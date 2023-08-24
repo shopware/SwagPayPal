@@ -66,6 +66,9 @@ parameters:
         -   # ignore deprecated CartService (we don't extend it)
             message: '#deprecated class Shopware\\Core\\Checkout\\Cart\\SalesChannel\\CartService#'
 
+        -   # ignore deprecated StockUpdater (PPI-805)
+            message : '#deprecated class Shopware\\Core\\Content\\Product\\DataAbstractionLayer\\StockUpdater#'
+
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
 

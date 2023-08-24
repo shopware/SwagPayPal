@@ -71,7 +71,8 @@ class PlusSubscriberTest extends TestCase
     use ServicesTrait;
 
     private const NEW_PAYMENT_NAME = 'PayPal, Lastschrift oder Kreditkarte';
-    private const PAYMENT_DESCRIPTION_EXTENSION = 'Bezahlung per PayPal - einfach, schnell und sicher. Zahlung per Lastschrift oder Kreditkarte ist auch ohne ein PayPal-Konto möglich.';
+    private const PAYMENT_DESCRIPTION_EXTENSION = 'Zahlung per Lastschrift oder Kreditkarte ist auch ohne ein PayPal-Konto möglich.';
+    private const NEW_PAYMENT_DESCRIPTION = 'Bezahlung per PayPal - einfach, schnell und sicher. ' . self::PAYMENT_DESCRIPTION_EXTENSION;
 
     private PaymentMethodUtil $paymentMethodUtil;
 
@@ -226,18 +227,12 @@ class PlusSubscriberTest extends TestCase
 
         $selectedPaymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
         static::assertSame(self::NEW_PAYMENT_NAME, $selectedPaymentMethod->getTranslated()['name']);
-        static::assertStringContainsString(
-            self::PAYMENT_DESCRIPTION_EXTENSION,
-            $selectedPaymentMethod->getTranslated()['description']
-        );
+        static::assertSame(self::NEW_PAYMENT_DESCRIPTION, $selectedPaymentMethod->getTranslated()['description']);
 
         $paymentMethod = $event->getPage()->getPaymentMethods()->get($this->paypalPaymentMethodId);
         static::assertNotNull($paymentMethod);
         static::assertSame(self::NEW_PAYMENT_NAME, $paymentMethod->getTranslated()['name']);
-        static::assertStringContainsString(
-            self::PAYMENT_DESCRIPTION_EXTENSION,
-            $paymentMethod->getTranslated()['description']
-        );
+        static::assertSame(self::NEW_PAYMENT_DESCRIPTION, $paymentMethod->getTranslated()['description']);
     }
 
     public function testOnCheckoutConfirmLoadedPayPalPaymentMethodNotSelected(): void
@@ -255,10 +250,7 @@ class PlusSubscriberTest extends TestCase
         $paymentMethod = $event->getPage()->getPaymentMethods()->get($this->paypalPaymentMethodId);
         static::assertNotNull($paymentMethod);
         static::assertSame(self::NEW_PAYMENT_NAME, $paymentMethod->getTranslated()['name']);
-        static::assertStringContainsString(
-            self::PAYMENT_DESCRIPTION_EXTENSION,
-            $paymentMethod->getTranslated()['description']
-        );
+        static::assertSame(self::NEW_PAYMENT_DESCRIPTION,$paymentMethod->getTranslated()['description']);
     }
 
     public function testOnCheckoutFinishLoadedIsNotPayPalPlus(): void
@@ -290,7 +282,7 @@ class PlusSubscriberTest extends TestCase
         $event = $this->createFinishEvent();
         $translated = $this->assertFinishPage($event)->getTranslated();
         static::assertSame(self::NEW_PAYMENT_NAME, $translated['name']);
-        static::assertSame(self::PAYMENT_DESCRIPTION_EXTENSION, $translated['description']);
+        static::assertSame(self::NEW_PAYMENT_DESCRIPTION, $translated['description']);
     }
 
     public function testOnCheckoutFinishLoadedNotPayPalSelected(): void
@@ -437,8 +429,19 @@ class PlusSubscriberTest extends TestCase
 
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
-        /** @var TranslatorInterface $translator */
-        $translator = $this->getContainer()->get('translator');
+        $translator = $this->createMock(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(function (string $key): string {
+            if ($key === 'paypal.plus.paymentNameOverwrite') {
+                return self::NEW_PAYMENT_NAME;
+            }
+
+            if ($key === 'paypal.plus.paymentDescriptionExtension') {
+                return self::PAYMENT_DESCRIPTION_EXTENSION;
+            }
+
+            static::fail(\sprintf('Unexpected translation key "%s"', $key));
+        });
+
         /** @var EntityRepository $currencyRepo */
         $currencyRepo = $this->getContainer()->get('currency.repository');
         $priceFormatter = new PriceFormatter();
