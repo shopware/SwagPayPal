@@ -78,22 +78,11 @@ class PosMediaRepoMock extends AbstractRepoMock
     /**
      * @return string[]
      */
-    protected function getPrimaryKeyWrite(Entity $entity): array
+    protected function getPrimaryKey(Entity $entity): array
     {
         return [
             'salesChannelId' => $entity->get('salesChannelId'),
             'mediaId' => $entity->get('mediaId'),
-        ];
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function getPrimaryKeyRead(Entity $entity): array
-    {
-        return [
-            'sales_channel_id' => $entity->get('salesChannelId'),
-            'media_id' => $entity->get('mediaId'),
         ];
     }
 

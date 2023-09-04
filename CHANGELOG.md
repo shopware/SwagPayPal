@@ -1,3 +1,6 @@
+# 7.2.3
+- PPI-812 - Fixes an issue, where Zettle sync could not be reset
+
 # 7.2.2
 - PPI-802 - Improved wording and default values in the Administration
 
