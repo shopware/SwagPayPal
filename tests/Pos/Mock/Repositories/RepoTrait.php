@@ -19,14 +19,20 @@ use Shopware\Core\Framework\Event\NestedEventCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
+ * @template T of EntityCollection
+ *
  * @internal
  */
 trait RepoTrait
 {
+    /**
+     * @var T
+     */
     protected EntityCollection $entityCollection;
 
     public function __construct()
     {
+        /** @var class-string<T> $collectionClass */
         $collectionClass = $this->getDefinition()->getCollectionClass();
         // @phpstan-ignore-next-line
         $this->entityCollection = new $collectionClass([]);
@@ -39,6 +45,9 @@ trait RepoTrait
         $this->entityCollection->add($entity);
     }
 
+    /**
+     * @return T
+     */
     public function getCollection(): EntityCollection
     {
         return $this->entityCollection;
