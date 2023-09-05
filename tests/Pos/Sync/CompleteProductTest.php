@@ -271,7 +271,7 @@ class CompleteProductTest extends TestCase
         ]);
 
         static::assertCount(5, $posProductRepository->getCollection());
-        static::assertNotContains($productStateF, $posProductRepository->getCollection());
+        static::assertFalse($posProductRepository->getCollection()->has($productStateF->getUniqueIdentifier()));
         static::assertSame($convertedGroupingA->getProduct()->generateChecksum(), $productStateA->getChecksum());
         static::assertNotEquals((new Product())->generateChecksum(), $productStateD->getChecksum());
         static::assertNotEquals((new Product())->generateChecksum(), $productStateE->getChecksum());
@@ -290,8 +290,8 @@ class CompleteProductTest extends TestCase
         static::assertCount(2, UpdateProductFixture::$lastUpdatedProducts);
 
         static::assertCount(2, $posMediaRepository->getCollection());
-        static::assertContains($existingMedia, $posMediaRepository->getCollection());
-        static::assertNotContains($removableMedia, $posMediaRepository->getCollection());
+        static::assertTrue($posMediaRepository->getCollection()->has($existingMedia->getUniqueIdentifier()));
+        static::assertFalse($posMediaRepository->getCollection()->has($removableMedia->getUniqueIdentifier()));
     }
 
     private function getTax(): TaxEntity
