@@ -67,9 +67,9 @@ use Symfony\Component\Messenger\MessageBus;
  */
 class StockSubscriberTest extends TestCase
 {
+    use BasicTestDataBehaviour;
     use KernelTestBehaviour;
     use SalesChannelTrait;
-    use BasicTestDataBehaviour;
 
     public function testStateChanged(): void
     {

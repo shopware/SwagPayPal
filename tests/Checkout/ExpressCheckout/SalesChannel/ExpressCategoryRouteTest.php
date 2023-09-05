@@ -34,7 +34,7 @@ class ExpressCategoryRouteTest extends TestCase
     use IntegrationTestBehaviour;
     use PaymentMethodTrait;
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $paymentMethodId = $this->getContainer()->get(PaymentMethodUtil::class)->getPayPalPaymentMethodId(Context::createDefaultContext());
 

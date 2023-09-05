@@ -12,6 +12,8 @@ use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Option;
 
 return static function (ECSConfig $ecsConfig): void {
+    (include __DIR__ . '/../../../ecs.php')($ecsConfig);
+
     $ecsConfig->ruleWithConfiguration(HeaderCommentFixer::class, ['header' => '(c) shopware AG <info@shopware.com>
 For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.', 'separate' => 'bottom', 'location' => 'after_declare_strict', 'comment_type' => 'comment']);

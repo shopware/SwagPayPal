@@ -42,7 +42,7 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
      */
     private LoggerInterface $logger;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $context = Context::createDefaultContext();
         $salesChannel = $this->getSalesChannel($context);

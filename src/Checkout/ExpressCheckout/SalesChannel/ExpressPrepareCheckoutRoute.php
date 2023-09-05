@@ -101,10 +101,9 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
             if (!\is_string($paypalOrderId)) {
                 if (\class_exists(RoutingException::class)) {
                     throw RoutingException::missingRequestParameter(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
-                } else {
-                    /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                    throw new MissingRequestParameterException(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
                 }
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new MissingRequestParameterException(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
             }
 
             $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannel()->getId());

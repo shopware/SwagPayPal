@@ -80,11 +80,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 class PayPalPaymentHandlerTest extends TestCase
 {
-    use PaymentTransactionTrait;
-    use ServicesTrait;
     use OrderFixture;
     use OrderTransactionTrait;
+    use PaymentTransactionTrait;
     use SalesChannelContextTrait;
+    use ServicesTrait;
 
     public const PAYER_ID_PAYMENT_INCOMPLETE = 'testPayerIdIncomplete';
     public const PAYER_ID_DUPLICATE_TRANSACTION = 'testPayerIdDuplicateTransaction';

@@ -55,9 +55,9 @@ use Symfony\Component\HttpFoundation\Request;
 class APMHandlerTest extends TestCase
 {
     use FullCheckoutTrait;
-    use ServicesTrait;
     use OrderFixture;
     use OrderTransactionTrait;
+    use ServicesTrait;
     use StateMachineStateTrait;
 
     /**
@@ -106,7 +106,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         return [
             [$this->getContainer()->get(BancontactOrderBuilder::class)],
             [$this->getContainer()->get(BlikOrderBuilder::class)],
-            //[$this->getContainer()->get(BoletoBancarioOrderBuilder::class)],
+            // [$this->getContainer()->get(BoletoBancarioOrderBuilder::class)],
             [$this->getContainer()->get(EpsOrderBuilder::class)],
             [$this->getContainer()->get(GiropayOrderBuilder::class)],
             [$this->getContainer()->get(IdealOrderBuilder::class)],

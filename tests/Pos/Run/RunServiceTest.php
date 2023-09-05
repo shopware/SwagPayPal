@@ -45,7 +45,7 @@ class RunServiceTest extends TestCase
 
     private Context $context;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         /** @var EntityRepository $runRepository */
         $runRepository = $this->getContainer()->get('swag_paypal_pos_sales_channel_run.repository');

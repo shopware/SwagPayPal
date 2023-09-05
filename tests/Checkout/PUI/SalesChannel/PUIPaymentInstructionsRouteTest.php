@@ -52,10 +52,10 @@ use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
  */
 class PUIPaymentInstructionsRouteTest extends TestCase
 {
-    use ServicesTrait;
     use OrderFixture;
-    use StateMachineStateTrait;
     use OrderTransactionTrait;
+    use ServicesTrait;
+    use StateMachineStateTrait;
 
     public function testGetPaymentInstructionsPending(): void
     {

@@ -29,7 +29,7 @@ class PaymentMethodDataRegistry
         SEPAMethodData::class,
         BancontactMethodData::class,
         BlikMethodData::class,
-        //BoletoBancarioMethodData::class,
+        // BoletoBancarioMethodData::class,
         EpsMethodData::class,
         GiropayMethodData::class,
         IdealMethodData::class,

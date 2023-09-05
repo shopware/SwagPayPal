@@ -27,8 +27,8 @@ use Swag\PayPal\Util\PriceFormatter;
  */
 class AmountProviderTest extends TestCase
 {
-    use IntegrationTestBehaviour;
     use CheckoutRouteTrait;
+    use IntegrationTestBehaviour;
 
     private PriceFormatter $priceFormatter;
 

@@ -35,7 +35,7 @@ class InventoryContextFactoryTest extends TestCase
 
     private SalesChannelEntity $salesChannel;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $context = Context::createDefaultContext();
 

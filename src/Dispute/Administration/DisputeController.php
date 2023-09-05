@@ -169,20 +169,18 @@ class DisputeController extends AbstractController
         if (!\is_string($disputeStateFilter)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::invalidRequestParameter('disputeStateFilter');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('disputeStateFilter');
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new InvalidRequestParameterException('disputeStateFilter');
         }
 
         foreach (\explode(',', $disputeStateFilter) as $disputeStateFilterItem) {
             if (!\in_array($disputeStateFilterItem, Item::DISPUTE_STATES, true)) {
                 if (\class_exists(RoutingException::class)) {
                     throw RoutingException::invalidRequestParameter('disputeStateFilter');
-                } else {
-                    /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                    throw new InvalidRequestParameterException('disputeStateFilter');
                 }
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new InvalidRequestParameterException('disputeStateFilter');
             }
         }
 

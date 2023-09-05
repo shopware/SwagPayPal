@@ -52,7 +52,7 @@ class ProductSyncerTest extends AbstractProductSyncTest
 
     private MockObject $unsyncedChecker;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $context = Context::createDefaultContext();
 

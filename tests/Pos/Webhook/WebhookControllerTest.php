@@ -42,9 +42,9 @@ use Symfony\Component\Routing\Router;
  */
 class WebhookControllerTest extends TestCase
 {
-    use SalesChannelTrait;
-    use PosSalesChannelTrait;
     use KernelTestBehaviour;
+    use PosSalesChannelTrait;
+    use SalesChannelTrait;
 
     private const INVALID_EVENT_NAME = 'ThisIsNotAnEvent';
 
@@ -54,7 +54,7 @@ class WebhookControllerTest extends TestCase
 
     private WebhookController $webhookController;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->context = Context::createDefaultContext();
 

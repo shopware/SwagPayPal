@@ -34,7 +34,7 @@ class ProductSelectionTest extends AbstractProductSyncTest
 
     private ProductSelection $productSelection;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $context = Context::createDefaultContext();
 

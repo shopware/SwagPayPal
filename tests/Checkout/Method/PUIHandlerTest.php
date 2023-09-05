@@ -48,9 +48,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class PUIHandlerTest extends TestCase
 {
     use FullCheckoutTrait;
-    use ServicesTrait;
     use OrderFixture;
     use OrderTransactionTrait;
+    use ServicesTrait;
     use StateMachineStateTrait;
 
     public const PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED = 'payment_source_info_cannot_be_verified@example.com';

@@ -119,7 +119,6 @@ class PaymentMethodStateServiceTest extends TestCase
         $service->setAllPaymentMethodsState(false, Context::createDefaultContext());
     }
 
-
     private function createStateService(): PaymentMethodStateService
     {
         $this->paymentMethodRepository = $this->createMock(EntityRepository::class);

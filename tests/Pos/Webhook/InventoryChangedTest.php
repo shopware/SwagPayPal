@@ -47,8 +47,8 @@ use Symfony\Component\Routing\Router;
  */
 class InventoryChangedTest extends TestCase
 {
-    use SalesChannelTrait;
     use KernelTestBehaviour;
+    use SalesChannelTrait;
 
     public function testInventoryChanged(): void
     {

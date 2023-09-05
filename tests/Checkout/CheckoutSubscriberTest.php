@@ -41,7 +41,7 @@ class CheckoutSubscriberTest extends TestCase
 
     private PaymentMethodDataRegistry $methodDataRegistry;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->methodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
 

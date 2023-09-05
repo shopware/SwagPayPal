@@ -27,15 +27,15 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class MethodEligibilityRouteTest extends TestCase
 {
-    use KernelTestBehaviour;
     use BasicTestDataBehaviour;
+    use KernelTestBehaviour;
     use SalesChannelApiTestBehaviour;
 
     private KernelBrowser $browser;
 
     private string $salesChannelId;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $methodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
         $paymentMethodData = [];

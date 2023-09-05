@@ -39,8 +39,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class FilteredPaymentMethodRouteTest extends TestCase
 {
-    use SalesChannelContextTrait;
     use PaymentMethodTrait;
+    use SalesChannelContextTrait;
     use ServicesTrait;
 
     private AbstractPaymentMethodRoute $paymentMethodRoute;
@@ -51,7 +51,7 @@ class FilteredPaymentMethodRouteTest extends TestCase
 
     private string $productId;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->paymentMethodRoute = $this->getContainer()->get(PaymentMethodRoute::class);
         $this->systemConfig = $this->getContainer()->get(SystemConfigService::class);

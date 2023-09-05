@@ -68,10 +68,9 @@ class PayPalPaymentMethodController extends AbstractController
         if ($salesChannelId !== null && !\is_string($salesChannelId)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::invalidRequestParameter('salesChannelId');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('salesChannelId');
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new InvalidRequestParameterException('salesChannelId');
         }
 
         $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, $salesChannelId);

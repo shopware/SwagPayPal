@@ -67,7 +67,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     private CartService $cartService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->cartService = $this->getContainer()->get(CartService::class);
     }

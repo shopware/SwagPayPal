@@ -41,7 +41,7 @@ class RunTaskTest extends TestCase
      */
     private array $tasks;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->messageBus = new MessageBusMock();
         $this->runService = $this->createMock(RunService::class);

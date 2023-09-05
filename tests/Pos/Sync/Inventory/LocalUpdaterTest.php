@@ -31,7 +31,7 @@ class LocalUpdaterTest extends TestCase
 
     private LocalUpdater $localUpdater;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->productRepository = $this->createMock(EntityRepository::class);
 

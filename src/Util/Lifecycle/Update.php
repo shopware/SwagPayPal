@@ -303,7 +303,7 @@ class Update
                 $this->webhookService->deregisterWebhook($salesChannelId);
                 $this->webhookService->registerWebhook($salesChannelId);
             }
-        } catch (PayPalSettingsInvalidException | WebhookIdInvalidException $exception) {
+        } catch (PayPalSettingsInvalidException|WebhookIdInvalidException $exception) {
             // do nothing, if the plugin is not correctly configured
         }
 
@@ -322,7 +322,7 @@ class Update
 
                 $this->posWebhookService->registerWebhook($salesChannel->getId(), $context);
             }
-        } catch (PosApiException | WebhookNotRegisteredException $exception) {
+        } catch (PosApiException|WebhookNotRegisteredException $exception) {
             // do nothing, if the Sales Channel is not correctly configured
         }
     }

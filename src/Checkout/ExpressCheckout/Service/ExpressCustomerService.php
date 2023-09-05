@@ -137,10 +137,9 @@ class ExpressCustomerService
         if ($newToken === null || $newToken === '') {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::missingRequestParameter(PlatformRequest::HEADER_CONTEXT_TOKEN);
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new MissingRequestParameterException(PlatformRequest::HEADER_CONTEXT_TOKEN);
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new MissingRequestParameterException(PlatformRequest::HEADER_CONTEXT_TOKEN);
         }
 
         return $newToken;

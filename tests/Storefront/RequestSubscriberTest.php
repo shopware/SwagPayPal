@@ -14,7 +14,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Event\RouteRequest\PaymentMethodRouteRequestEvent;
 use Swag\PayPal\Storefront\RequestSubscriber;
-use Swag\PayPal\Test\RestApi\AssertArraySubsetTrait;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

@@ -54,6 +54,7 @@ class Webhook extends PayPalApiStruct
      *
      * @OA\Property(
      *  oneOf={
+     *
      *      @OA\Schema(ref="#/components/schemas/swag_paypal_v2_order_authorization"},
      *      @OA\Schema(ref:"#/components/schemas/swag_paypal_v2_order_capture"},
      *      @OA\Schema(ref":"#/components/schemas/swag_paypal_v2_order_refund"},

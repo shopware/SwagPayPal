@@ -7,34 +7,21 @@
 
 namespace Swag\PayPal\OrdersApi\Builder\Util;
 
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\PluginEntity;
-use Shopware\Core\Framework\Plugin\PluginService;
-use Shopware\Core\System\Currency\CurrencyEntity;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Discount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Handling;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ItemTotal;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Shipping as BreakdownShipping;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\TaxTotal;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\SwagPayPal;
-use Swag\PayPal\Util\PriceFormatter;
 
 class CustomIdProvider
 {
-    private EntityRepository $pluginRepository;
-
     protected string $shopwareVersion;
 
     protected ?string $pluginVersion = null;
+
+    private EntityRepository $pluginRepository;
 
     /**
      * @internal

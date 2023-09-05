@@ -28,7 +28,7 @@ class LoggerTest extends TestCase
 
     private string $logsDir;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         /** @var string $logsDir */
         $logsDir = $this->getContainer()->getParameter('kernel.logs_dir');
@@ -39,7 +39,7 @@ class LoggerTest extends TestCase
         }
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->getContainer()->get(SystemConfigService::class)->delete(Settings::LOGGING_LEVEL);
     }
@@ -133,7 +133,7 @@ class LoggerTest extends TestCase
         $systemConfigService->set(Settings::LOGGING_LEVEL, $level);
 
         $logsDir = $this->getContainer()->getParameter('kernel.logs_dir');
-        $loggerFactory = new LoggerFactory($logsDir . DIRECTORY_SEPARATOR . '%s_test.log');
+        $loggerFactory = new LoggerFactory($logsDir . \DIRECTORY_SEPARATOR . '%s_test.log');
         $loggerFactory->setLogLevel($systemConfigService);
 
         return $loggerFactory->createRotating(self::LOGGER_PREFIX);

@@ -29,9 +29,9 @@ use Swag\PayPal\Util\PriceFormatter;
  */
 class CartPaymentBuilderTest extends TestCase
 {
-    use ServicesTrait;
     use CartTrait;
     use SalesChannelContextTrait;
+    use ServicesTrait;
 
     public function testGetPaymentLineItemMissingPrice(): void
     {

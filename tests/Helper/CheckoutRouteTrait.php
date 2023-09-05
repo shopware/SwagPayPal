@@ -30,8 +30,8 @@ use Swag\PayPal\Util\PaymentMethodUtil;
  */
 trait CheckoutRouteTrait
 {
-    use ServicesTrait;
     use PaymentMethodTrait;
+    use ServicesTrait;
 
     protected function tearDown(): void
     {

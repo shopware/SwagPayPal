@@ -12,7 +12,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
-use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 
 /**
  * @internal
