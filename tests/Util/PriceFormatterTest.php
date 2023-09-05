@@ -25,38 +25,40 @@ class PriceFormatterTest extends TestCase
     public function dataProviderFormatPriceTest(): array
     {
         return [
-            [1, '1.00'],
-            [2.1, '2.10'],
-            [3.54, '3.54'],
-            [4.56789, '4.57'],
-            [-.000001, '0.00'],
+            [1, null, '1.00'],
+            [2.1, 'EUR', '2.10'],
+            [3.54, null, '3.54'],
+            [4.56789, 'USD', '4.57'],
+            [-.000001, 'EUR', '0.00'],
+            [3.54, 'JPY', '4'],
         ];
     }
 
     /**
      * @dataProvider dataProviderFormatPriceTest
      */
-    public function testFormatPrice(float $input, string $output): void
+    public function testFormatPrice(float $input, ?string $currencyCode, string $output): void
     {
-        static::assertSame($this->priceFormatter->formatPrice($input), $output);
+        static::assertSame($this->priceFormatter->formatPrice($input, $currencyCode), $output);
     }
 
     public function dataProviderRoundPriceTest(): array
     {
         return [
-            [1, 1],
-            [2.1, 2.1],
-            [3.54, 3.54],
-            [4.56789, 4.57],
-            [-.000001, 0.00],
+            [1, 'EUR', 1],
+            [2.1, 'EUR', 2.1],
+            [3.54, null, 3.54],
+            [4.56789, 'USD', 4.57],
+            [-.000001, 'EUR', 0.00],
+            [3.54, 'JPY', 4],
         ];
     }
 
     /**
      * @dataProvider dataProviderRoundPriceTest
      */
-    public function testRoundPrice(float $input, float $output): void
+    public function testRoundPrice(float $input, ?string $currencyCode, float $output): void
     {
-        static::assertSame($this->priceFormatter->roundPrice($input), $output);
+        static::assertSame($this->priceFormatter->roundPrice($input, $currencyCode), $output);
     }
 }

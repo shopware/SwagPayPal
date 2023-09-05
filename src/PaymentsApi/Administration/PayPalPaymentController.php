@@ -352,8 +352,8 @@ class PayPalPaymentController extends AbstractController
 
     private function createRefund(Request $request): Refund
     {
-        $refundAmount = $this->priceFormatter->formatPrice((float) $request->request->get(self::REQUEST_PARAMETER_REFUND_AMOUNT));
         $currency = $request->request->getAlpha(self::REQUEST_PARAMETER_CURRENCY);
+        $refundAmount = $this->priceFormatter->formatPrice((float) $request->request->get(self::REQUEST_PARAMETER_REFUND_AMOUNT), $currency);
         $invoiceNumber = (string) $request->request->get(self::REQUEST_PARAMETER_REFUND_INVOICE_NUMBER, '');
         $description = (string) $request->request->get(self::REQUEST_PARAMETER_DESCRIPTION, '');
         $reason = (string) $request->request->get(self::REQUEST_PARAMETER_REASON, '');
@@ -384,8 +384,8 @@ class PayPalPaymentController extends AbstractController
 
     private function createCapture(Request $request): Capture
     {
-        $amountToCapture = $this->priceFormatter->formatPrice((float) $request->request->get(self::REQUEST_PARAMETER_CAPTURE_AMOUNT));
         $currency = $request->request->getAlpha(self::REQUEST_PARAMETER_CURRENCY);
+        $amountToCapture = $this->priceFormatter->formatPrice((float) $request->request->get(self::REQUEST_PARAMETER_CAPTURE_AMOUNT), $currency);
         $isFinalCapture = $request->request->getBoolean(self::REQUEST_PARAMETER_CAPTURE_IS_FINAL, true);
 
         $capture = new Capture();
