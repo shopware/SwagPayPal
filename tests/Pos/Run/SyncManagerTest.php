@@ -52,7 +52,7 @@ class SyncManagerTest extends TestCase
 
     private RunService $runService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->messageBus = new MessageBusMock();
         $this->context = Context::createDefaultContext();

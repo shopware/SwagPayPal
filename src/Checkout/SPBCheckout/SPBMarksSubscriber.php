@@ -40,10 +40,10 @@ class SPBMarksSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            //AccountEditOrderPageLoadedEvent::class => 'addMarksExtension',
-            //AccountPaymentMethodPageLoadedEvent::class => 'addMarksExtension',
-            //FooterPageletLoadedEvent::class => 'addMarksExtension',
-            //CheckoutConfirmPageLoadedEvent::class => 'addMarksExtension',
+            // AccountEditOrderPageLoadedEvent::class => 'addMarksExtension',
+            // AccountPaymentMethodPageLoadedEvent::class => 'addMarksExtension',
+            // FooterPageletLoadedEvent::class => 'addMarksExtension',
+            // CheckoutConfirmPageLoadedEvent::class => 'addMarksExtension',
         ];
     }
 
@@ -57,7 +57,7 @@ class SPBMarksSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->logger->debug('Adding SPB marks to {page}', ['page' => \get_class($event)]);
+        $this->logger->debug('Adding SPB marks to {page}', ['page' => $event::class]);
         if ($event instanceof CheckoutConfirmPageLoadedEvent) {
             $confirmPage = $event->getPage();
             if ($confirmPage->getCart()->getExtension(ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {

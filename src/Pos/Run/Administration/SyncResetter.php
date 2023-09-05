@@ -45,19 +45,19 @@ class SyncResetter
 
         $ids = $this->posProductRepository->searchIds($criteria, $context)->getIds();
         if (!empty($ids)) {
-            $ids = \array_filter($ids, static fn($id) => \is_array($id));
+            $ids = \array_filter($ids, static fn ($id) => \is_array($id));
             $this->posProductRepository->delete(\array_filter($ids), $context);
         }
 
         $ids = $this->posInventoryRepository->searchIds($criteria, $context)->getIds();
         if (!empty($ids)) {
-            $ids = \array_filter($ids, static fn($id) => \is_array($id));
+            $ids = \array_filter($ids, static fn ($id) => \is_array($id));
             $this->posInventoryRepository->delete(\array_filter($ids), $context);
         }
 
         $ids = $this->posMediaRepository->searchIds($criteria, $context)->getIds();
         if (!empty($ids)) {
-            $ids = \array_filter($ids, static fn($id) => \is_array($id));
+            $ids = \array_filter($ids, static fn ($id) => \is_array($id));
             $this->posMediaRepository->delete(\array_filter($ids), $context);
         }
 

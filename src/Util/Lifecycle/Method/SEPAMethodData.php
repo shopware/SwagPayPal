@@ -9,7 +9,6 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService;

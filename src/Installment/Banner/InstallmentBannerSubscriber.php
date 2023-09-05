@@ -129,7 +129,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
             $bannerData
         );
 
-        $this->logger->debug('Added data to {page}', ['page' => \get_class($pageLoadedEvent)]);
+        $this->logger->debug('Added data to {page}', ['page' => $pageLoadedEvent::class]);
     }
 
     public function addInstallmentBannerPagelet(PageletLoadedEvent $pageletLoadedEvent): void

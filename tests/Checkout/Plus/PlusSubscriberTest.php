@@ -62,11 +62,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class PlusSubscriberTest extends TestCase
 {
+    use BasicTestDataBehaviour;
     use CartTrait;
     use DatabaseTransactionBehaviour;
     use PaymentMethodTrait;
     use PaymentTransactionTrait;
-    use BasicTestDataBehaviour;
     use SalesChannelContextTrait;
     use ServicesTrait;
 
@@ -250,7 +250,7 @@ class PlusSubscriberTest extends TestCase
         $paymentMethod = $event->getPage()->getPaymentMethods()->get($this->paypalPaymentMethodId);
         static::assertNotNull($paymentMethod);
         static::assertSame(self::NEW_PAYMENT_NAME, $paymentMethod->getTranslated()['name']);
-        static::assertSame(self::NEW_PAYMENT_DESCRIPTION,$paymentMethod->getTranslated()['description']);
+        static::assertSame(self::NEW_PAYMENT_DESCRIPTION, $paymentMethod->getTranslated()['description']);
     }
 
     public function testOnCheckoutFinishLoadedIsNotPayPalPlus(): void

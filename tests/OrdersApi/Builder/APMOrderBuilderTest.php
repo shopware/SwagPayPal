@@ -206,7 +206,7 @@ class APMOrderBuilderTest extends TestCase
         return [
             [BancontactOrderBuilder::class, [], Bancontact::class, []],
             [BlikOrderBuilder::class, [], Blik::class, ['email' => 'test@test.com']],
-            //[Boletobancario::class, [], Boletobancario::class, ['email' => 'test@test.com']],
+            // [Boletobancario::class, [], Boletobancario::class, ['email' => 'test@test.com']],
             [EpsOrderBuilder::class, [], Eps::class, []],
             [GiropayOrderBuilder::class, [], Giropay::class, []],
             [IdealOrderBuilder::class, [], Ideal::class, []],

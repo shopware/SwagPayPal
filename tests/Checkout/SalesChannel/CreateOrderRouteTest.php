@@ -42,8 +42,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CreateOrderRouteTest extends TestCase
 {
-    use DatabaseTransactionBehaviour;
     use BasicTestDataBehaviour;
+    use DatabaseTransactionBehaviour;
     use SalesChannelContextTrait;
     use ServicesTrait;
 

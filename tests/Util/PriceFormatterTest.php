@@ -17,7 +17,7 @@ class PriceFormatterTest extends TestCase
 {
     protected PriceFormatter $priceFormatter;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->priceFormatter = new PriceFormatter();
     }

@@ -30,8 +30,8 @@ use Swag\PayPal\Util\PaymentMethodUtil;
  */
 class ExcludedProductValidatorTest extends TestCase
 {
-    use IntegrationTestBehaviour;
     use FullCheckoutTrait;
+    use IntegrationTestBehaviour;
     use PaymentMethodTrait;
 
     private ExcludedProductValidator $validator;
@@ -40,7 +40,7 @@ class ExcludedProductValidatorTest extends TestCase
 
     private IdsCollection $idsCollection;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = $this->getContainer()->get(ExcludedProductValidator::class);
         $this->systemConfig = $this->getContainer()->get(SystemConfigService::class);

@@ -33,11 +33,11 @@ use Swag\PayPal\Webhook\Handler\AbstractWebhookHandler;
  */
 abstract class AbstractWebhookHandlerTestCase extends TestCase
 {
-    use KernelTestBehaviour;
-    use StateMachineStateTrait;
     use DatabaseTransactionBehaviour;
+    use KernelTestBehaviour;
     use OrderFixture;
     use OrderTransactionTrait;
+    use StateMachineStateTrait;
 
     protected EntityRepository $orderTransactionRepository;
 

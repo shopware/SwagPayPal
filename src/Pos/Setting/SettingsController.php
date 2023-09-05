@@ -72,10 +72,9 @@ class SettingsController extends AbstractController
         if (!\is_string($apiKey)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::invalidRequestParameter('apiKey');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('apiKey');
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new InvalidRequestParameterException('apiKey');
         }
 
         $salesChannelId = $request->request->getAlnum('salesChannelId');
@@ -107,10 +106,9 @@ class SettingsController extends AbstractController
         if (!\is_string($apiKey)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::invalidRequestParameter('apiKey');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('apiKey');
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new InvalidRequestParameterException('apiKey');
         }
 
         $information = new AdditionalInformation();

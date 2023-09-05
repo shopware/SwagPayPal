@@ -36,7 +36,7 @@ class RemoteUpdaterTest extends TestCase
 
     private RemoteUpdater $remoteUpdater;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->inventoryResource = $this->createMock(InventoryResource::class);
 

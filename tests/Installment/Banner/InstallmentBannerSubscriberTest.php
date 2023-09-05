@@ -55,8 +55,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class InstallmentBannerSubscriberTest extends TestCase
 {
-    use ServicesTrait;
     use PaymentMethodTrait;
+    use ServicesTrait;
 
     private const CART_TOTAL_PRICE = 123.45;
     private const PRODUCT_PRICE = 678.9;

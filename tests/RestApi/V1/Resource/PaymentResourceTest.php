@@ -11,8 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V1\Api\Payment;
-use Swag\PayPal\RestApi\V1\Api\Payment\Link;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;

@@ -36,8 +36,8 @@ use Swag\PayPal\Util\PriceFormatter;
  */
 class PaymentStatusUtilTest extends TestCase
 {
-    use KernelTestBehaviour;
     use DatabaseTransactionBehaviour;
+    use KernelTestBehaviour;
     use OrderFixture;
 
     private const FIRST_TRANSACTION_ID = '9535b385fc7544f08e21b8b74b52ff4a';

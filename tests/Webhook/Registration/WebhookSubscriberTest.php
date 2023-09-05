@@ -42,7 +42,7 @@ class WebhookSubscriberTest extends TestCase
      */
     private $systemConfigService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->systemConfigService = $this->getContainer()->get(SystemConfigService::class);
         $this->systemConfigService->set(Settings::CLIENT_ID, 'defaultClientId');
@@ -50,7 +50,7 @@ class WebhookSubscriberTest extends TestCase
         $this->systemConfigService->set(Settings::SANDBOX, false);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->systemConfigService->delete(Settings::CLIENT_ID);
         $this->systemConfigService->delete(Settings::CLIENT_SECRET);

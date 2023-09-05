@@ -45,8 +45,8 @@ class PosSalesChannelMediaDefinition extends MappingEntityDefinition
 
             new ManyToOneAssociationField('media', 'media_id', MediaDefinition::class),
 
-            (new StringField('lookup_key', 'lookupKey')),
-            (new StringField('url', 'url')),
+            new StringField('lookup_key', 'lookupKey'),
+            new StringField('url', 'url'),
             new CreatedAtField(),
         ]);
     }

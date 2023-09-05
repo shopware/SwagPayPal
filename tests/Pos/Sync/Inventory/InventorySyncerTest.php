@@ -38,7 +38,7 @@ class InventorySyncerTest extends TestCase
 
     private InventoryContext $inventoryContext;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $context = Context::createDefaultContext();
 

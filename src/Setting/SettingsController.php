@@ -50,20 +50,18 @@ class SettingsController extends AbstractController
         if (!\is_string($clientId)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::invalidRequestParameter('clientId');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('clientId');
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new InvalidRequestParameterException('clientId');
         }
 
         $clientSecret = $request->query->get('clientSecret');
         if (!\is_string($clientSecret)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::invalidRequestParameter('clientSecret');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('clientSecret');
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new InvalidRequestParameterException('clientSecret');
         }
 
         $sandboxActive = $request->query->getBoolean('sandboxActive');

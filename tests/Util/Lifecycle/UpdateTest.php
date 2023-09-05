@@ -70,9 +70,9 @@ use Symfony\Component\Routing\Router;
 class UpdateTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
-    use ServicesTrait;
-    use SalesChannelTrait;
     use PosSalesChannelTrait;
+    use SalesChannelTrait;
+    use ServicesTrait;
 
     private const CLIENT_ID = 'testClientId';
     private const CLIENT_SECRET = 'testClientSecret';

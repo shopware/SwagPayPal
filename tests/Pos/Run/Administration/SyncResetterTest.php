@@ -7,27 +7,15 @@
 
 namespace Swag\PayPal\Test\Pos\Run\Administration;
 
-use Doctrine\DBAL\Connection;
-use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
-use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
-use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
-use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogEntity;
 use Swag\PayPal\Pos\Run\Administration\SyncResetter;
-use Swag\PayPal\Pos\Run\LoggerFactory;
-use Swag\PayPal\Pos\Run\RunService;
 
 /**
  * @internal

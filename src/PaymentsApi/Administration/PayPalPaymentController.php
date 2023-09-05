@@ -14,7 +14,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\Since;
-use Swag\PayPal\OrdersApi\Administration\Exception\OrderNotFoundException;
 use Swag\PayPal\PaymentsApi\Administration\Exception\PaymentNotFoundException;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;

@@ -60,11 +60,11 @@ class PosSalesChannelDefinition extends EntityDefinition
             new FkField('product_stream_id', 'productStreamId', ProductStreamDefinition::class),
 
             (new StringField('api_key', 'apiKey', self::MAX_APIKEY_SIZE))->addFlags(new Required()),
-            (new StringField('media_domain', 'mediaDomain')),
-            (new StringField('webhook_signing_key', 'webhookSigningKey', self::MAX_WEBHOOK_KEY_SIZE)),
+            new StringField('media_domain', 'mediaDomain'),
+            new StringField('webhook_signing_key', 'webhookSigningKey', self::MAX_WEBHOOK_KEY_SIZE),
 
-            (new BoolField('sync_prices', 'syncPrices')),
-            (new IntField('replace', 'replace', 0, 2)),
+            new BoolField('sync_prices', 'syncPrices'),
+            new IntField('replace', 'replace', 0, 2),
 
             (new OneToOneAssociationField('salesChannel', 'sales_channel_id', 'id', SalesChannelDefinition::class, false))->addFlags(new RestrictDelete()),
             new ManyToOneAssociationField('productStream', 'product_stream_id', ProductStreamDefinition::class),

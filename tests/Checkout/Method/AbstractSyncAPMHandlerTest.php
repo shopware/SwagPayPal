@@ -61,11 +61,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 abstract class AbstractSyncAPMHandlerTest extends TestCase
 {
-    use PaymentTransactionTrait;
-    use ServicesTrait;
     use OrderFixture;
     use OrderTransactionTrait;
+    use PaymentTransactionTrait;
     use SalesChannelContextTrait;
+    use ServicesTrait;
 
     protected EntityRepository $orderTransactionRepo;
 

@@ -41,7 +41,7 @@ class ClientToken extends PayPalApiStruct
     {
         $newToken = parent::assign($arrayDataWithSnakeCaseKeys);
 
-        //Calculate the expiration date manually
+        // Calculate the expiration date manually
         $expirationDateTime = new \DateTime();
         $interval = \DateInterval::createFromDateString(\sprintf('%s seconds', $newToken->getExpiresIn()));
         $expirationDateTime = $expirationDateTime->add($interval ?: new \DateInterval('PT0S'));
