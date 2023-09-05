@@ -1,4 +1,5 @@
 # 7.2.3
+- PPI-811 - Behebt ein Problem, bei dem Kreditkarten mit nicht verfügbarem 3D Secure nicht akzeptiert wurden
 - PPI-812 - Behebt ein Problem, bei dem der Zettle-Sync sich nicht zurücksetzbar ist
 
 # 7.2.2

@@ -19,7 +19,7 @@ interface ACDCValidatorInterface
 
     public const ENROLLMENT_STATUS_READY = 'Y';
     public const ENROLLMENT_STATUS_NOT_READY = 'N';
-    public const ENROLLMENT_STATUS_UNAVAILABLE = 'O';
+    public const ENROLLMENT_STATUS_UNAVAILABLE = 'U';
     public const ENROLLMENT_STATUS_BYPASSED = 'B';
 
     public const AUTHENTICATION_STATUS_SUCCESSFUL = 'Y';
