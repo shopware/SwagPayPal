@@ -1,4 +1,5 @@
 # 6.2.2
+- PPI-808 - Behebt ein Problem, bei dem manche Währungen (HUF, JPY, TWD) nicht korrekt an PayPal übermittelt wurden
 - PPI-811 - Behebt ein Problem, bei dem Kreditkarten mit nicht verfügbarem 3D Secure nicht akzeptiert wurden
 
 # 6.2.1

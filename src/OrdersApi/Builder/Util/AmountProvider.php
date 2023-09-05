@@ -43,7 +43,7 @@ class AmountProvider
 
         $amount = new Amount();
         $amount->setCurrencyCode($currencyCode);
-        $amount->setValue($this->priceFormatter->formatPrice($totalAmount->getTotalPrice()));
+        $amount->setValue($this->priceFormatter->formatPrice($totalAmount->getTotalPrice(), $currencyCode));
 
         $items = $purchaseUnit->getItems();
         if ($items !== null) {
@@ -90,30 +90,30 @@ class AmountProvider
 
         $itemTotal = new ItemTotal();
         $itemTotal->setCurrencyCode($currencyCode);
-        $itemTotal->setValue($this->priceFormatter->formatPrice($accumulatedAmountValue));
+        $itemTotal->setValue($this->priceFormatter->formatPrice($accumulatedAmountValue, $currencyCode));
 
         $shipping = new BreakdownShipping();
         $shipping->setCurrencyCode($currencyCode);
-        $shipping->setValue($this->priceFormatter->formatPrice($shippingCosts->getTotalPrice() + ($isNet ? $shippingCosts->getCalculatedTaxes()->getAmount() : 0.0)));
+        $shipping->setValue($this->priceFormatter->formatPrice($shippingCosts->getTotalPrice() + ($isNet ? $shippingCosts->getCalculatedTaxes()->getAmount() : 0.0), $currencyCode));
         $accumulatedAmountValue += (float) $shipping->getValue();
 
         $taxTotal = new TaxTotal();
         $taxTotal->setCurrencyCode($currencyCode);
-        $taxTotal->setValue($this->priceFormatter->formatPrice($accumulatedTaxValue));
+        $taxTotal->setValue($this->priceFormatter->formatPrice($accumulatedTaxValue, $currencyCode));
         $accumulatedAmountValue += (float) $taxTotal->getValue();
 
         $discount = new Discount();
         $discount->setCurrencyCode($currencyCode);
-        $discount->setValue($this->priceFormatter->formatPrice($accumulatedAmountValue - $amountValue));
+        $discount->setValue($this->priceFormatter->formatPrice($accumulatedAmountValue - $amountValue, $currencyCode));
 
         $handling = new Handling();
         $handling->setCurrencyCode($currencyCode);
         // if due to rounding the order is more than the items, we add a fake handling fee
         if ((float) $discount->getValue() < 0.0) {
-            $discount->setValue($this->priceFormatter->formatPrice(0.0));
-            $handling->setValue($this->priceFormatter->formatPrice($amountValue - $accumulatedAmountValue));
+            $discount->setValue($this->priceFormatter->formatPrice(0.0, $currencyCode));
+            $handling->setValue($this->priceFormatter->formatPrice($amountValue - $accumulatedAmountValue, $currencyCode));
         } else {
-            $handling->setValue($this->priceFormatter->formatPrice(0.0));
+            $handling->setValue($this->priceFormatter->formatPrice(0.0, $currencyCode));
         }
 
         $breakdown = new Breakdown();

@@ -70,15 +70,16 @@ class CaptureRefundCreator
      */
     private function getAmount(Money $amount, Request $request): ?Money
     {
+        $amount->setCurrencyCode($request->request->getAlpha(PayPalOrdersController::REQUEST_PARAMETER_CURRENCY));
         $amountString = $this->priceFormatter->formatPrice(
-            (float) $request->request->get(PayPalOrdersController::REQUEST_PARAMETER_AMOUNT)
+            (float) $request->request->get(PayPalOrdersController::REQUEST_PARAMETER_AMOUNT),
+            $amount->getCurrencyCode(),
         );
         if ($amountString === '0.00') {
             return null;
         }
 
         $amount->setValue($amountString);
-        $amount->setCurrencyCode($request->request->getAlpha(PayPalOrdersController::REQUEST_PARAMETER_CURRENCY));
 
         return $amount;
     }

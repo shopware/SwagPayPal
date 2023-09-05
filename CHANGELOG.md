@@ -1,4 +1,5 @@
 # 6.2.2
+- PPI-808 - Fixes an issue, where some currencies (HUF, JPY, TWD) were not transmitted correctly
 - PPI-811 - Fixes an issue, where credit cards with unavailable 3D Secure could not be processed
 
 # 6.2.1
