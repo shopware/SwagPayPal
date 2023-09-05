@@ -1,3 +1,6 @@
+# 6.2.2
+- PPI-811 - Fixes an issue, where credit cards with unavailable 3D Secure could not be processed
+
 # 6.2.1
 - PPI-802 - Improved wording and default values in the Administration
 - PPI-801 - Removed unnecessary debug statements

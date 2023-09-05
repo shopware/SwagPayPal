@@ -1,3 +1,6 @@
+# 6.2.2
+- PPI-811 - Behebt ein Problem, bei dem Kreditkarten mit nicht verfügbarem 3D Secure nicht akzeptiert wurden
+
 # 6.2.1
 - PPI-802 - Verbesserte Formulierung und Standardwerte in der Administration
 - PPI-801 - Unnötiges Debug-Statement entfernt
