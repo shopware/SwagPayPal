@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Helper;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @internal
  */
+#[Package('checkout')]
 final class ConstantsForTesting
 {
     // Constants for the repo mocks

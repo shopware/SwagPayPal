@@ -17,6 +17,7 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Tax\TaxEntity;
@@ -25,6 +26,7 @@ use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 /**
  * @internal
  */
+#[Package('checkout')]
 abstract class AbstractProductSyncTest extends TestCase
 {
     use KernelTestBehaviour;

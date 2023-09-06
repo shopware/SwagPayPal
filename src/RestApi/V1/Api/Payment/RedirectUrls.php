@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V1\Api\Payment;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_redirect_urls")
  */
+#[Package('checkout')]
 class RedirectUrls extends PayPalApiStruct
 {
     /**

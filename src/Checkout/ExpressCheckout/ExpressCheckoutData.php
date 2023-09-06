@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
+#[Package('checkout')]
 class ExpressCheckoutData extends Struct
 {
     private string $paypalOrderId;

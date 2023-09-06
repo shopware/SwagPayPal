@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api\Payment;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Amount;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
@@ -17,6 +18,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_transaction")
  */
+#[Package('checkout')]
 class Transaction extends PayPalApiStruct
 {
     /**

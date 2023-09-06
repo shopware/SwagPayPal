@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout\PUI;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
@@ -22,6 +23,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PUISubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID = 'payPalPUIFraudNetPageData';

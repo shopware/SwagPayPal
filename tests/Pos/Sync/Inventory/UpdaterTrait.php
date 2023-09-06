@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Inventory\Status;
@@ -21,6 +22,7 @@ use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 /**
  * @internal
  */
+#[Package('checkout')]
 trait UpdaterTrait
 {
     use InventoryTrait;

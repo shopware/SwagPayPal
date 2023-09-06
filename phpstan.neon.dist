@@ -15,6 +15,7 @@ parameters:
         -   tests
     excludePaths:
         -   src/Resources
+        -   src/DevOps/Rector
 
     symfony:
         constant_hassers: false
@@ -79,5 +80,9 @@ services:
             - phpstan.rules.rule
     -
         class: Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalMethodRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\PackageAnnotationRule
         tags:
             - phpstan.rules.rule

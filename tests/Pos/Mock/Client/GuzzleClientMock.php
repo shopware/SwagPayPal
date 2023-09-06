@@ -16,6 +16,7 @@ use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\PosRequestUri;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
@@ -38,6 +39,7 @@ use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 /**
  * @internal
  */
+#[Package('checkout')]
 class GuzzleClientMock implements ClientInterface
 {
     public const GENERAL_CLIENT_EXCEPTION_MESSAGE = 'generalClientExceptionMessage';

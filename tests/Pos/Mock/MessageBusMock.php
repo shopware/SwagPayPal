@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Mock;
 
+use Shopware\Core\Framework\Log\Package;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -14,6 +15,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class MessageBusMock implements MessageBusInterface
 {
     /**

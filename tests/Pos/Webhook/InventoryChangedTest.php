@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
@@ -45,6 +46,7 @@ use Symfony\Component\Routing\Router;
 /**
  * @internal
  */
+#[Package('checkout')]
 class InventoryChangedTest extends TestCase
 {
     use KernelTestBehaviour;

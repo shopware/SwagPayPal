@@ -9,12 +9,14 @@ namespace Swag\PayPal\Pos\Sync\Inventory;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Inventory\BulkChanges;
 use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\RemoteCalculator;
 
+#[Package('checkout')]
 class RemoteUpdater
 {
     private InventoryResource $inventoryResource;

@@ -11,6 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Api\Inventory\Status;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
@@ -24,6 +25,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\PosInventoryRepoMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class InventorySyncerTest extends TestCase
 {
     use InventoryTrait;

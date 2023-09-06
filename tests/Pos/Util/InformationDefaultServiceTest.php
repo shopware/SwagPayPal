@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Exception\PaymentMethodNotAvailableException;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Pos\Payment\PosPayment;
@@ -20,6 +21,7 @@ use Swag\PayPal\Pos\Payment\PosPayment;
 /**
  * @internal
  */
+#[Package('checkout')]
 class InformationDefaultServiceTest extends TestCase
 {
     public function testPaymentMethodNotUsable(): void

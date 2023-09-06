@@ -10,12 +10,14 @@ namespace Swag\PayPal\Pos\Sync;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\Inventory\LocalUpdater;
 use Swag\PayPal\Pos\Sync\Inventory\RemoteUpdater;
 use Swag\PayPal\Pos\Sync\Inventory\StockChange;
 
+#[Package('checkout')]
 class InventorySyncer
 {
     private InventoryContextFactory $inventoryContextFactory;

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
@@ -18,6 +19,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 /**
  * @internal
  */
+#[Package('checkout')]
 class OrdersResourceTest extends TestCase
 {
     use ServicesTrait;

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
@@ -14,6 +15,7 @@ use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
+#[Package('checkout')]
 class SEPAMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
     public const PAYPAL_SEPA_FIELD_DATA_EXTENSION_ID = 'payPalSEPAFieldData';

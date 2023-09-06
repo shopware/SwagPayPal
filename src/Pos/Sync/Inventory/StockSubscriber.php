@@ -21,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\Event\StateMachineTransitionEvent;
 use Swag\PayPal\Pos\MessageQueue\Message\InventoryUpdateMessage;
 use Swag\PayPal\SwagPayPal;
@@ -32,6 +33,7 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 /**
  * @internal
  */
+#[Package('checkout')]
 class StockSubscriber implements EventSubscriberInterface
 {
     /**

@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Webhook\Handler\AuthorizationVoided;
 use Swag\PayPal\Webhook\WebhookEventTypes;
@@ -16,6 +17,7 @@ use Swag\PayPal\Webhook\WebhookEventTypes;
 /**
  * @internal
  */
+#[Package('checkout')]
 class AuthorizationVoidedTest extends AbstractWebhookHandlerTestCase
 {
     public function testGetEventType(): void

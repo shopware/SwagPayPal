@@ -10,6 +10,7 @@ namespace SwagPayPalTestPosUtil;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -40,6 +41,7 @@ use Symfony\Component\Routing\Router;
 /**
  * @internal
  */
+#[Package('checkout')]
 class WebhookControllerTest extends TestCase
 {
     use KernelTestBehaviour;

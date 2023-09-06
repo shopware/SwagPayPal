@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Util;
 
+use Shopware\Core\Framework\Log\Package;
+
+#[Package('checkout')]
 class PriceFormatter
 {
     private const DEFAULT_DECIMALS = 2;

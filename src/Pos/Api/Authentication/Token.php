@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Api\Authentication;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[Package('checkout')]
 final class Token extends PosStruct
 {
     /**

@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Test\Webhook\Exception;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class WebhookExceptionTest extends TestCase
 {
     public function testGetStatusCode(): void

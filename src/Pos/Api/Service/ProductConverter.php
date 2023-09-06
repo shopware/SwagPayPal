@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Pos\Api\Service;
 
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\Api\Service\Converter\CategoryConverter;
@@ -19,6 +20,7 @@ use Swag\PayPal\Pos\Sync\Context\ProductContext;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGrouping;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
 
+#[Package('checkout')]
 class ProductConverter
 {
     private UuidConverter $uuidConverter;

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
@@ -15,6 +16,7 @@ use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
+#[Package('checkout')]
 class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
     public const PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID = 'payPalACDCFieldData';

@@ -7,10 +7,12 @@
 
 namespace Swag\PayPal\Setting\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\Setting\Settings;
 
+#[Package('checkout')]
 class CredentialsUtil implements CredentialsUtilInterface
 {
     private SystemConfigService $systemConfigService;

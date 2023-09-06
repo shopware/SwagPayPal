@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_payment_source_card_authentication_result_3d_secure")
  */
+#[Package('checkout')]
 class ThreeDSecure extends PayPalApiStruct
 {
     /**

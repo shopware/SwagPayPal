@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Inventory\Location;
@@ -23,6 +24,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\PosInventoryRepoMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class InventoryContextFactoryTest extends TestCase
 {
     use InventoryTrait;

@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class GetInventoryFixture
 {
     public static function get(): array

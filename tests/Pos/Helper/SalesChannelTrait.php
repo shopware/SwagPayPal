@@ -11,6 +11,7 @@ namespace Swag\PayPal\Test\Pos\Helper;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\TestDefaults;
@@ -21,6 +22,7 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 /**
  * @internal
  */
+#[Package('checkout')]
 trait SalesChannelTrait
 {
     protected function getSalesChannel(Context $context): SalesChannelEntity

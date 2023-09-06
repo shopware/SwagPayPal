@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Util\Availability;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
+#[Package('checkout')]
 class AvailabilityContext extends Struct
 {
     protected string $billingCountryCode;

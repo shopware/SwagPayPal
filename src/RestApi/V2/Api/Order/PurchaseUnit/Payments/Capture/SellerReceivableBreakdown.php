@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerReceivableBreakdown\GrossAmount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerReceivableBreakdown\NetAmount;
@@ -16,6 +17,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerReceiva
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_capture_seller_receivable_breakdown")
  */
+#[Package('checkout')]
 class SellerReceivableBreakdown extends PayPalApiStruct
 {
     /**

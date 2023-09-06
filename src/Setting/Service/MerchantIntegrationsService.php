@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Setting\Service;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResourceInterface;
@@ -16,6 +17,7 @@ use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 
+#[Package('checkout')]
 class MerchantIntegrationsService
 {
     private MerchantIntegrationsResourceInterface $merchantIntegrationsResource;

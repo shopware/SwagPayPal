@@ -9,10 +9,12 @@ namespace Swag\PayPal\Checkout\Payment\Service;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\SwagPayPal;
 
+#[Package('checkout')]
 class TransactionDataService
 {
     private EntityRepository $orderTransactionRepository;

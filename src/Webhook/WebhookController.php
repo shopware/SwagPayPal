@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Swag\PayPal\RestApi\PayPalApiStruct;
@@ -30,6 +31,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Package('checkout')]
 class WebhookController extends AbstractController
 {
     private LoggerInterface $logger;

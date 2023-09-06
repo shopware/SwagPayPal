@@ -13,12 +13,14 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalCalculator;
 use Swag\PayPal\Pos\Sync\Inventory\LocalUpdater;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class LocalUpdaterTest extends TestCase
 {
     use UpdaterTrait;

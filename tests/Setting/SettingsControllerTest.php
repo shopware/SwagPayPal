@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
@@ -29,6 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @internal
  */
+#[Package('checkout')]
 class SettingsControllerTest extends TestCase
 {
     use ServicesTrait;

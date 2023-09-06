@@ -8,9 +8,11 @@
 namespace Swag\PayPal\Setting;
 
 use Monolog\Logger;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
+#[Package('checkout')]
 final class Settings
 {
     public const SYSTEM_CONFIG_DOMAIN = 'SwagPayPal.settings.';

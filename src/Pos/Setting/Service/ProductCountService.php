@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\Count
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
@@ -23,6 +24,7 @@ use Swag\PayPal\Pos\Setting\Struct\ProductCount;
 use Swag\PayPal\Pos\Sync\ProductSelection;
 use Swag\PayPal\SwagPayPal;
 
+#[Package('checkout')]
 class ProductCountService
 {
     private ProductResource $productResource;

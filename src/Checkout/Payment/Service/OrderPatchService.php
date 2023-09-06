@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\Payment\Service;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
@@ -16,6 +17,7 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 
+#[Package('checkout')]
 class OrderPatchService
 {
     private SystemConfigService $systemConfigService;

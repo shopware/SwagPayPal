@@ -16,8 +16,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
+#[Package('checkout')]
 class PosSalesChannelMediaDefinition extends MappingEntityDefinition
 {
     public const ENTITY_NAME = 'swag_paypal_pos_sales_channel_media';

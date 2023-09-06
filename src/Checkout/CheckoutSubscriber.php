@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
@@ -17,6 +18,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CheckoutSubscriber implements EventSubscriberInterface
 {
     private PaymentMethodDataRegistry $methodDataRegistry;

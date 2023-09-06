@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\CredentialsClient;
 use Swag\PayPal\RestApi\Client\CredentialsClientFactory;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class CredentialsClientFactoryMock extends CredentialsClientFactory
 {
     private LoggerInterface $logger;

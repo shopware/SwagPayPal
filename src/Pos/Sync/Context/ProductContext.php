@@ -10,6 +10,7 @@ namespace Swag\PayPal\Pos\Sync\Context;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
@@ -19,6 +20,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductCollection
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductEntity;
 use Swag\PayPal\SwagPayPal;
 
+#[Package('checkout')]
 class ProductContext
 {
     public const PRODUCT_NEW = 0;

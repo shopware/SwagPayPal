@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Checkout\PUI\SalesChannel;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
+#[Package('checkout')]
 abstract class AbstractPUIPaymentInstructionsRoute
 {
     abstract public function getDecorated(): AbstractPUIPaymentInstructionsRoute;

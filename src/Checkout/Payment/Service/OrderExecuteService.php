@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\Payment\Service;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\Checkout\Exception\OrderFailedException;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
@@ -23,6 +24,7 @@ use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Package('checkout')]
 class OrderExecuteService
 {
     private OrderResource $orderResource;

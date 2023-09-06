@@ -12,12 +12,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class RunRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition

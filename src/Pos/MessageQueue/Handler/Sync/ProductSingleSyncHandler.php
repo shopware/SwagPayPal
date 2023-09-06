@@ -10,6 +10,7 @@ namespace Swag\PayPal\Pos\MessageQueue\Handler\Sync;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductSingleSyncMessage;
@@ -23,6 +24,7 @@ use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ProductSingleSyncHandler extends AbstractSyncHandler
 {
     use PosSalesChannelTrait;

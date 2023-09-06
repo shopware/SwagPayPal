@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Mock\Client;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Client\PosClient;
 use Swag\PayPal\Pos\Resource\TokenResource;
@@ -15,6 +16,7 @@ use Swag\PayPal\Pos\Resource\TokenResource;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PosClientMock extends PosClient
 {
     public function __construct(

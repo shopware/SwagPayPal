@@ -22,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price as ShopwarePrice;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -38,6 +39,7 @@ use Swag\PayPal\Pos\Sync\Context\ProductContext;
 /**
  * @internal
  */
+#[Package('checkout')]
 class VariantConverterTest extends TestCase
 {
     use KernelTestBehaviour;

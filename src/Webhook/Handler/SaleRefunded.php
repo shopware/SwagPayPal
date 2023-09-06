@@ -11,12 +11,14 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
+#[Package('checkout')]
 class SaleRefunded extends AbstractWebhookHandler
 {
     private SaleResource $saleResource;

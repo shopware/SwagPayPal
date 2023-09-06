@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Webhook;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
 
+#[Package('checkout')]
 class WebhookRegistry
 {
     /**

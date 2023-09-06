@@ -23,6 +23,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Write\Command\UpdateCommand;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\EntityExistence;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\PreWriteValidationEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\WriteContext;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Order\Shipping\Service\ShippingService;
 use Swag\PayPal\Checkout\Order\Shipping\ShippingSubscriber;
@@ -30,6 +31,7 @@ use Swag\PayPal\Checkout\Order\Shipping\ShippingSubscriber;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ShippingSubscriberTest extends TestCase
 {
     private const TEST_CODE = 'test_code';

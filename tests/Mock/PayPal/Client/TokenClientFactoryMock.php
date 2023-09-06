@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\TokenClient;
 use Swag\PayPal\RestApi\Client\TokenClientFactory;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 /**
  * @internal
  */
+#[Package('checkout')]
 class TokenClientFactoryMock extends TokenClientFactory
 {
     private LoggerInterface $logger;

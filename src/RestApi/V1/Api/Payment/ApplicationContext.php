@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V1\Api\Payment;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_application_context")
  */
+#[Package('checkout')]
 class ApplicationContext extends PayPalApiStruct
 {
     public const LANDING_PAGE_TYPE_LOGIN = 'Login';

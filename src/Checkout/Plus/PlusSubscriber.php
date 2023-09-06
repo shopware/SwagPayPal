@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\Plus;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
@@ -32,6 +33,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *
  * @internal
  */
+#[Package('checkout')]
 class PlusSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_PLUS_DATA_EXTENSION_ID = 'payPalPlusData';

@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\OrdersApi\Administration;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Swag\PayPal\OrdersApi\Administration\Exception\RequestParameterInvalidException;
 use Swag\PayPal\OrdersApi\Administration\PayPalOrdersController;
@@ -37,6 +38,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalOrdersControllerTest extends TestCase
 {
     use ServicesTrait;

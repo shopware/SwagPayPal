@@ -8,12 +8,14 @@
 namespace Swag\PayPal\RestApi\V2\Api\Referral\Operation;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_referral_api_integration_preference")
  */
+#[Package('checkout')]
 class ApiIntegrationPreference extends PayPalApiStruct
 {
     /**

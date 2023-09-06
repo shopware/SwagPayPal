@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Pos\Setting;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
@@ -27,6 +28,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Package('checkout')]
 class SettingsController extends AbstractController
 {
     private ApiCredentialService $apiCredentialService;

@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
@@ -24,6 +25,7 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 /**
  * @internal
  */
+#[Package('checkout')]
 class SalesChannelRepoMock extends AbstractRepoMock
 {
     private SalesChannelEntity $mockEntity;

@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization\SellerProtection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_authorization")
  */
+#[Package('checkout')]
 class Authorization extends Payment
 {
     /**

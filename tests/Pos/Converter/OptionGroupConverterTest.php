@@ -12,6 +12,7 @@ use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOp
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Api\Product\Variant;
 use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions;
@@ -20,6 +21,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\OptionGroupConverter;
 /**
  * @internal
  */
+#[Package('checkout')]
 class OptionGroupConverterTest extends TestCase
 {
     public function testConvert(): void

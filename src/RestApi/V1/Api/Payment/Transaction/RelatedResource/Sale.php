@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Sale\TransactionFee;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_transaction_sale")
  */
+#[Package('checkout')]
 class Sale extends RelatedResource
 {
     /**

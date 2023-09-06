@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\PaymentsApi\Service;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\PaymentsApi\Service\TransactionValidator;
 use Swag\PayPal\RestApi\V1\Api\DoVoid\Amount\Details;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
@@ -18,6 +19,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
 /**
  * @internal
  */
+#[Package('checkout')]
 class TransactionValidatorTest extends TestCase
 {
     /**

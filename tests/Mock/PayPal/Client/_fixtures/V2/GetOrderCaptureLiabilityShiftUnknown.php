@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @internal
  */
+#[Package('checkout')]
 class GetOrderCaptureLiabilityShiftUnknown
 {
     public const ID = '9XG87361JT539825F';

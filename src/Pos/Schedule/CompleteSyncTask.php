@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Schedule;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
+#[Package('checkout')]
 class CompleteSyncTask extends ScheduledTask
 {
     private const TIME_INTERVAL_ONE_HOUR = 3600;

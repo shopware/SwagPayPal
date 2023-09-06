@@ -7,10 +7,12 @@
 
 namespace Swag\PayPal\Storefront\Data\Event;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Page\Page;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 
+#[Package('checkout')]
 class PayPalPageExtensionAddedEvent
 {
     private Page $page;

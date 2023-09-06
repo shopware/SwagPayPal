@@ -14,6 +14,7 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\IdsCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -28,6 +29,7 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ExcludedProductValidatorTest extends TestCase
 {
     use FullCheckoutTrait;

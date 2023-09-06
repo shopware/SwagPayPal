@@ -8,6 +8,7 @@
 namespace Swag\PayPal\OrdersApi\Builder\Util;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
@@ -20,6 +21,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\TaxTotal;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\Util\PriceFormatter;
 
+#[Package('checkout')]
 class AmountProvider
 {
     private PriceFormatter $priceFormatter;

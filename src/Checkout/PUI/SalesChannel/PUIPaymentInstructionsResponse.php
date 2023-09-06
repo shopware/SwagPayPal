@@ -7,10 +7,12 @@
 
 namespace Swag\PayPal\Checkout\PUI\SalesChannel;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\StoreApiResponse;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 
+#[Package('checkout')]
 class PUIPaymentInstructionsResponse extends StoreApiResponse
 {
     protected PayUponInvoice $paymentInstructions;

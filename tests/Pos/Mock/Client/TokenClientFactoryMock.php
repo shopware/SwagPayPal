@@ -9,12 +9,14 @@ namespace Swag\PayPal\Test\Pos\Mock\Client;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Client\TokenClient;
 use Swag\PayPal\Pos\Client\TokenClientFactory;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class TokenClientFactoryMock extends TokenClientFactory
 {
     private LoggerInterface $logger;

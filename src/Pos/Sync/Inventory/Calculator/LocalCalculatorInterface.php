@@ -8,8 +8,10 @@
 namespace Swag\PayPal\Pos\Sync\Inventory\Calculator;
 
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 
+#[Package('checkout')]
 interface LocalCalculatorInterface
 {
     public function getChangeAmount(ProductEntity $productEntity, InventoryContext $inventoryContext): int;

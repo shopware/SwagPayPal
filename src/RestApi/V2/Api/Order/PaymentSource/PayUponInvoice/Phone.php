@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Common\PhoneNumber as CommonPhoneNumber;
 
+#[Package('checkout')]
 class Phone extends CommonPhoneNumber
 {
 }

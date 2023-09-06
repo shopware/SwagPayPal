@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Checkout\PUI;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
+#[Package('checkout')]
 class PUIFraudNetData extends Struct
 {
     protected string $sessionIdentifier;

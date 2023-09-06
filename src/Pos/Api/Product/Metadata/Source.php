@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Api\Product\Metadata;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[Package('checkout')]
 class Source extends PosStruct
 {
     protected bool $external;

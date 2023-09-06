@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Pos\Util;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
@@ -21,6 +22,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class LogCleanerTest extends TestCase
 {
     public function testLogCleanup(): void

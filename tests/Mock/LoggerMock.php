@@ -9,10 +9,12 @@ namespace Swag\PayPal\Test\Mock;
 
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class LoggerMock implements LoggerInterface
 {
     /**

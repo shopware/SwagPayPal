@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\Test\TestDefaults;
@@ -26,6 +27,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ExpressCustomerServiceTest extends TestCase
 {
     use CheckoutRouteTrait;

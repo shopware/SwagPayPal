@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Pos\Mock;
 
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
@@ -19,6 +20,7 @@ use Swag\PayPal\Pos\Sync\Context\ProductContext;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ProductContextMock extends ProductContext
 {
     private int $status;

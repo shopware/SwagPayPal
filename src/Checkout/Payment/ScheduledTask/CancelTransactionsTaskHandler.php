@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -22,6 +23,7 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CancelTransactionsTaskHandler extends ScheduledTaskHandler
 {
     private PaymentMethodUtil $paymentMethodUtil;

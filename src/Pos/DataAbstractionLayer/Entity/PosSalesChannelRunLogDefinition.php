@@ -18,7 +18,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\Framework\Log\Package;
 
+#[Package('checkout')]
 class PosSalesChannelRunLogDefinition extends EntityDefinition
 {
     public const ENTITY_NAME = 'swag_paypal_pos_sales_channel_run_log';

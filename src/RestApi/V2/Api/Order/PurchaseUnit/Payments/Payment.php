@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Common\Link;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V2\Api\Common\Money;
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_payment")
  */
+#[Package('checkout')]
 abstract class Payment extends PayPalApiStruct
 {
     public const MAX_LENGTH_INVOICE_ID = 127;

@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Pos\Api\Product;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Product\Metadata\Source;
 
+#[Package('checkout')]
 class Metadata extends PosStruct
 {
     protected bool $inPos;

@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Setting\Struct;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 
+#[Package('checkout')]
 class MerchantInformationStruct extends Struct
 {
     protected ?MerchantIntegrations $merchantIntegrations;

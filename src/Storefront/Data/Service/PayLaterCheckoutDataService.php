@@ -9,10 +9,12 @@ namespace Swag\PayPal\Storefront\Data\Service;
 
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Storefront\Data\Struct\PayLaterCheckoutData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 
+#[Package('checkout')]
 class PayLaterCheckoutDataService extends AbstractCheckoutDataService
 {
     public function buildCheckoutData(SalesChannelContext $context, ?Cart $cart = null, ?OrderEntity $order = null): ?PayLaterCheckoutData

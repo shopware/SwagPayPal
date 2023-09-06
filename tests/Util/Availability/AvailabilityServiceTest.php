@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -44,6 +45,7 @@ use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 /**
  * @internal
  */
+#[Package('checkout')]
 class AvailabilityServiceTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\SalesChannelNotFoundException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
@@ -21,6 +22,7 @@ use Swag\PayPal\Pos\MessageQueue\Message\Sync\InventorySyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits\SalesChannelContextAwareMessageInterface;
 use Swag\PayPal\SwagPayPal;
 
+#[Package('checkout')]
 class MessageHydrator
 {
     protected SalesChannelContextService $salesChannelContextService;

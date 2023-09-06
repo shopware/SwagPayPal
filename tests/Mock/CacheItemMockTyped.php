@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Test\Mock;
 
 use Psr\Cache\CacheItemInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class CacheItemMockTyped implements CacheItemInterface
 {
     public function getKey(): string

@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @internal
  */
+#[Package('checkout')]
 class GetPaymentAuthorizeResponseFixture
 {
     public const ID = 'PAYID-LSAT63Q0NM35123M7232615L';

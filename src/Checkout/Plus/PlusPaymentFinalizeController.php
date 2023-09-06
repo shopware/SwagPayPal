@@ -21,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -34,6 +35,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @deprecated tag:v8.0.0 - Will be removed without replacement.
  */
+#[Package('checkout')]
 class PlusPaymentFinalizeController extends AbstractController
 {
     private RouterInterface $router;

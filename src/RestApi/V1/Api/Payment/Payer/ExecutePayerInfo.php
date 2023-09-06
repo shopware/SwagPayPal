@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Payer;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_execute_payer_info")
  */
+#[Package('checkout')]
 class ExecutePayerInfo extends PayPalApiStruct
 {
     /**

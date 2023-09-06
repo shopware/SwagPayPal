@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Checkout\SalesChannel;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Checkout\SalesChannel\ErrorRoute;
 use Swag\PayPal\Test\Mock\LoggerMock;
@@ -23,6 +24,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ErrorRouteTest extends TestCase
 {
     use KernelTestBehaviour;

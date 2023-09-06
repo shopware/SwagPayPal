@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Pos\Api\Webhook\Payload\InventoryBalanceChanged;
 
+use Shopware\Core\Framework\Log\Package;
+
+#[Package('checkout')]
 class BalanceBefore extends Balance
 {
 }

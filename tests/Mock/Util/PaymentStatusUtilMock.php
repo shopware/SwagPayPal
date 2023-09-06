@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Mock\Util;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\Payment;
@@ -23,6 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PaymentStatusUtilMock extends PaymentStatusUtil
 {
     /**

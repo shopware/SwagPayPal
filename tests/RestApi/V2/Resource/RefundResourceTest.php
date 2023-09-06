@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V2\Resource\RefundResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -16,6 +17,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
 /**
  * @internal
  */
+#[Package('checkout')]
 class RefundResourceTest extends TestCase
 {
     use ServicesTrait;

@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Pos\Sync\Product;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 
+#[Package('checkout')]
 class UnsyncedChecker
 {
     private ProductResource $productResource;

@@ -13,6 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigEntity;
@@ -23,6 +24,7 @@ use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 /**
  * @internal
  */
+#[Package('checkout')]
 class SystemConfigRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition

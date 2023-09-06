@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
@@ -25,6 +26,7 @@ use Swag\PayPal\Util\PriceFormatter;
 /**
  * @internal
  */
+#[Package('checkout')]
 class AmountProviderTest extends TestCase
 {
     use CheckoutRouteTrait;

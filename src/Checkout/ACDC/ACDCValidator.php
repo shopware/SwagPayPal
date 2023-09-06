@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Checkout\ACDC;
 
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\Setting\Settings;
 
+#[Package('checkout')]
 class ACDCValidator implements ACDCValidatorInterface
 {
     private SystemConfigService $systemConfigService;

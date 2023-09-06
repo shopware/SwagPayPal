@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\RestApi;
 
+use Shopware\Core\Framework\Log\Package;
+
+#[Package('checkout')]
 final class PartnerAttributionId
 {
     /**

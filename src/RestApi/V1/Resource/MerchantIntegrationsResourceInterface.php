@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V1\Resource;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 
+#[Package('checkout')]
 interface MerchantIntegrationsResourceInterface
 {
     public function get(string $merchantId, ?string $salesChannelId = null, bool $sandboxActive = true): MerchantIntegrations;

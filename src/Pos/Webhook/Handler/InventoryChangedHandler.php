@@ -11,6 +11,7 @@ use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
@@ -25,6 +26,7 @@ use Swag\PayPal\Pos\Sync\Inventory\LocalUpdater;
 use Swag\PayPal\Pos\Sync\InventorySyncer;
 use Swag\PayPal\Pos\Webhook\WebhookEventNames;
 
+#[Package('checkout')]
 class InventoryChangedHandler extends AbstractWebhookHandler
 {
     private ApiKeyDecoder $apiKeyDecoder;

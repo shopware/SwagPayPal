@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Storefront\Data\Struct\ACDC;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
+#[Package('checkout')]
 class BillingAddress extends Struct
 {
     protected string $streetAddress;

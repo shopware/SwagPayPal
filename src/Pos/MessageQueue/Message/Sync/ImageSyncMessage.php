@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Pos\MessageQueue\Message\Sync;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits\OffsetTrait;
 
+#[Package('checkout')]
 class ImageSyncMessage extends AbstractSyncMessage
 {
     use OffsetTrait;

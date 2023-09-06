@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\RestApi\V1\Resource;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\DoVoid;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Authorization;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 
+#[Package('checkout')]
 class AuthorizationResource
 {
     private PayPalClientFactoryInterface $payPalClientFactory;

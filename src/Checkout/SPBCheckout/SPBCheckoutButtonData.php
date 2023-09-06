@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Checkout\SPBCheckout;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 
+#[Package('checkout')]
 class SPBCheckoutButtonData extends AbstractCheckoutData
 {
     protected string $buttonColor;

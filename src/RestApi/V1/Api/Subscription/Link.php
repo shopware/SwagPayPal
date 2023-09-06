@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Common\Link as CommonLink;
 
 /**
@@ -17,6 +18,7 @@ use Swag\PayPal\RestApi\V1\Api\Common\Link as CommonLink;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[Package('checkout')]
 class Link extends CommonLink
 {
 }

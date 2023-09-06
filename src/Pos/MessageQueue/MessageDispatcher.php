@@ -9,10 +9,12 @@ namespace Swag\PayPal\Pos\MessageQueue;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+#[Package('checkout')]
 class MessageDispatcher
 {
     protected MessageBusInterface $messageBus;

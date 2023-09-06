@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Swag\PayPal\PaymentsApi\Administration\Exception\PaymentNotFoundException;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
@@ -38,6 +39,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Package('checkout')]
 class PayPalPaymentController extends AbstractController
 {
     public const REQUEST_PARAMETER_CURRENCY = 'currency';

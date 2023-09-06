@@ -15,12 +15,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Symfony\Contracts\Service\ResetInterface;
 
+#[Package('checkout')]
 class PaymentMethodUtil implements ResetInterface
 {
     private EntityRepository $salesChannelRepository;

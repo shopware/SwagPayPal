@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Test\TestKernel;
@@ -16,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ServiceDefinitionTest extends TestCase
 {
     use KernelTestBehaviour;

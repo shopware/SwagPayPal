@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Psr\Cache\CacheItemPoolInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\TokenClientFactory;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Api\Token;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 
+#[Package('checkout')]
 class TokenResource implements TokenResourceInterface
 {
     private const CACHE_ID = 'paypal_auth_';

@@ -17,6 +17,7 @@ use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -34,6 +35,7 @@ use Swag\PayPal\Util\PriceFormatter;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PaymentStatusUtilTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
@@ -220,10 +222,10 @@ class PaymentStatusUtilTest extends TestCase
     public function dataProviderTestApplyRefundStateToPayment(): array
     {
         $completeRefundResponse = new Refund();
-        $completeRefundResponse->assign(['totalRefundedAmount' => (new Refund\TotalRefundedAmount())->assign(['value' => '15'])]);
+        $completeRefundResponse->assign(['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '15'])]);
 
         $partialRefundResponse = new Refund();
-        $partialRefundResponse->assign(['totalRefundedAmount' => (new Refund\TotalRefundedAmount())->assign(['value' => '14.99'])]);
+        $partialRefundResponse->assign(['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '14.99'])]);
 
         return [
             [

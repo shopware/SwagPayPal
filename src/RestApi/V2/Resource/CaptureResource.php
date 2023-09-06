@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\RestApi\V2\Resource;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
 
+#[Package('checkout')]
 class CaptureResource
 {
     private PayPalClientFactoryInterface $payPalClientFactory;

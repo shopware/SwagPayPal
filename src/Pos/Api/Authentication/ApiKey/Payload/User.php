@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Api\Authentication\ApiKey\Payload;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[Package('checkout')]
 class User extends PosStruct
 {
     protected string $userType;

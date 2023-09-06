@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\Test\Mock\Setting\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Settings;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class SystemConfigServiceMock extends SystemConfigService
 {
     /**

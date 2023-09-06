@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
@@ -20,6 +21,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PaymentResourceTest extends TestCase
 {
     use PaymentTransactionTrait;

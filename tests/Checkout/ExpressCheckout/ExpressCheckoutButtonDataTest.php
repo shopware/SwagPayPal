@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class ExpressCheckoutButtonDataTest extends TestCase
 {
     public function testExpressCheckoutButtonDataStruct(): void

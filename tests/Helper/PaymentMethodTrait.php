@@ -9,11 +9,13 @@ namespace Swag\PayPal\Test\Helper;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 trait PaymentMethodTrait
 {
     protected function addPaymentMethodToDefaultsSalesChannel(string $paypalPaymentMethodId, ?Context $context = null): void

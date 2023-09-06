@@ -11,10 +11,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelDefinition;
 use Swag\PayPal\SwagPayPal;
 
+#[Package('checkout')]
 class SalesChannelExtension extends EntityExtension
 {
     public function extendFields(FieldCollection $collection): void

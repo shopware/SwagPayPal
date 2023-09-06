@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -32,6 +33,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @deprecated tag:v8.0.0 - Will be removed without replacement.
  */
+#[Package('checkout')]
 class PlusDataService
 {
     private RouterInterface $router;

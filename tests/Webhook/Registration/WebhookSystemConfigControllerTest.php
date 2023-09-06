@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Webhook\Registration;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
@@ -26,6 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @internal
  */
+#[Package('checkout')]
 class WebhookSystemConfigControllerTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Referral;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Common\Link as CommonLink;
 
+#[Package('checkout')]
 class Link extends CommonLink
 {
 }

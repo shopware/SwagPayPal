@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
@@ -31,6 +32,7 @@ use Swag\PayPal\Webhook\Handler\AbstractWebhookHandler;
 /**
  * @internal
  */
+#[Package('checkout')]
 abstract class AbstractWebhookHandlerTestCase extends TestCase
 {
     use DatabaseTransactionBehaviour;

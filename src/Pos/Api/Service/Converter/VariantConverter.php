@@ -9,12 +9,14 @@ namespace Swag\PayPal\Pos\Api\Service\Converter;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Pos\Api\Product\Variant;
 use Swag\PayPal\Pos\Api\Product\Variant\CostPrice;
 use Swag\PayPal\Pos\Api\Product\Variant\Option;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 
+#[Package('checkout')]
 class VariantConverter
 {
     private UuidConverter $uuidConverter;

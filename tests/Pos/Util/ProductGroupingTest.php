@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Pos\Util;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGrouping;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
@@ -17,6 +18,7 @@ use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ProductGroupingTest extends TestCase
 {
     public function testAddProduct(): void

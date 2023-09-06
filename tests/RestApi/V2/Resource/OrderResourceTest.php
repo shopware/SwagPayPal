@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Test\TestDefaults;
@@ -29,6 +30,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
 /**
  * @internal
  */
+#[Package('checkout')]
 class OrderResourceTest extends TestCase
 {
     use BasicTestDataBehaviour;

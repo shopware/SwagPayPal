@@ -8,11 +8,13 @@
 namespace Swag\PayPal\OrdersApi\Builder\APM;
 
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Eps;
 
+#[Package('checkout')]
 class EpsOrderBuilder extends AbstractAPMOrderBuilder
 {
     protected function buildPaymentSource(

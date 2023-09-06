@@ -9,10 +9,12 @@ namespace Swag\PayPal\Storefront\Data\Service;
 
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Storefront\Data\Struct\VenmoCheckoutData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 
+#[Package('checkout')]
 class VenmoCheckoutDataService extends AbstractCheckoutDataService
 {
     public function buildCheckoutData(SalesChannelContext $context, ?Cart $cart = null, ?OrderEntity $order = null): ?VenmoCheckoutData

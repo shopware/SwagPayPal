@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
+#[Package('checkout')]
 class Discount extends Money
 {
 }

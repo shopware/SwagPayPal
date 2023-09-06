@@ -10,8 +10,10 @@ namespace Swag\PayPal\Pos\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 
+#[Package('checkout')]
 abstract class AbstractClient
 {
     protected ClientInterface $client;

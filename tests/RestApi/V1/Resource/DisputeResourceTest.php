@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Resource\DisputeResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -17,6 +18,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDisputesList;
 /**
  * @internal
  */
+#[Package('checkout')]
 class DisputeResourceTest extends TestCase
 {
     use ServicesTrait;

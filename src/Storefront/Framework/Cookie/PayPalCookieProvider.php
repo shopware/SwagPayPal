@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Storefront\Framework\Cookie;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 
+#[Package('checkout')]
 class PayPalCookieProvider implements CookieProviderInterface
 {
     private CookieProviderInterface $original;

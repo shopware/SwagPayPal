@@ -8,10 +8,12 @@
 namespace Swag\PayPal\Setting\Service;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 
+#[Package('checkout')]
 class SettingsValidationService implements SettingsValidationServiceInterface
 {
     private SystemConfigService $systemConfigService;

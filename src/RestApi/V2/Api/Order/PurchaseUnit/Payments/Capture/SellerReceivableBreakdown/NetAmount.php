@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerReceivableBreakdown;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
+#[Package('checkout')]
 class NetAmount extends Money
 {
 }

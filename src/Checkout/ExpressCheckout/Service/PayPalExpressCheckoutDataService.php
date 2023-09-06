@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
@@ -21,6 +22,7 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
+#[Package('checkout')]
 class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInterface
 {
     private CartService $cartService;
