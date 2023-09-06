@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @internal
  */
+#[Package('checkout')]
 class GetProductCountFixture
 {
     public const PRODUCT_COUNT = 42;

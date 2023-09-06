@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @internal
  */
+#[Package('checkout')]
 class GetPaymentOrderResponseFixture
 {
     public const ID = 'PAY-35B10430TC590490WLQDJXTI';

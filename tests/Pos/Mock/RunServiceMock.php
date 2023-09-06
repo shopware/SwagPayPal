@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Test\Pos\Mock;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Run\RunService;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class RunServiceMock extends RunService
 {
     private int $messageCount = 0;

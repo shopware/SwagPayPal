@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Test\Mock\Util;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class LocaleCodeProviderMock extends LocaleCodeProvider
 {
     public function getLocaleCodeFromContext(Context $context): string

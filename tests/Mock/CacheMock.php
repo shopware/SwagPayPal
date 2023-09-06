@@ -9,10 +9,12 @@ namespace Swag\PayPal\Test\Mock;
 
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Shopware\Core\Framework\Log\Package;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class CacheMock implements CacheItemPoolInterface
 {
     public function getItem($key): CacheItemInterface

@@ -8,12 +8,14 @@
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\IncorrectTransactionAmount\CorrectTransactionAmount;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_incorrect_transaction_amount")
  */
+#[Package('checkout')]
 class IncorrectTransactionAmount extends PayPalApiStruct
 {
     /**

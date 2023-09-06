@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi;
 
+use Shopware\Core\Framework\Log\Package;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
+#[Package('checkout')]
 abstract class PayPalApiStruct implements \JsonSerializable
 {
     final public function __construct()

@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Storefront\Data\Struct;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
+#[Package('checkout')]
 class AbstractCheckoutData extends Struct
 {
     protected string $clientId;

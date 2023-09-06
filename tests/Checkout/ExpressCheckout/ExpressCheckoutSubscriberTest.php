@@ -20,6 +20,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -61,6 +62,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ExpressCheckoutSubscriberTest extends TestCase
 {
     use ServicesTrait;

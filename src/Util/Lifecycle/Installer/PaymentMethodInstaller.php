@@ -10,12 +10,14 @@ namespace Swag\PayPal\Util\Lifecycle\Installer;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\RestrictDeleteViolationException;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
+#[Package('checkout')]
 class PaymentMethodInstaller
 {
     private EntityRepository $paymentMethodRepository;

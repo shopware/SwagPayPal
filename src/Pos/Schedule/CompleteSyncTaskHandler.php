@@ -9,12 +9,14 @@ namespace Swag\PayPal\Pos\Schedule;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class CompleteSyncTaskHandler extends AbstractSyncTaskHandler
 {
     private CompleteTask $completeTask;

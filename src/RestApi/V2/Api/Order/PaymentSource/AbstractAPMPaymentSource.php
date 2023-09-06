@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_payment_source_common")
  */
+#[Package('checkout')]
 abstract class AbstractAPMPaymentSource extends PayPalApiStruct
 {
     /**

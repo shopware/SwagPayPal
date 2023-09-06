@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Checkout\Payment\ScheduledTask;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
+#[Package('checkout')]
 class CancelTransactionsTask extends ScheduledTask
 {
     private const TIME_INTERVAL_DAILY = 86400;

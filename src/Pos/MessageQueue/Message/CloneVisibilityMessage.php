@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\MessageQueue\Message;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits\OffsetTrait;
 
+#[Package('checkout')]
 class CloneVisibilityMessage extends AbstractSyncMessage
 {
     use OffsetTrait;

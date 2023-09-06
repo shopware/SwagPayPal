@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Pos\Exception;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Package('checkout')]
 class ExistingPosAccountException extends ShopwareHttpException
 {
     /**

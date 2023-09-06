@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Util;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Util\PaymentTokenExtractor;
@@ -15,6 +16,7 @@ use Swag\PayPal\Util\PaymentTokenExtractor;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PaymentTokenExtractorTest extends TestCase
 {
     public function testExtract(): void

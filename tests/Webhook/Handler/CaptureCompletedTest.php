@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\RestApi\V2\Api\Webhook;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
@@ -18,6 +19,7 @@ use Swag\PayPal\Webhook\WebhookEventTypes;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
 {
     public function testGetEventType(): void

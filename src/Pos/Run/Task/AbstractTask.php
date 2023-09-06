@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Pos\Run\Task;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Run\RunService;
 
+#[Package('checkout')]
 abstract class AbstractTask
 {
     private MessageDispatcher $messageBus;

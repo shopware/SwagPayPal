@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
@@ -16,6 +17,7 @@ use Swag\PayPal\Pos\Api\Webhook\Subscription\UpdateSubscription;
 /**
  * @internal
  */
+#[Package('checkout')]
 class WebhookUpdateFixture
 {
     public static bool $sent = false;

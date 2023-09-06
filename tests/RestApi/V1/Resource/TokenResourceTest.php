@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
@@ -22,6 +23,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class TokenResourceTest extends TestCase
 {
     private const CACHED_ACCESS_TOKEN = 'A21AAEaQMaSheELTFsynkQLwXBZIr-fObE9PtGjr6_SOVEBXWNaJu1DvwKfLiJdxZ1aNtyYwK0ToZEL1i6TL5Dq9Qm30ZQfkA';

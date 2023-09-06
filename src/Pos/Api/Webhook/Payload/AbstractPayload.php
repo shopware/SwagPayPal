@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Api\Webhook\Payload;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[Package('checkout')]
 abstract class AbstractPayload extends PosStruct
 {
     protected string $organizationUuid;

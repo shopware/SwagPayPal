@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_pay_upon_invoice_deposit_bank_details")
  */
+#[Package('checkout')]
 class DepositBankDetails extends PayPalApiStruct
 {
     /**

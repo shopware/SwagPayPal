@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CreditNotProcessed\AgreedRefundDetails;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CreditNotProcessed\CancellationDetails;
@@ -18,6 +19,7 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_cretid_not_processed")
  */
+#[Package('checkout')]
 class CreditNotProcessed extends PayPalApiStruct
 {
     /**

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
@@ -18,6 +19,7 @@ use Swag\PayPal\RestApi\V2\Api\Webhook\Link;
 /**
  * @OA\Schema(schema="swag_paypal_v2_webhook")
  */
+#[Package('checkout')]
 class Webhook extends PayPalApiStruct
 {
     public const RESOURCE_TYPE_AUTHORIZATION = 'authorization';

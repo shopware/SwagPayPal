@@ -8,10 +8,12 @@
 namespace Swag\PayPal\Test\RestApi;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 trait AssertArraySubsetTrait
 {
     public static function assertArraySubset(array $subset, array $fullArray): void

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\SPBCheckout\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
@@ -20,6 +21,7 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 /**
  * @deprecated tag:v8.0.0 - will be removed without replacement, payment logos have been added natively
  */
+#[Package('checkout')]
 class SPBMarksDataService implements SPBMarksDataServiceInterface
 {
     private SettingsValidationServiceInterface $settingsValidationService;

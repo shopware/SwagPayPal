@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Bancontact;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Blik;
@@ -28,6 +29,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Trustly;
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_payment_source")
  */
+#[Package('checkout')]
 class PaymentSource extends PayPalApiStruct
 {
     /**

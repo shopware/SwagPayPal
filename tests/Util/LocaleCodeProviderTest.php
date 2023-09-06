@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Util;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -16,6 +17,7 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 /**
  * @internal
  */
+#[Package('checkout')]
 class LocaleCodeProviderTest extends TestCase
 {
     use ServicesTrait;

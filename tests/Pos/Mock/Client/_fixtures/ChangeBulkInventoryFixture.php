@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Inventory\BulkChanges;
 use Swag\PayPal\Pos\Api\Inventory\BulkChanges\ProductChange;
@@ -17,6 +18,7 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ChangeBulkInventoryFixture
 {
     public static bool $called = false;

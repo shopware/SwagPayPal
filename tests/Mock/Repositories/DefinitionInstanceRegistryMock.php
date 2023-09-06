@@ -10,12 +10,14 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\Compatibility\EntityRepositoryDecorator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
 {
     private LanguageRepoMock $languageRepo;

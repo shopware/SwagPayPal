@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Helper;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
@@ -41,6 +42,7 @@ use Swag\PayPal\Webhook\WebhookRegistry;
 /**
  * @internal
  */
+#[Package('checkout')]
 trait ServicesTrait
 {
     use IntegrationTestBehaviour;

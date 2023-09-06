@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class CaptureOrderDeclined
 {
     public const ID = '9XG87361JT53982FF';

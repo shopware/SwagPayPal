@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Pos\Sync\Inventory\Calculator;
 
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Inventory\BulkChanges\ProductChange;
 use Swag\PayPal\Pos\Api\Inventory\BulkChanges\ProductChange\VariantChange;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 
+#[Package('checkout')]
 class RemoteCalculator
 {
     private UuidConverter $uuidConverter;

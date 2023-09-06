@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromOrderEvent;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
@@ -20,6 +21,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+#[Package('checkout')]
 class ItemListProvider
 {
     private PriceFormatter $priceFormatter;

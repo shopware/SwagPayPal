@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\ACDC\ACDCValidator;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -38,6 +39,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ACDCHandlerTest extends AbstractSyncAPMHandlerTest
 {
     public function testPayCaptureLiabilityShiftUnknown(): void

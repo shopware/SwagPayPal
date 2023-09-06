@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V1\Resource;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Api\Token;
 
+#[Package('checkout')]
 interface TokenResourceInterface
 {
     public function getToken(OAuthCredentials $credentials): Token;

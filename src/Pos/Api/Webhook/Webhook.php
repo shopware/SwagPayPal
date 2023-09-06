@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Api\Webhook;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[Package('checkout')]
 class Webhook extends PosStruct
 {
     protected string $organizationUuid;

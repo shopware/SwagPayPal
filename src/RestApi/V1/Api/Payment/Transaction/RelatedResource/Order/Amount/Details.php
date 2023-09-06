@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Order\Amount;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Common\Details as CommonDetails;
 
+#[Package('checkout')]
 class Details extends CommonDetails
 {
 }

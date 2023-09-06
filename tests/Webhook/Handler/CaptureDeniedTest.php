@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\RestApi\V2\Api\Webhook;
 use Swag\PayPal\Webhook\Handler\CaptureDenied;
@@ -17,6 +18,7 @@ use Swag\PayPal\Webhook\WebhookEventTypes;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CaptureDeniedTest extends AbstractWebhookHandlerTestCase
 {
     public function testGetEventType(): void

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\PUI\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\PUI\PUIFraudNetData;
@@ -14,6 +15,7 @@ use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 
+#[Package('checkout')]
 class PUIFraudNetDataService
 {
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;

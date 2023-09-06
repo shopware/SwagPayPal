@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\Payment\Method;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ACDC\ACDCValidatorInterface;
 use Swag\PayPal\Checkout\ACDC\Exception\ACDCValidationFailedException;
@@ -21,6 +22,7 @@ use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 
+#[Package('checkout')]
 class ACDCHandler extends AbstractSyncAPMHandler
 {
     private ACDCValidatorInterface $acdcValidator;

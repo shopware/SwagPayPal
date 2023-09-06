@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Authorization;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Capture;
@@ -19,6 +20,7 @@ use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_transaction_related_resource")
  */
+#[Package('checkout')]
 class RelatedResource extends PayPalApiStruct
 {
     public const SALE = PaymentIntentV1::SALE;

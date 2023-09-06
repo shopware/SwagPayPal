@@ -7,10 +7,12 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+#[Package('checkout')]
 abstract class AbstractMethodData
 {
     public const CAPABILITY_ACTIVE = 'active';

@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @internal
  */
+#[Package('checkout')]
 class CaptureAuthorization
 {
     public const ID = '4S350271L2282743T';

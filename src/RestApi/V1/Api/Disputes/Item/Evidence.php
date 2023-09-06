@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\Document;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo;
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_evidence")
  */
+#[Package('checkout')]
 class Evidence extends PayPalApiStruct
 {
     /**

@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Test;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Composer\Factory;
 use Symfony\Component\Finder\Finder;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class DeprecatedTagTest extends TestCase
 {
     /**

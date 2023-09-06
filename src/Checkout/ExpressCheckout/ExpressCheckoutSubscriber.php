@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Event\DataMappingEvent;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Validation\BuildValidationEvent;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntitySearchResultLoadedEvent;
@@ -42,6 +43,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ExpressCheckoutSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID = 'payPalEcsButtonData';

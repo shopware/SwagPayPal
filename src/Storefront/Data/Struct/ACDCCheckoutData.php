@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Storefront\Data\Struct;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Storefront\Data\Struct\ACDC\CardholderData;
 
+#[Package('checkout')]
 class ACDCCheckoutData extends AbstractCheckoutData
 {
     protected CardholderData $cardholderData;

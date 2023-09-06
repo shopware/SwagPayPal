@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
@@ -23,6 +24,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 /**
  * @internal
  */
+#[Package('checkout')]
 class OrderExecuteServiceTest extends TestCase
 {
     public function testOrderGetOnMissingPayments(): void

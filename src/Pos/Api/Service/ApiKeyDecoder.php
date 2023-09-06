@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Pos\Api\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Authentication\ApiKey;
 use Swag\PayPal\Pos\Api\Exception\InvalidApiKeyException;
 
+#[Package('checkout')]
 class ApiKeyDecoder
 {
     public function decode(string $jwt): ApiKey

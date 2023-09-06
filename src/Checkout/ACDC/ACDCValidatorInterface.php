@@ -8,9 +8,11 @@
 namespace Swag\PayPal\Checkout\ACDC;
 
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order;
 
+#[Package('checkout')]
 interface ACDCValidatorInterface
 {
     public const LIABILITY_SHIFT_POSSIBLE = 'POSSIBLE';

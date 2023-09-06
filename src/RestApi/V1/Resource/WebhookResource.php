@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Resource;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 
+#[Package('checkout')]
 class WebhookResource
 {
     private const INVALID_WEBHOOK_ID_ERROR_NAME = 'INVALID_RESOURCE_ID';

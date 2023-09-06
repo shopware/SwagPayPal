@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
@@ -28,6 +29,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ExpressCreateOrderRouteTest extends TestCase
 {
     use CheckoutRouteTrait;

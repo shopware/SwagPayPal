@@ -8,10 +8,12 @@
 namespace Swag\PayPal\Util\Lifecycle;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
 
+#[Package('checkout')]
 class InstallUninstall
 {
     private PaymentMethodInstaller $paymentMethodInstaller;

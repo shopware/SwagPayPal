@@ -17,8 +17,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
+#[Package('checkout')]
 class PosSalesChannelInventoryDefinition extends MappingEntityDefinition
 {
     public const ENTITY_NAME = 'swag_paypal_pos_sales_channel_inventory';

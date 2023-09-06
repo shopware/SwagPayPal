@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Pos\Api\Error;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Error\PosApiError\Violation;
 
+#[Package('checkout')]
 class PosApiError extends PosStruct
 {
     public const ERROR_TYPE_ITEM_ALREADY_EXISTS = 'ITEM_ALREADY_EXIST';

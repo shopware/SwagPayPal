@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Test\Util;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\PriceFormatter;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class PriceFormatterTest extends TestCase
 {
     protected PriceFormatter $priceFormatter;

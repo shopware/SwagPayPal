@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Test\Mock;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class PaymentMethodUtilMock extends PaymentMethodUtil
 {
     public const PAYMENT_METHOD_ID = 'cfbd5018d38d41a8adcae0d94fc8bddc';

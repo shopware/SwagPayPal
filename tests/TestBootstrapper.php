@@ -9,6 +9,7 @@ namespace Shopware\Core;
 
 use Composer\Autoload\ClassLoader;
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -21,6 +22,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class TestBootstrapper
 {
     private ?ClassLoader $classLoader = null;

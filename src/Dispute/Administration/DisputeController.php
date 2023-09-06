@@ -9,6 +9,7 @@ namespace Swag\PayPal\Dispute\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
@@ -23,6 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Package('checkout')]
 class DisputeController extends AbstractController
 {
     private DisputeResource $disputeResource;

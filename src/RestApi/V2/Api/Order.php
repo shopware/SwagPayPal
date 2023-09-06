@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Link;
@@ -19,6 +20,7 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 /**
  * @OA\Schema(schema="swag_paypal_v2_order")
  */
+#[Package('checkout')]
 class Order extends PayPalApiStruct
 {
     public const PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL = 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL';

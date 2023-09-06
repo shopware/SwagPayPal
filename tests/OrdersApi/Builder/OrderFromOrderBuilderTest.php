@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -21,6 +22,7 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 /**
  * @internal
  */
+#[Package('checkout')]
 class OrderFromOrderBuilderTest extends TestCase
 {
     use PaymentTransactionTrait;

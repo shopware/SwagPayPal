@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api\Payment;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction\Amount;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction\Link;
@@ -16,6 +17,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction\RecipientBankingInstru
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_payment_instruction")
  */
+#[Package('checkout')]
 class PaymentInstruction extends PayPalApiStruct
 {
     public const TYPE_INVOICE = 'PAY_UPON_INVOICE';

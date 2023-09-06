@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
@@ -27,6 +28,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
+#[Package('checkout')]
 class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 {
     public const PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID = 'payPalEcsCartData';

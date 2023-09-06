@@ -9,12 +9,14 @@ namespace Swag\PayPal\RestApi\Client;
 
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
+#[Package('checkout')]
 class PayPalClient extends AbstractClient implements PayPalClientInterface
 {
     private TokenResourceInterface $tokenResource;

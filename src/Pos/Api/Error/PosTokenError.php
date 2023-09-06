@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Api\Error;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[Package('checkout')]
 class PosTokenError extends PosStruct
 {
     protected string $error;

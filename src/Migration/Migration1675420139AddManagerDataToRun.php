@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Migration;
 
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class Migration1675420139AddManagerDataToRun extends MigrationStep
 {
     public function getCreationTimestamp(): int

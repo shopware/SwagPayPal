@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Util;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 
+#[Package('checkout')]
 class PaymentTokenExtractor
 {
     public static function extract(Payment $payment): string

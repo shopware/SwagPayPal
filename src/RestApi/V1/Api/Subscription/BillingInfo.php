@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api\Subscription;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\CycleExecution;
 use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\LastPayment;
@@ -23,6 +24,7 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\OutstandingBalance;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[Package('checkout')]
 class BillingInfo extends PayPalApiStruct
 {
     /**

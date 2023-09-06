@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -23,6 +24,7 @@ use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CancelTransactionsTaskHandlerTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

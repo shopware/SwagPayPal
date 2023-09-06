@@ -11,6 +11,7 @@ use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -26,6 +27,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ProductSelectionTest extends AbstractProductSyncTest
 {
     private SalesChannelProductRepoMock $productRepository;

@@ -11,9 +11,11 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalCalculatorInterface;
 
+#[Package('checkout')]
 class LocalUpdater
 {
     private EntityRepository $productRepository;

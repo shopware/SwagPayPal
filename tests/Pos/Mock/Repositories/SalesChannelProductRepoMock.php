@@ -37,6 +37,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\Framework\Event\NestedEventCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -49,6 +50,7 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
  *
  * @internal
  */
+#[Package('checkout')]
 class SalesChannelProductRepoMock extends SalesChannelRepository
 {
     use RepoTrait;

@@ -8,12 +8,14 @@
 namespace Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\OauthIntegration\OauthThirdParty;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_merchant_integrations_oauth_integration")
  */
+#[Package('checkout')]
 class OauthIntegration extends PayPalApiStruct
 {
     /**

@@ -8,9 +8,11 @@
 namespace Swag\PayPal\Util\Lifecycle;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 
+#[Package('checkout')]
 class ActivateDeactivate
 {
     private PaymentMethodStateService $paymentMethodStateService;

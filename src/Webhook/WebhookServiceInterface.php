@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 
+#[Package('checkout')]
 interface WebhookServiceInterface
 {
     public function registerWebhook(?string $salesChannelId): string;

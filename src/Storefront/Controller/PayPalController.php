@@ -10,6 +10,7 @@ namespace Swag\PayPal\Storefront\Controller;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -34,6 +35,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @internal
  */
+#[Package('checkout')]
 class PayPalController extends StorefrontController
 {
     private AbstractCreateOrderRoute $createOrderRoute;

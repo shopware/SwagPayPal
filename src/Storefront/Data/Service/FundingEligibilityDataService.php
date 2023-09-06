@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Storefront\Data\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
@@ -17,6 +18,7 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
+#[Package('checkout')]
 class FundingEligibilityDataService
 {
     private CredentialsUtilInterface $credentialsUtil;

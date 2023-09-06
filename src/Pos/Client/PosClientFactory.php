@@ -8,9 +8,11 @@
 namespace Swag\PayPal\Pos\Client;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Resource\TokenResource;
 
+#[Package('checkout')]
 class PosClientFactory
 {
     private TokenResource $tokenResource;

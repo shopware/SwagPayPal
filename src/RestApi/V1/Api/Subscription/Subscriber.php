@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api\Subscription;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\Name;
 use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress;
@@ -22,6 +23,7 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[Package('checkout')]
 class Subscriber extends PayPalApiStruct
 {
     /**

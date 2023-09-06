@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Webhook\Registration;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
+#[Package('checkout')]
 class WebhookSystemConfigHelper
 {
     private const WEBHOOK_KEYS = [

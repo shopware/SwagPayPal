@@ -11,6 +11,7 @@ use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\TestDefaults;
@@ -36,6 +37,7 @@ use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ScheduledTaskTest extends TestCase
 {
     use IntegrationTestBehaviour;

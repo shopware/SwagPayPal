@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\PayPalApiStruct;
@@ -21,6 +22,7 @@ use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
+#[Package('checkout')]
 class WebhookService implements WebhookServiceInterface
 {
     public const WEBHOOK_CREATED = 'created';

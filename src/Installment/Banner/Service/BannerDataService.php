@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Installment\Banner\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -20,6 +21,7 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
+#[Package('checkout')]
 class BannerDataService implements BannerDataServiceInterface
 {
     private PaymentMethodUtil $paymentMethodUtil;

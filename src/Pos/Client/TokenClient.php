@@ -10,6 +10,7 @@ namespace Swag\PayPal\Pos\Client;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Api\Error\PosTokenError;
 use Swag\PayPal\Pos\Api\Exception\PosException;
@@ -19,6 +20,7 @@ use Swag\PayPal\Pos\Api\PosRequestUri;
 use Swag\PayPal\Pos\Setting\Exception\PosInvalidApiCredentialsException;
 use Swag\PayPal\SwagPayPal;
 
+#[Package('checkout')]
 class TokenClient extends AbstractClient
 {
     public function __construct(LoggerInterface $logger)

@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Test\RestApi\V1\Api;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class OAuthCredentialsTest extends TestCase
 {
     public function testToString(): void

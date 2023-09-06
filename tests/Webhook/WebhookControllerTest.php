@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
@@ -28,6 +29,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 /**
  * @internal
  */
+#[Package('checkout')]
 class WebhookControllerTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

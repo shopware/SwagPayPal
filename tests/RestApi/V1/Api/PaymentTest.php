@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Test\RestApi\V1\Api;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class PaymentTest extends TestCase
 {
     public function testJsonSerializable(): void

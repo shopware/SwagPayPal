@@ -13,11 +13,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class PaymentMethodRepoMock extends AbstractRepoMock
 {
     public const PAYPAL_PAYMENT_METHOD_ID = '0afca95b4937428a884830cd516fb826';

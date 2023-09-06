@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Pos\Api\Product\Variant;
 
+use Shopware\Core\Framework\Log\Package;
+
+#[Package('checkout')]
 class CostPrice extends Price
 {
     public static function convertFromPrice(Price $price): self

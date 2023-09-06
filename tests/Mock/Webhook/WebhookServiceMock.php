@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Mock\Webhook;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
@@ -22,6 +23,7 @@ use Swag\PayPal\Webhook\WebhookServiceInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class WebhookServiceMock implements WebhookServiceInterface
 {
     /**

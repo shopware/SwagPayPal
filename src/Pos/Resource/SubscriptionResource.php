@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Pos\Resource;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\PosBaseURL;
 use Swag\PayPal\Pos\Api\PosRequestUri;
 use Swag\PayPal\Pos\Api\Webhook\Subscription\CreateSubscription;
@@ -15,6 +16,7 @@ use Swag\PayPal\Pos\Api\Webhook\Subscription\UpdateSubscription;
 use Swag\PayPal\Pos\Client\PosClientFactory;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 
+#[Package('checkout')]
 class SubscriptionResource
 {
     private PosClientFactory $posClientFactory;

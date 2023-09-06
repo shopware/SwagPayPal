@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
@@ -27,6 +28,7 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 /**
  * @internal
  */
+#[Package('checkout')]
 class MerchantIntegrationsServiceTest extends TestCase
 {
     use ServicesTrait;

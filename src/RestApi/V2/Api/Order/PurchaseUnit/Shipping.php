@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Name;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Name;
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_shipping")
  */
+#[Package('checkout')]
 class Shipping extends PayPalApiStruct
 {
     /**

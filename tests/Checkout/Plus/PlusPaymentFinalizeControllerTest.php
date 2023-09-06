@@ -13,6 +13,7 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -27,6 +28,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PlusPaymentFinalizeControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;

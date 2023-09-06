@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\Checkout\Plus;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * @deprecated tag:v8.0.0 - Will be removed without replacement.
  */
+#[Package('checkout')]
 class PlusData extends Struct
 {
     protected string $approvalUrl;

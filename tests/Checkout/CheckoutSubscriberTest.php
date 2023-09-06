@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
@@ -32,6 +33,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CheckoutSubscriberTest extends TestCase
 {
     use CartTrait;

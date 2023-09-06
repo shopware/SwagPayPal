@@ -8,8 +8,10 @@
 namespace Swag\PayPal\Pos\Api\Service\Converter;
 
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Product\Category;
 
+#[Package('checkout')]
 class CategoryConverter
 {
     private UuidConverter $uuidConverter;

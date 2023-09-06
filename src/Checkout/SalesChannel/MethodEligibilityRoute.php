@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\SalesChannel;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
@@ -27,6 +28,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
+#[Package('checkout')]
 class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
 {
     public const REMOVABLE_PAYMENT_HANDLERS = [

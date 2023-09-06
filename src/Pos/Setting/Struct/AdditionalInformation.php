@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Setting\Struct;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
+#[Package('checkout')]
 class AdditionalInformation extends Struct
 {
     protected string $countryId;

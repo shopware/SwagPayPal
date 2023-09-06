@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\Tax;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_item")
  */
+#[Package('checkout')]
 class Item extends PayPalApiStruct
 {
     public const MAX_LENGTH_NAME = 120;

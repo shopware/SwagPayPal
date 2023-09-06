@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Mock;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 use Symfony\Component\Routing\RequestContext;
@@ -16,6 +17,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class RouterMock implements RouterInterface
 {
     public function setContext(RequestContext $context): void

@@ -10,7 +10,9 @@ namespace Swag\PayPal\Pos\Run;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\LogRecord;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Framework\Log\Package;
 
+#[Package('checkout')]
 class LogHandler extends AbstractProcessingHandler
 {
     /**

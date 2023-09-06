@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Pos\Api\Service\Converter;
 
 use Shopware\Core\Content\Property\PropertyGroupCollection;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Product\Variant;
 use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions;
 use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions\Definition;
 use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions\Definition\Property;
 
+#[Package('checkout')]
 class OptionGroupConverter
 {
     public function convert(PropertyGroupCollection $propertyGroupCollection): VariantOptionDefinitions

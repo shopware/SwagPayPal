@@ -12,6 +12,9 @@
     "require": {
         "shopware/core": "~6.5.0@dev"
     },
+    "require-dev": {
+        "rector/rector": "^0.18.1"
+    },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
         "copyright": "(c) by shopware AG",
@@ -52,7 +55,9 @@
         "phpstan": [
             "php bin/phpstan-config-generator.php",
             "../../../vendor/bin/phpstan analyze"
-        ]
+        ],
+        "rector": "../../../vendor/bin/rector process",
+        "rector-dry": "../../../vendor/bin/rector process --dry-run"
     },
     "autoload": {
         "psr-4": {

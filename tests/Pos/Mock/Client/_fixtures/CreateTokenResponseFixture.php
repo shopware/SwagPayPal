@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @internal
  */
+#[Package('checkout')]
 class CreateTokenResponseFixture
 {
     public const ACCESS_TOKEN = 'testAccessToken';

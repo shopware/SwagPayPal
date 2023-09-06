@@ -8,10 +8,12 @@
 namespace Swag\PayPal\Pos\MessageQueue\Message;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 use Shopware\Core\Framework\Struct\JsonSerializableTrait;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
+#[Package('checkout')]
 abstract class AbstractSyncMessage implements AsyncMessageInterface, \JsonSerializable
 {
     use JsonSerializableTrait {

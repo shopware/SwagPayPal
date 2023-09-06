@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Setting\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerId;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Package('checkout')]
 class ApiCredentialService implements ApiCredentialServiceInterface
 {
     private CredentialsResource $credentialsResource;

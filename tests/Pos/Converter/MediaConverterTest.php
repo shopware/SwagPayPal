@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Pos\Converter;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Api\Service\MediaConverter;
 use Swag\PayPal\Pos\Exception\InvalidMediaTypeException;
@@ -17,6 +18,7 @@ use Swag\PayPal\Pos\Exception\InvalidMediaTypeException;
 /**
  * @internal
  */
+#[Package('checkout')]
 class MediaConverterTest extends TestCase
 {
     private const MEDIA_URL = 'https://via.placeholder.com/500x500';

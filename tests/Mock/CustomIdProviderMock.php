@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\Test\Mock;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\OrdersApi\Builder\Util\CustomIdProvider;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class CustomIdProviderMock extends CustomIdProvider
 {
     public function __construct()

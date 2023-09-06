@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\Pos\Api\Product;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Product\Variant\CostPrice;
 use Swag\PayPal\Pos\Api\Product\Variant\Option;
 use Swag\PayPal\Pos\Api\Product\Variant\Price;
 
+#[Package('checkout')]
 class Variant extends PosStruct
 {
     protected string $uuid;

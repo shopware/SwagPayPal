@@ -11,11 +11,13 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Exception\ExistingPosSalesChannelsException;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\SwagPayPal;
 
+#[Package('checkout')]
 class PosStateService
 {
     private EntityRepository $salesChannelRepository;

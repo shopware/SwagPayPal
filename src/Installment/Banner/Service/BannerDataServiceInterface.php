@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Installment\Banner\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -17,6 +18,7 @@ use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\PayPal\Installment\Banner\BannerData;
 
+#[Package('checkout')]
 interface BannerDataServiceInterface
 {
     /**

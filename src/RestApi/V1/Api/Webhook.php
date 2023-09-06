@@ -8,12 +8,15 @@
 namespace Swag\PayPal\RestApi\V1\Api;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Link;
+use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_webhook")
  */
+#[Package('checkout')]
 class Webhook extends PayPalApiStruct
 {
     /**
@@ -39,7 +42,7 @@ class Webhook extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_webhook_resource")
      */
-    protected Webhook\Resource $resource;
+    protected Resource $resource;
 
     /**
      * @OA\Property(type="string")
@@ -98,12 +101,12 @@ class Webhook extends PayPalApiStruct
         $this->summary = $summary;
     }
 
-    public function getResource(): Webhook\Resource
+    public function getResource(): Resource
     {
         return $this->resource;
     }
 
-    public function setResource(Webhook\Resource $resource): void
+    public function setResource(Resource $resource): void
     {
         $this->resource = $resource;
     }

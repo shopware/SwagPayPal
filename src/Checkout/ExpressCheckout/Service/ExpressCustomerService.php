@@ -18,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -28,6 +29,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\V2\Api\Order;
 
+#[Package('checkout')]
 class ExpressCustomerService
 {
     public const EXPRESS_CHECKOUT_ACTIVE = 'payPalExpressCheckoutActive';

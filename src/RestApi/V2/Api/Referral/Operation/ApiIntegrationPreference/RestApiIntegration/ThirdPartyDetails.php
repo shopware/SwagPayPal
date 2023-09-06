@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_referral_third_party_details")
  */
+#[Package('checkout')]
 class ThirdPartyDetails extends PayPalApiStruct
 {
     public const FEATURE_TYPE_PAYMENT = 'PAYMENT';

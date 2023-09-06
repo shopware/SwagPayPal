@@ -14,12 +14,14 @@ use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Monolog\Processor\WebProcessor;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Settings;
 
 /**
  * @deprecated tag:v8.0.0 - Will be removed. Use `monolog.logger.paypal` instead
  */
+#[Package('checkout')]
 class LoggerFactory
 {
     protected const DEFAULT_LEVEL = Logger::WARNING;

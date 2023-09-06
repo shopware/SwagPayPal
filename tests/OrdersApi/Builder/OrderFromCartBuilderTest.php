@@ -19,6 +19,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
@@ -36,6 +37,7 @@ use Swag\PayPal\Util\PriceFormatter;
 /**
  * @internal
  */
+#[Package('checkout')]
 class OrderFromCartBuilderTest extends TestCase
 {
     use CartTrait;

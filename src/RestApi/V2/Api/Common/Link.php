@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V2\Api\Common;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_common_link")
  */
+#[Package('checkout')]
 abstract class Link extends PayPalApiStruct
 {
     public const RELATION_APPROVE = 'approve';

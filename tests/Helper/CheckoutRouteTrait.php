@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\SalesChannelNotFoundException;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -28,6 +29,7 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 /**
  * @internal
  */
+#[Package('checkout')]
 trait CheckoutRouteTrait
 {
     use PaymentMethodTrait;

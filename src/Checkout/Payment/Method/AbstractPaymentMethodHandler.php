@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Checkout\Payment\Method;
 
+use Shopware\Core\Framework\Log\Package;
+
+#[Package('checkout')]
 abstract class AbstractPaymentMethodHandler
 {
     public const PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME = 'paypalOrderId';

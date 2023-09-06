@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Storefront;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Event\RouteRequest\PaymentMethodRouteRequestEvent;
 use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
@@ -20,6 +21,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class RequestSubscriber implements EventSubscriberInterface
 {
     public const PAYMENT_PARAMETERS = [

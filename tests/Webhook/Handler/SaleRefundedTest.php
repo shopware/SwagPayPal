@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Sale;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
@@ -20,6 +21,7 @@ use Swag\PayPal\Webhook\WebhookEventTypes;
 /**
  * @internal
  */
+#[Package('checkout')]
 class SaleRefundedTest extends AbstractWebhookHandlerTestCase
 {
     private Sale $sale;

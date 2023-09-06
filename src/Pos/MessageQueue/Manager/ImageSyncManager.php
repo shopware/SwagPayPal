@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InvalidAggregationQueryException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Exception\MediaDomainNotSetException;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
@@ -20,6 +21,7 @@ use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Sync\ImageSyncer;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
 
+#[Package('checkout')]
 class ImageSyncManager extends AbstractSyncManager
 {
     use PosSalesChannelTrait;

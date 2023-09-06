@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 
+#[Package('checkout')]
 class ExpressCheckoutButtonData extends AbstractCheckoutData
 {
     protected bool $productDetailEnabled;

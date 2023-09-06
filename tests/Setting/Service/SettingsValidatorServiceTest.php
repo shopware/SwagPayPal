@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Setting\Service;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
@@ -18,6 +19,7 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 /**
  * @internal
  */
+#[Package('checkout')]
 class SettingsValidatorServiceTest extends TestCase
 {
     use ServicesTrait;

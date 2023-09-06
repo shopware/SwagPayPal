@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Installment\Banner;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
@@ -36,6 +37,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class InstallmentBannerSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID = 'payPalInstallmentBannerData';

@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Test\Setting\Exception;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalSettingsInvalidExceptionTest extends TestCase
 {
     public function testGetStatusCode(): void

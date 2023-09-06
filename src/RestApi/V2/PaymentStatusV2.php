@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\RestApi\V2;
 
+use Shopware\Core\Framework\Log\Package;
+
+#[Package('checkout')]
 final class PaymentStatusV2
 {
     public const ORDER_CREATED = 'CREATED';

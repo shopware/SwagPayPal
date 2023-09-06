@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Dispute\Administration;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Swag\PayPal\Dispute\Administration\DisputeController;
@@ -22,6 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @internal
  */
+#[Package('checkout')]
 class DisputeControllerTest extends TestCase
 {
     use ServicesTrait;

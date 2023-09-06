@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\Test\Checkout\Method;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class VenmoHandlerTest extends AbstractSyncAPMHandlerTest
 {
     protected function getPaymentHandlerClassName(): string

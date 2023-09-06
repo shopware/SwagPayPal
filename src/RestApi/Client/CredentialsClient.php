@@ -9,8 +9,10 @@ namespace Swag\PayPal\RestApi\Client;
 
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 
+#[Package('checkout')]
 class CredentialsClient extends AbstractClient
 {
     public function __construct(

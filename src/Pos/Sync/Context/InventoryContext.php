@@ -9,6 +9,7 @@ namespace Swag\PayPal\Pos\Sync\Context;
 
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\JsonSerializableTrait;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Inventory\Status;
@@ -19,6 +20,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryCollecti
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
 use Swag\PayPal\SwagPayPal;
 
+#[Package('checkout')]
 class InventoryContext implements \JsonSerializable
 {
     use JsonSerializableTrait {

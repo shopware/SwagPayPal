@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Administration;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Swag\PayPal\Administration\PayPalPaymentMethodController;
@@ -24,6 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalPaymentMethodControllerTest extends TestCase
 {
     public function testSetPayPalPaymentMethodAsSalesChannelDefault(): void

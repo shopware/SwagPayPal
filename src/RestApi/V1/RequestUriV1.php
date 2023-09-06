@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\RestApi\V1;
 
+use Shopware\Core\Framework\Log\Package;
+
+#[Package('checkout')]
 final class RequestUriV1
 {
     public const PAYMENT_RESOURCE = 'v1/payments/payment';

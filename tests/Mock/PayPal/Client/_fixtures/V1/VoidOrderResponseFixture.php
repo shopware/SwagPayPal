@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @internal
  */
+#[Package('checkout')]
 class VoidOrderResponseFixture
 {
     public const VOID_ID = 'O-5G515550L5450231X';

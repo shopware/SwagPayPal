@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\TestDefaults;
@@ -23,6 +24,7 @@ use Swag\PayPal\Test\Util\PaymentMethodUtilTest;
 /**
  * @internal
  */
+#[Package('checkout')]
 class SalesChannelRepoMock extends AbstractRepoMock
 {
     public const SALES_CHANNEL_NAME = 'SwagPayPal Test SalesChannel';

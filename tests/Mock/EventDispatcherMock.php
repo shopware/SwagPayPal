@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\Test\Mock;
 
+use Shopware\Core\Framework\Log\Package;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class EventDispatcherMock implements EventDispatcherInterface
 {
     private ?object $lastEvent = null;

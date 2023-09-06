@@ -11,6 +11,7 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartValidatorInterface;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
 use Shopware\Core\Checkout\Payment\Cart\Error\PaymentMethodBlockedError;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
@@ -22,6 +23,7 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+#[Package('checkout')]
 class CartValidator implements CartValidatorInterface
 {
     private CartPriceService $cartPriceService;

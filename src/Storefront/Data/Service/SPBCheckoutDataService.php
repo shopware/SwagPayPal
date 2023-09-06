@@ -9,6 +9,7 @@ namespace Swag\PayPal\Storefront\Data\Service;
 
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
@@ -21,6 +22,7 @@ use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\Routing\RouterInterface;
 
+#[Package('checkout')]
 class SPBCheckoutDataService extends AbstractCheckoutDataService
 {
     private const APM_BLIK = 'blik';

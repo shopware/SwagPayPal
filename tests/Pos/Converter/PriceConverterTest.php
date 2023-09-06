@@ -11,12 +11,14 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Pos\Api\Service\Converter\PriceConverter;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class PriceConverterTest extends TestCase
 {
     public function dataProviderPriceConversion(): array

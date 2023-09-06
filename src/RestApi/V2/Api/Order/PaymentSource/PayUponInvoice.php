@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\BillingAddress;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\DepositBankDetails;
@@ -18,6 +19,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\Phone;
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_pay_upon_invoice")
  */
+#[Package('checkout')]
 class PayUponInvoice extends PayPalApiStruct
 {
     /**

@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Pos\Mock\Repositories;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductEntity;
@@ -17,6 +18,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductEntity;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PosProductRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Storefront\Data;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -16,6 +17,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class FundingSubscriber implements EventSubscriberInterface
 {
     public const FUNDING_ELIGIBILITY_EXTENSION = 'swagPayPalFundingEligibility';

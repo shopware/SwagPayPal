@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_evidence_tracking_info")
  */
+#[Package('checkout')]
 class TrackingInfo extends PayPalApiStruct
 {
     /**
