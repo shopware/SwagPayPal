@@ -1,5 +1,6 @@
 # 7.2.3
 - PPI-808 - Behebt ein Problem, bei dem manche Währungen (HUF, JPY, TWD) nicht korrekt an PayPal übermittelt wurden
+- PPI-809 - Behebt ein Problem, bei dem die Buttons nicht die richtige Farbe hatten
 - PPI-811 - Behebt ein Problem, bei dem Kreditkarten mit nicht verfügbarem 3D Secure nicht akzeptiert wurden
 - PPI-812 - Behebt ein Problem, bei dem der Zettle-Sync sich nicht zurücksetzbar ist
 

@@ -61,9 +61,9 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         /**
          * This option specifies the PayPal button color
          *
-         * @type string
+         * @type string|null
          */
-        buttonColor: 'black',
+        buttonColor: null,
 
         /**
          * This option specifies the PayPal button shape
