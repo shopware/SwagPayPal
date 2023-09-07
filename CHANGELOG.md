@@ -1,5 +1,6 @@
 # 7.2.3
 - PPI-808 - Fixes an issue, where some currencies (HUF, JPY, TWD) were not transmitted correctly
+- PPI-809 - Fixes an issue, where payment buttons have not the right color
 - PPI-811 - Fixes an issue, where credit cards with unavailable 3D Secure could not be processed
 - PPI-812 - Fixes an issue, where Zettle sync could not be reset
 
