@@ -81,16 +81,16 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
             throw new InvalidTransactionException('');
         }
         $transactionAmount = $cartTransaction->getAmount();
-        $currency = $salesChannelContext->getCurrency()->getIsoCode();
+        $currencyCode = $salesChannelContext->getCurrency()->getIsoCode();
 
         $transaction = new Transaction();
         $shippingCostsTotal = $cart->getShippingCosts()->getTotalPrice();
-        $amount = (new AmountProvider($this->priceFormatter))->createAmount($transactionAmount, $shippingCostsTotal, $currency);
+        $amount = (new AmountProvider($this->priceFormatter))->createAmount($transactionAmount, $shippingCostsTotal, $currencyCode);
         $transaction->setAmount($amount);
 
         $itemListValid = true;
         if ($this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId())) {
-            $this->setItemList($transaction, $cart->getLineItems(), $currency);
+            $this->setItemList($transaction, $cart->getLineItems(), $currencyCode);
             $itemListValid = TransactionValidator::validateItemList([$transaction]);
         }
 
@@ -139,17 +139,17 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
 
     private function createItemFromLineItem(
         LineItem $lineItem,
-        string $currency,
+        string $currencyCode,
         CalculatedPrice $price
     ): Item {
         $item = new Item();
         $this->setName($lineItem, $item);
         $this->setSku($lineItem, $item);
 
-        $item->setCurrency($currency);
+        $item->setCurrency($currencyCode);
         $item->setQuantity($lineItem->getQuantity());
-        $item->setPrice($this->priceFormatter->formatPrice($price->getUnitPrice()));
-        $item->setTax($this->priceFormatter->formatPrice(0));
+        $item->setPrice($this->priceFormatter->formatPrice($price->getUnitPrice(), $currencyCode));
+        $item->setTax($this->priceFormatter->formatPrice(0, $currencyCode));
 
         $event = new PayPalV1ItemFromCartEvent($item, $lineItem);
         $this->eventDispatcher->dispatch($event);

@@ -14,13 +14,23 @@ class PriceFormatter
 {
     private const DEFAULT_DECIMALS = 2;
 
-    public function formatPrice(float $price): string
+    private const OTHER_DECIMALS = [
+        'HUF' => 0,
+        'JPY' => 0,
+        'TWD' => 0,
+    ];
+
+    public function formatPrice(float $price, ?string $countryCode = null): string
     {
-        return \number_format($this->roundPrice($price), self::DEFAULT_DECIMALS, '.', '');
+        $decimals = self::OTHER_DECIMALS[$countryCode] ?? self::DEFAULT_DECIMALS;
+
+        return \number_format($this->roundPrice($price, $countryCode), $decimals, '.', '');
     }
 
-    public function roundPrice(float $price): float
+    public function roundPrice(float $price, ?string $countryCode = null): float
     {
-        return \round($price, self::DEFAULT_DECIMALS);
+        $decimals = self::OTHER_DECIMALS[$countryCode] ?? self::DEFAULT_DECIMALS;
+
+        return \round($price, $decimals);
     }
 }

@@ -48,7 +48,8 @@ class PaymentStatusUtilV2
         $transactionId = $transaction->getId();
 
         $refundAmount = $refundResponse->getSellerPayableBreakdown()->getTotalRefundedAmount()->getValue();
-        $transactionAmount = $this->priceFormatter->formatPrice($transaction->getAmount()->getTotalPrice());
+        $currencyCode = $refundResponse->getSellerPayableBreakdown()->getTotalRefundedAmount()->getCurrencyCode();
+        $transactionAmount = $this->priceFormatter->formatPrice($transaction->getAmount()->getTotalPrice(), $currencyCode);
 
         if ($refundAmount === $transactionAmount) {
             $this->orderTransactionStateHandler->refund($transactionId, $context);
@@ -73,7 +74,7 @@ class PaymentStatusUtilV2
             }
         }
 
-        if ($isFinalCaptured && $refundAmount === $this->priceFormatter->formatPrice($capturedAmount)) {
+        if ($isFinalCaptured && $refundAmount === $this->priceFormatter->formatPrice($capturedAmount, $currencyCode)) {
             $this->orderTransactionStateHandler->refund($transactionId, $context);
 
             return;

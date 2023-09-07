@@ -307,6 +307,7 @@ class PaymentStatusUtilV2Test extends TestCase
         if ($value !== null) {
             $captureAmount = new CaptureAmount();
             $captureAmount->setValue($value);
+            $captureAmount->setCurrencyCode('EUR');
 
             $capture->setAmount($captureAmount);
         }
@@ -318,12 +319,14 @@ class PaymentStatusUtilV2Test extends TestCase
     {
         $totalRefundedAmount = new TotalRefundedAmount();
         $totalRefundedAmount->setValue($totalRefunded);
+        $totalRefundedAmount->setCurrencyCode('EUR');
 
         $sellerPayableBreakDown = new SellerPayableBreakdown();
         $sellerPayableBreakDown->setTotalRefundedAmount($totalRefundedAmount);
 
         $refundAmount = new RefundAmount();
         $refundAmount->setValue($value);
+        $refundAmount->setCurrencyCode('EUR');
 
         $refund = new Refund();
         $refund->setSellerPayableBreakdown($sellerPayableBreakDown);

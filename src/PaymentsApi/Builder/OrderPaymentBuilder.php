@@ -161,17 +161,17 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         return $items;
     }
 
-    private function createItemFromLineItem(OrderLineItemEntity $lineItem, string $currency): Item
+    private function createItemFromLineItem(OrderLineItemEntity $lineItem, string $currencyCode): Item
     {
         $item = new Item();
 
         $this->setName($lineItem, $item);
         $this->setSku($lineItem, $item);
 
-        $item->setCurrency($currency);
+        $item->setCurrency($currencyCode);
         $item->setQuantity($lineItem->getQuantity());
-        $item->setTax($this->priceFormatter->formatPrice(0));
-        $item->setPrice($this->priceFormatter->formatPrice($lineItem->getUnitPrice()));
+        $item->setTax($this->priceFormatter->formatPrice(0, $currencyCode));
+        $item->setPrice($this->priceFormatter->formatPrice($lineItem->getUnitPrice(), $currencyCode));
 
         $event = new PayPalV1ItemFromOrderEvent($item, $lineItem);
         $this->eventDispatcher->dispatch($event);
