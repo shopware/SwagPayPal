@@ -63,6 +63,16 @@ Component.register('swag-paypal-express', {
                 },
             ];
         },
+
+        renderSettingsDisabled() {
+            return !this.acl.can('swag_paypal.editor') || (
+                !this.actualConfigData['SwagPayPal.settings.ecsDetailEnabled']
+                && !this.actualConfigData['SwagPayPal.settings.ecsCartEnabled']
+                && !this.actualConfigData['SwagPayPal.settings.ecsOffCanvasEnabled']
+                && !this.actualConfigData['SwagPayPal.settings.ecsProductDetailEnabled']
+                && !this.actualConfigData['SwagPayPal.settings.ecsListingEnabled']
+            );
+        },
     },
 
     methods: {
