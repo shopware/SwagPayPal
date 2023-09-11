@@ -140,12 +140,12 @@ class AmountProviderTest extends TestCase
         $item = new Item();
 
         $unit = new UnitAmount();
-        $unit->setValue($this->priceFormatter->formatPrice($unitAmount));
+        $unit->setValue($this->priceFormatter->formatPrice($unitAmount, 'EUR'));
         $unit->setCurrencyCode('EUR');
         $item->setUnitAmount($unit);
 
         $tax = new Tax();
-        $tax->setValue($this->priceFormatter->formatPrice($taxAmount));
+        $tax->setValue($this->priceFormatter->formatPrice($taxAmount, 'EUR'));
         $tax->setCurrencyCode('EUR');
         $item->setTax($tax);
 

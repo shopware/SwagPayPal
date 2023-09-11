@@ -120,12 +120,12 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
 
             $tax = new Tax();
             $tax->setCurrencyCode($currencyCode);
-            $tax->setValue($this->priceFormatter->formatPrice($price->getCalculatedTaxes()->getAmount()));
+            $tax->setValue($this->priceFormatter->formatPrice($price->getCalculatedTaxes()->getAmount(), $currencyCode));
             $item->setTax($tax);
 
             $unitAmount = new UnitAmount();
             $unitAmount->setCurrencyCode($currencyCode);
-            $unitAmount->setValue($this->priceFormatter->formatPrice($price->getUnitPrice()));
+            $unitAmount->setValue($this->priceFormatter->formatPrice($price->getUnitPrice(), $currencyCode));
 
             $item->setUnitAmount($unitAmount);
             $item->setQuantity($lineItem->getQuantity());
