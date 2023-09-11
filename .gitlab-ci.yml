@@ -1,13 +1,17 @@
 variables:
-  PLATFORM_MIN_VERSION: 'v6.5.4.1'
+  PLATFORM_MIN_VERSION: 'v6.5.5.1'
   PLATFORM_DEFAULT_VERSION: '6.5.x'
   PLATFORM_BRANCH: $PLATFORM_DEFAULT_VERSION
   CMS_EXTENSION_BRANCH: 'master'
-  PLUGIN_DEPENDENCIES:
-    value: >
-      [
-        { "name": "SwagCmsExtensions", "url": "gitlab.shopware.com/shopware/6/services/cms-extensions", "branch": "$CMS_EXTENSION_BRANCH" }
-      ]
+  COMMERCIAL_ENABLED: 'true'
+  DEPENDENCIES_WITHOUT_COMMERCIAL: |
+    [{ "name": "SwagCmsExtensions", "url": "gitlab.shopware.com/shopware/6/services/cms-extensions", "branch": "$CMS_EXTENSION_BRANCH" }]
+  DEPENDENCIES_WITH_COMMERCIAL: |
+    [
+      { "name": "SwagCmsExtensions", "url": "gitlab.shopware.com/shopware/6/services/cms-extensions", "branch": "$CMS_EXTENSION_BRANCH" },
+      { "name": "SwagCommercial", "url": "gitlab.shopware.com/shopware/6/product/commercial.git", "branch": "$PLATFORM_BRANCH" }
+    ]
+  PLUGIN_DEPENDENCIES: $DEPENDENCIES_WITH_COMMERCIAL
 
 phpunit:
   services:
@@ -31,12 +35,13 @@ phpunit:
           DEV_IMAGE: [ 'shopware/development:8.1-composer-2', 'shopware/development:8.2-composer-2' ]
           MYSQL_CMD: $MYSQL8_CMD
           PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
+          PLUGIN_DEPENDENCIES: [ $DEPENDENCIES_WITH_COMMERCIAL, $DEPENDENCIES_WITHOUT_COMMERCIAL ]
       -   MYSQL_IMAGE:
             - mariadb:10.3
             - mariadb:10.5
           DEV_IMAGE: [ 'shopware/development:8.1-composer-2', 'shopware/development:8.2-composer-2' ]
           PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
-          RUN_IN_MR: 'false'
+          PLUGIN_DEPENDENCIES: [ $DEPENDENCIES_WITH_COMMERCIAL, $DEPENDENCIES_WITHOUT_COMMERCIAL ]
 
 phpstan:
   script:
