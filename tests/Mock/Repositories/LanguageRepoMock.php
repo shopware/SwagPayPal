@@ -9,16 +9,18 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageDefinition;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Locale\LocaleEntity;
 
 /**
+ * @extends AbstractRepoMock<LanguageCollection>
+ *
  * @internal
  */
 #[Package('checkout')]
@@ -39,7 +41,7 @@ class LanguageRepoMock extends AbstractRepoMock
         return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             1,
-            new EntityCollection([$this->createLanguageEntity($withLocale)]),
+            new LanguageCollection([$this->createLanguageEntity($withLocale)]),
             null,
             $criteria,
             $context

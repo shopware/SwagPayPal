@@ -52,7 +52,7 @@ class Order extends PayPalApiStruct
     protected Payer $payer;
 
     /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"})
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"}, nullable=true)
      */
     protected ?PurchaseUnitCollection $purchaseUnits;
 
@@ -62,7 +62,7 @@ class Order extends PayPalApiStruct
     protected ApplicationContext $applicationContext;
 
     /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source")
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source", nullable=true)
      */
     protected ?PaymentSource $paymentSource = null;
 

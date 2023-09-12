@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageEntity;
 use Symfony\Contracts\Service\ResetInterface;
 
@@ -22,6 +23,8 @@ class LocaleCodeProvider implements ResetInterface
     private array $cache = [];
 
     /**
+     * @param EntityRepository<LanguageCollection> $languageRepository
+     *
      * @internal
      */
     public function __construct(EntityRepository $languageRepository)
@@ -31,7 +34,7 @@ class LocaleCodeProvider implements ResetInterface
 
     public function getLocaleCodeFromContext(Context $context): string
     {
-        if ($this->cache[$context->getLanguageId()] ?? null) {
+        if (isset($this->cache[$context->getLanguageId()])) {
             return $this->cache[$context->getLanguageId()];
         }
 
@@ -39,18 +42,14 @@ class LocaleCodeProvider implements ResetInterface
         $criteria = new Criteria([$languageId]);
         $criteria->addAssociation('locale');
         $criteria->setLimit(1);
-        /** @var LanguageEntity|null $language */
+
+        /** @var LanguageEntity $language */
         $language = $this->languageRepository->search($criteria, $context)->first();
-        if ($language === null) {
-            return $this->cache[$context->getLanguageId()] = 'en-GB';
-        }
 
-        $locale = $language->getLocale();
-        if (!$locale) {
-            return $this->cache[$context->getLanguageId()] = 'en-GB';
-        }
+        /** @var string $locale */
+        $locale = $language->getLocale()?->getCode();
 
-        return $this->cache[$context->getLanguageId()] = $locale->getCode();
+        return $this->cache[$context->getLanguageId()] = $locale;
     }
 
     public function reset(): void

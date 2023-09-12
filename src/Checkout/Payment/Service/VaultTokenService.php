@@ -86,7 +86,7 @@ class VaultTokenService
                 ],
             ], $context->getContext());
 
-            $tokenId = $event->getPrimaryKeys(VaultTokenDefinition::ENTITY_NAME)[0] ?? $this->findTokenId($token->getId(), $context);
+            $tokenId = $event->getPrimaryKeys(VaultTokenDefinition::ENTITY_NAME)[0];
             if (!$tokenId) {
                 throw new EntityNotFoundException(VaultTokenDefinition::ENTITY_NAME, $token->getId());
             }
@@ -159,12 +159,7 @@ class VaultTokenService
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('token', $token));
         $criteria->addFilter(new EqualsFilter('customerId', $context->getCustomerId()));
-        $tokenId = $this->vaultTokenRepository->searchIds($criteria, $context->getContext())->firstId();
 
-        if (!$tokenId) {
-            return null;
-        }
-
-        return $tokenId;
+        return $this->vaultTokenRepository->searchIds($criteria, $context->getContext())->firstId();
     }
 }

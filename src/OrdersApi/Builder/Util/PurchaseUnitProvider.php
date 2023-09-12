@@ -98,18 +98,7 @@ class PurchaseUnitProvider
 
     private function createShipping(?CustomerEntity $customer, ?OrderEntity $order): ?Shipping
     {
-        if ($customer === null && $order === null) {
-            return null;
-        }
-
-        if ($customer !== null) {
-            $shippingAddress = $customer->getActiveShippingAddress();
-        }
-
-        if ($order !== null) {
-            $shippingAddress = $order->getDeliveries()?->first()?->getShippingOrderAddress() ?: $shippingAddress ?? null;
-        }
-
+        $shippingAddress = $order?->getDeliveries()?->first()?->getShippingOrderAddress() ?? $customer?->getActiveShippingAddress();
         if ($shippingAddress === null) {
             return null;
         }

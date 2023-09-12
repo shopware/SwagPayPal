@@ -101,7 +101,6 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
             return;
         }
 
-        /** @var VaultData|null $vaultData */
         $vaultData = $event->getPage()->getExtensionOfType(VaultSubscriber::VAULT_EXTENSION, VaultData::class);
         if ($vaultData?->getIdentifier()) {
             return;

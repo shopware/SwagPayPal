@@ -88,12 +88,10 @@ class OrderExecuteService
 
         if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
             $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
-            $this->isFinalized($response, $salesChannelId, $transactionId, $context);
-
-            return $response;
+        } else {
+            $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
         }
 
-        $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
         $this->isFinalized($response, $salesChannelId, $transactionId, $context);
 
         return $response;

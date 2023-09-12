@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
+use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
@@ -40,7 +41,7 @@ class VaultSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function addVaultData(AccountEditOrderPageLoadedEvent|CheckoutConfirmPageLoadedEvent $event): void
+    public function addVaultData(PageLoadedEvent $event): void
     {
         try {
             $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannelId());

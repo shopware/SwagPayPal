@@ -28,6 +28,7 @@ class PayerInfoPatchBuilder
         if ($orderBillingAddress === null) {
             throw new AddressNotFoundException($order->getBillingAddressId());
         }
+
         $customer = $order->getOrderCustomer();
         if ($customer === null) {
             throw new InvalidOrderException($order->getId());
