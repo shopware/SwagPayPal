@@ -20,24 +20,6 @@ Component.register('swag-paypal-payment-details-v2', {
             type: Object,
             required: true,
         },
-
-        /**
-         * @deprecated tag:v8.0.0 - will be removed, use orderTransaction instead
-         */
-        orderTransactionId: {
-            type: String,
-            required: false,
-            default: '',
-        },
-
-        /**
-         * @deprecated tag:v8.0.0 - will be removed, use orderTransaction instead
-         */
-        paypalPartnerAttributionId: {
-            type: String,
-            required: false,
-            default: '',
-        },
     },
 
     data() {

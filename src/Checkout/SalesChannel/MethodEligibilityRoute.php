@@ -48,7 +48,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
         $this->logger = $logger;
     }
 
-    public function getDecorated(): AbstractErrorRoute
+    public function getDecorated(): AbstractMethodEligibilityRoute
     {
         throw new DecorationPatternException(self::class);
     }

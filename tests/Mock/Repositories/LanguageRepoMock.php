@@ -27,7 +27,6 @@ use Shopware\Core\System\Locale\LocaleEntity;
 class LanguageRepoMock extends AbstractRepoMock
 {
     public const LOCALE_CODE = 'en-GB';
-    public const LANGUAGE_ID_WITHOUT_LOCALE = '3e5780c194c342d1b63d170400199f03';
 
     public function getDefinition(): EntityDefinition
     {
@@ -36,38 +35,24 @@ class LanguageRepoMock extends AbstractRepoMock
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        $withLocale = $criteria->getIds()[0] !== self::LANGUAGE_ID_WITHOUT_LOCALE;
-
         return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             1,
-            new LanguageCollection([$this->createLanguageEntity($withLocale)]),
+            new LanguageCollection([$this->createLanguageEntity()]),
             null,
             $criteria,
             $context
         );
     }
 
-    private function createLanguageEntity(bool $withLocale): LanguageEntity
+    private function createLanguageEntity(): LanguageEntity
     {
         $languageEntity = new LanguageEntity();
-
-        if ($withLocale) {
-            $languageEntity->setId(Defaults::LANGUAGE_SYSTEM);
-            $locale = $this->createLocaleEntity();
-            $languageEntity->setLocale($locale);
-        } else {
-            $languageEntity->setId(self::LANGUAGE_ID_WITHOUT_LOCALE);
-        }
-
-        return $languageEntity;
-    }
-
-    private function createLocaleEntity(): LocaleEntity
-    {
+        $languageEntity->setId(Defaults::LANGUAGE_SYSTEM);
         $locale = new LocaleEntity();
         $locale->setCode(self::LOCALE_CODE);
+        $languageEntity->setLocale($locale);
 
-        return $locale;
+        return $languageEntity;
     }
 }

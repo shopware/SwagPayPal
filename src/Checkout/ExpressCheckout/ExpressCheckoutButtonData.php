@@ -35,11 +35,6 @@ class ExpressCheckoutButtonData extends AbstractCheckoutData
 
     protected string $cancelRedirectUrl;
 
-    /**
-     * @deprecated tag:v8.0.0 - will be removed, use "showPayLater" instead
-     */
-    protected bool $disablePayLater;
-
     protected bool $showPayLater;
 
     public function getProductDetailEnabled(): bool
@@ -100,22 +95,6 @@ class ExpressCheckoutButtonData extends AbstractCheckoutData
     public function getCancelRedirectUrl(): string
     {
         return $this->cancelRedirectUrl;
-    }
-
-    /**
-     * @deprecated tag:v8.0.0 - will be removed, use "showPayLater" instead
-     */
-    public function isDisablePayLater(): bool
-    {
-        return $this->disablePayLater;
-    }
-
-    /**
-     * @deprecated tag:v8.0.0 - will be removed, use "showPayLater" instead
-     */
-    public function setDisablePayLater(bool $disablePayLater): void
-    {
-        $this->disablePayLater = $disablePayLater;
     }
 
     public function isShowPayLater(): bool

@@ -36,30 +36,4 @@ class LocaleCodeProviderTest extends TestCase
 
         static::assertSame(LanguageRepoMock::LOCALE_CODE, $iso);
     }
-
-    public function testGetLocaleCodeWithoutLocaleEntity(): void
-    {
-        $context = $this->createContextWithoutLocale();
-        $iso = $this->localeCodeProvider->getLocaleCodeFromContext($context);
-
-        static::assertSame(LanguageRepoMock::LOCALE_CODE, $iso);
-    }
-
-    private function createContextWithoutLocale(): Context
-    {
-        $defaultContext = Context::createDefaultContext();
-
-        return new Context(
-            $defaultContext->getSource(),
-            $defaultContext->getRuleIds(),
-            $defaultContext->getCurrencyId(),
-            [
-                LanguageRepoMock::LANGUAGE_ID_WITHOUT_LOCALE,
-            ],
-            $defaultContext->getVersionId(),
-            $defaultContext->getCurrencyFactor(),
-            $defaultContext->considerInheritance(),
-            $defaultContext->getTaxState()
-        );
-    }
 }

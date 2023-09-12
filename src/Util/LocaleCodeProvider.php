@@ -20,6 +20,9 @@ class LocaleCodeProvider implements ResetInterface
 {
     private EntityRepository $languageRepository;
 
+    /**
+     * @var array<string, string>
+     */
     private array $cache = [];
 
     /**

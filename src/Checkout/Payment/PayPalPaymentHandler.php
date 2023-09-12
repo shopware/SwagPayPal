@@ -49,12 +49,12 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
 
     /**
-     * @deprecated tag:v8.0.0 - Will be removed without replacement.
+     * @deprecated tag:v9.0.0 - Will be removed without replacement.
      */
     public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
 
     /**
-     * @deprecated tag:v8.0.0 - Will be removed without replacement.
+     * @deprecated tag:v9.0.0 - Will be removed without replacement.
      */
     public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
 

@@ -13,7 +13,6 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V2\Api\Referral\BusinessEntity;
 use Swag\PayPal\RestApi\V2\Api\Referral\LegalConsentCollection;
-use Swag\PayPal\RestApi\V2\Api\Referral\Link;
 use Swag\PayPal\RestApi\V2\Api\Referral\OperationCollection;
 use Swag\PayPal\RestApi\V2\Api\Referral\PartnerConfigOverride;
 
@@ -23,11 +22,6 @@ use Swag\PayPal\RestApi\V2\Api\Referral\PartnerConfigOverride;
 #[Package('checkout')]
 class Referral extends PayPalApiStruct
 {
-    /**
-     * @deprecated tag:v8.0.0 - will be removed
-     */
-    public const PRODUCT_TYPE_EXPRESS_CHECKOUT = 'EXPRESS_CHECKOUT';
-
     public const PRODUCT_TYPE_PPCP = 'PPCP';
     public const PRODUCT_TYPE_PAYMENT_METHODS = 'PAYMENT_METHODS';
 

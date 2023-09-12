@@ -73,16 +73,15 @@ class BannerDataService implements BannerDataServiceInterface
             }
         }
 
-        $bannerData = new BannerData(
-            (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
-            $this->credentialsUtil->getClientId($salesChannelContext->getSalesChannelId()),
-            $amount,
-            $salesChannelContext->getCurrency()->getIsoCode(),
-        );
+        $bannerData = new BannerData();
 
         $merchantPayerId = $this->credentialsUtil->getMerchantPayerId($salesChannelContext->getSalesChannelId());
 
         $bannerData->assign([
+            'paymentMethodId' => (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
+            'clientId' => $this->credentialsUtil->getClientId($salesChannelContext->getSalesChannelId()),
+            'amount' => $amount,
+            'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
             'merchantPayerId' => $merchantPayerId,
             'partnerAttributionId' => $merchantPayerId ? PartnerAttributionId::PAYPAL_PPCP : PartnerAttributionId::PAYPAL_CLASSIC,
             'footerEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED),

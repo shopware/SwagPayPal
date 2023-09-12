@@ -28,12 +28,6 @@
 
         <service id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
 
-        <service id="Swag\PayPal\Checkout\SalesChannel\ErrorRoute" public="true">
-            <argument type="service" id="request_stack"/>
-            <argument type="service" id="translator"/>
-            <argument type="service" id="monolog.logger.paypal"/>
-        </service>
-
         <service id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute" public="true">
             <argument type="service" id="monolog.logger.paypal"/>
         </service>

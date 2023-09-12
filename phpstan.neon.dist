@@ -40,7 +40,7 @@ parameters:
             message: '#Use \\Monolog\\Level::.*#'
 
         -   # ignore own deprecations in tests
-            message: '#.*tag:v8.0.0 -#'
+            message: '#.*tag:v9.0.0 -#'
             path: tests/**/*.php
 
         -   # ignore Plus deprecations

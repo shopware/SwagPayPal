@@ -59,10 +59,6 @@
                             </sw-tabs>
                         {% endblock %}
 
-                        {# @deprecated tag:v8.0.0 - will be removed without replacement #}
-                        {% block swag_paypal_content_card_shipping_alert %}
-                        {% endblock %}
-
                         {% block swag_paypal_content_card_channel_config %}
                             <sw-sales-channel-config
                                 {% if VUE3 %}
@@ -136,10 +132,6 @@
                                 {% block swag_paypal_content_card_channel_config_cards %}
                                     <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
 
-                                        {# @deprecated tag:v8.0.0 - Will be removed without replacement #}
-                                        {% block swag_paypal_content_card_channel_config_checkout_card %}
-                                        {% endblock %}
-
                                         {% block swag_paypal_content_card_channel_config_credentials_card %}
                                             <swag-paypal-credentials v-if="tab === 'general'"
                                                                      :actualConfigData="actualConfigData"
@@ -157,7 +149,7 @@
                                             </swag-paypal-credentials>
                                         {% endblock %}
 
-                                        {# @deprecated tag:v8.0.0 - Will be removed without replacement #}
+                                        {# @deprecated tag:v9.0.0 - Will be removed without replacement #}
                                         {% block swag_paypal_content_card_channel_config_plus %}
                                             <swag-paypal-plus v-if="showPlusCard && tab === 'storefront'"
                                                               :actualConfigData="actualConfigData"

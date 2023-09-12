@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Setting;
 
-use Monolog\Logger;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -48,21 +47,11 @@ final class Settings
     public const SPB_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonLanguageIso';
     public const ACDC_FORCE_3DS = self::SYSTEM_CONFIG_DOMAIN . 'acdcForce3DS';
     public const PUI_CUSTOMER_SERVICE_INSTRUCTIONS = self::SYSTEM_CONFIG_DOMAIN . 'puiCustomerServiceInstructions';
-
-    /**
-     * @deprecated tag:v8.0.0 - will be removed, use specific settings instead
-     */
-    public const INSTALLMENT_BANNER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled';
     public const INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerDetailPageEnabled';
     public const INSTALLMENT_BANNER_CART_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerCartEnabled';
     public const INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerOffCanvasCartEnabled';
     public const INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerLoginPageEnabled';
     public const INSTALLMENT_BANNER_FOOTER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerFooterEnabled';
-
-    /**
-     * @deprecated tag:v8.0.0 Will be removed without replacement.
-     */
-    public const LOGGING_LEVEL = self::SYSTEM_CONFIG_DOMAIN . 'loggingLevel';
     public const EXCLUDED_PRODUCT_IDS = self::SYSTEM_CONFIG_DOMAIN . 'excludedProductIds';
     public const EXCLUDED_PRODUCT_STREAM_IDS = self::SYSTEM_CONFIG_DOMAIN . 'excludedProductStreamIds';
     public const SPB_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'spbShowPayLater';
@@ -70,12 +59,12 @@ final class Settings
     public const SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbAlternativePaymentMethodsEnabled';
 
     /**
-     * @deprecated tag:v8.0.0 - Will be removed without replacement.
+     * @deprecated tag:v9.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION = self::SYSTEM_CONFIG_DOMAIN . 'merchantLocation';
 
     /**
-     * @deprecated tag:v8.0.0 - Will be removed without replacement.
+     * @deprecated tag:v9.0.0 - Will be removed without replacement.
      */
     public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
 
@@ -112,8 +101,6 @@ final class Settings
         self::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED => true,
         self::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED => true,
         self::INSTALLMENT_BANNER_FOOTER_ENABLED => true,
-        // @phpstan-ignore-next-line
-        self::LOGGING_LEVEL => Logger::WARNING,
         self::PUI_CUSTOMER_SERVICE_INSTRUCTIONS => 'Details zum Kundenservice finden Sie auf unserer Webseite',
         self::ACDC_FORCE_3DS => true,
         self::EXCLUDED_PRODUCT_IDS => [],
@@ -123,17 +110,17 @@ final class Settings
     ];
 
     /**
-     * @deprecated tag:v8.0.0 - Will be removed without replacement.
+     * @deprecated tag:v9.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION_GERMANY = 'germany';
 
     /**
-     * @deprecated tag:v8.0.0 - Will be removed without replacement.
+     * @deprecated tag:v9.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION_OTHER = 'other';
 
     /**
-     * @deprecated tag:v8.0.0 - Will be removed without replacement.
+     * @deprecated tag:v9.0.0 - Will be removed without replacement.
      */
     public const VALID_MERCHANT_LOCATIONS = [
         self::MERCHANT_LOCATION_GERMANY,

@@ -29,7 +29,6 @@ return static function (ContainerBuilder $container): void {
     $loader->load('service_v1.xml');
     $loader->load('setting.xml');
     $loader->load('shipping.xml');
-    $loader->load('spb_checkout.xml');
     $loader->load('storefront.xml');
     $loader->load('util.xml');
     $loader->load('webhook.xml');
