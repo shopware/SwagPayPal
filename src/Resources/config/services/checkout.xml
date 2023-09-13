@@ -144,6 +144,10 @@
             <argument type="service" id="subscription.repository" on-invalid="null"/>
         </service>
 
+        <service id="Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute">
+            <argument type="service" id="swag_paypal_vault_token_mapping.repository"/>
+        </service>
+
         <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\CancelTransactionsTask">
             <tag name="shopware.scheduled.task"/>
         </service>

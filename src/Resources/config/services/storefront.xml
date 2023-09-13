@@ -13,6 +13,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute"/>
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute"/>
             <argument type="service" id="monolog.logger.paypal"/>
 
             <call method="setContainer">

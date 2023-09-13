@@ -168,6 +168,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         $criteria->addAssociation('lineItems');
         $criteria->addAssociation('billingAddress.country');
         $criteria->addAssociation('orderCustomer');
+        $criteria->addAssociation('deliveries.shippingOrderAddress.country');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->first();
