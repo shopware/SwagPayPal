@@ -333,6 +333,22 @@
                     "inactive": "Vermeide die Anzeige von doppelten Zahlungsarten und deaktiviere PayPal PLUS. <a href=\"https://www.shopware.com/de/news/paypal-launcht-neues-produkt/?utm_source=product&utm_medium=sw6-onprem&utm_campaign=paypal-checkout&utm_content=link-de-blog\" target=\"_blank\">Mehr Informationen</a>"
                 }
             },
+            "vaulting": {
+              "cardTitle": "Vaulting",
+              "description": {
+                "title": "Einmal-Paypal-Checkout",
+                "text": "PayPal-Kontos mit aktiviertem 'Vaulting' können kontinuierlich belastet werden, ohne dass Deine Kunden während der Transaktionen anwesend sein müssen. Auch weitere Transaktionen können durchgeführt werden, ohne dass sich Deine Kunden erneut bei PayPal authentifizieren müssen."
+              },
+              "enable": {
+                "label": "Vaulting verwenden"
+              },
+              "enableAlways": {
+                "label": "Vaulting im Paypal-Checkout vorausgewählt"
+              },
+              "activateButton": {
+                "label": "Vaulting freischalten"
+              }
+            },
             "locale-field": {
                 "infobox": {
                     "text": "Um eine Liste der gültigen Ländercodes zu sehen, klicken Sie ",

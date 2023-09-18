@@ -166,6 +166,15 @@
                                             </swag-paypal-behavior>
                                         {% endblock %}
 
+                                        {% block swag_paypal_content_card_channel_config_vaulting %}
+                                            <swag-paypal-vaulting v-if="tab === 'general'"
+                                                                  :actualConfigData="actualConfigData"
+                                                                  :allConfigs="allConfigs"
+                                                                  :selectedSalesChannelId="selectedSalesChannelId"
+                                                                  :isSaveSuccessful="isSaveSuccessful">
+                                            </swag-paypal-vaulting>
+                                        {% endblock %}
+
                                         {% block swag_paypal_content_card_channel_config_express %}
                                             <swag-paypal-express v-if="tab === 'storefront'"
                                                                  :actualConfigData="actualConfigData"
