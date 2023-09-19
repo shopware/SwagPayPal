@@ -130,7 +130,7 @@ class PayPalOrdersController extends AbstractController
                 $this->getSalesChannelId($orderTransactionId, $context)
             );
         } catch (PayPalApiException $e) {
-            if ($e->getCode() === Response::HTTP_NOT_FOUND) {
+            if ($e->getStatusCode() === Response::HTTP_NOT_FOUND) {
                 throw new OrderNotFoundException($paypalOrderId);
             }
 
@@ -552,7 +552,7 @@ class PayPalOrdersController extends AbstractController
         $order = $orderTransaction->getOrder();
 
         if ($order === null) {
-            throw new InvalidTransactionException($orderTransactionId);
+            throw new OrderNotFoundException($orderTransactionId);
         }
 
         return $order->getSalesChannelId();
