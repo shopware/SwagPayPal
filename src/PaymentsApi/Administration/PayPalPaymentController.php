@@ -129,7 +129,7 @@ class PayPalPaymentController extends AbstractController
         try {
             $payment = $this->paymentResource->get($paymentId, $this->getSalesChannelIdByOrderId($orderId, $context));
         } catch (PayPalApiException $e) {
-            if ($e->getCode() === Response::HTTP_NOT_FOUND) {
+            if ($e->getStatusCode() === Response::HTTP_NOT_FOUND) {
                 throw new PaymentNotFoundException($paymentId);
             }
 
