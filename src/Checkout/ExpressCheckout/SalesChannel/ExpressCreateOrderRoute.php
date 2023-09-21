@@ -21,10 +21,8 @@ use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 {
     private CartService $cartService;
@@ -67,13 +65,8 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
      *         description="The new token of the order"
      *    )
      * )
-     *
-     * @Route(
-     *     "/store-api/paypal/express/create-order",
-     *      name="store-api.paypal.express.create_order",
-     *      methods={"POST"}
-     * )
      */
+    #[Route(path: '/store-api/paypal/express/create-order', name: 'store-api.paypal.express.create_order', methods: ['POST'])]
     public function createPayPalOrder(Request $request, SalesChannelContext $salesChannelContext): TokenResponse
     {
         try {

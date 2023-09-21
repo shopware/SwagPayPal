@@ -34,10 +34,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class PayPalPaymentController extends AbstractController
 {
     public const REQUEST_PARAMETER_CURRENCY = 'currency';
@@ -119,9 +117,8 @@ class PayPalPaymentController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_payment")
      *     )
      * )
-     *
-     * @Route("/api/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"}, defaults={"_acl": {"order.viewer"}})
      */
+    #[Route(path: '/api/paypal/payment-details/{orderId}/{paymentId}', name: 'api.paypal.payment_details', methods: ['GET'], defaults: ['_acl' => ['order.viewer']])]
     public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
     {
         try {
@@ -184,9 +181,8 @@ class PayPalPaymentController extends AbstractController
      *         })
      *     )
      * )
-     *
-     * @Route("/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}", name="api.paypal.resource_details", methods={"GET"}, defaults={"_acl": {"order.viewer"}})
      */
+    #[Route(path: '/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}', name: 'api.paypal.resource_details', methods: ['GET'], defaults: ['_acl' => ['order.viewer']])]
     public function resourceDetails(Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
     {
         $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);
@@ -215,10 +211,9 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
-     *
      * @throws RequiredParameterInvalidException
      */
+    #[Route(path: '/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.refund_payment', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
     public function refundPayment(
         Request $request,
         Context $context,
@@ -257,10 +252,9 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
-     *
      * @throws RequiredParameterInvalidException
      */
+    #[Route(path: '/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.catpure_payment', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
     public function capturePayment(
         Request $request,
         Context $context,
@@ -294,10 +288,9 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
-     *
      * @throws RequiredParameterInvalidException
      */
+    #[Route(path: '/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.void_payment', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
     public function voidPayment(
         Context $context,
         string $resourceType,

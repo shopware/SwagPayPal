@@ -19,10 +19,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class SettingsController extends AbstractController
 {
     private ApiCredentialServiceInterface $apiCredentialService;
@@ -40,9 +38,7 @@ class SettingsController extends AbstractController
         $this->merchantIntegrationsService = $merchantIntegrationsService;
     }
 
-    /**
-     * @Route("/api/_action/paypal/validate-api-credentials", name="api.action.paypal.validate.api.credentials", methods={"GET"}, defaults={"_acl": {"swag_paypal.viewer"}})
-     */
+    #[Route(path: '/api/_action/paypal/validate-api-credentials', name: 'api.action.paypal.validate.api.credentials', methods: ['GET'], defaults: ['_acl' => ['swag_paypal.viewer']])]
     public function validateApiCredentials(Request $request): JsonResponse
     {
         $clientId = $request->query->get('clientId');
@@ -70,9 +66,7 @@ class SettingsController extends AbstractController
         return new JsonResponse(['credentialsValid' => $credentialsValid]);
     }
 
-    /**
-     * @Route("/api/_action/paypal/get-api-credentials", name="api.action.paypal.get.api.credentials", methods={"POST"}, defaults={"_acl": {"swag_paypal.editor"}})
-     */
+    #[Route(path: '/api/_action/paypal/get-api-credentials', name: 'api.action.paypal.get.api.credentials', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function getApiCredentials(RequestDataBag $requestDataBag): JsonResponse
     {
         $authCode = $requestDataBag->get('authCode');
@@ -85,9 +79,7 @@ class SettingsController extends AbstractController
         return new JsonResponse($credentials);
     }
 
-    /**
-     * @Route("/api/_action/paypal/merchant-information", name="api.action.paypal.merchant-information", methods={"GET"}, defaults={"_acl": {"swag_paypal.editor"}})
-     */
+    #[Route(path: '/api/_action/paypal/merchant-information', name: 'api.action.paypal.merchant-information', methods: ['GET'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function getMerchantInformation(Request $request, Context $context): JsonResponse
     {
         $salesChannelId = $request->query->getAlnum('salesChannelId') ?: null;

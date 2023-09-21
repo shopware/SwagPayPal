@@ -65,16 +65,10 @@ class PlusPaymentFinalizeController extends AbstractController
     }
 
     /**
-     * @Route(
-     *     "/paypal/plus/payment/finalize-transaction",
-     *     name="payment.paypal.plus.finalize.transaction",
-     *     methods={"GET"},
-     *     defaults={"auth_required"=false,"_routeScope"={"storefront"}}
-     * )
-     *
      * @throws InvalidTransactionException
      * @throws CustomerCanceledAsyncPaymentException
      */
+    #[Route(path: '/paypal/plus/payment/finalize-transaction', name: 'payment.paypal.plus.finalize.transaction', methods: ['GET'], defaults: ['auth_required' => false, '_routeScope' => ['storefront']])]
     public function finalizeTransaction(Request $request, SalesChannelContext $salesChannelContext): RedirectResponse
     {
         $token = $request->query->get('token');

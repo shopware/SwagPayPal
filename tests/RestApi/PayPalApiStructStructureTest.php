@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\RestApi;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiCollection;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
@@ -17,6 +18,7 @@ use Symfony\Component\Finder\Finder;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalApiStructStructureTest extends TestCase
 {
     private const EXCLUSIONS = [

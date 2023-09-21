@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\RestApi\_fixtures\TestStruct;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiCollection;
 
 /**
@@ -14,6 +15,7 @@ use Swag\PayPal\RestApi\PayPalApiCollection;
  *
  * @extends PayPalApiCollection<Foo>
  */
+#[Package('checkout')]
 class FooCollection extends PayPalApiCollection
 {
     public static function getExpectedClass(): string

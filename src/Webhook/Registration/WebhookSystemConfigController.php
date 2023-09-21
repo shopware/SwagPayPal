@@ -17,10 +17,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class WebhookSystemConfigController extends SystemConfigController
 {
     public const WEBHOOK_ERRORS_KEY = 'payPalWebhookErrors';

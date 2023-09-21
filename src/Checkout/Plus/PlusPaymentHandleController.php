@@ -52,14 +52,7 @@ class PlusPaymentHandleController extends StorefrontController
         $this->requestStack = $requestStack;
     }
 
-    /**
-     * @Route(
-     *     "/paypal/plus/payment/handle",
-     *     name="frontend.paypal.plus.handle",
-     *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true, "_routeScope"={"storefront"}}
-     * )
-     */
+    #[Route(path: '/paypal/plus/payment/handle', name: 'frontend.paypal.plus.handle', methods: ['POST'], defaults: ['XmlHttpRequest' => true, '_routeScope' => ['storefront']])]
     public function handlePlusPayment(Request $request, SalesChannelContext $context): HandlePaymentMethodRouteResponse
     {
         $this->contextSwitchRoute->switchContext(

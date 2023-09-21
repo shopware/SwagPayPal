@@ -13,7 +13,7 @@
         "shopware/core": "~6.5.5@dev"
     },
     "require-dev": {
-        "rector/rector": "^0.18.1"
+        "rector/rector": "^0.18.3"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",

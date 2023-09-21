@@ -18,10 +18,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class ClearVaultRoute extends AbstractClearVaultRoute
 {
     /**
@@ -41,14 +39,8 @@ class ClearVaultRoute extends AbstractClearVaultRoute
 
     /**
      * @Since("8.0.0")
-     *
-     * @Route(
-     *     "/store-api/paypal/vault/clear",
-     *      name="store-api.paypal.vault.clear",
-     *      methods={"POST"},
-     *      defaults={"_loginRequired"=true}
-     * )
      */
+    #[Route(path: '/store-api/paypal/vault/clear', name: 'store-api.paypal.vault.clear', methods: ['POST'], defaults: ['_loginRequired' => true])]
     public function clearVault(Request $request, SalesChannelContext $salesChannelContext): Response
     {
         $this->tokenMappingRepository->delete([[

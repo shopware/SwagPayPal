@@ -18,10 +18,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class PayPalPaymentMethodController extends AbstractController
 {
     private PaymentMethodUtil $paymentMethodUtil;
@@ -58,9 +56,8 @@ class PayPalPaymentMethodController extends AbstractController
      *         response="204"
      *     )
      * )
-     *
-     * @Route("/api/_action/paypal/saleschannel-default", name="api.action.paypal.saleschannel_default", methods={"POST"}, defaults={"_acl": {"swag_paypal.editor"}})
      */
+    #[Route(path: '/api/_action/paypal/saleschannel-default', name: 'api.action.paypal.saleschannel_default', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function setPayPalPaymentMethodAsSalesChannelDefault(Request $request, Context $context): Response
     {
         $salesChannelId = $request->request->get('salesChannelId');

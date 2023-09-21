@@ -25,10 +25,8 @@ use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 {
     public const PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID = 'payPalEcsCartData';
@@ -85,13 +83,8 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
      *         description="The new context token"
      *    )
      * )
-     *
-     * @Route(
-     *     "/store-api/paypal/express/prepare-checkout",
-     *     name="store-api.paypal.express.prepare_checkout",
-     *     methods={"POST"}
-     * )
      */
+    #[Route(path: '/store-api/paypal/express/prepare-checkout', name: 'store-api.paypal.express.prepare_checkout', methods: ['POST'])]
     public function prepareCheckout(SalesChannelContext $salesChannelContext, Request $request): ContextTokenResponse
     {
         try {

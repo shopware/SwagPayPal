@@ -23,10 +23,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
 {
     public const REMOVABLE_PAYMENT_HANDLERS = [
@@ -80,14 +78,8 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
      *          response="204"
      *     )
      * )
-     *
-     * @Route(
-     *     "/store-api/paypal/payment-method-eligibility",
-     *     name="store-api.paypal.payment-method-eligibility",
-     *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true}
-     * )
      */
+    #[Route(path: '/store-api/paypal/payment-method-eligibility', name: 'store-api.paypal.payment-method-eligibility', methods: ['POST'], defaults: ['XmlHttpRequest' => true])]
     public function setPaymentMethodEligibility(Request $request, Context $context): Response
     {
         /** @var mixed|array $paymentMethods */

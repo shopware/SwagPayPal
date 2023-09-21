@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\RestApi;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiCollection;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V2\Api\Common\Money;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalApiCollectionTest extends TestCase
 {
     public function testConstructor(): void
@@ -233,6 +235,7 @@ class PayPalApiCollectionTest extends TestCase
  *
  * @extends PayPalApiCollection<Money>
  */
+#[Package('checkout')]
 class TestCollection extends PayPalApiCollection
 {
     public static function getExpectedClass(): string

@@ -27,10 +27,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class WebhookController extends AbstractController
 {
     private LoggerInterface $logger;
@@ -52,14 +50,7 @@ class WebhookController extends AbstractController
         $this->systemConfigRepository = $systemConfigRepository;
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/webhook/register/{salesChannelId}",
-     *     name="api.action.paypal.webhook.register",
-     *     methods={"POST"},
-     *     defaults={"_acl": {"swag_paypal.editor"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/webhook/register/{salesChannelId}', name: 'api.action.paypal.webhook.register', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function registerWebhook(string $salesChannelId): JsonResponse
     {
         $result = $this->webhookService->registerWebhook($salesChannelId !== 'null' ? $salesChannelId : null);
@@ -67,14 +58,7 @@ class WebhookController extends AbstractController
         return new JsonResponse(['result' => $result]);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/webhook/deregister/{salesChannelId}",
-     *     name="api.action.paypal.webhook.deregister",
-     *     methods={"DELETE"},
-     *     defaults={"_acl": {"swag_paypal.editor"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/webhook/deregister/{salesChannelId}', name: 'api.action.paypal.webhook.deregister', methods: ['DELETE'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function deregisterWebhook(string $salesChannelId): JsonResponse
     {
         $result = $this->webhookService->deregisterWebhook($salesChannelId !== 'null' ? $salesChannelId : null);
@@ -82,14 +66,7 @@ class WebhookController extends AbstractController
         return new JsonResponse(['result' => $result]);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/webhook/execute",
-     *     name="api.action.paypal.webhook.execute",
-     *     methods={"POST"},
-     *     defaults={"auth_required"=false}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/webhook/execute', name: 'api.action.paypal.webhook.execute', methods: ['POST'], defaults: ['auth_required' => false])]
     public function executeWebhook(Request $request, Context $context): Response
     {
         $token = $this->getShopwareToken($request);

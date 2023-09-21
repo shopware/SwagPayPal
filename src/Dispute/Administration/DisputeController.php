@@ -20,10 +20,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class DisputeController extends AbstractController
 {
     private DisputeResource $disputeResource;
@@ -68,14 +66,8 @@ class DisputeController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_disputes")
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/paypal/dispute",
-     *      name="api.paypal.dispute_list",
-     *      methods={"GET"},
-     *      defaults={"_acl": {"swag_paypal_disputes.viewer"}}
-     * )
      */
+    #[Route(path: '/api/paypal/dispute', name: 'api.paypal.dispute_list', methods: ['GET'], defaults: ['_acl' => ['swag_paypal_disputes.viewer']])]
     public function disputeList(Request $request): JsonResponse
     {
         $salesChannelId = $this->validateSalesChannelId($request);
@@ -119,14 +111,8 @@ class DisputeController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_disputes_item")
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/paypal/dispute/{disputeId}",
-     *      name="api.paypal.dispute_details",
-     *      methods={"GET"},
-     *      defaults={"_acl": {"swag_paypal_disputes.viewer"}}
-     * )
      */
+    #[Route(path: '/api/paypal/dispute/{disputeId}', name: 'api.paypal.dispute_details', methods: ['GET'], defaults: ['_acl' => ['swag_paypal_disputes.viewer']])]
     public function disputeDetails(string $disputeId, Request $request): JsonResponse
     {
         $salesChannelId = $this->validateSalesChannelId($request);

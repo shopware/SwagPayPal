@@ -33,10 +33,8 @@ use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class CreateOrderRoute extends AbstractCreateOrderRoute
 {
     public const FAKE_URL = 'https://www.example.com/';
@@ -110,20 +108,10 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
      *    )
      * )
      *
-     * @Route(
-     *     "/store-api/paypal/create-order",
-     *      name="store-api.paypal.create_order",
-     *      methods={"POST"}
-     * )
-     * @Route(
-     *     "/store-api/subscription/paypal/create-order",
-     *      name="store-api.subscription.paypal.create_order",
-     *      defaults={"_isSubscriptionCart"=true, "_isSubscriptionContext"=true},
-     *      methods={"POST"}
-     * )
-     *
      * @throws CustomerNotLoggedInException
      */
+    #[Route(path: '/store-api/paypal/create-order', name: 'store-api.paypal.create_order', methods: ['POST'])]
+    #[Route(path: '/store-api/subscription/paypal/create-order', name: 'store-api.subscription.paypal.create_order', defaults: ['_isSubscriptionCart' => true, '_isSubscriptionContext' => true], methods: ['POST'])]
     public function createPayPalOrder(SalesChannelContext $salesChannelContext, Request $request): TokenResponse
     {
         try {

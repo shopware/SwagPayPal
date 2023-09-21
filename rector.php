@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\Symfony\Set\SymfonySetList;
+use Rector\Symfony\Set\SensiolabsSetList;
 use Swag\PayPal\DevOps\Rector\ClassCheckoutPackageRector;
 
 return static function (RectorConfig $rectorConfig): void {
@@ -21,4 +23,9 @@ return static function (RectorConfig $rectorConfig): void {
     ]);
 
     $rectorConfig->rule(ClassCheckoutPackageRector::class);
+
+    $rectorConfig->sets([
+        SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES,
+        SensiolabsSetList::ANNOTATIONS_TO_ATTRIBUTES,
+    ]);
 };
