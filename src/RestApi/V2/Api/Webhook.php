@@ -11,11 +11,10 @@ use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Token;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
-use Swag\PayPal\RestApi\V2\Api\Webhook\Link;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_webhook")
@@ -26,6 +25,7 @@ class Webhook extends PayPalApiStruct
     public const RESOURCE_TYPE_AUTHORIZATION = 'authorization';
     public const RESOURCE_TYPE_CAPTURE = 'capture';
     public const RESOURCE_TYPE_REFUND = 'refund';
+    public const RESOURCE_TYPE_PAYMENT_TOKEN = 'payment_token';
 
     /**
      * @OA\Property(type="string")
@@ -57,13 +57,14 @@ class Webhook extends PayPalApiStruct
      *  oneOf={
      *
      *      @OA\Schema(ref="#/components/schemas/swag_paypal_v2_order_authorization"},
-     *      @OA\Schema(ref:"#/components/schemas/swag_paypal_v2_order_capture"},
-     *      @OA\Schema(ref":"#/components/schemas/swag_paypal_v2_order_refund"},
+     *      @OA\Schema(ref="#/components/schemas/swag_paypal_v2_order_capture"},
+     *      @OA\Schema(ref="#/components/schemas/swag_paypal_v2_order_refund"},
+     *      @OA\Schema(ref="#/components/schemas/swag_paypal_v2_order_payment_source_token"}
      *  },
      *  nullable=true
      * )
      */
-    protected ?Payment $resource;
+    protected ?PayPalApiStruct $resource;
 
     /**
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
@@ -153,12 +154,12 @@ class Webhook extends PayPalApiStruct
         $this->summary = $summary;
     }
 
-    public function getResource(): ?Payment
+    public function getResource(): ?PayPalApiStruct
     {
         return $this->resource;
     }
 
-    public function setResource(?Payment $resource): void
+    public function setResource(?PayPalApiStruct $resource): void
     {
         $this->resource = $resource;
     }
@@ -194,7 +195,7 @@ class Webhook extends PayPalApiStruct
     }
 
     /**
-     * @return class-string<Payment>|null
+     * @return class-string<PayPalApiStruct>|null
      */
     protected function identifyResourceType(string $resourceType): ?string
     {
@@ -205,6 +206,8 @@ class Webhook extends PayPalApiStruct
                 return Capture::class;
             case self::RESOURCE_TYPE_REFUND:
                 return Refund::class;
+            case self::RESOURCE_TYPE_PAYMENT_TOKEN:
+                return Token::class;
             default:
                 return null;
         }

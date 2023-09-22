@@ -18,6 +18,7 @@ use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
@@ -72,7 +73,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $transactionId = $this->getTransactionId($context, $container, $initialStateName);
         if ($webhook instanceof WebhookV2) {
             $resource = $webhook->getResource();
-            if ($resource !== null) {
+            if ($resource instanceof Payment) {
                 $resource->setCustomId(\json_encode(['orderTransactionId' => $transactionId]) ?: null);
             }
         }
