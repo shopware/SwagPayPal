@@ -16,7 +16,6 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderStates;
-use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -54,7 +53,6 @@ use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 #[Package('checkout')]
 class PUIPaymentInstructionsRouteTest extends TestCase
 {
-    use OrderFixture;
     use OrderTransactionTrait;
     use ServicesTrait;
     use StateMachineStateTrait;

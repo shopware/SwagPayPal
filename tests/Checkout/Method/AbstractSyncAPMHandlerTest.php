@@ -15,7 +15,6 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
-use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -63,7 +62,6 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 #[Package('checkout')]
 abstract class AbstractSyncAPMHandlerTest extends TestCase
 {
-    use OrderFixture;
     use OrderTransactionTrait;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;
