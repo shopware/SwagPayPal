@@ -1,3 +1,6 @@
+# 7.2.4
+- PPI-820 - Fixes an issue, where the paid status was not possible to be set over webhooks
+
 # 7.2.3
 - PPI-808 - Fixes an issue, where some currencies (HUF, JPY, TWD) were not transmitted correctly
 - PPI-809 - Fixes an issue, where payment buttons have not the right color

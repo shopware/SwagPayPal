@@ -108,6 +108,16 @@ class PaymentStatusUtilV2Test extends TestCase
                 OrderTransactionStates::STATE_UNCONFIRMED,
             ],
             [
+                $this->createCapture(true),
+                OrderTransactionStates::STATE_PAID,
+                OrderTransactionStates::STATE_PARTIALLY_PAID,
+            ],
+            [
+                $this->createCapture(true),
+                OrderTransactionStates::STATE_PAID,
+                OrderTransactionStates::STATE_CANCELLED,
+            ],
+            [
                 $this->createCapture(false),
                 OrderTransactionStates::STATE_PARTIALLY_PAID,
                 OrderTransactionStates::STATE_UNCONFIRMED,

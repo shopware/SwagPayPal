@@ -1,3 +1,6 @@
+# 7.2.4
+- PPI-820 - Behebt ein Problem, bei dem ein Übergang in den Zahlungsstatus 'Bezahlt' nicht über Webhooks möglich war
+
 # 7.2.3
 - PPI-808 - Behebt ein Problem, bei dem manche Währungen (HUF, JPY, TWD) nicht korrekt an PayPal übermittelt wurden
 - PPI-809 - Behebt ein Problem, bei dem die Buttons nicht die richtige Farbe hatten
