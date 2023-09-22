@@ -13,12 +13,12 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
-use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
+use Shopware\Core\Framework\Test\IdsCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -29,6 +29,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 use Swag\PayPal\RestApi\V1\Api\Refund;
 use Swag\PayPal\RestApi\V1\Api\Refund\TotalRefundedAmount;
+use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PriceFormatter;
 
@@ -40,7 +41,7 @@ class PaymentStatusUtilTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
     use KernelTestBehaviour;
-    use OrderFixture;
+    use OrderTransactionTrait;
 
     private const FIRST_TRANSACTION_ID = '9535b385fc7544f08e21b8b74b52ff4a';
     private const SECOND_TRANSACTION_ID = '8535b385fc7544f08e21b8b74b52ff4a';
@@ -290,17 +291,17 @@ class PaymentStatusUtilTest extends TestCase
 
     private function createBasicOrder(bool $withTransaction = true): string
     {
-        $orderId = Uuid::randomHex();
+        $ids = new IdsCollection();
         $context = Context::createDefaultContext();
 
-        $orderData = $this->getOrderData($orderId, $context);
+        $orderData = $this->getOrderData($ids);
         $this->orderRepository->create($orderData, $context);
 
         if ($withTransaction) {
             $firstTransactionData = [
                 [
                     'id' => self::FIRST_TRANSACTION_ID,
-                    'orderId' => $orderId,
+                    'orderId' => $ids->get('order-id'),
                     'paymentMethodId' => $this->getValidPaymentMethodId(),
                     'amount' => [
                         'unitPrice' => 5.0,
@@ -315,7 +316,7 @@ class PaymentStatusUtilTest extends TestCase
             $secondTransactionData = [
                 [
                     'id' => self::SECOND_TRANSACTION_ID,
-                    'orderId' => $orderId,
+                    'orderId' => $ids->get('order-id'),
                     'paymentMethodId' => $this->getValidPaymentMethodId(),
                     'amount' => [
                         'unitPrice' => 5.0,
@@ -333,7 +334,7 @@ class PaymentStatusUtilTest extends TestCase
 
             $updateData = [
                 [
-                    'id' => $orderId,
+                    'id' => $ids->get('order-id'),
                     'transactions' => [
                         ['id' => self::FIRST_TRANSACTION_ID],
                         ['id' => self::SECOND_TRANSACTION_ID],
@@ -344,7 +345,7 @@ class PaymentStatusUtilTest extends TestCase
             $this->orderRepository->update($updateData, $context);
         }
 
-        return $orderId;
+        return $ids->get('order-id');
     }
 
     private function assertTransactionState(string $orderId, string $expectedOrderTransactionState): void

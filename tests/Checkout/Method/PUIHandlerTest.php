@@ -15,7 +15,6 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
-use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -50,7 +49,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class PUIHandlerTest extends TestCase
 {
     use FullCheckoutTrait;
-    use OrderFixture;
     use OrderTransactionTrait;
     use ServicesTrait;
     use StateMachineStateTrait;
