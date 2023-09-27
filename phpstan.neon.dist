@@ -71,8 +71,7 @@ parameters:
             message : '#deprecated class Shopware\\Core\\Content\\Product\\DataAbstractionLayer\\StockUpdater#'
 
         -   # ignore deprecated Generator Shopware 6.6
-            message : '#deprecated class Shopware\\Tests\\Unit\\Core\\Checkout\\Cart\\Common\\Generator#'
-
+            message : '#Call to method .* of deprecated class Shopware\\Core\\Test\\Generator#'
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
 
