@@ -24,7 +24,6 @@ class Referral extends PayPalApiStruct
 {
     public const PRODUCT_TYPE_PPCP = 'PPCP';
     public const PRODUCT_TYPE_PAYMENT_METHODS = 'PAYMENT_METHODS';
-
     public const PRODUCT_TYPE_ADVANCED_VAULTING = 'ADVANCED_VAULTING';
 
     public const CAPABILITY_PAYPAL_WALLET_VAULTING_ADVANCED = 'PAYPAL_WALLET_VAULTING_ADVANCED';
@@ -148,6 +147,11 @@ class Referral extends PayPalApiStruct
     public function setProducts(array $products): void
     {
         $this->products = $products;
+    }
+
+    public function addProduct(string $product): void
+    {
+        $this->products[] = $product;
     }
 
     /**
