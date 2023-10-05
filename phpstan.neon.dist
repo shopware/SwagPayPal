@@ -72,6 +72,10 @@ parameters:
 
         -   # ignore deprecated Generator Shopware 6.6
             message : '#Call to method .* of deprecated class Shopware\\Core\\Test\\Generator#'
+
+        -   # ignore deprecated UrlGenerator
+            message : '#Use AbstractMediaUrlGenerator instead#'
+
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
 
