@@ -38,7 +38,7 @@ Component.register('swag-paypal-vaulting', {
 
     data() {
         return {
-            canHandleVaulting: false,
+            merchantInformation: null,
             isLoadingMerchantInformation: false,
         };
     },
@@ -46,6 +46,11 @@ Component.register('swag-paypal-vaulting', {
     computed: {
         isSandbox() {
             return this.actualConfigData['SwagPayPal.settings.sandbox'];
+        },
+        canHandleVaulting() {
+            return this.merchantInformation?.merchantIntegrations?.capabilities?.some(
+                (capability) => capability?.name === 'PAYPAL_WALLET_VAULTING_ADVANCED' && capability?.status === 'ACTIVE',
+            );
         },
     },
 
@@ -65,28 +70,15 @@ Component.register('swag-paypal-vaulting', {
 
     methods: {
         async createdComponent() {
+            this.isLoadingMerchantInformation = true;
             await this.fetchMerchantInformation();
+            this.isLoadingMerchantInformation = false;
 
             this.adjustRequestParams();
         },
         async fetchMerchantInformation() {
-            this.isLoadingMerchantInformation = true;
-
-            const information = await this.SwagPayPalApiCredentialsService
+            this.merchantInformation = await this.SwagPayPalApiCredentialsService
                 .getMerchantInformation(this.selectedSalesChannelId);
-
-            this.checkIfVaultingIsActive(information);
-
-            this.isLoadingMerchantInformation = false;
-        },
-        checkIfVaultingIsActive(merchantInformation) {
-            this.canHandleVaulting = false;
-
-            merchantInformation?.merchantIntegrations?.capabilities?.forEach((capability) => {
-                if (capability?.name === 'PAYPAL_WALLET_VAULTING_ADVANCED' && capability?.status === 'ACTIVE') {
-                    this.canHandleVaulting = true;
-                }
-            });
         },
         adjustRequestParams() {
             this.requestParams.secondaryProducts = this.requestParams.secondaryProducts.concat(',advanced_vaulting');

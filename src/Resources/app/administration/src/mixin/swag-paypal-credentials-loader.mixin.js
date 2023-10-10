@@ -38,11 +38,14 @@ Mixin.register('swag-paypal-credentials-loader', {
     },
 
     computed: {
+        returnUrl() {
+            return `${window.location.origin}${window.location.pathname}#${this.$route.path}`;
+        },
         onboardingUrlLive() {
             const params = this.createRequestParameter({
                 partnerId: this.payPalPartnerIdLive,
                 partnerClientId: this.payPalPartnerClientIdLive,
-                returnToPartnerUrl: this.returnUrl(),
+                returnToPartnerUrl: this.returnUrl,
                 sellerNonce: this.nonceLive,
             });
 
@@ -52,7 +55,7 @@ Mixin.register('swag-paypal-credentials-loader', {
             const params = this.createRequestParameter({
                 partnerId: this.payPalPartnerIdSandbox,
                 partnerClientId: this.payPalPartnerClientIdSandbox,
-                returnToPartnerUrl: this.returnUrl(),
+                returnToPartnerUrl: this.returnUrl,
                 sellerNonce: this.nonceSandbox,
             });
 
@@ -85,10 +88,6 @@ Mixin.register('swag-paypal-credentials-loader', {
     },
 
     methods: {
-        returnUrl() {
-            return `${window.location.origin}${window.location.pathname}#${this.$route.path}`;
-        },
-
         createRequestParameter(config = {}) {
             const params = { ...this.requestParams, ...config };
             return Object.keys(params).reduce((accumulator, key) => {
