@@ -1,5 +1,6 @@
 # 6.2.3
 - PPI-820 - Fixes an issue, where the paid status was not possible to be set over webhooks
+- PPI-826 - Express buttons are not displayed anymore, if the guest customer's double-opt-in feature is enabled.
 
 # 6.2.2
 - PPI-808 - Fixes an issue, where some currencies (HUF, JPY, TWD) were not transmitted correctly

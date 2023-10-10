@@ -77,6 +77,10 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
             return null;
         }
 
+        if ($this->systemConfigService->getBool('core.loginRegistration.doubleOptInGuestOrder')) {
+            return null;
+        }
+
         $context = $salesChannelContext->getContext();
         $salesChannelId = $salesChannelContext->getSalesChannelId();
 

@@ -1,5 +1,6 @@
 # 6.2.3
 - PPI-820 - Behebt ein Problem, bei dem ein Übergang in den Zahlungsstatus 'Bezahlt' nicht über Webhooks möglich war
+- PPI-826 - Die Express Buttons werden nicht mehr angezeigt, wenn die Double-Opt-In-Funktion des Gastkunden aktiviert ist.
 
 # 6.2.2
 - PPI-808 - Behebt ein Problem, bei dem manche Währungen (HUF, JPY, TWD) nicht korrekt an PayPal übermittelt wurden
