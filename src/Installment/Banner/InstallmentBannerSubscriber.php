@@ -9,7 +9,6 @@ namespace Swag\PayPal\Installment\Banner;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -30,7 +29,6 @@ use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Installment\Banner\Service\BannerDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
-use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -45,8 +43,6 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
 
     private SettingsValidationServiceInterface $settingsValidationService;
 
-    private SystemConfigService $systemConfigService;
-
     private PaymentMethodUtil $paymentMethodUtil;
 
     private BannerDataServiceInterface $bannerDataService;
@@ -57,14 +53,12 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
 
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
-        SystemConfigService $systemConfigService,
         PaymentMethodUtil $paymentMethodUtil,
         BannerDataServiceInterface $bannerDataService,
         ExcludedProductValidator $excludedProductValidator,
         LoggerInterface $logger
     ) {
         $this->settingsValidationService = $settingsValidationService;
-        $this->systemConfigService = $systemConfigService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->bannerDataService = $bannerDataService;
         $this->excludedProductValidator = $excludedProductValidator;
@@ -95,10 +89,6 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         try {
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {
-            return;
-        }
-
-        if (!$this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_ENABLED)) {
             return;
         }
 
@@ -144,10 +134,6 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         try {
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
         } catch (PayPalSettingsInvalidException $e) {
-            return;
-        }
-
-        if (!$this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_ENABLED, $salesChannelContext->getSalesChannelId())) {
             return;
         }
 

@@ -99,10 +99,6 @@ class Update
 
     public function update(UpdateContext $updateContext): void
     {
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.1.0', '<')) {
-            $this->updateTo110();
-        }
-
         if (\version_compare($updateContext->getCurrentPluginVersion(), '1.3.0', '<')) {
             $this->updateTo130();
         }
@@ -150,11 +146,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '6.2.0', '<')) {
             $this->updateTo620();
         }
-    }
 
-    private function updateTo110(): void
-    {
-        $this->setSettingToDefaultValue(Settings::INSTALLMENT_BANNER_ENABLED);
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '7.3.0', '<')) {
+            $this->updateTo730();
+        }
     }
 
     private function updateTo130(): void
@@ -475,5 +470,17 @@ class Update
     private function updateTo620(): void
     {
         $this->setSettingToDefaultValue(Settings::ECS_SHOW_PAY_LATER);
+    }
+
+    private function updateTo730(): void
+    {
+        // @phpstan-ignore-next-line
+        $installmentBannerEnabled = $this->systemConfig->getBool(Settings::INSTALLMENT_BANNER_ENABLED);
+
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED, $installmentBannerEnabled);
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_CART_ENABLED, $installmentBannerEnabled);
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED, $installmentBannerEnabled);
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED, $installmentBannerEnabled);
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED, $installmentBannerEnabled);
     }
 }

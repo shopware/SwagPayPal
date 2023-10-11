@@ -1,3 +1,6 @@
+# 7.3.0
+- PPI-765 - "Später bezahlen" Banner lassen sich nun feiner ein- und ausschalten
+
 # 7.2.4
 - PPI-818 - Warnung für potentielle Nicht-Verfügbarkeit der MyBank-Zahlungsmethode hinzugefügt
 - PPI-820 - Behebt ein Problem, bei dem ein Übergang in den Zahlungsstatus 'Bezahlt' nicht über Webhooks möglich war

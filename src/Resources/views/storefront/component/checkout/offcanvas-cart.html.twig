@@ -13,7 +13,7 @@
     {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
     {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
 
-    {% if installmentBanner is not null %}
+    {% if installmentBanner.offCanvasCartEnabled %}
         <div class="btn-block ml-1"
              data-swag-paypal-installment-banner="true"
              data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">

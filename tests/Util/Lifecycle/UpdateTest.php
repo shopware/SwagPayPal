@@ -357,6 +357,23 @@ class UpdateTest extends TestCase
         static::assertNotNull($acdcPaymentMethodId);
     }
 
+    public function testUpdateTo730(): void
+    {
+        $updateContext = $this->createUpdateContext('6.2.0', '7.3.0');
+
+        $systemConfigServiceMock = $this->createSystemConfigServiceMock();
+        $systemConfigServiceMock->set(Settings::INSTALLMENT_BANNER_ENABLED, true);
+
+        $updater = $this->createUpdateService($systemConfigServiceMock);
+        $updater->update($updateContext);
+
+        static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED));
+        static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_CART_ENABLED));
+        static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED));
+        static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED));
+        static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED));
+    }
+
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext
     {
         return new UpdateContext(
