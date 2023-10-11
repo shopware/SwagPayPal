@@ -56,6 +56,6 @@ class MyBankMethodData extends AbstractMethodData
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        return self::CAPABILITY_ACTIVE;
+        return 'mybank';
     }
 }

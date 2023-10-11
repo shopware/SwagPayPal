@@ -91,11 +91,13 @@
                     "limited": "Limited",
                     "pending": "Authorization pending",
                     "ineligible": "Ineligible",
-                    "inactive": "Onboarding needed"
+                    "inactive": "Onboarding needed",
+                    "mybank": "Limited"
                 },
                 "onboardingStatusTooltip": {
                     "ineligible": "PayPal informed us, that this payment method is currently ineligible for your account.",
-                    "limited": "PayPal informed us, that this payment method has some limitations for your account."
+                    "limited": "PayPal informed us, that this payment method has some limitations for your account.",
+                    "mybank": "Merchants enabling MyBank after February 2023 will need manual approval by PayPal. Reach out to PayPal support for further information on this."
                 },
                 "paymentMethodStatusChangedSuccess": {
                     "active": "Payment method \"{name}\" is now active.",
