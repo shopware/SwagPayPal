@@ -1,4 +1,5 @@
 # 7.2.4
+- PPI-818 - Warnung für potentielle Nicht-Verfügbarkeit der MyBank-Zahlungsmethode hinzugefügt
 - PPI-820 - Behebt ein Problem, bei dem ein Übergang in den Zahlungsstatus 'Bezahlt' nicht über Webhooks möglich war
 - PPI-826 - Die Express Buttons werden nicht mehr angezeigt, wenn die Double-Opt-In-Funktion des Gastkunden aktiviert ist.
 
