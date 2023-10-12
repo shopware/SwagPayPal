@@ -97,9 +97,7 @@ class PaymentStatusUtilV2
 
             $this->reopenTransaction($stateMachineState, $transactionId, $context);
             // If the previous state is "paid_partially", "paid" is currently not allowed as direct transition
-            if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_IN_PROGRESS
-             && $stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_UNCONFIRMED
-             && $stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_AUTHORIZED) {
+            if ($stateMachineState->getTechnicalName() === OrderTransactionStates::STATE_PARTIALLY_PAID) {
                 $this->orderTransactionStateHandler->process($transactionId, $context);
             }
             $this->orderTransactionStateHandler->paid($transactionId, $context);

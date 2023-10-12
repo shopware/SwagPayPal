@@ -47,6 +47,9 @@ Component.register('swag-paypal-checkout-method', {
             };
         },
 
+        /**
+         * @deprecated tag:v8.0.0 - will be removed, use `showEditLink` instead
+         */
         needsOnboarding() {
             return this.onboardingStatus?.toUpperCase() !== 'ACTIVE';
         },
@@ -57,11 +60,11 @@ Component.register('swag-paypal-checkout-method', {
                 return false;
             }
 
-            return this.needsOnboarding;
+            return !this.showEditLink;
         },
 
         showEditLink() {
-            return this.onboardingStatus === 'active';
+            return ['active', 'limited', 'mybank'].includes(this.onboardingStatus);
         },
 
         statusBadgeVariant() {
@@ -69,7 +72,7 @@ Component.register('swag-paypal-checkout-method', {
 
             switch (this.onboardingStatus) {
                 case 'active': variant = 'success'; break;
-                case 'limited': variant = 'danger'; break;
+                case 'limited': case 'mybank': variant = 'danger'; break;
                 case 'inactive': case 'ineligible': variant = 'neutral'; break;
                 case 'pending': variant = 'info'; break;
                 default: variant = 'neutral';
@@ -86,6 +89,7 @@ Component.register('swag-paypal-checkout-method', {
                     variant = '#37D046';
                     break;
                 case 'limited':
+                case 'mybank':
                     variant = '#ff9800';
                     break;
                 case 'inactive':
