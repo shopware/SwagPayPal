@@ -8,7 +8,7 @@
     <template #avatar>
         {% block swag_paypal_content_card_channel_config_checkout_avatar %}
         <img
-            :src="'swagpaypal/static/img/paypal-logo-avatar.svg' | asset"
+            :src="assetFilter('swagpaypal/static/img/paypal-logo-avatar.svg')"
             :alt="$tc('swag-paypal.settingForm.checkout.appImageAlt')"
         >
         {% endblock %}

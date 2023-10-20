@@ -14,4 +14,10 @@ Component.override('sw-sales-channel-modal-grid', {
             return salesChannelType.id === PAYPAL_POS_SALES_CHANNEL_TYPE_ID;
         },
     },
+
+    computed: {
+        assetFilter() {
+            return Shopware.Component.getFilter('asset');
+        },
+    },
 });
