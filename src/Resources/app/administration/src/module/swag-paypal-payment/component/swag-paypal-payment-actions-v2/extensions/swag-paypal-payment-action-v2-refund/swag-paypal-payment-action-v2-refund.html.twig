@@ -5,9 +5,17 @@
 
         {% block swag_paypal_payment_action_refund_v2_capture_select %}
             <sw-select-field
+                    {% if VUE3 %}
+                    v-model:value="selectedCaptureId"
+                    {% else %}
                     v-model="selectedCaptureId"
+                    {% endif %}
                     :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
-                    @change="setCapture">
+                    {% if VUE3 %}
+                    @update:value="setCapture"
+                    {% else %}
+                    @change="setCapture"
+                    {% endif %}>
                 <option v-for="capture in captures"
                         :value="capture.id">
                     {{ dateFilter(capture.create_time) }} ({{ capture.amount.value }} {{ capture.amount.currency_code }}) - {{ capture.id }} [{{ capture.status }}]
@@ -26,7 +34,11 @@
 
         {% block swag_paypal_payment_action_refund_v2_amount %}
             <sw-number-field
+                    {% if VUE3 %}
+                    v-model:value="refundAmount"
+                    {% else %}
                     v-model="refundAmount"
+                    {% endif %}
                     :max="Number(selectedCapture.amount.value)"
                     :min="0"
                     :label="$tc('swag-paypal-payment.refundAction.refundAmount.label')"

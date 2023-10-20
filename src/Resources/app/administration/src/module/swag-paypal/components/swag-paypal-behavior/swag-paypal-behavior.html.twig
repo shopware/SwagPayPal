@@ -167,7 +167,11 @@
 
                 {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids %}
                     <sw-inherit-wrapper
+                        {% if VUE3 %}
+                        v-model:value="actualConfigData['SwagPayPal.settings.excludedProductIds']"
+                        {% else %}
                         v-model="actualConfigData['SwagPayPal.settings.excludedProductIds']"
+                        {% endif %}
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.excludedProductIds']"
                         :customInheritationCheckFunction="checkArrayFieldInheritance"
                         :label="$tc('swag-paypal.settingForm.behavior.excludedProductIds.label')"
@@ -181,7 +185,11 @@
                                 :mapInheritance="props"
                                 :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                 :ids="props.currentValue"
+                                {% if VUE3 %}
+                                @update:ids="props.updateCurrentValue"
+                                {% else %}
                                 @change="props.updateCurrentValue"
+                                {% endif %}
                             >
 
                                 {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids_label_property %}
@@ -211,7 +219,11 @@
 
                 {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_streams_ids %}
                     <sw-inherit-wrapper
+                        {% if VUE3 %}
+                        v-model:value="actualConfigData['SwagPayPal.settings.excludedProductStreamIds']"
+                        {% else %}
                         v-model="actualConfigData['SwagPayPal.settings.excludedProductStreamIds']"
+                        {% endif %}
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.excludedProductStreamIds']"
                         :customInheritationCheckFunction="checkArrayFieldInheritance"
                         :label="$tc('swag-paypal.settingForm.behavior.excludedProductStreamIds.label')"
@@ -224,7 +236,11 @@
                                 :mapInheritance="props"
                                 :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                 :ids="props.currentValue"
+                                {% if VUE3 %}
+                                @update:ids="props.updateCurrentValue"
+                                {% else %}
                                 @change="props.updateCurrentValue"
+                                {% endif %}
                             ></sw-entity-multi-id-select>
                         </template>
                     </sw-inherit-wrapper>

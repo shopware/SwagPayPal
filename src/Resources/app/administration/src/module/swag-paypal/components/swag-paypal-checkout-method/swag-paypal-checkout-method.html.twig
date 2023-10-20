@@ -74,7 +74,11 @@
         :label="$tc('swag-paypal.settingForm.checkout.switch.label')"
         :disabled="paymentMethodToggleDisabled || !acl.can('swag_paypal.editor')"
         :value="paymentMethod.active"
+        {% if VUE3 %}
+        @update:value="onChangePaymentMethodActive"
+        {% else %}
         @change="onChangePaymentMethodActive"
+        {% endif %}
     />
     {% endblock %}
 </div>

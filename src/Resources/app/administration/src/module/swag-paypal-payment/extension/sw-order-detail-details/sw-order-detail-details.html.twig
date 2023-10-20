@@ -5,7 +5,11 @@
     <div class="swag-paypal-order-carrier"
          v-if="payPalResourceId">
         <sw-text-field
+            {% if VUE3 %}
+            v-model:value="payPalCarrier"
+            {% else %}
             v-model="payPalCarrier"
+            {% endif %}
             disabled
             :label="$tc('sw-order-detail.payPalCarrierLabel')"
             :helpText="$tc('sw-order-detail.payPalCarrierHelpText')"
