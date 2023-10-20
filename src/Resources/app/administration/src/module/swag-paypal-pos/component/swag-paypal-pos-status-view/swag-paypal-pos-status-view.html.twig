@@ -29,15 +29,14 @@
 
                     {% block swag_paypal_pos_status_view_detail_static %}
                         {{ $tc('swag-paypal-pos.detail.overview.status.lastSynced') }}:
-                        {{ lastFinishedRun.updatedAt | date({
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric'
-                            })
-                        }}
+                        {{ dateFilter(lastFinishedRun.updatedAt, {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                        }) }}
                     {% endblock %}
                 </div>
 
@@ -57,15 +56,14 @@
         {% block swag_paypal_pos_status_view_substatus %}
             <template #substatus v-if="incompleteLastRun">
                 {{ $tc('swag-paypal-pos.detail.overview.status.lastSyncedComplete') }}:
-                {{ lastCompleteRun.updatedAt | date({
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    })
-                }}
+                {{ dateFilter(lastCompleteRun.updatedAt, {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                }) }}
             </template>
         {% endblock %}
     </swag-paypal-pos-status>

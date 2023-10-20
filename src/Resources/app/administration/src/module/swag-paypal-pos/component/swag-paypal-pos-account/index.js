@@ -80,6 +80,10 @@ Component.register('swag-paypal-pos-account', {
         assetFilter() {
             return Shopware.Filter.getByName('asset');
         },
+
+        dateFilter() {
+            return Shopware.Filter.getByName('date');
+        },
     },
 
     watch: {

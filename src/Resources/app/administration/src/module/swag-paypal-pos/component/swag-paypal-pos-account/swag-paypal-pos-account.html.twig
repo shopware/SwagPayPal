@@ -83,7 +83,7 @@
                                 {% block swag_paypal_pos_account_grid_container_status_updated %}
                                     <div v-if="lastRun"
                                          class="swag-paypal-pos-account__status-updated">
-                                        {{ $tc('swag-paypal-pos.account.lastUpdated') }} {{ lastRun.updatedAt | date({
+                                        {{ $tc('swag-paypal-pos.account.lastUpdated') }} {{ dateFilter(lastRun.updatedAt, {
                                             hour: '2-digit',
                                             minute: '2-digit',
                                             second: '2-digit',
