@@ -18,7 +18,10 @@
                                 <sw-step-display :initialItemVariants="stepInitialItemVariants"
                                                  :itemIndex="stepIndex"
                                                  :itemVariant="stepVariant">
-                                    <sw-step-item v-for="pageName in displayStepperPages" :key="pageName">
+                                    <sw-step-item v-for="pageName in displayStepperPages"
+                                                  {% if VUE2 %}
+                                                  :key="pageName"
+                                                  {% endif %}>
                                         {{ $tc(`swag-paypal-pos.wizard.stepItemTitle.${pageName}`) }}
                                     </sw-step-item>
                                 </sw-step-display>

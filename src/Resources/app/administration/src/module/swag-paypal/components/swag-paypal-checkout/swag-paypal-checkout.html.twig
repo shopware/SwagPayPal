@@ -132,7 +132,9 @@
             {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item %}
             <swag-paypal-checkout-method
                 v-for="paymentMethod in paymentMethods"
+                {% if VUE2 %}
                 :key="paymentMethod.id"
+                {% else %}
                 :payment-method="paymentMethod"
                 :onboarding-status="onboardingStatus(paymentMethod)"
             />

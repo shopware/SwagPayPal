@@ -13,7 +13,9 @@
             <template #smart-bar-actions>
                 <sw-button v-for="button in buttonConfig"
                            size="small"
+                           {% if VUE2 %}
                            :key="button.key"
+                           {% endif %}
                            :disabled="button.disabled"
                            :isLoading="button.isLoading || isLoading"
                            :variant="button.variant"
@@ -77,7 +79,9 @@
 
                     {% block swag_paypal_pos_content_card %}
                         <router-view v-if="!isLoading"
+                                     {% if VUE2 %}
                                      :key="$route.params.id"
+                                     {% endif %}
                                      :salesChannel="salesChannel"
                                      :cloneSalesChannelId="cloneSalesChannelId"
                                      :lastRun="lastRun"
