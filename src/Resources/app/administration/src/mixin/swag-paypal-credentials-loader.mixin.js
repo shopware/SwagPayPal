@@ -80,10 +80,6 @@ Mixin.register('swag-paypal-credentials-loader', {
         this.createScript();
     },
 
-    unmounted() {
-        this.destroyed();
-    },
-
     destroyed() {
         this.$root.$off('paypal-onboarding-finish');
     },
