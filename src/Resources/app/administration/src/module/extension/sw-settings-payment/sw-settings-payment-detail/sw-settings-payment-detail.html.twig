@@ -13,11 +13,10 @@
 
 {% block sw_settings_payment_detail_content_field_active %}
 <template v-if="disableActiveSwitch">
-    <sw-field
+    <sw-switch-field
         v-model="paymentMethod.active"
         v-tooltip.left="{ message: $tc('sw-settings-payment-detail.tooltip') }"
         class="sw-settings-payment-detail__field-active"
-        type="switch"
         :disabled="disableActiveSwitch"
         :label="$tc('sw-settings-payment.detail.labelActive')"
     />
