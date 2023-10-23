@@ -80,11 +80,7 @@
 
                     {% block swag_paypal_pos_detail_settings_sync_input %}
                         <sw-radio-field
-                            {% if VUE3 %}
-                            v-model:value="salesChannel.extensions.paypalPosSalesChannel.replace"
-                            {% else %}
                             v-model="salesChannel.extensions.paypalPosSalesChannel.replace"
-                            {% endif %}
                             :label="$tc('swag-paypal-pos.wizard.syncLibrary.description')"
                             class="swag-paypal-pos-boolean-radio"
                             :options="optionsReplace"

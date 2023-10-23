@@ -46,11 +46,7 @@
 
         {% block swag_paypal_payment_action_capture_v2_is_final_capture %}
             <sw-checkbox-field
-                    {% if VUE3 %}
-                    v-model:value="isFinalCapture"
-                    {% else %}
                     v-model="isFinalCapture"
-                    {% endif %}
                     :label="$tc('swag-paypal-payment.captureAction.isFinal')">
             </sw-checkbox-field>
         {% endblock %}

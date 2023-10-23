@@ -7,11 +7,7 @@
 
                 {% block swag_paypal_content_card_channel_config_acdc_settings_detail_enabled %}
                     <sw-inherit-wrapper
-                        {% if VUE3 %}
-                        v-model:value="actualConfigData['SwagPayPal.settings.acdcForce3DS']"
-                        {% else %}
                         v-model="actualConfigData['SwagPayPal.settings.acdcForce3DS']"
-                        {% endif %}
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.acdcForce3DS']"
                         :customInheritationCheckFunction="checkBoolFieldInheritance">
                         <template #content="props">

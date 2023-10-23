@@ -1,10 +1,6 @@
 {% block swag_paypal_pos_boolean_radio %}
     <sw-radio-field
-        {% if VUE3 %}
-        v-model:value="castedValue"
-        {% else %}
         v-model="castedValue"
-        {% endif %}
         v-bind="$attrs"
         class="swag-paypal-pos-boolean-radio"
         :name="name"
