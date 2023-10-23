@@ -25,7 +25,11 @@
 
         {% block swag_paypal_payment_action_refund_v2_invoice_number %}
             <swag-paypal-text-field
+                    {% if VUE3 %}
+                    v-model:value="refundInvoiceNumber"
+                    {% else %}
                     v-model="refundInvoiceNumber"
+                    {% endif %}
                     maxLength="127"
                     :label="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.label')"
                     :placeholder="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.placeholder')">
@@ -51,7 +55,11 @@
 
         {% block swag_paypal_payment_action_refund_v2_note_to_payer %}
             <swag-paypal-textarea-field
+                    {% if VUE3 %}
+                    v-model:value="refundNoteToPayer"
+                    {% else %}
                     v-model="refundNoteToPayer"
+                    {% endif %}
                     maxLength="255"
                     :placeholder="$tc('swag-paypal-payment.refundAction.refundNoteToPayer.placeholder')"
                     :label="$tc('swag-paypal-payment.refundAction.refundNoteToPayer.label')">
