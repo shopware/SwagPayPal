@@ -9,17 +9,29 @@
 
         {% block swag_paypal_pos_wizard_product_selection_sales_channel_toggle %}
             <sw-switch-field
+                    {% if VUE3 %}
+                    v-model:value="hasClone"
+                    {% else %}
                     v-model="hasClone"
+                    {% endif %}
                     class="swag-paypal-pos-wizard-product-selection__clone-switch"
                     bordered
                     :label="$tc('swag-paypal-pos.wizard.productSelection.labelToggle')"
-                    @change="updateClone">
+                    {% if VUE3 %}
+                    @update:value="updateClone"
+                    {% else %}
+                    @change="updateClone"
+                    {% endif %}>
             </sw-switch-field>
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_product_selection_sales_channel_select %}
             <sw-entity-single-select
+                    {% if VUE3 %}
+                    v-model:value="localCloneSalesChannelId"
+                    {% else %}
                     v-model="localCloneSalesChannelId"
+                    {% endif %}
                     class="swag-paypal-pos-wizard-product-selection__saleschannel-select"
                     entity="sales_channel"
                     :criteria="salesChannelCriteria"

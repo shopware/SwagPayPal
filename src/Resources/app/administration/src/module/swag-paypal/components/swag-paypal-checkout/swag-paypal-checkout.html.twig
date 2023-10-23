@@ -146,10 +146,18 @@
         {% block swag_paypal_content_card_channel_config_checkout_container_switch_show_credentials %}
         <sw-switch-field
             v-if="allowShowCredentials"
+            {% if VUE3 %}
+            v-model:value="showCredentials"
+            {% else %}
             v-model="showCredentials"
+            {% endif %}
             :label="$tc('swag-paypal.settingForm.checkout.showCredentials')"
             :disabled="!acl.can('swag_paypal.editor')"
+            {% if VUE3 %}
+            @update:value="updateShowCredentials"
+            {% else %}
             @change="updateShowCredentials"
+            {% endif %}
         />
         {% endblock %}
 

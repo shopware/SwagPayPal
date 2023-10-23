@@ -9,12 +9,20 @@
 
         {% block swag_paypal_pos_wizard_connection_apikey %}
             <sw-password-field
+                    {% if VUE3 %}
+                    v-model:value="salesChannel.extensions.paypalPosSalesChannel.apiKey"
+                    {% else %}
                     v-model="salesChannel.extensions.paypalPosSalesChannel.apiKey"
+                    {% endif %}
                     class="swag-paypal-pos-wizard-connection__apikey-field"
                     required
                     :label="$tc('swag-paypal-pos.authentication.labelApiKey')"
                     :placeholder="$tc('swag-paypal-pos.authentication.placeholderApiKey')"
-                    @input="forceUpdate">
+                    {% if VUE3 %}
+                    @update:value="forceUpdate"
+                    {% else %}
+                    @input="forceUpdate"
+                    {% endif %}>
                 <template #suffix>
 
                     {% block swag_paypal_pos_wizard_connection_apikey_suffix %}

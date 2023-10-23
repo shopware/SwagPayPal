@@ -155,7 +155,11 @@
                                         :label="$tc('swag-paypal-disputes.common.status')"
                                         :options="disputeStates"
                                         :value="disputeStateFilter"
-                                        @change="onChangeDisputeStateFilter">
+                                        {% if VUE3 %}
+                                        @update:value="onChangeDisputeStateFilter"
+                                        {% else %}
+                                        @change="onChangeDisputeStateFilter"
+                                        {% endif %}>
                                     </sw-multi-select>
                                 {% endblock %}
                             {% endblock %}
