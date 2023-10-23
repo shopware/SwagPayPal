@@ -8,22 +8,24 @@
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_product_selection_sales_channel_toggle %}
-            <sw-switch-field v-model="hasClone"
-                             class="swag-paypal-pos-wizard-product-selection__clone-switch"
-                             bordered
-                             :label="$tc('swag-paypal-pos.wizard.productSelection.labelToggle')"
-                             @change="updateClone">
+            <sw-switch-field
+                    v-model="hasClone"
+                    class="swag-paypal-pos-wizard-product-selection__clone-switch"
+                    bordered
+                    :label="$tc('swag-paypal-pos.wizard.productSelection.labelToggle')"
+                    @change="updateClone">
             </sw-switch-field>
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_product_selection_sales_channel_select %}
-            <sw-entity-single-select v-model="localCloneSalesChannelId"
-                                     class="swag-paypal-pos-wizard-product-selection__saleschannel-select"
-                                     entity="sales_channel"
-                                     :criteria="salesChannelCriteria"
-                                     :disabled="!hasClone"
-                                     :label="$tc('swag-paypal-pos.wizard.productSelection.labelSelect')"
-                                     @input="forceUpdate">
+            <sw-entity-single-select
+                    v-model="localCloneSalesChannelId"
+                    class="swag-paypal-pos-wizard-product-selection__saleschannel-select"
+                    entity="sales_channel"
+                    :criteria="salesChannelCriteria"
+                    :disabled="!hasClone"
+                    :label="$tc('swag-paypal-pos.wizard.productSelection.labelSelect')"
+                    @input="forceUpdate">
             </sw-entity-single-select>
         {% endblock %}
     </div>

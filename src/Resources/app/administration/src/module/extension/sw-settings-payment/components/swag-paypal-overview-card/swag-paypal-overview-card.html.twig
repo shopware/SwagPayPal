@@ -1,7 +1,8 @@
 {% block swag_paypal_overview_card %}
-<sw-sales-channel-config v-model="config"
-                         ref="swagPayPalConfigComponent"
-                         domain="SwagPayPal.settings">
+<sw-sales-channel-config
+        v-model="config"
+        ref="swagPayPalConfigComponent"
+        domain="SwagPayPal.settings">
 
     {% block swag_paypal_overview_card_select %}
         <template #select>

@@ -4,9 +4,10 @@
               @modal-close="$emit('modal-close')">
 
         {% block swag_paypal_payment_action_capture_v2_max_amount %}
-            <sw-text-field v-model="captureableAmount"
-                           :label="$tc('swag-paypal-payment.captureAction.maxAmount')"
-                           :disabled="true">
+            <sw-text-field
+                    v-model="captureableAmount"
+                    :label="$tc('swag-paypal-payment.captureAction.maxAmount')"
+                    :disabled="true">
                 <template #suffix v-if="currencyCode">
                     {{ currencyCode }}
                 </template>
@@ -14,10 +15,11 @@
         {% endblock %}
 
         {% block swag_paypal_payment_action_capture_v2_amount %}
-            <sw-number-field v-model="captureAmount"
-                             :max="captureableAmount"
-                             :min="0"
-                             :label="$tc('swag-paypal-payment.captureAction.currentAmount')">
+            <sw-number-field
+                    v-model="captureAmount"
+                    :max="captureableAmount"
+                    :min="0"
+                    :label="$tc('swag-paypal-payment.captureAction.currentAmount')">
                 <template #suffix v-if="currencyCode">
                     {{ currencyCode }}
                 </template>
