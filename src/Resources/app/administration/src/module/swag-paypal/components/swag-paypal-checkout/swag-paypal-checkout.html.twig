@@ -138,7 +138,7 @@
                 v-for="paymentMethod in paymentMethods"
                 {% if VUE2 %}
                 :key="paymentMethod.id"
-                {% else %}
+                {% endif %}
                 :payment-method="paymentMethod"
                 :onboarding-status="onboardingStatus(paymentMethod)"
             />
