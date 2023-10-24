@@ -36,7 +36,11 @@
 
         {% block swag_paypal_payment_action_capture_v2_invoice_number %}
             <swag-paypal-text-field
+                    {% if VUE3 %}
+                    v-model:value="captureInvoiceNumber"
+                    {% else %}
                     v-model="captureInvoiceNumber"
+                    {% endif %}
                     maxLength="127"
                     :label="$tc('swag-paypal-payment.captureAction.captureInvoiceNumber.label')"
                     :placeholder="$tc('swag-paypal-payment.captureAction.captureInvoiceNumber.placeholder')">
@@ -45,7 +49,11 @@
 
         {% block swag_paypal_payment_action_capture_v2_note_to_payer %}
             <swag-paypal-textarea-field
+                    {% if VUE3 %}
+                    v-model:value="captureNoteToPayer"
+                    {% else %}
                     v-model="captureNoteToPayer"
+                    {% endif %}
                     maxLength="255"
                     :placeholder="$tc('swag-paypal-payment.captureAction.captureNoteToPayer.placeholder')"
                     :label="$tc('swag-paypal-payment.captureAction.captureNoteToPayer.label')">

@@ -1,6 +1,10 @@
 {% block swag_paypal_overview_card %}
 <sw-sales-channel-config
+        {% if VUE3 %}
+        v-model:value="config"
+        {% else %}
         v-model="config"
+        {% endif %}
         ref="swagPayPalConfigComponent"
         domain="SwagPayPal.settings">
 

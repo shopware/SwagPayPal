@@ -14,12 +14,17 @@
         {% block swag_paypal_actions %}
             <template #smart-bar-actions>
                 {% block swag_paypal_actions_save %}
-                    <sw-button-process v-model="isSaveSuccessful"
-                                       class="sw-settings-login-registration__save-action"
-                                       variant="primary"
-                                       :isLoading="isLoading"
-                                       :disabled="isLoading || savingDisabled || hasError || !acl.can('swag_paypal.editor')"
-                                       @click="onSave">
+                    <sw-button-process
+                        {% if VUE3 %}
+                        v-model:value="isSaveSuccessful"
+                        {% else %}
+                        v-model="isSaveSuccessful"
+                        {% endif %}
+                        class="sw-settings-login-registration__save-action"
+                        variant="primary"
+                        :isLoading="isLoading"
+                        :disabled="isLoading || savingDisabled || hasError || !acl.can('swag_paypal.editor')"
+                        @click="onSave">
                         {{ $tc('global.default.save') }}
                     </sw-button-process>
                 {% endblock %}
@@ -59,9 +64,14 @@
                         {% endblock %}
 
                         {% block swag_paypal_content_card_channel_config %}
-                            <sw-sales-channel-config v-model="config"
-                                                     ref="configComponent"
-                                                     domain="SwagPayPal.settings">
+                            <sw-sales-channel-config
+                                {% if VUE3 %}
+                                v-model:value="config"
+                                {% else %}
+                                v-model="config"
+                                {% endif %}
+                                ref="configComponent"
+                                domain="SwagPayPal.settings">
 
                                 {% block swag_paypal_content_card_channel_config_sales_channel %}
                                     <template #select="{ onInput, selectedSalesChannelId }">
@@ -71,13 +81,18 @@
                                                      :title="$tc('global.entities.sales_channel', 2)">
 
                                                 {% block swag_paypal_content_card_channel_config_sales_channel_card_title %}
-                                                    <sw-single-select v-model="selectedSalesChannelId"
-                                                                      labelProperty="translated.name"
-                                                                      valueProperty="id"
-                                                                      :isLoading="isLoading"
-                                                                      :options="salesChannels"
-                                                                      :disabled="!acl.can('swag_paypal.editor')"
-                                                                      @change="onInput">
+                                                    <sw-single-select
+                                                        {% if VUE3 %}
+                                                        v-model:value="selectedSalesChannelId"
+                                                        {% else %}
+                                                        v-model="selectedSalesChannelId"
+                                                        {% endif %}
+                                                        labelProperty="translated.name"
+                                                        valueProperty="id"
+                                                        :isLoading="isLoading"
+                                                        :options="salesChannels"
+                                                        :disabled="!acl.can('swag_paypal.editor')"
+                                                        @change="onInput">
                                                     </sw-single-select>
                                                 {% endblock %}
 
@@ -93,10 +108,15 @@
                                                             {% endblock %}
 
                                                             {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container_button %}
-                                                                <sw-button-process v-model="isSetDefaultPaymentSuccessful"
-                                                                                   :isLoading="isSettingDefaultPaymentMethods"
-                                                                                   :disabled="!acl.can('swag_paypal.editor')"
-                                                                                   @click="onSetPaymentMethodDefault">
+                                                                <sw-button-process
+                                                                    {% if VUE3 %}
+                                                                    v-model:processSuccess="isSetDefaultPaymentSuccessful"
+                                                                    {% else %}
+                                                                    v-model="isSetDefaultPaymentSuccessful"
+                                                                    {% endif %}
+                                                                    :isLoading="isSettingDefaultPaymentMethods"
+                                                                    :disabled="!acl.can('swag_paypal.editor')"
+                                                                    @click="onSetPaymentMethodDefault">
                                                                     {{ $tc('swag-paypal.saleschannelCard.button.label') }}
                                                                 </sw-button-process>
                                                             {% endblock %}

@@ -14,58 +14,83 @@
                 <sw-container columns="1fr 200px" gap="0px 30px">
 
                     {% block swag_paypal_pos_detail_settings_input_name %}
-                        <sw-text-field v-model="salesChannel.name"
-                                       required
-                                       type="text"
-                                       validation="required"
-                                       :error="salesChannelNameError"
-                                       :disabled="!acl.can('sales_channel.editor')"
-                                       :label="$tc('sw-sales-channel.detail.labelInputName')"
-                                       :placeholder="placeholder(salesChannel, 'name', $tc('sw-sales-channel.detail.placeholderName'))">
+                        <sw-text-field
+                                {% if VUE3 %}
+                                v-model:value="salesChannel.name"
+                                {% else %}
+                                v-model="salesChannel.name"
+                                {% endif %}
+                                required
+                                type="text"
+                                validation="required"
+                                :error="salesChannelNameError"
+                                :disabled="!acl.can('sales_channel.editor')"
+                                :label="$tc('sw-sales-channel.detail.labelInputName')"
+                                :placeholder="placeholder(salesChannel, 'name', $tc('sw-sales-channel.detail.placeholderName'))">
                         </sw-text-field>
                     {% endblock %}
 
                     {% block swag_paypal_pos_detail_settings_input_active %}
-                        <sw-switch-field v-model="salesChannel.active"
-                                         bordered
-                                         :disabled="!acl.can('sales_channel.editor')"
-                                         :label="$tc('sw-sales-channel.detail.labelInputActive')"
-                                         :helpText="$tc('swag-paypal-pos.detail.settings.activeHelpText')">
+                        <sw-switch-field
+                                {% if VUE3 %}
+                                v-model:value="salesChannel.active"
+                                {% else %}
+                                v-model="salesChannel.active"
+                                {% endif %}
+                                bordered
+                                :disabled="!acl.can('sales_channel.editor')"
+                                :label="$tc('sw-sales-channel.detail.labelInputActive')"
+                                :helpText="$tc('swag-paypal-pos.detail.settings.activeHelpText')">
                         </sw-switch-field>
                     {% endblock %}
 
                 </sw-container>
 
                 {% block swag_paypal_pos_detail_settings_input_media_domain %}
-                    <swag-paypal-pos-url-field v-model="swagPaypalPosSalesChannel.mediaDomain"
-                                               required
-                                               validation="required"
-                                               :error="swagPaypalPosSalesChannelMediaDomainError"
-                                               :disabled="!acl.can('sales_channel.editor')"
-                                               :label="$tc('swag-paypal-pos.detail.settings.domain')"
-                                               :helpText="$tc('swag-paypal-pos.detail.settings.domainHelpText')"
-                                               @input="forceUpdate">
+                    <swag-paypal-pos-url-field
+                            {% if VUE3 %}
+                            v-model:value="swagPaypalPosSalesChannel.mediaDomain"
+                            {% else %}
+                            v-model="swagPayPalPosSalesChannel.mediaDomain"
+                            {% endif %}
+                            required
+                            validation="required"
+                            :error="swagPaypalPosSalesChannelMediaDomainError"
+                            :disabled="!acl.can('sales_channel.editor')"
+                            :label="$tc('swag-paypal-pos.detail.settings.domain')"
+                            :helpText="$tc('swag-paypal-pos.detail.settings.domainHelpText')"
+                            @input="forceUpdate">
                     </swag-paypal-pos-url-field>
                 {% endblock %}
 
                 {% block swag_paypal_pos_detail_settings_input_language %}
-                    <sw-entity-single-select v-model="salesChannel.languageId"
-                                             entity="language"
-                                             required
-                                             :disabled="!acl.can('sales_channel.editor')"
-                                             :label="$tc('global.entities.language')"
-                                             @change="changeLanguage">
+                    <sw-entity-single-select
+                            {% if VUE3 %}
+                            v-model:value="salesChannel.languageId"
+                            {% else %}
+                            v-model="salesChannel.languageId"
+                            {% endif %}
+                            entity="language"
+                            required
+                            :disabled="!acl.can('sales_channel.editor')"
+                            :label="$tc('global.entities.language')"
+                            @change="changeLanguage">
                     </sw-entity-single-select>
                 {% endblock %}
 
                 {% block swag_paypal_pos_detail_settings_input_product_stream %}
                     {# ToDo PPI-56 - implement support for product streams #}
-                    <sw-entity-single-select v-if="false"
-                                             v-model="swagPaypalPosSalesChannel.productStreamId"
-                                             entity="product_stream"
-                                             :disabled="!acl.can('sales_channel.editor')"
-                                             :label="$tc('swag-paypal-pos.detail.settings.productStream')"
-                                             @change="forceUpdate">
+                    <sw-entity-single-select
+                            v-if="false"
+                            {% if VUE3 %}
+                            v-model:value="swagPaypalPosSalesChannel.productStreamId"
+                            {% else %}
+                            v-model="swagPaypalPosSalesChannel.productStreamId"
+                            {% endif %}
+                            entity="product_stream"
+                            :disabled="!acl.can('sales_channel.editor')"
+                            :label="$tc('swag-paypal-pos.detail.settings.productStream')"
+                            @change="forceUpdate">
                     </sw-entity-single-select>
                 {% endblock %}
 
@@ -105,7 +130,11 @@
 
                     {% block swag_paypal_pos_detail_settings_prices_input %}
                         <swag-paypal-pos-boolean-radio
+                            {% if VUE3 %}
+                            v-model:value="swagPaypalPosSalesChannel.syncPrices"
+                            {% else %}
                             v-model="swagPaypalPosSalesChannel.syncPrices"
+                            {% endif %}
                             class="swag-paypal-pos-detail-settings__sync-prices-input"
                             :label="$tc('swag-paypal-pos.wizard.syncPrices.description')"
                             :optionTrue="optionSyncPrices"
@@ -126,13 +155,18 @@
                          :title="$tc('swag-paypal-pos.detail.settings.titleCredentials')">
 
                     {% block swag_paypal_pos_detail_settings_credentials_apikey %}
-                        <sw-password-field v-model="swagPaypalPosSalesChannel.apiKey"
-                                           class="swag-paypal-pos-detail-settings__apikey-field"
-                                           required
-                                           :label="$tc('swag-paypal-pos.authentication.labelApiKey')"
-                                           :disabled="!acl.can('sales_channel.editor')"
-                                           :placeholder="$tc('swag-paypal-pos.authentication.placeholderApiKey')"
-                                           @input="forceUpdate">
+                        <sw-password-field
+                                {% if VUE3 %}
+                                v-model:value="swagPaypalPosSalesChannel.apiKey"
+                                {% else %}
+                                v-model="swagPaypalPosSalesChannel.apiKey"
+                                {% endif %}
+                                class="swag-paypal-pos-detail-settings__apikey-field"
+                                required
+                                :label="$tc('swag-paypal-pos.authentication.labelApiKey')"
+                                :disabled="!acl.can('sales_channel.editor')"
+                                :placeholder="$tc('swag-paypal-pos.authentication.placeholderApiKey')"
+                                @input="forceUpdate">
                             <template #suffix>
 
                                 {% block swag_paypal_pos_detail_settings_credentials_apikey_suffix %}
