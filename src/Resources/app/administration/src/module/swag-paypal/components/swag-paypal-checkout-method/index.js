@@ -47,13 +47,6 @@ Component.register('swag-paypal-checkout-method', {
             };
         },
 
-        /**
-         * @deprecated tag:v8.0.0 - will be removed, use `showEditLink` instead
-         */
-        needsOnboarding() {
-            return this.onboardingStatus?.toUpperCase() !== 'ACTIVE';
-        },
-
         paymentMethodToggleDisabled() {
             // should be able to deactivate active payment method
             if (this.paymentMethod.active) {
