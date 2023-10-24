@@ -19,9 +19,7 @@
                                                  :itemIndex="stepIndex"
                                                  :itemVariant="stepVariant">
                                     <sw-step-item v-for="pageName in displayStepperPages"
-                                                  {% if VUE2 %}
-                                                  :key="pageName"
-                                                  {% endif %}>
+                                                  :key="pageName">
                                         {{ $tc(`swag-paypal-pos.wizard.stepItemTitle.${pageName}`) }}
                                     </sw-step-item>
                                 </sw-step-display>
@@ -55,9 +53,7 @@
                             <div class="footer-left">
                                 <sw-button v-for="button in buttons.left"
                                            size="small"
-                                            {% if VUE2 %}
                                            :key="button.key"
-                                            {% endif %}
                                            :disabled="button.disabled"
                                            :isLoading="isLoading"
                                            :variant="button.variant"
@@ -71,9 +67,7 @@
                             <div class="footer-right">
                                 <sw-button v-for="button in buttons.right"
                                            size="small"
-                                           {% if VUE2 %}
                                            :key="button.key"
-                                           {% endif %}
                                            :disabled="button.disabled"
                                            :isLoading="isLoading"
                                            :variant="button.variant"
