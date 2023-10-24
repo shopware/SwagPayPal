@@ -31,14 +31,12 @@ async function createWrapper(customOptions = {}) {
         },
         data() {
             return {
-                canHandleVaulting: false,
-                isLoadingMerchantInformation: false,
                 onboardingUrlLive: onboardingCallbackLive,
                 onboardingUrlSandbox: onboardingCallbackSandbox,
                 requestParams: {
-                    secondaryProducts: 'payment_methods,advanced_vaulting',
-                    capabilities: 'PAYPAL_WALLET_VAULTING_ADVANCED',
-                    features: ['VAULT'],
+                    secondaryProducts: 'something',
+                    capabilities: 'else',
+                    features: [],
                 },
             };
         },
@@ -48,8 +46,9 @@ async function createWrapper(customOptions = {}) {
                 'SwagPayPal.settings.vaultingEnabled': true,
                 'SwagPayPal.settings.vaultingEnableAlways': true,
             },
-            allConfigs: {},
+            allConfigs: { null: {} },
             selectedSalesChannelId: 'SALES_CHANNEL',
+            isSaveSuccessful: false,
         },
     };
 
