@@ -38,14 +38,13 @@
 
                                     {% block swag_paypal_pos_synced_products_grid_column_date_formatted %}
                                         <template v-if="hasSync(item)">
-                                            {{ getSyncDate(item) | date({
+                                            {{ dateFilter(getSyncDate(item), {
                                                 hour: '2-digit',
                                                 minute: '2-digit',
                                                 day: '2-digit',
                                                 month: '2-digit',
                                                 year: '2-digit'
-                                            })
-                                            }}
+                                            }) }}
                                         </template>
                                     {% endblock %}
 
