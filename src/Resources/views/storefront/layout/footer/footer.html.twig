@@ -5,7 +5,7 @@
         {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
         {% set installmentBanner = page.footer.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
 
-        {% if installmentBanner is not null %}
+        {% if installmentBanner.footerEnabled %}
             <div class="col-4 mt-2 p-0 footer-logo is-payment"
                  data-swag-paypal-installment-banner="true"
                  data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">

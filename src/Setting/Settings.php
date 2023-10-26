@@ -48,7 +48,16 @@ final class Settings
     public const SPB_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonLanguageIso';
     public const ACDC_FORCE_3DS = self::SYSTEM_CONFIG_DOMAIN . 'acdcForce3DS';
     public const PUI_CUSTOMER_SERVICE_INSTRUCTIONS = self::SYSTEM_CONFIG_DOMAIN . 'puiCustomerServiceInstructions';
+
+    /**
+     * @deprecated tag:v8.0.0 - will be removed, use specific settings instead
+     */
     public const INSTALLMENT_BANNER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled';
+    public const INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerDetailPageEnabled';
+    public const INSTALLMENT_BANNER_CART_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerCartEnabled';
+    public const INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerOffCanvasCartEnabled';
+    public const INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerLoginPageEnabled';
+    public const INSTALLMENT_BANNER_FOOTER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerFooterEnabled';
 
     /**
      * @deprecated tag:v8.0.0 Will be removed without replacement.
@@ -94,7 +103,11 @@ final class Settings
         self::SPB_BUTTON_SHAPE => 'rect',
         self::SPB_SHOW_PAY_LATER => false,
         self::PLUS_CHECKOUT_ENABLED => false,
-        self::INSTALLMENT_BANNER_ENABLED => true,
+        self::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED => true,
+        self::INSTALLMENT_BANNER_CART_ENABLED => true,
+        self::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED => true,
+        self::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED => true,
+        self::INSTALLMENT_BANNER_FOOTER_ENABLED => true,
         // @phpstan-ignore-next-line
         self::LOGGING_LEVEL => Logger::WARNING,
         self::PUI_CUSTOMER_SERVICE_INSTRUCTIONS => 'Details zum Kundenservice finden Sie auf unserer Webseite',

@@ -10,7 +10,7 @@
 
         {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
         {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
-        {% set installmentBannerEnabled = installmentBanner is not null %}
+        {% set installmentBannerEnabled = installmentBanner.loginPageEnabled %}
 
         {% set isBootstrap5 = feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
 
