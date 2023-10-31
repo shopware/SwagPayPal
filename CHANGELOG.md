@@ -1,5 +1,6 @@
 # 7.3.0
 - PPI-765 - "Pay later" banners can now be turned on and off more granular
+- PPI-828 - Fixes an issue, where caching could interfere with the correct list of available payment methods
 
 # 6.2.3
 - PPI-818 - Added warning for possible unavailability of MyBank payment method

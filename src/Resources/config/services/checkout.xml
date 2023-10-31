@@ -49,6 +49,7 @@
 
         <service id="Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute"
                  decorates="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"
+                 decoration-priority="-1500"
                  public="true">
             <argument type="service" id=".inner"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
