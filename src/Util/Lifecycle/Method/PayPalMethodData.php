@@ -53,7 +53,8 @@ class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodI
     {
         if ($availabilityContext->isSubscription()) {
             $systemConfigService = $this->container->get(SystemConfigService::class);
-            $systemConfigService->get(Settings::VAULTING_ENABLED, $availabilityContext->getSalesChannelId());
+
+            return $systemConfigService->getBool(Settings::VAULTING_ENABLED, $availabilityContext->getSalesChannelId());
         }
 
         return true;
