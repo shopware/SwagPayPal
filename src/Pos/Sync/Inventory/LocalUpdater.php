@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Pos\Sync\Inventory;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -18,27 +17,14 @@ use Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalCalculatorInterface;
 #[Package('checkout')]
 class LocalUpdater
 {
-    private EntityRepository $productRepository;
-
-    private LocalCalculatorInterface $localCalculator;
-
-    private StockUpdater $stockUpdater;
-
-    private LoggerInterface $logger;
-
     /**
      * @internal
      */
     public function __construct(
-        EntityRepository $productRepository,
-        LocalCalculatorInterface $localCalculator,
-        StockUpdater $stockUpdater,
-        LoggerInterface $logger
+        private readonly EntityRepository $productRepository,
+        private readonly LocalCalculatorInterface $localCalculator,
+        private readonly LoggerInterface $logger
     ) {
-        $this->productRepository = $productRepository;
-        $this->localCalculator = $localCalculator;
-        $this->stockUpdater = $stockUpdater;
-        $this->logger = $logger;
     }
 
     public function updateLocal(ProductCollection $productCollection, InventoryContext $inventoryContext): ProductCollection
@@ -85,8 +71,6 @@ class LocalUpdater
                 'change' => $stockChange->getStockChange(),
             ]);
         }
-
-        $this->stockUpdater->update($changedProducts->getKeys(), $inventoryContext->getContext());
 
         return $changedProducts;
     }

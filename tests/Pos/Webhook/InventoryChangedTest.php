@@ -5,14 +5,14 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPalTestPosUtil;
+namespace Swag\PayPal\Test\Pos\Util;
 
 use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -74,10 +74,10 @@ class InventoryChangedTest extends TestCase
             new UuidConverter(),
             $inventoryRepository
         );
+
         $localUpdater = new LocalUpdater(
             $productRepository,
             $localCalculator,
-            $this->createMock(StockUpdater::class),
             new NullLogger()
         );
 
@@ -99,7 +99,8 @@ class InventoryChangedTest extends TestCase
             ),
             $inventoryContextFactory,
             $productRepository,
-            new UuidConverter()
+            new UuidConverter(),
+            true,
         );
 
         $salesChannel = $this->getSalesChannel($context);
@@ -137,5 +138,66 @@ class InventoryChangedTest extends TestCase
         static::assertSame(13, $variantA->getStock());
         static::assertSame(8, $inventoryVariantB->getStock());
         static::assertSame(7, $variantB->getStock());
+    }
+
+    public function testDisabledInventoryStockManagement(): void
+    {
+        $context = Context::createDefaultContext();
+
+        $apiKeyDecoder = $this->createMock(ApiKeyDecoder::class);
+        $apiKeyDecoder->expects(static::never())->method('decode');
+
+        $inventoryContextFactory = $this->createMock(InventoryContextFactory::class);
+        $inventoryContextFactory->expects(static::never())->method('getContext');
+
+        $localUpdater = $this->createMock(LocalUpdater::class);
+        $localUpdater->expects(static::never())->method('updateLocal');
+
+        $inventorySyncer = $this->createMock(InventorySyncer::class);
+        $inventorySyncer->expects(static::never())->method('updateLocalChanges');
+
+        $productRepository = $this->createMock(EntityRepository::class);
+        $productRepository->expects(static::never())->method('search');
+
+        $inventoryChangedHandler = new InventoryChangedHandler(
+            $apiKeyDecoder,
+            $this->createMock(RunServiceMock::class),
+            $this->createMock(LocalWebhookCalculator::class),
+            $localUpdater,
+            $inventorySyncer,
+            $inventoryContextFactory,
+            $productRepository,
+            new UuidConverter(),
+            false,
+        );
+
+        $salesChannel = $this->getSalesChannel($context);
+
+        $webhookRegistry = new WebhookRegistry(new \ArrayObject([$inventoryChangedHandler]));
+        $salesChannelRepository = new SalesChannelRepoMock();
+        $salesChannelRepository->addMockEntity($salesChannel);
+
+        /** @var Router $router */
+        $router = $this->getContainer()->get('router');
+
+        $webhookService = new WebhookService(
+            new SubscriptionResource(new PosClientFactoryMock()),
+            $webhookRegistry,
+            $salesChannelRepository,
+            $this->getContainer()->get(SystemConfigService::class),
+            new UuidConverter(),
+            $router
+        );
+
+        $webhookController = new WebhookController(
+            new NullLogger(),
+            $webhookService,
+            $salesChannelRepository
+        );
+
+        $request = new Request([], InventoryChangeFixture::getWebhookFixture());
+        $request->headers->add(['x-izettle-signature' => InventoryChangeFixture::getSignature()]);
+
+        $webhookController->executeWebhook(TestDefaults::SALES_CHANNEL, $request, $context);
     }
 }

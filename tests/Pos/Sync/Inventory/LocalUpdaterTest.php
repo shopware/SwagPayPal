@@ -10,7 +10,6 @@ namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -25,9 +24,7 @@ class LocalUpdaterTest extends TestCase
 {
     use UpdaterTrait;
 
-    private MockObject $productRepository;
-
-    private MockObject $stockUpdater;
+    private EntityRepository&MockObject $productRepository;
 
     private MockObject $logger;
 
@@ -37,14 +34,11 @@ class LocalUpdaterTest extends TestCase
     {
         $this->productRepository = $this->createMock(EntityRepository::class);
 
-        $this->stockUpdater = $this->createMock(StockUpdater::class);
-
         $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->localUpdater = new LocalUpdater(
             $this->productRepository,
             new LocalCalculator(),
-            $this->stockUpdater,
             $this->logger
         );
     }
@@ -59,19 +53,15 @@ class LocalUpdaterTest extends TestCase
         $inventoryContext = $this->createInventoryContext($product, $localInventory, $posInventory);
 
         $this->productRepository->expects($change === 0 ? static::never() : static::once())
-                                ->method('update')
-                                ->with([[
-                                    'id' => $product->getId(),
-                                    'versionId' => $product->getVersionId(),
-                                    'stock' => $product->getStock() + $change,
-                                ]]);
-
-        $this->stockUpdater->expects($change === 0 ? static::never() : static::once())
-                           ->method('update')
-                           ->with([$product->getId()]);
+            ->method('update')
+            ->with([[
+                'id' => $product->getId(),
+                'versionId' => $product->getVersionId(),
+                'stock' => $product->getStock() + $change,
+            ]]);
 
         $this->logger->expects($change === 0 ? static::never() : static::once())
-                     ->method('info');
+            ->method('info');
 
         $this->localUpdater->updateLocal(new ProductCollection([$product]), $inventoryContext);
     }
@@ -83,8 +73,6 @@ class LocalUpdaterTest extends TestCase
         $inventoryContext = $this->createInventoryContext($product, 1, 2);
 
         $this->productRepository->expects(static::never())->method('update');
-
-        $this->stockUpdater->expects(static::never())->method('update');
 
         $this->localUpdater->updateLocal(new ProductCollection([$product]), $inventoryContext);
     }

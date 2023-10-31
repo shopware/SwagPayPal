@@ -167,7 +167,8 @@ class StockSubscriberTest extends TestCase
                 $this->getContainer()->get(SalesChannelContextFactory::class),
             ),
             $salesChannelProductRepository,
-            $inventoryContextFactory
+            $inventoryContextFactory,
+            true,
         );
 
         $runService = new RunServiceMock(

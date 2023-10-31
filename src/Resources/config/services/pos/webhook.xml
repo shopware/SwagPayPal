@@ -39,6 +39,7 @@
             <argument type="service" id="Swag\PayPal\Pos\Sync\Context\InventoryContextFactory"/>
             <argument type="service" id="product.repository"/>
             <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+            <argument>%shopware.stock.enable_stock_management%</argument>
             <tag name="swag.paypal.pos.webhook.handler"/>
         </service>
     </services>
