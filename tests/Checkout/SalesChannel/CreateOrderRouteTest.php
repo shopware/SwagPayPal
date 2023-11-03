@@ -12,6 +12,7 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Log\Package;
@@ -96,7 +97,13 @@ class CreateOrderRouteTest extends TestCase
         $request = new Request([], ['orderId' => 'no-order-id']);
 
         $this->expectException(ShopwareHttpException::class);
-        $this->expectExceptionMessageMatches('/Order with id \"?no-order-id\"? not found./');
+        // @phpstan-ignore-next-line
+        if (\class_exists(PaymentException::class) && \method_exists(PaymentException::class, 'unknownPaymentMethodByHandlerIdentifier')) {
+            // Shopware >= 6.5.7.0
+            $this->expectExceptionMessageMatches('/Could not find order with id \"no-order-id\"/');
+        } else {
+            $this->expectExceptionMessageMatches('/Order with id \"?no-order-id\"? not found./');
+        }
         $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
 
