@@ -362,7 +362,7 @@ class UpdateTest extends TestCase
         $updateContext = $this->createUpdateContext('6.2.0', '7.3.0');
 
         $systemConfigServiceMock = $this->createSystemConfigServiceMock();
-        $systemConfigServiceMock->set(Settings::INSTALLMENT_BANNER_ENABLED, true);
+        $systemConfigServiceMock->set(Settings::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled', true);
 
         $updater = $this->createUpdateService($systemConfigServiceMock);
         $updater->update($updateContext);

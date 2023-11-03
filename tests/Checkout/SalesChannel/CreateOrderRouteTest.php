@@ -102,7 +102,7 @@ class CreateOrderRouteTest extends TestCase
         // @phpstan-ignore-next-line
         if (\class_exists(PaymentException::class) && \method_exists(PaymentException::class, 'unknownPaymentMethodByHandlerIdentifier')) {
             // Shopware >= 6.5.7.0
-            $this->expectExceptionMessageMatches('/Could not find order with id \"no-order-id\"/');
+            $this->expectExceptionMessageMatches('/Could not find order with id \"noorderid\"/');
         } else {
             $this->expectExceptionMessageMatches('/Order with id noorderid not found./');
         }

@@ -473,8 +473,7 @@ class Update
 
     private function updateTo730(): void
     {
-        // @phpstan-ignore-next-line
-        $installmentBannerEnabled = $this->systemConfig->getBool(Settings::INSTALLMENT_BANNER_ENABLED);
+        $installmentBannerEnabled = $this->systemConfig->getBool(Settings::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled');
 
         $this->systemConfig->set(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED, $installmentBannerEnabled);
         $this->systemConfig->set(Settings::INSTALLMENT_BANNER_CART_ENABLED, $installmentBannerEnabled);
