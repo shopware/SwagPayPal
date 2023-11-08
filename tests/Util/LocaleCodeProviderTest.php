@@ -20,19 +20,10 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 #[Package('checkout')]
 class LocaleCodeProviderTest extends TestCase
 {
-    use ServicesTrait;
-
-    private LocaleCodeProvider $localeCodeProvider;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->localeCodeProvider = $this->createLocaleCodeProvider();
-    }
-
     public function testGetLocaleCodeFromDefaultContext(): void
     {
-        $iso = $this->localeCodeProvider->getLocaleCodeFromContext(Context::createDefaultContext());
+        $localeCodeProvider = new LocaleCodeProvider(new LanguageRepoMock());
+        $iso = $localeCodeProvider->getLocaleCodeFromContext(Context::createDefaultContext());
 
         static::assertSame(LanguageRepoMock::LOCALE_CODE, $iso);
     }

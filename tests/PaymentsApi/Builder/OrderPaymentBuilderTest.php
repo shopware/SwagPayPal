@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
@@ -236,7 +237,7 @@ class OrderPaymentBuilderTest extends TestCase
     /**
      * @dataProvider dataProviderTestApplicationContext
      */
-    public function testApplicationContext(SystemConfigServiceMock $settings, string $expectedResult): void
+    public function testApplicationContext(SystemConfigService $settings, string $expectedResult): void
     {
         $paymentBuilder = $this->createPaymentBuilder($settings);
 

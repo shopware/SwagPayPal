@@ -30,6 +30,7 @@ use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
@@ -38,7 +39,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Resource\SubscriptionResource;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
-use Swag\PayPal\Pos\Webhook\WebhookRegistry;
+use Swag\PayPal\Pos\Webhook\WebhookRegistry as PosWebhookRegistry;
 use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV1;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
@@ -52,6 +53,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\RouterMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
+use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
@@ -60,6 +62,7 @@ use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
+use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -387,7 +390,7 @@ class UpdateTest extends TestCase
     }
 
     private function createUpdateService(
-        SystemConfigServiceMock $systemConfigService,
+        SystemConfigService $systemConfigService,
         ?WebhookService $webhookService = null,
         ?PosWebhookService $posWebhookService = null
     ): Update {
@@ -424,19 +427,19 @@ class UpdateTest extends TestCase
         );
     }
 
-    private function createWebhookService(SystemConfigServiceMock $systemConfigService): WebhookService
+    private function createWebhookService(SystemConfigService $systemConfigService): WebhookService
     {
         return new WebhookService(
             new WebhookResource($this->createPayPalClientFactoryWithService($systemConfigService)),
-            $this->createWebhookRegistry(new OrderTransactionRepoMock()),
+            new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]),
             $systemConfigService,
             new RouterMock()
         );
     }
 
-    private function createPosWebhookService(SystemConfigServiceMock $systemConfigService): PosWebhookService
+    private function createPosWebhookService(SystemConfigService $systemConfigService): PosWebhookService
     {
-        $webhookRegistry = new WebhookRegistry(new \ArrayObject([]));
+        $webhookRegistry = new PosWebhookRegistry(new \ArrayObject([]));
         /** @var Router $router */
         $router = $this->getContainer()->get('router');
 

@@ -24,6 +24,7 @@ use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\RouterMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\RestApi\V1\Resource\WebhookResourceTest;
+use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -182,7 +183,7 @@ class WebhookServiceTest extends TestCase
 
         return new WebhookService(
             $this->createWebhookResource($systemConfigService),
-            $this->createWebhookRegistry($orderTransactionRepo),
+            new WebhookRegistry([new DummyWebhook($orderTransactionRepo)]),
             $systemConfigService,
             new RouterMock()
         );

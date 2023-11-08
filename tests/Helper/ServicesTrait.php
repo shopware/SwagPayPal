@@ -132,16 +132,6 @@ trait ServicesTrait
         );
     }
 
-    protected function createWebhookRegistry(?OrderTransactionRepoMock $orderTransactionRepo = null): WebhookRegistry
-    {
-        return new WebhookRegistry(new DummyCollection([$this->createDummyWebhook($orderTransactionRepo)]));
-    }
-
-    protected function createLocaleCodeProvider(): LocaleCodeProvider
-    {
-        return new LocaleCodeProvider(new LanguageRepoMock());
-    }
-
     /**
      * @param array<string, mixed> $settings
      */
@@ -153,26 +143,5 @@ trait ServicesTrait
         }
 
         return $systemConfigService;
-    }
-
-    private function createDummyWebhook(?OrderTransactionRepoMock $orderTransactionRepo = null): DummyWebhook
-    {
-        if ($orderTransactionRepo === null) {
-            $orderTransactionRepo = new OrderTransactionRepoMock();
-        }
-
-        return new DummyWebhook($orderTransactionRepo);
-    }
-
-    private function getEmptyCartPrice(): CartPrice
-    {
-        return new CartPrice(
-            0.0,
-            0.0,
-            0,
-            new CalculatedTaxCollection(),
-            new TaxRuleCollection(),
-            CartPrice::TAX_STATE_GROSS
-        );
     }
 }

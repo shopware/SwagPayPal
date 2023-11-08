@@ -16,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityNotFoundExcepti
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Exception\SubscriptionTypeNotSupportedException;
 use Swag\PayPal\DataAbstractionLayer\Extension\CustomerExtension;
@@ -30,7 +31,7 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 #[Package('checkout')]
 class VaultTokenService
 {
-    public const CUSTOM_FIELD_PAYPAL_WALLET_VAULT = 'swagPaypalVaultToken_';
+    public const CUSTOM_FIELD_SUBSCRIPTION_VAULT = 'swagPaypalVaultToken_%s';
     public const REQUEST_CREATE_VAULT = 'createVault';
 
     /**
@@ -46,6 +47,9 @@ class VaultTokenService
     public function getAvailableToken(SyncPaymentTransactionStruct $struct, Context $context): ?VaultTokenEntity
     {
         $customerId = $struct->getOrder()->getOrderCustomer()?->getCustomerId();
+        if (!$customerId) {
+            return null;
+        }
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('customerId', $customerId));
@@ -53,10 +57,12 @@ class VaultTokenService
 
         if ($subscription = $this->getSubscription($struct)) {
             // try to get the token from the subscription
-            $tokenId = ($subscription->getCustomFields() ?? [])[self::CUSTOM_FIELD_PAYPAL_WALLET_VAULT] ?? null;
+            $tokenId = ($subscription->getCustomFields() ?? [])[$this->getSubscriptionCustomFieldKey($struct->getOrderTransaction()->getPaymentMethodId())] ?? null;
 
             if ($tokenId) {
                 $criteria->setIds([$tokenId]);
+            } else {
+                return null;
             }
         } else {
             $criteria->addFilter(new EqualsFilter('mainMapping.customerId', $customerId));
@@ -77,19 +83,16 @@ class VaultTokenService
 
         $tokenId = $this->findTokenId($token->getId(), $context);
         if (!$tokenId) {
-            $event = $this->vaultTokenRepository->upsert([
+            $tokenId = Uuid::randomHex();
+            $this->vaultTokenRepository->upsert([
                 [
+                    'id' => $tokenId,
                     'token' => $token->getId(),
                     'paymentMethodId' => $struct->getOrderTransaction()->getPaymentMethodId(),
                     'identifier' => $paymentSource->getVaultIdentifier(),
                     'customerId' => $context->getCustomerId(),
                 ],
             ], $context->getContext());
-
-            $tokenId = $event->getPrimaryKeys(VaultTokenDefinition::ENTITY_NAME)[0];
-            if (!$tokenId) {
-                throw new EntityNotFoundException(VaultTokenDefinition::ENTITY_NAME, $token->getId());
-            }
         }
 
         $customerId = $struct->getOrder()->getOrderCustomer()?->getCustomerId();
@@ -98,7 +101,7 @@ class VaultTokenService
         }
 
         if ($subscription = $this->getSubscription($struct)) {
-            $this->saveTokenToSubscription($subscription, $tokenId, $context->getContext());
+            $this->saveTokenToSubscription($subscription, $tokenId, $struct->getOrderTransaction()->getPaymentMethodId(), $context->getContext());
         }
     }
 
@@ -128,7 +131,7 @@ class VaultTokenService
         $paymentSource->setAttributes($attributes);
     }
 
-    private function saveTokenToSubscription(SubscriptionEntity $subscription, string $tokenId, Context $context): void
+    private function saveTokenToSubscription(SubscriptionEntity $subscription, string $tokenId, string $paymentMethodId, Context $context): void
     {
         if ($this->subscriptionRepository === null) {
             throw new ServiceNotFoundException('subscription.repository');
@@ -137,7 +140,7 @@ class VaultTokenService
         $this->subscriptionRepository->upsert([[
             'id' => $subscription->getId(),
             'customFields' => [
-                self::CUSTOM_FIELD_PAYPAL_WALLET_VAULT => $tokenId,
+                $this->getSubscriptionCustomFieldKey($paymentMethodId) => $tokenId,
             ],
         ]], $context);
     }
@@ -161,5 +164,10 @@ class VaultTokenService
         $criteria->addFilter(new EqualsFilter('customerId', $context->getCustomerId()));
 
         return $this->vaultTokenRepository->searchIds($criteria, $context->getContext())->firstId();
+    }
+
+    private function getSubscriptionCustomFieldKey(string $paymentMethodId): string
+    {
+        return \sprintf(self::CUSTOM_FIELD_SUBSCRIPTION_VAULT, $paymentMethodId);
     }
 }

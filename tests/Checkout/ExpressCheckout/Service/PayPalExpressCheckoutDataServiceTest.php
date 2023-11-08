@@ -34,6 +34,8 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -79,7 +81,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
 
         $this->expressCheckoutDataService = new PayPalExpressCheckoutDataService(
             $this->cartService,
-            $this->createLocaleCodeProvider(),
+            new LocaleCodeProvider(new LanguageRepoMock()),
             $router,
             $this->paymentMethodUtil,
             $this->systemConfigService,

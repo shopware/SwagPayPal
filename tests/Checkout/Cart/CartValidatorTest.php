@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\Checkout\Cart;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -78,7 +81,14 @@ class CartValidatorTest extends TestCase
         $cart = Generator::createCart();
         $cart->getLineItems()->remove('A');
         $cart->getLineItems()->remove('B');
-        $cart->setPrice($this->getEmptyCartPrice());
+        $cart->setPrice(new CartPrice(
+            0.0,
+            0.0,
+            0,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection(),
+            CartPrice::TAX_STATE_GROSS
+        ));
 
         $context = $this->getSalesChannelContext();
         $errors = new ErrorCollection();
@@ -92,7 +102,14 @@ class CartValidatorTest extends TestCase
     {
         $cart = Generator::createCart();
         $cart->getLineItems()->remove('A');
-        $cart->setPrice($this->getEmptyCartPrice());
+        $cart->setPrice(new CartPrice(
+            0.0,
+            0.0,
+            0,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection(),
+            CartPrice::TAX_STATE_GROSS
+        ));
 
         $context = $this->getSalesChannelContext();
         $errors = new ErrorCollection();
@@ -106,7 +123,14 @@ class CartValidatorTest extends TestCase
     {
         $cart = Generator::createCart();
         $cart->getLineItems()->remove('A');
-        $cart->setPrice($this->getEmptyCartPrice());
+        $cart->setPrice(new CartPrice(
+            0.0,
+            0.0,
+            0,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection(),
+            CartPrice::TAX_STATE_GROSS
+        ));
 
         $context = Generator::createSalesChannelContext();
         $errors = new ErrorCollection();
