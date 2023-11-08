@@ -22,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
@@ -41,6 +42,7 @@ use Symfony\Component\HttpFoundation\Request;
 #[Package('checkout')]
 class FilteredPaymentMethodRouteTest extends TestCase
 {
+    use IntegrationTestBehaviour;
     use PaymentMethodTrait;
     use SalesChannelContextTrait;
     use ServicesTrait;

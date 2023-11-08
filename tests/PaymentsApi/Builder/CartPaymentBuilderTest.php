@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
@@ -32,6 +33,7 @@ use Swag\PayPal\Util\PriceFormatter;
 class CartPaymentBuilderTest extends TestCase
 {
     use CartTrait;
+    use IntegrationTestBehaviour;
     use SalesChannelContextTrait;
     use ServicesTrait;
 

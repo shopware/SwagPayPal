@@ -7,11 +7,7 @@
 
 namespace Swag\PayPal\Test\Helper;
 
-use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
-use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
@@ -24,20 +20,15 @@ use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\DummyCollection;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
-use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
-use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
-use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
-use Swag\PayPal\Webhook\WebhookRegistry;
 
 /**
  * @internal
@@ -45,8 +36,6 @@ use Swag\PayPal\Webhook\WebhookRegistry;
 #[Package('checkout')]
 trait ServicesTrait
 {
-    use IntegrationTestBehaviour;
-
     protected function createPayPalClientFactory(): PayPalClientFactoryMock
     {
         return $this->createPayPalClientFactoryWithService($this->createDefaultSystemConfig());

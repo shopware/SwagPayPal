@@ -18,8 +18,7 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Struct\ArrayStruct;
-use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
@@ -47,8 +46,7 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class CreateOrderRouteTest extends TestCase
 {
-    use BasicTestDataBehaviour;
-    use DatabaseTransactionBehaviour;
+    use IntegrationTestBehaviour;
     use SalesChannelContextTrait;
     use ServicesTrait;
 

@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -32,7 +32,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 #[Package('checkout')]
 class WebhookControllerTest extends TestCase
 {
-    use DatabaseTransactionBehaviour;
+    use IntegrationTestBehaviour;
     use ServicesTrait;
 
     public const THROW_WEBHOOK_EXCEPTION = 'executeWebhookThrowsWebhookException';

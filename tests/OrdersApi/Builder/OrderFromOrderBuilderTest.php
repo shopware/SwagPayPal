@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEnt
 use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
@@ -27,6 +28,7 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 #[Package('checkout')]
 class OrderFromOrderBuilderTest extends TestCase
 {
+    use IntegrationTestBehaviour;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;
     use ServicesTrait;

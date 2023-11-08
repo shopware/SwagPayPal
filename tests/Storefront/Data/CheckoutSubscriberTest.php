@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Shipping\Cart\Error\ShippingMethodBlockedError;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
@@ -68,6 +69,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class CheckoutSubscriberTest extends TestCase
 {
     use CartTrait;
+    use IntegrationTestBehaviour;
     use PaymentMethodTrait;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;

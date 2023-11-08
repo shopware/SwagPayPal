@@ -9,8 +9,6 @@ namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\DummyCollection;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Webhook\Exception\WebhookException;
@@ -22,8 +20,6 @@ use Swag\PayPal\Webhook\WebhookRegistry;
 #[Package('checkout')]
 class WebhookRegistryTest extends TestCase
 {
-    use ServicesTrait;
-
     public function testGetWebhookHandler(): void
     {
         $registry = new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]);

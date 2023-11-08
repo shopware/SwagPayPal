@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
@@ -33,6 +34,7 @@ use Symfony\Component\HttpFoundation\Request;
 #[Package('checkout')]
 class SettingsControllerTest extends TestCase
 {
+    use IntegrationTestBehaviour;
     use ServicesTrait;
 
     public function testValidateApiWithValidData(): void

@@ -19,8 +19,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\SalesChannelRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -64,9 +63,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Package('checkout')]
 class PlusSubscriberTest extends TestCase
 {
-    use BasicTestDataBehaviour;
     use CartTrait;
-    use DatabaseTransactionBehaviour;
+    use IntegrationTestBehaviour;
     use PaymentMethodTrait;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;

@@ -20,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\Method\APMHandler;
@@ -55,6 +56,7 @@ use Symfony\Component\HttpFoundation\Request;
 class APMHandlerTest extends TestCase
 {
     use FullCheckoutTrait;
+    use IntegrationTestBehaviour;
     use OrderTransactionTrait;
     use ServicesTrait;
     use StateMachineStateTrait;

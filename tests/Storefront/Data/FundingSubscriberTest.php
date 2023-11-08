@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
@@ -41,6 +42,7 @@ use Symfony\Component\Routing\RouterInterface;
 class FundingSubscriberTest extends TestCase
 {
     use CartTrait;
+    use IntegrationTestBehaviour;
     use PaymentMethodTrait;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;

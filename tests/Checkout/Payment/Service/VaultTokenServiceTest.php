@@ -17,12 +17,12 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\Recurring\RecurringDataStruct;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Swag\PayPal\Checkout\Exception\SubscriptionTypeNotSupportedException;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
@@ -47,7 +47,7 @@ class VaultTokenServiceTest extends TestCase
 
     public function testGetAvailableTokenFromSubscription(): void
     {
-        if (!class_exists(SubscriptionDefinition::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
@@ -65,8 +65,9 @@ class VaultTokenServiceTest extends TestCase
 
         $order = new OrderEntity();
         $order->setId(Uuid::randomHex());
-        $order->setOrderCustomer(new OrderCustomerEntity());
-        $order->getOrderCustomer()->setCustomerId('customer-id');
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setCustomerId('customer-id');
+        $order->setOrderCustomer($orderCustomer);
 
         $vaultTokenRepository = new StaticEntityRepository([static function (Criteria $criteria) use ($token) {
             static::assertSame([$token->getId()], $criteria->getIds());
@@ -95,7 +96,7 @@ class VaultTokenServiceTest extends TestCase
 
     public function testGetAvailableTokenFromSubscriptionWithoutToken(): void
     {
-        if (!class_exists(SubscriptionDefinition::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
@@ -112,8 +113,9 @@ class VaultTokenServiceTest extends TestCase
 
         $order = new OrderEntity();
         $order->setId(Uuid::randomHex());
-        $order->setOrderCustomer(new OrderCustomerEntity());
-        $order->getOrderCustomer()->setCustomerId('customer-id');
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setCustomerId('customer-id');
+        $order->setOrderCustomer($orderCustomer);
 
         $vaultTokenService = new VaultTokenService(
             new StaticEntityRepository([], new CustomerDefinition()),
@@ -132,18 +134,15 @@ class VaultTokenServiceTest extends TestCase
         $token = new VaultTokenEntity();
         $token->setId(Uuid::randomHex());
 
-        $subscription = new SubscriptionEntity();
-        $subscription->setId(Uuid::randomHex());
-        $subscription->setNextSchedule(new \DateTime());
-
         $transaction = new OrderTransactionEntity();
         $transaction->setId(Uuid::randomHex());
         $transaction->setPaymentMethodId('payment-method-id');
 
         $order = new OrderEntity();
         $order->setId(Uuid::randomHex());
-        $order->setOrderCustomer(new OrderCustomerEntity());
-        $order->getOrderCustomer()->setCustomerId('customer-id');
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setCustomerId('customer-id');
+        $order->setOrderCustomer($orderCustomer);
 
         $vaultTokenRepository = new StaticEntityRepository([static function (Criteria $criteria) use ($token) {
             static::assertCount(3, $criteria->getFilters());
@@ -174,7 +173,7 @@ class VaultTokenServiceTest extends TestCase
 
     public function testGetAvailableTokenWithoutCustomerIdInOrder(): void
     {
-        if (!class_exists(SubscriptionDefinition::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
@@ -201,12 +200,12 @@ class VaultTokenServiceTest extends TestCase
 
         $vaultTokenService->requestVaulting($paymentSource);
         static::assertSame('ON_SUCCESS', $paymentSource->getAttributes()?->getVault()?->getStoreInVault());
-        static::assertSame('MERCHANT', $paymentSource->getAttributes()?->getVault()?->getUsageType());
+        static::assertSame('MERCHANT', $paymentSource->getAttributes()->getVault()->getUsageType());
     }
 
     public function testGetSubscription(): void
     {
-        if (!class_exists(SubscriptionRecurringDataStruct::class)) {
+        if (!\class_exists(SubscriptionRecurringDataStruct::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
@@ -267,8 +266,9 @@ class VaultTokenServiceTest extends TestCase
 
         $order = new OrderEntity();
         $order->setId(Uuid::randomHex());
-        $order->setOrderCustomer(new OrderCustomerEntity());
-        $order->getOrderCustomer()->setCustomerId('customer-id');
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setCustomerId('customer-id');
+        $order->setOrderCustomer($orderCustomer);
 
         $salesChannelContext = Generator::createSalesChannelContext();
         $vault = new Vault();
@@ -298,7 +298,7 @@ class VaultTokenServiceTest extends TestCase
 
     public function testSaveTokenToSubscription(): void
     {
-        if (!class_exists(SubscriptionDefinition::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
@@ -344,7 +344,7 @@ class VaultTokenServiceTest extends TestCase
 
     public function testSaveTokenToSubscriptionWithoutRepository(): void
     {
-        if (!class_exists(SubscriptionDefinition::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 

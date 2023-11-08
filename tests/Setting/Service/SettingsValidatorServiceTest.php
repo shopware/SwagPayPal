@@ -35,6 +35,7 @@ class SettingsValidatorServiceTest extends TestCase
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
         $validationService->validate();
         $validationService->validate(TestDefaults::SALES_CHANNEL);
+        static::expectNotToPerformAssertions();
     }
 
     public function testValidateWithValidLiveDistinctSettings(): void
@@ -61,6 +62,7 @@ class SettingsValidatorServiceTest extends TestCase
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
         $validationService->validate();
         $validationService->validate(TestDefaults::SALES_CHANNEL);
+        static::expectNotToPerformAssertions();
     }
 
     public function testValidateWithValidSandboxSettingsButSandboxDisabled(): void

@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -38,6 +39,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 #[Package('checkout')]
 class CartValidatorTest extends TestCase
 {
+    use IntegrationTestBehaviour;
     use PaymentMethodTrait;
     use ServicesTrait;
 

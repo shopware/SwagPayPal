@@ -14,7 +14,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\EntityExistence;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -22,8 +21,8 @@ use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\DummyCollection;
 use Swag\PayPal\Test\Mock\RouterMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
@@ -34,7 +33,6 @@ use Swag\PayPal\Webhook\WebhookService;
 #[Package('checkout')]
 class WebhookSubscriberTest extends TestCase
 {
-    use DatabaseTransactionBehaviour;
     use ServicesTrait;
 
     private const WEBHOOK_ID = 'someWebhookId';
@@ -46,17 +44,10 @@ class WebhookSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+        $this->systemConfigService = new SystemConfigServiceMock();
         $this->systemConfigService->set(Settings::CLIENT_ID, 'defaultClientId');
         $this->systemConfigService->set(Settings::CLIENT_SECRET, 'defaultClientSecret');
         $this->systemConfigService->set(Settings::SANDBOX, false);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->systemConfigService->delete(Settings::CLIENT_ID);
-        $this->systemConfigService->delete(Settings::CLIENT_SECRET);
-        $this->systemConfigService->delete(Settings::SANDBOX);
     }
 
     public function testRemoveWebhookWithInheritedConfiguration(): void
@@ -97,7 +88,7 @@ class WebhookSubscriberTest extends TestCase
     {
         $webhookService = new WebhookService(
             new WebhookResource($this->createPayPalClientFactoryWithService($this->systemConfigService)),
-            new WebhookRegistry(new DummyCollection([])),
+            new WebhookRegistry([]),
             $this->systemConfigService,
             new RouterMock()
         );
