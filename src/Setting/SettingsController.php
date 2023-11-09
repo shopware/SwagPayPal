@@ -9,7 +9,6 @@ namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -42,8 +41,6 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Since("0.9.0")
-     *
      * @Route("/api/_action/paypal/validate-api-credentials", name="api.action.paypal.validate.api.credentials", methods={"GET"}, defaults={"_acl": {"swag_paypal.viewer"}})
      */
     public function validateApiCredentials(Request $request): JsonResponse
@@ -74,8 +71,6 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Since("0.10.0")
-     *
      * @Route("/api/_action/paypal/get-api-credentials", name="api.action.paypal.get.api.credentials", methods={"POST"}, defaults={"_acl": {"swag_paypal.editor"}})
      */
     public function getApiCredentials(RequestDataBag $requestDataBag): JsonResponse
@@ -91,8 +86,6 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Since("5.2.0")
-     *
      * @Route("/api/_action/paypal/merchant-information", name="api.action.paypal.merchant-information", methods={"GET"}, defaults={"_acl": {"swag_paypal.editor"}})
      */
     public function getMerchantInformation(Request $request, Context $context): JsonResponse

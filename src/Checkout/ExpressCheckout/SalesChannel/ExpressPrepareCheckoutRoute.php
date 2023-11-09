@@ -66,8 +66,6 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
     }
 
     /**
-     * @Since("2.0.0")
-     *
      * @OA\Post(
      *     path="/store-api/paypal/express/prepare-checkout",
      *     description="Loggs in a guest customer, with the data of a paypal order",

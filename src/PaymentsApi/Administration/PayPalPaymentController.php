@@ -14,7 +14,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Swag\PayPal\PaymentsApi\Administration\Exception\PaymentNotFoundException;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -90,8 +89,6 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Since("0.10.0")
-     *
      * @OA\Get(
      *     path="/paypal/payment-details/{orderId}/{paymentId}",
      *     description="Loads the Payment details of the given PayPal ID",
@@ -142,8 +139,6 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Since("1.5.1")
-     *
      * @OA\Get(
      *     path="/paypal/resource-details/{resourceType}/{resourceId}/{orderId}",
      *     description="Loads the PayPal resource details of the given resource ID",
@@ -221,8 +216,6 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Since("0.9.0")
-     *
      * @Route("/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
      *
      * @throws RequiredParameterInvalidException
@@ -265,8 +258,6 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Since("0.9.0")
-     *
      * @Route("/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
      *
      * @throws RequiredParameterInvalidException
@@ -304,8 +295,6 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Since("0.9.0")
-     *
      * @Route("/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
      *
      * @throws RequiredParameterInvalidException
