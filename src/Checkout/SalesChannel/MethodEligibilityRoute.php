@@ -12,7 +12,6 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
@@ -56,8 +55,6 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
     }
 
     /**
-     * @Since("5.1.0")
-     *
      * @OA\Post(
      *     path="/store-api/paypal/payment-method-eligibility",
      *     description="Sets ineligible payment methods to be removed from the session",

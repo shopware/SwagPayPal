@@ -10,7 +10,6 @@ namespace Swag\PayPal\Administration;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -36,8 +35,6 @@ class PayPalPaymentMethodController extends AbstractController
     }
 
     /**
-     * @Since("1.5.0")
-     *
      * @OA\Post(
      *     path="/_action/paypal/saleschannel-default",
      *     description="Sets PayPal as the default payment method for a given Saleschannel, or all.",

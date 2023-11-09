@@ -18,7 +18,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Annotation\Entity;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
@@ -86,8 +85,6 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
     }
 
     /**
-     * @Since("6.2.0.0")
-     *
      * @Entity("payment_method")
      *
      * @OA\Post (

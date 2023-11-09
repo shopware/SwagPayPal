@@ -9,7 +9,6 @@ namespace Swag\PayPal\Checkout\Plus;
 
 use Shopware\Core\Checkout\Payment\SalesChannel\HandlePaymentMethodRouteResponse;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
@@ -54,8 +53,6 @@ class PlusPaymentHandleController extends StorefrontController
     }
 
     /**
-     * @Since("6.0.0")
-     *
      * @Route(
      *     "/paypal/plus/payment/handle",
      *     name="frontend.paypal.plus.handle",

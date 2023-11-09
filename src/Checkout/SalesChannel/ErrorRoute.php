@@ -51,8 +51,6 @@ class ErrorRoute extends AbstractErrorRoute
     }
 
     /**
-     * @Since("3.3.0")
-     *
      * @OA\Post(
      *     path="/store-api/paypal/error",
      *     description="Adds an error message to a flashbag and logs the error",
