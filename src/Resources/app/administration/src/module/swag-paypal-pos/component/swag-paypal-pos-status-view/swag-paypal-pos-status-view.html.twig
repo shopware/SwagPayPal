@@ -24,9 +24,9 @@
                     {{ $tc('swag-paypal-pos.detail.overview.status.syncingDetail') }}
                 {% endblock %}
             </template>
-            <template #detail v-else-if="lastFinishedRun">
-                <div>
 
+            <template #detail v-if="!isSyncing && lastFinishedRun">
+                <div>
                     {% block swag_paypal_pos_status_view_detail_static %}
                         {{ $tc('swag-paypal-pos.detail.overview.status.lastSynced') }}:
                         {{ dateFilter(lastFinishedRun.updatedAt, {

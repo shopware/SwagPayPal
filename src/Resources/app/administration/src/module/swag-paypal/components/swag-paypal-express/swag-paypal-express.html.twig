@@ -23,7 +23,11 @@
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsDetailEnabled.helpText')"
                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             {% if VUE3 %}
+                                             @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                             @change="props.updateCurrentValue"
+                                             {% endif %}>
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
@@ -46,7 +50,11 @@
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsCartEnabled.helpText')"
                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             {% if VUE3 %}
+                                             @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                             @change="props.updateCurrentValue"
+                                             {% endif %}>
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
@@ -69,7 +77,11 @@
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsOffCanvasEnabled.helpText')"
                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             {% if VUE3 %}
+                                             @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                             @change="props.updateCurrentValue"
+                                             {% endif %}>
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
@@ -93,7 +105,11 @@
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsLoginEnabled.helpText')"
                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             {% if VUE3 %}
+                                             @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                             @change="props.updateCurrentValue"
+                                             {% endif %}>
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
@@ -116,7 +132,11 @@
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsListingEnabled.helpText')"
                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             {% if VUE3 %}
+                                             @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                             @change="props.updateCurrentValue"
+                                             {% endif %}>
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
@@ -140,7 +160,11 @@
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited || renderSettingsDisabled"
                                               :value="props.currentValue"
-                                              @change="props.updateCurrentValue">
+                                              {% if VUE3 %}
+                                              @update:value="props.updateCurrentValue"
+                                              {% else %}
+                                              @change="props.updateCurrentValue"
+                                              {% endif %}>
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>
@@ -164,7 +188,11 @@
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited || renderSettingsDisabled"
                                               :value="props.currentValue"
-                                              @change="props.updateCurrentValue">
+                                              {% if VUE3 %}
+                                              @update:value="props.updateCurrentValue"
+                                              {% else %}
+                                              @change="props.updateCurrentValue"
+                                              {% endif %}>
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>
@@ -186,7 +214,11 @@
                                                     :helpText="$tc('swag-paypal.settingForm.express.ecsButtonLanguageIso.helpText')"
                                                     :disabled="props.isInherited || renderSettingsDisabled"
                                                     :value="props.currentValue"
+                                                    {% if VUE3 %}
+                                                    @update:value="props.updateCurrentValue"
+                                                    {% else %}
                                                     @change="props.updateCurrentValue"
+                                                    {% endif %}
                                                     @preventSave="preventSave">
                             </swag-paypal-locale-field>
                         </template>
@@ -210,7 +242,11 @@
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsShowPayLater.helpText')"
                                              :disabled="props.isInherited || renderSettingsDisabled"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             {% if VUE3 %}
+                                             @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                             @change="props.updateCurrentValue"
+                                             {% endif %}>
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>

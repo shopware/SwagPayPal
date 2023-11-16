@@ -24,7 +24,11 @@
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                               :value="props.currentValue"
-                                              @change="props.updateCurrentValue">
+                                              {% if VUE3 %}
+                                              @update:value="props.updateCurrentValue"
+                                              {% else %}
+                                              @change="props.updateCurrentValue"
+                                              {% endif %}>
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>
@@ -48,7 +52,11 @@
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                               :value="props.currentValue"
-                                              @change="props.updateCurrentValue">
+                                              {% if VUE3 %}
+                                              @update:value="props.updateCurrentValue"
+                                              {% else %}
+                                              @change="props.updateCurrentValue"
+                                              {% endif %}>
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>
@@ -71,7 +79,11 @@
                                              :helpText="$tc('swag-paypal.settingForm.behavior.submitCart.helpText')"
                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             {% if VUE3 %}
+                                             @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                             @change="props.updateCurrentValue"
+                                             {% endif %}>
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
@@ -93,7 +105,11 @@
                                            :helpText="$tc('swag-paypal.settingForm.behavior.brandName.tooltipText')"
                                            :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                            :value="props.currentValue"
-                                           @change="props.updateCurrentValue">
+                                           {% if VUE3 %}
+                                           @update:value="props.updateCurrentValue"
+                                           {% else %}
+                                           @change="props.updateCurrentValue"
+                                           {% endif %}>
                             </sw-text-field>
                         </template>
                     </sw-inherit-wrapper>
@@ -117,7 +133,11 @@
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                               :value="props.currentValue"
-                                              @change="props.updateCurrentValue">
+                                              {% if VUE3 %}
+                                              @update:value="props.updateCurrentValue"
+                                              {% else %}
+                                              @change="props.updateCurrentValue"
+                                              {% endif %}>
                             </sw-single-select>
 
                             {% block swag_paypal_content_card_channel_config_behaviour_settings_landing_page_hint %}
@@ -144,7 +164,11 @@
                                              :helpText="$tc('swag-paypal.settingForm.behavior.sendOrderNumber.helpText')"
                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             {% if VUE3 %}
+                                             @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                             @change="props.updateCurrentValue"
+                                             {% endif %}>
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
@@ -170,7 +194,11 @@
                                                    :helpText="$tc('swag-paypal.settingForm.behavior.orderNumberPrefix.tooltipText')"
                                                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                                    :value="props.currentValue"
-                                                   @change="props.updateCurrentValue">
+                                                   {% if VUE3 %}
+                                                   @update:value="props.updateCurrentValue"
+                                                   {% else %}
+                                                   @change="props.updateCurrentValue"
+                                                   {% endif %}>
                                     </sw-text-field>
                                 </template>
                             </sw-inherit-wrapper>
@@ -192,7 +220,11 @@
                                                    :helpText="$tc('swag-paypal.settingForm.behavior.orderNumberSuffix.tooltipText')"
                                                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                                    :value="props.currentValue"
-                                                   @change="props.updateCurrentValue">
+                                                   {% if VUE3 %}
+                                                   @update:value="props.updateCurrentValue"
+                                                   {% else %}
+                                                   @change="props.updateCurrentValue"
+                                                   {% endif %}>
                                     </sw-text-field>
                                 </template>
                             </sw-inherit-wrapper>
@@ -288,6 +320,5 @@
 
             </div>
         {% endblock %}
-
     </sw-card>
 {% endblock %}

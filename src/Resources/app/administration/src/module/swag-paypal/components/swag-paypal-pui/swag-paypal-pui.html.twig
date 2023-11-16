@@ -21,7 +21,11 @@
                                            :helpText="$tc('swag-paypal.settingForm.pui.customerServiceInstructions.helpText')"
                                            :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                            :value="props.currentValue"
-                                           @change="props.updateCurrentValue">
+                                           {% if VUE3 %}
+                                           @update:value="props.updateCurrentValue"
+                                           {% else %}
+                                           @change="props.updateCurrentValue"
+                                           {% endif %}>
                             </sw-text-field>
                         </template>
                     </sw-inherit-wrapper>

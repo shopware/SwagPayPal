@@ -17,7 +17,7 @@ Component.override('sw-sales-channel-modal-grid', {
 
     computed: {
         assetFilter() {
-            return Shopware.Component.getFilter('asset');
+            return Shopware.Filter.getByName('asset');
         },
     },
 });

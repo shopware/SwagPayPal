@@ -43,7 +43,12 @@
                 required
                 :label="$tc('swag-paypal-pos.wizard.customization.labelDomain')"
                 :placeholder="$tc('swag-paypal-pos.wizard.customization.placeholderDomain')"
-                @input="forceUpdate">
+                {% if VUE3 %}
+                :value="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
+                @update:value="forceUpdate"
+                {% else %}
+                @input="forceUpdate"
+                {% endif %}>
             </sw-url-field>
         {% endblock %}
 
