@@ -49,6 +49,12 @@ Component.register('swag-paypal-pos-wizard-connection', {
         },
     },
 
+    computed: {
+        assetFilter() {
+            return Shopware.Filter.getByName('asset');
+        },
+    },
+
     created() {
         this.createdComponent();
     },

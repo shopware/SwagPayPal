@@ -35,7 +35,11 @@
                 {# @deprecated tag:v8.0.0 - Will be removed without replacement #}
                 {% block swag_paypal_content_card_channel_config_plus_settings_checkout_enabled %}
                     <sw-inherit-wrapper
+                        {% if VUE3 %}
+                        v-model:value="actualConfigData['SwagPayPal.settings.plusCheckoutEnabled']"
+                        {% else %}
                         v-model="actualConfigData['SwagPayPal.settings.plusCheckoutEnabled']"
+                        {% endif %}
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.plusCheckoutEnabled']"
                         :customInheritationCheckFunction="checkBoolFieldInheritance">
                         <template #content="props">
@@ -45,7 +49,11 @@
                                              :label="$tc('swag-paypal.settingForm.plus.plusCheckoutEnabled.label')"
                                              :disabled="ifItWasNotActive() || props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             {% if VUE3 %}
+                                             @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                             @change="props.updateCurrentValue"
+                                             {% endif %}>
                             </sw-switch-field>
 
                             {# @deprecated tag:v8.0.0 - Will be removed without replacement #}

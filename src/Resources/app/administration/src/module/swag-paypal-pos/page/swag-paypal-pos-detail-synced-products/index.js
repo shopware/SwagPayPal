@@ -57,6 +57,12 @@ Component.register('swag-paypal-pos-detail-synced-products', {
         this.createdComponent();
     },
 
+    computed: {
+        dateFilter() {
+            return Shopware.Filter.getByName('date');
+        },
+    },
+
     methods: {
         createdComponent() {
             this.$emit('buttons-update', []);

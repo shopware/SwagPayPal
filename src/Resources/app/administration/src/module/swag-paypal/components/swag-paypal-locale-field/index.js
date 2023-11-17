@@ -7,6 +7,8 @@ const { debounce } = Shopware.Utils;
 Component.extend('swag-paypal-locale-field', 'sw-text-field', {
     template,
 
+    inject: ['feature'],
+
     data() {
         return {
             error: null,
@@ -26,7 +28,12 @@ Component.extend('swag-paypal-locale-field', 'sw-text-field', {
         checkValue(value) {
             const localeCodeRegex = /^[a-z]{2}_[A-Z]{2}$/;
 
-            this.$emit('change', value || '');
+            if (this.feature.isActive('VUE3')) {
+                this.$emit('update:value', value || '');
+            } else {
+                this.$emit('change', value || '');
+            }
+
 
             if (!value || localeCodeRegex.exec(value)) {
                 this.preventSave(false);

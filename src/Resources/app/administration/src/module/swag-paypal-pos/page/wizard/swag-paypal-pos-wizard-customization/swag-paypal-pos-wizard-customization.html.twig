@@ -3,32 +3,52 @@
          class="swag-paypal-pos-wizard-customization">
 
         {% block swag_paypal_pos_wizard_customization_name %}
-            <sw-text-field v-model="salesChannel.name"
-                           class="swag-paypal-pos-wizard-customization__name-field"
-                           validation="required"
-                           required
-                           :label="$tc('swag-paypal-pos.wizard.customization.salesChannelLabel')"
-                           :placeholder="$tc('sw-sales-channel.detail.placeholderName')"
-                           @input="forceUpdate">
+            <sw-text-field
+                {% if VUE3 %}
+                v-model:value="salesChannel.name"
+                {% else %}
+                v-model="salesChannel.name"
+                {% endif %}
+                class="swag-paypal-pos-wizard-customization__name-field"
+                validation="required"
+                required
+                :label="$tc('swag-paypal-pos.wizard.customization.salesChannelLabel')"
+                :placeholder="$tc('sw-sales-channel.detail.placeholderName')"
+                @input="forceUpdate">
             </sw-text-field>
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_customization_language %}
-            <sw-entity-single-select v-model="salesChannel.languageId"
-                                     entity="language"
-                                     required
-                                     :label="$tc('global.entities.language')"
-                                     @change="changeLanguage">
+            <sw-entity-single-select
+                {% if VUE3 %}
+                v-model:value="salesChannel.languageId"
+                {% else %}
+                v-model="salesChannel.languageId"
+                {% endif %}
+                entity="language"
+                required
+                :label="$tc('global.entities.language')"
+                @change="changeLanguage">
             </sw-entity-single-select>
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_customization_media_domain %}
-            <sw-url-field v-model="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
-                          class="swag-paypal-pos-wizard-customization__domain-field"
-                          required
-                          :label="$tc('swag-paypal-pos.wizard.customization.labelDomain')"
-                          :placeholder="$tc('swag-paypal-pos.wizard.customization.placeholderDomain')"
-                          @input="forceUpdate">
+            <sw-url-field
+                {% if VUE3 %}
+                v-model:value="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
+                {% else %}
+                v-model="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
+                {% endif %}
+                class="swag-paypal-pos-wizard-customization__domain-field"
+                required
+                :label="$tc('swag-paypal-pos.wizard.customization.labelDomain')"
+                :placeholder="$tc('swag-paypal-pos.wizard.customization.placeholderDomain')"
+                {% if VUE3 %}
+                :value="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
+                @update:value="forceUpdate"
+                {% else %}
+                @input="forceUpdate"
+                {% endif %}>
             </sw-url-field>
         {% endblock %}
 

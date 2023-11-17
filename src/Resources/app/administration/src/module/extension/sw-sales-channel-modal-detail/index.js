@@ -12,4 +12,10 @@ Component.override('sw-sales-channel-modal-detail', {
             return salesChannelTypeId === PAYPAL_POS_SALES_CHANNEL_TYPE_ID;
         },
     },
+
+    computed: {
+        assetFilter() {
+            return Shopware.Filter.getByName('asset');
+        },
+    },
 });

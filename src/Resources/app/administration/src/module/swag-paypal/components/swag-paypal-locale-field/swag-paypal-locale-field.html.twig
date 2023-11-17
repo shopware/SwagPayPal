@@ -9,7 +9,9 @@
                                      :error="error"
                                      @inheritance-restore="$emit('inheritance-restore', $event)"
                                      @inheritance-remove="$emit('inheritance-remove', $event)"
-                                     v-on="$listeners">
+                                     {% if VUE2 %}
+                                     v-on="$listeners"
+                                     {% endif %}>
 
                     <template #sw-field-input="{ identification, error, disabled, size, setFocusClass, removeFocusClass, hasSuffix, hasPrefix }">
                         <input type="text"

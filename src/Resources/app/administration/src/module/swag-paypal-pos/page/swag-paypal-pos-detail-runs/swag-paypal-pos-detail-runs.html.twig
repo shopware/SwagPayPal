@@ -57,7 +57,7 @@
                                 <template #column-date="{ item }">
 
                                     {% block swag_paypal_pos_detail_runs_card_grid_column_date_formatted %}
-                                        {{ item.finishedAt | date({
+                                        {{ dateFilter(item.finishedAt, {
                                             hour: '2-digit',
                                             minute: '2-digit',
                                             day: '2-digit',

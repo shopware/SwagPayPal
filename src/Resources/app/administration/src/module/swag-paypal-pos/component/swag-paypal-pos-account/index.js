@@ -76,6 +76,14 @@ Component.register('swag-paypal-pos-account', {
         runRepository() {
             return this.repositoryFactory.create('swag_paypal_pos_sales_channel_run');
         },
+
+        assetFilter() {
+            return Shopware.Filter.getByName('asset');
+        },
+
+        dateFilter() {
+            return Shopware.Filter.getByName('date');
+        },
     },
 
     watch: {

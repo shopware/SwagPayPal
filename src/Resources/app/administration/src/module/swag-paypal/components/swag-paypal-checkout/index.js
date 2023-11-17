@@ -110,6 +110,10 @@ Component.register('swag-paypal-checkout', {
     },
 
     computed: {
+        assetFilter() {
+            return Shopware.Filter.getByName('asset');
+        },
+
         paymentMethodRepository() {
             return this.repositoryFactory.create('payment_method');
         },
