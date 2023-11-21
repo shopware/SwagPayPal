@@ -7,7 +7,6 @@
  */
 
 use Shopware\Core\DevOps\StaticAnalyze\StaticAnalyzeKernel;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Dotenv\Dotenv;

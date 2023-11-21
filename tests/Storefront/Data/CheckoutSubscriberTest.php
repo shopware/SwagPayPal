@@ -46,7 +46,6 @@ use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ClientTokenResponseFixture;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
@@ -55,6 +54,7 @@ use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
@@ -79,12 +79,12 @@ class CheckoutSubscriberTest extends TestCase
 
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;
 
-    private EventDispatcherMock $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
     protected function setUp(): void
     {
         $this->paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
-        $this->eventDispatcher = new EventDispatcherMock();
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
     public function testGetSubscribedEvents(): void

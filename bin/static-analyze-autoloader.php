@@ -5,9 +5,6 @@
  * file that was distributed with this source code.
  */
 
-use staabm\PHPStanDba\QueryReflection\PdoQueryReflector;
-use staabm\PHPStanDba\QueryReflection\QueryReflection;
-use staabm\PHPStanDba\QueryReflection\RuntimeConfiguration;
 use Symfony\Component\Dotenv\Dotenv;
 
 require_once dirname(__DIR__, 4) . '/vendor/autoload.php';

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Helper;
 
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
@@ -20,15 +21,13 @@ use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
-use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @internal
@@ -43,11 +42,9 @@ trait ServicesTrait
 
     protected function createPayPalClientFactoryWithService(SystemConfigService $systemConfigService): PayPalClientFactoryMock
     {
-        $logger = new LoggerMock();
-
         return new PayPalClientFactoryMock(
             $systemConfigService,
-            $logger
+            new NullLogger()
         );
     }
 
@@ -93,10 +90,10 @@ trait ServicesTrait
         $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
 
         return new OrderPaymentBuilder(
-            new LocaleCodeProviderMock(),
+            $this->createMock(LocaleCodeProvider::class),
             new PriceFormatter(),
-            new EventDispatcherMock(),
-            new LoggerMock(),
+            $this->createMock(EventDispatcherInterface::class),
+            new NullLogger(),
             $systemConfig,
             new CurrencyRepoMock()
         );
@@ -116,7 +113,7 @@ trait ServicesTrait
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
             $this->createMock(LocaleCodeProvider::class),
-            new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock()),
+            new ItemListProvider($priceFormatter, $this->createMock(EventDispatcherInterface::class), new NullLogger()),
             $this->createMock(VaultTokenService::class),
         );
     }

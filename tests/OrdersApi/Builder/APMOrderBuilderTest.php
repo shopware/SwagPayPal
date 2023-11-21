@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
@@ -50,10 +51,10 @@ use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
-use Swag\PayPal\Test\Mock\LoggerMock;
-use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @internal
@@ -164,10 +165,9 @@ class APMOrderBuilderTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
 
-        $settings = $this->createSystemConfigServiceMock([
-            Settings::ORDER_NUMBER_PREFIX => 'foo',
-            Settings::ORDER_NUMBER_SUFFIX => 'bar',
-        ]);
+        $settings = SystemConfigServiceMock::createWithoutCredentials();
+        $settings->set(Settings::ORDER_NUMBER_PREFIX, 'foo');
+        $settings->set(Settings::ORDER_NUMBER_SUFFIX, 'bar');
         $order = $this->createOrderBuilder($orderBuilderClass, $settings)->getOrder(
             $paymentTransaction,
             $salesChannelContext,
@@ -209,14 +209,14 @@ class APMOrderBuilderTest extends TestCase
         $amountProvider = new AmountProvider($priceFormatter);
         $addressProvider = new AddressProvider();
         $customIdProvider = new CustomIdProviderMock();
-        $localeCodeProvider = new LocaleCodeProviderMock();
+        $localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
 
         return new $orderBuilderClass(
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
             $localeCodeProvider,
-            new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())
+            new ItemListProvider($priceFormatter, $this->createMock(EventDispatcherInterface::class), new NullLogger())
         );
     }
 

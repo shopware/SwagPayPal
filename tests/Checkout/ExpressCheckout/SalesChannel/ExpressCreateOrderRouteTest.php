@@ -21,11 +21,10 @@ use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -66,8 +65,8 @@ class ExpressCreateOrderRouteTest extends TestCase
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
             $this->createMock(LocaleCodeProvider::class),
-            new EventDispatcherMock(),
-            new LoggerMock(),
+            $this->createMock(EventDispatcherInterface::class),
+            new NullLogger(),
             $this->createMock(VaultTokenService::class),
         );
 

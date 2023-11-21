@@ -41,10 +41,6 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 #[Package('checkout')]
 class VaultTokenServiceTest extends TestCase
 {
-    protected function setUp(): void
-    {
-    }
-
     public function testGetAvailableTokenFromSubscription(): void
     {
         if (!\class_exists(SubscriptionDefinition::class)) {

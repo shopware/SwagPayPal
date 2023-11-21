@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -20,7 +21,6 @@ use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
@@ -75,7 +75,7 @@ class SettingsControllerTest extends TestCase
 
     private function createApiValidationController(): SettingsController
     {
-        $logger = new LoggerMock();
+        $logger = new NullLogger();
 
         return new SettingsController(
             new ApiCredentialService(

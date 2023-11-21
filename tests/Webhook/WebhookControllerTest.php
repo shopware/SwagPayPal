@@ -8,15 +8,15 @@
 namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock;
 use Swag\PayPal\Test\Webhook\_fixtures\WebhookDataFixture;
 use Swag\PayPal\Webhook\WebhookController;
@@ -33,7 +33,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class WebhookControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;
-    use ServicesTrait;
 
     public const THROW_WEBHOOK_EXCEPTION = 'executeWebhookThrowsWebhookException';
     public const THROW_GENERAL_EXCEPTION = 'executeWebhookThrowsGeneralException';
@@ -146,8 +145,8 @@ class WebhookControllerTest extends TestCase
         );
 
         return new WebhookController(
-            new LoggerMock(),
-            new WebhookServiceMock($this->createSystemConfigServiceMock()),
+            new NullLogger(),
+            new WebhookServiceMock(SystemConfigServiceMock::createWithoutCredentials()),
             $systemConfigRepo
         );
     }

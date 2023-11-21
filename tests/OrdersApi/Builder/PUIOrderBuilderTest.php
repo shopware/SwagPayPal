@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
@@ -25,12 +26,11 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
-use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
-use Swag\PayPal\Test\Mock\LoggerMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @internal
@@ -41,7 +41,6 @@ class PUIOrderBuilderTest extends TestCase
     use IntegrationTestBehaviour;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;
-    use ServicesTrait;
 
     private const TEST_FIRST_NAME = 'FirstName';
     private const TEST_LAST_NAME = 'LastName';
@@ -147,10 +146,9 @@ class PUIOrderBuilderTest extends TestCase
         $customer = $salesChannelContext->getCustomer();
         static::assertNotNull($customer);
 
-        $settings = $this->createSystemConfigServiceMock([
-            Settings::ORDER_NUMBER_PREFIX => 'foo',
-            Settings::ORDER_NUMBER_SUFFIX => 'bar',
-        ]);
+        $settings = SystemConfigServiceMock::createWithoutCredentials();
+        $settings->set(Settings::ORDER_NUMBER_PREFIX, 'foo');
+        $settings->set(Settings::ORDER_NUMBER_SUFFIX, 'bar');
         $order = $this->createPUIOrderBuilder($settings)->getOrder(
             $paymentTransaction,
             $salesChannelContext,
@@ -165,7 +163,7 @@ class PUIOrderBuilderTest extends TestCase
 
     private function createPUIOrderBuilder(?SystemConfigService $systemConfig = null): PUIOrderBuilder
     {
-        $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
+        $systemConfig = $systemConfig ?? SystemConfigServiceMock::createWithCredentials();
 
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
@@ -176,7 +174,7 @@ class PUIOrderBuilderTest extends TestCase
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
-            new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock()),
+            new ItemListProvider($priceFormatter, $this->createMock(EventDispatcherInterface::class), new NullLogger()),
             $this->getContainer()->get(LocaleCodeProvider::class),
         );
     }

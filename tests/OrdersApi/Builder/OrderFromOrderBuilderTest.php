@@ -21,6 +21,7 @@ use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 
 /**
  * @internal
@@ -121,10 +122,9 @@ class OrderFromOrderBuilderTest extends TestCase
         $customer = $salesChannelContext->getCustomer();
         static::assertNotNull($customer);
 
-        $settings = $this->createSystemConfigServiceMock([
-            Settings::ORDER_NUMBER_PREFIX => 'foo',
-            Settings::ORDER_NUMBER_SUFFIX => 'bar',
-        ]);
+        $settings = SystemConfigServiceMock::createWithoutCredentials();
+        $settings->set(Settings::ORDER_NUMBER_PREFIX, 'foo');
+        $settings->set(Settings::ORDER_NUMBER_SUFFIX, 'bar');
         $order = $this->createOrderBuilder($settings)->getOrder(
             $paymentTransaction,
             new RequestDataBag(),

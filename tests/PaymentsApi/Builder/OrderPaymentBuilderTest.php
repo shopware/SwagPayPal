@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
@@ -15,6 +16,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
+use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -23,6 +25,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Webhook\WebhookServiceTest;
+use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @internal
@@ -236,9 +241,18 @@ class OrderPaymentBuilderTest extends TestCase
     /**
      * @dataProvider dataProviderTestApplicationContext
      */
-    public function testApplicationContext(SystemConfigService $settings, string $expectedResult): void
+    public function testApplicationContext(SystemConfigService $systemConfigService, string $expectedResult): void
     {
-        $paymentBuilder = $this->createPaymentBuilder($settings);
+        $localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
+        $localeCodeProvider->method('getLocaleCodeFromContext')->willReturn('en-GB');
+        $paymentBuilder = new OrderPaymentBuilder(
+            $localeCodeProvider,
+            new PriceFormatter(),
+            $this->createMock(EventDispatcherInterface::class),
+            new NullLogger(),
+            $systemConfigService,
+            new CurrencyRepoMock()
+        );
 
         $context = Context::createDefaultContext(new SalesChannelApiSource(TestDefaults::SALES_CHANNEL));
         $salesChannelContext = Generator::createSalesChannelContext($context);

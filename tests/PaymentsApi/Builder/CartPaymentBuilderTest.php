@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
@@ -21,10 +22,9 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @internal
@@ -108,8 +108,8 @@ class CartPaymentBuilderTest extends TestCase
         return new CartPaymentBuilder(
             $this->getContainer()->get(LocaleCodeProvider::class),
             new PriceFormatter(),
-            new EventDispatcherMock(),
-            new LoggerMock(),
+            $this->createMock(EventDispatcherInterface::class),
+            new NullLogger(),
             $settings
         );
     }

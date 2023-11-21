@@ -51,7 +51,7 @@ use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use Swag\PayPal\Test\Mock\RouterMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
@@ -66,6 +66,7 @@ use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -95,7 +96,7 @@ class UpdateTest extends TestCase
 
     public function testUpdateTo130WithNoPreviousSettings(): void
     {
-        $systemConfigService = $this->createSystemConfigServiceMock();
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
         $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
@@ -105,11 +106,11 @@ class UpdateTest extends TestCase
 
     public function testUpdateTo130WithSandboxEnabled(): void
     {
-        $systemConfigService = $this->createSystemConfigServiceMock([
-            Settings::CLIENT_ID => self::CLIENT_ID,
-            Settings::CLIENT_SECRET => self::CLIENT_SECRET,
-            Settings::SANDBOX => true,
-        ]);
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::CLIENT_ID, self::CLIENT_ID);
+        $systemConfigService->set(Settings::CLIENT_SECRET, self::CLIENT_SECRET);
+        $systemConfigService->set(Settings::SANDBOX, true);
+
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
         $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
@@ -121,11 +122,11 @@ class UpdateTest extends TestCase
 
     public function testUpdateTo130WithSandboxDisabled(): void
     {
-        $systemConfigService = $this->createSystemConfigServiceMock([
-            Settings::CLIENT_ID => self::CLIENT_ID,
-            Settings::CLIENT_SECRET => self::CLIENT_SECRET,
-            Settings::SANDBOX => false,
-        ]);
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::CLIENT_ID, self::CLIENT_ID);
+        $systemConfigService->set(Settings::CLIENT_SECRET, self::CLIENT_SECRET);
+        $systemConfigService->set(Settings::SANDBOX, false);
+
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
         $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
@@ -137,13 +138,13 @@ class UpdateTest extends TestCase
 
     public function testUpdateTo130WithSandboxSettingsSet(): void
     {
-        $systemConfigService = $this->createSystemConfigServiceMock([
-            Settings::CLIENT_ID => self::CLIENT_ID,
-            Settings::CLIENT_SECRET => self::CLIENT_SECRET,
-            Settings::CLIENT_ID_SANDBOX => self::OTHER_CLIENT_ID,
-            Settings::CLIENT_SECRET_SANDBOX => self::OTHER_CLIENT_SECRET,
-            Settings::SANDBOX => true,
-        ]);
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::CLIENT_ID, self::CLIENT_ID);
+        $systemConfigService->set(Settings::CLIENT_SECRET, self::CLIENT_SECRET);
+        $systemConfigService->set(Settings::CLIENT_ID_SANDBOX, self::OTHER_CLIENT_ID);
+        $systemConfigService->set(Settings::CLIENT_SECRET_SANDBOX, self::OTHER_CLIENT_SECRET);
+        $systemConfigService->set(Settings::SANDBOX, true);
+
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
         $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
@@ -153,11 +154,11 @@ class UpdateTest extends TestCase
 
     public function testUpdateTo170(): void
     {
-        $systemConfigService = $this->createSystemConfigServiceMock([
-            Settings::CLIENT_ID_SANDBOX => self::OTHER_CLIENT_ID,
-            Settings::CLIENT_SECRET_SANDBOX => self::OTHER_CLIENT_SECRET,
-            Settings::SANDBOX => true,
-        ]);
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::CLIENT_ID_SANDBOX, self::OTHER_CLIENT_ID);
+        $systemConfigService->set(Settings::CLIENT_SECRET_SANDBOX, self::OTHER_CLIENT_SECRET);
+        $systemConfigService->set(Settings::SANDBOX, true);
+
         $updateContext = $this->createUpdateContext('1.6.9', '1.7.0');
         $update = $this->createUpdateService($systemConfigService, $this->createWebhookService($systemConfigService));
         $update->update($updateContext);
@@ -166,7 +167,7 @@ class UpdateTest extends TestCase
 
     public function testUpdateTo170WithMissingSettings(): void
     {
-        $systemConfigService = $this->createSystemConfigServiceMock();
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
         $updateContext = $this->createUpdateContext('1.6.9', '1.7.0');
         $update = $this->createUpdateService($systemConfigService, $this->createWebhookService($systemConfigService));
         $update->update($updateContext);
@@ -202,7 +203,7 @@ class UpdateTest extends TestCase
             $context
         );
 
-        $update = $this->createUpdateService($this->createSystemConfigServiceMock());
+        $update = $this->createUpdateService(SystemConfigServiceMock::createWithoutCredentials());
         $update->update($updateContext);
 
         static::assertEquals(0, $customFieldRepository->searchIds($criteria, $context)->getTotal());
@@ -223,7 +224,7 @@ class UpdateTest extends TestCase
             ],
         ], $context);
 
-        $updater = $this->createUpdateService($this->createSystemConfigServiceMock());
+        $updater = $this->createUpdateService(SystemConfigServiceMock::createWithoutCredentials());
         $updater->update($updateContext);
 
         /** @var PaymentMethodEntity|null $updatedPaymentMethod */
@@ -235,7 +236,7 @@ class UpdateTest extends TestCase
     public function testUpdateTo200MigrateSettings(): void
     {
         $updateContext = $this->createUpdateContext('1.9.1', '2.0.0');
-        $systemConfig = $this->createSystemConfigServiceMock();
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
 
         $systemConfig->set(Settings::INTENT, PaymentIntentV1::SALE);
         $systemConfig->set(Settings::INTENT, PaymentIntentV1::ORDER, TestDefaults::SALES_CHANNEL);
@@ -255,7 +256,7 @@ class UpdateTest extends TestCase
     public function testUpdateTo200MigrateIntentSettingWithInvalidIntent(): void
     {
         $updateContext = $this->createUpdateContext('1.9.1', '2.0.0');
-        $systemConfig = $this->createSystemConfigServiceMock();
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
         $systemConfig->set(Settings::INTENT, 'invalidIntent');
 
         $updater = $this->createUpdateService($systemConfig);
@@ -267,7 +268,7 @@ class UpdateTest extends TestCase
     public function testUpdateTo200MigrateIntentSettingWithInvalidLandingPage(): void
     {
         $updateContext = $this->createUpdateContext('1.9.1', '2.0.0');
-        $systemConfig = $this->createSystemConfigServiceMock();
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
 
         $systemConfig->set(Settings::LANDING_PAGE, 'invalidLandingPage');
 
@@ -279,12 +280,11 @@ class UpdateTest extends TestCase
 
     public function testUpdateTo300(): void
     {
-        $systemConfigService = $this->createSystemConfigServiceMock([
-            Settings::CLIENT_ID_SANDBOX => self::OTHER_CLIENT_ID,
-            Settings::CLIENT_SECRET_SANDBOX => self::OTHER_CLIENT_SECRET,
-            Settings::SANDBOX => true,
-            Settings::WEBHOOK_ID => 'anyIdWillDo',
-        ]);
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::CLIENT_ID_SANDBOX, self::OTHER_CLIENT_ID);
+        $systemConfigService->set(Settings::CLIENT_SECRET_SANDBOX, self::OTHER_CLIENT_SECRET);
+        $systemConfigService->set(Settings::SANDBOX, true);
+        $systemConfigService->set(Settings::WEBHOOK_ID, 'anyIdWillDo');
 
         $updateContext = $this->createUpdateContext('2.2.2', '3.0.0');
         $update = $this->createUpdateService(
@@ -321,7 +321,7 @@ class UpdateTest extends TestCase
             ],
         ], $context);
 
-        $updater = $this->createUpdateService($this->createSystemConfigServiceMock());
+        $updater = $this->createUpdateService(SystemConfigServiceMock::createWithoutCredentials());
         $updater->update($updateContext);
 
         /** @var PaymentMethodEntity|null $updatedPaymentMethod */
@@ -352,7 +352,7 @@ class UpdateTest extends TestCase
             static::markTestSkipped('Could not delete payment method, probably orders exist');
         }
 
-        $updater = $this->createUpdateService($this->createSystemConfigServiceMock());
+        $updater = $this->createUpdateService(SystemConfigServiceMock::createWithoutCredentials());
         $updater->update($updateContext);
 
         $acdcPaymentMethodId = $this->paymentMethodRepository->searchIds($criteria, $context)->firstId();
@@ -363,7 +363,7 @@ class UpdateTest extends TestCase
     {
         $updateContext = $this->createUpdateContext('6.2.0', '7.3.0');
 
-        $systemConfigServiceMock = $this->createSystemConfigServiceMock();
+        $systemConfigServiceMock = SystemConfigServiceMock::createWithoutCredentials();
         $systemConfigServiceMock->set(Settings::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled', true);
 
         $updater = $this->createUpdateService($systemConfigServiceMock);
@@ -432,7 +432,7 @@ class UpdateTest extends TestCase
             new WebhookResource($this->createPayPalClientFactoryWithService($systemConfigService)),
             new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]),
             $systemConfigService,
-            new RouterMock()
+            $this->createMock(RouterInterface::class),
         );
     }
 

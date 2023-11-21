@@ -10,13 +10,13 @@ namespace Swag\PayPal\Test\RestApi\V1\Resource;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\NullLogger;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateTokenResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 
@@ -54,7 +54,7 @@ class TokenResourceTest extends TestCase
         $item->method('get')->willReturn($withToken ? $this->getCacheContent() : null);
         $cacheItemPool->method('getItem')->willReturn($item);
 
-        $logger = new LoggerMock();
+        $logger = new NullLogger();
 
         return new TokenResource(
             $cacheItemPool,

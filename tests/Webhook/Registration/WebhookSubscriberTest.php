@@ -21,11 +21,11 @@ use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\RouterMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -37,17 +37,11 @@ class WebhookSubscriberTest extends TestCase
 
     private const WEBHOOK_ID = 'someWebhookId';
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
+    private SystemConfigService $systemConfigService;
 
     protected function setUp(): void
     {
-        $this->systemConfigService = new SystemConfigServiceMock();
-        $this->systemConfigService->set(Settings::CLIENT_ID, 'defaultClientId');
-        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'defaultClientSecret');
-        $this->systemConfigService->set(Settings::SANDBOX, false);
+        $this->systemConfigService = SystemConfigServiceMock::createWithCredentials();
     }
 
     public function testRemoveWebhookWithInheritedConfiguration(): void
@@ -90,7 +84,7 @@ class WebhookSubscriberTest extends TestCase
             new WebhookResource($this->createPayPalClientFactoryWithService($this->systemConfigService)),
             new WebhookRegistry([]),
             $this->systemConfigService,
-            new RouterMock()
+            $this->createMock(RouterInterface::class),
         );
 
         foreach ($configuration as $salesChannelId => $webhookId) {

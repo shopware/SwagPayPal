@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder\Util;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
@@ -21,7 +22,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -138,7 +138,7 @@ class ItemListProviderTest extends TestCase
         return new ItemListProvider(
             new PriceFormatter(),
             $this->createMock(EventDispatcher::class),
-            new LoggerMock()
+            new NullLogger()
         );
     }
 

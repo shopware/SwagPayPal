@@ -46,12 +46,11 @@ use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
@@ -445,8 +444,8 @@ class PlusSubscriberTest extends TestCase
         /** @var EntityRepository $currencyRepo */
         $currencyRepo = $this->getContainer()->get('currency.repository');
         $priceFormatter = new PriceFormatter();
-        $eventDispatcher = new EventDispatcherMock();
-        $logger = new LoggerMock();
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $logger = new NullLogger();
 
         $plusDataService = new PlusDataService(
             new CartPaymentBuilder(

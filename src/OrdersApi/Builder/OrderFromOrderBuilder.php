@@ -129,7 +129,7 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
     ): PurchaseUnit {
         $submitCart = $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId());
 
-        $items = $submitCart ? $this->itemListProvider->getItemList($salesChannelContext->getCurrency(), $order) : null;
+        $items = $submitCart ? $this->itemListProvider->getItemList($order->getCurrency() ?? $salesChannelContext->getCurrency(), $order) : null;
 
         $purchaseUnit = $this->purchaseUnitProvider->createPurchaseUnit(
             $orderTransaction->getAmount(),

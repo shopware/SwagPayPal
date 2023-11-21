@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Mock\Setting\Service;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 
 /**
  * @internal
@@ -22,9 +23,30 @@ class SystemConfigServiceMock extends SystemConfigService
      */
     private array $data;
 
-    public function __construct()
+    public function __construct(array $additionalSettings = [])
     {
         $this->data = ['' => Settings::DEFAULT_VALUES];
+
+        foreach ($additionalSettings as $key => $value) {
+            $this->set($key, $value);
+        }
+    }
+
+    public static function createWithoutCredentials(array $additionalSettings = []): static
+    {
+        return new static($additionalSettings);
+    }
+
+    public static function createWithCredentials(array $additionalSettings = []): static
+    {
+        return new static(\array_merge([
+            Settings::CLIENT_ID => 'TestClientId',
+            Settings::CLIENT_SECRET => 'TestClientSecret',
+            Settings::MERCHANT_PAYER_ID => 'TestMerchantPayerId',
+            Settings::ORDER_NUMBER_PREFIX => OrderPaymentBuilderTest::TEST_ORDER_NUMBER_PREFIX,
+            Settings::ORDER_NUMBER_SUFFIX => OrderPaymentBuilderTest::TEST_ORDER_NUMBER_SUFFIX,
+            Settings::BRAND_NAME => 'Test Brand',
+        ], $additionalSettings));
     }
 
     /**
