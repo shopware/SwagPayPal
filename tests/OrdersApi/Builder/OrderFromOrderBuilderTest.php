@@ -242,7 +242,7 @@ class OrderFromOrderBuilderTest extends TestCase
             $salesChannelContext,
         );
 
-        static::assertSame('testToken', $order->getPaymentSource()->getPaypal()?->getVaultId());
+        static::assertSame('testToken', $order->getPaymentSource()?->getPaypal()?->getVaultId());
     }
 
     private function createOrderTransaction(?string $transactionId = null): OrderTransactionEntity
@@ -280,7 +280,7 @@ class OrderFromOrderBuilderTest extends TestCase
 
     private function createOrder(): OrderEntity
     {
-        $orderNumber = $orderNumber ?? OrderPaymentBuilderTest::TEST_ORDER_NUMBER_WITHOUT_PREFIX;
+        $orderNumber = OrderPaymentBuilderTest::TEST_ORDER_NUMBER_WITHOUT_PREFIX;
         $order = new OrderEntity();
         $order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $order->setShippingCosts(new CalculatedPrice(4.99, 4.99, new CalculatedTaxCollection(), new TaxRuleCollection()));

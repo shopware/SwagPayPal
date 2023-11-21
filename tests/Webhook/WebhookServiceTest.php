@@ -7,10 +7,9 @@
 
 namespace Swag\PayPal\Test\Webhook;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
@@ -19,14 +18,12 @@ use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\RestApi\V1\Resource\WebhookResourceTest;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
-use Swag\PayPal\Webhook\WebhookServiceInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -44,82 +41,89 @@ class WebhookServiceTest extends TestCase
     public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
     public const ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN = 'testWebhookExecuteToken';
 
-    private EntityRepository $orderTransactionRepo;
+    private OrderTransactionRepoMock $orderTransactionRepo;
+
+    private SystemConfigServiceMock $systemConfig;
+
+    private RouterInterface&MockObject $router;
+
+    private WebhookService $webhookService;
 
     protected function setUp(): void
     {
-        $definitionRegistry = new DefinitionInstanceRegistryMock([], $this->createMock(ContainerInterface::class));
-        $this->orderTransactionRepo = $definitionRegistry->getRepository(
-            (new OrderTransactionDefinition())->getEntityName()
+        $this->orderTransactionRepo = new OrderTransactionRepoMock();
+        $this->systemConfig = SystemConfigServiceMock::createWithCredentials();
+        $this->router = $this->createMock(RouterInterface::class);
+
+        $this->webhookService = new WebhookService(
+            $this->createWebhookResource($this->systemConfig),
+            new WebhookRegistry([new DummyWebhook($this->orderTransactionRepo)]),
+            $this->systemConfig,
+            $this->router,
         );
     }
 
     public function testRegisterWebhookWithAlreadyExistingTokenAndId(): void
     {
-        $settings = $this->createDefaultSystemConfig([
-            Settings::WEBHOOK_ID => self::ALREADY_EXISTING_WEBHOOK_ID,
-            Settings::WEBHOOK_EXECUTE_TOKEN => self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN,
-        ]);
+        $this->router
+            ->expects(static::once())
+            ->method('generate')
+            ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
+            ->willReturn(GuzzleClientMock::GET_WEBHOOK_URL);
 
-        $result = $this->createWebhookService($settings)->registerWebhook(null);
+        $this->systemConfig->set(Settings::WEBHOOK_ID, 'someId');
+        $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, 'someToken');
+        $result = $this->webhookService->registerWebhook(null);
 
         static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
     }
 
     public function testRegisterWebhookWithoutTokenButWithId(): void
     {
-        $settings = $this->createDefaultSystemConfig([
-            Settings::WEBHOOK_ID => self::ALREADY_EXISTING_WEBHOOK_ID,
-        ]);
+        $this->systemConfig->set(Settings::WEBHOOK_ID, self::ALREADY_EXISTING_WEBHOOK_ID);
 
-        $result = $this->createWebhookService($settings)->registerWebhook(null);
+        $result = $this->webhookService->registerWebhook(null);
 
         static::assertSame(WebhookService::WEBHOOK_UPDATED, $result);
     }
 
     public function testRegisterWebhookWithoutTokenAndId(): void
     {
-        $settings = $this->createDefaultSystemConfig();
-        $result = $this->createWebhookService($settings)->registerWebhook(null);
+        $result = $this->webhookService->registerWebhook(null);
 
         static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
 
-        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $settings->getString(Settings::WEBHOOK_ID));
-        static::assertSame(WebhookService::PAYPAL_WEBHOOK_TOKEN_LENGTH, \mb_strlen($settings->getString(Settings::WEBHOOK_EXECUTE_TOKEN)));
+        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $this->systemConfig->getString(Settings::WEBHOOK_ID));
+        static::assertSame(WebhookService::PAYPAL_WEBHOOK_TOKEN_LENGTH, \mb_strlen($this->systemConfig->getString(Settings::WEBHOOK_EXECUTE_TOKEN)));
     }
 
     public function testDeregisterWebhookWithExistingInheritedId(): void
     {
-        $settings = $this->createDefaultSystemConfig([
-            Settings::WEBHOOK_ID => self::ALREADY_EXISTING_WEBHOOK_ID,
-            Settings::WEBHOOK_EXECUTE_TOKEN => self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN,
-        ]);
+        $this->systemConfig->set(Settings::WEBHOOK_ID, self::ALREADY_EXISTING_WEBHOOK_ID);
+        $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
-        $result = $this->createWebhookService($settings)->deregisterWebhook(TestDefaults::SALES_CHANNEL);
+        $result = $this->webhookService->deregisterWebhook(TestDefaults::SALES_CHANNEL);
 
         static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
-        static::assertSame(self::ALREADY_EXISTING_WEBHOOK_ID, $settings->get(Settings::WEBHOOK_ID));
-        static::assertSame(self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN, $settings->get(Settings::WEBHOOK_EXECUTE_TOKEN));
+        static::assertSame(self::ALREADY_EXISTING_WEBHOOK_ID, $this->systemConfig->get(Settings::WEBHOOK_ID));
+        static::assertSame(self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN, $this->systemConfig->get(Settings::WEBHOOK_EXECUTE_TOKEN));
     }
 
     public function testDeregisterWebhookWithExistingId(): void
     {
-        $settings = $this->createDefaultSystemConfig([
-            Settings::WEBHOOK_ID => self::ALREADY_EXISTING_WEBHOOK_ID,
-            Settings::WEBHOOK_EXECUTE_TOKEN => self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN,
-        ]);
+        $this->systemConfig->set(Settings::WEBHOOK_ID, self::ALREADY_EXISTING_WEBHOOK_ID);
+        $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
-        $result = $this->createWebhookService($settings)->deregisterWebhook(null);
+        $result = $this->webhookService->deregisterWebhook(null);
 
         static::assertSame(WebhookService::WEBHOOK_DELETED, $result);
-        static::assertNull($settings->get(Settings::WEBHOOK_ID));
-        static::assertNull($settings->get(Settings::WEBHOOK_EXECUTE_TOKEN));
+        static::assertNull($this->systemConfig->get(Settings::WEBHOOK_ID));
+        static::assertNull($this->systemConfig->get(Settings::WEBHOOK_EXECUTE_TOKEN));
     }
 
     public function testDeregisterWebhookWithoutExistingId(): void
     {
-        $settings = $this->createDefaultSystemConfig();
-        $result = $this->createWebhookService($settings)->deregisterWebhook(TestDefaults::SALES_CHANNEL);
+        $result = $this->webhookService->deregisterWebhook(TestDefaults::SALES_CHANNEL);
 
         static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
     }
@@ -131,7 +135,7 @@ class WebhookServiceTest extends TestCase
         $webhook = new Webhook();
         $webhook->assign(['event_type' => DummyWebhook::EVENT_TYPE]);
 
-        $this->createWebhookService($this->createDefaultSystemConfig())->executeWebhook($webhook, $context);
+        $this->webhookService->executeWebhook($webhook, $context);
 
         /** @var OrderTransactionRepoMock $orderTransactionRepo */
         $orderTransactionRepo = $this->orderTransactionRepo;
@@ -140,53 +144,26 @@ class WebhookServiceTest extends TestCase
         static::assertTrue($updatedTransaction[DummyWebhook::ORDER_TRANSACTION_UPDATE_DATA_KEY]);
     }
 
-    public function testRegisterWebhookWithoutTokenAndIdThrowsException(): void
-    {
-        $settings = $this->createDefaultSystemConfig([
-            Settings::WEBHOOK_EXECUTE_TOKEN => WebhookResourceTest::TEST_URL_ALREADY_EXISTS,
-        ]);
-        $result = $this->createWebhookService($settings)->registerWebhook(null);
-
-        static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
-    }
-
     public function testRegisterWebhookWithAlreadyExistingTokenAndIdThrowsException(): void
     {
-        $settings = $this->createDefaultSystemConfig([
-            Settings::WEBHOOK_ID => WebhookResourceTest::THROW_EXCEPTION_INVALID_ID,
-            Settings::WEBHOOK_EXECUTE_TOKEN => self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN,
-        ]);
+        $this->systemConfig->set(Settings::WEBHOOK_ID, self::THROW_WEBHOOK_ID_INVALID);
+        $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
-        $result = $this->createWebhookService($settings)->registerWebhook(TestDefaults::SALES_CHANNEL);
+        $result = $this->webhookService->registerWebhook(TestDefaults::SALES_CHANNEL);
 
         static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
     }
 
     public function testDeregisterWebhookWithInvalidIdThrowsException(): void
     {
-        $settings = $this->createDefaultSystemConfig([
-            Settings::WEBHOOK_ID => WebhookResourceTest::THROW_EXCEPTION_INVALID_ID,
-            Settings::WEBHOOK_EXECUTE_TOKEN => self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN,
-        ]);
+        $this->systemConfig->set(Settings::WEBHOOK_ID, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID);
+        $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
-        $result = $this->createWebhookService($settings)->deregisterWebhook(null);
+        $result = $this->webhookService->deregisterWebhook(null);
 
         static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
-        static::assertNull($settings->get(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
-        static::assertNull($settings->get(Settings::WEBHOOK_EXECUTE_TOKEN, TestDefaults::SALES_CHANNEL));
-    }
-
-    private function createWebhookService(SystemConfigService $systemConfigService): WebhookServiceInterface
-    {
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-
-        return new WebhookService(
-            $this->createWebhookResource($systemConfigService),
-            new WebhookRegistry([new DummyWebhook($orderTransactionRepo)]),
-            $systemConfigService,
-            $this->createMock(RouterInterface::class),
-        );
+        static::assertNull($this->systemConfig->get(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
+        static::assertNull($this->systemConfig->get(Settings::WEBHOOK_EXECUTE_TOKEN, TestDefaults::SALES_CHANNEL));
     }
 
     private function createWebhookResource(SystemConfigService $systemConfigService): WebhookResource

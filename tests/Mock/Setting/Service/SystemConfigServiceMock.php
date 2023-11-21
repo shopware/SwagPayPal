@@ -32,14 +32,14 @@ class SystemConfigServiceMock extends SystemConfigService
         }
     }
 
-    public static function createWithoutCredentials(array $additionalSettings = []): static
+    public static function createWithoutCredentials(array $additionalSettings = []): self
     {
-        return new static($additionalSettings);
+        return new self($additionalSettings);
     }
 
-    public static function createWithCredentials(array $additionalSettings = []): static
+    public static function createWithCredentials(array $additionalSettings = []): self
     {
-        return new static(\array_merge([
+        return new self(\array_merge([
             Settings::CLIENT_ID => 'TestClientId',
             Settings::CLIENT_SECRET => 'TestClientSecret',
             Settings::MERCHANT_PAYER_ID => 'TestMerchantPayerId',
