@@ -36,9 +36,6 @@ class ClearVaultRoute extends AbstractClearVaultRoute
         throw new DecorationPatternException(self::class);
     }
 
-    /**
-     * @Since("8.0.0")
-     */
     #[Route(path: '/store-api/paypal/vault/clear', name: 'store-api.paypal.vault.clear', methods: ['POST'], defaults: ['_loginRequired' => true])]
     public function clearVault(Request $request, SalesChannelContext $salesChannelContext): Response
     {
