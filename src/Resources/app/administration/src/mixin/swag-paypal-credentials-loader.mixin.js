@@ -19,8 +19,8 @@ Mixin.register('swag-paypal-credentials-loader', {
             requestParams: {
                 channelId: 'partner',
                 product: 'ppcp',
-                secondaryProducts: 'payment_methods',
-                capabilities: 'PAY_UPON_INVOICE',
+                secondaryProducts: 'payment_methods,advanced_vaulting',
+                capabilities: 'PAY_UPON_INVOICE,PAYPAL_WALLET_VAULTING_ADVANCED',
                 integrationType: 'FO',
                 features: [
                     'PAYMENT',
@@ -30,6 +30,8 @@ Mixin.register('swag-paypal-credentials-loader', {
                     'ADVANCED_TRANSACTIONS_SEARCH',
                     'ACCESS_MERCHANT_INFORMATION',
                     'TRACKING_SHIPMENT_READWRITE',
+                    'VAULT',
+                    'BILLING_AGREEMENT',
                 ],
                 displayMode: 'minibrowser',
                 partnerLogoUrl: 'https://assets.shopware.com/media/logos/shopware_logo_blue.svg',

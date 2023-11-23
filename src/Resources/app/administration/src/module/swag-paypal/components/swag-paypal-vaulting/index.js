@@ -73,18 +73,13 @@ Component.register('swag-paypal-vaulting', {
             this.isLoadingMerchantInformation = true;
             await this.fetchMerchantInformation();
             this.isLoadingMerchantInformation = false;
-
-            this.adjustRequestParams();
         },
+
         async fetchMerchantInformation() {
             this.merchantInformation = await this.SwagPayPalApiCredentialsService
                 .getMerchantInformation(this.selectedSalesChannelId);
         },
-        adjustRequestParams() {
-            this.requestParams.secondaryProducts = this.requestParams.secondaryProducts.concat(',advanced_vaulting');
-            this.requestParams.capabilities = 'PAYPAL_WALLET_VAULTING_ADVANCED';
-            this.requestParams.features = this.requestParams.features.concat('VAULT', 'BILLING_AGREEMENT');
-        },
+
         checkBoolFieldInheritance(value) {
             return typeof value !== 'boolean';
         },

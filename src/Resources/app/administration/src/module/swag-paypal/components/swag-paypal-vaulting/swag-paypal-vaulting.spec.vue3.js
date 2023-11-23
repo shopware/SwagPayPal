@@ -1,9 +1,9 @@
 import { mount } from '@vue/test-utils_v3';
-import objectMergeWith from 'lodash/mergeWith';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-vaulting';
 
 const onboardingCallbackLive = 'onboardingCallbackLive';
 const onboardingCallbackSandbox = 'onboardingUrlSandbox';
+const objectMergeWith = require('lodash.mergewith');
 
 async function createWrapper(customOptions = {}) {
     const options = {
@@ -77,7 +77,7 @@ describe('Paypal Vaulting Component', () => {
                             capabilities: [],
                             merchantIntegrations: {
                                 capabilities: [
-                                    {name: 'PAYPAL_WALLET_VAULTING_ADVANCED', status: 'ACTIVE'},
+                                    { name: 'PAYPAL_WALLET_VAULTING_ADVANCED', status: 'ACTIVE' },
                                 ],
                             },
                         }),
