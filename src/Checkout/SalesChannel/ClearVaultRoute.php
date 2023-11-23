@@ -10,7 +10,6 @@ namespace Swag\PayPal\Checkout\SalesChannel;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\DataAbstractionLayer\VaultTokenMapping\VaultTokenMappingCollection;

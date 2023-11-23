@@ -150,11 +150,7 @@ class DisputeController extends AbstractController
 
         foreach (\explode(',', $disputeStateFilter) as $disputeStateFilterItem) {
             if (!\in_array($disputeStateFilterItem, Item::DISPUTE_STATES, true)) {
-                if (\class_exists(RoutingException::class)) {
-                    throw RoutingException::invalidRequestParameter('disputeStateFilter');
-                }
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('disputeStateFilter');
+                throw RoutingException::invalidRequestParameter('disputeStateFilter');
             }
         }
 

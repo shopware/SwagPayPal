@@ -191,8 +191,4 @@ class PayPalHandler
 
         $this->vaultTokenService->saveToken($transaction, $paymentSource, $context);
     }
-
-    public function handleRecurringPayment(): void
-    {
-    }
 }
