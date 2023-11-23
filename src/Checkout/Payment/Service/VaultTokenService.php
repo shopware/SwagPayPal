@@ -57,11 +57,11 @@ class VaultTokenService
             // try to get the token from the subscription
             $tokenId = ($subscription->getCustomFields() ?? [])[$this->getSubscriptionCustomFieldKey($struct->getOrderTransaction()->getPaymentMethodId())] ?? null;
 
-            if ($tokenId) {
-                $criteria->setIds([$tokenId]);
-            } else {
+            if (!$tokenId) {
                 return null;
             }
+
+            $criteria->setIds([$tokenId]);
         } else {
             $criteria->addFilter(new EqualsFilter('mainMapping.customerId', $customerId));
         }
