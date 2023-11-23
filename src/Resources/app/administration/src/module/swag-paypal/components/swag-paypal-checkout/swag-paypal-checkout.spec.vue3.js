@@ -73,7 +73,7 @@ describe('Paypal Configuration Component', () => {
 
     it('should link to the sandbox onboarding guide', async () => {
         wrapper = await createWrapper({
-            propsData: {
+            props: {
                 actualConfigData: {
                     'SwagPayPal.settings.sandbox': true,
                 },
