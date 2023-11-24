@@ -59,7 +59,7 @@ class CustomIdProvider
                 return $this->pluginVersion = '0.0.0';
             }
 
-            $this->pluginVersion = $plugin->getVersion();
+            $this->pluginVersion = \mb_substr($plugin->getVersion(), 0, 16);
         }
 
         return $this->pluginVersion;

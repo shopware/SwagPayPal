@@ -10,21 +10,20 @@ namespace Swag\PayPal\Test\Setting\Service;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
-use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
-use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceMerchantIntegrations;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @internal
@@ -32,71 +31,96 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 #[Package('checkout')]
 class MerchantIntegrationsServiceTest extends TestCase
 {
-    use IntegrationTestBehaviour;
-    use ServicesTrait;
+    private SystemConfigServiceMock $systemConfigService;
 
-    public function testFetchMerchantIntegrations(): void
+    public function testGetInformation(): void
     {
         $merchantIntegrationService = $this->createMerchantIntegrationService();
 
-        $integrations = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getCapabilities();
-        static::assertCount(\count($this->getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods()), $integrations);
+        $information = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext());
+
+        $integrations = $information->getMerchantIntegrations();
+        static::assertNotNull($integrations);
+        static::assertSame(GetResourceMerchantIntegrations::TRACKING_ID, $integrations->getTrackingId());
+        static::assertSame(GetResourceMerchantIntegrations::LEGAL_NAME, $integrations->getLegalName());
+
+        $capabilities = $information->getCapabilities();
+        static::assertSame(AbstractMethodData::CAPABILITY_INELIGIBLE, $capabilities['pui']);
+        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['paypal']);
+        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['acdc']);
     }
 
-    public function testACDCShouldBeActive(): void
+    public function testGetInformationWithoutCredentials(): void
     {
-        $paymentMethodId = $this->getPaymentIdByHandler(ACDCHandler::class);
-
         $merchantIntegrationService = $this->createMerchantIntegrationService();
+        $this->systemConfigService->set(Settings::CLIENT_ID, null);
 
-        $integrations = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getCapabilities();
-        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $integrations[$paymentMethodId]);
+        $information = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext());
+
+        $capabilities = $information->getCapabilities();
+        static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['pui']);
+        static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['paypal']);
+        static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['acdc']);
+
+        $integrations = $information->getMerchantIntegrations();
+        static::assertNull($integrations);
     }
 
-    public function testPUIShouldBeUnknown(): void
-    {
-        $paymentMethodId = $this->getPaymentIdByHandler(PUIHandler::class);
-
-        $merchantIntegrationService = $this->createMerchantIntegrationService();
-
-        $integrations = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getCapabilities();
-        static::assertSame(AbstractMethodData::CAPABILITY_INELIGIBLE, $integrations[$paymentMethodId]);
-    }
-
-    public function testMerchantInformation(): void
+    public function testGetInformationWithoutMerchantId(): void
     {
         $merchantIntegrationService = $this->createMerchantIntegrationService();
+        $this->systemConfigService->set(Settings::MERCHANT_PAYER_ID, null);
 
-        $information = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getMerchantIntegrations();
-        static::assertNotNull($information);
-        static::assertSame(GetResourceMerchantIntegrations::TRACKING_ID, $information->getTrackingId());
-        static::assertSame(GetResourceMerchantIntegrations::LEGAL_NAME, $information->getLegalName());
+        $information = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext());
+
+        $capabilities = $information->getCapabilities();
+        static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['pui']);
+        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['paypal']);
+        static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['acdc']);
+
+        $integrations = $information->getMerchantIntegrations();
+        static::assertNull($integrations);
     }
 
     private function createMerchantIntegrationService(): MerchantIntegrationsService
     {
+        $this->systemConfigService = SystemConfigServiceMock::createWithCredentials();
+        $clientFactory = new PayPalClientFactoryMock($this->systemConfigService, new NullLogger());
+
+        $container = $this->createMock(ContainerInterface::class);
+
+        $dataRegistry = $this->createMock(PaymentMethodDataRegistry::class);
+        $dataRegistry
+            ->expects(static::once())
+            ->method('getPaymentMethods')
+            ->willReturn([
+                new ACDCMethodData($container),
+                new PUIMethodData($container),
+                new PayPalMethodData($container),
+            ]);
+
+        $dataRegistry
+            ->expects(static::exactly(3))
+            ->method('getEntityIdFromData')
+            ->willReturnCallback(static function (AbstractMethodData $methodData) {
+                if ($methodData instanceof ACDCMethodData) {
+                    return 'acdc';
+                }
+                if ($methodData instanceof PUIMethodData) {
+                    return 'pui';
+                }
+                if ($methodData instanceof PayPalMethodData) {
+                    return 'paypal';
+                }
+
+                throw new \RuntimeException('Invalid method data');
+            });
+
         return new MerchantIntegrationsService(
-            new MerchantIntegrationsResource($this->createPayPalClientFactory()),
-            new CredentialsUtil($this->createDefaultSystemConfig()),
-            $this->getContainer()->get(PaymentMethodDataRegistry::class),
-            new PayPalClientFactoryMock($this->createDefaultSystemConfig(), new NullLogger())
+            new MerchantIntegrationsResource($clientFactory),
+            new CredentialsUtil($this->systemConfigService),
+            $dataRegistry,
+            $clientFactory,
         );
-    }
-
-    private function getPaymentIdByHandler(string $handlerIdentifier): string
-    {
-        /** @var EntityRepository $paymentRepository */
-        $paymentRepository = $this->getContainer()->get('payment_method.repository');
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('handlerIdentifier', $handlerIdentifier));
-
-        $firstId = $paymentRepository->searchIds($criteria, Context::createDefaultContext())->firstId();
-
-        if ($firstId === null) {
-            throw new \RuntimeException('No handlerIdentifier found.');
-        }
-
-        return $firstId;
     }
 }

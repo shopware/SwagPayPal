@@ -28,6 +28,8 @@ class Referral extends PayPalApiStruct
 
     public const CAPABILITY_PAYPAL_WALLET_VAULTING_ADVANCED = 'PAYPAL_WALLET_VAULTING_ADVANCED';
     public const CAPABILITY_PAY_UPON_INVOICE = 'PAY_UPON_INVOICE';
+    public const CAPABILITY_APPLE_PAY = 'APPLE_PAY';
+    public const CAPABILITY_GOOGLE_PAY = 'GOOGLE_PAY';
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_referral_business_entity")
@@ -62,6 +64,7 @@ class Referral extends PayPalApiStruct
     protected array $products = [
         self::PRODUCT_TYPE_PPCP,
         self::PRODUCT_TYPE_PAYMENT_METHODS,
+        self::PRODUCT_TYPE_ADVANCED_VAULTING,
     ];
 
     /**
@@ -71,6 +74,9 @@ class Referral extends PayPalApiStruct
      */
     protected array $capabilities = [
         self::CAPABILITY_PAY_UPON_INVOICE,
+        self::CAPABILITY_PAYPAL_WALLET_VAULTING_ADVANCED,
+        self::CAPABILITY_APPLE_PAY,
+        self::CAPABILITY_GOOGLE_PAY,
     ];
 
     /**

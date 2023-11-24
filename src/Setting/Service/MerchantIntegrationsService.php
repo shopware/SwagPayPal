@@ -22,48 +22,46 @@ use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 #[Package('checkout')]
 class MerchantIntegrationsService
 {
-    private MerchantIntegrationsResourceInterface $merchantIntegrationsResource;
-
-    private CredentialsUtilInterface $credentialsUtil;
-
-    private PaymentMethodDataRegistry $paymentMethodDataRegistry;
-
-    private PayPalClientFactoryInterface $payPalClientFactory;
-
     /**
      * @internal
      */
     public function __construct(
-        MerchantIntegrationsResourceInterface $merchantIntegrationsResource,
-        CredentialsUtilInterface $credentialsUtil,
-        PaymentMethodDataRegistry $paymentMethodDataRegistry,
-        PayPalClientFactoryInterface $payPalClientFactory
+        private readonly MerchantIntegrationsResourceInterface $merchantIntegrationsResource,
+        private readonly CredentialsUtilInterface $credentialsUtil,
+        private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        private readonly PayPalClientFactoryInterface $payPalClientFactory
     ) {
-        $this->merchantIntegrationsResource = $merchantIntegrationsResource;
-        $this->credentialsUtil = $credentialsUtil;
-        $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
-        $this->payPalClientFactory = $payPalClientFactory;
     }
 
     public function getMerchantInformation(Context $context, ?string $salesChannelId = null): MerchantInformationStruct
     {
         $information = new MerchantInformationStruct();
 
+        $integrations = $this->getIntegrations($salesChannelId);
+        $information->setMerchantIntegrations($integrations);
+        $information->setCapabilities($this->enrichCapabilities($integrations, $context, $salesChannelId));
+
+        return $information;
+    }
+
+    private function getIntegrations(?string $salesChannelId = null): ?MerchantIntegrations
+    {
+        $merchantPayerId = $this->credentialsUtil->getMerchantPayerId($salesChannelId);
+
+        if (!$merchantPayerId) {
+            return null;
+        }
+
         try {
-            $integrations = $this->merchantIntegrationsResource->get(
-                $this->credentialsUtil->getMerchantPayerId($salesChannelId),
+            return $this->merchantIntegrationsResource->get(
+                $merchantPayerId,
                 $salesChannelId,
                 $this->credentialsUtil->isSandbox($salesChannelId)
             );
-
-            $information->setMerchantIntegrations($integrations);
         } catch (PayPalApiException|PayPalSettingsInvalidException) {
             // just catch exceptions thrown in case of invalid credentials
+            return null;
         }
-
-        $information->setCapabilities($this->enrichCapabilities($integrations ?? null, $context, $salesChannelId));
-
-        return $information;
     }
 
     /**
@@ -80,27 +78,24 @@ class MerchantIntegrationsService
                 continue;
             }
 
-            $capabilities[$paymentMethodId] = $integrations ? $methodData->validateCapability($integrations) : AbstractMethodData::CAPABILITY_INACTIVE;
-        }
+            if ($integrations !== null) {
+                $capabilities[$paymentMethodId] = $methodData->validateCapability($integrations);
 
-        if ($integrations !== null) {
-            return $capabilities;
-        }
-
-        try {
-            $this->payPalClientFactory->getPayPalClient($salesChannelId);
-
-            $payPalPaymentMethodId = $this->paymentMethodDataRegistry->getEntityIdFromData(
-                $this->paymentMethodDataRegistry->getPaymentMethod(PayPalMethodData::class),
-                $context
-            );
-
-            if ($payPalPaymentMethodId === null) {
-                return $capabilities;
+                continue;
             }
 
-            $capabilities[$payPalPaymentMethodId] = AbstractMethodData::CAPABILITY_ACTIVE;
-        } catch (\Throwable $e) {
+            if ($methodData instanceof PayPalMethodData) {
+                try {
+                    // if the PayPal client can be created, at least PayPal Wallet is active
+                    $this->payPalClientFactory->getPayPalClient($salesChannelId);
+                    $capabilities[$paymentMethodId] = AbstractMethodData::CAPABILITY_ACTIVE;
+
+                    continue;
+                } catch (\Throwable $e) {
+                }
+            }
+
+            $capabilities[$paymentMethodId] = AbstractMethodData::CAPABILITY_INACTIVE;
         }
 
         return $capabilities;

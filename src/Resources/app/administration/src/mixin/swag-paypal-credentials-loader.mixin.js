@@ -19,8 +19,8 @@ Mixin.register('swag-paypal-credentials-loader', {
             requestParams: {
                 channelId: 'partner',
                 product: 'ppcp',
-                secondaryProducts: 'payment_methods,advanced_vaulting',
-                capabilities: 'PAY_UPON_INVOICE,PAYPAL_WALLET_VAULTING_ADVANCED',
+                secondaryProducts: 'advanced_vaulting,PAYMENT_METHODS',
+                capabilities: 'APPLE_PAY,GOOGLE_PAY,PAY_UPON_INVOICE,PAYPAL_WALLET_VAULTING_ADVANCED',
                 integrationType: 'FO',
                 features: [
                     'PAYMENT',
