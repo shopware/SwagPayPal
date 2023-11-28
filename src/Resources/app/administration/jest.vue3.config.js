@@ -15,7 +15,7 @@ module.exports = {
     ],
 
     setupFilesAfterEnv: [
-        resolve(join(process.env.ADMIN_PATH, '/test/_setup/prepare_vue3_environment.js')),
+        resolve(join(process.env.ADMIN_PATH, '/test/_setup/prepare_environment.js')),
     ],
 
     collectCoverageFrom: [
