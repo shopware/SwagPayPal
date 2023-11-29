@@ -3,7 +3,6 @@ import 'SwagPayPal/module/swag-paypal/components/swag-paypal-vaulting';
 
 const onboardingCallbackLive = 'onboardingCallbackLive';
 const onboardingCallbackSandbox = 'onboardingUrlSandbox';
-const objectMergeWith = require('lodash.mergewith');
 
 async function createWrapper(customOptions = {}) {
     const options = {
@@ -56,7 +55,10 @@ async function createWrapper(customOptions = {}) {
         },
     };
 
-    return mount(await Shopware.Component.build('swag-paypal-vaulting'), objectMergeWith(options, customOptions));
+    return mount(
+        await Shopware.Component.build('swag-paypal-vaulting'),
+        Shopware.Utils.object.mergeWith(options, customOptions),
+    );
 }
 
 describe('Paypal Vaulting Component', () => {
