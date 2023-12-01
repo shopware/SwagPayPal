@@ -12,11 +12,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * @internal
  */
 #[Package('checkout')]
+#[AsMessageHandler(handles: CompleteSyncTask::class)]
 class CompleteSyncTaskHandler extends AbstractSyncTaskHandler
 {
     private CompleteTask $completeTask;
@@ -28,11 +30,6 @@ class CompleteSyncTaskHandler extends AbstractSyncTaskHandler
     ) {
         parent::__construct($scheduledTaskRepository, $salesChannelRepository);
         $this->completeTask = $completeTask;
-    }
-
-    public static function getHandledMessages(): iterable
-    {
-        return [CompleteSyncTask::class];
     }
 
     protected function executeTask(SalesChannelEntity $salesChannel, Context $context): void
