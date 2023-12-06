@@ -76,6 +76,9 @@ parameters:
         -   # ignore deprecated UrlGenerator
             message : '#Use AbstractMediaUrlGenerator instead#'
 
+        -   # ignore nullable Zip Code (6.6)
+            message : '#Call to deprecated method [sg]etZipcode\(\) of class .*OrderAddressEntity#'
+
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
 
