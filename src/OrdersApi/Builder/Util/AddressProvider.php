@@ -34,7 +34,7 @@ class AddressProvider
         }
 
         $address->setAdminArea2($customerAddress->getCity());
-        $address->setPostalCode($customerAddress->getZipcode());
+        $address->setPostalCode($customerAddress->getZipcode() ?: '');
 
         $country = $customerAddress->getCountry();
         if ($country !== null) {
