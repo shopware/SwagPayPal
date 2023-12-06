@@ -19,11 +19,13 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * @internal
  */
 #[Package('checkout')]
+#[AsMessageHandler(handles: CancelTransactionsTask::class)]
 class CancelTransactionsTaskHandler extends ScheduledTaskHandler
 {
     private PaymentMethodUtil $paymentMethodUtil;
@@ -46,14 +48,6 @@ class CancelTransactionsTaskHandler extends ScheduledTaskHandler
         $this->stateMachineStateRepo = $stateMachineStateRepository;
         $this->orderTransactionRepo = $orderTransactionRepository;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
-    }
-
-    /**
-     * @return class-string[]
-     */
-    public static function getHandledMessages(): iterable
-    {
-        return [CancelTransactionsTask::class];
     }
 
     public function run(): void

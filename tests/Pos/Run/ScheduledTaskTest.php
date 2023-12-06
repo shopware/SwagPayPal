@@ -22,11 +22,8 @@ use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
-use Swag\PayPal\Pos\Schedule\CleanUpLogTask;
 use Swag\PayPal\Pos\Schedule\CleanUpLogTaskHandler;
-use Swag\PayPal\Pos\Schedule\CompleteSyncTask;
 use Swag\PayPal\Pos\Schedule\CompleteSyncTaskHandler;
-use Swag\PayPal\Pos\Schedule\InventorySyncTask;
 use Swag\PayPal\Pos\Schedule\InventorySyncTaskHandler;
 use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
@@ -55,7 +52,6 @@ class ScheduledTaskTest extends TestCase
         $taskHandler = new CompleteSyncTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $completeTask);
 
         static::assertEmpty($runRepository->getCollection());
-        static::assertContains(CompleteSyncTask::class, CompleteSyncTaskHandler::getHandledMessages());
 
         $taskHandler->run();
 
@@ -81,7 +77,6 @@ class ScheduledTaskTest extends TestCase
         $taskHandler = new InventorySyncTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $inventoryTask);
 
         static::assertEmpty($runRepository->getCollection());
-        static::assertContains(InventorySyncTask::class, InventorySyncTaskHandler::getHandledMessages());
 
         $taskHandler->run();
 
@@ -115,7 +110,6 @@ class ScheduledTaskTest extends TestCase
         $taskHandler = new CleanUpLogTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $logCleaner);
 
         static::assertCount(2, $runRepository->getCollection());
-        static::assertContains(CleanUpLogTask::class, CleanUpLogTaskHandler::getHandledMessages());
 
         $taskHandler->run();
 
