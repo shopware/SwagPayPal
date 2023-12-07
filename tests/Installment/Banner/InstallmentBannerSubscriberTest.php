@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Installment\Banner;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
@@ -375,7 +376,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     private function createOffCanvasCartPage(): OffcanvasCartPage
     {
         $page = new OffcanvasCartPage();
-        $cart = new Cart('testToken');
+        $cart = new Cart('testName', 'testToken');
         $cart->setPrice(
             new CartPrice(
                 0,
@@ -403,7 +404,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     private function createCheckoutRegisterPage(): CheckoutRegisterPage
     {
         $page = new CheckoutRegisterPage();
-        $cart = new Cart('testToken');
+        $cart = new Cart('testName', 'testToken');
         $cart->setPrice(
             new CartPrice(
                 0,

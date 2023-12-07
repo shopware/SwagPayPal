@@ -1,4 +1,4 @@
-# 7.3.0
+# 6.3.0
 - PPI-765 - "Später bezahlen" Banner lassen sich nun feiner ein- und ausschalten
 - PPI-828 - Behebt ein Problem, bei dem aufgrund des Caches eine inkorrekte Liste an Zahlungsarten im Checkout angezeigt wurde
 
