@@ -1,3 +1,7 @@
+# 6.3.0
+- PPI-765 - "Später bezahlen" Banner lassen sich nun feiner ein- und ausschalten
+- PPI-828 - Behebt ein Problem, bei dem aufgrund des Caches eine inkorrekte Liste an Zahlungsarten im Checkout angezeigt wurde
+
 # 6.2.3
 - PPI-818 - Warnung für potentielle Nicht-Verfügbarkeit der MyBank-Zahlungsmethode hinzugefügt
 - PPI-820 - Behebt ein Problem, bei dem ein Übergang in den Zahlungsstatus 'Bezahlt' nicht über Webhooks möglich war

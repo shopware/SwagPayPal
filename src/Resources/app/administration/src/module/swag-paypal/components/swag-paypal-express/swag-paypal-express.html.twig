@@ -1,6 +1,7 @@
 {% block swag_paypal_content_card_channel_config_express %}
     <sw-card position-identifier="swag-paypal-card-channel-config-express"
-             :title="$tc('swag-paypal.settingForm.express.cardTitle')">
+             :title="$tc('swag-paypal.settingForm.express.cardTitle')"
+             :subtitle="$tc('swag-paypal.settingForm.express.cardSubtitle')">
 
         {% block swag_paypal_content_card_channel_config_express_settings %}
             <div v-if="actualConfigData" class="swag-paypal-settings-express-fields">

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Installment\Banner\Service;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
@@ -18,6 +19,7 @@ use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 class BannerDataService implements BannerDataServiceInterface
@@ -26,15 +28,19 @@ class BannerDataService implements BannerDataServiceInterface
 
     private CredentialsUtilInterface $credentialsUtil;
 
+    private SystemConfigService $systemConfigService;
+
     /**
      * @internal
      */
     public function __construct(
         PaymentMethodUtil $paymentMethodUtil,
-        CredentialsUtilInterface $credentialsUtil
+        CredentialsUtilInterface $credentialsUtil,
+        SystemConfigService $systemConfigService
     ) {
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->credentialsUtil = $credentialsUtil;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -69,7 +75,7 @@ class BannerDataService implements BannerDataServiceInterface
             (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
             $this->credentialsUtil->getClientId($salesChannelContext->getSalesChannelId()),
             $amount,
-            $salesChannelContext->getCurrency()->getIsoCode()
+            $salesChannelContext->getCurrency()->getIsoCode(),
         );
 
         $merchantPayerId = $this->credentialsUtil->getMerchantPayerId($salesChannelContext->getSalesChannelId());
@@ -77,6 +83,11 @@ class BannerDataService implements BannerDataServiceInterface
         $bannerData->assign([
             'merchantPayerId' => $merchantPayerId,
             'partnerAttributionId' => $merchantPayerId ? PartnerAttributionId::PAYPAL_PPCP : PartnerAttributionId::PAYPAL_CLASSIC,
+            'footerEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED),
+            'cartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_CART_ENABLED),
+            'offCanvasCartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED),
+            'loginPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED),
+            'detailPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED),
         ]);
 
         return $bannerData;

@@ -33,6 +33,16 @@ class BannerData extends Struct
 
     protected string $paymentMethodId;
 
+    protected bool $footerEnabled;
+
+    protected bool $cartEnabled;
+
+    protected bool $offCanvasCartEnabled;
+
+    protected bool $loginPageEnabled;
+
+    protected bool $detailPageEnabled;
+
     /**
      * @deprecated tag:v8.0.0 - will be empty, use `assign()` instead
      */
@@ -128,6 +138,31 @@ class BannerData extends Struct
         return $this->textColor;
     }
 
+    public function getFooterEnabled(): bool
+    {
+        return $this->footerEnabled;
+    }
+
+    public function getCartEnabled(): bool
+    {
+        return $this->cartEnabled;
+    }
+
+    public function getOffCanvasCartEnabled(): bool
+    {
+        return $this->offCanvasCartEnabled;
+    }
+
+    public function getLoginPageEnabled(): bool
+    {
+        return $this->loginPageEnabled;
+    }
+
+    public function getDetailPageEnabled(): bool
+    {
+        return $this->detailPageEnabled;
+    }
+
     public function setAmount(float $amount): void
     {
         $this->amount = $amount;
@@ -161,5 +196,30 @@ class BannerData extends Struct
     public function setTextColor(string $textColor): void
     {
         $this->textColor = $textColor;
+    }
+
+    public function setFooterEnabled(bool $footerEnabled): void
+    {
+        $this->footerEnabled = $footerEnabled;
+    }
+
+    public function setCartEnabled(bool $cartEnabled): void
+    {
+        $this->cartEnabled = $cartEnabled;
+    }
+
+    public function setOffCanvasCartEnabled(bool $offCanvasCartEnabled): void
+    {
+        $this->offCanvasCartEnabled = $offCanvasCartEnabled;
+    }
+
+    public function setLoginPageEnabled(bool $loginPageEnabled): void
+    {
+        $this->loginPageEnabled = $loginPageEnabled;
+    }
+
+    public function setDetailPageEnabled(bool $detailPageEnabled): void
+    {
+        $this->detailPageEnabled = $detailPageEnabled;
     }
 }
