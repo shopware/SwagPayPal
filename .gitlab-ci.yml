@@ -1,8 +1,8 @@
 variables:
-  PLATFORM_MIN_VERSION: 'v6.5.5.1'
-  PLATFORM_DEFAULT_VERSION: '6.5.x'
+  PLATFORM_MIN_VERSION: 'trunk' # @TODO - After v6.6 release set to '6.6.0'
+  PLATFORM_DEFAULT_VERSION: 'trunk'
   PLATFORM_BRANCH: $PLATFORM_DEFAULT_VERSION
-  CMS_EXTENSION_BRANCH: 'master'
+  CMS_EXTENSION_BRANCH: 'next-32119/adjust-plugin-pipelines-after-vue3-transition' # 'master'
   COMMERCIAL_ENABLED: 'true'
   DEPENDENCIES_WITHOUT_COMMERCIAL: |
     [{ "name": "SwagCmsExtensions", "url": "gitlab.shopware.com/shopware/6/services/cms-extensions", "branch": "$CMS_EXTENSION_BRANCH" }]
@@ -32,15 +32,15 @@ phpunit:
     matrix:
       -   MYSQL_IMAGE:
             - mysql:8.0
-          DEV_IMAGE: [ 'shopware/development:8.1-composer-2', 'shopware/development:8.2-composer-2' ]
+          DEV_IMAGE: [ 'shopware/development:8.2-composer-2', 'shopware/development:8.3-composer-2' ]
           MYSQL_CMD: $MYSQL8_CMD
-          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
+          # PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
           PLUGIN_DEPENDENCIES: [ $DEPENDENCIES_WITH_COMMERCIAL, $DEPENDENCIES_WITHOUT_COMMERCIAL ]
       -   MYSQL_IMAGE:
             - mariadb:10.3
             - mariadb:10.5
-          DEV_IMAGE: [ 'shopware/development:8.1-composer-2', 'shopware/development:8.2-composer-2' ]
-          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
+          DEV_IMAGE: [ 'shopware/development:8.2-composer-2', 'shopware/development:8.3-composer-2' ]
+          # PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
           PLUGIN_DEPENDENCIES: [ $DEPENDENCIES_WITH_COMMERCIAL, $DEPENDENCIES_WITHOUT_COMMERCIAL ]
 
 phpstan:
@@ -49,8 +49,8 @@ phpstan:
     - composer phpstan
   parallel:
     matrix:
-      -   DEV_IMAGE: ['shopware/development:8.1-composer-2', 'shopware/development:8.2-composer-2' ]
-          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
+      -   DEV_IMAGE: [ 'shopware/development:8.2-composer-2', 'shopware/development:8.3-composer-2' ]
+          # PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
 
 linting:
   stage: test
