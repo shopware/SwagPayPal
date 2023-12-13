@@ -487,7 +487,7 @@ class PayPalOrdersController extends AbstractController
         $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
 
         if ($orderTransaction === null) {
-            throw PaymentException::invalidTransaction('');
+            throw PaymentException::invalidTransaction($orderTransactionId);
         }
 
         $order = $orderTransaction->getOrder();

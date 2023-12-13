@@ -57,10 +57,7 @@
             "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/.eslintrc.js --fix ./src",
             "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/stylelint --config ../../../../../../../src/Storefront/Resources/app/storefront/stylelint.config.js --fix ./src"
         ],
-        "phpunit": [
-            "composer dump-autoload --dev",
-            "../../../vendor/bin/phpunit"
-        ],
+        "phpunit": "../../../vendor/bin/phpunit",
         "phpstan": [
             "php ../../../src/Core/DevOps/StaticAnalyze/phpstan-bootstrap.php",
             "php bin/phpstan-config-generator.php",

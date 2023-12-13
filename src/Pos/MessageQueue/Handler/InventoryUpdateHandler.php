@@ -25,7 +25,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * @internal
  */
 #[Package('checkout')]
-#[AsMessageHandler(handles: InventoryUpdateMessage::class)]
+#[AsMessageHandler]
 class InventoryUpdateHandler
 {
     private RunService $runService;

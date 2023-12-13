@@ -27,7 +27,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * @internal
  */
 #[Package('checkout')]
-#[AsMessageHandler(handles: SyncManagerMessage::class)]
+#[AsMessageHandler]
 class SyncManagerHandler
 {
     public const SYNC_PRODUCT = 'product';

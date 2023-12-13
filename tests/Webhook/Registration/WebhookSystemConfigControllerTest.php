@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Webhook\Registration;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
@@ -60,9 +61,9 @@ class WebhookSystemConfigControllerTest extends TestCase
         $newConfig['null'][Settings::SANDBOX] = false;
         $newConfig[TestDefaults::SALES_CHANNEL][Settings::SANDBOX] = false;
 
-        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig), Context::createDefaultContext());
 
-        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
+        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig), Context::createDefaultContext());
 
         static::assertFalse($this->systemConfigService->get(Settings::SANDBOX));
         static::assertFalse($this->systemConfigService->get(Settings::SANDBOX, TestDefaults::SALES_CHANNEL));
@@ -81,9 +82,9 @@ class WebhookSystemConfigControllerTest extends TestCase
         $newConfig[TestDefaults::SALES_CHANNEL][Settings::CLIENT_ID_SANDBOX] = self::OTHER_CLIENT_ID;
         $newConfig[TestDefaults::SALES_CHANNEL][Settings::CLIENT_SECRET_SANDBOX] = self::OTHER_CLIENT_SECRET;
 
-        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig), Context::createDefaultContext());
 
-        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
+        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig), Context::createDefaultContext());
 
         static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID_SANDBOX));
         static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX));
@@ -105,9 +106,9 @@ class WebhookSystemConfigControllerTest extends TestCase
         $newConfig[TestDefaults::SALES_CHANNEL][Settings::CLIENT_ID] = self::OTHER_CLIENT_ID;
         $newConfig[TestDefaults::SALES_CHANNEL][Settings::CLIENT_SECRET] = self::OTHER_CLIENT_SECRET;
 
-        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig), Context::createDefaultContext());
 
-        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
+        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig), Context::createDefaultContext());
 
         static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID_SANDBOX));
         static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX));
@@ -129,9 +130,9 @@ class WebhookSystemConfigControllerTest extends TestCase
         $newConfig[TestDefaults::SALES_CHANNEL][Settings::CLIENT_ID] = self::OTHER_CLIENT_ID;
         $newConfig[TestDefaults::SALES_CHANNEL][Settings::CLIENT_SECRET] = self::OTHER_CLIENT_SECRET;
 
-        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig), Context::createDefaultContext());
 
-        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
+        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig), Context::createDefaultContext());
 
         static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID));
         static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET));
@@ -147,9 +148,9 @@ class WebhookSystemConfigControllerTest extends TestCase
         $oldConfig = $this->getDefaultConfig();
         $newConfig = $this->getDefaultConfig();
 
-        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig), Context::createDefaultContext());
 
-        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
+        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig), Context::createDefaultContext());
 
         static::assertEmpty($this->webhookService->getDeregistrations());
         static::assertEqualsCanonicalizing([TestDefaults::SALES_CHANNEL, 'null'], $this->webhookService->getRegistrations());
@@ -172,7 +173,7 @@ class WebhookSystemConfigControllerTest extends TestCase
 
     public function testSaveWithRemovedSalesChannelSettings(): void
     {
-        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($this->getDefaultConfig()));
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($this->getDefaultConfig()), Context::createDefaultContext());
         $newConfig = [
             Settings::CLIENT_ID_SANDBOX => null,
             Settings::CLIENT_SECRET_SANDBOX => null,

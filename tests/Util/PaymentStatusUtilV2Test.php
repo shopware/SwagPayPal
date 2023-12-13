@@ -305,6 +305,7 @@ class PaymentStatusUtilV2Test extends TestCase
     private function getOrderTransaction(string $orderTransactionId): ?OrderTransactionEntity
     {
         $criteria = new Criteria([$orderTransactionId]);
+        $criteria->addAssociation('stateMachineState');
 
         /** @var ?OrderTransactionEntity $entity */
         $entity = $this->orderTransactionRepository->search($criteria, $this->context)->first();

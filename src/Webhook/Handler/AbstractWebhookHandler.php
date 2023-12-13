@@ -91,7 +91,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         }
 
         $criteria = new Criteria([$orderTransactionId]);
-        $criteria->addAssociation('order');
+        $criteria->addAssociations(['order', 'stateMachineState']);
         /** @var OrderTransactionEntity|null $orderTransaction */
         $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
 

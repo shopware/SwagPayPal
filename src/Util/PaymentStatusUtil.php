@@ -173,8 +173,9 @@ class PaymentStatusUtil
     private function getOrderTransaction(string $orderId, Context $context): OrderTransactionEntity
     {
         $criteria = new Criteria([$orderId]);
-        $criteria->addAssociation('transactions');
+        $criteria->addAssociation('transactions.stateMachineState');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
+
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, $context)->first();
 

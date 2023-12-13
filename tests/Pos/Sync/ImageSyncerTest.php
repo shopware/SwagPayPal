@@ -124,8 +124,8 @@ class ImageSyncerTest extends TestCase
         $imageSyncManager = new ImageSyncManager($messageDispatcher, $mediaRepository, $imageSyncer);
 
         $salesChannel = $this->getSalesChannel($context);
-        $posSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
-        static::assertInstanceOf(PosSalesChannelEntity::class, $posSalesChannel);
+        $posSalesChannel = $salesChannel->getExtensionOfType(SwagPayPal::SALES_CHANNEL_POS_EXTENSION, PosSalesChannelEntity::class);
+        static::assertNotNull($posSalesChannel);
         $posSalesChannel->setMediaDomain($mediaDomain);
 
         $runId = $runService->startRun(TestDefaults::SALES_CHANNEL, 'image', [SyncManagerHandler::SYNC_IMAGE], $context);
@@ -174,8 +174,8 @@ class ImageSyncerTest extends TestCase
         $imageSyncManager = new ImageSyncManager($messageDispatcher, new PosMediaRepoMock(), $imageSyncer);
 
         $salesChannel = $this->getSalesChannel($context);
-        $posSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
-        static::assertInstanceOf(PosSalesChannelEntity::class, $posSalesChannel);
+        $posSalesChannel = $salesChannel->getExtensionOfType(SwagPayPal::SALES_CHANNEL_POS_EXTENSION, PosSalesChannelEntity::class);
+        static::assertNotNull($posSalesChannel);
         $posSalesChannel->setMediaDomain(null);
 
         $runId = $runService->startRun(TestDefaults::SALES_CHANNEL, 'image', [SyncManagerHandler::SYNC_IMAGE], $context);
@@ -223,9 +223,10 @@ class ImageSyncerTest extends TestCase
     private function createMedia(string $id, string $url, ?string $lookupKey = null, bool $validMime = true): PosSalesChannelMediaEntity
     {
         $posMedia = new PosSalesChannelMediaEntity();
-        $media = $this->createPartialMock(MediaEntity::class, ['getPath']);
+        $media = new MediaEntity();
         $media->setId($id);
         $media->setUrl($url);
+        $media->setPath(\str_replace(self::DOMAIN_URL . '/', '', $url));
         $media->setFileName(self::LOCAL_FILE_NAME);
         $media->setFileExtension(self::LOCAL_FILE_EXTENSION);
         $media->setMimeType($validMime ? 'image/jpeg' : self::INVALID_MIME_TYPE);
@@ -234,14 +235,6 @@ class ImageSyncerTest extends TestCase
         $posMedia->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $posMedia->setUniqueIdentifier(TestDefaults::SALES_CHANNEL . '-' . $id);
         $posMedia->setLookupKey($lookupKey);
-
-        $media
-            ->method('getPath')
-            ->willReturn(
-                self::MEDIA_URL_VALID,
-                self::MEDIA_URL_INVALID,
-                self::MEDIA_URL_EXISTING
-            );
 
         return $posMedia;
     }

@@ -19,11 +19,13 @@ use Swag\PayPal\Pos\MessageQueue\Message\CloneVisibilityMessage;
 use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * @internal
  */
 #[Package('checkout')]
+#[AsMessageHandler(handles: CloneVisibilityMessage::class)]
 class CloneVisibilityHandler extends AbstractSyncHandler
 {
     private EntityRepository $productVisibilityRepository;
@@ -64,12 +66,5 @@ class CloneVisibilityHandler extends AbstractSyncHandler
         }
 
         $this->productVisibilityRepository->upsert($updates, $context);
-    }
-
-    public static function getHandledMessages(): iterable
-    {
-        return [
-            CloneVisibilityMessage::class,
-        ];
     }
 }

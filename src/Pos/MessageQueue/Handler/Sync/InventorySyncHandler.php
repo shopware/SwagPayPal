@@ -19,11 +19,13 @@ use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\InventorySyncer;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * @internal
  */
 #[Package('checkout')]
+#[AsMessageHandler(handles: InventorySyncMessage::class)]
 class InventorySyncHandler extends AbstractSyncHandler
 {
     private EntityRepository $productRepository;
@@ -68,12 +70,5 @@ class InventorySyncHandler extends AbstractSyncHandler
 
         $this->inventoryContextFactory->updateLocal($message->getInventoryContext());
         $this->inventorySyncer->sync($products, $message->getInventoryContext());
-    }
-
-    public static function getHandledMessages(): iterable
-    {
-        return [
-            InventorySyncMessage::class,
-        ];
     }
 }

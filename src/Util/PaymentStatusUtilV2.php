@@ -123,6 +123,8 @@ class PaymentStatusUtilV2
     private function getOrderTransaction(string $orderTransactionId, Context $context): OrderTransactionEntity
     {
         $criteria = new Criteria([$orderTransactionId]);
+        $criteria->addAssociation('stateMachineState');
+
         /** @var OrderTransactionEntity|null $transaction */
         $transaction = $this->orderTransactionRepository->search($criteria, $context)->first();
 

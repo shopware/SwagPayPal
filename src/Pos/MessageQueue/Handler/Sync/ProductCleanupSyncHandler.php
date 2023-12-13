@@ -20,11 +20,13 @@ use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\ProductSelection;
 use Swag\PayPal\Pos\Sync\ProductSyncer;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * @internal
  */
 #[Package('checkout')]
+#[AsMessageHandler(handles: ProductCleanupSyncMessage::class)]
 class ProductCleanupSyncHandler extends AbstractSyncHandler
 {
     use PosSalesChannelTrait;
@@ -81,12 +83,5 @@ class ProductCleanupSyncHandler extends AbstractSyncHandler
             'id' => $posSalesChannel->getId(),
             'replace' => PosSalesChannelEntity::REPLACE_OFF,
         ]], $message->getContext());
-    }
-
-    public static function getHandledMessages(): iterable
-    {
-        return [
-            ProductCleanupSyncMessage::class,
-        ];
     }
 }
