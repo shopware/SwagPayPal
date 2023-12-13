@@ -10,8 +10,7 @@ namespace Swag\PayPal\Checkout\Payment\Handler;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -48,7 +47,7 @@ class PayPalHandler
     }
 
     /**
-     * @throws AsyncPaymentProcessException
+     * @throws PaymentException
      */
     public function handlePayPalOrder(
         SyncPaymentTransactionStruct $transaction,
@@ -77,7 +76,7 @@ class PayPalHandler
         } catch (PayPalApiException $e) {
             if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
                 || ($e->getIssue() !== PayPalApiException::ERROR_CODE_DUPLICATE_INVOICE_ID)) {
-                throw new AsyncPaymentProcessException(
+                throw PaymentException::asyncProcessInterrupted(
                     $transaction->getOrderTransaction()->getId(),
                     \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
                 );
@@ -118,7 +117,7 @@ class PayPalHandler
         $link = $paypalOrderResponse->getLinks()->getRelation(Link::RELATION_APPROVE)
             ?? $paypalOrderResponse->getLinks()->getRelation(Link::RELATION_PAYER_ACTION);
         if ($link === null) {
-            throw new AsyncPaymentProcessException($transactionId, 'No approve link provided by PayPal');
+            throw PaymentException::asyncProcessInterrupted($transactionId, 'No approve link provided by PayPal');
         }
 
         return new RedirectResponse($link->getHref());
@@ -157,7 +156,7 @@ class PayPalHandler
     }
 
     /**
-     * @throws AsyncPaymentFinalizeException
+     * @throws PaymentException
      */
     public function handleFinalizeOrder(
         SyncPaymentTransactionStruct $transaction,
@@ -183,7 +182,7 @@ class PayPalHandler
         );
 
         if (!($paymentSource = $paypalOrder->getPaymentSource()?->getPaypal())) {
-            throw new AsyncPaymentFinalizeException(
+            throw PaymentException::asyncFinalizeInterrupted(
                 $transaction->getOrderTransaction()->getId(),
                 'Missing payment details for PayPal payment source'
             );

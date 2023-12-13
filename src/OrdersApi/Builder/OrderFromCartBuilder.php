@@ -13,7 +13,7 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -122,7 +122,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
     ): PurchaseUnit {
         $cartTransaction = $cart->getTransactions()->first();
         if ($cartTransaction === null) {
-            throw new InvalidTransactionException('');
+            throw PaymentException::invalidTransaction('');
         }
 
         $submitCart = $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId());

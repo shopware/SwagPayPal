@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\OrdersApi\Administration;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -68,7 +68,7 @@ class PayPalOrdersControllerTest extends TestCase
         $context = Context::createDefaultContext();
         $context->addExtension(ConstantsForTesting::WITHOUT_TRANSACTION, new ArrayStruct());
 
-        $this->expectException(InvalidTransactionException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The transaction with id orderTransactionId is invalid or could not be found.');
         $this->createController()->orderDetails(
             'orderTransactionId',

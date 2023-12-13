@@ -16,7 +16,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -172,12 +172,12 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
 
         $transactionCollection = $order->getTransactions();
         if ($transactionCollection === null) {
-            throw new InvalidOrderException($orderId);
+            throw PaymentException::invalidOrder($orderId);
         }
 
         $transaction = $transactionCollection->last();
         if ($transaction === null) {
-            throw new InvalidOrderException($orderId);
+            throw PaymentException::invalidOrder($orderId);
         }
 
         return $this->orderFromOrderBuilder->getOrder(

@@ -17,11 +17,11 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
@@ -50,7 +50,7 @@ class OrderFromCartBuilderTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContext();
 
-        $this->expectException(InvalidTransactionException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The transaction with id  is invalid or could not be found.');
         $this->createOrderFromCartBuilder()->getOrder($this->createCart('', false), new Request(), $salesChannelContext, null);
     }

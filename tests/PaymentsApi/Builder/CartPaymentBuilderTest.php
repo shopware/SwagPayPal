@@ -13,7 +13,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
@@ -93,7 +93,7 @@ class CartPaymentBuilderTest extends TestCase
         $cart = $this->createCart('');
         $cart->setTransactions(new TransactionCollection());
 
-        $this->expectException(InvalidTransactionException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The transaction with id  is invalid or could not be found.');
         $this->createCartPaymentBuilder()->getPayment($cart, $salesChannelContext, '');
     }

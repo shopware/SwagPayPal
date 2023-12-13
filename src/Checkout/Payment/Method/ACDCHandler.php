@@ -66,7 +66,7 @@ class ACDCHandler extends AbstractSyncAPMHandler
         }
 
         if (!$this->acdcValidator->validate($paypalOrder, $transaction, $salesChannelContext)) {
-            throw new ACDCValidationFailedException($transaction->getOrderTransaction()->getId());
+            throw ACDCValidationFailedException::syncACDCValidationFailed($transaction->getOrderTransaction()->getId());
         }
 
         return parent::executeOrder($transaction, $paypalOrder, $salesChannelContext);

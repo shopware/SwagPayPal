@@ -11,7 +11,7 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -97,12 +97,12 @@ class PlusDataService
 
         $transactions = $order->getTransactions();
         if ($transactions === null) {
-            throw new InvalidOrderException($order->getId());
+            throw PaymentException::invalidOrder($order->getId());
         }
 
         $firstTransaction = $transactions->first();
         if ($firstTransaction === null) {
-            throw new InvalidOrderException($order->getId());
+            throw PaymentException::invalidOrder($order->getId());
         }
 
         $finishUrl = $this->createFinishUrl(true);

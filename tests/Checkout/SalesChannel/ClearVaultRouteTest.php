@@ -8,9 +8,9 @@
 namespace Swag\PayPal\Test\Checkout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute;
 use Symfony\Component\HttpFoundation\Request;
 

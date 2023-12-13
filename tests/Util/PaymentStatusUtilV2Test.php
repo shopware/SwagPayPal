@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -131,7 +131,7 @@ class PaymentStatusUtilV2Test extends TestCase
         $orderTransactionId = $this->createOrderTransaction(false);
 
         $captureResponse = $this->createCapture(true);
-        $this->expectException(InvalidTransactionException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage(
             \sprintf('The transaction with id %s is invalid or could not be found.', $orderTransactionId)
         );

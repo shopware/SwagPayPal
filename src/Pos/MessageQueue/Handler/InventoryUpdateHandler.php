@@ -19,13 +19,14 @@ use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
 use Swag\PayPal\SwagPayPal;
-use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * @internal
  */
 #[Package('checkout')]
-class InventoryUpdateHandler implements MessageSubscriberInterface
+#[AsMessageHandler(handles: InventoryUpdateMessage::class)]
+class InventoryUpdateHandler
 {
     private RunService $runService;
 
@@ -63,13 +64,6 @@ class InventoryUpdateHandler implements MessageSubscriberInterface
 
             $this->messageBus->bulkDispatch($messages, $runId);
         }
-    }
-
-    public static function getHandledMessages(): iterable
-    {
-        return [
-            InventoryUpdateMessage::class,
-        ];
     }
 
     private function getSalesChannels(Context $context): SalesChannelCollection

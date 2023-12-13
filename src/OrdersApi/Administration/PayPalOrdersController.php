@@ -9,7 +9,7 @@ namespace Swag\PayPal\OrdersApi\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -487,7 +487,7 @@ class PayPalOrdersController extends AbstractController
         $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
 
         if ($orderTransaction === null) {
-            throw new InvalidTransactionException($orderTransactionId);
+            throw PaymentException::invalidTransaction('');
         }
 
         $order = $orderTransaction->getOrder();

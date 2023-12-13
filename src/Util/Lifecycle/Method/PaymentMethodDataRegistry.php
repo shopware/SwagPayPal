@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
-use Shopware\Core\Checkout\Payment\Exception\UnknownPaymentMethodException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -115,7 +115,7 @@ class PaymentMethodDataRegistry
     {
         if ($this->paymentMethods === null) {
             if (!\class_exists($methodDataClass)) {
-                throw new UnknownPaymentMethodException($methodDataClass);
+                throw PaymentException::unknownPaymentMethodByHandlerIdentifier($methodDataClass);
             }
 
             return new $methodDataClass($this->container);
@@ -127,7 +127,7 @@ class PaymentMethodDataRegistry
             }
         }
 
-        throw new UnknownPaymentMethodException($methodDataClass);
+        throw PaymentException::unknownPaymentMethodByHandlerIdentifier($methodDataClass);
     }
 
     public function getPaymentMethodByHandler(string $paymentHandler): ?AbstractMethodData

@@ -14,7 +14,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -88,7 +88,7 @@ class PUIHandlerTest extends TestCase
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessageMatches('/The synchronous payment process was interrupted due to the following error:
 Birthday is required for PUI for customer/');
         $this->processPayment(
@@ -108,7 +108,7 @@ Birthday is required for PUI for customer/');
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
 Missing Fraudnet session id');
         $this->processPayment(
@@ -129,7 +129,7 @@ Missing Fraudnet session id');
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
 Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $this->processPayment(
@@ -162,7 +162,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
                 $context,
                 $this->getDefaultConfigData()
             );
-        } catch (SyncPaymentProcessException $e) {
+        } catch (PaymentException $e) {
             static::assertSame('The synchronous payment process was interrupted due to the following error:
 The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. The provided payment source is declined by the processor. Please try again with a different payment source by creating a new order. PAYMENT_SOURCE_DECLINED_BY_PROCESSOR ', $e->getMessage());
             static::assertTrue($this->session->getFlashBag()->has('danger'));
@@ -187,7 +187,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
                 $context,
                 $this->getDefaultConfigData()
             );
-        } catch (SyncPaymentProcessException $e) {
+        } catch (PaymentException $e) {
             static::assertSame('The synchronous payment process was interrupted due to the following error:
 The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. The combination of the payment_source name, billing address, shipping name and shipping address could not be verified. Please correct this information and try again by creating a new order. PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED ', $e->getMessage());
             static::assertTrue($this->session->getFlashBag()->has('danger'));

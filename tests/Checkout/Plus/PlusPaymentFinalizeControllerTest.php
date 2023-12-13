@@ -11,11 +11,11 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -61,7 +61,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
     {
         $salesChannelContext = Generator::createSalesChannelContext();
         $salesChannelContext->getContext()->addExtension(ConstantsForTesting::WITHOUT_TRANSACTION, new ArrayStruct());
-        $this->expectException(InvalidTransactionException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The transaction with id  is invalid or could not be found.');
         $this->createController()->finalizeTransaction(new Request(), $salesChannelContext);
     }
@@ -70,7 +70,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
     {
         $salesChannelContext = Generator::createSalesChannelContext();
         $salesChannelContext->getContext()->addExtension(ConstantsForTesting::WITHOUT_ORDER, new ArrayStruct());
-        $this->expectException(InvalidTransactionException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage(
             \sprintf(
                 'The transaction with id %s is invalid or could not be found.',

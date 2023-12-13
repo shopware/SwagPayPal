@@ -15,13 +15,14 @@ use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
-use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * @internal
  */
 #[Package('checkout')]
-abstract class AbstractSyncHandler implements MessageSubscriberInterface
+#[AsMessageHandler]
+abstract class AbstractSyncHandler
 {
     private RunService $runService;
 

@@ -17,7 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
-use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
+use Shopware\Core\System\StateMachine\StateMachineException;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -67,7 +67,7 @@ class CancelTransactionsTaskHandler extends ScheduledTaskHandler
         );
         $stateInProgressId = $this->stateMachineStateRepo->searchIds($stateMachineStateCriteria, $context)->firstId();
         if ($stateInProgressId === null) {
-            throw new StateMachineStateNotFoundException(
+            throw StateMachineException::stateMachineStateNotFound(
                 OrderTransactionStates::STATE_MACHINE,
                 OrderTransactionStates::STATE_IN_PROGRESS
             );

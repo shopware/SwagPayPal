@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\Checkout\Plus;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
@@ -135,7 +135,7 @@ class PlusSubscriberTest extends TestCase
         $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $event->getPage()->getOrder()->assign(['transactions' => null]);
 
-        $this->expectException(InvalidOrderException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage(
             \sprintf('The order with id %s is invalid or could not be found.', ConstantsForTesting::VALID_ORDER_ID)
         );
@@ -149,7 +149,7 @@ class PlusSubscriberTest extends TestCase
         $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $event->getPage()->getOrder()->setTransactions(new OrderTransactionCollection());
 
-        $this->expectException(InvalidOrderException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage(
             \sprintf('The order with id %s is invalid or could not be found.', ConstantsForTesting::VALID_ORDER_ID)
         );

@@ -10,7 +10,7 @@ namespace Swag\PayPal\Util;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -88,7 +88,7 @@ class PaymentStatusUtilV2
         $transactionId = $transaction->getId();
         $stateMachineState = $transaction->getStateMachineState();
         if ($stateMachineState === null) {
-            throw new InvalidTransactionException($transactionId);
+            throw PaymentException::invalidTransaction($transactionId);
         }
 
         if ($captureResponse->isFinalCapture()) {
@@ -127,7 +127,7 @@ class PaymentStatusUtilV2
         $transaction = $this->orderTransactionRepository->search($criteria, $context)->first();
 
         if ($transaction === null) {
-            throw new InvalidTransactionException($orderTransactionId);
+            throw PaymentException::invalidTransaction($orderTransactionId);
         }
 
         return $transaction;
@@ -139,7 +139,7 @@ class PaymentStatusUtilV2
         Context $context
     ): void {
         if ($stateMachineState === null) {
-            throw new InvalidTransactionException($transactionId);
+            throw PaymentException::invalidTransaction($transactionId);
         }
 
         // TODO PPI-59 - Do transition even if transaction is already partially refunded.

@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Pos\Converter;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Api\Service\MediaConverter;
@@ -30,7 +29,7 @@ class MediaConverterTest extends TestCase
     {
         $shopwareMedia = $this->getMedia();
 
-        $image = $this->createMediaConverter()->convert(self::DOMAIN_URL, $shopwareMedia);
+        $image = (new MediaConverter())->convert(self::DOMAIN_URL, $shopwareMedia);
 
         static::assertSame(self::MEDIA_URL, $image->getImageUrl());
         static::assertSame('JPEG', $image->getImageFormat());
@@ -43,26 +42,18 @@ class MediaConverterTest extends TestCase
         $shopwareMedia->setMimeType('video/mp4');
 
         $this->expectException(InvalidMediaTypeException::class);
-        $this->createMediaConverter()->convert(self::DOMAIN_URL, $shopwareMedia);
+        (new MediaConverter())->convert(self::DOMAIN_URL, $shopwareMedia);
     }
 
     public function testConvertExisting(): void
     {
         $shopwareMedia = $this->getMedia();
 
-        $image = $this->createMediaConverter()->convert(self::DOMAIN_URL, $shopwareMedia, self::LOOKUP_KEY);
+        $image = (new MediaConverter())->convert(self::DOMAIN_URL, $shopwareMedia, self::LOOKUP_KEY);
 
         static::assertSame(self::MEDIA_URL, $image->getImageUrl());
         static::assertSame('JPEG', $image->getImageFormat());
         static::assertSame(self::LOOKUP_KEY, $image->getImageLookupKey());
-    }
-
-    private function createMediaConverter(): MediaConverter
-    {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
-        $urlGenerator->method('getRelativeMediaUrl')->willReturn(self::MEDIA_RELATIVE_URL);
-
-        return new MediaConverter($urlGenerator);
     }
 
     private function getMedia(): MediaEntity
@@ -70,6 +61,7 @@ class MediaConverterTest extends TestCase
         $media = new MediaEntity();
         $media->setId(Uuid::randomHex());
         $media->setMimeType('image/jpeg');
+        $media->setPath(self::MEDIA_RELATIVE_URL);
 
         return $media;
     }

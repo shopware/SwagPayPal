@@ -166,6 +166,8 @@ class PayPalApiStructStructureTest extends TestCase
             $propertyType = $types[0];
         }
 
+        static::assertInstanceOf(\ReflectionNamedType::class, $propertyType);
+
         return match ($propertyType->getName()) {
             'string' => 'test',
             'int' => 1,

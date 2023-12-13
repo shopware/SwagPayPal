@@ -13,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -98,7 +97,7 @@ class ImageSyncerTest extends TestCase
 
         $imageSyncer = new ImageSyncer(
             $mediaRepository,
-            new MediaConverter($this->createUrlGenerator()),
+            new MediaConverter(),
             $imageResource,
             $logger
         );
@@ -159,7 +158,7 @@ class ImageSyncerTest extends TestCase
 
         $imageSyncer = new ImageSyncer(
             new PosMediaRepoMock(),
-            new MediaConverter($this->createUrlGenerator()),
+            new MediaConverter(),
             new ImageResource(new PosClientFactoryMock()),
             new NullLogger()
         );
@@ -221,22 +220,10 @@ class ImageSyncerTest extends TestCase
         $imageSyncer->cleanUp($salesChannelId, $context);
     }
 
-    private function createUrlGenerator(): UrlGeneratorInterface
-    {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
-        $urlGenerator->method('getRelativeMediaUrl')->willReturn(
-            self::MEDIA_URL_VALID,
-            self::MEDIA_URL_INVALID,
-            self::MEDIA_URL_EXISTING
-        );
-
-        return $urlGenerator;
-    }
-
     private function createMedia(string $id, string $url, ?string $lookupKey = null, bool $validMime = true): PosSalesChannelMediaEntity
     {
         $posMedia = new PosSalesChannelMediaEntity();
-        $media = new MediaEntity();
+        $media = $this->createPartialMock(MediaEntity::class, ['getPath']);
         $media->setId($id);
         $media->setUrl($url);
         $media->setFileName(self::LOCAL_FILE_NAME);
@@ -247,6 +234,14 @@ class ImageSyncerTest extends TestCase
         $posMedia->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $posMedia->setUniqueIdentifier(TestDefaults::SALES_CHANNEL . '-' . $id);
         $posMedia->setLookupKey($lookupKey);
+
+        $media
+            ->method('getPath')
+            ->willReturn(
+                self::MEDIA_URL_VALID,
+                self::MEDIA_URL_INVALID,
+                self::MEDIA_URL_EXISTING
+            );
 
         return $posMedia;
     }

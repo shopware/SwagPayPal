@@ -13,10 +13,10 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionColl
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
@@ -169,7 +169,7 @@ class PayPalHandlerTest extends TestCase
             new NullLogger(),
         );
 
-        $this->expectException(AsyncPaymentFinalizeException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('Missing payment details for PayPal payment source');
         $handler->handleFinalizeOrder(
             $struct,

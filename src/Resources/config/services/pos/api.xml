@@ -32,9 +32,7 @@
             <argument type="service" id="Swag\PayPal\Pos\Api\Service\MetadataGenerator"/>
         </service>
 
-        <service id="Swag\PayPal\Pos\Api\Service\MediaConverter">
-            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
-        </service>
+        <service id="Swag\PayPal\Pos\Api\Service\MediaConverter" />
 
         <service id="Swag\PayPal\Pos\Client\TokenClientFactory">
             <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>

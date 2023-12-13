@@ -9,11 +9,11 @@ namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
