@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\SalesChannel;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
@@ -48,9 +49,7 @@ class CreateOrderRouteTest extends TestCase
     use SalesChannelContextTrait;
     use ServicesTrait;
 
-    /**
-     * @dataProvider dataProviderTestCreatePayment
-     */
+    #[DataProvider('dataProviderTestCreatePayment')]
     public function testCreatePayment(bool $withCartLineItems): void
     {
         $salesChannelContext = $this->createSalesChannelContext(
@@ -127,7 +126,7 @@ class CreateOrderRouteTest extends TestCase
         $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
 
-    public function dataProviderTestCreatePayment(): array
+    public static function dataProviderTestCreatePayment(): array
     {
         return [[true], [false]];
     }

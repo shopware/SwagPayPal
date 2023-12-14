@@ -61,7 +61,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * @internal
  */
 #[Package('checkout')]
-abstract class AbstractSyncAPMHandlerTest extends TestCase
+abstract class AbstractTestSyncAPMHandler extends TestCase
 {
     use IntegrationTestBehaviour;
     use OrderTransactionTrait;

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -43,9 +44,7 @@ class LocalUpdaterTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider dataProviderInventoryUpdate
-     */
+    #[DataProvider('dataProviderInventoryUpdate')]
     public function testUpdateLocalInventory(int $localInventory, int $posInventory, int $change): void
     {
         $product = $this->getVariantProduct();

@@ -40,7 +40,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * @internal
  */
 #[Package('checkout')]
-class ACDCHandlerTest extends AbstractSyncAPMHandlerTest
+class ACDCHandlerTestSyncAPMHandler extends AbstractTestSyncAPMHandler
 {
     public function testPayCaptureLiabilityShiftUnknown(): void
     {

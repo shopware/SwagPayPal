@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Api;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Exception\InvalidApiKeyException;
@@ -30,7 +31,7 @@ class ApiKeyDecoderTest extends TestCase
         static::assertSame(self::EXAMPLE_CLIENT_ID, $decoded->getPayload()->getClientId());
     }
 
-    public function dataProviderMalformedSegments(): array
+    public static function dataProviderMalformedSegments(): array
     {
         return [
             [0, 'header'],
@@ -40,9 +41,7 @@ class ApiKeyDecoderTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderMalformedSegments
-     */
+    #[DataProvider('dataProviderMalformedSegments')]
     public function testMalformed(int $segmentOrder, string $segmentName): void
     {
         $decoder = new ApiKeyDecoder();

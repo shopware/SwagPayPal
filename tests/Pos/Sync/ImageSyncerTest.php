@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Pos\Sync;
 
 use Doctrine\DBAL\Connection;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -75,9 +76,7 @@ class ImageSyncerTest extends TestCase
     private const POS_IMAGE_LOOKUP_KEY_INVALID = 'AJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ';
     private const INVALID_SOURCE_URL = 'https://media3.giphy.com/media/3oeSAF90T9N04MyefS/giphy.gif';
 
-    /**
-     * @dataProvider dataProviderImageSync
-     */
+    #[DataProvider('dataProviderImageSync')]
     public function testImageSync(string $mediaDomain): void
     {
         $context = Context::createDefaultContext();
@@ -144,7 +143,7 @@ class ImageSyncerTest extends TestCase
         static::assertSame(self::POS_IMAGE_LOOKUP_KEY_EXISTING, $mediaD->getLookupKey());
     }
 
-    public function dataProviderImageSync(): array
+    public static function dataProviderImageSync(): array
     {
         return [
             [self::DOMAIN_URL],
@@ -248,7 +247,7 @@ class ImageSyncerTest extends TestCase
         );
         $matcher = static::exactly(3);
         $logger->expects($matcher)->method('warning')->willReturnCallback(function (string $message, array $context) use ($matcher): void {
-            switch ($matcher->getInvocationCount()) {
+            switch ($matcher->numberOfInvocations()) {
                 case 1:
                     static::assertSame('Media Type {mimeType} is not supported by Zettle. Skipping image {fileName}.', $message);
                     static::assertSame(self::INVALID_MIME_TYPE, $context['mimeType']);

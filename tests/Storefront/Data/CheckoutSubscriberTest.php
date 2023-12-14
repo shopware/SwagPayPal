@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Storefront\Data;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -97,9 +98,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame(['onCheckoutConfirmLoaded', 10], $events['subscription.' . CheckoutConfirmPageLoadedEvent::class]);
     }
 
-    /**
-     * @dataProvider dataProviderPaymentMethods
-     */
+    #[DataProvider('dataProviderPaymentMethods')]
     public function testOnAccountOrderEditSPBDisabled(string $paymentMethodId, string $extensionId, string $assertionMethod): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
@@ -117,9 +116,7 @@ class CheckoutSubscriberTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider dataProviderPaymentMethods
-     */
+    #[DataProvider('dataProviderPaymentMethods')]
     public function testOnAccountOrderEditPaymentMethodNotInActiveSalesChannel(string $paymentMethodId, string $extensionId): void
     {
         $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId);
@@ -130,9 +127,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertFalse($event->getPage()->hasExtension($extensionId));
     }
 
-    /**
-     * @dataProvider dataProviderPaymentMethods
-     */
+    #[DataProvider('dataProviderPaymentMethods')]
     public function testOnAccountOrderEditLoadedNoSettings(string $paymentMethodId, string $extensionId): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
@@ -146,9 +141,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertFalse($event->getPage()->hasExtension($extensionId));
     }
 
-    /**
-     * @dataProvider dataProviderPaymentMethods
-     */
+    #[DataProvider('dataProviderPaymentMethods')]
     public function testOnAccountOrderEditLoaded(string $paymentMethodId, string $extensionId, string $assertionMethod): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
@@ -158,9 +151,7 @@ class CheckoutSubscriberTest extends TestCase
         $this->$assertionMethod($event, $paymentMethodId, $extensionId);
     }
 
-    /**
-     * @dataProvider dataProviderPaymentMethods
-     */
+    #[DataProvider('dataProviderPaymentMethods')]
     public function testOnCheckoutConfirmSPBDisabled(string $paymentMethodId, string $extensionId, string $assertionMethod): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
@@ -178,9 +169,7 @@ class CheckoutSubscriberTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider dataProviderPaymentMethods
-     */
+    #[DataProvider('dataProviderPaymentMethods')]
     public function testOnCheckoutConfirmNoSettings(string $paymentMethodId, string $extensionId): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
@@ -194,9 +183,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertFalse($event->getPage()->hasExtension($extensionId));
     }
 
-    /**
-     * @dataProvider dataProviderPaymentMethods
-     */
+    #[DataProvider('dataProviderPaymentMethods')]
     public function testOnCheckoutConfirmPaymentMethodNotInActiveSalesChannel(string $paymentMethodId, string $extensionId): void
     {
         $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId);
@@ -207,9 +194,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertFalse($event->getPage()->hasExtension($extensionId));
     }
 
-    /**
-     * @dataProvider dataProviderPaymentMethods
-     */
+    #[DataProvider('dataProviderPaymentMethods')]
     public function testOnCheckoutConfirmLoaded(string $paymentMethodId, string $extensionId, string $assertionMethod): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
@@ -220,9 +205,7 @@ class CheckoutSubscriberTest extends TestCase
         $this->$assertionMethod($event, $paymentMethodId, $extensionId);
     }
 
-    /**
-     * @dataProvider dataProviderPaymentMethods
-     */
+    #[DataProvider('dataProviderPaymentMethods')]
     public function testOnCheckoutConfirmLoadedDisabledWithCartErrors(string $paymentMethodId, string $extensionId): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
@@ -234,9 +217,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertFalse($event->getPage()->hasExtension($extensionId));
     }
 
-    /**
-     * @dataProvider dataProviderPaymentMethods
-     */
+    #[DataProvider('dataProviderPaymentMethods')]
     public function testOnCheckoutConfirmLoadedWithCustomLanguage(string $paymentMethodId, string $extensionId): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
@@ -258,9 +239,9 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame('rect', $extension->getButtonShape());
     }
 
-    public function dataProviderPaymentMethods(): iterable
+    public static function dataProviderPaymentMethods(): iterable
     {
-        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
+        $paymentMethodDataRegistry = static::getContainer()->get(PaymentMethodDataRegistry::class);
 
         return [
             'acdc' => [

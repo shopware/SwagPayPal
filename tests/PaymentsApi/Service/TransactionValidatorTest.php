@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\PaymentsApi\Service;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\PaymentsApi\Service\TransactionValidator;
@@ -23,9 +24,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ItemCollection;
 #[Package('checkout')]
 class TransactionValidatorTest extends TestCase
 {
-    /**
-     * @dataProvider dataProviderTestValidateItemList
-     */
+    #[DataProvider('dataProviderTestValidateItemList')]
     public function testValidateItemList(
         string $subTotal,
         string $shippingTotal,
@@ -62,7 +61,7 @@ class TransactionValidatorTest extends TestCase
         static::assertSame($expectedResult, TransactionValidator::validateItemList([$transaction]));
     }
 
-    public function dataProviderTestValidateItemList(): array
+    public static function dataProviderTestValidateItemList(): array
     {
         return [
             [

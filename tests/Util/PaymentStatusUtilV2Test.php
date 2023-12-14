@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Util;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
@@ -69,9 +70,7 @@ class PaymentStatusUtilV2Test extends TestCase
         $this->context = Context::createDefaultContext();
     }
 
-    /**
-     * @dataProvider dataProviderTestApplyCaptureState
-     */
+    #[DataProvider('dataProviderTestApplyCaptureState')]
     public function testApplyCaptureState(Capture $captureResponse, string $expectedOrderTransactionState, string $originalOrderTransactionState): void
     {
         $orderTransactionId = $this->createOrderTransaction(true, $originalOrderTransactionState);
@@ -85,41 +84,41 @@ class PaymentStatusUtilV2Test extends TestCase
         $this->assertTransactionState($orderTransactionId, $expectedOrderTransactionState);
     }
 
-    public function dataProviderTestApplyCaptureState(): array
+    public static function dataProviderTestApplyCaptureState(): array
     {
         return [
             [
-                $this->createCapture(true),
+                static::createCapture(true),
                 OrderTransactionStates::STATE_PAID,
                 OrderTransactionStates::STATE_AUTHORIZED,
             ],
             [
-                $this->createCapture(false),
+                static::createCapture(false),
                 OrderTransactionStates::STATE_PARTIALLY_PAID,
                 OrderTransactionStates::STATE_AUTHORIZED,
             ],
             [
-                $this->createCapture(true),
+                static::createCapture(true),
                 OrderTransactionStates::STATE_PAID,
                 OrderTransactionStates::STATE_PAID,
             ],
             [
-                $this->createCapture(true),
+                static::createCapture(true),
                 OrderTransactionStates::STATE_PAID,
                 OrderTransactionStates::STATE_UNCONFIRMED,
             ],
             [
-                $this->createCapture(true),
+                static::createCapture(true),
                 OrderTransactionStates::STATE_PAID,
                 OrderTransactionStates::STATE_PARTIALLY_PAID,
             ],
             [
-                $this->createCapture(true),
+                static::createCapture(true),
                 OrderTransactionStates::STATE_PAID,
                 OrderTransactionStates::STATE_CANCELLED,
             ],
             [
-                $this->createCapture(false),
+                static::createCapture(false),
                 OrderTransactionStates::STATE_PARTIALLY_PAID,
                 OrderTransactionStates::STATE_UNCONFIRMED,
             ],
@@ -154,9 +153,7 @@ class PaymentStatusUtilV2Test extends TestCase
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_CANCELLED);
     }
 
-    /**
-     * @dataProvider dataProviderTestApplyRefundState
-     */
+    #[DataProvider('dataProviderTestApplyRefundState')]
     public function testApplyRefundState(Refund $refundResponse, string $expectedOrderTransactionState): void
     {
         $orderTransactionId = $this->createOrderTransaction();
@@ -177,15 +174,15 @@ class PaymentStatusUtilV2Test extends TestCase
         $this->assertTransactionState($orderTransactionId, $expectedOrderTransactionState);
     }
 
-    public function dataProviderTestApplyRefundState(): array
+    public static function dataProviderTestApplyRefundState(): array
     {
         return [
             [
-                $this->createRefund('15.00', '15.00'),
+                static::createRefund('15.00', '15.00'),
                 OrderTransactionStates::STATE_REFUNDED,
             ],
             [
-                $this->createRefund('14.00', '14.00'),
+                static::createRefund('14.00', '14.00'),
                 OrderTransactionStates::STATE_PARTIALLY_REFUNDED,
             ],
         ];
@@ -257,6 +254,41 @@ class PaymentStatusUtilV2Test extends TestCase
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_REFUNDED);
     }
 
+    public static function createCapture(bool $isFinal, ?string $value = null): Capture
+    {
+        $capture = new Capture();
+        $capture->setFinalCapture($isFinal);
+        if ($value !== null) {
+            $captureAmount = new Money();
+            $captureAmount->setValue($value);
+            $captureAmount->setCurrencyCode('EUR');
+
+            $capture->setAmount($captureAmount);
+        }
+
+        return $capture;
+    }
+
+    public static function createRefund(string $value, string $totalRefunded): Refund
+    {
+        $totalRefundedAmount = new Money();
+        $totalRefundedAmount->setValue($totalRefunded);
+        $totalRefundedAmount->setCurrencyCode('EUR');
+
+        $sellerPayableBreakDown = new SellerPayableBreakdown();
+        $sellerPayableBreakDown->setTotalRefundedAmount($totalRefundedAmount);
+
+        $refundAmount = new Money();
+        $refundAmount->setValue($value);
+        $refundAmount->setCurrencyCode('EUR');
+
+        $refund = new Refund();
+        $refund->setSellerPayableBreakdown($sellerPayableBreakDown);
+        $refund->setAmount($refundAmount);
+
+        return $refund;
+    }
+
     private function createOrderTransaction(bool $withTransaction = true, string $state = OrderTransactionStates::STATE_AUTHORIZED): string
     {
         $orderTransactionId = Uuid::randomHex();
@@ -311,41 +343,6 @@ class PaymentStatusUtilV2Test extends TestCase
         $entity = $this->orderTransactionRepository->search($criteria, $this->context)->first();
 
         return $entity;
-    }
-
-    private function createCapture(bool $isFinal, ?string $value = null): Capture
-    {
-        $capture = new Capture();
-        $capture->setFinalCapture($isFinal);
-        if ($value !== null) {
-            $captureAmount = new Money();
-            $captureAmount->setValue($value);
-            $captureAmount->setCurrencyCode('EUR');
-
-            $capture->setAmount($captureAmount);
-        }
-
-        return $capture;
-    }
-
-    private function createRefund(string $value, string $totalRefunded): Refund
-    {
-        $totalRefundedAmount = new Money();
-        $totalRefundedAmount->setValue($totalRefunded);
-        $totalRefundedAmount->setCurrencyCode('EUR');
-
-        $sellerPayableBreakDown = new SellerPayableBreakdown();
-        $sellerPayableBreakDown->setTotalRefundedAmount($totalRefundedAmount);
-
-        $refundAmount = new Money();
-        $refundAmount->setValue($value);
-        $refundAmount->setCurrencyCode('EUR');
-
-        $refund = new Refund();
-        $refund->setSellerPayableBreakdown($sellerPayableBreakDown);
-        $refund->setAmount($refundAmount);
-
-        return $refund;
     }
 
     private function createOrder(?CaptureCollection $captures = null, ?RefundCollection $refunds = null): Order

@@ -24,7 +24,7 @@ use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
  * @internal
  */
 #[Package('checkout')]
-class DeletedUpdaterTest extends AbstractProductSyncTest
+class DeletedUpdaterTestProductSync extends AbstractTestProductSync
 {
     private ProductContextMock $productContext;
 

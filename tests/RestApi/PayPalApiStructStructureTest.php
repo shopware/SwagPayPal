@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\RestApi;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiCollection;
@@ -27,9 +28,7 @@ class PayPalApiStructStructureTest extends TestCase
         Token::class,
     ];
 
-    /**
-     * @dataProvider dataProviderStructPaths
-     */
+    #[DataProvider('dataProviderStructPaths')]
     public function testAllStructsHaveSettersAndGetters(string $path): void
     {
         $structs = $this->getAllStructs($path);

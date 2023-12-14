@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Sync\Product;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -19,7 +20,7 @@ use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
-use Swag\PayPal\Pos\Sync\Product\OutdatedUpdater;
+use Swag\PayPal\Pos\Sync\Product\NewUpdater;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
 use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 
@@ -27,7 +28,7 @@ use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
  * @internal
  */
 #[Package('checkout')]
-class OutdatedUpdaterTest extends AbstractProductSyncTest
+class NewUpdaterTestProductSync extends AbstractTestProductSync
 {
     private ProductContextMock $productContext;
 
@@ -65,13 +66,13 @@ class OutdatedUpdaterTest extends AbstractProductSyncTest
         $this->logger = $this->createMock(LoggerInterface::class);
     }
 
-    public function testOutdatedProduct(): void
+    public function testNewProduct(): void
     {
-        $updater = new OutdatedUpdater($this->productResource, $this->logger);
-        $this->productContext->setUpdateStatus(ProductContext::PRODUCT_OUTDATED);
+        $updater = new NewUpdater($this->productResource, $this->logger);
+        $this->productContext->setUpdateStatus(ProductContext::PRODUCT_NEW);
 
-        $this->productResource->expects(static::never())->method('createProduct');
-        $this->productResource->expects(static::once())->method('updateProduct');
+        $this->productResource->expects(static::once())->method('createProduct');
+        $this->productResource->expects(static::never())->method('updateProduct');
         $this->productResource->expects(static::never())->method('deleteProducts');
         $this->logger->expects(static::once())->method('info');
 
@@ -81,41 +82,42 @@ class OutdatedUpdaterTest extends AbstractProductSyncTest
         static::assertCount(0, $this->productContext->getProductRemovals());
     }
 
-    public function testOutdatedProductButNotExistsAtPos(): void
+    public function testNewProductButExistsAtPos(): void
     {
-        $updater = new OutdatedUpdater($this->productResource, $this->logger);
-        $this->productContext->setUpdateStatus(ProductContext::PRODUCT_OUTDATED);
+        $updater = new NewUpdater($this->productResource, $this->logger);
+        $this->productContext->setUpdateStatus(ProductContext::PRODUCT_NEW);
 
         $error = new PosApiError();
         $error->assign([
-            'errorType' => PosApiError::ERROR_TYPE_ENTITY_NOT_FOUND,
-            'developerMessage' => PosApiError::ERROR_TYPE_ENTITY_NOT_FOUND,
+            'errorType' => PosApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS,
+            'developerMessage' => PosApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS,
             'violations' => [], ]);
-        $this->productResource->method('updateProduct')->willThrowException(
+        $this->productResource->method('createProduct')->willThrowException(
             new PosApiException($error)
         );
 
-        $this->productResource->expects(static::never())->method('createProduct');
-        $this->productResource->expects(static::once())->method('updateProduct');
+        $this->productResource->expects(static::once())->method('createProduct');
+        $this->productResource->expects(static::never())->method('updateProduct');
         $this->productResource->expects(static::never())->method('deleteProducts');
         $this->logger->expects(static::once())->method('notice');
 
         $updater->update($this->productGroupingCollection, $this->productContext);
 
-        static::assertCount(0, $this->productContext->getProductChanges());
-        static::assertCount(1, $this->productContext->getProductRemovals());
+        static::assertCount(1, $this->productContext->getProductChanges());
+        static::assertEmpty($this->productContext->getProductChanges()[0]['checksum']);
+        static::assertCount(0, $this->productContext->getProductRemovals());
     }
 
-    public function testOutdatedProductUpdateError(): void
+    public function testNewProductCreationError(): void
     {
-        $updater = new OutdatedUpdater($this->productResource, $this->logger);
-        $this->productContext->setUpdateStatus(ProductContext::PRODUCT_OUTDATED);
+        $updater = new NewUpdater($this->productResource, $this->logger);
+        $this->productContext->setUpdateStatus(ProductContext::PRODUCT_NEW);
 
         $error = new PosApiError();
         $error->assign([
             'developerMessage' => 'anyError',
             'violations' => [], ]);
-        $this->productResource->method('updateProduct')->willThrowException(
+        $this->productResource->method('createProduct')->willThrowException(
             new PosApiException($error)
         );
 
@@ -123,20 +125,18 @@ class OutdatedUpdaterTest extends AbstractProductSyncTest
         $updater->update($this->productGroupingCollection, $this->productContext);
     }
 
-    public function dataProviderUnwantedStatus(): array
+    public static function dataProviderUnwantedStatus(): array
     {
         return [
-            [ProductContext::PRODUCT_NEW],
+            [ProductContext::PRODUCT_OUTDATED],
             [ProductContext::PRODUCT_CURRENT],
         ];
     }
 
-    /**
-     * @dataProvider dataProviderUnwantedStatus
-     */
+    #[DataProvider('dataProviderUnwantedStatus')]
     public function testAnyOtherProduct(int $unwantedStatus): void
     {
-        $updater = new OutdatedUpdater($this->productResource, $this->logger);
+        $updater = new NewUpdater($this->productResource, $this->logger);
         $this->productContext->setUpdateStatus($unwantedStatus);
 
         $this->productResource->expects(static::never())->method('createProduct');

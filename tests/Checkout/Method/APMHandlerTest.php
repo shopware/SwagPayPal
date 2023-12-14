@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Method;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -61,9 +62,7 @@ class APMHandlerTest extends TestCase
     use ServicesTrait;
     use StateMachineStateTrait;
 
-    /**
-     * @dataProvider dataProviderOrderBuilder
-     */
+    #[DataProvider('dataProviderOrderBuilder')]
     public function testPayAndFinalize(AbstractAPMOrderBuilder $orderBuilder): void
     {
         $productId = $this->createProduct();
@@ -81,9 +80,7 @@ class APMHandlerTest extends TestCase
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $context->getContext());
     }
 
-    /**
-     * @dataProvider dataProviderOrderBuilder
-     */
+    #[DataProvider('dataProviderOrderBuilder')]
     public function testPayWithInvalidSettingsException(AbstractAPMOrderBuilder $orderBuilder): void
     {
         $productId = $this->createProduct();
@@ -102,21 +99,20 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         );
     }
 
-    public function dataProviderOrderBuilder(): array
+    public static function dataProviderOrderBuilder(): array
     {
         return [
-            [$this->getContainer()->get(BancontactOrderBuilder::class)],
-            [$this->getContainer()->get(BlikOrderBuilder::class)],
-            // [$this->getContainer()->get(BoletoBancarioOrderBuilder::class)],
-            [$this->getContainer()->get(EpsOrderBuilder::class)],
-            [$this->getContainer()->get(GiropayOrderBuilder::class)],
-            [$this->getContainer()->get(IdealOrderBuilder::class)],
-            [$this->getContainer()->get(MultibancoOrderBuilder::class)],
-            [$this->getContainer()->get(MyBankOrderBuilder::class)],
-            [$this->getContainer()->get(OxxoOrderBuilder::class)],
-            [$this->getContainer()->get(P24OrderBuilder::class)],
-            [$this->getContainer()->get(SofortOrderBuilder::class)],
-            [$this->getContainer()->get(TrustlyOrderBuilder::class)],
+            [static::getContainer()->get(BancontactOrderBuilder::class)],
+            [static::getContainer()->get(BlikOrderBuilder::class)],
+            [static::getContainer()->get(EpsOrderBuilder::class)],
+            [static::getContainer()->get(GiropayOrderBuilder::class)],
+            [static::getContainer()->get(IdealOrderBuilder::class)],
+            [static::getContainer()->get(MultibancoOrderBuilder::class)],
+            [static::getContainer()->get(MyBankOrderBuilder::class)],
+            [static::getContainer()->get(OxxoOrderBuilder::class)],
+            [static::getContainer()->get(P24OrderBuilder::class)],
+            [static::getContainer()->get(SofortOrderBuilder::class)],
+            [static::getContainer()->get(TrustlyOrderBuilder::class)],
         ];
     }
 

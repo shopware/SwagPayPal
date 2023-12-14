@@ -65,7 +65,7 @@ trait ServicesTrait
     /**
      * @return array<string, mixed>
      */
-    protected function getDefaultConfigData(): array
+    protected static function getDefaultConfigData(): array
     {
         return \array_merge(Settings::DEFAULT_VALUES, [
             Settings::CLIENT_ID => 'TestClientId',
@@ -80,9 +80,9 @@ trait ServicesTrait
     /**
      * @param array<string, mixed> $settings
      */
-    protected function createDefaultSystemConfig(array $settings = []): SystemConfigServiceMock
+    protected static function createDefaultSystemConfig(array $settings = []): SystemConfigServiceMock
     {
-        return $this->createSystemConfigServiceMock(\array_merge($this->getDefaultConfigData(), $settings));
+        return static::createSystemConfigServiceMock(\array_merge(static::getDefaultConfigData(), $settings));
     }
 
     protected function createPaymentBuilder(?SystemConfigService $systemConfig = null): OrderPaymentBuilder
@@ -121,7 +121,7 @@ trait ServicesTrait
     /**
      * @param array<string, mixed> $settings
      */
-    protected function createSystemConfigServiceMock(array $settings = []): SystemConfigServiceMock
+    protected static function createSystemConfigServiceMock(array $settings = []): SystemConfigServiceMock
     {
         $systemConfigService = new SystemConfigServiceMock();
         foreach ($settings as $key => $value) {

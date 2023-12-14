@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
@@ -115,7 +116,7 @@ class AvailabilityServiceTest extends TestCase
         );
     }
 
-    public function dataProviderPaymentMethod(): iterable
+    public static function dataProviderPaymentMethod(): iterable
     {
         return [
             [ACDCMethodData::class, true],

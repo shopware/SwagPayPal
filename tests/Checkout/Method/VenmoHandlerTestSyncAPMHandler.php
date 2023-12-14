@@ -14,7 +14,7 @@ use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
  * @internal
  */
 #[Package('checkout')]
-class VenmoHandlerTest extends AbstractSyncAPMHandlerTest
+class VenmoHandlerTestSyncAPMHandler extends AbstractTestSyncAPMHandler
 {
     protected function getPaymentHandlerClassName(): string
     {

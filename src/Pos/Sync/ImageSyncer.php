@@ -86,7 +86,7 @@ class ImageSyncer
                 $upload = $this->mediaConverter->convert($domain, $media, $entity->getLookupKey());
 
                 $bulkUpload->addImageUpload($upload);
-            } catch (InvalidMediaTypeException $invalidMediaTypeException) {
+            } catch (InvalidMediaTypeException) {
                 $this->logger->warning(
                     'Media Type {mimeType} is not supported by Zettle. Skipping image {fileName}.',
                     [

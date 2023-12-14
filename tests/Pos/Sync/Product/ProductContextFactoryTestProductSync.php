@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Sync\Product;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
@@ -27,14 +28,14 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\PosProductRepoMock;
  * @internal
  */
 #[Package('checkout')]
-class ProductContextFactoryTest extends AbstractProductSyncTest
+class ProductContextFactoryTestProductSync extends AbstractTestProductSync
 {
     private const IMAGE_MEDIA_ID_EXISTING = 'existingMediaId';
     private const IMAGE_MEDIA_ID_NEW = 'newMediaId';
     private const IMAGE_URL = 'https://image.izettle.com/product/BJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ.jpeg';
     private const IMAGE_LOOKUP_KEY = 'BJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ';
 
-    public function dataProviderCheckForUpdate(): array
+    public static function dataProviderCheckForUpdate(): array
     {
         return [
             ['The name', 'The name', ProductContext::PRODUCT_CURRENT],
@@ -43,9 +44,7 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         ];
     }
 
-    /**
-     * @dataProvider dataProviderCheckForUpdate
-     */
+    #[DataProvider('dataProviderCheckForUpdate')]
     public function testCheckForUpdate(?string $oldName, string $newName, int $status): void
     {
         $context = Context::createDefaultContext();

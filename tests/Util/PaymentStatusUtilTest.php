@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Util;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
@@ -83,7 +84,7 @@ class PaymentStatusUtilTest extends TestCase
         $this->assertTransactionState($orderId, OrderTransactionStates::STATE_CANCELLED);
     }
 
-    public function dataProviderTestApplyCaptureState(): array
+    public static function dataProviderTestApplyCaptureState(): array
     {
         $finalCaptureResponse = new Capture();
         $finalCaptureResponse->setIsFinalCapture(true);
@@ -102,9 +103,7 @@ class PaymentStatusUtilTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderTestApplyCaptureState
-     */
+    #[DataProvider('dataProviderTestApplyCaptureState')]
     public function testApplyCaptureState(Capture $captureResponse, string $expectedOrderTransactionState): void
     {
         $orderId = $this->createBasicOrder();
@@ -221,7 +220,7 @@ class PaymentStatusUtilTest extends TestCase
         $this->assertTransactionState($orderId, OrderTransactionStates::STATE_REFUNDED);
     }
 
-    public function dataProviderTestApplyRefundStateToPayment(): array
+    public static function dataProviderTestApplyRefundStateToPayment(): array
     {
         $completeRefundResponse = new Refund();
         $completeRefundResponse->assign(['totalRefundedAmount' => (new Value())->assign(['value' => '15'])]);
@@ -241,9 +240,7 @@ class PaymentStatusUtilTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderTestApplyRefundStateToPayment
-     */
+    #[DataProvider('dataProviderTestApplyRefundStateToPayment')]
     public function testApplyRefundStateToPayment(Refund $refundResponse, string $expectedOrderTransactionState): void
     {
         $orderId = $this->createBasicOrder();

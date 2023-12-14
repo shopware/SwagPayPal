@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Run;
 
 use Doctrine\DBAL\Connection;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
@@ -83,7 +84,7 @@ class PosCommandTest extends TestCase
         ];
     }
 
-    public function dataProviderSyncFunctions(): array
+    public static function dataProviderSyncFunctions(): array
     {
         return [
             [
@@ -116,9 +117,9 @@ class PosCommandTest extends TestCase
         ];
     }
 
-    public function dataProviderFunctions(): array
+    public static function dataProviderFunctions(): array
     {
-        return $this->dataProviderSyncFunctions() + [
+        return static::dataProviderSyncFunctions() + [
             [
                 PosLogCleanupCommand::class,
                 null,
@@ -130,27 +131,21 @@ class PosCommandTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderFunctions
-     */
+    #[DataProvider('dataProviderFunctions')]
     public function testSyncWithInvalidId(string $commandClassName): void
     {
         $input = new ArrayInput(['salesChannelId' => self::INVALID_CHANNEL_ID]);
         static::assertSame(1, $this->commands[$commandClassName]->run($input, new NullOutput()));
     }
 
-    /**
-     * @dataProvider dataProviderFunctions
-     */
+    #[DataProvider('dataProviderFunctions')]
     public function testSyncWithValidId(string $commandClassName): void
     {
         $input = new ArrayInput(['salesChannelId' => $this->salesChannelRepoMock->getMockEntity()->getId()]);
         static::assertSame(0, $this->commands[$commandClassName]->run($input, new NullOutput()));
     }
 
-    /**
-     * @dataProvider dataProviderSyncFunctions
-     */
+    #[DataProvider('dataProviderSyncFunctions')]
     public function testSyncNormal(string $commandClassName, array $serviceCalls): void
     {
         $input = new ArrayInput([]);

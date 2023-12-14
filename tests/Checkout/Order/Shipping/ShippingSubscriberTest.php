@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Order\Shipping;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -75,9 +76,7 @@ class ShippingSubscriberTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider dataProviderWriteResult
-     */
+    #[DataProvider('dataProviderWriteResult')]
     public function testOnOrderDeliveryWritten(EntityWriteResult $result, ?array $expectedAfter, array $expectedBefore): void
     {
         $event = new EntityWrittenEvent(
@@ -98,9 +97,7 @@ class ShippingSubscriberTest extends TestCase
         $subscriber->onOrderDeliveryWritten($event);
     }
 
-    /**
-     * @dataProvider dataProviderWriteResult
-     */
+    #[DataProvider('dataProviderWriteResult')]
     public function testOnOrderDeliveryWrittenWithNonLiveVersion(EntityWriteResult $result): void
     {
         $event = new EntityWrittenEvent(
@@ -119,7 +116,7 @@ class ShippingSubscriberTest extends TestCase
         $subscriber->onOrderDeliveryWritten($event);
     }
 
-    public function dataProviderWriteResult(): array
+    public static function dataProviderWriteResult(): array
     {
         return [
             [

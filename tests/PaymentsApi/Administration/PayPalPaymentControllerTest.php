@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\PaymentsApi\Administration;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
@@ -78,7 +79,7 @@ class PayPalPaymentControllerTest extends TestCase
         $this->createPaymentController()->paymentDetails('testOrderId', 'testPaymentId', $context)->getContent();
     }
 
-    public function dataProviderTestResourceDetails(): array
+    public static function dataProviderTestResourceDetails(): array
     {
         return [
             [
@@ -112,9 +113,7 @@ class PayPalPaymentControllerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderTestResourceDetails
-     */
+    #[DataProvider('dataProviderTestResourceDetails')]
     public function testResourceDetails(string $resourceType, array $assertions): void
     {
         $context = Context::createDefaultContext();

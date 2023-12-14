@@ -27,7 +27,7 @@ trait UpdaterTrait
 {
     use InventoryTrait;
 
-    public function dataProviderInventoryUpdate(): array
+    public static function dataProviderInventoryUpdate(): array
     {
         return [
             [1, 2, 1],  // more

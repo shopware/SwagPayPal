@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Run;
 
 use Doctrine\DBAL\Connection;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
@@ -81,7 +82,7 @@ class PosSyncControllerTest extends TestCase
         );
     }
 
-    public function dataProviderSyncFunctions(): array
+    public static function dataProviderSyncFunctions(): array
     {
         return [
             [
@@ -114,9 +115,9 @@ class PosSyncControllerTest extends TestCase
         ];
     }
 
-    public function dataProviderFunctions(): array
+    public static function dataProviderFunctions(): array
     {
-        return $this->dataProviderSyncFunctions() + [
+        return static::dataProviderSyncFunctions() + [
             [
                 'cleanUpLog',
                 null,
@@ -128,9 +129,7 @@ class PosSyncControllerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderFunctions
-     */
+    #[DataProvider('dataProviderFunctions')]
     public function testSyncWithInvalidId(string $syncFunction): void
     {
         $context = Context::createDefaultContext();
@@ -138,9 +137,7 @@ class PosSyncControllerTest extends TestCase
         $this->posSyncController->$syncFunction(self::INVALID_CHANNEL_ID, $context);
     }
 
-    /**
-     * @dataProvider dataProviderSyncFunctions
-     */
+    #[DataProvider('dataProviderSyncFunctions')]
     public function testSyncNormal(string $syncFunction, array $serviceCalls): void
     {
         $context = Context::createDefaultContext();
