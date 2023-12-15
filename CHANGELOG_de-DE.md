@@ -1,3 +1,6 @@
+# 6.3.1
+- PPI-844 - Behebt ein Problem, bei dem der Ratenzahlungs-Banner nicht auf CMS-Produktdetailseiten deaktivierbar war
+
 # 6.3.0
 - PPI-765 - "Später bezahlen" Banner lassen sich nun feiner ein- und ausschalten
 - PPI-828 - Behebt ein Problem, bei dem aufgrund des Caches eine inkorrekte Liste an Zahlungsarten im Checkout angezeigt wurde
