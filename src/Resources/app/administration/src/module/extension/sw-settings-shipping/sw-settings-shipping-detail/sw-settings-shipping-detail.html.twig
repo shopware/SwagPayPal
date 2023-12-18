@@ -24,11 +24,7 @@
 
         {% block sw_settings_shipping_detail_paypal_default_carrier_input %}
         <sw-text-field
-            {% if VUE3 %}
             v-model:value="payPalDefaultCarrier"
-            {% else %}
-            v-model="payPalDefaultCarrier"
-            {% endif %}
             :label="$tc('swag-paypal-settings-shipping-carrier.inputLabel')"
             :placeholder="$tc('swag-paypal-settings-shipping-carrier.inputPlaceholder')"
         ></sw-text-field>

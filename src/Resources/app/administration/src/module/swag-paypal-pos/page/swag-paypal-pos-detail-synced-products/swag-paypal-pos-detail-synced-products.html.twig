@@ -76,9 +76,6 @@
                                 <template v-if="actions"
                                           #actions="{ item }">
                                     <sw-context-menu-item v-for="action in actions"
-                                                          {% if VUE2 %}
-                                                          :key="action.label"
-                                                          {% endif %}
                                                           @click="action.callback(item)">
                                         {{ $tc(action.label) }}
                                     </sw-context-menu-item>

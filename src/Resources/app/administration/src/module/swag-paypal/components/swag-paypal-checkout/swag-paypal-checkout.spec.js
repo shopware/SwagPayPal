@@ -1,8 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
-import 'src/app/component/base/sw-card';
-import 'src/app/component/base/sw-container';
-import 'src/app/component/base/sw-icon';
-import 'src/app/component/base/sw-alert';
+import { mount } from '@vue/test-utils';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-checkout';
 
 const onboardingCallbackLive = 'onboardingCallbackLive';
@@ -10,28 +6,34 @@ const onboardingCallbackSandbox = 'onboardingUrlSandbox';
 
 async function createWrapper(customOptions = {}) {
     const options = {
-        mocks: {
-            $tc: (key) => key,
-        },
-        provide: {
-            acl: {
-                can: () => true,
+        global: {
+            mocks: {
+                $tc: (key) => key,
             },
-            repositoryFactory: {
-                create: () => ({ search: () => Promise.resolve([]) }),
+            provide: {
+                acl: {
+                    can: () => true,
+                },
+                repositoryFactory: {
+                    create: () => ({ search: () => Promise.resolve([]) }),
+                },
+                SwagPayPalApiCredentialsService: {
+                    getMerchantInformation: () => Promise.resolve({ capabilities: [] }),
+                },
+                feature: {
+                    isActive(flag) {
+                        return flag === 'VUE3';
+                    },
+                },
             },
-            SwagPayPalApiCredentialsService: {
-                getMerchantInformation: () => Promise.resolve({ capabilities: [] }),
+            stubs: {
+                'sw-icon': true,
+                'sw-inherit-wrapper': true,
+                'sw-button-process': true,
+                'sw-container': await wrapTestComponent('sw-container', { sync: true }),
+                'sw-card': await wrapTestComponent('sw-card', { sync: true }),
+                'sw-alert': await wrapTestComponent('sw-alert', { sync: true }),
             },
-        },
-        stubs: ['sw-icon', 'sw-inherit-wrapper', 'sw-button-process'],
-        components: {
-            'sw-container': await Shopware.Component.build('sw-container'),
-            'sw-card': await Shopware.Component.build('sw-card'),
-            'sw-alert': await Shopware.Component.build('sw-alert'),
-        },
-        filters: {
-            asset: null,
         },
         data() {
             return {
@@ -39,7 +41,7 @@ async function createWrapper(customOptions = {}) {
                 onboardingUrlSandbox: onboardingCallbackSandbox,
             };
         },
-        propsData: {
+        props: {
             actualConfigData: {},
             allConfigs: {},
             clientIdFilled: true,
@@ -50,7 +52,7 @@ async function createWrapper(customOptions = {}) {
         },
     };
 
-    return shallowMount(await Shopware.Component.build('swag-paypal-checkout'), {
+    return mount(await Shopware.Component.build('swag-paypal-checkout'), {
         ...options,
         ...customOptions,
     });

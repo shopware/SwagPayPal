@@ -28,11 +28,7 @@ Component.extend('swag-paypal-locale-field', 'sw-text-field', {
         checkValue(value) {
             const localeCodeRegex = /^[a-z]{2}_[A-Z]{2}$/;
 
-            if (this.feature.isActive('VUE3')) {
-                this.$emit('update:value', value || '');
-            } else {
-                this.$emit('change', value || '');
-            }
+            this.$emit('update:value', value || '');
 
 
             if (!value || localeCodeRegex.exec(value)) {

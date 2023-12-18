@@ -15,11 +15,7 @@
 
                     {% block swag_paypal_pos_detail_settings_input_name %}
                         <sw-text-field
-                                {% if VUE3 %}
                                 v-model:value="salesChannel.name"
-                                {% else %}
-                                v-model="salesChannel.name"
-                                {% endif %}
                                 required
                                 type="text"
                                 validation="required"
@@ -32,11 +28,7 @@
 
                     {% block swag_paypal_pos_detail_settings_input_active %}
                         <sw-switch-field
-                                {% if VUE3 %}
                                 v-model:value="salesChannel.active"
-                                {% else %}
-                                v-model="salesChannel.active"
-                                {% endif %}
                                 bordered
                                 :disabled="!acl.can('sales_channel.editor')"
                                 :label="$tc('sw-sales-channel.detail.labelInputActive')"
@@ -48,11 +40,7 @@
 
                 {% block swag_paypal_pos_detail_settings_input_media_domain %}
                     <swag-paypal-pos-url-field
-                            {% if VUE3 %}
                             v-model:value="swagPaypalPosSalesChannel.mediaDomain"
-                            {% else %}
-                            v-model="swagPayPalPosSalesChannel.mediaDomain"
-                            {% endif %}
                             required
                             validation="required"
                             :error="swagPaypalPosSalesChannelMediaDomainError"
@@ -65,11 +53,7 @@
 
                 {% block swag_paypal_pos_detail_settings_input_language %}
                     <sw-entity-single-select
-                            {% if VUE3 %}
                             v-model:value="salesChannel.languageId"
-                            {% else %}
-                            v-model="salesChannel.languageId"
-                            {% endif %}
                             entity="language"
                             required
                             :disabled="!acl.can('sales_channel.editor')"
@@ -82,11 +66,7 @@
                     {# ToDo PPI-56 - implement support for product streams #}
                     <sw-entity-single-select
                             v-if="false"
-                            {% if VUE3 %}
                             v-model:value="swagPaypalPosSalesChannel.productStreamId"
-                            {% else %}
-                            v-model="swagPaypalPosSalesChannel.productStreamId"
-                            {% endif %}
                             entity="product_stream"
                             :disabled="!acl.can('sales_channel.editor')"
                             :label="$tc('swag-paypal-pos.detail.settings.productStream')"
@@ -105,11 +85,7 @@
 
                     {% block swag_paypal_pos_detail_settings_sync_input %}
                         <sw-radio-field
-                            {% if VUE3 %}
                             v-model:value="salesChannel.extensions.paypalPosSalesChannel.replace"
-                            {% else %}
-                            v-model="salesChannel.extensions.paypalPosSalesChannel.replace"
-                            {% endif %}
                             :label="$tc('swag-paypal-pos.wizard.syncLibrary.description')"
                             class="swag-paypal-pos-boolean-radio"
                             :options="optionsReplace"
@@ -130,11 +106,7 @@
 
                     {% block swag_paypal_pos_detail_settings_prices_input %}
                         <swag-paypal-pos-boolean-radio
-                            {% if VUE3 %}
                             v-model:value="swagPaypalPosSalesChannel.syncPrices"
-                            {% else %}
-                            v-model="swagPaypalPosSalesChannel.syncPrices"
-                            {% endif %}
                             class="swag-paypal-pos-detail-settings__sync-prices-input"
                             :label="$tc('swag-paypal-pos.wizard.syncPrices.description')"
                             :optionTrue="optionSyncPrices"
@@ -156,11 +128,7 @@
 
                     {% block swag_paypal_pos_detail_settings_credentials_apikey %}
                         <sw-password-field
-                                {% if VUE3 %}
                                 v-model:value="swagPaypalPosSalesChannel.apiKey"
-                                {% else %}
-                                v-model="swagPaypalPosSalesChannel.apiKey"
-                                {% endif %}
                                 class="swag-paypal-pos-detail-settings__apikey-field"
                                 required
                                 :label="$tc('swag-paypal-pos.authentication.labelApiKey')"
