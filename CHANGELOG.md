@@ -1,3 +1,6 @@
+# 6.3.1
+- PPI-844 - Fixes an issue, where the installment banner was not toggleable on CMS product detail pages
+
 # 6.3.0
 - PPI-765 - "Pay later" banners can now be turned on and off more granular
 - PPI-828 - Fixes an issue, where caching could interfere with the correct list of available payment methods
