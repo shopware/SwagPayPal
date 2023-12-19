@@ -1,8 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
-import 'src/app/component/utils/sw-inherit-wrapper';
-import 'src/app/component/base/sw-card';
-import 'src/app/component/form/sw-switch-field';
-import 'src/app/component/form/sw-checkbox-field';
+import { mount } from '@vue/test-utils';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-vaulting';
 
 const onboardingCallbackLive = 'onboardingCallbackLive';
@@ -10,24 +6,26 @@ const onboardingCallbackSandbox = 'onboardingUrlSandbox';
 
 async function createWrapper(customOptions = {}) {
     const options = {
-        mocks: {
-            $tc: (key) => key,
-        },
-        provide: {
-            acl: {
-                can: () => true,
+        global: {
+            mocks: {
+                $tc: (key) => key,
             },
-            SwagPayPalApiCredentialsService: {
-                getMerchantInformation: () => Promise.resolve({ capabilities: [] }),
+            provide: {
+                acl: {
+                    can: () => true,
+                },
+                SwagPayPalApiCredentialsService: {
+                    getMerchantInformation: () => Promise.resolve({ capabilities: [] }),
+                },
             },
-        },
-        components: {
-            'sw-inherit-wrapper': {
-                template: '<div class="sw-inherit-wrapper"><slot name="content"></slot></div>',
+            stubs: {
+                'sw-inherit-wrapper': {
+                    template: '<div class="sw-inherit-wrapper"><slot name="content"></slot></div>',
+                },
+                'sw-card': await wrapTestComponent('sw-card', { sync: true }),
+                'sw-switch-field': await wrapTestComponent('sw-switch-field', { sync: true }),
+                'sw-checkbox-field': await wrapTestComponent('sw-checkbox-field', { sync: true }),
             },
-            'sw-card': await Shopware.Component.build('sw-card'),
-            'sw-switch-field': await Shopware.Component.build('sw-switch-field'),
-            'sw-checkbox-field': await Shopware.Component.build('sw-checkbox-field'),
         },
         data() {
             return {
@@ -40,7 +38,7 @@ async function createWrapper(customOptions = {}) {
                 },
             };
         },
-        propsData: {
+        props: {
             actualConfigData: {
                 'SwagPayPal.settings.sandbox': true,
                 'SwagPayPal.settings.vaultingEnabled': true,
@@ -52,10 +50,10 @@ async function createWrapper(customOptions = {}) {
         },
     };
 
-    return shallowMount(await Shopware.Component.build('swag-paypal-vaulting'), {
-        ...options,
-        ...customOptions,
-    });
+    return mount(
+        await Shopware.Component.build('swag-paypal-vaulting'),
+        Shopware.Utils.object.mergeWith(options, customOptions),
+    );
 }
 
 describe('Paypal Vaulting Component', () => {
@@ -69,19 +67,18 @@ describe('Paypal Vaulting Component', () => {
 
     it('should set canHandleVaulting state correctly', async () => {
         const wrapper = await createWrapper({
-            provide: {
-                acl: {
-                    can: () => true,
-                },
-                SwagPayPalApiCredentialsService: {
-                    getMerchantInformation: () => Promise.resolve({
-                        capabilities: [],
-                        merchantIntegrations: {
-                            capabilities: [
-                                { name: 'PAYPAL_WALLET_VAULTING_ADVANCED', status: 'ACTIVE' },
-                            ],
-                        },
-                    }),
+            global: {
+                provide: {
+                    SwagPayPalApiCredentialsService: {
+                        getMerchantInformation: () => Promise.resolve({
+                            capabilities: [],
+                            merchantIntegrations: {
+                                capabilities: [
+                                    { name: 'PAYPAL_WALLET_VAULTING_ADVANCED', status: 'ACTIVE' },
+                                ],
+                            },
+                        }),
+                    },
                 },
             },
         });

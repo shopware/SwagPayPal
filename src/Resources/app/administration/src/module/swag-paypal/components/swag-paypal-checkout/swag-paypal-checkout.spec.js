@@ -20,11 +20,6 @@ async function createWrapper(customOptions = {}) {
                 SwagPayPalApiCredentialsService: {
                     getMerchantInformation: () => Promise.resolve({ capabilities: [] }),
                 },
-                feature: {
-                    isActive(flag) {
-                        return flag === 'VUE3';
-                    },
-                },
             },
             stubs: {
                 'sw-icon': true,

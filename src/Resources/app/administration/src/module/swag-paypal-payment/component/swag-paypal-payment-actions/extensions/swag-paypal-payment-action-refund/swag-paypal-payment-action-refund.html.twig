@@ -7,7 +7,7 @@
             <sw-select-field
                     v-model:value="selectedCaptureId"
                     :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
-                    @update:value="preserveCapture"
+                    @update:value="preserveCapture">
                 <option v-for="capture in captures"
                         :value="capture.id">
                     {{ capture.label }}
@@ -18,8 +18,6 @@
         {% block swag_paypal_payment_action_refund_invoice_number %}
             <swag-paypal-text-field
                     v-model:value="refundInvoiceNumber"
-                    {% elseif %}
-                    v-model="refundInvoiceNumber"
                     maxLength="127"
                     :label="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.label')"
                     :placeholder="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.placeholder')">
@@ -29,8 +27,6 @@
         {% block swag_paypal_payment_action_refund_reason %}
             <swag-paypal-text-field
                     v-model:value="refundReason"
-                    {% elseif %}
-                    v-model="refundReason"
                     maxLength="30"
                     :label="$tc('swag-paypal-payment.refundAction.refundReason.label')"
                     :placeholder="$tc('swag-paypal-payment.refundAction.refundReason.placeholder')">

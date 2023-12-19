@@ -7,7 +7,7 @@
             <sw-select-field
                     v-model:value="selectedCaptureId"
                     :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
-                    @update:value="setCapture"
+                    @update:value="setCapture">
                 <option v-for="capture in captures"
                         :value="capture.id">
                     {{ dateFilter(capture.create_time) }} ({{ capture.amount.value }} {{ capture.amount.currency_code }}) - {{ capture.id }} [{{ capture.status }}]

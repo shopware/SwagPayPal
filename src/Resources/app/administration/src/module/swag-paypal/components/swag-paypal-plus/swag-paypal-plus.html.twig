@@ -45,7 +45,7 @@
                                              :label="$tc('swag-paypal.settingForm.plus.plusCheckoutEnabled.label')"
                                              :disabled="ifItWasNotActive() || props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @update:value="props.updateCurrentValue"
+                                             @update:value="props.updateCurrentValue">
                             </sw-switch-field>
 
                             {# @deprecated tag:v9.0.0 - Will be removed without replacement #}
