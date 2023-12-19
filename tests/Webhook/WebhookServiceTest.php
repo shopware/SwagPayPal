@@ -63,6 +63,53 @@ class WebhookServiceTest extends TestCase
         );
     }
 
+    public function testStatusWebhookWithoutId(): void
+    {
+        $result = $this->webhookService->getStatus(null);
+
+        static::assertSame(WebhookService::STATUS_WEBHOOK_MISSING, $result);
+    }
+
+    public function testStatusWebhookWithoutRegisteredWebhook(): void
+    {
+        $this->systemConfig->set(Settings::WEBHOOK_ID, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID);
+        $result = $this->webhookService->getStatus(null);
+
+        static::assertSame(WebhookService::STATUS_WEBHOOK_MISSING, $result);
+    }
+
+    public function testStatusWebhookRegisteredWebhookEqualsPayPals(): void
+    {
+        $this->systemConfig->set(Settings::WEBHOOK_ID, 'someId');
+        $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, 'someToken');
+
+        $this->router
+            ->expects(static::once())
+            ->method('generate')
+            ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
+            ->willReturn(GuzzleClientMock::GET_WEBHOOK_URL);
+
+        $result = $this->webhookService->getStatus(null);
+
+        static::assertSame(WebhookService::STATUS_WEBHOOK_VALID, $result);
+    }
+
+    public function testStatusWebhookRegisteredWebhookNotEqualsPayPals(): void
+    {
+        $this->systemConfig->set(Settings::WEBHOOK_ID, 'someId');
+        $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, 'someToken');
+
+        $this->router
+            ->expects(static::once())
+            ->method('generate')
+            ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
+            ->willReturn(GuzzleClientMock::GET_WEBHOOK_URL . 'Invalid');
+
+        $result = $this->webhookService->getStatus(null);
+
+        static::assertSame(WebhookService::STATUS_WEBHOOK_INVALID, $result);
+    }
+
     public function testRegisterWebhookWithAlreadyExistingTokenAndId(): void
     {
         $this->router

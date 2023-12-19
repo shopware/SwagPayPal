@@ -15,12 +15,14 @@ use Swag\PayPal\RestApi\V1\Api\Patch;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
+use Swag\PayPal\Webhook\Exception\WebhookValidationError;
 
 #[Package('checkout')]
 class WebhookResource
 {
     private const INVALID_WEBHOOK_ID_ERROR_NAME = 'INVALID_RESOURCE_ID';
     private const WEBHOOK_URL_EXISTS_ERROR_NAME = 'WEBHOOK_URL_ALREADY_EXISTS';
+    private const WEBHOOK_URL_VALIDATION_ERROR_NAME = 'VALIDATION_ERROR';
 
     private PayPalClientFactoryInterface $payPalClientFactory;
 
@@ -48,6 +50,10 @@ class WebhookResource
         } catch (PayPalApiException $e) {
             if ($e->getParameters()['name'] === self::WEBHOOK_URL_EXISTS_ERROR_NAME) {
                 throw new WebhookAlreadyExistsException($webhookUrl);
+            }
+
+            if ($e->getParameters()['name'] === self::WEBHOOK_URL_VALIDATION_ERROR_NAME) {
+                throw new WebhookValidationError($webhookUrl);
             }
 
             throw $e;
@@ -99,6 +105,10 @@ class WebhookResource
         } catch (PayPalApiException $e) {
             if ($e->getParameters()['name'] === self::INVALID_WEBHOOK_ID_ERROR_NAME) {
                 throw new WebhookIdInvalidException($webhookId);
+            }
+
+            if ($e->getParameters()['name'] === self::WEBHOOK_URL_VALIDATION_ERROR_NAME) {
+                throw new WebhookValidationError($webhookUrl);
             }
 
             throw $e;

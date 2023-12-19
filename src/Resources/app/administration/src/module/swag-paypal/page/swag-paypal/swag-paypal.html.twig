@@ -51,6 +51,12 @@
                                         :route="{ name: 'swag.paypal.index', params: { tab: 'storefront' } }">
                                         {{ $tc('swag-paypal.tabs.storefront') }}
                                     </sw-tabs-item>
+                                    <sw-tabs-item
+                                        key="advanced"
+                                        :active-tab="active"
+                                        :route="{ name: 'swag.paypal.index', params: { tab: 'advanced' } }">
+                                        {{ $tc('swag-paypal.tabs.advanced') }}
+                                    </sw-tabs-item>
                                 </template>
                             </sw-tabs>
                         {% endblock %}
@@ -115,6 +121,13 @@
 
                                 {% block swag_paypal_content_card_channel_config_cards %}
                                     <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
+                                        {% block swag_paypal_content_tabs %}
+                                            <swag-paypal-webhook
+                                                v-if="tab === 'advanced'"
+                                                :isLoading="isLoading"
+                                                :selectedSalesChannelId="selectedSalesChannelId"
+                                            />
+                                        {% endblock %}
 
                                         {% block swag_paypal_content_card_channel_config_credentials_card %}
                                             <swag-paypal-credentials v-if="tab === 'general'"
