@@ -34,7 +34,7 @@ use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
  * @internal
  */
 #[Package('checkout')]
-class ProductSyncerTest extends AbstractProductSyncTest
+class ProductSyncerTestProductSync extends AbstractTestProductSync
 {
     private MockObject $productContextFactory;
 

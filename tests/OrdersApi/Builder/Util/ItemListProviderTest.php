@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\OrdersApi\Builder\Util;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
@@ -47,9 +48,7 @@ class ItemListProviderTest extends TestCase
         static::assertCount(1, $itemList);
     }
 
-    /**
-     * @dataProvider dataProviderTaxConstellation
-     */
+    #[DataProvider('dataProviderTaxConstellation')]
     public function testTaxes(bool $hasTaxes): void
     {
         $lineItem = $this->createLineItem('test', 10.00, null, $hasTaxes);
@@ -66,9 +65,7 @@ class ItemListProviderTest extends TestCase
         static::assertSame($hasTaxes ? '1.90' : '0.00', $item->getTax()->getValue());
     }
 
-    /**
-     * @dataProvider dataProviderQuantityConstellation
-     */
+    #[DataProvider('dataProviderQuantityConstellation')]
     public function testRoundingError(float $productPrice, int $quantity, string $title, int $expectedQuantity, string $expectedUnitPrice, string $expectedTaxValue, bool $hasTaxes): void
     {
         $lineItem = $this->createLineItem('test', $productPrice, null, $hasTaxes, $quantity);
@@ -109,7 +106,7 @@ class ItemListProviderTest extends TestCase
         static::assertSame($expectedItemSku, $itemList->first()?->getSku());
     }
 
-    public function dataProviderTaxConstellation(): iterable
+    public static function dataProviderTaxConstellation(): iterable
     {
         return [
             'gross' => [false],
@@ -117,7 +114,7 @@ class ItemListProviderTest extends TestCase
         ];
     }
 
-    public function dataProviderQuantityConstellation(): iterable
+    public static function dataProviderQuantityConstellation(): iterable
     {
         return [
             [10.002, 1, 'test', 1, '10.00', '1.90', true],

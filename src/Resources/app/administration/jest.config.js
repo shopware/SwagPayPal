@@ -10,8 +10,12 @@ module.exports = {
         adminPath: process.env.ADMIN_PATH,
     },
 
+    testMatch: [
+        '<rootDir>/**/*.spec.js',
+    ],
+
     setupFilesAfterEnv: [
-        resolve(join(__dirname, '/test/prepare_environment.js')),
+        resolve(join(process.env.ADMIN_PATH, '/test/_setup/prepare_environment.js')),
     ],
 
     collectCoverageFrom: [
@@ -37,6 +41,10 @@ module.exports = {
         '^uuid$': require.resolve('uuid'),
         '^\@shopware-ag\/admin-extension-sdk\/es\/(.*)':
             `${process.env.ADMIN_PATH}/node_modules/@shopware-ag/admin-extension-sdk/umd/$1`,
-        vue$: 'vue/dist/vue.common.dev.js',
+        vue$: '@vue/compat/dist/vue.cjs.js',
+    },
+
+    testEnvironmentOptions: {
+        customExportConditions: ["node", "node-addons"],
     },
 };

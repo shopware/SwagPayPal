@@ -11,15 +11,16 @@ use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\MessageQueue\Handler\Sync\InventorySyncHandler;
@@ -80,7 +81,8 @@ class CompleteInventoryTest extends TestCase
                 $this->getContainer()->get(SalesChannelContextFactory::class)
             ),
             $salesChannelProductRepository,
-            $inventoryContextFactory
+            $inventoryContextFactory,
+            true,
         );
 
         $runService = new RunServiceMock(
@@ -102,7 +104,6 @@ class CompleteInventoryTest extends TestCase
                 new LocalUpdater(
                     $productRepository,
                     new LocalCalculator(),
-                    $this->createMock(StockUpdater::class),
                     new NullLogger()
                 ),
                 new RemoteUpdater(
@@ -198,5 +199,35 @@ class CompleteInventoryTest extends TestCase
 
         // inventory updated online
         static::assertTrue(ChangeBulkInventoryFixture::$called);
+    }
+
+    public function testDisabledInventoryStockManagement(): void
+    {
+        $messageDispatcher = new MessageDispatcher(new MessageBusMock(), $this->createMock(Connection::class));
+
+        $productSelection = $this->createMock(ProductSelection::class);
+        $productSelection->expects(static::never())->method('getSalesChannelContext');
+
+        $salesChannelProductRepository = $this->createMock(SalesChannelRepository::class);
+        $salesChannelProductRepository->expects(static::never())->method('searchIds');
+
+        $inventoryContextFactory = $this->createMock(InventoryContextFactory::class);
+        $inventoryContextFactory->expects(static::never())->method('getContext');
+
+        $inventorySyncManager = new InventorySyncManager(
+            $messageDispatcher,
+            $productSelection,
+            $salesChannelProductRepository,
+            $inventoryContextFactory,
+            false,
+        );
+
+        $messages = $inventorySyncManager->createMessages(
+            $this->getSalesChannel(Context::createDefaultContext()),
+            Context::createDefaultContext(),
+            Uuid::randomHex()
+        );
+
+        static::assertCount(0, $messages);
     }
 }

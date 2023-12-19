@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Converter;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;
@@ -18,7 +19,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 #[Package('checkout')]
 class UuidConverterTest extends TestCase
 {
-    public function dataProviderUuidConversionToV1(): array
+    public static function dataProviderUuidConversionToV1(): array
     {
         return [
             ['1ce0868f406d47d98cfe4b281e62f099', '1ce0868f-406d-17d9-8cfe-4b281e62f099'],
@@ -26,9 +27,7 @@ class UuidConverterTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderUuidConversionToV1
-     */
+    #[DataProvider('dataProviderUuidConversionToV1')]
     public function testConvertToV1(string $originalUuid, string $expectedUuid): void
     {
         if ($expectedUuid === '') {
@@ -37,7 +36,7 @@ class UuidConverterTest extends TestCase
         static::assertSame($expectedUuid, $this->createUuidConverter()->convertUuidToV1($originalUuid));
     }
 
-    public function dataProviderUuidConversionToV4(): array
+    public static function dataProviderUuidConversionToV4(): array
     {
         return [
             ['1ce0868f-406d-17d9-8cfe-4b281e62f099', '1ce0868f406d47d98cfe4b281e62f099'],
@@ -45,9 +44,7 @@ class UuidConverterTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderUuidConversionToV4
-     */
+    #[DataProvider('dataProviderUuidConversionToV4')]
     public function testConvertToV4(string $originalUuid, string $expectedUuid): void
     {
         if ($expectedUuid === '') {
@@ -56,7 +53,7 @@ class UuidConverterTest extends TestCase
         static::assertEquals($expectedUuid, $this->createUuidConverter()->convertUuidToV4($originalUuid));
     }
 
-    public function dataProviderUuidIncrementation(): array
+    public static function dataProviderUuidIncrementation(): array
     {
         return [
             ['1ce0868f406d47d98cfe4b281e62f099', '1ce0868f406d47d98cfe4b281e62f09a'],
@@ -65,9 +62,7 @@ class UuidConverterTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderUuidIncrementation
-     */
+    #[DataProvider('dataProviderUuidIncrementation')]
     public function testIncrement(string $originalUuid, string $expectedUuid): void
     {
         if ($expectedUuid === '') {

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Storefront\Framework\Cookie;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
@@ -45,9 +46,7 @@ class PayPalCookieProviderTest extends TestCase
         static::assertSame($cookies, $result);
     }
 
-    /**
-     * @dataProvider dataTestGetCookieGroupsWithRequiredCookieGroup
-     */
+    #[DataProvider('dataTestGetCookieGroupsWithRequiredCookieGroup')]
     public function testGetCookieGroupsWithRequiredCookieGroup(array $cookies, bool $payPalCookieAdded): void
     {
         $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
@@ -74,7 +73,7 @@ class PayPalCookieProviderTest extends TestCase
         static::assertSame('paypal-cookie-key', $payPalCookie['cookie']);
     }
 
-    public function dataTestGetCookieGroupsWithRequiredCookieGroup(): array
+    public static function dataTestGetCookieGroupsWithRequiredCookieGroup(): array
     {
         return [
             // Matching snippet name, missing is required flag

@@ -9,9 +9,9 @@ namespace Swag\PayPal\Test\Storefront\Data;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\Generator;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;

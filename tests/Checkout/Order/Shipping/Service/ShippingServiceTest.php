@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Order\Shipping\Service;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -125,9 +126,7 @@ class ShippingServiceTest extends TestCase
         $this->getService()->updateTrackingCodes(Uuid::randomHex(), [self::TEST_CODE_A], [], Context::createDefaultContext());
     }
 
-    /**
-     * @dataProvider updateDataProvider
-     */
+    #[DataProvider('updateDataProvider')]
     public function testUpdate(array $after, array $before, array $expectedAdded, array $expectedRemoved): void
     {
         $this->orderTransactionRepository->expects(static::once())->method('search')->willReturn($this->getOrderTransactionResult());
@@ -151,7 +150,7 @@ class ShippingServiceTest extends TestCase
         $this->getService()->updateTrackingCodes(Uuid::randomHex(), $after, $before, Context::createDefaultContext());
     }
 
-    public function updateDataProvider(): array
+    public static function updateDataProvider(): array
     {
         return [
             'add code' => [

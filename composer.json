@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "shopware/core": "~6.5.5@dev"
+        "shopware/core": "~6.6.0@dev"
     },
     "require-dev": {
         "rector/rector": "^0.18.3"
@@ -59,6 +59,7 @@
         ],
         "phpunit": "../../../vendor/bin/phpunit",
         "phpstan": [
+            "php ../../../src/Core/DevOps/StaticAnalyze/phpstan-bootstrap.php",
             "php bin/phpstan-config-generator.php",
             "../../../vendor/bin/phpstan analyze"
         ],
@@ -93,7 +94,8 @@
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "symfony/runtime": true
         }
     }
 }

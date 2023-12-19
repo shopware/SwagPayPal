@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Converter;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
@@ -21,7 +22,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\PriceConverter;
 #[Package('checkout')]
 class PriceConverterTest extends TestCase
 {
-    public function dataProviderPriceConversion(): array
+    public static function dataProviderPriceConversion(): array
     {
         return [
             [100.02, 10002, 'EUR'],
@@ -30,9 +31,7 @@ class PriceConverterTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderPriceConversion
-     */
+    #[DataProvider('dataProviderPriceConversion')]
     public function testConvert(float $floatValue, int $intValue, string $currencyCode): void
     {
         $shopwarePrice = new CalculatedPrice($floatValue, $floatValue, new CalculatedTaxCollection(), new TaxRuleCollection());
@@ -43,9 +42,7 @@ class PriceConverterTest extends TestCase
         static::assertSame($currency->getIsoCode(), $price->getCurrencyId());
     }
 
-    /**
-     * @dataProvider dataProviderPriceConversion
-     */
+    #[DataProvider('dataProviderPriceConversion')]
     public function testConvertFloat(float $floatValue, int $intValue, string $currencyCode): void
     {
         $currency = new CurrencyEntity();

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Run;
 
 use Doctrine\DBAL\Connection;
+use Monolog\Level;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
@@ -82,7 +83,7 @@ class RunServiceTest extends TestCase
         $logEntry = $this->logRepository->search($criteria, $context)->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
-        static::assertEquals(Logger::INFO, $logEntry->getLevel());
+        static::assertEquals(Level::Info, Level::from($logEntry->getLevel()));
         static::assertEquals(self::TEST_MESSAGE, $logEntry->getMessage());
         static::assertEquals($runId, $logEntry->getRunId());
         static::assertNull($logEntry->getProductId());
@@ -112,7 +113,7 @@ class RunServiceTest extends TestCase
         $logEntry = $this->logRepository->search($criteria, $context)->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
-        static::assertEquals(Logger::INFO, $logEntry->getLevel());
+        static::assertSame(Level::Info, Level::from($logEntry->getLevel()));
         static::assertEquals(self::TEST_MESSAGE, $logEntry->getMessage());
         static::assertEquals($runId, $logEntry->getRunId());
         static::assertEquals($product->getParentId(), $logEntry->getProductId());
@@ -149,7 +150,7 @@ class RunServiceTest extends TestCase
         $logEntry = $this->logRepository->search($criteria, $context)->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
-        static::assertEquals(Logger::EMERGENCY, $logEntry->getLevel());
+        static::assertSame(Level::Emergency, Level::from($logEntry->getLevel()));
     }
 
     public function testIsRunActiveTrue(): void

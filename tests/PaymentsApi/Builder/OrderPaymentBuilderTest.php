@@ -7,13 +7,14 @@
 
 namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
@@ -238,9 +239,7 @@ class OrderPaymentBuilderTest extends TestCase
         $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
     }
 
-    /**
-     * @dataProvider dataProviderTestApplicationContext
-     */
+    #[DataProvider('dataProviderTestApplicationContext')]
     public function testApplicationContext(SystemConfigService $systemConfigService, string $expectedResult): void
     {
         $localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
@@ -268,18 +267,18 @@ class OrderPaymentBuilderTest extends TestCase
         static::assertSame('commit', $applicationContext['user_action']);
     }
 
-    public function dataProviderTestApplicationContext(): array
+    public static function dataProviderTestApplicationContext(): array
     {
-        $withoutToken = $this->createDefaultSystemConfig([
+        $withoutToken = static::createDefaultSystemConfig([
             Settings::WEBHOOK_ID => WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_ID,
             Settings::LANDING_PAGE => ApplicationContext::LANDING_PAGE_TYPE_BILLING,
         ]);
 
-        $withoutTokenAndId = $this->createDefaultSystemConfig([
+        $withoutTokenAndId = static::createDefaultSystemConfig([
             Settings::LANDING_PAGE => ApplicationContext::LANDING_PAGE_TYPE_LOGIN,
         ]);
 
-        $submitCart = $this->createDefaultSystemConfig([
+        $submitCart = static::createDefaultSystemConfig([
             Settings::LANDING_PAGE => 'Foo',
         ]);
 

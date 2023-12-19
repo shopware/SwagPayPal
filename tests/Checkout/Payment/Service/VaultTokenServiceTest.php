@@ -17,12 +17,12 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\Recurring\RecurringDataStruct;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Swag\PayPal\Checkout\Exception\SubscriptionTypeNotSupportedException;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;

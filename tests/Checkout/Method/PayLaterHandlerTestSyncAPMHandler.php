@@ -14,7 +14,7 @@ use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
  * @internal
  */
 #[Package('checkout')]
-class PayLaterHandlerTest extends AbstractSyncAPMHandlerTest
+class PayLaterHandlerTestSyncAPMHandler extends AbstractTestSyncAPMHandler
 {
     protected function getPaymentHandlerClassName(): string
     {

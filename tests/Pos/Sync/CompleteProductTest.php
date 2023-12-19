@@ -13,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Content\Media\Pathname\UrlGenerator;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
@@ -164,7 +163,7 @@ class CompleteProductTest extends TestCase
             $salesChannelProductRepository,
             new ImageSyncer(
                 $posMediaRepository,
-                new MediaConverter($this->createMock(UrlGenerator::class)),
+                new MediaConverter(),
                 new ImageResource(new PosClientFactoryMock()),
                 new NullLogger()
             )

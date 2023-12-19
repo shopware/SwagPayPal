@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Pos\Api\Service;
 
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Image\BulkImageUpload\ImageUpload;
 use Swag\PayPal\Pos\Exception\InvalidMediaTypeException;
@@ -16,21 +15,11 @@ use Swag\PayPal\Pos\Exception\InvalidMediaTypeException;
 #[Package('checkout')]
 class MediaConverter
 {
-    private UrlGeneratorInterface $urlGenerator;
-
-    /**
-     * @internal
-     */
-    public function __construct(UrlGeneratorInterface $urlGenerator)
-    {
-        $this->urlGenerator = $urlGenerator;
-    }
-
     public function convert(string $domain, MediaEntity $mediaEntity, ?string $lookupKey = null): ImageUpload
     {
         $mime = $mediaEntity->getMimeType();
         $format = $this->matchMimeType($mime);
-        $mediaUrl = $this->urlGenerator->getRelativeMediaUrl($mediaEntity);
+        $mediaUrl = $mediaEntity->getPath();
         $encodedMediaUrl = \implode('/', \array_map('rawurlencode', \explode('/', $mediaUrl)));
 
         $imageUpload = new ImageUpload();

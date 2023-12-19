@@ -7,6 +7,7 @@
  */
 
 use Shopware\Core\DevOps\StaticAnalyze\StaticAnalyzeKernel;
+use Shopware\Core\Framework\Adapter\Kernel\KernelFactory;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Dotenv\Dotenv;
@@ -16,22 +17,28 @@ $pluginRootPath = dirname(__DIR__);
 
 $classLoader = require $projectRoot . '/vendor/autoload.php';
 if (file_exists($projectRoot . '/.env')) {
-    (new Dotenv())->usePutEnv()->load($projectRoot . '/.env');
+    (new Dotenv())->usePutEnv()->bootEnv($projectRoot . '/.env');
 }
 
-$composerJson = json_decode((string) file_get_contents($pluginRootPath . '/composer.json'), true);
-$swagPayPal = [
-    'autoload' => $composerJson['autoload'],
-    'baseClass' => SwagPayPal::class,
-    'managedByComposer' => false,
-    'name' => 'SwagPayPal',
-    'version' => $composerJson['version'],
-    'active' => true,
-    'path' => $pluginRootPath,
-];
-$pluginLoader = new StaticKernelPluginLoader($classLoader, null, [$swagPayPal]);
+/** @var array{'autoload': array{}} $composer */
+$composer = json_decode((string) file_get_contents($pluginRootPath . '/composer.json'), true);
 
-$kernel = new StaticAnalyzeKernel('dev', true, $pluginLoader, 'phpstan-test-cache-id');
+$pluginLoader = new StaticKernelPluginLoader($classLoader, null, [
+    [
+        'name' => 'SwagPayPal',
+        'active' => true,
+        'version' => $composer['version'],
+        'baseClass' => SwagPayPal::class,
+        'managedByComposer' => false,
+        'autoload' => $composer['autoload'],
+        'path' => $pluginRootPath,
+    ],
+]);
+
+KernelFactory::$kernelClass = StaticAnalyzeKernel::class;
+
+/** @var StaticAnalyzeKernel $kernel */
+$kernel = KernelFactory::create('dev', true, $classLoader, $pluginLoader);
 $kernel->boot();
 
 $phpStanConfigDist = file_get_contents($pluginRootPath . '/phpstan.neon.dist');
@@ -49,9 +56,11 @@ $phpStanConfig = str_replace(
     [
         str_replace($kernel->getProjectDir(), '', $kernel->getCacheDir()),
         $projectRoot . (is_dir($projectRoot . '/platform') ? '/platform' : ''),
-        str_replace('\\', '_', get_class($kernel)),
+        str_replace('\\', '_', $kernel::class),
     ],
     $phpStanConfigDist
 );
 
 file_put_contents(__DIR__ . '/../phpstan.neon', $phpStanConfig);
+
+return $classLoader;

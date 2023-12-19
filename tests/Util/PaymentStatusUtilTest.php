@@ -7,12 +7,13 @@
 
 namespace Swag\PayPal\Test\Util;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -83,7 +84,7 @@ class PaymentStatusUtilTest extends TestCase
         $this->assertTransactionState($orderId, OrderTransactionStates::STATE_CANCELLED);
     }
 
-    public function dataProviderTestApplyCaptureState(): array
+    public static function dataProviderTestApplyCaptureState(): array
     {
         $finalCaptureResponse = new Capture();
         $finalCaptureResponse->setIsFinalCapture(true);
@@ -102,9 +103,7 @@ class PaymentStatusUtilTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderTestApplyCaptureState
-     */
+    #[DataProvider('dataProviderTestApplyCaptureState')]
     public function testApplyCaptureState(Capture $captureResponse, string $expectedOrderTransactionState): void
     {
         $orderId = $this->createBasicOrder();
@@ -221,7 +220,7 @@ class PaymentStatusUtilTest extends TestCase
         $this->assertTransactionState($orderId, OrderTransactionStates::STATE_REFUNDED);
     }
 
-    public function dataProviderTestApplyRefundStateToPayment(): array
+    public static function dataProviderTestApplyRefundStateToPayment(): array
     {
         $completeRefundResponse = new Refund();
         $completeRefundResponse->assign(['totalRefundedAmount' => (new Value())->assign(['value' => '15'])]);
@@ -241,9 +240,7 @@ class PaymentStatusUtilTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderTestApplyRefundStateToPayment
-     */
+    #[DataProvider('dataProviderTestApplyRefundStateToPayment')]
     public function testApplyRefundStateToPayment(Refund $refundResponse, string $expectedOrderTransactionState): void
     {
         $orderId = $this->createBasicOrder();
@@ -286,7 +283,7 @@ class PaymentStatusUtilTest extends TestCase
     public function testApplyVoidStateToOrderWithNoOrderTransaction(): void
     {
         $orderId = $this->createBasicOrder(false);
-        $this->expectException(InvalidOrderException::class);
+        $this->expectException(PaymentException::class);
         $this->paymentStatusUtil->applyVoidStateToOrder($orderId, Context::createDefaultContext());
     }
 
@@ -368,7 +365,7 @@ class PaymentStatusUtilTest extends TestCase
     private function getOrder(string $orderId): ?OrderEntity
     {
         $criteria = new Criteria([$orderId]);
-        $criteria->addAssociation('transactions');
+        $criteria->addAssociation('transactions.stateMachineState');
 
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, Context::createDefaultContext())->first();

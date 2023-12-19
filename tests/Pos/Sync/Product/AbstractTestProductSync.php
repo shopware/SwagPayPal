@@ -27,7 +27,7 @@ use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
  * @internal
  */
 #[Package('checkout')]
-abstract class AbstractProductSyncTest extends TestCase
+abstract class AbstractTestProductSync extends TestCase
 {
     use KernelTestBehaviour;
     use SalesChannelTrait;

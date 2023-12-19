@@ -9,11 +9,11 @@ namespace Swag\PayPal\Test\Pos\Sync;
 
 use Doctrine\DBAL\Connection;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -76,9 +76,7 @@ class ImageSyncerTest extends TestCase
     private const POS_IMAGE_LOOKUP_KEY_INVALID = 'AJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ';
     private const INVALID_SOURCE_URL = 'https://media3.giphy.com/media/3oeSAF90T9N04MyefS/giphy.gif';
 
-    /**
-     * @dataProvider dataProviderImageSync
-     */
+    #[DataProvider('dataProviderImageSync')]
     public function testImageSync(string $mediaDomain): void
     {
         $context = Context::createDefaultContext();
@@ -98,7 +96,7 @@ class ImageSyncerTest extends TestCase
 
         $imageSyncer = new ImageSyncer(
             $mediaRepository,
-            new MediaConverter($this->createUrlGenerator()),
+            new MediaConverter(),
             $imageResource,
             $logger
         );
@@ -125,8 +123,8 @@ class ImageSyncerTest extends TestCase
         $imageSyncManager = new ImageSyncManager($messageDispatcher, $mediaRepository, $imageSyncer);
 
         $salesChannel = $this->getSalesChannel($context);
-        $posSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
-        static::assertInstanceOf(PosSalesChannelEntity::class, $posSalesChannel);
+        $posSalesChannel = $salesChannel->getExtensionOfType(SwagPayPal::SALES_CHANNEL_POS_EXTENSION, PosSalesChannelEntity::class);
+        static::assertNotNull($posSalesChannel);
         $posSalesChannel->setMediaDomain($mediaDomain);
 
         $runId = $runService->startRun(TestDefaults::SALES_CHANNEL, 'image', [SyncManagerHandler::SYNC_IMAGE], $context);
@@ -145,7 +143,7 @@ class ImageSyncerTest extends TestCase
         static::assertSame(self::POS_IMAGE_LOOKUP_KEY_EXISTING, $mediaD->getLookupKey());
     }
 
-    public function dataProviderImageSync(): array
+    public static function dataProviderImageSync(): array
     {
         return [
             [self::DOMAIN_URL],
@@ -159,7 +157,7 @@ class ImageSyncerTest extends TestCase
 
         $imageSyncer = new ImageSyncer(
             new PosMediaRepoMock(),
-            new MediaConverter($this->createUrlGenerator()),
+            new MediaConverter(),
             new ImageResource(new PosClientFactoryMock()),
             new NullLogger()
         );
@@ -175,8 +173,8 @@ class ImageSyncerTest extends TestCase
         $imageSyncManager = new ImageSyncManager($messageDispatcher, new PosMediaRepoMock(), $imageSyncer);
 
         $salesChannel = $this->getSalesChannel($context);
-        $posSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
-        static::assertInstanceOf(PosSalesChannelEntity::class, $posSalesChannel);
+        $posSalesChannel = $salesChannel->getExtensionOfType(SwagPayPal::SALES_CHANNEL_POS_EXTENSION, PosSalesChannelEntity::class);
+        static::assertNotNull($posSalesChannel);
         $posSalesChannel->setMediaDomain(null);
 
         $runId = $runService->startRun(TestDefaults::SALES_CHANNEL, 'image', [SyncManagerHandler::SYNC_IMAGE], $context);
@@ -221,24 +219,13 @@ class ImageSyncerTest extends TestCase
         $imageSyncer->cleanUp($salesChannelId, $context);
     }
 
-    private function createUrlGenerator(): UrlGeneratorInterface
-    {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
-        $urlGenerator->method('getRelativeMediaUrl')->willReturn(
-            self::MEDIA_URL_VALID,
-            self::MEDIA_URL_INVALID,
-            self::MEDIA_URL_EXISTING
-        );
-
-        return $urlGenerator;
-    }
-
     private function createMedia(string $id, string $url, ?string $lookupKey = null, bool $validMime = true): PosSalesChannelMediaEntity
     {
         $posMedia = new PosSalesChannelMediaEntity();
         $media = new MediaEntity();
         $media->setId($id);
         $media->setUrl($url);
+        $media->setPath(\str_replace(self::DOMAIN_URL . '/', '', $url));
         $media->setFileName(self::LOCAL_FILE_NAME);
         $media->setFileExtension(self::LOCAL_FILE_EXTENSION);
         $media->setMimeType($validMime ? 'image/jpeg' : self::INVALID_MIME_TYPE);
@@ -260,7 +247,7 @@ class ImageSyncerTest extends TestCase
         );
         $matcher = static::exactly(3);
         $logger->expects($matcher)->method('warning')->willReturnCallback(function (string $message, array $context) use ($matcher): void {
-            switch ($matcher->getInvocationCount()) {
+            switch ($matcher->numberOfInvocations()) {
                 case 1:
                     static::assertSame('Media Type {mimeType} is not supported by Zettle. Skipping image {fileName}.', $message);
                     static::assertSame(self::INVALID_MIME_TYPE, $context['mimeType']);

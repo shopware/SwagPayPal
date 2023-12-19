@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Run;
 
 use Doctrine\DBAL\Connection;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
@@ -57,7 +58,7 @@ class RunTaskTest extends TestCase
         ];
     }
 
-    public function dataProviderRunTaskName(): array
+    public static function dataProviderRunTaskName(): array
     {
         return [
             [CompleteTask::class, 'complete'],
@@ -83,7 +84,7 @@ class RunTaskTest extends TestCase
         static::assertSame($expectedName, $task->getRunTaskName());
     }
 
-    public function dataProviderExecution(): array
+    public static function dataProviderExecution(): array
     {
         return [
             [

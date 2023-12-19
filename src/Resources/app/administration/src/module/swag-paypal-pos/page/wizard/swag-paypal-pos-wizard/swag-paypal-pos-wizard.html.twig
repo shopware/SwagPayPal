@@ -28,7 +28,6 @@
 
                         {% block swag_paypal_pos_wizard_modal_content_page %}
                             <div class="swag-paypal-pos-wizard__page">
-                                {% if VUE3 %}
                                     <router-view
                                         v-slot="{ Component }"
                                     >
@@ -46,19 +45,6 @@
                                             @update-clone-sales-channel="updateCloneSalesChannel"
                                         />
                                     </router-view>
-                                {% else %}
-                                    <router-view :salesChannel="salesChannel"
-                                                 :cloneSalesChannelId="cloneSalesChannelId"
-                                                 :saveSalesChannel="save"
-                                                 :isLoading="isLoading"
-                                                 @buttons-update="updateButtons"
-                                                 @frw-set-title="setTitle"
-                                                 @frw-finish="onFinishWizard"
-                                                 @toggle-loading="toggleLoading"
-                                                 @recreate-sales-channel="createNewSalesChannel"
-                                                 @update-clone-sales-channel="updateCloneSalesChannel">
-                                    </router-view>
-                                {% endif %}
                             </div>
                         {% endblock %}
                     </sw-container>

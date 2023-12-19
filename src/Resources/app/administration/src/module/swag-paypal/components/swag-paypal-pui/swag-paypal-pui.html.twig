@@ -7,11 +7,7 @@
 
                 {% block swag_paypal_content_card_channel_config_pui_settings_customer_service_instructions %}
                     <sw-inherit-wrapper
-                        {% if VUE3 %}
                         v-model:value="actualConfigData['SwagPayPal.settings.puiCustomerServiceInstructions']"
-                        {% else %}
-                        v-model="actualConfigData['SwagPayPal.settings.puiCustomerServiceInstructions']"
-                        {% endif %}
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.puiCustomerServiceInstructions']"
                         :customInheritationCheckFunction="checkTextFieldInheritance">
                         <template #content="props">
@@ -21,11 +17,7 @@
                                            :helpText="$tc('swag-paypal.settingForm.pui.customerServiceInstructions.helpText')"
                                            :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                            :value="props.currentValue"
-                                           {% if VUE3 %}
-                                           @update:value="props.updateCurrentValue"
-                                           {% else %}
-                                           @change="props.updateCurrentValue"
-                                           {% endif %}>
+                                           @update:value="props.updateCurrentValue">
                             </sw-text-field>
                         </template>
                     </sw-inherit-wrapper>

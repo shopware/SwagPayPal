@@ -61,7 +61,7 @@ class WebhookSystemConfigController extends SystemConfigController
         }, $errors)]);
     }
 
-    public function batchSaveConfiguration(Request $request, ?Context $context = null): JsonResponse
+    public function batchSaveConfiguration(Request $request, Context $context): JsonResponse
     {
         /** @var array<string, array<string, mixed>> $data */
         $data = $request->request->all();

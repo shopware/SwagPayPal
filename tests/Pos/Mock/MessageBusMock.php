@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Test\Pos\Mock;
 
 use Shopware\Core\Framework\Log\Package;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
@@ -40,19 +40,19 @@ class MessageBusMock implements MessageBusInterface
     }
 
     /**
-     * @param array<callable&MessageSubscriberInterface> $handlers
+     * @param array<object&callable> $handlers
      */
     public function execute(array $handlers, bool $loop = true): void
     {
+        $messageTypes = $this->getMessageTypes($handlers);
+
         do {
             $processed = [];
             foreach ($this->envelopes as $envelopeKey => $envelope) {
                 foreach ($handlers as $handler) {
-                    foreach ($handler::getHandledMessages() as $messageType) {
-                        if (\get_class($envelope->getMessage()) === $messageType) {
-                            $handler($envelope->getMessage());
-                            $processed[] = $envelopeKey;
-                        }
+                    if (\get_class($envelope->getMessage()) === $messageTypes[$handler::class]) {
+                        $handler($envelope->getMessage());
+                        $processed[] = $envelopeKey;
                     }
                 }
             }
@@ -70,5 +70,60 @@ class MessageBusMock implements MessageBusInterface
     public function clear(): void
     {
         $this->envelopes = [];
+    }
+
+    /**
+     * @param array<object&callable> $handlers
+     *
+     * @return array<class-string, string>
+     */
+    private function getMessageTypes(array $handlers): array
+    {
+        $handlersWithMessages = [];
+
+        foreach ($handlers as $handler) {
+            $class = $this->findMessageTypeByAttribute($handler::class) ?? $this->findMessageTypeByParameter($handler::class);
+
+            if (!$class) {
+                throw new \RuntimeException('Could not find message type');
+            }
+
+            $handlersWithMessages[$handler::class] = $class;
+        }
+
+        return $handlersWithMessages;
+    }
+
+    /**
+     * @param class-string $handler
+     */
+    private function findMessageTypeByAttribute(string $handler): ?string
+    {
+        $reflection = new \ReflectionClass($handler);
+        $attributes = $reflection->getAttributes();
+
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() === AsMessageHandler::class) {
+                return $attribute->getArguments()['handles'] ?? null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param class-string $handler
+     */
+    private function findMessageTypeByParameter(string $handler): ?string
+    {
+        $reflection = new \ReflectionMethod($handler, '__invoke');
+        $parameters = $reflection->getParameters();
+        $messageType = $parameters[0]->getType();
+
+        if ($messageType instanceof \ReflectionNamedType) {
+            return $messageType->getName();
+        }
+
+        return null;
     }
 }

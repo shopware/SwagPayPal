@@ -11,8 +11,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -110,7 +109,7 @@ class PlusPuiHandler
     }
 
     /**
-     * @throws AsyncPaymentFinalizeException
+     * @throws PaymentException
      */
     public function handleFinalizePayment(
         AsyncPaymentTransactionStruct $transaction,
@@ -134,7 +133,7 @@ class PlusPuiHandler
         } catch (PayPalApiException $e) {
             $parameters = $e->getParameters();
             if (!isset($parameters['name']) || $parameters['name'] !== PayPalApiException::ERROR_CODE_DUPLICATE_ORDER_NUMBER) {
-                throw new AsyncPaymentFinalizeException(
+                throw PaymentException::asyncFinalizeInterrupted(
                     $transactionId,
                     \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
                 );
@@ -158,13 +157,13 @@ class PlusPuiHandler
                     $partnerAttributionId
                 );
             } catch (\Exception $e) {
-                throw new AsyncPaymentFinalizeException(
+                throw PaymentException::asyncFinalizeInterrupted(
                     $transactionId,
                     \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
                 );
             }
         } catch (\Exception $e) {
-            throw new AsyncPaymentFinalizeException(
+            throw PaymentException::asyncFinalizeInterrupted(
                 $transactionId,
                 \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
             );
@@ -187,7 +186,7 @@ class PlusPuiHandler
     /**
      * @param Patch[] $patches
      *
-     * @throws AsyncPaymentProcessException
+     * @throws PaymentException
      */
     private function patchPayPalPayment(
         array $patches,
@@ -198,7 +197,7 @@ class PlusPuiHandler
         try {
             $this->paymentResource->patch($patches, $paypalPaymentId, $salesChannelId);
         } catch (\Exception $e) {
-            throw new AsyncPaymentProcessException(
+            throw PaymentException::asyncProcessInterrupted(
                 $orderTransactionId,
                 \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
             );

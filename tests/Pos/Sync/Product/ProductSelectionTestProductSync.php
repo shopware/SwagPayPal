@@ -28,7 +28,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
  * @internal
  */
 #[Package('checkout')]
-class ProductSelectionTest extends AbstractProductSyncTest
+class ProductSelectionTestProductSync extends AbstractTestProductSync
 {
     private SalesChannelProductRepoMock $productRepository;
 
@@ -62,7 +62,7 @@ class ProductSelectionTest extends AbstractProductSyncTest
         );
     }
 
-    public function dataProviderProductSelection(): array
+    public static function dataProviderProductSelection(): array
     {
         return [
             [false, false],

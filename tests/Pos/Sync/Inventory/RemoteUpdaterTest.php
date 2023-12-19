@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -49,9 +50,7 @@ class RemoteUpdaterTest extends TestCase
         $this->remoteUpdater = new RemoteUpdater($this->inventoryResource, $remoteCalculator, $this->logger);
     }
 
-    /**
-     * @dataProvider dataProviderInventoryUpdate
-     */
+    #[DataProvider('dataProviderInventoryUpdate')]
     public function testUpdateRemoteInventoryVariant(int $localInventory, int $newLocalInventory, int $change): void
     {
         $product = $this->getVariantProduct();
@@ -86,9 +85,7 @@ class RemoteUpdaterTest extends TestCase
         $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
 
-    /**
-     * @dataProvider dataProviderInventoryUpdate
-     */
+    #[DataProvider('dataProviderInventoryUpdate')]
     public function testUpdateRemoteInventorySingle(int $localInventory, int $newLocalInventory, int $change): void
     {
         $product = $this->getSingleProduct();

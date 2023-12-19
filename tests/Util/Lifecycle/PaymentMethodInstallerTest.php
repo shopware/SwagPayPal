@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerRegistry;
@@ -53,9 +54,7 @@ class PaymentMethodInstallerTest extends TestCase
         $this->paymentMethodRepository = $this->getRepository(PaymentMethodDefinition::ENTITY_NAME);
     }
 
-    /**
-     * @dataProvider dataProviderContainerUse
-     */
+    #[DataProvider('dataProviderContainerUse')]
     public function testUninstallDeletesRule(bool $useContainer): void
     {
         $context = Context::createDefaultContext();
@@ -82,9 +81,7 @@ class PaymentMethodInstallerTest extends TestCase
         static::assertNull($puiRuleId);
     }
 
-    /**
-     * @dataProvider dataProviderContainerUse
-     */
+    #[DataProvider('dataProviderContainerUse')]
     public function testInstallAll(bool $useContainer): void
     {
         $context = Context::createDefaultContext();
@@ -119,7 +116,7 @@ class PaymentMethodInstallerTest extends TestCase
         }
     }
 
-    public function dataProviderContainerUse(): iterable
+    public static function dataProviderContainerUse(): iterable
     {
         return [
             'Installer from container' => [true],

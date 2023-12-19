@@ -12,15 +12,15 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -61,7 +61,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * @internal
  */
 #[Package('checkout')]
-abstract class AbstractSyncAPMHandlerTest extends TestCase
+abstract class AbstractTestSyncAPMHandler extends TestCase
 {
     use IntegrationTestBehaviour;
     use OrderTransactionTrait;
@@ -107,7 +107,7 @@ abstract class AbstractSyncAPMHandlerTest extends TestCase
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
 
-        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage(\sprintf('The synchronous payment process was interrupted due to the following error:
 Order "%s" failed', CaptureOrderDeclined::ID));
         $handler->pay($paymentTransaction, $this->createRequest(CaptureOrderDeclined::ID), $salesChannelContext);
@@ -136,7 +136,7 @@ Order "%s" failed', CaptureOrderDeclined::ID));
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
 
-        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage(\sprintf('The synchronous payment process was interrupted due to the following error:
 Order "%s" failed', AuthorizeOrderDenied::ID));
         $handler->pay($paymentTransaction, $this->createRequest(AuthorizeOrderDenied::ID), $salesChannelContext);
@@ -150,7 +150,7 @@ Order "%s" failed', AuthorizeOrderDenied::ID));
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
 
-        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
 The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. The instrument presented  was either declined by the processor or bank, or it can\'t be used for this payment. INSTRUMENT_DECLINED ');
         $handler->pay($paymentTransaction, $this->createRequest(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED), $salesChannelContext);
@@ -163,7 +163,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
         $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $this->getContainer());
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
 
-        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
 Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $handler->pay($paymentTransaction, $this->createRequest(GetOrderCapture::ID), $salesChannelContext);
@@ -175,7 +175,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
 
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $paymentTransaction = $this->createPaymentTransactionStruct();
-        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
 Missing PayPal order id');
         $handler->pay($paymentTransaction, $this->createRequest(), $salesChannelContext);

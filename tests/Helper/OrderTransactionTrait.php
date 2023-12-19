@@ -28,8 +28,8 @@ use Shopware\Core\Framework\Test\IdsCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
 use Shopware\Core\System\StateMachine\Loader\InitialStateIdLoader;
+use Shopware\Core\System\StateMachine\StateMachineException;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
@@ -53,7 +53,7 @@ trait OrderTransactionTrait
     ): string {
         $stateId = $this->getOrderTransactionStateIdByTechnicalName($transactionStateTechnicalName, $container, $context);
         if (!$stateId) {
-            throw new StateMachineStateNotFoundException(OrderTransactionStates::STATE_MACHINE, $transactionStateTechnicalName);
+            throw StateMachineException::stateMachineStateNotFound(OrderTransactionStates::STATE_MACHINE, $transactionStateTechnicalName);
         }
 
         $paymentMethodId = $container->get(PaymentMethodUtil::class)->getPayPalPaymentMethodId($context);

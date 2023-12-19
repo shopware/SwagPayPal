@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Method;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -14,7 +15,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -61,9 +62,7 @@ class APMHandlerTest extends TestCase
     use ServicesTrait;
     use StateMachineStateTrait;
 
-    /**
-     * @dataProvider dataProviderOrderBuilder
-     */
+    #[DataProvider('dataProviderOrderBuilder')]
     public function testPayAndFinalize(AbstractAPMOrderBuilder $orderBuilder): void
     {
         $productId = $this->createProduct();
@@ -81,9 +80,7 @@ class APMHandlerTest extends TestCase
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $context->getContext());
     }
 
-    /**
-     * @dataProvider dataProviderOrderBuilder
-     */
+    #[DataProvider('dataProviderOrderBuilder')]
     public function testPayWithInvalidSettingsException(AbstractAPMOrderBuilder $orderBuilder): void
     {
         $productId = $this->createProduct();
@@ -91,7 +88,7 @@ class APMHandlerTest extends TestCase
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        $this->expectException(AsyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $this->processPayment(
@@ -102,21 +99,20 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         );
     }
 
-    public function dataProviderOrderBuilder(): array
+    public static function dataProviderOrderBuilder(): array
     {
         return [
-            [$this->getContainer()->get(BancontactOrderBuilder::class)],
-            [$this->getContainer()->get(BlikOrderBuilder::class)],
-            // [$this->getContainer()->get(BoletoBancarioOrderBuilder::class)],
-            [$this->getContainer()->get(EpsOrderBuilder::class)],
-            [$this->getContainer()->get(GiropayOrderBuilder::class)],
-            [$this->getContainer()->get(IdealOrderBuilder::class)],
-            [$this->getContainer()->get(MultibancoOrderBuilder::class)],
-            [$this->getContainer()->get(MyBankOrderBuilder::class)],
-            [$this->getContainer()->get(OxxoOrderBuilder::class)],
-            [$this->getContainer()->get(P24OrderBuilder::class)],
-            [$this->getContainer()->get(SofortOrderBuilder::class)],
-            [$this->getContainer()->get(TrustlyOrderBuilder::class)],
+            [static::getContainer()->get(BancontactOrderBuilder::class)],
+            [static::getContainer()->get(BlikOrderBuilder::class)],
+            [static::getContainer()->get(EpsOrderBuilder::class)],
+            [static::getContainer()->get(GiropayOrderBuilder::class)],
+            [static::getContainer()->get(IdealOrderBuilder::class)],
+            [static::getContainer()->get(MultibancoOrderBuilder::class)],
+            [static::getContainer()->get(MyBankOrderBuilder::class)],
+            [static::getContainer()->get(OxxoOrderBuilder::class)],
+            [static::getContainer()->get(P24OrderBuilder::class)],
+            [static::getContainer()->get(SofortOrderBuilder::class)],
+            [static::getContainer()->get(TrustlyOrderBuilder::class)],
         ];
     }
 

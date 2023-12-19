@@ -9,11 +9,7 @@
 
         {% block swag_paypal_pos_wizard_sync_prices_description_input %}
             <swag-paypal-pos-boolean-radio
-                {% if VUE3 %}
                 v-model:value="salesChannel.extensions.paypalPosSalesChannel.syncPrices"
-                {% else %}
-                v-model="salesChannel.extensions.paypalPosSalesChannel.syncPrices"
-                {% endif %}
                 :label="$tc('swag-paypal-pos.wizard.syncPrices.description')"
                 :optionTrue="optionTrue"
                 :optionFalse="optionFalse">

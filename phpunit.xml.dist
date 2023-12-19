@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
          bootstrap="tests/TestBootstrap.php"
-         executionOrder="random">
+         executionOrder="random"
+         cacheDirectory=".phpunit.cache">
 
     <php>
         <ini name="error_reporting" value="-1"/>
@@ -20,23 +21,12 @@
         </testsuite>
     </testsuites>
 
-    <coverage>
+    <source>
         <include>
             <directory suffix=".php">./src/</directory>
         </include>
         <exclude>
             <file>src/SwagPayPal.php</file>
         </exclude>
-    </coverage>
-
-    <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener">
-            <arguments>
-                <array>
-                    <!-- set this option to 0 to disable the DebugClassLoader integration -->
-                    <element key="debug-class-loader"><integer>0</integer></element>
-                </array>
-            </arguments>
-        </listener>
-    </listeners>
+    </source>
 </phpunit>

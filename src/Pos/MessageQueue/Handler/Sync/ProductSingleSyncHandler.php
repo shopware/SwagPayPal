@@ -20,11 +20,13 @@ use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\ProductSelection;
 use Swag\PayPal\Pos\Sync\ProductSyncer;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * @internal
  */
 #[Package('checkout')]
+#[AsMessageHandler(handles: ProductSingleSyncMessage::class)]
 class ProductSingleSyncHandler extends AbstractSyncHandler
 {
     use PosSalesChannelTrait;
@@ -70,12 +72,5 @@ class ProductSingleSyncHandler extends AbstractSyncHandler
         $products = $this->productRepository->search($criteria, $message->getSalesChannelContext())->getEntities();
 
         $this->productSyncer->sync($products, $message->getSalesChannel(), $message->getContext());
-    }
-
-    public static function getHandledMessages(): iterable
-    {
-        return [
-            ProductSingleSyncMessage::class,
-        ];
     }
 }

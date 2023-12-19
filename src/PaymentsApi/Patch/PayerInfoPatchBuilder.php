@@ -10,7 +10,7 @@ namespace Swag\PayPal\PaymentsApi\Patch;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Common\Address;
 use Swag\PayPal\RestApi\V1\Api\Patch;
@@ -31,7 +31,7 @@ class PayerInfoPatchBuilder
 
         $customer = $order->getOrderCustomer();
         if ($customer === null) {
-            throw new InvalidOrderException($order->getId());
+            throw PaymentException::invalidOrder($order->getId());
         }
 
         $payerInfo = new PayerInfo();
@@ -73,7 +73,7 @@ class PayerInfoPatchBuilder
             }
         }
 
-        $billingAddress->setPostalCode($orderBillingAddress->getZipcode());
+        $billingAddress->setPostalCode($orderBillingAddress->getZipcode() ?? '');
 
         $state = $orderBillingAddress->getCountryState();
         if ($state !== null) {

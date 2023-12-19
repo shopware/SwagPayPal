@@ -64,13 +64,7 @@ Component.register('swag-paypal-pos-boolean-radio', {
             },
 
             set(val) {
-                if (this.feature.isActive('VUE3')) {
-                    this.$emit('update:value', val);
-
-                    return;
-                }
-
-                this.$emit('change', val);
+                this.$emit('update:value', val);
             },
         },
 

@@ -10,8 +10,7 @@ namespace Swag\PayPal\Storefront\Data\Service;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
-use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -105,7 +104,7 @@ abstract class AbstractCheckoutDataService
                 'frontend.account.edit-order.page',
                 [
                     'orderId' => $order->getId(),
-                    'error-code' => (new AsyncPaymentProcessException($order->getId(), ''))->getErrorCode(),
+                    'error-code' => PaymentException::PAYMENT_ASYNC_PROCESS_INTERRUPTED,
                     self::PAYPAL_ERROR => 1,
                 ],
                 RouterInterface::ABSOLUTE_URL
@@ -114,7 +113,7 @@ abstract class AbstractCheckoutDataService
                 'frontend.account.edit-order.page',
                 [
                     'orderId' => $order->getId(),
-                    'error-code' => (new CustomerCanceledAsyncPaymentException($order->getId()))->getErrorCode(),
+                    'error-code' => PaymentException::PAYMENT_CUSTOMER_CANCELED_EXTERNAL,
                 ],
                 RouterInterface::ABSOLUTE_URL
             );

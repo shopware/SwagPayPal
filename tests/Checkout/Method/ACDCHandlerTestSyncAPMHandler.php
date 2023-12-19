@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\Checkout\Method;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -40,7 +40,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * @internal
  */
 #[Package('checkout')]
-class ACDCHandlerTest extends AbstractSyncAPMHandlerTest
+class ACDCHandlerTestSyncAPMHandler extends AbstractTestSyncAPMHandler
 {
     public function testPayCaptureLiabilityShiftUnknown(): void
     {
@@ -50,7 +50,7 @@ class ACDCHandlerTest extends AbstractSyncAPMHandlerTest
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
 
-        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
 Credit card validation failed, 3D secure was not validated.');
         $handler->pay($paymentTransaction, $this->createRequest(GetOrderCaptureLiabilityShiftUnknown::ID), $salesChannelContext);
@@ -64,7 +64,7 @@ Credit card validation failed, 3D secure was not validated.');
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
 
-        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
 Credit card validation failed, 3D secure was not validated.');
         $handler->pay($paymentTransaction, $this->createRequest(GetOrderCaptureLiabilityShiftNo::ID), $salesChannelContext);

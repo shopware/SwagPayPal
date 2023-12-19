@@ -15,11 +15,8 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefi
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
-use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -29,6 +26,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateDefinition;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
@@ -213,7 +211,7 @@ class PayPalPaymentHandlerTest extends TestCase
         $dataBag = new RequestDataBag();
         $dataBag->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, true);
         $dataBag->set(PlusPuiHandler::PAYPAL_PAYMENT_ID_INPUT_NAME, self::PAYPAL_PATCH_THROWS_EXCEPTION);
-        $this->expectException(AsyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 The asynchronous payment process was interrupted due to the following error:
 An error occurred during the communication with PayPal
@@ -295,7 +293,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
             AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_PATCH_THROWS_EXCEPTION,
         ]);
 
-        $this->expectException(AsyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 The error "TEST" occurred with the following message: generalClientExceptionMessage');
         $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
@@ -369,7 +367,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
             ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION
         );
 
-        $this->expectException(AsyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 A PayPal test error occurred.');
         $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
@@ -382,7 +380,7 @@ A PayPal test error occurred.');
         $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $this->getContainer());
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
 
-        $this->expectException(AsyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
@@ -401,7 +399,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
             false
         );
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
-        $this->expectException(AsyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 Customer is not logged in.');
         $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
@@ -422,7 +420,7 @@ Customer is not logged in.');
             $transactionId,
             ConstantsForTesting::PAYPAL_RESPONSE_HAS_NO_APPROVAL_URL
         );
-        $this->expectException(AsyncPaymentProcessException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 No approve link provided by PayPal');
         $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
@@ -509,7 +507,7 @@ No approve link provided by PayPal');
 
     public function testFinalizeWithCancel(): void
     {
-        $this->expectException(CustomerCanceledAsyncPaymentException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The customer canceled the external payment process. Customer canceled the payment on the PayPal page');
         $this->createPayPalPaymentHandler()->finalize(
             $this->createPaymentTransactionStruct(
@@ -542,7 +540,7 @@ No approve link provided by PayPal');
             ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION
         );
 
-        $this->expectException(AsyncPaymentFinalizeException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment finalize was interrupted due to the following error:
 An error occurred during the communication with PayPal');
         $this->createPayPalPaymentHandler($settings)->finalize(
@@ -582,7 +580,7 @@ An error occurred during the communication with PayPal');
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => self::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED,
         ]);
 
-        $this->expectException(AsyncPaymentFinalizeException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment finalize was interrupted due to the following error:
 The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. The instrument presented  was either declined by the processor or bank, or it can\'t be used for this payment. INSTRUMENT_DECLINED ');
 

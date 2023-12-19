@@ -9,8 +9,7 @@ namespace Swag\PayPal\Test\Mock\Payment;
 
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
-use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -41,14 +40,14 @@ class AsyncPaymentHandlerMock implements AsynchronousPaymentHandlerInterface
     ): void {
         $transactionId = $transaction->getOrderTransaction()->getId();
         if ($request->query->getBoolean(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
-            throw new CustomerCanceledAsyncPaymentException(
+            throw PaymentException::customerCanceled(
                 $transactionId,
                 'Customer canceled the payment on the PayPal page'
             );
         }
 
         if ($request->query->getBoolean(self::REQUEST_PARAM_SHOULD_THROW_EXCEPTION)) {
-            throw new AsyncPaymentFinalizeException($transactionId, 'Test error message');
+            throw PaymentException::asyncFinalizeInterrupted($transactionId, 'Test error message');
         }
     }
 }

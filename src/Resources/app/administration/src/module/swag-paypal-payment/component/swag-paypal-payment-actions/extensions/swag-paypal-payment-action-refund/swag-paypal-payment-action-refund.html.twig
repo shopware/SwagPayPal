@@ -5,17 +5,9 @@
 
         {% block swag_paypal_payment_action_refund_invoice_select %}
             <sw-select-field
-                    {% if VUE3 %}
                     v-model:value="selectedCaptureId"
-                    {% else %}
-                    v-model="selectedCaptureId"
-                    {% endif %}
                     :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
-                    {% if VUE3 %}
-                    @update:value="preserveCapture"
-                    {% else %}
-                    @change="preserveCapture"
-                    {% endif %}>
+                    @update:value="preserveCapture">
                 <option v-for="capture in captures"
                         :value="capture.id">
                     {{ capture.label }}
@@ -25,11 +17,7 @@
 
         {% block swag_paypal_payment_action_refund_invoice_number %}
             <swag-paypal-text-field
-                    {% if VUE3 %}
                     v-model:value="refundInvoiceNumber"
-                    {% elseif %}
-                    v-model="refundInvoiceNumber"
-                    {% endif %}
                     maxLength="127"
                     :label="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.label')"
                     :placeholder="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.placeholder')">
@@ -38,11 +26,7 @@
 
         {% block swag_paypal_payment_action_refund_reason %}
             <swag-paypal-text-field
-                    {% if VUE3 %}
                     v-model:value="refundReason"
-                    {% elseif %}
-                    v-model="refundReason"
-                    {% endif %}
                     maxLength="30"
                     :label="$tc('swag-paypal-payment.refundAction.refundReason.label')"
                     :placeholder="$tc('swag-paypal-payment.refundAction.refundReason.placeholder')">
@@ -51,11 +35,7 @@
 
         {% block swag_paypal_payment_action_refund_amount %}
             <sw-number-field
-                    {% if VUE3 %}
                     v-model:value="refundAmount"
-                    {% else %}
-                    v-model="refundAmount"
-                    {% endif %}
                     :max="refundableAmount"
                     :min="0"
                     :label="$tc('swag-paypal-payment.refundAction.refundAmount.label')"
@@ -68,11 +48,7 @@
 
         {% block swag_paypal_payment_action_refund_description %}
             <sw-textarea-field
-                    {% if VUE3 %}
                     v-model:value="refundDescription"
-                    {% else %}
-                    v-model="refundDescription"
-                    {% endif %}
                     :placeholder="$tc('swag-paypal-payment.refundAction.refundDescription.placeholder')"
                     :label="$tc('swag-paypal-payment.refundAction.refundDescription.label')">
             </sw-textarea-field>

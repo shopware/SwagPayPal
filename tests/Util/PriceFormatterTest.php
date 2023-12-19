@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Util;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\PriceFormatter;
@@ -24,7 +25,7 @@ class PriceFormatterTest extends TestCase
         $this->priceFormatter = new PriceFormatter();
     }
 
-    public function dataProviderFormatPriceTest(): array
+    public static function dataProviderFormatPriceTest(): array
     {
         return [
             [1, null, '1.00'],
@@ -36,15 +37,13 @@ class PriceFormatterTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderFormatPriceTest
-     */
+    #[DataProvider('dataProviderFormatPriceTest')]
     public function testFormatPrice(float $input, ?string $currencyCode, string $output): void
     {
         static::assertSame($this->priceFormatter->formatPrice($input, $currencyCode), $output);
     }
 
-    public function dataProviderRoundPriceTest(): array
+    public static function dataProviderRoundPriceTest(): array
     {
         return [
             [1, 'EUR', 1],
@@ -56,9 +55,7 @@ class PriceFormatterTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderRoundPriceTest
-     */
+    #[DataProvider('dataProviderRoundPriceTest')]
     public function testRoundPrice(float $input, ?string $currencyCode, float $output): void
     {
         static::assertSame($this->priceFormatter->roundPrice($input, $currencyCode), $output);

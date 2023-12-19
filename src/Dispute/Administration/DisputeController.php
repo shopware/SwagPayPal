@@ -10,7 +10,6 @@ namespace Swag\PayPal\Dispute\Administration;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
@@ -139,7 +138,7 @@ class DisputeController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestParameterException
+     * @throws RoutingException
      */
     private function validateDisputeStateFilter(Request $request): ?string
     {

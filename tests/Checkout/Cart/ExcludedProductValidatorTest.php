@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Cart;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\DataAbstractionLayer\ProductStreamUpdater;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -85,9 +86,7 @@ class ExcludedProductValidatorTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider dataProviderConstellations
-     */
+    #[DataProvider('dataProviderConstellations')]
     public function testCartContainsExcludedProduct(?string $settingKey, ?string $settingIdName, ?string $expectedIdName): void
     {
         if ($settingKey && $settingIdName) {
@@ -100,9 +99,7 @@ class ExcludedProductValidatorTest extends TestCase
         static::assertSame((bool) $expectedIdName, $this->validator->cartContainsExcludedProduct($cart, $context));
     }
 
-    /**
-     * @dataProvider dataProviderConstellations
-     */
+    #[DataProvider('dataProviderConstellations')]
     public function testCartContainsExcludedProductOnlyInSalesChannel(?string $settingKey, ?string $settingIdName, ?string $expectedIdName): void
     {
         $context = $this->registerUser();
@@ -116,9 +113,7 @@ class ExcludedProductValidatorTest extends TestCase
         static::assertSame((bool) $expectedIdName, $this->validator->cartContainsExcludedProduct($cart, $context));
     }
 
-    /**
-     * @dataProvider dataProviderConstellations
-     */
+    #[DataProvider('dataProviderConstellations')]
     public function testFindExcludedProducts(?string $settingKey, ?string $settingIdName, ?string $expectedIdName): void
     {
         if ($settingKey && $settingIdName) {
@@ -131,9 +126,7 @@ class ExcludedProductValidatorTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider dataProviderConstellations
-     */
+    #[DataProvider('dataProviderConstellations')]
     public function testIsExcludedProduct(?string $settingKey, ?string $settingIdName, ?string $expectedIdName): void
     {
         if ($settingKey && $settingIdName) {
@@ -207,7 +200,7 @@ class ExcludedProductValidatorTest extends TestCase
         }
     }
 
-    public function dataProviderConstellations(): array
+    public static function dataProviderConstellations(): array
     {
         return [
             'nothingExcluded' => [

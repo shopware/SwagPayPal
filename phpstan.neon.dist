@@ -33,12 +33,6 @@ parameters:
             message: '#Service ".*" is private#'
             path: tests/**/*.php
 
-        -   # ignore attributes, since we have to support PHP 7.4 for Shopware 6.4
-            message: '#use the .* attribute instead#'
-
-        -   # ignore new monolog levels, not supported in Shopware 6.4
-            message: '#Use \\Monolog\\Level::.*#'
-
         -   # ignore own deprecations in tests
             message: '#.*tag:v9.0.0 -#'
             path: tests/**/*.php
@@ -46,34 +40,10 @@ parameters:
         -   # ignore Plus deprecations
             message: '#deprecated.*(Plus|PLUS|_PAYMENT_|MERCHANT_LOCATION)#'
 
-        -   # ignore Symfony 6 message queue deprecations
-            message: '#AsMessageHandler#'
-
         -   # ignore SystemConfigController context requirement
             message: '#Call to deprecated method batchSaveConfiguration#'
             path: tests/Webhook/Registration/WebhookSystemConfigControllerTest.php
             count: 11
-
-        -   # ignore lineItemPayloadDeprecation deprecations
-            message: '#Call to deprecated method setPayloadValue\(\) of class .*LineItem#'
-
-        -   # ignore DomainException deprecations
-            message: '#use .*Exception::.* instead#'
-
-        -   # ignore deprecated CartService (we don't extend it)
-            message: '#deprecated class Shopware\\Core\\Checkout\\Cart\\SalesChannel\\CartService#'
-
-        -   # ignore deprecated StockUpdater (PPI-805)
-            message : '#deprecated class Shopware\\Core\\Content\\Product\\DataAbstractionLayer\\StockUpdater#'
-
-        -   # ignore deprecated Generator Shopware 6.6
-            message : '#Call to method .* of deprecated class Shopware\\Core\\Test\\Generator#'
-
-        -   # ignore deprecated UrlGenerator
-            message : '#Use AbstractMediaUrlGenerator instead#'
-
-        -   # ignore nullable Zip Code (6.6)
-            message : '#Call to deprecated method [sg]etZipcode\(\) of class .*OrderAddressEntity#'
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

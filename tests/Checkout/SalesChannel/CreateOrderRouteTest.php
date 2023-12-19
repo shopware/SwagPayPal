@@ -7,18 +7,18 @@
 
 namespace Swag\PayPal\Test\Checkout\SalesChannel;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
@@ -49,9 +49,7 @@ class CreateOrderRouteTest extends TestCase
     use SalesChannelContextTrait;
     use ServicesTrait;
 
-    /**
-     * @dataProvider dataProviderTestCreatePayment
-     */
+    #[DataProvider('dataProviderTestCreatePayment')]
     public function testCreatePayment(bool $withCartLineItems): void
     {
         $salesChannelContext = $this->createSalesChannelContext(
@@ -112,7 +110,7 @@ class CreateOrderRouteTest extends TestCase
         $salesChannelContext->getContext()->addExtension(OrderRepositoryMock::NO_ORDER_TRANSACTIONS, new ArrayStruct());
         $request = new Request([], ['orderId' => 'no-order-transactions-id']);
 
-        $this->expectException(InvalidOrderException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The order with id noordertransactionsid is invalid or could not be found.');
         $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
@@ -123,12 +121,12 @@ class CreateOrderRouteTest extends TestCase
         $salesChannelContext->getContext()->addExtension(OrderRepositoryMock::NO_ORDER_TRANSACTION, new ArrayStruct());
         $request = new Request([], ['orderId' => 'no-order-transaction-id']);
 
-        $this->expectException(InvalidOrderException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The order with id noordertransactionid is invalid or could not be found.');
         $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
 
-    public function dataProviderTestCreatePayment(): array
+    public static function dataProviderTestCreatePayment(): array
     {
         return [[true], [false]];
     }

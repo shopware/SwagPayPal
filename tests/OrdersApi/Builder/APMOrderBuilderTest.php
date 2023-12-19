@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
@@ -180,7 +181,7 @@ class APMOrderBuilderTest extends TestCase
         static::assertStringEndsWith('bar', $invoiceId);
     }
 
-    public function dataProviderAPM(): array
+    public static function dataProviderAPM(): array
     {
         return [
             [BancontactOrderBuilder::class, [], Bancontact::class, []],

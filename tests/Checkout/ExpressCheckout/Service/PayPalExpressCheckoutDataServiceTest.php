@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\Service;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
@@ -168,9 +169,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertNull($expressCheckoutButtonData);
     }
 
-    /**
-     * @dataProvider dataProviderTestGetExpressCheckoutButtonDataWithCredentials
-     */
+    #[DataProvider('dataProviderTestGetExpressCheckoutButtonDataWithCredentials')]
     public function testGetExpressCheckoutButtonDataWithCredentials(bool $withSettingsLocale, bool $addToCart): void
     {
         $taxId = $this->createTaxId(Context::createDefaultContext());
@@ -221,7 +220,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         );
     }
 
-    public function dataProviderTestGetExpressCheckoutButtonDataWithCredentials(): array
+    public static function dataProviderTestGetExpressCheckoutButtonDataWithCredentials(): array
     {
         return [
             [false, false],

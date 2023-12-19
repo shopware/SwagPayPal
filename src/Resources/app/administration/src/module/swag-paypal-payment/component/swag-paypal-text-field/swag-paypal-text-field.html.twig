@@ -1,9 +1,6 @@
 {% block sw_text_field %}
     <sw-contextual-field
             v-bind="$attrs"
-            {% if VUE2 %}
-            v-on="$listeners"
-            {% endif %}
             class="sw-field--text"
             :name="formFieldName"
             @inheritance-restore="$emit('inheritance-restore', $event)"
