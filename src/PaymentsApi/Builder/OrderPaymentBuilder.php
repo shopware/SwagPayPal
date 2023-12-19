@@ -27,6 +27,8 @@ use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ItemCollection;
+use Swag\PayPal\RestApi\V1\Api\Payment\TransactionCollection;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
@@ -67,7 +69,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         $requestPayment = new Payment();
         $requestPayment->setPayer($payer);
         $requestPayment->setRedirectUrls($redirectUrls);
-        $requestPayment->setTransactions([$transaction]);
+        $requestPayment->setTransactions(new TransactionCollection([$transaction]));
         $requestPayment->setApplicationContext($applicationContext);
 
         return $requestPayment;
@@ -110,7 +112,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         if ($this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId())) {
             $items = $this->getItemList($order, $currency);
 
-            if ($items !== []) {
+            if ($items->count() > 0) {
                 $itemList = new ItemList();
                 $itemList->setItems($items);
                 $transaction->setItemList($itemList);
@@ -143,19 +145,16 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         return $currency;
     }
 
-    /**
-     * @return Item[]
-     */
-    private function getItemList(OrderEntity $order, string $currency): array
+    private function getItemList(OrderEntity $order, string $currency): ItemCollection
     {
-        $items = [];
+        $items = new ItemCollection();
         $lineItems = $order->getNestedLineItems();
         if ($lineItems === null) {
-            return [];
+            return $items;
         }
 
         foreach ($lineItems->getElements() as $lineItem) {
-            $items[] = $this->createItemFromLineItem($lineItem, $currency);
+            $items->add($this->createItemFromLineItem($lineItem, $currency));
         }
 
         return $items;

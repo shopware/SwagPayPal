@@ -12,69 +12,107 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromCartEvent;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
+use Swag\PayPal\RestApi\V2\Api\Common\Money;
+use Swag\PayPal\RestApi\V2\Api\Common\Name;
 use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\Tax;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[Package('checkout')]
 class OrderFromCartBuilder extends AbstractOrderBuilder
 {
-    private EventDispatcherInterface $eventDispatcher;
-
-    private LoggerInterface $logger;
-
-    private PriceFormatter $priceFormatter;
-
     /**
      * @internal
      */
     public function __construct(
-        PriceFormatter $priceFormatter,
+        private readonly PriceFormatter $priceFormatter,
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
         AddressProvider $addressProvider,
-        EventDispatcherInterface $eventDispatcher,
-        LoggerInterface $logger
+        LocaleCodeProvider $localeCodeProvider,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly LoggerInterface $logger,
+        private readonly VaultTokenService $vaultTokenService,
     ) {
-        parent::__construct($systemConfigService, $purchaseUnitProvider, $addressProvider);
-        $this->priceFormatter = $priceFormatter;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->logger = $logger;
+        parent::__construct($systemConfigService, $purchaseUnitProvider, $addressProvider, $localeCodeProvider);
     }
 
     public function getOrder(
         Cart $cart,
+        Request $request,
         SalesChannelContext $salesChannelContext,
         ?CustomerEntity $customer
     ): Order {
         $order = new Order();
 
         $intent = $this->getIntent($salesChannelContext->getSalesChannelId());
-        if ($customer !== null) {
-            $payer = $this->createPayer($customer);
-            $order->setPayer($payer);
-        }
         $purchaseUnit = $this->createPurchaseUnit($salesChannelContext, $cart, $customer);
-        $applicationContext = $this->createApplicationContext($salesChannelContext);
 
         $order->setIntent($intent);
-        $order->setPurchaseUnits([$purchaseUnit]);
-        $order->setApplicationContext($applicationContext);
+        $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
+        $order->setPaymentSource($this->createPaymentSource($salesChannelContext, $request, $customer));
 
         return $order;
+    }
+
+    private function createPaymentSource(
+        SalesChannelContext $salesChannelContext,
+        Request $request,
+        ?CustomerEntity $customer
+    ): PaymentSource {
+        $paymentSource = new PaymentSource();
+        $paypal = new Paypal();
+        $paymentSource->setPaypal($paypal);
+
+        $paypal->setExperienceContext($this->createExperienceContext($salesChannelContext));
+
+        if ($customer === null) {
+            return $paymentSource;
+        }
+
+        $paypal->setEmailAddress($customer->getEmail());
+        $name = new Name();
+        $name->setGivenName($customer->getFirstName());
+        $name->setSurname($customer->getLastName());
+        $paypal->setName($name);
+
+        $billingAddress = $customer->getActiveBillingAddress();
+        if ($billingAddress === null) {
+            throw new AddressNotFoundException($customer->getDefaultBillingAddressId());
+        }
+        $address = new Address();
+        $this->addressProvider->createAddress($billingAddress, $address);
+        $paypal->setAddress($address);
+
+        if ($salesChannelContext->hasExtension('subscription')) {
+            $this->vaultTokenService->requestVaulting($paypal);
+        }
+
+        if ($request->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+            $this->vaultTokenService->requestVaulting($paypal);
+        }
+
+        return $paymentSource;
     }
 
     private function createPurchaseUnit(
@@ -101,12 +139,9 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         );
     }
 
-    /**
-     * @return Item[]
-     */
-    private function createItems(CurrencyEntity $currency, Cart $cart): array
+    private function createItems(CurrencyEntity $currency, Cart $cart): ItemCollection
     {
-        $items = [];
+        $items = new ItemCollection();
         $currencyCode = $currency->getIsoCode();
 
         foreach ($cart->getLineItems() as $lineItem) {
@@ -120,12 +155,12 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
 
-            $tax = new Tax();
+            $tax = new Money();
             $tax->setCurrencyCode($currencyCode);
             $tax->setValue($this->priceFormatter->formatPrice($price->getCalculatedTaxes()->getAmount(), $currencyCode));
             $item->setTax($tax);
 
-            $unitAmount = new UnitAmount();
+            $unitAmount = new Money();
             $unitAmount->setCurrencyCode($currencyCode);
             $unitAmount->setValue($this->priceFormatter->formatPrice($price->getUnitPrice(), $currencyCode));
 
@@ -135,7 +170,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $event = new PayPalV2ItemFromCartEvent($item, $lineItem);
             $this->eventDispatcher->dispatch($event);
 
-            $items[] = $event->getPayPalLineItem();
+            $items->add($event->getPayPalLineItem());
         }
 
         return $items;

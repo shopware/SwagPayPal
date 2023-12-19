@@ -25,6 +25,10 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * @phpstan-ignore-next-line ignore finality of repository in tests
  *
  * @internal
+ *
+ * @template TEntityCollection of EntityCollection
+ *
+ * @extends EntityRepository<TEntityCollection>
  */
 #[Package('checkout')]
 class AbstractRepoMock extends EntityRepository
@@ -55,7 +59,10 @@ class AbstractRepoMock extends EntityRepository
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        return new EntitySearchResult($this->getDefinition()->getEntityName(), 0, new EntityCollection(), null, $criteria, $context);
+        /** @var TEntityCollection $emptyCollection */
+        $emptyCollection = new EntityCollection();
+
+        return new EntitySearchResult($this->getDefinition()->getEntityName(), 0, $emptyCollection, null, $criteria, $context);
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent

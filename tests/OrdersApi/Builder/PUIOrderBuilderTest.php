@@ -8,10 +8,11 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\PUI\Exception\MissingBirthdayException;
@@ -25,12 +26,11 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
-use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
-use Swag\PayPal\Test\Mock\LoggerMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @internal
@@ -38,9 +38,9 @@ use Swag\PayPal\Util\PriceFormatter;
 #[Package('checkout')]
 class PUIOrderBuilderTest extends TestCase
 {
+    use IntegrationTestBehaviour;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;
-    use ServicesTrait;
 
     private const TEST_FIRST_NAME = 'FirstName';
     private const TEST_LAST_NAME = 'LastName';
@@ -58,26 +58,16 @@ class PUIOrderBuilderTest extends TestCase
         $countryState = new CountryStateEntity();
         $countryState->setShortCode(self::STATE_SHORT_CODE);
 
-        $shippingAddress = new CustomerAddressEntity();
-        $shippingAddress->setFirstName(self::TEST_FIRST_NAME);
-        $shippingAddress->setLastName(self::TEST_LAST_NAME);
-        $shippingAddress->setAdditionalAddressLine1(self::ADDRESS_LINE_1);
-        $shippingAddress->setCountryState($countryState);
-        $shippingAddress->setStreet('Test street 123');
-        $shippingAddress->setCity('Test City');
-        $shippingAddress->setZipcode('12345');
-        $customer->setActiveShippingAddress($shippingAddress);
-
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
             $customer
         );
 
-        $shipping = $order->getPurchaseUnits()[0]->getShipping();
+        $shipping = $order->getPurchaseUnits()->first()?->getShipping();
         static::assertSame(
             \sprintf('%s %s', self::TEST_FIRST_NAME, self::TEST_LAST_NAME),
-            $shipping->getName()->getFullName()
+            $shipping?->getName()->getFullName()
         );
         static::assertSame(self::ADDRESS_LINE_1, $shipping->getAddress()->getAddressLine2());
         static::assertSame(self::STATE_SHORT_CODE, $shipping->getAddress()->getAdminArea1());
@@ -99,25 +89,6 @@ class PUIOrderBuilderTest extends TestCase
         static::assertNotNull($customer);
 
         $paymentTransaction->getOrder()->assign(['billingAddress' => null]);
-
-        $this->expectException(AddressNotFoundException::class);
-        $this->expectExceptionMessageMatches('/Customer address with id "[a-z0-9]*" not found/');
-        $orderBuilder->getOrder(
-            $paymentTransaction,
-            $salesChannelContext,
-            $customer
-        );
-    }
-
-    public function testGetOrderNoShippingAddress(): void
-    {
-        $orderBuilder = $this->createPUIOrderBuilder();
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
-
-        $customer->assign(['activeShippingAddress' => null, 'defaultShippingAddress' => null]);
 
         $this->expectException(AddressNotFoundException::class);
         $this->expectExceptionMessageMatches('/Customer address with id "[a-z0-9]*" not found/');
@@ -175,17 +146,16 @@ class PUIOrderBuilderTest extends TestCase
         $customer = $salesChannelContext->getCustomer();
         static::assertNotNull($customer);
 
-        $settings = $this->createSystemConfigServiceMock([
-            Settings::ORDER_NUMBER_PREFIX => 'foo',
-            Settings::ORDER_NUMBER_SUFFIX => 'bar',
-        ]);
+        $settings = SystemConfigServiceMock::createWithoutCredentials();
+        $settings->set(Settings::ORDER_NUMBER_PREFIX, 'foo');
+        $settings->set(Settings::ORDER_NUMBER_SUFFIX, 'bar');
         $order = $this->createPUIOrderBuilder($settings)->getOrder(
             $paymentTransaction,
             $salesChannelContext,
             $customer
         );
 
-        $invoiceId = $order->getPurchaseUnits()[0]->getInvoiceId();
+        $invoiceId = $order->getPurchaseUnits()->first()?->getInvoiceId();
         static::assertIsString($invoiceId);
         static::assertStringStartsWith('foo', $invoiceId);
         static::assertStringEndsWith('bar', $invoiceId);
@@ -193,7 +163,7 @@ class PUIOrderBuilderTest extends TestCase
 
     private function createPUIOrderBuilder(?SystemConfigService $systemConfig = null): PUIOrderBuilder
     {
-        $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
+        $systemConfig = $systemConfig ?? SystemConfigServiceMock::createWithCredentials();
 
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
@@ -204,7 +174,7 @@ class PUIOrderBuilderTest extends TestCase
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
-            new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock()),
+            new ItemListProvider($priceFormatter, $this->createMock(EventDispatcherInterface::class), new NullLogger()),
             $this->getContainer()->get(LocaleCodeProvider::class),
         );
     }

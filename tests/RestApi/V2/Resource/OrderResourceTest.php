@@ -10,8 +10,8 @@ namespace Swag\PayPal\Test\RestApi\V2\Resource;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -33,8 +33,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
 #[Package('checkout')]
 class OrderResourceTest extends TestCase
 {
-    use BasicTestDataBehaviour;
-    use DatabaseTransactionBehaviour;
+    use IntegrationTestBehaviour;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;
     use ServicesTrait;
@@ -74,11 +73,11 @@ class OrderResourceTest extends TestCase
         $order = $this->createResource()->capture('orderId', TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         static::assertSame(CaptureOrderCapture::ID, $order->getId());
-        $payments = $order->getPurchaseUnits()[0]->getPayments();
+        $payments = $order->getPurchaseUnits()->first()?->getPayments();
         static::assertNotNull($payments);
         $captures = $payments->getCaptures();
         static::assertNotNull($captures);
-        static::assertTrue($captures[0]->isFinalCapture());
+        static::assertTrue($captures->first()?->isFinalCapture());
         static::assertNull($payments->getRefunds());
         static::assertNull($payments->getAuthorizations());
     }
@@ -88,20 +87,18 @@ class OrderResourceTest extends TestCase
         $orderBuilder = $this->createOrderBuilder();
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            $customer
+            new RequestDataBag(),
+            $salesChannelContext
         );
 
-        static::assertNotNull($order->getPurchaseUnits()[0]->getItems());
+        static::assertNotNull($order->getPurchaseUnits()->first()?->getItems());
 
         $orderResponse = $this->createResource()->create($order, TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         static::assertSame(CreateOrderCapture::ID, $orderResponse->getId());
-        static::assertStringContainsString('token=' . CreateOrderCapture::ID, $orderResponse->getLinks()[1]->getHref());
+        static::assertStringContainsString('token=' . CreateOrderCapture::ID, $orderResponse->getLinks()->getAt(1)?->getHref() ?? '');
     }
 
     public function testAuthorize(): void
@@ -109,11 +106,11 @@ class OrderResourceTest extends TestCase
         $order = $this->createResource()->authorize('orderId', TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         static::assertSame(AuthorizeOrderAuthorization::ID, $order->getId());
-        $payments = $order->getPurchaseUnits()[0]->getPayments();
+        $payments = $order->getPurchaseUnits()->first()?->getPayments();
         static::assertNotNull($payments);
         $authorizations = $payments->getAuthorizations();
         static::assertNotNull($authorizations);
-        static::assertSame('CREATED', $authorizations[0]->getStatus());
+        static::assertSame('CREATED', $authorizations->first()?->getStatus());
         static::assertNull($payments->getCaptures());
         static::assertNull($payments->getRefunds());
     }

@@ -17,47 +17,72 @@ use Swag\PayPal\Test\RestApi\_fixtures\TestStruct;
 #[Package('checkout')]
 class PayPalApiStructTest extends TestCase
 {
-    use AssertArraySubsetTrait;
+    public function testAssignScalarValue(): void
+    {
+        $data = ['id' => 'testId'];
+        static::assertSame($data, $this->cycleStruct($data));
+    }
 
-    public function testAssign(): void
+    public function testAssignObject(): void
     {
         $data = [
-            'id' => 'testId',
             'bar' => [
                 'bar' => 'testBar',
             ],
+        ];
+        static::assertSame($data, $this->cycleStruct($data));
+    }
+
+    public function testAssignScalarArray(): void
+    {
+        $data = [
+            'scalar_array' => [
+                'test',
+            ],
+        ];
+        static::assertSame($data, $this->cycleStruct($data));
+    }
+
+    public function testAssignCollection(): void
+    {
+        $data = [
             'foo' => [
                 [
                     'foo_baz' => 'fooBazTest',
                 ],
             ],
         ];
-
-        $testStruct = new TestStruct();
-        $testStruct->assign($data);
-
-        $testJsonString = \json_encode($testStruct);
-        static::assertNotFalse($testJsonString);
-
-        $testArray = \json_decode($testJsonString, true);
-
-        static::assertArraySubset($data, $testArray);
+        static::assertSame($data, $this->cycleStruct($data));
     }
 
-    public function testAssignWithNoGetter(): void
+    public function testAssignNull(): void
     {
-        $data = [
-            'no_setter' => 'testValue',
-            'not_existing_class' => [
-                'test' => 'value',
-            ],
-            'not_existing_collection_class' => [
-                [
-                    'test' => 'value',
-                ],
-            ],
-        ];
+        $data = ['foo' => null];
+        static::assertEmpty($this->cycleStruct($data));
+    }
 
+    public function testAssignEmptyArray(): void
+    {
+        $data = ['foo' => []];
+        static::assertEmpty($this->cycleStruct($data));
+    }
+
+    public function testAssignNoSetter(): void
+    {
+        $actual = $this->cycleStruct([
+            'no_setter' => 'testValue',
+        ]);
+
+        static::assertEmpty($actual);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
+     */
+    private function cycleStruct(array $data): array
+    {
         $paypalStruct = new TestStruct();
         $paypalStruct->assign($data);
 
@@ -65,6 +90,8 @@ class PayPalApiStructTest extends TestCase
         static::assertNotFalse($testJsonString);
 
         $paypalStructArray = \json_decode($testJsonString, true);
-        static::assertEmpty($paypalStructArray);
+        static::assertIsArray($paypalStructArray);
+
+        return $paypalStructArray;
     }
 }

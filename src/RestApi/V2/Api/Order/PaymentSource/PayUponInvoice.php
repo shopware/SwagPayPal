@@ -9,18 +9,17 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\BillingAddress;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
+use Swag\PayPal\RestApi\V2\Api\Common\Name;
+use Swag\PayPal\RestApi\V2\Api\Common\PhoneNumber;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\DepositBankDetails;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\ExperienceContext;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\Name;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\Phone;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_pay_upon_invoice")
  */
 #[Package('checkout')]
-class PayUponInvoice extends PayPalApiStruct
+class PayUponInvoice extends AbstractPaymentSource
 {
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_name")
@@ -40,12 +39,12 @@ class PayUponInvoice extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_phone_number")
      */
-    protected Phone $phone;
+    protected PhoneNumber $phone;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_address")
      */
-    protected BillingAddress $billingAddress;
+    protected Address $billingAddress;
 
     /**
      * @OA\Property(type="string")
@@ -56,11 +55,6 @@ class PayUponInvoice extends PayPalApiStruct
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_pay_upon_invoice_deposit_bank_details")
      */
     protected DepositBankDetails $depositBankDetails;
-
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_pay_upon_invoice_experience_context")
-     */
-    protected ExperienceContext $experienceContext;
 
     public function getName(): Name
     {
@@ -92,22 +86,22 @@ class PayUponInvoice extends PayPalApiStruct
         $this->birthDate = $birthDate;
     }
 
-    public function getPhone(): Phone
+    public function getPhone(): PhoneNumber
     {
         return $this->phone;
     }
 
-    public function setPhone(Phone $phone): void
+    public function setPhone(PhoneNumber $phone): void
     {
         $this->phone = $phone;
     }
 
-    public function getBillingAddress(): BillingAddress
+    public function getBillingAddress(): Address
     {
         return $this->billingAddress;
     }
 
-    public function setBillingAddress(BillingAddress $billingAddress): void
+    public function setBillingAddress(Address $billingAddress): void
     {
         $this->billingAddress = $billingAddress;
     }

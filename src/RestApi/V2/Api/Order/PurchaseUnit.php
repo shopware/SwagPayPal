@@ -11,7 +11,7 @@ use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payee;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
@@ -53,11 +53,9 @@ class PurchaseUnit extends PayPalApiStruct
     protected ?string $invoiceId = null;
 
     /**
-     * @var Item[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_item"}, nullable=true)
      */
-    protected ?array $items = null;
+    protected ?ItemCollection $items = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_shipping")
@@ -129,18 +127,12 @@ class PurchaseUnit extends PayPalApiStruct
         $this->invoiceId = $invoiceId;
     }
 
-    /**
-     * @return Item[]|null
-     */
-    public function getItems(): ?array
+    public function getItems(): ?ItemCollection
     {
         return $this->items;
     }
 
-    /**
-     * @param Item[]|null $items
-     */
-    public function setItems(?array $items): void
+    public function setItems(?ItemCollection $items): void
     {
         $this->items = $items;
     }

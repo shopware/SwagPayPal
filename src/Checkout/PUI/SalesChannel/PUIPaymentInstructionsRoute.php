@@ -28,10 +28,8 @@ use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
 {
     private EntityRepository $orderTransactionRepository;
@@ -84,15 +82,9 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
      *    )
      * )
      *
-     * @Route(
-     *     "/store-api/paypal/pui/payment-instructions/{transactionId}",
-     *      name="store-api.paypal.pui.payment_instructions",
-     *      methods={"GET"},
-     *      defaults={"_loginRequired"=true, "_loginRequiredAllowGuest"=true}
-     * )
-     *
      * @throws ShopwareHttpException
      */
+    #[Route(path: '/store-api/paypal/pui/payment-instructions/{transactionId}', name: 'store-api.paypal.pui.payment_instructions', methods: ['GET'], defaults: ['_loginRequired' => true, '_loginRequiredAllowGuest' => true])]
     public function getPaymentInstructions(string $transactionId, SalesChannelContext $salesChannelContext): PUIPaymentInstructionsResponse
     {
         /** @var OrderTransactionEntity|null $transaction */

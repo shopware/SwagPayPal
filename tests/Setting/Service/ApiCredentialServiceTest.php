@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Setting\Service;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
@@ -15,7 +16,6 @@ use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
@@ -72,7 +72,7 @@ class ApiCredentialServiceTest extends TestCase
 
     private function createApiCredentialService(): ApiCredentialService
     {
-        $logger = new LoggerMock();
+        $logger = new NullLogger();
 
         return new ApiCredentialService(
             new CredentialsResource(

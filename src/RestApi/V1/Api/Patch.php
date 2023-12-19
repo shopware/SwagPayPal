@@ -31,11 +31,9 @@ class Patch extends PayPalApiStruct
     protected string $path;
 
     /**
-     * @var array|string
-     *
      * @OA\Property(oneOf=[{"type":"string"},{"type":"array"}])
      */
-    protected $value;
+    protected array|string $value;
 
     public function getOp(): string
     {
@@ -57,18 +55,12 @@ class Patch extends PayPalApiStruct
         $this->path = $path;
     }
 
-    /**
-     * @return array|string
-     */
-    public function getValue()
+    public function getValue(): array|string
     {
         return $this->value;
     }
 
-    /**
-     * @param array|string $value
-     */
-    public function setValue($value): void
+    public function setValue(array|string $value): void
     {
         $this->value = $value;
     }

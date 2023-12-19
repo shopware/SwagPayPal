@@ -25,7 +25,7 @@ class P24OrderBuilder extends AbstractAPMOrderBuilder
         PaymentSource $paymentSource
     ): void {
         $sourceElement = new P24();
-        $this->fillPaymentSource($paymentTransaction->getOrder(), $sourceElement);
+        $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);
 
         $customer = $paymentTransaction->getOrder()->getOrderCustomer();
         if ($customer === null) {

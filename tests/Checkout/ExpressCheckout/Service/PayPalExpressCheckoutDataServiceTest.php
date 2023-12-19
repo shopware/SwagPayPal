@@ -17,8 +17,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
@@ -34,6 +33,8 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -43,8 +44,7 @@ use Symfony\Component\Routing\RouterInterface;
 #[Package('checkout')]
 class PayPalExpressCheckoutDataServiceTest extends TestCase
 {
-    use BasicTestDataBehaviour;
-    use DatabaseTransactionBehaviour;
+    use IntegrationTestBehaviour;
     use ServicesTrait;
 
     private const CLIENT_ID = 'someClientId';
@@ -79,7 +79,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
 
         $this->expressCheckoutDataService = new PayPalExpressCheckoutDataService(
             $this->cartService,
-            $this->createLocaleCodeProvider(),
+            new LocaleCodeProvider(new LanguageRepoMock()),
             $router,
             $this->paymentMethodUtil,
             $this->systemConfigService,

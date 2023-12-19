@@ -26,22 +26,8 @@
 
         <service id="Swag\PayPal\Util\LocaleCodeProvider">
             <argument type="service" id="language.repository"/>
-        </service>
 
-        <service id="Swag\PayPal\Util\Log\LoggerFactory">
-            <deprecated package="swag/paypal" version="8.0.0">tag:v8.0.0 - %service_id% will be removed, use `monolog.logger.paypal` instead</deprecated>
-            <argument type="string">%kernel.logs_dir%/%%s_%kernel.environment%.log</argument>
-            <argument>%shopware.logger.file_rotation_count%</argument>
-
-            <call method="setLogLevel">
-                <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            </call>
-        </service>
-
-        <service id="Swag\PayPal\Util\Logger" class="Monolog\Logger">
-            <deprecated package="swag/paypal" version="8.0.0">tag:v8.0.0 - %service_id% will be removed, use `monolog.logger.paypal` instead</deprecated>
-            <factory service="Swag\PayPal\Util\Log\LoggerFactory" method="createRotating"/>
-            <argument type="string">swag_paypal</argument>
+            <tag name="kernel.reset" method="reset"/>
         </service>
 
         <service id="monolog.processor.paypal.introspection" class="Monolog\Processor\IntrospectionProcessor">

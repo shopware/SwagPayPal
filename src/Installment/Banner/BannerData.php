@@ -45,34 +45,14 @@ class BannerData extends Struct
 
     protected bool $detailPageEnabled;
 
-    /**
-     * @deprecated tag:v8.0.0 - will be empty, use `assign()` instead
-     */
-    public function __construct(
-        string $paymentMethodId,
-        string $clientId,
-        float $amount,
-        string $currency,
-        string $layout = 'text',
-        string $color = 'blue',
-        string $ratio = '8x1',
-        string $logoType = 'primary',
-        string $textColor = 'black',
-    ) {
-        $this->paymentMethodId = $paymentMethodId;
-        $this->clientId = $clientId;
-        $this->amount = $amount;
-        $this->currency = $currency;
-        $this->layout = $layout;
-        $this->color = $color;
-        $this->ratio = $ratio;
-        $this->logoType = $logoType;
-        $this->textColor = $textColor;
-    }
-
     public function getPaymentMethodId(): string
     {
         return $this->paymentMethodId;
+    }
+
+    public function setPaymentMethodId(string $paymentMethodId): void
+    {
+        $this->paymentMethodId = $paymentMethodId;
     }
 
     public function getMerchantPayerId(): string

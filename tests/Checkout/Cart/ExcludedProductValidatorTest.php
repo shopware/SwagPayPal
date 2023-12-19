@@ -20,7 +20,6 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
-use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\FullCheckoutTrait;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;

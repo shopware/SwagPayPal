@@ -1,14 +1,17 @@
-{% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
+{% sw_extends {
+    template: '@Storefront/storefront/page/checkout/confirm/index.html.twig',
+    scopes: ['default', 'subscription']
+} %}
 
 {% block page_checkout_confirm_form_submit %}
     {{ parent() }}
 
-    {% block ppage_checkout_confirm_form_submit_paypal_container %}
+    {% block page_checkout_confirm_form_submit_paypal_container %}
         {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
     {% endblock %}
 {% endblock %}
 
-{# @deprecated tag:v8.0.0 - Will be removed without replacement #}
+{# @deprecated tag:v9.0.0 - Will be removed without replacement #}
 {% block base_script_hmr_mode %}
     {{ parent() }}
     {% if page.extensions[constant('Swag\\PayPal\\Checkout\\Plus\\PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID')] %}

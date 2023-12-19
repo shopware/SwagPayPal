@@ -10,13 +10,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Discount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Handling;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Insurance;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ItemTotal;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Shipping;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ShippingDiscount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\TaxTotal;
+use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_breakdown")
@@ -27,104 +21,104 @@ class Breakdown extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected ItemTotal $itemTotal;
+    protected Money $itemTotal;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected Shipping $shipping;
+    protected Money $shipping;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected Handling $handling;
+    protected Money $handling;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money", nullable=true)
      */
-    protected ?TaxTotal $taxTotal = null;
+    protected ?Money $taxTotal = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected Insurance $insurance;
+    protected Money $insurance;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected ShippingDiscount $shippingDiscount;
+    protected Money $shippingDiscount;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected Discount $discount;
+    protected Money $discount;
 
-    public function getItemTotal(): ItemTotal
+    public function getItemTotal(): Money
     {
         return $this->itemTotal;
     }
 
-    public function setItemTotal(ItemTotal $itemTotal): void
+    public function setItemTotal(Money $itemTotal): void
     {
         $this->itemTotal = $itemTotal;
     }
 
-    public function getShipping(): Shipping
+    public function getShipping(): Money
     {
         return $this->shipping;
     }
 
-    public function setShipping(Shipping $shipping): void
+    public function setShipping(Money $shipping): void
     {
         $this->shipping = $shipping;
     }
 
-    public function getHandling(): Handling
+    public function getHandling(): Money
     {
         return $this->handling;
     }
 
-    public function setHandling(Handling $handling): void
+    public function setHandling(Money $handling): void
     {
         $this->handling = $handling;
     }
 
-    public function getTaxTotal(): ?TaxTotal
+    public function getTaxTotal(): ?Money
     {
         return $this->taxTotal;
     }
 
-    public function setTaxTotal(?TaxTotal $taxTotal): void
+    public function setTaxTotal(?Money $taxTotal): void
     {
         $this->taxTotal = $taxTotal;
     }
 
-    public function getInsurance(): Insurance
+    public function getInsurance(): Money
     {
         return $this->insurance;
     }
 
-    public function setInsurance(Insurance $insurance): void
+    public function setInsurance(Money $insurance): void
     {
         $this->insurance = $insurance;
     }
 
-    public function getShippingDiscount(): ShippingDiscount
+    public function getShippingDiscount(): Money
     {
         return $this->shippingDiscount;
     }
 
-    public function setShippingDiscount(ShippingDiscount $shippingDiscount): void
+    public function setShippingDiscount(Money $shippingDiscount): void
     {
         $this->shippingDiscount = $shippingDiscount;
     }
 
-    public function getDiscount(): Discount
+    public function getDiscount(): Money
     {
         return $this->discount;
     }
 
-    public function setDiscount(Discount $discount): void
+    public function setDiscount(Money $discount): void
     {
         $this->discount = $discount;
     }

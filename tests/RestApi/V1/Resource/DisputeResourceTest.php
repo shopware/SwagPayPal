@@ -27,10 +27,10 @@ class DisputeResourceTest extends TestCase
     {
         $disputes = $this->createResource()->list(TestDefaults::SALES_CHANNEL)->getItems();
         static::assertNotNull($disputes);
-        $disputesCount = \count($disputes);
+        $disputesCount = $disputes->count();
         static::assertSame(3, $disputesCount);
 
-        static::assertSame(GetDisputesList::LAST_ID, $disputes[$disputesCount - 1]->getDisputeId());
+        static::assertSame(GetDisputesList::LAST_ID, $disputes->last()?->getDisputeId());
     }
 
     public function testGet(): void

@@ -15,7 +15,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * @OA\Schema(schema="swag_paypal_v1_disputes_common_buyer")
  */
 #[Package('checkout')]
-abstract class Buyer extends PayPalApiStruct
+class Buyer extends PayPalApiStruct
 {
     /**
      * @OA\Property(type="string")

@@ -15,9 +15,10 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromOrderEvent;
+use Swag\PayPal\RestApi\V2\Api\Common\Money;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\Tax;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -43,17 +44,14 @@ class ItemListProvider
         $this->logger = $logger;
     }
 
-    /**
-     * @return Item[]
-     */
-    public function getItemList(CurrencyEntity $currency, OrderEntity $order): array
+    public function getItemList(CurrencyEntity $currency, OrderEntity $order): ItemCollection
     {
-        $items = [];
+        $items = new ItemCollection();
         $currencyCode = $currency->getIsoCode();
         $isNet = $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS;
         $lineItems = $order->getNestedLineItems();
         if ($lineItems === null) {
-            return [];
+            return new ItemCollection();
         }
 
         foreach ($lineItems as $lineItem) {
@@ -66,7 +64,7 @@ class ItemListProvider
             $event = new PayPalV2ItemFromOrderEvent($item, $lineItem);
             $this->eventDispatcher->dispatch($event);
 
-            $items[] = $event->getPayPalLineItem();
+            $items->add($event->getPayPalLineItem());
         }
 
         return $items;
@@ -105,13 +103,13 @@ class ItemListProvider
     {
         $unitPrice = $this->priceFormatter->formatPrice($lineItem->getUnitPrice(), $currencyCode);
 
-        $unitAmount = new UnitAmount();
+        $unitAmount = new Amount();
         $unitAmount->setCurrencyCode($currencyCode);
         $unitAmount->setValue($unitPrice);
         $item->setUnitAmount($unitAmount);
         $item->setQuantity($lineItem->getQuantity());
 
-        $tax = new Tax();
+        $tax = new Money();
         $tax->setCurrencyCode($currencyCode);
         $tax->setValue($this->getTax($lineItem, $isNet, true, $currencyCode));
         $item->setTax($tax);

@@ -11,7 +11,6 @@ use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Swag\PayPal\Administration\PayPalPaymentMethodController;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -59,13 +58,7 @@ class PayPalPaymentMethodControllerTest extends TestCase
         $request = new Request([], ['salesChannelId' => true]);
         $context = Context::createDefaultContext();
 
-        if (\class_exists(RoutingException::class)) {
-            /** @phpstan-ignore-next-line when class is not there this may cause phpstan to fail */
-            $this->expectException(RoutingException::class);
-        } else {
-            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-            $this->expectException(InvalidRequestParameterException::class);
-        }
+        $this->expectException(RoutingException::class);
         $this->expectExceptionMessage('The parameter "salesChannelId" is invalid.');
         $this->createPayPalPaymentMethodController()->setPayPalPaymentMethodAsSalesChannelDefault($request, $context);
     }

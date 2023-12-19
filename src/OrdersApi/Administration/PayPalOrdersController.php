@@ -29,10 +29,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class PayPalOrdersController extends AbstractController
 {
     public const REQUEST_PARAMETER_CURRENCY = 'currency';
@@ -111,14 +109,8 @@ class PayPalOrdersController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order")
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/paypal-v2/order/{orderTransactionId}/{paypalOrderId}",
-     *      name="api.paypal_v2.order_details",
-     *      methods={"GET"},
-     *      defaults={"_acl": {"order.viewer"}}
-     * )
      */
+    #[Route(path: '/api/paypal-v2/order/{orderTransactionId}/{paypalOrderId}', name: 'api.paypal_v2.order_details', methods: ['GET'], defaults: ['_acl' => ['order.viewer']])]
     public function orderDetails(string $orderTransactionId, string $paypalOrderId, Context $context): JsonResponse
     {
         try {
@@ -171,14 +163,8 @@ class PayPalOrdersController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order_authorization")
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/paypal-v2/authorization/{orderTransactionId}/{authorizationId}",
-     *      name="api.paypal_v2.authorization_details",
-     *      methods={"GET"},
-     *      defaults={"_acl": {"order.viewer"}}
-     * )
      */
+    #[Route(path: '/api/paypal-v2/authorization/{orderTransactionId}/{authorizationId}', name: 'api.paypal_v2.authorization_details', methods: ['GET'], defaults: ['_acl' => ['order.viewer']])]
     public function authorizationDetails(string $orderTransactionId, string $authorizationId, Context $context): JsonResponse
     {
         $authorization = $this->authorizationResource->get(
@@ -223,14 +209,8 @@ class PayPalOrdersController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order_capture")
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/paypal-v2/capture/{orderTransactionId}/{captureId}",
-     *      name="api.paypal_v2.capture_details",
-     *      methods={"GET"},
-     *      defaults={"_acl": {"order.viewer"}}
-     * )
      */
+    #[Route(path: '/api/paypal-v2/capture/{orderTransactionId}/{captureId}', name: 'api.paypal_v2.capture_details', methods: ['GET'], defaults: ['_acl' => ['order.viewer']])]
     public function captureDetails(string $orderTransactionId, string $captureId, Context $context): JsonResponse
     {
         $capture = $this->captureResource->get(
@@ -275,14 +255,8 @@ class PayPalOrdersController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order_refund")
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/paypal-v2/refund/{orderTransactionId}/{refundId}",
-     *      name="api.paypal_v2.refund_details",
-     *      methods={"GET"},
-     *      defaults={"_acl": {"order.viewer"}}
-     * )
      */
+    #[Route(path: '/api/paypal-v2/refund/{orderTransactionId}/{refundId}', name: 'api.paypal_v2.refund_details', methods: ['GET'], defaults: ['_acl' => ['order.viewer']])]
     public function refundDetails(string $orderTransactionId, string $refundId, Context $context): JsonResponse
     {
         $refund = $this->refundResource->get(
@@ -349,14 +323,8 @@ class PayPalOrdersController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order_refund")
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}",
-     *     name="api.action.paypal_v2.refund_capture",
-     *     methods={"POST"},
-     *     defaults={"_acl": {"order.editor"}}
-     * )
      */
+    #[Route(path: '/api/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}', name: 'api.action.paypal_v2.refund_capture', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
     public function refundCapture(
         string $orderTransactionId,
         string $captureId,
@@ -429,14 +397,8 @@ class PayPalOrdersController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order_capture")
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}",
-     *     name="api.action.paypal_v2.capture_authorization",
-     *     methods={"POST"},
-     *     defaults={"_acl": {"order.editor"}}
-     * )
      */
+    #[Route(path: '/api/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}', name: 'api.action.paypal_v2.capture_authorization', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
     public function captureAuthorization(
         string $orderTransactionId,
         string $authorizationId,
@@ -498,14 +460,8 @@ class PayPalOrdersController extends AbstractController
      *         description="Returns status 204 if the voidance was succesful",
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/_action/paypal-v2/void-authorization/{orderTransactionId}/{authorizationId}",
-     *     name="api.action.paypal_v2.void_authorization",
-     *     methods={"POST"},
-     *     defaults={"_acl": {"order.editor"}}
-     * )
      */
+    #[Route(path: '/api/_action/paypal-v2/void-authorization/{orderTransactionId}/{authorizationId}', name: 'api.action.paypal_v2.void_authorization', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
     public function voidAuthorization(
         string $orderTransactionId,
         string $authorizationId,

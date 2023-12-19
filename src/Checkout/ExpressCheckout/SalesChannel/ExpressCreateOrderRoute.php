@@ -18,12 +18,11 @@ use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 {
     private CartService $cartService;
@@ -66,22 +65,17 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
      *         description="The new token of the order"
      *    )
      * )
-     *
-     * @Route(
-     *     "/store-api/paypal/express/create-order",
-     *      name="store-api.paypal.express.create_order",
-     *      methods={"POST"}
-     * )
      */
-    public function createPayPalOrder(SalesChannelContext $salesChannelContext): TokenResponse
+    #[Route(path: '/store-api/paypal/express/create-order', name: 'store-api.paypal.express.create_order', methods: ['POST'])]
+    public function createPayPalOrder(Request $request, SalesChannelContext $salesChannelContext): TokenResponse
     {
         try {
             $this->logger->debug('Started');
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
             $this->logger->debug('Building order');
-            $order = $this->orderFromCartBuilder->getOrder($cart, $salesChannelContext, null);
-            $order->getApplicationContext()->setShippingPreference(ApplicationContext::SHIPPING_PREFERENCE_GET_FROM_FILE);
-            $order->getApplicationContext()->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
+            $order = $this->orderFromCartBuilder->getOrder($cart, $request, $salesChannelContext, null);
+            $order->getPaymentSource()?->getPaypal()?->getExperienceContext()->setShippingPreference(ApplicationContext::SHIPPING_PREFERENCE_GET_FROM_FILE);
+            $order->getPaymentSource()?->getPaypal()?->getExperienceContext()->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
 
             $orderResponse = $this->orderResource->create(
                 $order,

@@ -10,12 +10,12 @@ namespace Swag\PayPal\RestApi\V1\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
-use Swag\PayPal\RestApi\V1\Api\Payment\Link;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction;
 use Swag\PayPal\RestApi\V1\Api\Payment\RedirectUrls;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
+use Swag\PayPal\RestApi\V1\Api\Payment\TransactionCollection;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 
 /**
@@ -50,11 +50,9 @@ class Payment extends PayPalApiStruct
     protected Payer $payer;
 
     /**
-     * @var Transaction[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction"})
      */
-    protected array $transactions;
+    protected TransactionCollection $transactions;
 
     /**
      * @OA\Property(type="string")
@@ -67,11 +65,9 @@ class Payment extends PayPalApiStruct
     protected string $updateTime;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_redirect_urls")
@@ -138,18 +134,12 @@ class Payment extends PayPalApiStruct
         $this->payer = $payer;
     }
 
-    /**
-     * @return Transaction[]
-     */
-    public function getTransactions(): array
+    public function getTransactions(): TransactionCollection
     {
         return $this->transactions;
     }
 
-    /**
-     * @param Transaction[] $transactions
-     */
-    public function setTransactions(array $transactions): void
+    public function setTransactions(TransactionCollection $transactions): void
     {
         $this->transactions = $transactions;
     }
@@ -174,18 +164,12 @@ class Payment extends PayPalApiStruct
         $this->updateTime = $updateTime;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }
@@ -220,6 +204,9 @@ class Payment extends PayPalApiStruct
         $this->paymentInstruction = $paymentInstruction;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $data = parent::jsonSerialize();

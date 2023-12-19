@@ -22,6 +22,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrder
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsResponse;
+use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
 use Swag\PayPal\Checkout\TokenResponse;
@@ -30,125 +31,60 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route(defaults={"_routeScope"={"storefront"}})
- *
  * @internal
  */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class PayPalController extends StorefrontController
 {
-    private AbstractCreateOrderRoute $createOrderRoute;
-
-    private AbstractMethodEligibilityRoute $methodEligibilityRoute;
-
-    private AbstractPUIPaymentInstructionsRoute $puiPaymentInstructionsRoute;
-
-    private AbstractExpressPrepareCheckoutRoute $expressPrepareCheckoutRoute;
-
-    private AbstractExpressCreateOrderRoute $expressCreateOrderRoute;
-
-    private LoggerInterface $logger;
-
-    private AbstractContextSwitchRoute $contextSwitchRoute;
-
-    private AbstractCartDeleteRoute $cartDeleteRoute;
-
     /**
      * @internal
      */
     public function __construct(
-        AbstractCreateOrderRoute $createOrderRoute,
-        AbstractMethodEligibilityRoute $methodEligibilityRoute,
-        AbstractPUIPaymentInstructionsRoute $puiPaymentInstructionsRoute,
-        AbstractExpressPrepareCheckoutRoute $expressPrepareCheckoutRoute,
-        AbstractExpressCreateOrderRoute $expressCreateOrderRoute,
-        AbstractContextSwitchRoute $contextSwitchRoute,
-        AbstractCartDeleteRoute $cartDeleteRoute,
-        LoggerInterface $logger
+        private readonly AbstractCreateOrderRoute $createOrderRoute,
+        private readonly AbstractMethodEligibilityRoute $methodEligibilityRoute,
+        private readonly AbstractPUIPaymentInstructionsRoute $puiPaymentInstructionsRoute,
+        private readonly AbstractExpressPrepareCheckoutRoute $expressPrepareCheckoutRoute,
+        private readonly AbstractExpressCreateOrderRoute $expressCreateOrderRoute,
+        private readonly AbstractContextSwitchRoute $contextSwitchRoute,
+        private readonly AbstractCartDeleteRoute $cartDeleteRoute,
+        private readonly AbstractClearVaultRoute $clearVaultRoute,
+        private readonly LoggerInterface $logger
     ) {
-        $this->createOrderRoute = $createOrderRoute;
-        $this->methodEligibilityRoute = $methodEligibilityRoute;
-        $this->puiPaymentInstructionsRoute = $puiPaymentInstructionsRoute;
-        $this->expressPrepareCheckoutRoute = $expressPrepareCheckoutRoute;
-        $this->expressCreateOrderRoute = $expressCreateOrderRoute;
-        $this->contextSwitchRoute = $contextSwitchRoute;
-        $this->cartDeleteRoute = $cartDeleteRoute;
-        $this->logger = $logger;
     }
 
-    /**
-     * @Route(
-     *     "/paypal/create-order",
-     *     name="frontend.paypal.create_order",
-     *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
-     * )
-     */
+    #[Route(path: '/paypal/create-order', name: 'frontend.paypal.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
+    #[Route(path: '/subscription/paypal/create-order/{subscriptionToken}', name: 'frontend.subscription.paypal.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false, '_subscriptionCart' => true, '_subscriptionContext' => true])]
     public function createOrder(SalesChannelContext $salesChannelContext, Request $request): TokenResponse
     {
         return $this->createOrderRoute->createPayPalOrder($salesChannelContext, $request);
     }
 
-    /**
-     * @Route(
-     *     "/paypal/payment-method-eligibility",
-     *     name="frontend.paypal.payment-method-eligibility",
-     *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
-     * )
-     */
+    #[Route(path: '/paypal/payment-method-eligibility', name: 'frontend.paypal.payment-method-eligibility', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function paymentMethodEligibility(Request $request, Context $context): Response
     {
         return $this->methodEligibilityRoute->setPaymentMethodEligibility($request, $context);
     }
 
-    /**
-     * @Route(
-     *     "/paypal/pui/payment-instructions/{transactionId}",
-     *     name="frontend.paypal.pui.payment_instructions",
-     *     methods={"GET"},
-     *     defaults={"_loginRequired"=true, "_loginRequiredAllowGuest"=true, "XmlHttpRequest"=true, "csrf_protected"=false}
-     * )
-     */
+    #[Route(path: '/paypal/pui/payment-instructions/{transactionId}', name: 'frontend.paypal.pui.payment_instructions', methods: ['GET'], defaults: ['_loginRequired' => true, '_loginRequiredAllowGuest' => true, 'XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function puiPaymentInstructions(string $transactionId, SalesChannelContext $salesChannelContext): PUIPaymentInstructionsResponse
     {
         return $this->puiPaymentInstructionsRoute->getPaymentInstructions($transactionId, $salesChannelContext);
     }
 
-    /**
-     * @Route(
-     *     "/paypal/express/prepare-checkout",
-     *     name="frontend.paypal.express.prepare_checkout",
-     *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
-     * )
-     */
+    #[Route(path: '/paypal/express/prepare-checkout', name: 'frontend.paypal.express.prepare_checkout', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function expressPrepareCheckout(Request $request, SalesChannelContext $context): ContextTokenResponse
     {
         return $this->expressPrepareCheckoutRoute->prepareCheckout($context, $request);
     }
 
-    /**
-     * @Route(
-     *     "/paypal/express/create-order",
-     *     name="frontend.paypal.express.create_order",
-     *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
-     * )
-     */
-    public function expressCreateOrder(SalesChannelContext $context): TokenResponse
+    #[Route(path: '/paypal/express/create-order', name: 'frontend.paypal.express.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
+    public function expressCreateOrder(Request $request, SalesChannelContext $context): TokenResponse
     {
-        return $this->expressCreateOrderRoute->createPayPalOrder($context);
+        return $this->expressCreateOrderRoute->createPayPalOrder($request, $context);
     }
 
-    /**
-     * @Route(
-     *     "/paypal/express/prepare-cart",
-     *     name="frontend.paypal.express.prepare_cart",
-     *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
-     * )
-     */
+    #[Route(path: '/paypal/express/prepare-cart', name: 'frontend.paypal.express.prepare_cart', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function expressPrepareCart(Request $request, SalesChannelContext $context): Response
     {
         $this->contextSwitchRoute->switchContext(new RequestDataBag([
@@ -162,14 +98,15 @@ class PayPalController extends StorefrontController
         return new NoContentResponse();
     }
 
-    /**
-     * @Route(
-     *     "/paypal/error",
-     *     name="frontend.paypal.error",
-     *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
-     * )
-     */
+    #[Route(path: '/paypal/vault/clear', name: 'frontend.paypal.vault.clear', methods: ['GET'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
+    public function clearVault(Request $request, SalesChannelContext $context): Response
+    {
+        $this->clearVaultRoute->clearVault($request, $context);
+
+        return $this->createActionResponse($request);
+    }
+
+    #[Route(path: '/paypal/error', name: 'frontend.paypal.error', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function addErrorMessage(Request $request): Response
     {
         if ($request->request->getBoolean('cancel')) {

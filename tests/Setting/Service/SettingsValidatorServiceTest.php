@@ -14,7 +14,7 @@ use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 
 /**
  * @internal
@@ -22,11 +22,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 #[Package('checkout')]
 class SettingsValidatorServiceTest extends TestCase
 {
-    use ServicesTrait;
-
     public function testValidateWithValidLiveSettings(): void
     {
-        $systemSettings = $this->createSystemConfigServiceMock();
+        $systemSettings = SystemConfigServiceMock::createWithoutCredentials();
         $systemSettings->set(Settings::CLIENT_ID, 'SomeClientId');
         $systemSettings->set(Settings::CLIENT_SECRET, 'SomeClientSecret');
 
@@ -35,11 +33,12 @@ class SettingsValidatorServiceTest extends TestCase
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
         $validationService->validate();
         $validationService->validate(TestDefaults::SALES_CHANNEL);
+        static::expectNotToPerformAssertions();
     }
 
     public function testValidateWithValidLiveDistinctSettings(): void
     {
-        $systemSettings = $this->createSystemConfigServiceMock();
+        $systemSettings = SystemConfigServiceMock::createWithoutCredentials();
         $systemSettings->set(Settings::CLIENT_ID, 'SomeClientId', TestDefaults::SALES_CHANNEL);
         $systemSettings->set(Settings::CLIENT_SECRET, 'SomeClientSecret', TestDefaults::SALES_CHANNEL);
 
@@ -51,7 +50,7 @@ class SettingsValidatorServiceTest extends TestCase
 
     public function testValidateWithValidSandboxSettings(): void
     {
-        $systemSettings = $this->createSystemConfigServiceMock();
+        $systemSettings = SystemConfigServiceMock::createWithoutCredentials();
         $systemSettings->set(Settings::CLIENT_ID_SANDBOX, 'SomeClientId');
         $systemSettings->set(Settings::CLIENT_SECRET_SANDBOX, 'SomeClientSecret');
         $systemSettings->set(Settings::SANDBOX, true);
@@ -61,11 +60,12 @@ class SettingsValidatorServiceTest extends TestCase
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
         $validationService->validate();
         $validationService->validate(TestDefaults::SALES_CHANNEL);
+        static::expectNotToPerformAssertions();
     }
 
     public function testValidateWithValidSandboxSettingsButSandboxDisabled(): void
     {
-        $systemSettings = $this->createSystemConfigServiceMock();
+        $systemSettings = SystemConfigServiceMock::createWithoutCredentials();
         $systemSettings->set(Settings::CLIENT_ID_SANDBOX, 'SomeClientId');
         $systemSettings->set(Settings::CLIENT_SECRET_SANDBOX, 'SomeClientSecret');
         $systemSettings->set(Settings::SANDBOX, false);
@@ -77,7 +77,7 @@ class SettingsValidatorServiceTest extends TestCase
 
     public function testValidateWithValidLiveSettingsButSandboxEnabled(): void
     {
-        $systemSettings = $this->createSystemConfigServiceMock();
+        $systemSettings = SystemConfigServiceMock::createWithoutCredentials();
         $systemSettings->set(Settings::CLIENT_ID, 'SomeClientId');
         $systemSettings->set(Settings::CLIENT_SECRET, 'SomeClientSecret');
         $systemSettings->set(Settings::SANDBOX, true);
@@ -89,7 +89,7 @@ class SettingsValidatorServiceTest extends TestCase
 
     public function testValidateWithoutClientSecretThrowsException(): void
     {
-        $systemSettings = $this->createSystemConfigServiceMock();
+        $systemSettings = SystemConfigServiceMock::createWithoutCredentials();
         $systemSettings->set(Settings::CLIENT_ID, 'SomeClientId');
 
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
@@ -99,7 +99,7 @@ class SettingsValidatorServiceTest extends TestCase
 
     public function testValidateWithoutClientIdThrowsException(): void
     {
-        $systemSettings = $this->createSystemConfigServiceMock();
+        $systemSettings = SystemConfigServiceMock::createWithoutCredentials();
 
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
         $this->expectException(PayPalSettingsInvalidException::class);
@@ -108,7 +108,7 @@ class SettingsValidatorServiceTest extends TestCase
 
     public function testValidateWithoutClientSecretSandboxThrowsException(): void
     {
-        $systemSettings = $this->createSystemConfigServiceMock();
+        $systemSettings = SystemConfigServiceMock::createWithoutCredentials();
         $systemSettings->set(Settings::CLIENT_ID_SANDBOX, 'SomeClientId');
         $systemSettings->set(Settings::SANDBOX, true);
 
@@ -119,7 +119,7 @@ class SettingsValidatorServiceTest extends TestCase
 
     public function testValidateWithoutClientIdSandboxThrowsException(): void
     {
-        $systemSettings = $this->createSystemConfigServiceMock();
+        $systemSettings = SystemConfigServiceMock::createWithoutCredentials();
         $systemSettings->set(Settings::SANDBOX, true);
 
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());

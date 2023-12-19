@@ -10,7 +10,10 @@ namespace Swag\PayPal\Test\Checkout\ExpressCheckout;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
@@ -21,6 +24,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -54,6 +58,8 @@ use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,6 +71,7 @@ use Symfony\Component\Routing\RouterInterface;
 #[Package('checkout')]
 class ExpressCheckoutSubscriberTest extends TestCase
 {
+    use IntegrationTestBehaviour;
     use ServicesTrait;
 
     private CartService $cartService;
@@ -253,7 +260,14 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $event = new CheckoutCartPageLoadedEvent(new CheckoutCartPage(), $salesChannelContext, new Request());
 
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
-        $cart->setPrice($this->getEmptyCartPrice());
+        $cart->setPrice(new CartPrice(
+            0.0,
+            0.0,
+            0,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection(),
+            CartPrice::TAX_STATE_GROSS
+        ));
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
@@ -533,7 +547,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         return new ExpressCheckoutSubscriber(
             new PayPalExpressCheckoutDataService(
                 $this->cartService,
-                $this->createLocaleCodeProvider(),
+                new LocaleCodeProvider(new LanguageRepoMock()),
                 $router,
                 $this->getContainer()->get(PaymentMethodUtil::class),
                 $settings,

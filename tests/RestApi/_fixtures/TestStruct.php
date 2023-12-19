@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\RestApi\_fixtures;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\Test\RestApi\_fixtures\TestStruct\Bar;
-use Swag\PayPal\Test\RestApi\_fixtures\TestStruct\Foo;
+use Swag\PayPal\Test\RestApi\_fixtures\TestStruct\FooCollection;
 
 /**
  * @internal
@@ -22,14 +22,16 @@ class TestStruct extends PayPalApiStruct
 
     protected Bar $bar;
 
-    /**
-     * @var Foo[]
-     */
-    protected array $foo;
+    protected FooCollection $foo;
 
     protected object $notExistingClass;
 
     protected array $notExistingCollectionClass;
+
+    /**
+     * @var string[]
+     */
+    protected array $scalarArray;
 
     protected function setId(string $id): void
     {
@@ -41,18 +43,12 @@ class TestStruct extends PayPalApiStruct
         $this->bar = $bar;
     }
 
-    /**
-     * @param Foo[] $foo
-     */
-    protected function setFoo(array $foo): void
+    protected function setFoo(FooCollection $foo): void
     {
         $this->foo = $foo;
     }
 
-    /**
-     * @param object $notExistingClass
-     */
-    protected function setNotExistingClass($notExistingClass): void
+    protected function setNotExistingClass(object $notExistingClass): void
     {
         $this->notExistingClass = $notExistingClass;
     }
@@ -60,5 +56,13 @@ class TestStruct extends PayPalApiStruct
     protected function setNotExistingCollectionClass(array $notExistingCollectionClass): void
     {
         $this->notExistingCollectionClass = $notExistingCollectionClass;
+    }
+
+    /**
+     * @param string[] $scalarArray
+     */
+    protected function setScalarArray(array $scalarArray): void
+    {
+        $this->scalarArray = $scalarArray;
     }
 }

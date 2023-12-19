@@ -18,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Shipping;
 use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
+use Swag\PayPal\RestApi\V1\Api\Shipping\TrackerCollection;
 use Swag\PayPal\RestApi\V1\Resource\ShippingResource;
 use Swag\PayPal\SwagPayPal;
 
@@ -93,9 +94,9 @@ class ShippingService
             return;
         }
 
-        $trackers = [];
+        $trackers = new TrackerCollection();
         foreach ($addedTrackingCodes as $trackingCode) {
-            $trackers[] = $this->createTracker($transactionId, $trackingCode, $carrier, Tracker::STATUS_SHIPPED);
+            $trackers->add($this->createTracker($transactionId, $trackingCode, $carrier, Tracker::STATUS_SHIPPED));
         }
 
         $this->logger->info('Adding tracking codes for order delivery "{orderDeliveryId}"', [

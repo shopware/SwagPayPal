@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Shipping\Cart\Error\ShippingMethodBlockedError;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
@@ -45,7 +46,6 @@ use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ClientTokenResponseFixture;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
@@ -54,6 +54,7 @@ use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
@@ -68,6 +69,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class CheckoutSubscriberTest extends TestCase
 {
     use CartTrait;
+    use IntegrationTestBehaviour;
     use PaymentMethodTrait;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;
@@ -77,21 +79,22 @@ class CheckoutSubscriberTest extends TestCase
 
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;
 
-    private EventDispatcherMock $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
     protected function setUp(): void
     {
         $this->paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
-        $this->eventDispatcher = new EventDispatcherMock();
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
     public function testGetSubscribedEvents(): void
     {
         $events = CheckoutDataSubscriber::getSubscribedEvents();
 
-        static::assertCount(2, $events);
-        static::assertSame('onAccountOrderEditLoaded', $events[AccountEditOrderPageLoadedEvent::class]);
-        static::assertSame('onCheckoutConfirmLoaded', $events[CheckoutConfirmPageLoadedEvent::class]);
+        static::assertCount(3, $events);
+        static::assertSame(['onAccountOrderEditLoaded', 10], $events[AccountEditOrderPageLoadedEvent::class]);
+        static::assertSame(['onCheckoutConfirmLoaded', 10], $events[CheckoutConfirmPageLoadedEvent::class]);
+        static::assertSame(['onCheckoutConfirmLoaded', 10], $events['subscription.' . CheckoutConfirmPageLoadedEvent::class]);
     }
 
     /**

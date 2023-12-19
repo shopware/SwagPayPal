@@ -10,11 +10,9 @@ namespace Swag\PayPal\RestApi\V1\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Refund\Amount;
-use Swag\PayPal\RestApi\V1\Api\Refund\Link;
-use Swag\PayPal\RestApi\V1\Api\Refund\RefundFromReceivedAmount;
-use Swag\PayPal\RestApi\V1\Api\Refund\RefundFromTransactionFee;
-use Swag\PayPal\RestApi\V1\Api\Refund\TotalRefundedAmount;
+use Swag\PayPal\RestApi\V1\Api\Common\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
+use Swag\PayPal\RestApi\V1\Api\Common\Value;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_refund")
@@ -65,17 +63,17 @@ class Refund extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected RefundFromTransactionFee $refundFromTransactionFee;
+    protected Value $refundFromTransactionFee;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected TotalRefundedAmount $totalRefundedAmount;
+    protected Value $totalRefundedAmount;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected RefundFromReceivedAmount $refundFromReceivedAmount;
+    protected Value $refundFromReceivedAmount;
 
     /**
      * @OA\Property(type="string")
@@ -93,11 +91,9 @@ class Refund extends PayPalApiStruct
     protected string $parentPayment;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     public function getAmount(): Amount
     {
@@ -179,32 +175,32 @@ class Refund extends PayPalApiStruct
         $this->state = $state;
     }
 
-    public function getRefundFromTransactionFee(): RefundFromTransactionFee
+    public function getRefundFromTransactionFee(): Value
     {
         return $this->refundFromTransactionFee;
     }
 
-    public function setRefundFromTransactionFee(RefundFromTransactionFee $refundFromTransactionFee): void
+    public function setRefundFromTransactionFee(Value $refundFromTransactionFee): void
     {
         $this->refundFromTransactionFee = $refundFromTransactionFee;
     }
 
-    public function getTotalRefundedAmount(): TotalRefundedAmount
+    public function getTotalRefundedAmount(): Value
     {
         return $this->totalRefundedAmount;
     }
 
-    public function setTotalRefundedAmount(TotalRefundedAmount $totalRefundedAmount): void
+    public function setTotalRefundedAmount(Value $totalRefundedAmount): void
     {
         $this->totalRefundedAmount = $totalRefundedAmount;
     }
 
-    public function getRefundFromReceivedAmount(): RefundFromReceivedAmount
+    public function getRefundFromReceivedAmount(): Value
     {
         return $this->refundFromReceivedAmount;
     }
 
-    public function setRefundFromReceivedAmount(RefundFromReceivedAmount $refundFromReceivedAmount): void
+    public function setRefundFromReceivedAmount(Value $refundFromReceivedAmount): void
     {
         $this->refundFromReceivedAmount = $refundFromReceivedAmount;
     }
@@ -239,18 +235,12 @@ class Refund extends PayPalApiStruct
         $this->parentPayment = $parentPayment;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }

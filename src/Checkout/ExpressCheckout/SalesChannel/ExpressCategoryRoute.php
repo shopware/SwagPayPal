@@ -22,10 +22,8 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class ExpressCategoryRoute extends AbstractCategoryRoute
 {
     private AbstractCategoryRoute $inner;
@@ -94,9 +92,8 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
      *          @OA\JsonContent(ref="#/components/schemas/category_flat")
      *     )
      * )
-     *
-     * @Route("/store-api/category/{navigationId}", name="store-api.category.detail", methods={"GET","POST"})
      */
+    #[Route(path: '/store-api/category/{navigationId}', name: 'store-api.category.detail', methods: ['GET', 'POST'])]
     public function load(string $navigationId, Request $request, SalesChannelContext $context): CategoryRouteResponse
     {
         $response = $this->inner->load($navigationId, $request, $context);

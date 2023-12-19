@@ -16,7 +16,7 @@ use Swag\PayPal\RestApi\V1\Api\Common\Money;
  * @OA\Schema(schema="swag_paypal_v1_disputes_common_transaction")
  */
 #[Package('checkout')]
-abstract class Transaction extends PayPalApiStruct
+class Transaction extends PayPalApiStruct
 {
     /**
      * @OA\Property(type="string")
@@ -69,11 +69,9 @@ abstract class Transaction extends PayPalApiStruct
     protected Seller $seller;
 
     /**
-     * @var Item[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_item"})
      */
-    protected array $items;
+    protected ItemCollection $items;
 
     public function getBuyerTransactionId(): string
     {
@@ -175,18 +173,12 @@ abstract class Transaction extends PayPalApiStruct
         $this->seller = $seller;
     }
 
-    /**
-     * @return Item[]
-     */
-    public function getItems(): array
+    public function getItems(): ItemCollection
     {
         return $this->items;
     }
 
-    /**
-     * @param Item[] $items
-     */
-    public function setItems(array $items): void
+    public function setItems(ItemCollection $items): void
     {
         $this->items = $items;
     }

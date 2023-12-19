@@ -19,8 +19,8 @@ Mixin.register('swag-paypal-credentials-loader', {
             requestParams: {
                 channelId: 'partner',
                 product: 'ppcp',
-                secondaryProducts: 'payment_methods',
-                capabilities: 'PAY_UPON_INVOICE',
+                secondaryProducts: 'advanced_vaulting,PAYMENT_METHODS',
+                capabilities: 'APPLE_PAY,GOOGLE_PAY,PAY_UPON_INVOICE,PAYPAL_WALLET_VAULTING_ADVANCED',
                 integrationType: 'FO',
                 features: [
                     'PAYMENT',
@@ -30,6 +30,8 @@ Mixin.register('swag-paypal-credentials-loader', {
                     'ADVANCED_TRANSACTIONS_SEARCH',
                     'ACCESS_MERCHANT_INFORMATION',
                     'TRACKING_SHIPMENT_READWRITE',
+                    'VAULT',
+                    'BILLING_AGREEMENT',
                 ],
                 displayMode: 'minibrowser',
                 partnerLogoUrl: 'https://assets.shopware.com/media/logos/shopware_logo_blue.svg',
@@ -38,11 +40,14 @@ Mixin.register('swag-paypal-credentials-loader', {
     },
 
     computed: {
+        returnUrl() {
+            return `${window.location.origin}${window.location.pathname}#${this.$route.path}`;
+        },
         onboardingUrlLive() {
             const params = this.createRequestParameter({
                 partnerId: this.payPalPartnerIdLive,
                 partnerClientId: this.payPalPartnerClientIdLive,
-                returnToPartnerUrl: this.returnUrl(),
+                returnToPartnerUrl: this.returnUrl,
                 sellerNonce: this.nonceLive,
             });
 
@@ -52,7 +57,7 @@ Mixin.register('swag-paypal-credentials-loader', {
             const params = this.createRequestParameter({
                 partnerId: this.payPalPartnerIdSandbox,
                 partnerClientId: this.payPalPartnerClientIdSandbox,
-                returnToPartnerUrl: this.returnUrl(),
+                returnToPartnerUrl: this.returnUrl,
                 sellerNonce: this.nonceSandbox,
             });
 
@@ -85,10 +90,6 @@ Mixin.register('swag-paypal-credentials-loader', {
     },
 
     methods: {
-        returnUrl() {
-            return `${window.location.origin}${window.location.pathname}#${this.$route.path}`;
-        },
-
         createRequestParameter(config = {}) {
             const params = { ...this.requestParams, ...config };
             return Object.keys(params).reduce((accumulator, key) => {

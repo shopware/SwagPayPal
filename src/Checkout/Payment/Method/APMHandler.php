@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Checkout\Payment\Method;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
@@ -74,13 +73,6 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        $customer = $salesChannelContext->getCustomer();
-        if ($customer === null) {
-            $message = CartException::customerNotLoggedIn()->getMessage();
-            $this->logger->error($message);
-
-            throw new AsyncPaymentProcessException($transactionId, $message);
-        }
 
         try {
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
@@ -95,7 +87,6 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         $paypalOrder = $this->orderBuilder->getOrder(
             $transaction,
             $salesChannelContext,
-            $customer,
             $dataBag
         );
 
@@ -127,7 +118,7 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
             $salesChannelContext->getContext()
         );
 
-        $link = $response->getRelLink(Link::RELATION_PAYER_ACTION);
+        $link = $response->getLinks()->getRelation(Link::RELATION_PAYER_ACTION);
         if ($link === null) {
             throw new AsyncPaymentProcessException($transactionId, 'No approve link provided by PayPal');
         }
@@ -171,10 +162,10 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
     private function tryToSetTransactionState(Order $paypalOrder, string $transactionId, Context $context): void
     {
         $purchaseUnits = $paypalOrder->getPurchaseUnits();
-        if (empty($purchaseUnits)) {
+        if ($purchaseUnits->count()) {
             return;
         }
-        $payments = \current($purchaseUnits)->getPayments();
+        $payments = $purchaseUnits->first()?->getPayments();
         if ($payments === null) {
             return;
         }

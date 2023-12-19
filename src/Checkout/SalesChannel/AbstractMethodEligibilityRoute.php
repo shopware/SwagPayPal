@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 abstract class AbstractMethodEligibilityRoute
 {
-    abstract public function getDecorated(): AbstractErrorRoute;
+    abstract public function getDecorated(): AbstractMethodEligibilityRoute;
 
     abstract public function setPaymentMethodEligibility(Request $request, Context $context): Response;
 }

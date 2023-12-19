@@ -66,9 +66,9 @@ final class Token extends PayPalApiStruct
     private \DateTime $expireDateTime;
 
     /**
-     * @return static
+     * @param array<string, mixed> $arrayDataWithSnakeCaseKeys
      */
-    public function assign(array $arrayDataWithSnakeCaseKeys)
+    public function assign(array $arrayDataWithSnakeCaseKeys): static
     {
         $newToken = parent::assign($arrayDataWithSnakeCaseKeys);
 

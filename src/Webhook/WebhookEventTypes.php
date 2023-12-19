@@ -18,18 +18,20 @@ final class WebhookEventTypes
     public const ALL_EVENTS = '*';
     /* A payment authorization is created, approved, executed, or a future payment authorization is created. */
     public const PAYMENT_AUTHORIZATION_CREATED = 'PAYMENT.AUTHORIZATION.CREATED';
-    /* A payment authorization is voided. */
+    /* A payment authorization is voided either due to authorization reaching it’s 30 day validity period or authorization was manually voided using the Void Authorized Payment API. */
     public const PAYMENT_AUTHORIZATION_VOIDED = 'PAYMENT.AUTHORIZATION.VOIDED';
+    /* A payment capture is declined. */
+    public const PAYMENT_CAPTURE_DECLINED = 'PAYMENT.CAPTURE.DECLINED';
     /* A payment capture completes. */
     public const PAYMENT_CAPTURE_COMPLETED = 'PAYMENT.CAPTURE.COMPLETED';
-    /* A payment capture is denied. */
-    public const PAYMENT_CAPTURE_DENIED = 'PAYMENT.CAPTURE.DENIED';
     /* The state of a payment capture changes to pending. */
     public const PAYMENT_CAPTURE_PENDING = 'PAYMENT.CAPTURE.PENDING';
     /* A merchant refunds a payment capture. */
     public const PAYMENT_CAPTURE_REFUNDED = 'PAYMENT.CAPTURE.REFUNDED';
     /* PayPal reverses a payment capture. */
     public const PAYMENT_CAPTURE_REVERSED = 'PAYMENT.CAPTURE.REVERSED';
+    /* A payment capture is denied. */
+    public const PAYMENT_CAPTURE_DENIED = 'PAYMENT.CAPTURE.DENIED';
     /* A batch payout payment is denied. */
     public const PAYMENT_PAYOUTSBATCH_DENIED = 'PAYMENT.PAYOUTSBATCH.DENIED';
     /* The state of a batch payout payment changes to processing. */
@@ -72,7 +74,7 @@ final class WebhookEventTypes
     public const IDENTITY_AUTHORIZATION_CONSENT_REVOKED = 'IDENTITY.AUTHORIZATION-CONSENT.REVOKED';
     /* Checkout payment is created and approved by buyer. */
     public const PAYMENTS_PAYMENT_CREATED = 'PAYMENTS.PAYMENT.CREATED';
-    /* See Orders. */
+    /* A buyer approved a checkout order */
     public const CHECKOUT_ORDER_APPROVED = 'CHECKOUT.ORDER.APPROVED';
     /* Express checkout payment is created and approved by buyer. */
     public const CHECKOUT_CHECKOUT_BUYER_APPROVED = 'CHECKOUT.CHECKOUT.BUYER-APPROVED';
@@ -142,6 +144,8 @@ final class WebhookEventTypes
     public const CUSTOMER_MANAGED_ACCOUNT_NEGATIVE_BALANCE_NOTIFIED = 'CUSTOMER.MANAGED-ACCOUNT.NEGATIVE-BALANCE-NOTIFIED';
     /* Negative balance debit has been initiated on a managed account. */
     public const CUSTOMER_MANAGED_ACCOUNT_NEGATIVE_BALANCE_DEBIT_INITIATED = 'CUSTOMER.MANAGED-ACCOUNT.NEGATIVE-BALANCE-DEBIT-INITIATED';
+    /* A problem occurred after the buyer approved the order but before you captured the payment. Refer to Handle uncaptured payments for what to do when this event occurs. */
+    public const CHECKOUT_PAYMENT_APPROVAL_REVERSED = 'CHECKOUT.PAYMENT-APPROVAL.REVERSED';
     /* A payment order is canceled. */
     public const PAYMENT_ORDER_CANCELLED = 'PAYMENT.ORDER.CANCELLED';
     /* A payment order is created. */
@@ -178,4 +182,6 @@ final class WebhookEventTypes
     public const VAULT_CREDIT_CARD_DELETED = 'VAULT.CREDIT-CARD.DELETED';
     /* A credit card is updated. */
     public const VAULT_CREDIT_CARD_UPDATED = 'VAULT.CREDIT-CARD.UPDATED';
+    /* A payment method token is deleted. */
+    public const VAULT_PAYMENT_TOKEN_DELETED = 'VAULT.PAYMENT-TOKEN.DELETED';
 }

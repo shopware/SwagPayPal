@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V2\Api\Common\Link;
+use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
 /**
@@ -43,11 +43,9 @@ abstract class Payment extends PayPalApiStruct
     protected ?string $customId = null;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     /**
      * @OA\Property(type="string")
@@ -99,18 +97,12 @@ abstract class Payment extends PayPalApiStruct
         $this->customId = $customId;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }

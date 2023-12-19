@@ -1,4 +1,7 @@
-{% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
+{% sw_extends {
+    template: '@Storefront/storefront/component/payment/payment-method.html.twig',
+    scopes: ['default', 'subscription']
+} %}
 
 {% set isBootstrap5 = feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
 
@@ -6,15 +9,35 @@
     {{ parent() }}
 
     {# @var \Swag\PayPal\Checkout\Plus\PlusData payPalPlusData #}
-    {# @deprecated tag:v8.0.0 - Will be removed without replacement #}
+    {# @deprecated tag:v9.0.0 - Will be removed without replacement #}
     {% set payPalPlusData = page.extensions[constant('Swag\\PayPal\\Checkout\\Plus\\PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Storefront\Data\Struct\VaultData payPalVaultData #}
+    {% set payPalVaultData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\VaultSubscriber::VAULT_EXTENSION')] %}
 
     {% if payPalPlusData and payPalPlusData.approvalUrl and payPalPlusData.paymentMethodId is same as(context.paymentMethod.id) and payPalPlusData.paymentMethodId is same as(payment.id) %}
+        {% block component_payment_method_description_paypal_plus %}
         <div class="d-none"
              data-swag-paypal-payment-wall="true"
              data-swag-pay-pal-plus-payment-wall-options="{{ payPalPlusData|json_encode }}">
         </div>
         <div id="ppplus"></div>
+        {% endblock %}
+    {% elseif payment.id is same as(context.paymentMethod.id) and payPalVaultData is not null %}
+        {% block component_payment_method_description_paypal_vault %}
+        {% if payPalVaultData.identifier %}
+            <div>{{ payPalVaultData.identifier }}</div>
+            <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
+                {{ "paypal.vault.clearAccount"|trans }}
+            </a>
+        {% else %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="createVault" id="swagPaypalCreateVault" form="confirmOrderForm" value="1" {% if payPalVaultData.preselect %}checked{% endif %} />
+                <label class="form-check-label" for="swagPaypalCreateVault" >
+                    {{ "paypal.vault.createToken"|trans }}
+                </label>
+            </div>
+        {% endif %}
+        {% endblock %}
     {% endif %}
 {% endblock %}
 

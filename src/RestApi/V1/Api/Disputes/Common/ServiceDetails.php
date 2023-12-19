@@ -10,13 +10,12 @@ namespace Swag\PayPal\RestApi\V1\Api\Disputes\Common;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CreditNotProcessed\ServiceDetails\SubReason;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_common_service_details")
  */
 #[Package('checkout')]
-abstract class ServiceDetails extends PayPalApiStruct
+class ServiceDetails extends PayPalApiStruct
 {
     /**
      * @OA\Property(type="string")
@@ -34,11 +33,9 @@ abstract class ServiceDetails extends PayPalApiStruct
     protected string $note;
 
     /**
-     * @var SubReason[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_sub_reason"})
      */
-    protected array $subReasons;
+    protected SubReasonCollection $subReasons;
 
     /**
      * @OA\Property(type="string")
@@ -75,18 +72,12 @@ abstract class ServiceDetails extends PayPalApiStruct
         $this->note = $note;
     }
 
-    /**
-     * @return SubReason[]
-     */
-    public function getSubReasons(): array
+    public function getSubReasons(): SubReasonCollection
     {
         return $this->subReasons;
     }
 
-    /**
-     * @param SubReason[] $subReasons
-     */
-    public function setSubReasons(array $subReasons): void
+    public function setSubReasons(SubReasonCollection $subReasons): void
     {
         $this->subReasons = $subReasons;
     }

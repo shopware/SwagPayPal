@@ -1,3 +1,6 @@
+# 8.0.0
+- PPI-763 - "Später bezahlen" Banner wird unterhalb des Preises auf der Produktdetailseite angezeigt
+
 # 7.3.1
 - PPI-844 - Behebt ein Problem, bei dem der Ratenzahlungs-Banner nicht auf CMS-Produktdetailseiten deaktivierbar war
 

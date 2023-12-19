@@ -1,7 +1,7 @@
 {
     "name": "swag/paypal",
     "description": "PayPal integration for Shopware 6",
-    "version": "7.3.1",
+    "version": "8.0.1",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
@@ -10,10 +10,10 @@
         }
     ],
     "require": {
-        "shopware/core": "~6.5.0@dev"
+        "shopware/core": "~6.5.5@dev"
     },
     "require-dev": {
-        "rector/rector": "^0.18.1"
+        "rector/rector": "^0.18.3"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
@@ -41,8 +41,14 @@
             "@phpstan",
             "@phpunit"
         ],
-        "ecs": "../../../vendor/bin/ecs check src tests",
-        "ecs-fix": "../../../vendor/bin/ecs check --fix src tests",
+        "ecs": [
+            "../../../vendor/bin/ecs check --config=../../../ecs.php src tests",
+            "../../../vendor/bin/ecs check src tests"
+        ],
+        "ecs-fix": [
+            "../../../vendor/bin/ecs check --fix --config=../../../ecs.php src tests",
+            "../../../vendor/bin/ecs check --fix src tests"
+        ],
         "init:admin": "npm ci --no-audit --prefer-offline --prefix src/Resources/app/administration",
         "lint:admin": "npm run lint-fix --prefix src/Resources/app/administration",
         "lint:admin:ci": "npm run lint-ci --prefix src/Resources/app/administration",

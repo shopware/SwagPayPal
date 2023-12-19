@@ -19,6 +19,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Swag\PayPal\Checkout\CheckoutSubscriber;
@@ -37,6 +38,7 @@ use Symfony\Component\HttpFoundation\Request;
 class CheckoutSubscriberTest extends TestCase
 {
     use CartTrait;
+    use IntegrationTestBehaviour;
     use ServicesTrait;
 
     private CheckoutSubscriber $checkoutSubscriber;

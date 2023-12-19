@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\Webhook\Registration;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
 #[Package('checkout')]
 class WebhookSystemConfigControllerTest extends TestCase
 {
-    use DatabaseTransactionBehaviour;
+    use IntegrationTestBehaviour;
     use ServicesTrait;
 
     private const OTHER_CLIENT_ID = 'otherClientId';

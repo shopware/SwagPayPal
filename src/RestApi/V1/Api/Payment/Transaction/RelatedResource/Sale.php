@@ -9,7 +9,7 @@ namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Sale\TransactionFee;
+use Swag\PayPal\RestApi\V1\Api\Common\Value;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_transaction_sale")
@@ -20,14 +20,14 @@ class Sale extends RelatedResource
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected TransactionFee $transactionFee;
+    protected Value $transactionFee;
 
-    public function getTransactionFee(): TransactionFee
+    public function getTransactionFee(): Value
     {
         return $this->transactionFee;
     }
 
-    public function setTransactionFee(TransactionFee $transactionFee): void
+    public function setTransactionFee(Value $transactionFee): void
     {
         $this->transactionFee = $transactionFee;
     }

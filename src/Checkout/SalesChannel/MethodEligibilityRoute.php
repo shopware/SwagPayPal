@@ -12,7 +12,6 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
@@ -21,13 +20,10 @@ use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
 {
     public const REMOVABLE_PAYMENT_HANDLERS = [
@@ -49,7 +45,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
         $this->logger = $logger;
     }
 
-    public function getDecorated(): AbstractErrorRoute
+    public function getDecorated(): AbstractMethodEligibilityRoute
     {
         throw new DecorationPatternException(self::class);
     }
@@ -81,25 +77,14 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
      *          response="204"
      *     )
      * )
-     *
-     * @Route(
-     *     "/store-api/paypal/payment-method-eligibility",
-     *     name="store-api.paypal.payment-method-eligibility",
-     *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true}
-     * )
      */
+    #[Route(path: '/store-api/paypal/payment-method-eligibility', name: 'store-api.paypal.payment-method-eligibility', methods: ['POST'], defaults: ['XmlHttpRequest' => true])]
     public function setPaymentMethodEligibility(Request $request, Context $context): Response
     {
         /** @var mixed|array $paymentMethods */
         $paymentMethods = $request->request->all()['paymentMethods'] ?? null;
         if (!\is_array($paymentMethods)) {
-            if (\class_exists(RoutingException::class)) {
-                RoutingException::invalidRequestParameter('paymentMethods');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('paymentMethods');
-            }
+            RoutingException::invalidRequestParameter('paymentMethods');
         }
 
         $handlers = [];

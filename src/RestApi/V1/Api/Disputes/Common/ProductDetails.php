@@ -15,7 +15,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * @OA\Schema(schema="swag_paypal_v1_disputes_common_product_details")
  */
 #[Package('checkout')]
-abstract class ProductDetails extends PayPalApiStruct
+class ProductDetails extends PayPalApiStruct
 {
     /**
      * @OA\Property(type="string")
@@ -28,11 +28,9 @@ abstract class ProductDetails extends PayPalApiStruct
     protected string $productReceivedTime;
 
     /**
-     * @var SubReason[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_sub_reason"})
      */
-    protected array $subReasons;
+    protected SubReasonCollection $subReasons;
 
     /**
      * @OA\Property(type="string")
@@ -64,18 +62,12 @@ abstract class ProductDetails extends PayPalApiStruct
         $this->productReceivedTime = $productReceivedTime;
     }
 
-    /**
-     * @return SubReason[]
-     */
-    public function getSubReasons(): array
+    public function getSubReasons(): SubReasonCollection
     {
         return $this->subReasons;
     }
 
-    /**
-     * @param SubReason[] $subReasons
-     */
-    public function setSubReasons(array $subReasons): void
+    public function setSubReasons(SubReasonCollection $subReasons): void
     {
         $this->subReasons = $subReasons;
     }

@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputeOutcome\AmountRefunded;
+use Swag\PayPal\RestApi\V1\Api\Common\Money;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_dispute_outcome")
@@ -26,7 +26,7 @@ class DisputeOutcome extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected AmountRefunded $amountRefunded;
+    protected Money $amountRefunded;
 
     public function getOutcomeCode(): string
     {
@@ -38,12 +38,12 @@ class DisputeOutcome extends PayPalApiStruct
         $this->outcomeCode = $outcomeCode;
     }
 
-    public function getAmountRefunded(): AmountRefunded
+    public function getAmountRefunded(): Money
     {
         return $this->amountRefunded;
     }
 
-    public function setAmountRefunded(AmountRefunded $amountRefunded): void
+    public function setAmountRefunded(Money $amountRefunded): void
     {
         $this->amountRefunded = $amountRefunded;
     }

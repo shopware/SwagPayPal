@@ -6,9 +6,8 @@
  * file that was distributed with this source code.
  */
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Core\DevOps\StaticAnalyze\StaticAnalyzeKernel;
+use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Dotenv\Dotenv;
 

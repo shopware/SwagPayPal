@@ -22,7 +22,7 @@ class WebhookRegistry
     /**
      * @internal
      */
-    public function __construct(\IteratorAggregate $webhooks)
+    public function __construct(iterable $webhooks)
     {
         foreach ($webhooks as $webhook) {
             $this->registerWebhook($webhook);

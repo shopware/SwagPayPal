@@ -10,7 +10,6 @@ namespace Swag\PayPal\Administration;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,10 +17,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class PayPalPaymentMethodController extends AbstractController
 {
     private PaymentMethodUtil $paymentMethodUtil;
@@ -58,18 +55,13 @@ class PayPalPaymentMethodController extends AbstractController
      *         response="204"
      *     )
      * )
-     *
-     * @Route("/api/_action/paypal/saleschannel-default", name="api.action.paypal.saleschannel_default", methods={"POST"}, defaults={"_acl": {"swag_paypal.editor"}})
      */
+    #[Route(path: '/api/_action/paypal/saleschannel-default', name: 'api.action.paypal.saleschannel_default', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function setPayPalPaymentMethodAsSalesChannelDefault(Request $request, Context $context): Response
     {
         $salesChannelId = $request->request->get('salesChannelId');
         if ($salesChannelId !== null && !\is_string($salesChannelId)) {
-            if (\class_exists(RoutingException::class)) {
-                throw RoutingException::invalidRequestParameter('salesChannelId');
-            }
-            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-            throw new InvalidRequestParameterException('salesChannelId');
+            throw RoutingException::invalidRequestParameter('salesChannelId');
         }
 
         $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, $salesChannelId);

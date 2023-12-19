@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
@@ -54,7 +55,10 @@ class AvailabilityService
         $handlers = [];
 
         $context = $this->buildAvailabilityContext($cart, $salesChannelContext);
-        $context->assign(['totalAmount' => $order->getPrice()->getTotalPrice()]);
+        $context->assign([
+            'totalAmount' => $order->getPrice()->getTotalPrice(),
+            'subscription' => $order->getExtensionOfType('foreignKeys', ArrayStruct::class)?->get('subscriptionId') !== null,
+        ]);
 
         foreach ($paymentMethods as $paymentMethod) {
             if (!$this->isAvailable($paymentMethod, $context)) {
@@ -99,6 +103,8 @@ class AvailabilityService
             'billingCountryCode' => $billingCountryCode,
             'currencyCode' => $salesChannelContext->getCurrency()->getIsoCode(),
             'totalAmount' => $cart->getPrice()->getTotalPrice(),
+            'subscription' => $salesChannelContext->hasExtension('subscription'),
+            'salesChannelId' => $salesChannelContext->getSalesChannelId(),
         ]);
 
         return $context;

@@ -8,8 +8,10 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
@@ -20,6 +22,9 @@ class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodI
 {
     public const PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID = 'payPalSpbButtonData';
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     public function getTranslations(): array
     {
         return [
@@ -46,6 +51,12 @@ class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodI
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
+        if ($availabilityContext->isSubscription()) {
+            $systemConfigService = $this->container->get(SystemConfigService::class);
+
+            return $systemConfigService->getBool(Settings::VAULTING_ENABLED, $availabilityContext->getSalesChannelId());
+        }
+
         return true;
     }
 
@@ -72,5 +83,10 @@ class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodI
     public function getCheckoutTemplateExtensionId(): string
     {
         return self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID;
+    }
+
+    public function isVaultable(): bool
+    {
+        return true;
     }
 }

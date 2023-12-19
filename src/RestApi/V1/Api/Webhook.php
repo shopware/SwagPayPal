@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Webhook\Link;
+use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
 
 /**
@@ -50,11 +50,9 @@ class Webhook extends PayPalApiStruct
     protected string $createTime;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     /**
      * @OA\Property(type="string")
@@ -121,18 +119,12 @@ class Webhook extends PayPalApiStruct
         $this->createTime = $createTime;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }

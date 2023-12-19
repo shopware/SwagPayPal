@@ -55,6 +55,10 @@
         },
         "cookie": {
             "name": "PayPal-Zahlungen"
+        },
+        "vault": {
+          "clearAccount": "Konto entfernen",
+          "createToken": "Konto für zukünftige Käufe speichern"
         }
     }
 }

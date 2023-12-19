@@ -29,10 +29,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class PosSyncController extends AbstractController
 {
     private EntityRepository $salesChannelRepository;
@@ -78,14 +76,7 @@ class PosSyncController extends AbstractController
         $this->productSelection = $productSelection;
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/sync/{salesChannelId}/products",
-     *      name="api.action.paypal.pos.sync.products",
-     *      methods={"POST"},
-     *      defaults={"_acl": {"sales_channel.viewer"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/sync/{salesChannelId}/products', name: 'api.action.paypal.pos.sync.products', methods: ['POST'], defaults: ['_acl' => ['sales_channel.viewer']])]
     public function syncProducts(string $salesChannelId, Context $context): Response
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
@@ -95,14 +86,7 @@ class PosSyncController extends AbstractController
         return new JsonResponse(['runId' => $runId]);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/sync/{salesChannelId}/images",
-     *      name="api.action.paypal.pos.sync.images",
-     *      methods={"POST"},
-     *      defaults={"_acl": {"sales_channel.viewer"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/sync/{salesChannelId}/images', name: 'api.action.paypal.pos.sync.images', methods: ['POST'], defaults: ['_acl' => ['sales_channel.viewer']])]
     public function syncImages(string $salesChannelId, Context $context): Response
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
@@ -112,14 +96,7 @@ class PosSyncController extends AbstractController
         return new JsonResponse(['runId' => $runId]);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/sync/{salesChannelId}/inventory",
-     *      name="api.action.paypal.pos.sync.inventory",
-     *      methods={"POST"},
-     *      defaults={"_acl": {"sales_channel.viewer"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/sync/{salesChannelId}/inventory', name: 'api.action.paypal.pos.sync.inventory', methods: ['POST'], defaults: ['_acl' => ['sales_channel.viewer']])]
     public function syncInventory(string $salesChannelId, Context $context): Response
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
@@ -129,14 +106,7 @@ class PosSyncController extends AbstractController
         return new JsonResponse(['runId' => $runId]);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/sync/{salesChannelId}",
-     *      name="api.action.paypal.pos.sync",
-     *      methods={"POST"},
-     *      defaults={"_acl": {"sales_channel.viewer"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/sync/{salesChannelId}', name: 'api.action.paypal.pos.sync', methods: ['POST'], defaults: ['_acl' => ['sales_channel.viewer']])]
     public function syncAll(string $salesChannelId, Context $context): Response
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
@@ -146,14 +116,7 @@ class PosSyncController extends AbstractController
         return new JsonResponse(['runId' => $runId]);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/sync/abort/{runId}",
-     *      name="api.action.paypal.pos.sync.abort",
-     *      methods={"POST"},
-     *      defaults={"_acl": {"sales_channel.viewer"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/sync/abort/{runId}', name: 'api.action.paypal.pos.sync.abort', methods: ['POST'], defaults: ['_acl' => ['sales_channel.viewer']])]
     public function abortSync(string $runId, Context $context): Response
     {
         $this->runService->abortRun($runId, $context);
@@ -161,14 +124,7 @@ class PosSyncController extends AbstractController
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/sync/reset/{salesChannelId}",
-     *      name="api.action.paypal.pos.sync.reset",
-     *      methods={"POST"},
-     *      defaults={"_acl": {"sales_channel.editor"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/sync/reset/{salesChannelId}', name: 'api.action.paypal.pos.sync.reset', methods: ['POST'], defaults: ['_acl' => ['sales_channel.editor']])]
     public function resetSync(string $salesChannelId, Context $context): Response
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context, true);
@@ -178,14 +134,7 @@ class PosSyncController extends AbstractController
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/log/cleanup/{salesChannelId}",
-     *      name="api.action.paypal.pos.log.cleanup",
-     *      methods={"POST"},
-     *      defaults={"_acl": {"sales_channel.editor"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/log/cleanup/{salesChannelId}', name: 'api.action.paypal.pos.log.cleanup', methods: ['POST'], defaults: ['_acl' => ['sales_channel.editor']])]
     public function cleanUpLog(string $salesChannelId, Context $context): Response
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context, true);
@@ -195,14 +144,7 @@ class PosSyncController extends AbstractController
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Route(
-     *     "/api/paypal/pos/product-log/{salesChannelId}",
-     *      name="api.paypal.pos.product-log",
-     *      methods={"GET"},
-     *      defaults={"_acl": {"sales_channel.viewer"}}
-     * )
-     */
+    #[Route(path: '/api/paypal/pos/product-log/{salesChannelId}', name: 'api.paypal.pos.product-log', methods: ['GET'], defaults: ['_acl' => ['sales_channel.viewer']])]
     public function getProductLog(string $salesChannelId, Request $request, Context $context): Response
     {
         $limit = $request->query->getInt('limit', 10);

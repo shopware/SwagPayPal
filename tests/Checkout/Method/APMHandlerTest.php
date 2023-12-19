@@ -20,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\Method\APMHandler;
@@ -27,7 +28,6 @@ use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder;
-use Swag\PayPal\OrdersApi\Builder\APM\BoletoBancarioOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\EpsOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\GiropayOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\IdealOrderBuilder;
@@ -56,6 +56,7 @@ use Symfony\Component\HttpFoundation\Request;
 class APMHandlerTest extends TestCase
 {
     use FullCheckoutTrait;
+    use IntegrationTestBehaviour;
     use OrderTransactionTrait;
     use ServicesTrait;
     use StateMachineStateTrait;

@@ -1,0 +1,109 @@
+{% block swag_paypal_content_card_channel_config_vaulting %}
+    <sw-card positionIdentifier="swag-paypal-card-channel-config-vaulting"
+             :title="$tc('swag-paypal.settingForm.vaulting.cardTitle')"
+             :is-loading="isLoadingMerchantInformation"
+    >
+
+        {% block swag_paypal_content_card_channel_config_vaulting_settings %}
+            <div v-if="actualConfigData" class="swag-paypal-settings-vaulting">
+
+                {% block swag_paypal_content_card_channel_config_vaulting_settings_description_title %}
+                    <div class="swag-paypal-settings-vaulting-description-title">
+                        {{ $tc('swag-paypal.settingForm.vaulting.description.title') }}
+                    </div>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_vaulting_settings_description_text %}
+                    <div>
+                        {{ $tc('swag-paypal.settingForm.vaulting.description.text') }}
+                    </div>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_vaulting_settings_enable %}
+                    <sw-inherit-wrapper
+                                        v-if="canHandleVaulting && !isLoadingMerchantInformation"
+                                        {% if VUE3 %}
+                                            v-model:value="actualConfigData['SwagPayPal.settings.vaultingEnabled']"
+                                        {% else %}
+                                            v-model="actualConfigData['SwagPayPal.settings.vaultingEnabled']"
+                                        {% endif %}
+                                        :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['SwagPayPal.settings.vaultingEnabled']"
+                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-switch-field name="SwagPayPal.settings.vaultingEnabled"
+                                             bordered
+                                             :mapInheritance="props"
+                                             :label="$tc('swag-paypal.settingForm.vaulting.enable.label')"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                                             :value="props.currentValue"
+                                             {% if VUE3 %}
+                                                 @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                                 @change="props.updateCurrentValue"
+                                             {% endif %}>
+                            </sw-switch-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_vaulting_settings_enable_always %}
+                    <sw-inherit-wrapper
+                                        v-if="canHandleVaulting && !isLoadingMerchantInformation"
+                                        {% if VUE3 %}
+                                            v-model:value="actualConfigData['SwagPayPal.settings.vaultingEnableAlways']"
+                                        {% else %}
+                                            v-model="actualConfigData['SwagPayPal.settings.vaultingEnableAlways']"
+                                        {% endif %}
+                                        :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['SwagPayPal.settings.vaultingEnableAlways']"
+                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-switch-field name="SwagPayPal.settings.vaultingEnableAlways"
+                                             bordered
+                                             :mapInheritance="props"
+                                             :label="$tc('swag-paypal.settingForm.vaulting.enableAlways.label')"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor') || !actualConfigData['SwagPayPal.settings.vaultingEnabled']"
+                                             :value="props.currentValue"
+                                             {% if VUE3 %}
+                                                 @update:value="props.updateCurrentValue"
+                                             {% else %}
+                                                 @change="props.updateCurrentValue"
+                                             {% endif %}>
+                            </sw-switch-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_vaulting_settings_onboarding %}
+                    <div v-if="!canHandleVaulting && !isLoadingMerchantInformation">
+                        {% block swag_paypal_content_card_channel_config_vaulting_settings_onboarding_button %}
+                            <a
+                                v-show="!isSandbox"
+                                class="sw-button sw-button--ghost swag-paypal-settings-vaulting-activate-button"
+                                target="_blank"
+                                :href="onboardingUrlLive"
+                                :disabled="!acl.can('swag_paypal.editor')"
+                                data-paypal-onboard-complete="onboardingCallbackLive"
+                                data-paypal-button="true"
+                            >
+                                {{ $tc('swag-paypal.settingForm.vaulting.activateButton.label') }}
+                            </a>
+                            <a
+                                v-show="isSandbox"
+                                class="sw-button sw-button--ghost swag-paypal-settings-vaulting-activate-button"
+                                target="_blank"
+                                :href="onboardingUrlSandbox"
+                                :disabled="!acl.can('swag_paypal.editor')"
+                                data-paypal-onboard-complete="onboardingCallbackSandbox"
+                                data-paypal-button="true"
+                            >
+                                {{ $tc('swag-paypal.settingForm.vaulting.activateButton.label') }}
+                            </a>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+
+            </div>
+        {% endblock %}
+
+    </sw-card>
+{% endblock %}

@@ -81,6 +81,13 @@
             <tag name="swag.paypal.webhook.handler"/>
         </service>
 
+        <service id="Swag\PayPal\Webhook\Handler\VaultPaymentTokenDeleted">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="swag_paypal_vault_token.repository"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
         <!-- registration -->
         <service id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigController"
                  decorates="Shopware\Core\System\SystemConfig\Api\SystemConfigController"

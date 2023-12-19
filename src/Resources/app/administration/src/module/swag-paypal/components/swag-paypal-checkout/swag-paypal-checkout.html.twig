@@ -16,10 +16,7 @@
 
     <template #header-right>
         {% block swag_paypal_content_card_channel_config_checkout_settings_link %}
-        <sw-internal-link
-            v-if="showSettingsLink"
-            :routerLink="{ name: 'swag.paypal.index' }"
-        >
+        <sw-internal-link :routerLink="{ name: 'swag.paypal.index' }">
             {{ $tc('swag-paypal.settingForm.checkout.settingsLink') }}
         </sw-internal-link>
         {% endblock %}
@@ -146,21 +143,6 @@
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_checkout_container_switch_show_credentials %}
-        <sw-switch-field
-            v-if="allowShowCredentials"
-            {% if VUE3 %}
-            v-model:value="showCredentials"
-            {% else %}
-            v-model="showCredentials"
-            {% endif %}
-            :label="$tc('swag-paypal.settingForm.checkout.showCredentials')"
-            :disabled="!acl.can('swag_paypal.editor')"
-            {% if VUE3 %}
-            @update:value="updateShowCredentials"
-            {% else %}
-            @change="updateShowCredentials"
-            {% endif %}
-        />
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_checkout_container_credentials_slot %}

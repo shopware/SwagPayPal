@@ -108,13 +108,6 @@ Component.register('swag-paypal-disputes-detail', {
             this.isLoading = false;
         },
 
-        /**
-         * @deprecated tag:v8.0.0 - will be removed, use computed externalDetailPageLink instead
-         */
-        getExternalDetailPageLink() {
-            return `${this.resolutionCenterUrl}/${this.dispute.dispute_id}`;
-        },
-
         setLinkToOrderModule() {
             if (!this.orderTransactionCriteria) {
                 this.orderModuleLink = null;

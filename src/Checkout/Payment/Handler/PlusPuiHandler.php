@@ -33,7 +33,7 @@ use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * @deprecated tag:v8.0.0 - Will be removed without replacement.
+ * @deprecated tag:v9.0.0 - Will be removed without replacement.
  */
 #[Package('checkout')]
 class PlusPuiHandler
@@ -96,8 +96,8 @@ class PlusPuiHandler
             $salesChannelContext
         );
 
-        $patches[] = $this->shippingAddressPatchBuilder->createShippingAddressPatch($customer);
-        $patches[] = $this->payerInfoPatchBuilder->createPayerInfoPatch($customer);
+        $patches[] = $this->shippingAddressPatchBuilder->createShippingAddressPatch($transaction->getOrder());
+        $patches[] = $this->payerInfoPatchBuilder->createPayerInfoPatch($transaction->getOrder());
 
         $this->patchPayPalPayment(
             $patches,
@@ -229,8 +229,12 @@ class PlusPuiHandler
     private function getPaymentState(Payment $payment): string
     {
         $intent = $payment->getIntent();
-        $relatedResource = $payment->getTransactions()[0]->getRelatedResources()[0];
+        $relatedResource = $payment->getTransactions()->first()?->getRelatedResources()->first();
         $paymentState = '';
+
+        if ($relatedResource === null) {
+            return $paymentState;
+        }
 
         switch ($intent) {
             case PaymentIntentV1::SALE:
@@ -272,15 +276,15 @@ class PlusPuiHandler
 
         switch ($payment->getIntent()) {
             case PaymentIntentV1::ORDER:
-                $resource = $payment->getTransactions()[0]->getRelatedResources()[0]->getOrder();
+                $resource = $payment->getTransactions()->first()?->getRelatedResources()->first()?->getOrder();
 
                 break;
             case PaymentIntentV1::AUTHORIZE:
-                $resource = $payment->getTransactions()[0]->getRelatedResources()[0]->getAuthorization();
+                $resource = $payment->getTransactions()->first()?->getRelatedResources()->first()?->getAuthorization();
 
                 break;
             case PaymentIntentV1::SALE:
-                $resource = $payment->getTransactions()[0]->getRelatedResources()[0]->getSale();
+                $resource = $payment->getTransactions()->first()?->getRelatedResources()->first()?->getSale();
 
                 break;
             default:

@@ -20,6 +20,9 @@ class SEPAMethodData extends AbstractMethodData implements CheckoutDataMethodInt
 {
     public const PAYPAL_SEPA_FIELD_DATA_EXTENSION_ID = 'payPalSEPAFieldData';
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     public function getTranslations(): array
     {
         return [

@@ -12,36 +12,31 @@ use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
+use Swag\PayPal\RestApi\V2\Api\Common\Name;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
-use Swag\PayPal\RestApi\V2\Api\Order\Payer\Address as PayerAddress;
-use Swag\PayPal\RestApi\V2\Api\Order\Payer\Name as PayerName;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\LocaleCodeProvider;
 
 #[Package('checkout')]
 abstract class AbstractOrderBuilder
 {
-    protected SystemConfigService $systemConfigService;
-
-    protected PurchaseUnitProvider $purchaseUnitProvider;
-
-    protected AddressProvider $addressProvider;
-
     /**
      * @internal
      */
     public function __construct(
-        SystemConfigService $systemConfigService,
-        PurchaseUnitProvider $purchaseUnitProvider,
-        AddressProvider $addressProvider
+        protected readonly SystemConfigService $systemConfigService,
+        protected readonly PurchaseUnitProvider $purchaseUnitProvider,
+        protected readonly AddressProvider $addressProvider,
+        protected readonly LocaleCodeProvider $localeCodeProvider,
     ) {
-        $this->systemConfigService = $systemConfigService;
-        $this->purchaseUnitProvider = $purchaseUnitProvider;
-        $this->addressProvider = $addressProvider;
     }
 
     /**
@@ -58,11 +53,14 @@ abstract class AbstractOrderBuilder
         return $intent;
     }
 
+    /**
+     * @deprecated tag:v9.0.0 - will be removed, use payment source attributes instead
+     */
     protected function createPayer(CustomerEntity $customer): Payer
     {
         $payer = new Payer();
         $payer->setEmailAddress($customer->getEmail());
-        $name = new PayerName();
+        $name = new Name();
         $name->setGivenName($customer->getFirstName());
         $name->setSurname($customer->getLastName());
         $payer->setName($name);
@@ -71,13 +69,16 @@ abstract class AbstractOrderBuilder
         if ($billingAddress === null) {
             throw new AddressNotFoundException($customer->getDefaultBillingAddressId());
         }
-        $address = new PayerAddress();
+        $address = new Address();
         $this->addressProvider->createAddress($billingAddress, $address);
         $payer->setAddress($address);
 
         return $payer;
     }
 
+    /**
+     * @deprecated tag:v9.0.0 - will be removed, use experience context instead
+     */
     protected function createApplicationContext(
         SalesChannelContext $salesChannelContext
     ): ApplicationContext {
@@ -86,6 +87,19 @@ abstract class AbstractOrderBuilder
         $applicationContext->setLandingPage($this->getLandingPageType($salesChannelContext->getSalesChannelId()));
 
         return $applicationContext;
+    }
+
+    protected function createExperienceContext(
+        SalesChannelContext $salesChannelContext
+    ): ExperienceContext {
+        $experienceContext = new ExperienceContext();
+        $experienceContext->setBrandName($this->getBrandName($salesChannelContext));
+        $experienceContext->setLocale($this->localeCodeProvider->getLocaleCodeFromContext($salesChannelContext->getContext()));
+        $experienceContext->setLandingPage($this->getLandingPageType($salesChannelContext->getSalesChannelId()));
+        $experienceContext->setReturnUrl(CreateOrderRoute::FAKE_URL);
+        $experienceContext->setCancelUrl(CreateOrderRoute::FAKE_URL . '?cancel=1');
+
+        return $experienceContext;
     }
 
     protected function getBrandName(SalesChannelContext $salesChannelContext): string

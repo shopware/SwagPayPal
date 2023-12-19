@@ -16,18 +16,14 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\Test\TestDefaults;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
@@ -48,8 +44,7 @@ use Swag\PayPal\Installment\Banner\Service\BannerDataService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Test\Helper\PaymentMethodTrait;
-use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -59,36 +54,22 @@ use Symfony\Component\HttpFoundation\Request;
 #[Package('checkout')]
 class InstallmentBannerSubscriberTest extends TestCase
 {
-    use PaymentMethodTrait;
-    use ServicesTrait;
-
     private const CART_TOTAL_PRICE = 123.45;
     private const PRODUCT_PRICE = 678.9;
     private const ADVANCED_PRODUCT_PRICE = 111.22;
 
-    private PaymentMethodUtil $paymentMethodUtil;
+    private PaymentMethodUtil&MockObject $paymentMethodUtil;
 
     private string $payPalPaymentMethodId;
 
-    private Context $context;
-
-    /**
-     * @var MockObject&ExcludedProductValidator
-     */
-    private $excludedProductValidator;
+    private MockObject&ExcludedProductValidator $excludedProductValidator;
 
     protected function setUp(): void
     {
-        $this->paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
-        $this->context = Context::createDefaultContext();
-        $this->payPalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($this->context);
+        $this->payPalPaymentMethodId = Uuid::randomHex();
+        $this->paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
+        $this->paymentMethodUtil->method('getPayPalPaymentMethodId')->willReturn($this->payPalPaymentMethodId);
         $this->excludedProductValidator = $this->createMock(ExcludedProductValidator::class);
-        $this->paymentMethodUtil->reset();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->removePaymentMethodFromDefaultsSalesChannel($this->payPalPaymentMethodId);
     }
 
     public function testGetSubscribedEvents(): void
@@ -110,6 +91,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerPayPalNotInSalesChannel(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent(false);
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(false);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
@@ -119,6 +101,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerInvalidSettings(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent();
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::CLIENT_ID => null,
@@ -131,6 +114,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerCheckoutCartDisabled(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent();
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::INSTALLMENT_BANNER_CART_ENABLED => false,
@@ -145,6 +129,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerCheckoutCart(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent();
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
@@ -167,7 +152,8 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerCheckoutCartExcludedProduct(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent();
-        $this->excludedProductValidator->method('cartContainsExcludedProduct')->willReturn(true);
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->excludedProductValidator->expects(static::once())->method('cartContainsExcludedProduct')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
@@ -177,6 +163,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerOffCanvasCartDisabled(): void
     {
         $event = $this->createOffCanvasCartPageLoadedEvent();
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED => false,
@@ -191,6 +178,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerProductPage(): void
     {
         $event = $this->createProductPageLoadedEvent();
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
@@ -204,6 +192,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerProductPageDisabled(): void
     {
         $event = $this->createProductPageLoadedEvent();
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED => false,
@@ -218,7 +207,8 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerProductPageExcludedProduct(): void
     {
         $event = $this->createProductPageLoadedEvent();
-        $this->excludedProductValidator->method('isProductExcluded')->willReturn(true);
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->excludedProductValidator->expects(static::once())->method('isProductExcluded')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
@@ -228,6 +218,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerProductPageWithAdvancedPrices(): void
     {
         $event = $this->createProductPageLoadedEvent(true);
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
@@ -241,6 +232,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerFooterPayPalNotInSalesChannel(): void
     {
         $event = $this->createFooterPageletLoadedEvent(false);
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(false);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBannerPagelet($event);
 
@@ -250,6 +242,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerFooterInvalidSettings(): void
     {
         $event = $this->createFooterPageletLoadedEvent();
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::CLIENT_ID => null,
@@ -262,6 +255,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerFooterDisabled(): void
     {
         $event = $this->createFooterPageletLoadedEvent();
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::INSTALLMENT_BANNER_FOOTER_ENABLED => false,
@@ -276,6 +270,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerFooterPagelet(): void
     {
         $event = $this->createFooterPageletLoadedEvent();
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBannerPagelet($event);
 
@@ -289,6 +284,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerAccountLoginPageDisabled(): void
     {
         $event = $this->createCheckoutRegisterPageLoadedEvent();
+        $this->paymentMethodUtil->expects(static::once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED => false,
@@ -320,13 +316,7 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     private function createInstallmentBannerSubscriber(array $settings = []): InstallmentBannerSubscriber
     {
-        $settings = $this->createSystemConfigServiceMock(\array_merge(
-            [
-                Settings::CLIENT_ID => 'testClientId',
-                Settings::CLIENT_SECRET => 'testClientSecret',
-            ],
-            $settings
-        ));
+        $settings = SystemConfigServiceMock::createWithCredentials($settings);
 
         return new InstallmentBannerSubscriber(
             new SettingsValidationService($settings, new NullLogger()),
@@ -469,42 +459,22 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     private function createSalesChannelContext(bool $withPayPalInContext = true): SalesChannelContext
     {
-        if (!$withPayPalInContext) {
-            $this->removePaymentMethodFromDefaultsSalesChannel($this->payPalPaymentMethodId);
-        }
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext->getCurrency()->setIsoCode('EUR');
+        $salesChannelContext->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection([
+            $salesChannelContext->getPaymentMethod(),
+        ]));
 
-        /** @var EntityRepository $repository */
-        $repository = $this->getContainer()->get('payment_method.repository');
-
-        $criteria = (new Criteria())
-            ->setLimit(1)
-            ->addFilter(new EqualsFilter('active', true))
-            ->addFilter(new NotFilter(NotFilter::CONNECTION_OR, [
-                new EqualsFilter('handlerIdentifier', PayPalPaymentHandler::class),
-            ]));
-
-        $otherPaymentMethodId = $repository->searchIds($criteria, Context::createDefaultContext())->firstId();
-        static::assertNotNull($otherPaymentMethodId);
-
-        $paymentMethodsArray = [['id' => $otherPaymentMethodId]];
         if ($withPayPalInContext) {
-            $paymentMethodsArray[] = ['id' => $this->payPalPaymentMethodId];
+            $paypalPaymentMethod = new PaymentMethodEntity();
+            $paypalPaymentMethod->setId($this->payPalPaymentMethodId);
+            $paypalPaymentMethod->setHandlerIdentifier(PayPalPaymentHandler::class);
+            $paypalPaymentMethod->setActive(true);
+
+            $salesChannelContext->getSalesChannel()->getPaymentMethods()?->add($paypalPaymentMethod);
         }
 
-        /** @var EntityRepository $salesChannelRepo */
-        $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
-        $salesChannelRepo->update([
-            [
-                'id' => TestDefaults::SALES_CHANNEL,
-                'paymentMethodId' => $otherPaymentMethodId,
-                'paymentMethods' => $paymentMethodsArray,
-            ],
-        ], Context::createDefaultContext());
-
-        return $this->getContainer()->get(SalesChannelContextFactory::class)->create(
-            Uuid::randomHex(),
-            TestDefaults::SALES_CHANNEL
-        );
+        return $salesChannelContext;
     }
 
     private function createRequest(): Request

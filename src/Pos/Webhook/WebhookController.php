@@ -27,10 +27,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class WebhookController extends AbstractController
 {
     use PosSalesChannelTrait;
@@ -54,14 +52,7 @@ class WebhookController extends AbstractController
         $this->salesChannelRepository = $salesChannelRepository;
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/webhook/registration/{salesChannelId}",
-     *     name="api.action.paypal.pos.webhook.registration.register",
-     *     methods={"POST"},
-     *     defaults={"_acl": {"sales_channel.editor"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/webhook/registration/{salesChannelId}', name: 'api.action.paypal.pos.webhook.registration.register', methods: ['POST'], defaults: ['_acl' => ['sales_channel.editor']])]
     public function registerWebhook(string $salesChannelId, Context $context): Response
     {
         $this->webhookService->registerWebhook($salesChannelId, $context);
@@ -69,14 +60,7 @@ class WebhookController extends AbstractController
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/webhook/registration/{salesChannelId}",
-     *     name="api.action.paypal.pos.webhook.registration.unregister",
-     *     methods={"DELETE"},
-     *     defaults={"_acl": {"sales_channel.deleter"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/webhook/registration/{salesChannelId}', name: 'api.action.paypal.pos.webhook.registration.unregister', methods: ['DELETE'], defaults: ['_acl' => ['sales_channel.deleter']])]
     public function unregisterWebhook(string $salesChannelId, Context $context): Response
     {
         $this->webhookService->unregisterWebhook($salesChannelId, $context);
@@ -84,14 +68,7 @@ class WebhookController extends AbstractController
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/webhook/execute/{salesChannelId}",
-     *     name="api.action.paypal.pos.webhook.execute",
-     *     methods={"POST"},
-     *     defaults={"auth_required"=false}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/webhook/execute/{salesChannelId}', name: 'api.action.paypal.pos.webhook.execute', methods: ['POST'], defaults: ['auth_required' => false])]
     public function executeWebhook(string $salesChannelId, Request $request, Context $context): Response
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);

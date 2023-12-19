@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Referral;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V2\Api\Referral\BusinessEntity\Address;
+use Swag\PayPal\RestApi\V2\Api\Referral\BusinessEntity\AddressCollection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_referral_business_entity")
@@ -19,24 +19,16 @@ use Swag\PayPal\RestApi\V2\Api\Referral\BusinessEntity\Address;
 class BusinessEntity extends PayPalApiStruct
 {
     /**
-     * @var Address[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_referral_address"})
      */
-    protected array $addresses = [];
+    protected AddressCollection $addresses;
 
-    /**
-     * @return Address[]
-     */
-    public function getAddresses(): array
+    public function getAddresses(): AddressCollection
     {
         return $this->addresses;
     }
 
-    /**
-     * @param Address[] $addresses
-     */
-    public function setAddresses(array $addresses): void
+    public function setAddresses(AddressCollection $addresses): void
     {
         $this->addresses = $addresses;
     }

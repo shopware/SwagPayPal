@@ -9,8 +9,7 @@ namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\DummyCollection;
+use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookRegistry;
@@ -21,26 +20,27 @@ use Swag\PayPal\Webhook\WebhookRegistry;
 #[Package('checkout')]
 class WebhookRegistryTest extends TestCase
 {
-    use ServicesTrait;
-
     public function testGetWebhookHandler(): void
     {
-        $webhook = $this->createWebhookRegistry()->getWebhookHandler(DummyWebhook::EVENT_TYPE);
+        $registry = new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]);
+        $webhook = $registry->getWebhookHandler(DummyWebhook::EVENT_TYPE);
 
         static::assertInstanceOf(DummyWebhook::class, $webhook);
     }
 
     public function testGetUnknownWebhookHandler(): void
     {
+        $registry = new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]);
+
         $this->expectException(WebhookException::class);
         $this->expectExceptionMessage('No webhook handler found for event "Foo". Shopware does not need to handle this event.');
-        $this->createWebhookRegistry()->getWebhookHandler('Foo');
+        $registry->getWebhookHandler('Foo');
     }
 
     public function testRegisterAlreadyRegisteredWebhook(): void
     {
         $this->expectException(WebhookException::class);
         $this->expectExceptionMessage('The specified event is already registered.');
-        new WebhookRegistry(new DummyCollection([$this->createDummyWebhook(), $this->createDummyWebhook()]));
+        new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock()), new DummyWebhook(new OrderTransactionRepoMock())]);
     }
 }

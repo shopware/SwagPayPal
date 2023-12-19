@@ -9,17 +9,21 @@ namespace Swag\PayPal\Checkout\Payment;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\CartException;
+use Shopware\Core\Checkout\Cart\Order\OrderConverter;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\RecurringPaymentHandlerInterface;
+use Shopware\Core\Checkout\Payment\Cart\RecurringPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
+use Shopware\Core\Checkout\Payment\PaymentException;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -27,15 +31,14 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Common\Link;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
-class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
+class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, RecurringPaymentHandlerInterface
 {
     public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
     public const PAYPAL_REQUEST_PARAMETER_PAYER_ID = 'PayerID';
@@ -45,12 +48,12 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
 
     /**
-     * @deprecated tag:v8.0.0 - Will be removed without replacement.
+     * @deprecated tag:v9.0.0 - Will be removed without replacement.
      */
     public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
 
     /**
-     * @deprecated tag:v8.0.0 - Will be removed without replacement.
+     * @deprecated tag:v9.0.0 - Will be removed without replacement.
      */
     public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
 
@@ -59,35 +62,19 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         OrderTransactionStates::STATE_AUTHORIZED,
     ];
 
-    private OrderTransactionStateHandler $orderTransactionStateHandler;
-
-    private PayPalHandler $payPalHandler;
-
-    private PlusPuiHandler $plusPuiHandler;
-
-    private EntityRepository $stateMachineStateRepository;
-
-    private LoggerInterface $logger;
-
-    private SettingsValidationServiceInterface $settingsValidationService;
-
     /**
      * @internal
      */
     public function __construct(
-        OrderTransactionStateHandler $orderTransactionStateHandler,
-        PayPalHandler $payPalHandler,
-        PlusPuiHandler $plusPuiHandler,
-        EntityRepository $stateMachineStateRepository,
-        LoggerInterface $logger,
-        SettingsValidationServiceInterface $settingsValidationService
+        private readonly OrderTransactionStateHandler $orderTransactionStateHandler,
+        private readonly PayPalHandler $payPalHandler,
+        private readonly PlusPuiHandler $plusPuiHandler,
+        private readonly EntityRepository $stateMachineStateRepository,
+        private readonly LoggerInterface $logger,
+        private readonly SettingsValidationServiceInterface $settingsValidationService,
+        private readonly VaultTokenService $vaultTokenService,
+        private readonly OrderConverter $orderConverter,
     ) {
-        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
-        $this->payPalHandler = $payPalHandler;
-        $this->plusPuiHandler = $plusPuiHandler;
-        $this->stateMachineStateRepository = $stateMachineStateRepository;
-        $this->logger = $logger;
-        $this->settingsValidationService = $settingsValidationService;
     }
 
     /**
@@ -118,14 +105,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
                 return $this->plusPuiHandler->handlePlusPayment($transaction, $dataBag, $salesChannelContext, $customer);
             }
 
-            $response = $this->payPalHandler->handlePayPalOrder($transaction, $salesChannelContext, $customer);
-
-            $link = $response->getRelLink(Link::RELATION_APPROVE);
-            if ($link === null) {
-                throw new AsyncPaymentProcessException($transactionId, 'No approve link provided by PayPal');
-            }
-
-            return new RedirectResponse($link->getHref());
+            return $this->payPalHandler->handlePayPalOrder($transaction, $dataBag, $salesChannelContext);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['error' => $e]);
 
@@ -143,6 +123,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         SalesChannelContext $salesChannelContext
     ): void {
         $this->logger->debug('Started');
+
         if ($this->transactionAlreadyFinalized($transaction, $salesChannelContext)) {
             $this->logger->debug('Already finalized');
 
@@ -160,59 +141,78 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
         try {
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
-        } catch (PayPalSettingsInvalidException $exception) {
-            throw new AsyncPaymentFinalizeException($transaction->getOrderTransaction()->getId(), $exception->getMessage());
-        }
 
-        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        $context = $salesChannelContext->getContext();
+            $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
+            $context = $salesChannelContext->getContext();
 
-        $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
+            $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
 
-        $isExpressCheckout = $request->query->getBoolean(self::PAYPAL_EXPRESS_CHECKOUT_ID);
-        $isSPBCheckout = $request->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ID);
-        $isPlus = $request->query->getBoolean(self::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER);
+            $isExpressCheckout = $request->query->getBoolean(self::PAYPAL_EXPRESS_CHECKOUT_ID);
+            $isSPBCheckout = $request->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ID);
+            $isPlus = $request->query->getBoolean(self::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER);
 
-        $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
+            $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
 
-        if (\is_string($paymentId)) {
-            $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
-            if (!\is_string($payerId)) {
-                if (\class_exists(RoutingException::class)) {
+            if (\is_string($paymentId)) {
+                $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
+                if (!\is_string($payerId)) {
                     throw RoutingException::missingRequestParameter(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
                 }
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new MissingRequestParameterException(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
+
+                $this->plusPuiHandler->handleFinalizePayment(
+                    $transaction,
+                    $salesChannelId,
+                    $context,
+                    $paymentId,
+                    $payerId,
+                    $partnerAttributionId
+                );
+
+                return;
             }
 
-            $this->plusPuiHandler->handleFinalizePayment(
-                $transaction,
-                $salesChannelId,
-                $context,
-                $paymentId,
-                $payerId,
-                $partnerAttributionId
-            );
-
-            return;
-        }
-
-        $token = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
-        if (!\is_string($token)) {
-            if (\class_exists(RoutingException::class)) {
+            $token = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
+            if (!\is_string($token)) {
                 throw RoutingException::missingRequestParameter(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
             }
-            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-            throw new MissingRequestParameterException(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
+
+            $this->payPalHandler->handleFinalizeOrder(
+                $transaction,
+                $token,
+                $salesChannelId,
+                $salesChannelContext,
+                $partnerAttributionId
+            );
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['error' => $e]);
+
+            throw new AsyncPaymentFinalizeException($transaction->getOrderTransaction()->getId(), $e->getMessage());
+        }
+    }
+
+    public function captureRecurring(RecurringPaymentTransactionStruct $transaction, Context $context): void
+    {
+        $this->logger->debug('Started');
+        $transactionId = $transaction->getOrderTransaction()->getId();
+
+        $subscription = $this->vaultTokenService->getSubscription($transaction);
+        if (!$subscription) {
+            throw PaymentException::recurringInterrupted($transactionId, 'Subscription not found');
         }
 
-        $this->payPalHandler->handleFinalizeOrder(
-            $transaction,
-            $token,
-            $salesChannelId,
-            $context,
-            $partnerAttributionId
-        );
+        $salesChannelContext = $this->orderConverter->assembleSalesChannelContext($transaction->getOrder(), $context);
+
+        try {
+            $this->settingsValidationService->validate($subscription->getSalesChannelId());
+            $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $context);
+
+            $redirect = $this->payPalHandler->handlePayPalOrder($transaction, new RequestDataBag(), $salesChannelContext);
+            $this->payPalHandler->handleFinalizeOrder($transaction, $redirect->getTargetUrl(), $subscription->getSalesChannelId(), $salesChannelContext, PartnerAttributionId::PAYPAL_PPCP);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['error' => $e]);
+
+            throw PaymentException::recurringInterrupted($transactionId, $e->getMessage());
+        }
     }
 
     private function getPartnerAttributionId(bool $isECS, bool $isSPB, bool $isPlus): string

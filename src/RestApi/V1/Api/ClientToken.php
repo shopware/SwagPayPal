@@ -36,10 +36,7 @@ class ClientToken extends PayPalApiStruct
      */
     protected \DateTime $expireDateTime;
 
-    /**
-     * @return static
-     */
-    public function assign(array $arrayDataWithSnakeCaseKeys)
+    public function assign(array $arrayDataWithSnakeCaseKeys): static
     {
         $newToken = parent::assign($arrayDataWithSnakeCaseKeys);
 

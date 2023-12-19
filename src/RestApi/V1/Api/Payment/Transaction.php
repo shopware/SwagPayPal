@@ -10,10 +10,10 @@ namespace Swag\PayPal\RestApi\V1\Api\Payment;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\Amount;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Payee;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResourceCollection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_transaction")
@@ -39,7 +39,7 @@ class Transaction extends PayPalApiStruct
     /**
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_related_resource"})
      */
-    protected array $relatedResources;
+    protected RelatedResourceCollection $relatedResources;
 
     /**
      * @OA\Property(type="string", nullable=true)
@@ -91,18 +91,12 @@ class Transaction extends PayPalApiStruct
         $this->itemList = $itemList;
     }
 
-    /**
-     * @return RelatedResource[]
-     */
-    public function getRelatedResources(): array
+    public function getRelatedResources(): RelatedResourceCollection
     {
         return $this->relatedResources;
     }
 
-    /**
-     * @param RelatedResource[] $relatedResources
-     */
-    public function setRelatedResources(array $relatedResources): void
+    public function setRelatedResources(RelatedResourceCollection $relatedResources): void
     {
         $this->relatedResources = $relatedResources;
     }

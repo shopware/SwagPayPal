@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\PartnerAction\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\Money;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_partner_action")
@@ -51,7 +51,7 @@ class PartnerAction extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected Amount $amount;
+    protected Money $amount;
 
     public function getId(): string
     {
@@ -113,12 +113,12 @@ class PartnerAction extends PayPalApiStruct
         $this->status = $status;
     }
 
-    public function getAmount(): Amount
+    public function getAmount(): Money
     {
         return $this->amount;
     }
 
-    public function setAmount(Amount $amount): void
+    public function setAmount(Money $amount): void
     {
         $this->amount = $amount;
     }

@@ -16,6 +16,7 @@ return static function (ContainerBuilder $container): void {
     $loader->load('apm.xml');
     $loader->load('checkout.xml');
     $loader->load('client.xml');
+    $loader->load('dal.xml');
     $loader->load('dispute.xml');
     $loader->load('express_checkout.xml');
     $loader->load('installment.xml');
@@ -28,7 +29,6 @@ return static function (ContainerBuilder $container): void {
     $loader->load('service_v1.xml');
     $loader->load('setting.xml');
     $loader->load('shipping.xml');
-    $loader->load('spb_checkout.xml');
     $loader->load('storefront.xml');
     $loader->load('util.xml');
     $loader->load('webhook.xml');

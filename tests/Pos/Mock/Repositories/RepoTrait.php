@@ -55,6 +55,9 @@ trait RepoTrait
         return $this->entityCollection;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function updateCollection(array $data, Context $context): EntityWrittenContainerEvent
     {
         foreach ($data as $entry) {
@@ -84,6 +87,9 @@ trait RepoTrait
         return new EntityWrittenContainerEvent($context, new NestedEventCollection([]), []);
     }
 
+    /**
+     * @param array<string, array> $data
+     */
     protected function removeFromCollection(array $data, Context $context): EntityWrittenContainerEvent
     {
         foreach ($data as $primaryKey) {
@@ -123,7 +129,7 @@ trait RepoTrait
     {
         return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
-            \count($entityCollection),
+            $entityCollection->count(),
             $entityCollection,
             null,
             $criteria,

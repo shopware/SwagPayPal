@@ -100,7 +100,7 @@ class SalesChannelRepoMock extends AbstractRepoMock
                 /** @var SalesChannelEntity|null $entity */
                 $entity = $this->entityCollection->get($id);
 
-                if ($entity !== null) {
+                if ($entity instanceof SalesChannelEntity) {
                     $collection->add($entity);
                 }
             }

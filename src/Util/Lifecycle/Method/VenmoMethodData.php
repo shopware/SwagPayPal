@@ -21,6 +21,9 @@ class VenmoMethodData extends AbstractMethodData implements CheckoutDataMethodIn
 {
     public const PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID = 'payPalVenmoFieldData';
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     public function getTranslations(): array
     {
         return [

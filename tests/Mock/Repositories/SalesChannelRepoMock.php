@@ -10,12 +10,12 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\TestDefaults;
@@ -45,14 +45,17 @@ class SalesChannelRepoMock extends AbstractRepoMock
         $salesChannelId = $id ?? TestDefaults::SALES_CHANNEL;
         $arrayKey = $withPaymentMethods ? $salesChannelId : PaymentMethodUtilTest::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD;
 
-        return new EntitySearchResult(
+        /** @var EntitySearchResult $result */
+        $result = new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             1,
-            new EntityCollection([$arrayKey => $this->createSalesChannelEntity($salesChannelId, $withPaymentMethods)]),
+            new SalesChannelCollection([$arrayKey => $this->createSalesChannelEntity($salesChannelId, $withPaymentMethods)]),
             null,
             $criteria,
             $context
         );
+
+        return $result;
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent

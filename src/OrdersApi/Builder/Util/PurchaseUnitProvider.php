@@ -10,16 +10,16 @@ namespace Swag\PayPal\OrdersApi\Builder\Util;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Address as ShippingAddress;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Name as ShippingName;
 use Swag\PayPal\Setting\Settings;
 
@@ -49,14 +49,11 @@ class PurchaseUnitProvider
         $this->systemConfigService = $systemConfigService;
     }
 
-    /**
-     * @param Item[]|null $itemList
-     */
     public function createPurchaseUnit(
         CalculatedPrice $totalAmount,
         CalculatedPrice $shippingCosts,
         ?CustomerEntity $customer,
-        ?array $itemList,
+        ?ItemCollection $itemList,
         SalesChannelContext $salesChannelContext,
         bool $isNet,
         ?OrderEntity $order = null,
@@ -78,8 +75,9 @@ class PurchaseUnitProvider
 
         $purchaseUnit->setAmount($amount);
 
-        if ($customer !== null) {
-            $purchaseUnit->setShipping($this->createShipping($customer));
+        $shipping = $this->createShipping($customer, $order);
+        if ($shipping !== null) {
+            $purchaseUnit->setShipping($shipping);
         }
 
         if ($orderTransaction !== null) {
@@ -98,16 +96,15 @@ class PurchaseUnitProvider
         return $purchaseUnit;
     }
 
-    private function createShipping(CustomerEntity $customer): Shipping
+    private function createShipping(?CustomerEntity $customer, ?OrderEntity $order): ?Shipping
     {
-        $shippingAddress = $customer->getActiveShippingAddress();
+        $shippingAddress = $order?->getDeliveries()?->first()?->getShippingOrderAddress() ?? $customer?->getActiveShippingAddress();
         if ($shippingAddress === null) {
-            throw new AddressNotFoundException($customer->getDefaultShippingAddressId());
+            return null;
         }
 
         $shipping = new Shipping();
-
-        $address = new ShippingAddress();
+        $address = new Address();
         $this->addressProvider->createAddress($shippingAddress, $address);
         $shipping->setAddress($address);
         $shipping->setName($this->createShippingName($shippingAddress));
@@ -115,7 +112,7 @@ class PurchaseUnitProvider
         return $shipping;
     }
 
-    private function createShippingName(CustomerAddressEntity $shippingAddress): ShippingName
+    private function createShippingName(CustomerAddressEntity|OrderAddressEntity $shippingAddress): ShippingName
     {
         $shippingName = new ShippingName();
         $shippingName->setFullName(\sprintf('%s %s', $shippingAddress->getFirstName(), $shippingAddress->getLastName()));

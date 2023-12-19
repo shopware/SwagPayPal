@@ -10,8 +10,8 @@ namespace Swag\PayPal\RestApi\V1\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Link;
+use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
+use Swag\PayPal\RestApi\V1\Api\Disputes\ItemCollection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes")
@@ -20,47 +20,31 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Link;
 class Disputes extends PayPalApiStruct
 {
     /**
-     * @var Item[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_item"}, nullable=true)
      */
-    protected ?array $items = null;
+    protected ?ItemCollection $items = null;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
-    /**
-     * @return Item[]|null
-     */
-    public function getItems(): ?array
+    public function getItems(): ?ItemCollection
     {
         return $this->items;
     }
 
-    /**
-     * @param Item[]|null $items
-     */
-    public function setItems(?array $items): void
+    public function setItems(?ItemCollection $items): void
     {
         $this->items = $items;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }

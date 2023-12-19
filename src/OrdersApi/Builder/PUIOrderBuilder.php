@@ -23,13 +23,14 @@ use Swag\PayPal\Checkout\PUI\Exception\MissingPhoneNumberException;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
+use Swag\PayPal\RestApi\V2\Api\Common\Name;
+use Swag\PayPal\RestApi\V2\Api\Common\PhoneNumber;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\BillingAddress;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\ExperienceContext;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\Name;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\Phone;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -37,10 +38,6 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 #[Package('checkout')]
 class PUIOrderBuilder extends AbstractOrderBuilder
 {
-    private ItemListProvider $itemListProvider;
-
-    private LocaleCodeProvider $localeCodeProvider;
-
     /**
      * @internal
      */
@@ -48,12 +45,10 @@ class PUIOrderBuilder extends AbstractOrderBuilder
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
         AddressProvider $addressProvider,
-        ItemListProvider $itemListProvider,
+        private readonly ItemListProvider $itemListProvider,
         LocaleCodeProvider $localeCodeProvider
     ) {
-        parent::__construct($systemConfigService, $purchaseUnitProvider, $addressProvider);
-        $this->itemListProvider = $itemListProvider;
-        $this->localeCodeProvider = $localeCodeProvider;
+        parent::__construct($systemConfigService, $purchaseUnitProvider, $addressProvider, $localeCodeProvider);
     }
 
     public function getOrder(
@@ -82,7 +77,7 @@ class PUIOrderBuilder extends AbstractOrderBuilder
 
         $order = new Order();
         $order->setIntent(PaymentIntentV2::CAPTURE);
-        $order->setPurchaseUnits([$purchaseUnit]);
+        $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
         $order->setProcessingInstruction(Order::PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL);
         $order->setPaymentSource($paymentSource);
 
@@ -102,7 +97,7 @@ class PUIOrderBuilder extends AbstractOrderBuilder
         $name->setGivenName($orderCustomer->getFirstName());
         $name->setSurname($orderCustomer->getLastName());
 
-        $address = new BillingAddress();
+        $address = new Address();
         $this->addressProvider->createAddress($orderAddress, $address);
 
         $experienceContext = new ExperienceContext();
@@ -145,7 +140,7 @@ class PUIOrderBuilder extends AbstractOrderBuilder
         return $address;
     }
 
-    private function getPhoneNumber(OrderAddressEntity $orderAddress): Phone
+    private function getPhoneNumber(OrderAddressEntity $orderAddress): PhoneNumber
     {
         $phoneNumber = $orderAddress->getPhoneNumber();
         if (!$phoneNumber) {
@@ -161,7 +156,7 @@ class PUIOrderBuilder extends AbstractOrderBuilder
 
         $phoneNumber = \preg_replace('/(^((\+|00)\d{1,3}\s+|0049|49)|\D)/', '', $phoneNumber) ?? '';
 
-        $phone = new Phone();
+        $phone = new PhoneNumber();
         $phone->setNationalNumber($phoneNumber);
         $phone->setCountryCode($countryCode);
 

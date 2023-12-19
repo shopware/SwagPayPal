@@ -15,11 +15,11 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\RestApi\V2\Api\Common\Money;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\Tax;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Util\PriceFormatter;
 
@@ -45,9 +45,9 @@ class AmountProviderTest extends TestCase
     public function testPositiveMismatch(): void
     {
         $purchaseUnit = new PurchaseUnit();
-        $purchaseUnit->setItems([
+        $purchaseUnit->setItems(new ItemCollection([
             $this->getItem(10, 0.503, 0.0, 19.0),
-        ]);
+        ]));
 
         $breakdown = $this->createAmount($purchaseUnit, 10.03, 5.0)->getBreakdown();
 
@@ -60,9 +60,9 @@ class AmountProviderTest extends TestCase
     public function testNegativeMismatch(): void
     {
         $purchaseUnit = new PurchaseUnit();
-        $purchaseUnit->setItems([
+        $purchaseUnit->setItems(new ItemCollection([
             $this->getItem(10, 0.496, 0.0, 19.0),
-        ]);
+        ]));
 
         $breakdown = $this->createAmount($purchaseUnit, 9.96, 5.0)->getBreakdown();
 
@@ -75,10 +75,10 @@ class AmountProviderTest extends TestCase
     public function testNegativeItem(): void
     {
         $purchaseUnit = new PurchaseUnit();
-        $purchaseUnit->setItems([
+        $purchaseUnit->setItems(new ItemCollection([
             $this->getItem(1, 10, 0.0, 19.0),
             $this->getItem(1, -5, 0.0, 19.0),
-        ]);
+        ]));
 
         $breakdown = $this->createAmount($purchaseUnit, 10, 5.0)->getBreakdown();
 
@@ -91,10 +91,10 @@ class AmountProviderTest extends TestCase
     public function testNetTaxesWithShipping(): void
     {
         $purchaseUnit = new PurchaseUnit();
-        $purchaseUnit->setItems([
+        $purchaseUnit->setItems(new ItemCollection([
             $this->getItem(1, 10, 1.9, 19.0),
             $this->getItem(1, 50, 9.5, 19.0),
-        ]);
+        ]));
 
         $breakdown = $this->createAmount($purchaseUnit, 77.35, 5.0, true)->getBreakdown();
         static::assertNotNull($breakdown);
@@ -110,10 +110,10 @@ class AmountProviderTest extends TestCase
     public function testNetTaxesWithDiscount(): void
     {
         $purchaseUnit = new PurchaseUnit();
-        $purchaseUnit->setItems([
+        $purchaseUnit->setItems(new ItemCollection([
             $this->getItem(1, 10, 1.9, 19.0),
             $this->getItem(1, -1, -0.19, 19.0),
-        ]);
+        ]));
 
         $breakdown = $this->createAmount($purchaseUnit, 10.71, 0.0, true)->getBreakdown();
         static::assertNotNull($breakdown);
@@ -141,12 +141,12 @@ class AmountProviderTest extends TestCase
     {
         $item = new Item();
 
-        $unit = new UnitAmount();
+        $unit = new Money();
         $unit->setValue($this->priceFormatter->formatPrice($unitAmount, 'EUR'));
         $unit->setCurrencyCode('EUR');
         $item->setUnitAmount($unit);
 
-        $tax = new Tax();
+        $tax = new Money();
         $tax->setValue($this->priceFormatter->formatPrice($taxAmount, 'EUR'));
         $tax->setCurrencyCode('EUR');
         $item->setTax($tax);

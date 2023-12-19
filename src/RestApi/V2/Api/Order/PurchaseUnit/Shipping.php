@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Address;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Name;
 
 /**

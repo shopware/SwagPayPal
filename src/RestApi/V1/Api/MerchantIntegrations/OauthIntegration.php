@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\OauthIntegration\OauthThirdParty;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\OauthIntegration\OauthThirdPartyCollection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_merchant_integrations_oauth_integration")
@@ -34,11 +34,9 @@ class OauthIntegration extends PayPalApiStruct
     protected string $status;
 
     /**
-     * @var OauthThirdParty[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_oauth_integration_third_party"})
      */
-    protected array $oauthThirdParty;
+    protected OauthThirdPartyCollection $oauthThirdParty;
 
     public function getIntegrationMethod(): string
     {
@@ -70,12 +68,12 @@ class OauthIntegration extends PayPalApiStruct
         $this->status = $status;
     }
 
-    public function getOauthThirdParty(): array
+    public function getOauthThirdParty(): OauthThirdPartyCollection
     {
         return $this->oauthThirdParty;
     }
 
-    public function setOauthThirdParty(array $oauthThirdParty): void
+    public function setOauthThirdParty(OauthThirdPartyCollection $oauthThirdParty): void
     {
         $this->oauthThirdParty = $oauthThirdParty;
     }

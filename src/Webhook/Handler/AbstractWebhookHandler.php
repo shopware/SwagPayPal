@@ -27,19 +27,13 @@ use Swag\PayPal\Webhook\WebhookHandler;
 #[Package('checkout')]
 abstract class AbstractWebhookHandler implements WebhookHandler
 {
-    protected EntityRepository $orderTransactionRepository;
-
-    protected OrderTransactionStateHandler $orderTransactionStateHandler;
-
     /**
      * @internal
      */
     public function __construct(
-        EntityRepository $orderTransactionRepository,
-        OrderTransactionStateHandler $orderTransactionStateHandler
+        protected readonly EntityRepository $orderTransactionRepository,
+        protected readonly OrderTransactionStateHandler $orderTransactionStateHandler
     ) {
-        $this->orderTransactionRepository = $orderTransactionRepository;
-        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
     }
 
     abstract public function getEventType(): string;

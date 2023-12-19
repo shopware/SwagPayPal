@@ -28,12 +28,6 @@
 
         <service id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
 
-        <service id="Swag\PayPal\Checkout\SalesChannel\ErrorRoute" public="true">
-            <argument type="service" id="request_stack"/>
-            <argument type="service" id="translator"/>
-            <argument type="service" id="monolog.logger.paypal"/>
-        </service>
-
         <service id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute" public="true">
             <argument type="service" id="monolog.logger.paypal"/>
         </service>
@@ -100,6 +94,9 @@
             <argument type="service" id="state_machine_state.repository"/>
             <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
+
             <tag name="shopware.payment.method.async"/>
         </service>
 
@@ -109,6 +106,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
             <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
@@ -138,6 +136,16 @@
 
         <service id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService">
             <argument type="service" id="order_transaction.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService">
+            <argument type="service" id="swag_paypal_vault_token.repository"/>
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="subscription.repository" on-invalid="null"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute">
+            <argument type="service" id="swag_paypal_vault_token_mapping.repository"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\CancelTransactionsTask">

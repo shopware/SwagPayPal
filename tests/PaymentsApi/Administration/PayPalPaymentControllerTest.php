@@ -30,9 +30,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\RefundSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidAuthorizationResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
-use Swag\PayPal\Test\Mock\Util\PaymentStatusUtilMock;
+use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PriceFormatter;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -324,7 +323,7 @@ class PayPalPaymentControllerTest extends TestCase
             new AuthorizationResource($this->createPayPalClientFactory()),
             new OrdersResource($this->createPayPalClientFactory()),
             new CaptureResource($this->createPayPalClientFactory()),
-            new PaymentStatusUtilMock($this->createMock(ContainerInterface::class)),
+            $this->createMock(PaymentStatusUtil::class),
             new OrderRepositoryMock(),
             new PriceFormatter()
         );
@@ -353,7 +352,7 @@ class PayPalPaymentControllerTest extends TestCase
             new AuthorizationResource($this->createPayPalClientFactory()),
             new OrdersResource($this->createPayPalClientFactory()),
             new CaptureResource($this->createPayPalClientFactory()),
-            new PaymentStatusUtilMock($this->createMock(ContainerInterface::class)),
+            $this->createMock(PaymentStatusUtil::class),
             new OrderRepositoryMock(),
             new PriceFormatter()
         );

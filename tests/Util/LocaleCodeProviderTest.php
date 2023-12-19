@@ -10,7 +10,6 @@ namespace Swag\PayPal\Test\Util;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
@@ -20,46 +19,11 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 #[Package('checkout')]
 class LocaleCodeProviderTest extends TestCase
 {
-    use ServicesTrait;
-
-    private LocaleCodeProvider $localeCodeProvider;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->localeCodeProvider = $this->createLocaleCodeProvider();
-    }
-
     public function testGetLocaleCodeFromDefaultContext(): void
     {
-        $iso = $this->localeCodeProvider->getLocaleCodeFromContext(Context::createDefaultContext());
+        $localeCodeProvider = new LocaleCodeProvider(new LanguageRepoMock());
+        $iso = $localeCodeProvider->getLocaleCodeFromContext(Context::createDefaultContext());
 
         static::assertSame(LanguageRepoMock::LOCALE_CODE, $iso);
-    }
-
-    public function testGetLocaleCodeWithoutLocaleEntity(): void
-    {
-        $context = $this->createContextWithoutLocale();
-        $iso = $this->localeCodeProvider->getLocaleCodeFromContext($context);
-
-        static::assertSame(LanguageRepoMock::LOCALE_CODE, $iso);
-    }
-
-    private function createContextWithoutLocale(): Context
-    {
-        $defaultContext = Context::createDefaultContext();
-
-        return new Context(
-            $defaultContext->getSource(),
-            $defaultContext->getRuleIds(),
-            $defaultContext->getCurrencyId(),
-            [
-                LanguageRepoMock::LANGUAGE_ID_WITHOUT_LOCALE,
-            ],
-            $defaultContext->getVersionId(),
-            $defaultContext->getCurrencyFactor(),
-            $defaultContext->considerInheritance(),
-            $defaultContext->getTaxState()
-        );
     }
 }

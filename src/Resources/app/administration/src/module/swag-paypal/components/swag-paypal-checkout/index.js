@@ -77,24 +77,10 @@ Component.register('swag-paypal-checkout', {
             type: Boolean,
             required: true,
         },
-        // @deprecated tag:v8.0.0 - will be removed, credentials are separate now
-        allowShowCredentials: {
-            type: Boolean,
-            required: false,
-            default: false,
-        },
-        // @deprecated tag:v8.0.0 - will be removed
-        showSettingsLink: {
-            type: Boolean,
-            required: false,
-            default: false,
-        },
     },
 
     data() {
         return {
-            // @deprecated tag:v8.0.0 - will be removed, credentials are separate now
-            showCredentials: false,
             paymentMethods: [],
             merchantInformation: {
                 merchantIntegrations: {
@@ -238,11 +224,6 @@ Component.register('swag-paypal-checkout', {
     methods: {
         async createdComponent() {
             await this.getPaymentMethodsAndMerchantIntegrations();
-        },
-
-        // @deprecated tag:v8.0.0 - will be removed, credentials are separate now
-        updateShowCredentials() {
-            this.$emit('on-change-credentials-visibility', this.showCredentials);
         },
 
         deactivatePayPalPlus() {

@@ -1,0 +1,21 @@
+{% sw_extends "@Storefront/storefront/page/product-detail/buy-widget.html.twig" %}
+
+{% block page_product_detail_price %}
+    {{ parent() }}
+
+    {% block page_product_detail_price_paypal_installment_banner %}
+        {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
+        {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+        {% set isBootstrap5 = feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
+
+        {% if installmentBanner.detailPageEnabled %}
+            <div class="{{ isBootstrap5 ? 'row g-2 mt-0' : 'form-row mt-3' }} mb-4 justify-content-end">
+                <div class="{{ buyable ? 'col-8' : 'col-12' }}"
+                     data-swag-paypal-installment-banner="true"
+                     data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
+                </div>
+            </div>
+        {% endif %}
+    {% endblock %}
+
+{% endblock %}

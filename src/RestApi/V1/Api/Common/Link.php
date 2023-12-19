@@ -15,7 +15,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * @OA\Schema(schema="swag_paypal_v1_common_link")
  */
 #[Package('checkout')]
-abstract class Link extends PayPalApiStruct
+class Link extends PayPalApiStruct
 {
     /**
      * @OA\Property(type="string")

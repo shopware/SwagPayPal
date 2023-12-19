@@ -7,12 +7,10 @@
 
 namespace Swag\PayPal\Test\Helper;
 
-use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
-use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -23,21 +21,13 @@ use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\DummyCollection;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
-use Swag\PayPal\Test\Mock\Repositories\AbstractRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
-use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
-use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
-use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
-use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
-use Swag\PayPal\Webhook\WebhookRegistry;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @internal
@@ -45,8 +35,6 @@ use Swag\PayPal\Webhook\WebhookRegistry;
 #[Package('checkout')]
 trait ServicesTrait
 {
-    use IntegrationTestBehaviour;
-
     protected function createPayPalClientFactory(): PayPalClientFactoryMock
     {
         return $this->createPayPalClientFactoryWithService($this->createDefaultSystemConfig());
@@ -54,11 +42,9 @@ trait ServicesTrait
 
     protected function createPayPalClientFactoryWithService(SystemConfigService $systemConfigService): PayPalClientFactoryMock
     {
-        $logger = new LoggerMock();
-
         return new PayPalClientFactoryMock(
             $systemConfigService,
-            $logger
+            new NullLogger()
         );
     }
 
@@ -76,6 +62,9 @@ trait ServicesTrait
         return new OrderResource($this->createPayPalClientFactoryWithService($systemConfig));
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function getDefaultConfigData(): array
     {
         return \array_merge(Settings::DEFAULT_VALUES, [
@@ -88,6 +77,9 @@ trait ServicesTrait
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $settings
+     */
     protected function createDefaultSystemConfig(array $settings = []): SystemConfigServiceMock
     {
         return $this->createSystemConfigServiceMock(\array_merge($this->getDefaultConfigData(), $settings));
@@ -98,10 +90,10 @@ trait ServicesTrait
         $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
 
         return new OrderPaymentBuilder(
-            new LocaleCodeProviderMock(new AbstractRepoMock()),
+            $this->createMock(LocaleCodeProvider::class),
             new PriceFormatter(),
-            new EventDispatcherMock(),
-            new LoggerMock(),
+            $this->createMock(EventDispatcherInterface::class),
+            new NullLogger(),
             $systemConfig,
             new CurrencyRepoMock()
         );
@@ -120,20 +112,15 @@ trait ServicesTrait
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
-            new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())
+            $this->createMock(LocaleCodeProvider::class),
+            new ItemListProvider($priceFormatter, $this->createMock(EventDispatcherInterface::class), new NullLogger()),
+            $this->createMock(VaultTokenService::class),
         );
     }
 
-    protected function createWebhookRegistry(?OrderTransactionRepoMock $orderTransactionRepo = null): WebhookRegistry
-    {
-        return new WebhookRegistry(new DummyCollection([$this->createDummyWebhook($orderTransactionRepo)]));
-    }
-
-    protected function createLocaleCodeProvider(): LocaleCodeProvider
-    {
-        return new LocaleCodeProvider(new LanguageRepoMock());
-    }
-
+    /**
+     * @param array<string, mixed> $settings
+     */
     protected function createSystemConfigServiceMock(array $settings = []): SystemConfigServiceMock
     {
         $systemConfigService = new SystemConfigServiceMock();
@@ -142,26 +129,5 @@ trait ServicesTrait
         }
 
         return $systemConfigService;
-    }
-
-    private function createDummyWebhook(?OrderTransactionRepoMock $orderTransactionRepo = null): DummyWebhook
-    {
-        if ($orderTransactionRepo === null) {
-            $orderTransactionRepo = new OrderTransactionRepoMock();
-        }
-
-        return new DummyWebhook($orderTransactionRepo);
-    }
-
-    private function getEmptyCartPrice(): CartPrice
-    {
-        return new CartPrice(
-            0.0,
-            0.0,
-            0,
-            new CalculatedTaxCollection(),
-            new TaxRuleCollection(),
-            CartPrice::TAX_STATE_GROSS
-        );
     }
 }

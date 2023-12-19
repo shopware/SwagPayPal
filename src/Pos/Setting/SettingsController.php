@@ -9,7 +9,6 @@ namespace Swag\PayPal\Pos\Setting;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
 use Swag\PayPal\Pos\Setting\Service\ApiCredentialService;
@@ -24,10 +23,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class SettingsController extends AbstractController
 {
     private ApiCredentialService $apiCredentialService;
@@ -57,23 +54,12 @@ class SettingsController extends AbstractController
         $this->productCountService = $productCountService;
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/validate-api-credentials",
-     *     name="api.action.paypal.pos.validate.api.credentials",
-     *     methods={"POST"},
-     *     defaults={"_acl": {"sales_channel.editor"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/validate-api-credentials', name: 'api.action.paypal.pos.validate.api.credentials', methods: ['POST'], defaults: ['_acl' => ['sales_channel.editor']])]
     public function validateApiCredentials(Request $request, Context $context): JsonResponse
     {
         $apiKey = $request->request->get('apiKey');
         if (!\is_string($apiKey)) {
-            if (\class_exists(RoutingException::class)) {
-                throw RoutingException::invalidRequestParameter('apiKey');
-            }
-            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-            throw new InvalidRequestParameterException('apiKey');
+            throw RoutingException::invalidRequestParameter('apiKey');
         }
 
         $salesChannelId = $request->request->getAlnum('salesChannelId');
@@ -89,23 +75,12 @@ class SettingsController extends AbstractController
         return new JsonResponse(['credentialsValid' => $credentialsValid]);
     }
 
-    /**
-     * @Route(
-     *     "/api/paypal/pos/fetch-information",
-     *     name="api.paypal.pos.fetch.information",
-     *     methods={"POST"},
-     *     defaults={"_acl": {"sales_channel.viewer"}}
-     * )
-     */
+    #[Route(path: '/api/paypal/pos/fetch-information', name: 'api.paypal.pos.fetch.information', methods: ['POST'], defaults: ['_acl' => ['sales_channel.viewer']])]
     public function fetchInformation(Request $request, Context $context): JsonResponse
     {
         $apiKey = $request->request->get('apiKey');
         if (!\is_string($apiKey)) {
-            if (\class_exists(RoutingException::class)) {
-                throw RoutingException::invalidRequestParameter('apiKey');
-            }
-            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-            throw new InvalidRequestParameterException('apiKey');
+            throw RoutingException::invalidRequestParameter('apiKey');
         }
 
         $information = new AdditionalInformation();
@@ -115,14 +90,7 @@ class SettingsController extends AbstractController
         return new JsonResponse($information);
     }
 
-    /**
-     * @Route(
-     *     "/api/_action/paypal/pos/clone-product-visibility",
-     *     name="api.action.paypal.pos.clone.product.visibility",
-     *     methods={"POST"},
-     *     defaults={"_acl": {"sales_channel.editor"}}
-     * )
-     */
+    #[Route(path: '/api/_action/paypal/pos/clone-product-visibility', name: 'api.action.paypal.pos.clone.product.visibility', methods: ['POST'], defaults: ['_acl' => ['sales_channel.editor']])]
     public function cloneProductVisibility(Request $request, Context $context): Response
     {
         $fromSalesChannelId = $request->request->getAlnum('fromSalesChannelId');
@@ -133,14 +101,7 @@ class SettingsController extends AbstractController
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Route(
-     *     "/api/paypal/pos/product-count",
-     *     name="api.paypal.pos.product.count",
-     *     methods={"GET"},
-     *     defaults={"_acl": {"sales_channel.viewer"}}
-     * )
-     */
+    #[Route(path: '/api/paypal/pos/product-count', name: 'api.paypal.pos.product.count', methods: ['GET'], defaults: ['_acl' => ['sales_channel.viewer']])]
     public function getProductCounts(Request $request, Context $context): JsonResponse
     {
         $salesChannelId = $request->query->getAlnum('salesChannelId');

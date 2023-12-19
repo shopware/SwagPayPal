@@ -139,19 +139,20 @@ class GetRefundedOrderCapture
                         ],
                     ],
                 ],
-            ],
-            'payer' => [
-                'name' => [
-                    'given_name' => 'Test',
-                    'surname' => 'Test',
-                ],
-                'email_address' => 'customer-de@shopware.com',
-                'payer_id' => 'XTW5U37QPXKJE',
-                'address' => [
-                    'address_line_1' => 'Ebbinghoff 10',
-                    'admin_area_2' => 'Schöppingen',
-                    'postal_code' => '48624',
-                    'country_code' => 'DE',
+                'paypal' => [
+                    'email_address' => 'customer-de@shopware.com',
+                    'account_id' => 'XTW5U37QPXKJE',
+                    'account_status' => 'VERIFIED',
+                    'name' => [
+                        'given_name' => 'Kunde',
+                        'surname' => 'Deutschland',
+                    ],
+                    'address' => [
+                        'address_line_1' => 'Ebbinghoff 10',
+                        'admin_area_2' => 'Schöppingen',
+                        'postal_code' => '48624',
+                        'country_code' => 'DE',
+                    ],
                 ],
             ],
             'create_time' => '2020-08-17T12:33:59Z',

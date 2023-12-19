@@ -9,8 +9,7 @@ namespace Swag\PayPal\RestApi\V1\Api\Payment\Payer;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo\BillingAddress;
-use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo\ShippingAddress;
+use Swag\PayPal\RestApi\V1\Api\Common\Address;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_payer_info")
@@ -36,12 +35,12 @@ class PayerInfo extends ExecutePayerInfo
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_address", nullable=true)
      */
-    protected ?BillingAddress $billingAddress = null;
+    protected ?Address $billingAddress = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_payer_info_shipping_address")
      */
-    protected ShippingAddress $shippingAddress;
+    protected Address $shippingAddress;
 
     /**
      * @OA\Property(type="string")
@@ -83,22 +82,22 @@ class PayerInfo extends ExecutePayerInfo
         $this->lastName = $lastName;
     }
 
-    public function getBillingAddress(): ?BillingAddress
+    public function getBillingAddress(): ?Address
     {
         return $this->billingAddress;
     }
 
-    public function setBillingAddress(?BillingAddress $billingAddress): void
+    public function setBillingAddress(?Address $billingAddress): void
     {
         $this->billingAddress = $billingAddress;
     }
 
-    public function getShippingAddress(): ShippingAddress
+    public function getShippingAddress(): Address
     {
         return $this->shippingAddress;
     }
 
-    public function setShippingAddress(ShippingAddress $shippingAddress): void
+    public function setShippingAddress(Address $shippingAddress): void
     {
         $this->shippingAddress = $shippingAddress;
     }

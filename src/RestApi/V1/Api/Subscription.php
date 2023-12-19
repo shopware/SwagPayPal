@@ -10,10 +10,10 @@ namespace Swag\PayPal\RestApi\V1\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
+use Swag\PayPal\RestApi\V1\Api\Common\Money;
 use Swag\PayPal\RestApi\V1\Api\Subscription\ApplicationContext;
 use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo;
-use Swag\PayPal\RestApi\V1\Api\Subscription\Link;
-use Swag\PayPal\RestApi\V1\Api\Subscription\ShippingAmount;
 use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber;
 
 /**
@@ -52,7 +52,7 @@ class Subscription extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected ShippingAmount $shippingAmount;
+    protected Money $shippingAmount;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_subscriber")
@@ -90,11 +90,9 @@ class Subscription extends PayPalApiStruct
     protected string $updateTime;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     public function getId(): string
     {
@@ -136,12 +134,12 @@ class Subscription extends PayPalApiStruct
         $this->quantity = $quantity;
     }
 
-    public function getShippingAmount(): ShippingAmount
+    public function getShippingAmount(): Money
     {
         return $this->shippingAmount;
     }
 
-    public function setShippingAmount(ShippingAmount $shippingAmount): void
+    public function setShippingAmount(Money $shippingAmount): void
     {
         $this->shippingAmount = $shippingAmount;
     }
@@ -206,12 +204,12 @@ class Subscription extends PayPalApiStruct
         $this->updateTime = $updateTime;
     }
 
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }

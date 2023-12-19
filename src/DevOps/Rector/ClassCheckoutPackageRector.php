@@ -8,6 +8,7 @@
 namespace Swag\PayPal\DevOps\Rector;
 
 use PhpParser\Node;
+use PhpParser\Node\AttributeGroup;
 use PhpParser\Node\Stmt\ClassLike;
 use Rector\Core\Rector\AbstractRector;
 use Rector\PhpAttribute\NodeFactory\PhpAttributeGroupFactory;
@@ -65,17 +66,11 @@ class Foo{}'
 
     private function hasPackageAnnotation(ClassLike $class): bool
     {
-        foreach ($class->attrGroups as $group) {
-            $attribute = $group->attrs[0];
+        $names = \array_map(
+            fn (AttributeGroup $group) => $group->attrs[0]->name->toString(),
+            $class->attrGroups
+        );
 
-            /** @var Node\Name\FullyQualified $name */
-            $name = $attribute->name;
-
-            if ($name->toString() === Package::class) {
-                return true;
-            }
-        }
-
-        return false;
+        return \in_array(Package::class, $names, true) || \in_array('Package', $names, true);
     }
 }

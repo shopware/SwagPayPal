@@ -8,12 +8,15 @@
 namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
+use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -21,8 +24,10 @@ use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Webhook\WebhookServiceTest;
+use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @internal
@@ -53,7 +58,7 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
-        $transaction = $payment->getTransactions()[0];
+        $transaction = $payment->getTransactions()->first();
         $transactionJsonString = \json_encode($transaction);
         static::assertNotFalse($transactionJsonString);
 
@@ -129,7 +134,9 @@ class OrderPaymentBuilderTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        static::assertNull($payment->getTransactions()[0]->getItemList());
+        $transaction = $payment->getTransactions()->first();
+        static::assertNotNull($transaction);
+        static::assertNull($transaction->getItemList());
     }
 
     public function testGetPaymentLabelTooLongIsTruncated(): void
@@ -148,11 +155,11 @@ class OrderPaymentBuilderTest extends TestCase
         $firstOrderLineItem->setLabel($productName);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        $itemList = $payment->getTransactions()[0]->getItemList();
+        $itemList = $payment->getTransactions()->first()?->getItemList();
         static::assertNotNull($itemList);
 
         $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliqu';
-        static::assertSame($expectedItemName, $itemList->getItems()[0]->getName());
+        static::assertSame($expectedItemName, $itemList->getItems()->first()?->getName());
     }
 
     public function testGetPaymentProductNumberTooLongIsTruncated(): void
@@ -171,11 +178,11 @@ class OrderPaymentBuilderTest extends TestCase
         $firstOrderLineItem->setPayload(['productNumber' => $productNumber]);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        $itemList = $payment->getTransactions()[0]->getItemList();
+        $itemList = $payment->getTransactions()->first()?->getItemList();
         static::assertNotNull($itemList);
 
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-        static::assertSame($expectedItemSku, $itemList->getItems()[0]->getSku());
+        static::assertSame($expectedItemSku, $itemList->getItems()->first()?->getSku());
     }
 
     public function testGetPaymentMissingProductNumberInPayload(): void
@@ -192,10 +199,10 @@ class OrderPaymentBuilderTest extends TestCase
         $salesChannelContext = Generator::createSalesChannelContext($context);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        $itemList = $payment->getTransactions()[0]->getItemList();
+        $itemList = $payment->getTransactions()->first()?->getItemList();
         static::assertNotNull($itemList);
 
-        static::assertNull($itemList->getItems()[0]->getSku());
+        static::assertNull($itemList->getItems()->first()?->getSku());
     }
 
     public function testGetPaymentOrderHasNoCurrency(): void
@@ -213,7 +220,7 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
-        static::assertSame(self::TEST_ORDER_NUMBER, $payment->getTransactions()[0]->getInvoiceNumber());
+        static::assertSame(self::TEST_ORDER_NUMBER, $payment->getTransactions()->first()?->getInvoiceNumber());
     }
 
     public function testGetPaymentOrderHasNoCurrencyAndInvalidCurrencyId(): void
@@ -234,9 +241,18 @@ class OrderPaymentBuilderTest extends TestCase
     /**
      * @dataProvider dataProviderTestApplicationContext
      */
-    public function testApplicationContext(SystemConfigServiceMock $settings, string $expectedResult): void
+    public function testApplicationContext(SystemConfigService $systemConfigService, string $expectedResult): void
     {
-        $paymentBuilder = $this->createPaymentBuilder($settings);
+        $localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
+        $localeCodeProvider->method('getLocaleCodeFromContext')->willReturn('en-GB');
+        $paymentBuilder = new OrderPaymentBuilder(
+            $localeCodeProvider,
+            new PriceFormatter(),
+            $this->createMock(EventDispatcherInterface::class),
+            new NullLogger(),
+            $systemConfigService,
+            new CurrencyRepoMock()
+        );
 
         $context = Context::createDefaultContext(new SalesChannelApiSource(TestDefaults::SALES_CHANNEL));
         $salesChannelContext = Generator::createSalesChannelContext($context);
@@ -351,7 +367,7 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
-        $transaction = \json_encode($payment->getTransactions()[0]);
+        $transaction = \json_encode($payment->getTransactions()->first());
 
         static::assertNotFalse($transaction);
 

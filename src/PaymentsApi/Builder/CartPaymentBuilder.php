@@ -23,6 +23,8 @@ use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ItemCollection;
+use Swag\PayPal\RestApi\V1\Api\Payment\TransactionCollection;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
@@ -62,7 +64,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         $requestPayment = new Payment();
         $requestPayment->setPayer($payer);
         $requestPayment->setRedirectUrls($redirectUrls);
-        $requestPayment->setTransactions([$transaction]);
+        $requestPayment->setTransactions(new TransactionCollection([$transaction]));
         $requestPayment->setApplicationContext($applicationContext);
 
         return $requestPayment;
@@ -108,21 +110,18 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
     ): void {
         $items = $this->getItemList($lineItemCollection, $currency);
 
-        if (!empty($items)) {
+        if ($items->count() > 0) {
             $itemList = new ItemList();
             $itemList->setItems($items);
             $transaction->setItemList($itemList);
         }
     }
 
-    /**
-     * @return Item[]
-     */
     private function getItemList(
         LineItemCollection $lineItemCollection,
         string $currency
-    ): array {
-        $items = [];
+    ): ItemCollection {
+        $items = new ItemCollection();
 
         foreach ($lineItemCollection->getElements() as $lineItem) {
             $price = $lineItem->getPrice();
@@ -131,7 +130,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
                 continue;
             }
 
-            $items[] = $this->createItemFromLineItem($lineItem, $currency, $price);
+            $items->add($this->createItemFromLineItem($lineItem, $currency, $price));
         }
 
         return $items;

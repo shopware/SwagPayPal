@@ -9,8 +9,8 @@ namespace Swag\PayPal\PaymentsApi\Builder\Util;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Amount;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Amount\Details;
+use Swag\PayPal\RestApi\V1\Api\Common\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\Details;
 use Swag\PayPal\Util\PriceFormatter;
 
 #[Package('checkout')]

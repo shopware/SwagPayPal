@@ -20,10 +20,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
 #[Package('checkout')]
+#[Route(defaults: ['_routeScope' => ['api']])]
 class DisputeController extends AbstractController
 {
     private DisputeResource $disputeResource;
@@ -68,14 +66,8 @@ class DisputeController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_disputes")
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/paypal/dispute",
-     *      name="api.paypal.dispute_list",
-     *      methods={"GET"},
-     *      defaults={"_acl": {"swag_paypal_disputes.viewer"}}
-     * )
      */
+    #[Route(path: '/api/paypal/dispute', name: 'api.paypal.dispute_list', methods: ['GET'], defaults: ['_acl' => ['swag_paypal_disputes.viewer']])]
     public function disputeList(Request $request): JsonResponse
     {
         $salesChannelId = $this->validateSalesChannelId($request);
@@ -119,14 +111,8 @@ class DisputeController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_disputes_item")
      *     )
      * )
-     *
-     * @Route(
-     *     "/api/paypal/dispute/{disputeId}",
-     *      name="api.paypal.dispute_details",
-     *      methods={"GET"},
-     *      defaults={"_acl": {"swag_paypal_disputes.viewer"}}
-     * )
      */
+    #[Route(path: '/api/paypal/dispute/{disputeId}', name: 'api.paypal.dispute_details', methods: ['GET'], defaults: ['_acl' => ['swag_paypal_disputes.viewer']])]
     public function disputeDetails(string $disputeId, Request $request): JsonResponse
     {
         $salesChannelId = $this->validateSalesChannelId($request);
@@ -157,27 +143,14 @@ class DisputeController extends AbstractController
      */
     private function validateDisputeStateFilter(Request $request): ?string
     {
-        /** @var string|int|float|null $disputeStateFilter */ // Remove once SW 6.4.3.0 is min version
         $disputeStateFilter = $request->query->get('disputeStateFilter');
-        if ($disputeStateFilter === null) {
-            return null;
-        }
-
         if (!\is_string($disputeStateFilter)) {
-            if (\class_exists(RoutingException::class)) {
-                throw RoutingException::invalidRequestParameter('disputeStateFilter');
-            }
-            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-            throw new InvalidRequestParameterException('disputeStateFilter');
+            return null;
         }
 
         foreach (\explode(',', $disputeStateFilter) as $disputeStateFilterItem) {
             if (!\in_array($disputeStateFilterItem, Item::DISPUTE_STATES, true)) {
-                if (\class_exists(RoutingException::class)) {
-                    throw RoutingException::invalidRequestParameter('disputeStateFilter');
-                }
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('disputeStateFilter');
+                throw RoutingException::invalidRequestParameter('disputeStateFilter');
             }
         }
 

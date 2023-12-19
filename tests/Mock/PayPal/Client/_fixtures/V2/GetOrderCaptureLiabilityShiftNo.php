@@ -90,22 +90,21 @@ class GetOrderCaptureLiabilityShiftNo
                         ],
                     ],
                 ],
-            ],
-            'payer' => [
-                'name' => [
-                    'given_name' => self::PAYER_NAME_GIVEN_NAME,
-                    'surname' => self::PAYER_NAME_SURNAME,
-                ],
-                'email_address' => self::PAYER_EMAIL_ADDRESS,
-                'payer_id' => 'XTW5U37QPXKJE',
-                'address' => [
-                    'address_line_1' => self::PAYER_ADDRESS_ADDRESS_LINE_1,
-                    'admin_area_1' => 'NY',
-                    'admin_area_2' => self::PAYER_ADDRESS_ADMIN_AREA_2,
-                    'postal_code' => '48624',
-                    'country_code' => 'US',
-                ],
-                'phone' => [
+                'paypal' => [
+                    'email_address' => self::PAYER_EMAIL_ADDRESS,
+                    'account_id' => 'XTW5U37QPXKJE',
+                    'account_status' => 'VERIFIED',
+                    'name' => [
+                        'given_name' => self::PAYER_NAME_GIVEN_NAME,
+                        'surname' => self::PAYER_NAME_SURNAME,
+                    ],
+                    'address' => [
+                        'address_line_1' => self::PAYER_ADDRESS_ADDRESS_LINE_1,
+                        'admin_area_1' => 'NY',
+                        'admin_area_2' => self::PAYER_ADDRESS_ADMIN_AREA_2,
+                        'postal_code' => '48624',
+                        'country_code' => 'US',
+                    ],
                     'phone_type' => 'HOME',
                     'phone_number' => [
                         'national_number' => self::PAYER_PHONE_NUMBER,

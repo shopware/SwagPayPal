@@ -20,6 +20,9 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
 {
     public const PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID = 'payPalPayLaterFieldData';
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     public function getTranslations(): array
     {
         return [

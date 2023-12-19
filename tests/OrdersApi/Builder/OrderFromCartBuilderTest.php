@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
@@ -21,6 +22,7 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -30,9 +32,10 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
-use Swag\PayPal\Test\Mock\LoggerMock;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @internal
@@ -49,7 +52,7 @@ class OrderFromCartBuilderTest extends TestCase
 
         $this->expectException(InvalidTransactionException::class);
         $this->expectExceptionMessage('The transaction with id  is invalid or could not be found.');
-        $this->createOrderFromCartBuilder()->getOrder($this->createCart('', false), $salesChannelContext, null);
+        $this->createOrderFromCartBuilder()->getOrder($this->createCart('', false), new Request(), $salesChannelContext, null);
     }
 
     public function testGetOrderInvalidIntent(): void
@@ -58,7 +61,7 @@ class OrderFromCartBuilderTest extends TestCase
 
         $this->expectException(PayPalSettingsInvalidException::class);
         $this->expectExceptionMessage('Required setting "intent" is missing or invalid');
-        $this->createOrderFromCartBuilder([Settings::INTENT => 'invalidIntent'])->getOrder($this->createCart('', false), $salesChannelContext, null);
+        $this->createOrderFromCartBuilder([Settings::INTENT => 'invalidIntent'])->getOrder($this->createCart('', false), new Request(), $salesChannelContext, null);
     }
 
     public function testGetOrderInvalidLandingPageType(): void
@@ -67,7 +70,7 @@ class OrderFromCartBuilderTest extends TestCase
 
         $this->expectException(PayPalSettingsInvalidException::class);
         $this->expectExceptionMessage('Required setting "landingPage" is missing or invalid');
-        $this->createOrderFromCartBuilder([Settings::LANDING_PAGE => 'invalidLandingPageType'])->getOrder($this->createCart(''), $salesChannelContext, null);
+        $this->createOrderFromCartBuilder([Settings::LANDING_PAGE => 'invalidLandingPageType'])->getOrder($this->createCart(''), new Request(), $salesChannelContext, null);
     }
 
     public function testGetOrderWithItemWithoutPrice(): void
@@ -78,9 +81,9 @@ class OrderFromCartBuilderTest extends TestCase
         $lineItem->setPrice(null);
         $cart->add($lineItem);
 
-        $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
+        $order = $this->createOrderFromCartBuilder()->getOrder($cart, new Request(), $salesChannelContext, null);
 
-        static::assertSame([], $order->getPurchaseUnits()[0]->getItems());
+        static::assertSame([], $order->getPurchaseUnits()->first()?->getItems()?->getElements());
     }
 
     public function testGetOrderWithDisabledSubmitCartConfig(): void
@@ -88,8 +91,10 @@ class OrderFromCartBuilderTest extends TestCase
         $cart = $this->createCart('');
         $salesChannelContext = $this->createSalesChannelContext();
 
-        $order = $this->createOrderFromCartBuilder([Settings::SUBMIT_CART => false])->getOrder($cart, $salesChannelContext, null);
-        static::assertNull($order->getPurchaseUnits()[0]->getAmount()->getBreakdown());
+        $order = $this->createOrderFromCartBuilder([Settings::SUBMIT_CART => false])->getOrder($cart, new Request(), $salesChannelContext, null);
+        $purchaseUnit = $order->getPurchaseUnits()->first();
+        static::assertNotNull($purchaseUnit);
+        static::assertNull($purchaseUnit->getAmount()->getBreakdown());
     }
 
     public function testGetOrderWithMismatchingAmount(): void
@@ -97,9 +102,11 @@ class OrderFromCartBuilderTest extends TestCase
         $cart = $this->createCartWithLineItem(new CalculatedPrice(5.0, 5.95, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $salesChannelContext = $this->createSalesChannelContext();
 
-        $order = $this->createOrderFromCartBuilder([Settings::SUBMIT_CART => false])->getOrder($cart, $salesChannelContext, null);
-        static::assertNull($order->getPurchaseUnits()[0]->getAmount()->getBreakdown());
-        static::assertNull($order->getPurchaseUnits()[0]->getItems());
+        $order = $this->createOrderFromCartBuilder([Settings::SUBMIT_CART => false])->getOrder($cart, new Request(), $salesChannelContext, null);
+        $purchaseUnit = $order->getPurchaseUnits()->first();
+        static::assertNotNull($purchaseUnit);
+        static::assertNull($purchaseUnit->getAmount()->getBreakdown());
+        static::assertNull($purchaseUnit->getItems());
     }
 
     public function testGetOrderWithProductWithZeroPrice(): void
@@ -107,9 +114,9 @@ class OrderFromCartBuilderTest extends TestCase
         $cart = $this->createCartWithLineItem(new CalculatedPrice(0, 0, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $cart->setPrice($this->createCartPrice(0.0, 0.0, 0.0));
         $salesChannelContext = $this->createSalesChannelContext();
-        $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
+        $order = $this->createOrderFromCartBuilder()->getOrder($cart, new Request(), $salesChannelContext, null);
 
-        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
         static::assertNotEmpty($paypalOrderItems);
         static::assertSame('0.00', $paypalOrderItems[0]->getUnitAmount()->getValue());
@@ -125,9 +132,9 @@ class OrderFromCartBuilderTest extends TestCase
         $cart->add($this->createLineItem($discount, LineItem::PROMOTION_LINE_ITEM_TYPE));
         $cart->add($this->createLineItem($productPrice));
 
-        $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
+        $order = $this->createOrderFromCartBuilder()->getOrder($cart, new Request(), $salesChannelContext, null);
 
-        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
         static::assertNotEmpty($paypalOrderItems);
         static::assertSame(0, \array_keys($paypalOrderItems)[0], 'First array key of the PayPal items array must be 0.');
@@ -144,8 +151,8 @@ class OrderFromCartBuilderTest extends TestCase
         $cartLineItem->setLabel($productName);
         $cart->add($cartLineItem);
 
-        $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
-        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        $order = $this->createOrderFromCartBuilder()->getOrder($cart, new Request(), $salesChannelContext, null);
+        $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
         static::assertNotEmpty($paypalOrderItems);
         $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magn';
@@ -163,8 +170,8 @@ class OrderFromCartBuilderTest extends TestCase
         $cartLineItem->setPayloadValue('productNumber', $productNumber);
         $cart->add($cartLineItem);
 
-        $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
-        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        $order = $this->createOrderFromCartBuilder()->getOrder($cart, new Request(), $salesChannelContext, null);
+        $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
         static::assertNotEmpty($paypalOrderItems);
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
@@ -200,8 +207,8 @@ class OrderFromCartBuilderTest extends TestCase
             )
         );
 
-        $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
-        $breakdown = $order->getPurchaseUnits()[0]->getAmount()->getBreakdown();
+        $order = $this->createOrderFromCartBuilder()->getOrder($cart, new Request(), $salesChannelContext, null);
+        $breakdown = $order->getPurchaseUnits()->first()?->getAmount()->getBreakdown();
         static::assertNotNull($breakdown);
         $taxTotal = $breakdown->getTaxTotal();
         static::assertNotNull($taxTotal);
@@ -222,8 +229,10 @@ class OrderFromCartBuilderTest extends TestCase
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
-            new EventDispatcherMock(),
-            new LoggerMock()
+            $this->createMock(LocaleCodeProvider::class),
+            $this->createMock(EventDispatcherInterface::class),
+            new NullLogger(),
+            $this->createMock(VaultTokenService::class),
         );
     }
 

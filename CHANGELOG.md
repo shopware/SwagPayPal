@@ -1,3 +1,6 @@
+# 8.0.0
+- PPI-763 - Move "Pay later" banner underneath price display on product detail page
+
 # 7.3.1
 - PPI-844 - Fixes an issue, where the installment banner was not toggleable on CMS product detail pages
 

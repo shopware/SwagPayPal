@@ -16,6 +16,8 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -25,6 +27,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\Test\TestDefaults;
@@ -147,6 +150,8 @@ trait PaymentTransactionTrait
 
         $country = new CountryEntity();
         $country->setIso('DE');
+        $state = new CountryStateEntity();
+        $state->setShortCode('NRW');
         $address = new OrderAddressEntity();
         $address->setFirstName('Some');
         $address->setLastName('One');
@@ -156,8 +161,25 @@ trait PaymentTransactionTrait
         $address->setPhoneNumber('+41 (0123) 49567-89'); // extra weird for filter testing
         $address->setId(Uuid::randomHex());
         $address->setCountry($country);
+        $address->setCountryState($state);
         $order->setBillingAddress($address);
         $order->setBillingAddressId($address->getId());
+
+        $delivery = new OrderDeliveryEntity();
+        $delivery->setId(Uuid::randomHex());
+        $address = new OrderAddressEntity();
+        $address->setFirstName('FirstName');
+        $address->setLastName('LastName');
+        $address->setStreet('Street 1');
+        $address->setAdditionalAddressLine1('Test address line 1');
+        $address->setZipcode('12345');
+        $address->setCity('City');
+        $address->setPhoneNumber('+41 (0123) 49567-89'); // extra weird for filter testing
+        $address->setId(Uuid::randomHex());
+        $address->setCountry($country);
+        $address->setCountryState($state);
+        $delivery->setShippingOrderAddress($address);
+        $order->setDeliveries(new OrderDeliveryCollection([$delivery]));
 
         $orderCustomer = new OrderCustomerEntity();
         $orderCustomer->setFirstName('Test');
