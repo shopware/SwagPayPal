@@ -49,6 +49,7 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\Loader\DirectoryLoader;
 use Symfony\Component\DependencyInjection\Loader\GlobFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Contracts\Service\Attribute\Required;
 
 #[Package('checkout')]
 class SwagPayPal extends Plugin
@@ -79,9 +80,7 @@ class SwagPayPal extends Plugin
 
     private ActivateDeactivate $activateDeactivate;
 
-    /**
-     * @Required
-     */
+    #[Required]
     public function setActivateDeactivate(ActivateDeactivate $activateDeactivate): void
     {
         $this->activateDeactivate = $activateDeactivate;

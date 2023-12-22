@@ -2,7 +2,7 @@ variables:
   PLATFORM_MIN_VERSION: 'trunk' # @TODO - After v6.6 release set to '6.6.0'
   PLATFORM_DEFAULT_VERSION: 'trunk'
   PLATFORM_BRANCH: $PLATFORM_DEFAULT_VERSION
-  CMS_EXTENSION_BRANCH: 'next-32119/adjust-plugin-pipelines-after-vue3-transition' # 'master'
+  CMS_EXTENSION_BRANCH: 'master'
   COMMERCIAL_ENABLED: 'true'
   DEPENDENCIES_WITHOUT_COMMERCIAL: |
     [{ "name": "SwagCmsExtensions", "url": "gitlab.shopware.com/shopware/6/services/cms-extensions", "branch": "$CMS_EXTENSION_BRANCH" }]
