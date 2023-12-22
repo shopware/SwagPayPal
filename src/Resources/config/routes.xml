@@ -4,14 +4,14 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <import resource="../../Administration/**/*Controller.php" type="annotation"/>
-    <import resource="../../Checkout/**/*Controller.php" type="annotation"/>
-    <import resource="../../Checkout/**/*Route.php" type="annotation"/>
-    <import resource="../../Dispute/**/*Controller.php" type="annotation"/>
-    <import resource="../../Pos/**/*Controller.php" type="annotation"/>
-    <import resource="../../OrdersApi/**/*Controller.php" type="annotation"/>
-    <import resource="../../PaymentsApi/**/*Controller.php" type="annotation"/>
-    <import resource="../../Setting/**/*Controller.php" type="annotation"/>
-    <import resource="../../Storefront/**/*Controller.php" type="annotation"/>
-    <import resource="../../Webhook/**/*Controller.php" type="annotation"/>
+    <import resource="../../Administration/**/*Controller.php" type="attribute"/>
+    <import resource="../../Checkout/**/*Controller.php" type="attribute"/>
+    <import resource="../../Checkout/**/*Route.php" type="attribute"/>
+    <import resource="../../Dispute/**/*Controller.php" type="attribute"/>
+    <import resource="../../Pos/**/*Controller.php" type="attribute"/>
+    <import resource="../../OrdersApi/**/*Controller.php" type="attribute"/>
+    <import resource="../../PaymentsApi/**/*Controller.php" type="attribute"/>
+    <import resource="../../Setting/**/*Controller.php" type="attribute"/>
+    <import resource="../../Storefront/**/*Controller.php" type="attribute"/>
+    <import resource="../../Webhook/**/*Controller.php" type="attribute"/>
 </routes>
