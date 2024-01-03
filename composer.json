@@ -51,11 +51,12 @@
         ],
         "init:admin": "npm ci --no-audit --prefer-offline --prefix src/Resources/app/administration",
         "lint:admin": "npm run lint-fix --prefix src/Resources/app/administration",
-        "lint:admin:ci": "npm run lint-ci --prefix src/Resources/app/administration",
+        "lint:admin:ci": "npm run lint --prefix src/Resources/app/administration",
         "init:storefront": "npm ci --no-audit --prefer-offline --prefix src/Resources/app/storefront",
-        "lint:storefront": [
-            "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/.eslintrc.js --fix ./src",
-            "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/stylelint --config ../../../../../../../src/Storefront/Resources/app/storefront/stylelint.config.js --fix ./src"
+        "lint:storefront": "@lint:storefront:ci --fix",
+        "lint:storefront:ci": [
+            "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/.eslintrc.js ./src",
+            "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/stylelint --config ../../../../../../../src/Storefront/Resources/app/storefront/stylelint.config.js ./src"
         ],
         "phpunit": "../../../vendor/bin/phpunit",
         "phpstan": [

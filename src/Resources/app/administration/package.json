@@ -9,8 +9,7 @@
         "unit": "jest --config --ci",
         "unit-watch": "jest --config --watch",
         "lint": "eslint --ext .js,.ts,.vue src",
-        "lint-fix": "eslint --ext .js,.ts,.vue src --fix",
-        "lint-ci": "npm run lint -- --format junit --output-file eslint.junit.xml"
+        "lint-fix": "eslint --ext .js,.ts,.vue src --fix"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.19.1",
