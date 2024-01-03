@@ -52,17 +52,29 @@ phpstan:
       -   DEV_IMAGE: [ 'shopware/development:8.2-composer-2', 'shopware/development:8.3-composer-2' ]
           # PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
 
-linting:
+eslint (administration):
   stage: test
   needs: []
+  rules:
+    - changes:
+        - 'src/Resources/app/administration/**/*'
   script:
     - $CI_PROJECT_DIR/bin/console bundle:dump
-    - '(cd $CI_PROJECT_DIR/src/Administration/Resources/app/administration/ && npm ci --no-audit --prefer-offline)'
-    - '(cd $CI_PROJECT_DIR/src/Storefront/Resources/app/storefront/ && npm ci --no-audit --prefer-offline)'
+    - npm ci --prefix $CI_PROJECT_DIR/src/Administration/Resources/app/administration --no-audit --prefer-offline
     - composer init:admin
-    - composer init:storefront
     - composer lint:admin:ci
-    - composer lint:storefront
+
+eslint (storefront):
+  stage: test
+  needs: []
+  rules:
+    - changes:
+        - 'src/Resources/app/storefront/**/*'
+  script:
+    - $CI_PROJECT_DIR/bin/console bundle:dump
+    - npm ci --prefix $CI_PROJECT_DIR/src/Storefront/Resources/app/storefront --no-audit --prefer-offline
+    - composer init:storefront
+    - composer lint:storefront:ci
 
 include:
   project: 'shopware/6/product/platform'
