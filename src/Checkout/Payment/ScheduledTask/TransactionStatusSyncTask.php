@@ -11,17 +11,17 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
 #[Package('checkout')]
-class CancelTransactionsTask extends ScheduledTask
+class TransactionStatusSyncTask extends ScheduledTask
 {
-    private const TIME_INTERVAL_DAILY = 86400;
+    private const TIME_INTERVAL = 3600;
 
     public static function getTaskName(): string
     {
-        return 'swag_paypal.cancel_transactions';
+        return 'swag_paypal.transaction_status_sync';
     }
 
     public static function getDefaultInterval(): int
     {
-        return self::TIME_INTERVAL_DAILY;
+        return self::TIME_INTERVAL;
     }
 }
