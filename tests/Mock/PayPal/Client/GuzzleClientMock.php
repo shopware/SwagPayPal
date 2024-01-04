@@ -632,6 +632,10 @@ class GuzzleClientMock implements ClientInterface
             throw $this->createClientExceptionWebhookAlreadyExists();
         }
 
+        if ($createWebhookJson && \mb_strpos($createWebhookJson, WebhookResourceTest::TEST_URL_INVALID) !== false) {
+            throw $this->createClientExceptionWebhookIsInvalid();
+        }
+
         return ['id' => self::TEST_WEBHOOK_ID];
     }
 
@@ -642,6 +646,10 @@ class GuzzleClientMock implements ClientInterface
     {
         if (\mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID) !== false) {
             throw $this->createClientExceptionWithInvalidId();
+        }
+
+        if (\mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_URL) !== false) {
+            throw $this->createClientExceptionWebhookIsInvalid();
         }
 
         if (\mb_strpos($resourceUri, self::TEST_WEBHOOK_ID) !== false) {
@@ -778,6 +786,16 @@ class GuzzleClientMock implements ClientInterface
     {
         $jsonString = (string) \json_encode([
             'name' => 'WEBHOOK_URL_ALREADY_EXISTS',
+            'message' => self::GENERAL_CLIENT_EXCEPTION_MESSAGE,
+        ]);
+
+        return $this->createClientExceptionFromResponseString($jsonString);
+    }
+
+    private function createClientExceptionWebhookIsInvalid(): ClientException
+    {
+        $jsonString = (string) \json_encode([
+            'name' => 'VALIDATION_ERROR',
             'message' => self::GENERAL_CLIENT_EXCEPTION_MESSAGE,
         ]);
 

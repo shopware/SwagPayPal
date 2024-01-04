@@ -43,6 +43,11 @@ class WebhookServiceMock implements WebhookServiceInterface
         $this->systemConfigService = $systemConfigService;
     }
 
+    public function getStatus(?string $salesChannelId): string
+    {
+        return WebhookService::STATUS_WEBHOOK_VALID;
+    }
+
     public function registerWebhook(?string $salesChannelId): string
     {
         $this->registrations[] = $salesChannelId ?? 'null';

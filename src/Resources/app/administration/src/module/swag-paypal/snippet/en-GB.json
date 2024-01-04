@@ -28,11 +28,27 @@
         },
         "tabs": {
           "general": "General",
-          "storefront": "Storefront presentation"
+          "storefront": "Storefront presentation",
+          "advanced": "Advanced"
         },
         "general": {
             "mainMenuItemGeneral": "PayPal",
             "descriptionTextModule": "PayPal settings"
+        },
+        "webhook": {
+          "cardTitle": "Webhook",
+          "buttonRefresh": "Refresh webhook",
+          "refreshFailed": {
+            "title": "Failed to refresh",
+            "errorUnknown": "Unknown error"
+          },
+          "status": {
+            "unknown": "Loading...",
+            "missing": "Not registered",
+            "invalid": "Registered, but possible domain mismatch",
+            "valid": "Registered"
+          },
+          "infoText": "The webhook is used for updating the status of a transaction asynchronously. Incorrectly registered webhooks, e.g. on a different or not publicly available server, may result in unconfirmed transactions, regardless whether the transaction has been processed by PayPal."
         },
         "messageNotBlank": "This value should not be blank.",
         "settingForm": {

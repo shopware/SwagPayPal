@@ -1,0 +1,45 @@
+{% block swag_paypal_webhook %}
+<sw-card
+    :isLoading="isFetchingStatus"
+    :disabled="isLoading"
+    class="swag-paypal-webhook"
+    position-identifier="swag-paypal-webhook-card"
+>
+    <template #title>
+        {% block swag_paypal_webhook_card_title %}
+        <span class="swag-paypal-webhook__title">
+            {{ $tc('swag-paypal.webhook.cardTitle') }}
+        </span>
+
+        <sw-label
+            class="swag-paypal-webhook__label"
+            appearance="pill"
+            size="medium"
+            :variant="webhookStatusVariant"
+        >
+            <sw-color-badge :rounded="true" :variant="webhookStatusVariant"  />
+            <span>{{ webhookStatusLabel }}</span>
+        </sw-label>
+        {% endblock %}
+    </template>
+
+
+    {% block swag_paypal_webhook_info_text %}
+        <span class="swag-paypal-webhook__info-text">
+            {{ $tc('swag-paypal.webhook.infoText') }}
+        </span>
+    {% endblock %}
+
+    {% block swag_paypal_webhook_refresh_button %}
+        <sw-button
+            class="swag-paypal-webhook__refresh-button"
+            variant=""
+            :disabled="isLoading || isRefreshing || isFetchingStatus || !allowRefresh || !acl.can('swag_paypal.editor')"
+            :isLoading="isRefreshing"
+            @click="onRefreshWebhook"
+        >
+            {{ $tc('swag-paypal.webhook.buttonRefresh') }}
+        </sw-button>
+    {% endblock %}
+</sw-card>
+{% endblock %}
