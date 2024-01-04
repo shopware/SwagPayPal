@@ -14,7 +14,6 @@ final class PaymentStatusV2
 {
     public const ORDER_CREATED = 'CREATED';
     public const ORDER_SAVED = 'SAVED';
-    public const ORDER_PENDING_APPROVAL = 'PENDING_APPROVAL';
     public const ORDER_APPROVED = 'APPROVED';
     public const ORDER_VOIDED = 'VOIDED';
     public const ORDER_COMPLETED = 'COMPLETED';
@@ -22,21 +21,20 @@ final class PaymentStatusV2
 
     public const ORDER_CAPTURE_COMPLETED = 'COMPLETED';
     public const ORDER_CAPTURE_DECLINED = 'DECLINED';
-    public const ORDER_CAPTURE_FAILED = 'FAILED';
     public const ORDER_CAPTURE_PARTIALLY_REFUNDED = 'PARTIALLY_REFUNDED';
     public const ORDER_CAPTURE_PENDING = 'PENDING';
     public const ORDER_CAPTURE_REFUNDED = 'REFUNDED';
+    public const ORDER_CAPTURE_FAILED = 'FAILED';
 
     public const ORDER_AUTHORIZATION_CREATED = 'CREATED';
     public const ORDER_AUTHORIZATION_CAPTURED = 'CAPTURED';
     public const ORDER_AUTHORIZATION_DENIED = 'DENIED';
-    public const ORDER_AUTHORIZATION_EXPIRED = 'EXPIRED';
     public const ORDER_AUTHORIZATION_PARTIALLY_CAPTURED = 'PARTIALLY_CAPTURED';
-    public const ORDER_AUTHORIZATION_PARTIALLY_CREATED = 'PARTIALLY_CREATED';
     public const ORDER_AUTHORIZATION_VOIDED = 'VOIDED';
     public const ORDER_AUTHORIZATION_PENDING = 'PENDING';
 
     public const ORDER_REFUND_CANCELLED = 'CANCELLED';
+    public const ORDER_REFUND_FAILED = 'FAILED';
     public const ORDER_REFUND_PENDING = 'PENDING';
     public const ORDER_REFUND_COMPLETED = 'COMPLETED';
 

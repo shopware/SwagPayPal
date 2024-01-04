@@ -148,18 +148,24 @@
             <argument type="service" id="swag_paypal_vault_token_mapping.repository"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\CancelTransactionsTask">
+        <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\TransactionStatusSyncTask">
             <tag name="shopware.scheduled.task"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\CancelTransactionsTaskHandler">
+        <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\TransactionStatusSyncTaskHandler">
             <argument type="service" id="scheduled_task.repository"/>
-            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
-            <argument type="service" id="state_machine_state.repository"/>
             <argument type="service" id="order_transaction.repository"/>
-            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="messenger.bus.shopware"/>
             <tag name="messenger.message_handler"/>
         </service>
 
+        <service id="Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessageHandler">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <argument type="service" id="monolog.logger.paypal"/>
+            <tag name="messenger.message_handler" />
+        </service>
     </services>
 </container>

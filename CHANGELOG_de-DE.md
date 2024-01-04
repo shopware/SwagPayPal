@@ -1,5 +1,6 @@
 # 8.0.0
 - PPI-763 - "Später bezahlen" Banner wird unterhalb des Preises auf der Produktdetailseite angezeigt
+- PPI-827 - Automatische Abfrage des Zahlungsstatus für unbestätigte Transaktionen hinzugefügt
 - PPI-831 - Verbesserte Verwaltung des Zahlungsstatus-Webhooks
 
 # 7.3.1
