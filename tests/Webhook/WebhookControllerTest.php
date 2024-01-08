@@ -38,6 +38,17 @@ class WebhookControllerTest extends TestCase
     public const THROW_GENERAL_EXCEPTION = 'executeWebhookThrowsGeneralException';
     public const EMPTY_TOKEN = 'emptyExecuteToken';
 
+    public function testStatusWebhook(): void
+    {
+        $jsonResponse = $this->createWebhookController()->statusWebhook(TestDefaults::SALES_CHANNEL);
+        $content = $jsonResponse->getContent();
+        static::assertNotFalse($content);
+
+        $result = \json_decode($content, true);
+
+        static::assertEqualsCanonicalizing(['result' => WebhookService::STATUS_WEBHOOK_VALID], $result);
+    }
+
     public function testRegisterWebhook(): void
     {
         $jsonResponse = $this->createWebhookController()->registerWebhook(TestDefaults::SALES_CHANNEL);

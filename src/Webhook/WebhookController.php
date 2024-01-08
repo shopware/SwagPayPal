@@ -50,6 +50,14 @@ class WebhookController extends AbstractController
         $this->systemConfigRepository = $systemConfigRepository;
     }
 
+    #[Route(path: '/api/_action/paypal/webhook/status/{salesChannelId}', name: 'api.action.paypal.webhook.status', methods: ['GET'], defaults: ['_acl' => ['swag_paypal.viewer']])]
+    public function statusWebhook(string $salesChannelId): JsonResponse
+    {
+        $status = $this->webhookService->getStatus($salesChannelId !== 'null' ? $salesChannelId : null);
+
+        return new JsonResponse(['result' => $status]);
+    }
+
     #[Route(path: '/api/_action/paypal/webhook/register/{salesChannelId}', name: 'api.action.paypal.webhook.register', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function registerWebhook(string $salesChannelId): JsonResponse
     {

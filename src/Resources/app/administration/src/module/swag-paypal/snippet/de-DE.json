@@ -28,11 +28,27 @@
         },
         "tabs": {
           "general": "Allgemein",
-          "storefront": "Storefront-Darstellung"
+          "storefront": "Storefront-Darstellung",
+          "advanced": "Fortgeschritten"
         },
         "general": {
             "mainMenuItemGeneral": "PayPal",
             "descriptionTextModule": "Einstellungen für PayPal"
+        },
+        "webhook": {
+          "cardTitle": "Webhook",
+          "buttonRefresh": "Webhook aktualisieren",
+          "refreshFailed": {
+            "title": "Aktualisierung ist fehlgeschlagen",
+            "errorUnknown": "Unbekannter Fehler"
+          },
+          "status": {
+            "unknown": "Laden...",
+            "missing": "Fehlend",
+            "invalid": "Registriert, aber mit abweichender Domain",
+            "valid": "Gültig"
+          },
+          "infoText": "Der Webhook dient dazu, den Status einer Transaktion asynchron zu aktualisieren. Falsch registrierte Webhooks, z.B. auf einem anderen oder nicht öffentlich zugänglichen Server, können zu unbestätigten Transaktionen führen, unabhängig davon, ob die Transaktion von PayPal verarbeitet wurde."
         },
         "messageNotBlank": "Dieser Wert darf nicht leer sein.",
         "settingForm": {
