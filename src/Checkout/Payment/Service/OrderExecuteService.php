@@ -131,9 +131,7 @@ class OrderExecuteService
         }
 
         if ($authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_DENIED
-            || $authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_PARTIALLY_CREATED
-            || $authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_VOIDED
-            || $authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_EXPIRED) {
+            || $authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_VOIDED) {
             throw new OrderFailedException($order->getId());
         }
 
