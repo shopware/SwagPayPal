@@ -18,6 +18,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
+use Swag\PayPal\Webhook\Exception\WebhookValidationError;
 
 /**
  * @internal
@@ -31,9 +32,13 @@ class WebhookResourceTest extends TestCase
 
     public const THROW_EXCEPTION_INVALID_ID = 'getWebhookUrlShouldThrowExceptionWithInvalidResourceId';
 
+    public const THROW_EXCEPTION_INVALID_URL = 'updateWebhookUrlShouldThrowExceptionWithInvalidWebhookUrl';
+
     public const TEST_URL = 'testUrl';
 
     public const TEST_URL_ALREADY_EXISTS = 'alreadyExistingTestUrl';
+
+    public const TEST_URL_INVALID = 'invalidTestUrl';
 
     private PayPalClientFactoryMock $clientFactory;
 
@@ -52,6 +57,16 @@ class WebhookResourceTest extends TestCase
         $this->expectException(PayPalApiException::class);
         $this->expectExceptionMessage('The error "TEST" occurred with the following message: ' . GuzzleClientMock::GENERAL_CLIENT_EXCEPTION_MESSAGE);
         $this->createWebHookResource()->createWebhook(self::TEST_URL, $createWebhooks, TestDefaults::SALES_CHANNEL);
+    }
+
+    public function testCreateWebhookThrowsInvalidWebhookException(): void
+    {
+        $createWebhooks = new CreateWebhooks();
+        $createWebhooks->assign(['url' => self::TEST_URL_INVALID]);
+
+        $this->expectException(WebhookValidationError::class);
+        $this->expectExceptionMessage(\sprintf('Provided webhook URL "%s" is invalid', self::TEST_URL_INVALID));
+        $this->createWebHookResource()->createWebhook(self::TEST_URL_INVALID, $createWebhooks, TestDefaults::SALES_CHANNEL);
     }
 
     public function testCreateWebhookThrowsExceptionWebhookAlreadyExists(): void
@@ -104,7 +119,7 @@ class WebhookResourceTest extends TestCase
         $this->createWebHookResource()->updateWebhook('', self::THROW_EXCEPTION_INVALID_ID, TestDefaults::SALES_CHANNEL);
     }
 
-    public function testUpdateWebhookThrowsExceptionWithResponse(): void
+    public function testUpdateWebhookThrowsInvalidUrlException(): void
     {
         $createWebhooks = new CreateWebhooks();
         $createWebhooks->assign(['url' => self::TEST_URL]);
@@ -112,6 +127,16 @@ class WebhookResourceTest extends TestCase
         $this->expectException(PayPalApiException::class);
         $this->expectExceptionMessage('The error "TEST" occurred with the following message: ' . GuzzleClientMock::GENERAL_CLIENT_EXCEPTION_MESSAGE);
         $this->createWebHookResource()->updateWebhook('', GuzzleClientMock::TEST_WEBHOOK_ID, TestDefaults::SALES_CHANNEL);
+    }
+
+    public function testUpdateWebhookThrowsExceptionWithResponse(): void
+    {
+        $createWebhooks = new CreateWebhooks();
+        $createWebhooks->assign(['url' => self::TEST_URL]);
+
+        $this->expectException(WebhookValidationError::class);
+        $this->expectExceptionMessage(\sprintf('Provided webhook URL "%s" is invalid', self::TEST_URL));
+        $this->createWebHookResource()->updateWebhook(self::TEST_URL, self::THROW_EXCEPTION_INVALID_URL, TestDefaults::SALES_CHANNEL);
     }
 
     private function createWebHookResource(): WebhookResource

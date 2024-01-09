@@ -33,6 +33,10 @@ class WebhookService implements WebhookServiceInterface
     public const PAYPAL_WEBHOOK_TOKEN_NAME = 'sw-token';
     public const PAYPAL_WEBHOOK_TOKEN_LENGTH = 32;
 
+    public const STATUS_WEBHOOK_MISSING = 'missing';
+    public const STATUS_WEBHOOK_INVALID = 'invalid';
+    public const STATUS_WEBHOOK_VALID = 'valid';
+
     private WebhookResource $webhookResource;
 
     private RouterInterface $router;
@@ -54,6 +58,31 @@ class WebhookService implements WebhookServiceInterface
         $this->webhookRegistry = $webhookRegistry;
         $this->router = $router;
         $this->systemConfigService = $systemConfigService;
+    }
+
+    public function getStatus(?string $salesChannelId): string
+    {
+        $webhookId = $this->systemConfigService->getString(Settings::WEBHOOK_ID, $salesChannelId);
+        if ($webhookId === '') {
+            return self::STATUS_WEBHOOK_MISSING;
+        }
+
+        try {
+            $registeredWebhookUrl = $this->webhookResource->getWebhookUrl($webhookId, $salesChannelId);
+        } catch (WebhookIdInvalidException) {
+            return self::STATUS_WEBHOOK_MISSING;
+        }
+
+        $webhookExecuteToken = $this->systemConfigService->getString(Settings::WEBHOOK_EXECUTE_TOKEN, $salesChannelId);
+
+        $this->router->getContext()->setScheme('https');
+        $webhookUrl = $this->router->generate(
+            'api.action.paypal.webhook.execute',
+            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return $registeredWebhookUrl === $webhookUrl ? self::STATUS_WEBHOOK_VALID : self::STATUS_WEBHOOK_INVALID;
     }
 
     public function registerWebhook(?string $salesChannelId): string

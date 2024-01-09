@@ -2,6 +2,7 @@ import SwagPayPalApiCredentialsService from '../core/service/api/swag-paypal-api
 import SwagPayPalPosSettingApiService from '../core/service/api/swag-paypal-pos-setting.api.service';
 import SwagPayPalPosApiService from '../core/service/api/swag-paypal-pos.api.service';
 import SwagPayPalPosWebhookRegisterService from '../core/service/api/swag-paypal-pos-webhook-register.service';
+import SwagPayPalWebhookService from '../core/service/api/swag-paypal-webhook.service';
 import SwagPayPalPaymentService from '../core/service/api/swag-paypal-payment.service';
 import SwagPayPalOrderService from '../core/service/api/swag-paypal-order.service';
 import SwagPaypalPaymentMethodService from '../core/service/api/swag-paypal-payment-method.service';
@@ -29,6 +30,11 @@ Application.addServiceProvider(
 Application.addServiceProvider(
     'SwagPayPalPosWebhookRegisterService',
     (container) => new SwagPayPalPosWebhookRegisterService(initContainer.httpClient, container.loginService),
+);
+
+Application.addServiceProvider(
+    'SwagPayPalWebhookService',
+    (container) => new SwagPayPalWebhookService(initContainer.httpClient, container.loginService),
 );
 
 Application.addServiceProvider(

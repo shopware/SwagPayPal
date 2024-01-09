@@ -17,6 +17,8 @@ use Swag\PayPal\Webhook\Exception\WebhookException;
 #[Package('checkout')]
 interface WebhookServiceInterface
 {
+    public function getStatus(?string $salesChannelId): string;
+
     public function registerWebhook(?string $salesChannelId): string;
 
     public function deregisterWebhook(?string $salesChannelId): string;
