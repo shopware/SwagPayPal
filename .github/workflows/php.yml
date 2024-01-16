@@ -23,15 +23,22 @@ jobs:
       extensionName: SwagPayPal
       shopwareVersion: trunk
   phpunit:
-    strategy:
-      fail-fast: false
-      matrix:
-        shopware-version:
-          - trunk
-    uses: shopware/github-actions/.github/workflows/phpunit.yml@main
-    with:
-      extensionName: SwagPayPal
-      shopwareVersion: ${{ matrix.shopware-version }}
-      uploadCoverage: true
-    secrets:
-      codecovToken: ${{ secrets.CODECOV_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Shopware
+        uses: FriendsOfShopware/setup-shopware@main
+        with:
+          shopware-version: trunk
+          php-version: 8.2
+          php-extensions: pcov
+      - name: Clone Extension
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/SwagPayPal
+      - name: Run PHPUnit
+        working-directory: custom/plugins/SwagPayPal
+        run: ${{ github.workspace }}/vendor/bin/phpunit --coverage-clover clover.xml
+
+
+
+
