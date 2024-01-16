@@ -1,5 +1,7 @@
 includes:
-    - %ShopwareRoot%/vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - ../../../vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - ../../../src/Core/DevOps/StaticAnalyze/PHPStan/extension.neon
+    - ../../../src/Core/DevOps/StaticAnalyze/PHPStan/rules.neon
 
 parameters:
     phpVersion: 80100
@@ -15,11 +17,10 @@ parameters:
     excludePaths:
         -   src/Resources
         -   src/DevOps/Rector
-
     symfony:
         constant_hassers: false
-        # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
-        container_xml_path: '../../..%ShopwareHashedCacheDir%/%ShopwareKernelClass%DevDebugContainer.xml'
+        containerXmlPath: '../../../var/cache/phpstan_dev/Shopware_Core_DevOps_StaticAnalyze_StaticAnalyzeKernelPhpstan_devDebugContainer.xml'
+        consoleApplicationLoader: ../../../src/Core/DevOps/StaticAnalyze/console-application.php
 
     ignoreErrors:
         # We won't type all arrays/iterables for now
@@ -45,11 +46,3 @@ parameters:
             path: tests/Webhook/Registration/WebhookSystemConfigControllerTest.php
             count: 11
 
-    bootstrapFiles:
-        -   bin/static-analyze-autoloader.php
-
-rules:
-    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
-    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
-    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalMethodRule
-    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\PackageAnnotationRule

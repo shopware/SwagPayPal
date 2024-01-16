@@ -13,32 +13,38 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 3 * * *'
+
+env:
+  SHOPWARE_TOOL_CACHE_PHPSTAN: ${{ github.workspace }}/var/phpstan
 jobs:
   cs:
     if: github.event_name != 'schedule'
     uses: shopware/github-actions/.github/workflows/cs-fixer.yml@main
   phpstan:
-    uses: shopware/github-actions/.github/workflows/phpstan.yml@main
+    uses: shopware/github-actions/.github/workflows/phpstan.yml@phpstan-deps
     with:
       extensionName: SwagPayPal
       shopwareVersion: trunk
+      dependencies: |-
+        [
+          {"name": "SwagCmsExtensions", "repo": "https://shopware:$CMS_TOKEN@gitlab.shopware.com/shopware/6/services/cms-extensions.git"}
+        ]
+    secrets:
+      env: CMS_TOKEN=${{ secrets.GITLAB_TOKEN }}
   phpunit:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Shopware
-        uses: FriendsOfShopware/setup-shopware@main
-        with:
-          shopware-version: trunk
-          php-version: 8.2
-          php-extensions: pcov
-      - name: Clone Extension
-        uses: actions/checkout@v4
-        with:
-          path: custom/plugins/SwagPayPal
-      - name: Run PHPUnit
-        working-directory: custom/plugins/SwagPayPal
-        run: ${{ github.workspace }}/vendor/bin/phpunit --coverage-clover clover.xml
-
+    uses: shopware/github-actions/.github/workflows/phpunit.yml@phpstan-deps
+    with:
+      uploadCoverage: true
+      extensionName: SwagPayPal
+      shopwareVersion: ${{ matrix.shopware-version }}
+      dependencies: |-
+        [
+          {"name": "SwagCmsExtensions", "repo": "https://shopware:$CMS_TOKEN@gitlab.shopware.com/shopware/6/services/cms-extensions.git"}
+        ]
+    secrets:
+      env: |-
+        CMS_TOKEN=${{ secrets.GITLAB_TOKEN }}
+      codecovToken: ${{ secrets.CODECOV_TOKEN }}
 
 
 

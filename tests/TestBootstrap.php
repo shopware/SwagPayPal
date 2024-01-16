@@ -20,7 +20,7 @@ return (new TestBootstrapper())
     ->setProjectDir($_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4))
     ->setLoadEnvFile(true)
     ->setForceInstallPlugins(true)
-    //->addActivePlugins('SwagCmsExtensions')
+    ->addActivePlugins('SwagCmsExtensions')
     ->addCallingPlugin()
     ->bootstrap()
     ->getClassLoader();
