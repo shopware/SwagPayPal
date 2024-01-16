@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\PaymentsApi\Administration;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -19,6 +20,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 use Swag\PayPal\RestApi\V1\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V1\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
+use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentSaleResponseFixture;
@@ -29,6 +31,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\RefundCaptureResponseFixtur
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\RefundSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidAuthorizationResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PriceFormatter;
@@ -317,12 +320,14 @@ class PayPalPaymentControllerTest extends TestCase
 
     private function createPaymentController(): PayPalPaymentController
     {
+        $clientFactory = new PayPalClientFactoryMock(new NullLogger());
+
         return new PayPalPaymentController(
-            $this->createPaymentResource($this->createDefaultSystemConfig()),
-            new SaleResource($this->createPayPalClientFactory()),
-            new AuthorizationResource($this->createPayPalClientFactory()),
-            new OrdersResource($this->createPayPalClientFactory()),
-            new CaptureResource($this->createPayPalClientFactory()),
+            new PaymentResource($clientFactory),
+            new SaleResource($clientFactory),
+            new AuthorizationResource($clientFactory),
+            new OrdersResource($clientFactory),
+            new CaptureResource($clientFactory),
             $this->createMock(PaymentStatusUtil::class),
             new OrderRepositoryMock(),
             new PriceFormatter()
@@ -346,12 +351,14 @@ class PayPalPaymentControllerTest extends TestCase
 
     private function createPaymentControllerWithSaleResourceMock(): PayPalPaymentController
     {
+        $clientFactory = new PayPalClientFactoryMock(new NullLogger());
+
         return new PayPalPaymentController(
-            $this->createPaymentResource($this->createDefaultSystemConfig()),
-            new SaleResource($this->createPayPalClientFactory()),
-            new AuthorizationResource($this->createPayPalClientFactory()),
-            new OrdersResource($this->createPayPalClientFactory()),
-            new CaptureResource($this->createPayPalClientFactory()),
+            new PaymentResource($clientFactory),
+            new SaleResource($clientFactory),
+            new AuthorizationResource($clientFactory),
+            new OrdersResource($clientFactory),
+            new CaptureResource($clientFactory),
             $this->createMock(PaymentStatusUtil::class),
             new OrderRepositoryMock(),
             new PriceFormatter()

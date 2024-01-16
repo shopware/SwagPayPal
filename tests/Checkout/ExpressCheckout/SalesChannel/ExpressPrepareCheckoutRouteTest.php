@@ -27,9 +27,11 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -127,8 +129,6 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         /** @var EntityRepository $customerRepo */
         $customerRepo = $this->getContainer()->get('customer.repository');
 
-        $orderResource = $this->createOrderResource($settings);
-
         return new ExpressPrepareCheckoutRoute(
             new ExpressCustomerService(
                 $this->getContainer()->get(RegisterRoute::class),
@@ -141,7 +141,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
                 new NullLogger()
             ),
             $this->getContainer()->get(SalesChannelContextFactory::class),
-            $orderResource,
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
             $cartService,
             new NullLogger()
         );

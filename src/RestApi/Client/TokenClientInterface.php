@@ -8,14 +8,12 @@
 namespace Swag\PayPal\RestApi\Client;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\PartnerAttributionId;
 
 #[Package('checkout')]
-interface PayPalClientFactoryInterface
+interface TokenClientInterface
 {
-    public function getPayPalClient(
-        ?string $salesChannelId,
-        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC,
-        bool $isFirstParty = false,
-    ): PayPalClientInterface;
+    /**
+     * @param array<string, string> $additionalData
+     */
+    public function getToken(array $additionalData = []): array;
 }

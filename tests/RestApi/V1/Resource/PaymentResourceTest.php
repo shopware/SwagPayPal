@@ -8,15 +8,18 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
+use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 
 /**
  * @internal
@@ -40,7 +43,7 @@ class PaymentResourceTest extends TestCase
         $salesChannelContext = Generator::createSalesChannelContext();
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $payment = $this->createPaymentBuilder($this->createDefaultSystemConfig())->getPayment($paymentTransaction, $salesChannelContext);
-        $createdPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->create(
+        $createdPayment = $this->createPaymentResource()->create(
             $payment,
             $salesChannelContext->getSalesChannel()->getId(),
             PartnerAttributionId::PAYPAL_CLASSIC
@@ -53,7 +56,7 @@ class PaymentResourceTest extends TestCase
 
     public function testExecuteSale(): void
     {
-        $executedPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->execute(
+        $executedPayment = $this->createPaymentResource()->execute(
             'testPayerId',
             self::TEST_PAYMENT_ID,
             TestDefaults::SALES_CHANNEL
@@ -69,7 +72,7 @@ class PaymentResourceTest extends TestCase
 
     public function testExecuteAuthorize(): void
     {
-        $executedPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->execute(
+        $executedPayment = $this->createPaymentResource()->execute(
             ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE,
             self::TEST_PAYMENT_ID,
             TestDefaults::SALES_CHANNEL
@@ -85,7 +88,7 @@ class PaymentResourceTest extends TestCase
 
     public function testExecuteOrder(): void
     {
-        $executedPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->execute(
+        $executedPayment = $this->createPaymentResource()->execute(
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER,
             self::TEST_PAYMENT_ID,
             TestDefaults::SALES_CHANNEL
@@ -101,7 +104,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetSale(): void
     {
-        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::TEST_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource()->get(self::TEST_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()->first();
         static::assertNotNull($payment->getLinks()->first());
@@ -113,7 +116,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetSaleWithRefund(): void
     {
-        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::SALE_WITH_REFUND_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource()->get(self::SALE_WITH_REFUND_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()->first();
         static::assertNotNull($payment->getLinks()->first());
@@ -129,7 +132,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetOrder(): void
     {
-        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::ORDER_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource()->get(self::ORDER_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()->first();
         static::assertNotNull($payment->getLinks()->first());
@@ -141,7 +144,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetCapturedAuthorizeWithRefunds(): void
     {
-        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::AUTHORIZE_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource()->get(self::AUTHORIZE_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()->first();
         static::assertNotNull($payment->getLinks()->first());
@@ -161,7 +164,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetCapturedOrder(): void
     {
-        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::CAPTURED_ORDER_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource()->get(self::CAPTURED_ORDER_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()->first();
         static::assertNotNull($payment->getLinks()->first());
@@ -173,5 +176,10 @@ class PaymentResourceTest extends TestCase
         $capture = $transaction?->getRelatedResources()->getAt(1)?->getCapture();
         static::assertNotNull($capture);
         static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $capture->getState());
+    }
+
+    private function createPaymentResource(): PaymentResource
+    {
+        return new PaymentResource(new PayPalClientFactoryMock(new NullLogger()));
     }
 }

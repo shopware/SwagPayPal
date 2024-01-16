@@ -8,11 +8,12 @@
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V2\Resource\RefundResource;
-use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 
 /**
  * @internal
@@ -20,8 +21,6 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
 #[Package('checkout')]
 class RefundResourceTest extends TestCase
 {
-    use ServicesTrait;
-
     public function testGet(): void
     {
         $refundId = GetRefund::ID;
@@ -33,6 +32,6 @@ class RefundResourceTest extends TestCase
 
     private function createResource(): RefundResource
     {
-        return new RefundResource($this->createPayPalClientFactory());
+        return new RefundResource(new PayPalClientFactoryMock(new NullLogger()));
     }
 }

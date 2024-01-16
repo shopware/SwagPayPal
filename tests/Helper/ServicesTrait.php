@@ -17,11 +17,8 @@ use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
-use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
-use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
@@ -35,33 +32,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 #[Package('checkout')]
 trait ServicesTrait
 {
-    protected function createPayPalClientFactory(): PayPalClientFactoryMock
-    {
-        return $this->createPayPalClientFactoryWithService($this->createDefaultSystemConfig());
-    }
-
-    protected function createPayPalClientFactoryWithService(SystemConfigService $systemConfigService): PayPalClientFactoryMock
-    {
-        return new PayPalClientFactoryMock(
-            $systemConfigService,
-            new NullLogger()
-        );
-    }
-
-    protected function createPaymentResource(?SystemConfigService $systemConfig = null): PaymentResource
-    {
-        $systemConfig = $systemConfig ?? $this->createSystemConfigServiceMock();
-
-        return new PaymentResource($this->createPayPalClientFactoryWithService($systemConfig));
-    }
-
-    protected function createOrderResource(?SystemConfigService $systemConfig = null): OrderResource
-    {
-        $systemConfig = $systemConfig ?? $this->createSystemConfigServiceMock();
-
-        return new OrderResource($this->createPayPalClientFactoryWithService($systemConfig));
-    }
-
     /**
      * @return array<string, mixed>
      */

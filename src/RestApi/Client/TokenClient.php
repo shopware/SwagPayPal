@@ -15,7 +15,7 @@ use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 
 #[Package('checkout')]
-class TokenClient extends AbstractClient
+class TokenClient extends AbstractClient implements TokenClientInterface
 {
     public function __construct(
         OAuthCredentials $credentials,
@@ -24,7 +24,7 @@ class TokenClient extends AbstractClient
         $client = new Client([
             'base_uri' => $credentials->getUrl(),
             'headers' => [
-                'PayPal-Partner-Attribution-Id' => PartnerAttributionId::PAYPAL_CLASSIC,
+                'PayPal-Partner-Attribution-Id' => PartnerAttributionId::PAYPAL_PPCP,
                 'Authorization' => (string) $credentials,
             ],
         ]);
@@ -32,11 +32,15 @@ class TokenClient extends AbstractClient
         parent::__construct($client, $logger);
     }
 
-    public function getToken(): array
+    /**
+     * @param array<string, string> $additionalData
+     */
+    public function getToken(array $additionalData = []): array
     {
         $data = [
             'form_params' => [
                 'grant_type' => 'client_credentials',
+                ...$additionalData,
             ],
         ];
 

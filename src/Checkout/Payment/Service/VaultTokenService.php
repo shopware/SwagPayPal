@@ -86,6 +86,7 @@ class VaultTokenService
                 [
                     'id' => $tokenId,
                     'token' => $token->getId(),
+                    'tokenCustomer' => $token->getCustomer()?->getId(),
                     'paymentMethodId' => $struct->getOrderTransaction()->getPaymentMethodId(),
                     'identifier' => $paymentSource->getVaultIdentifier(),
                     'customerId' => $context->getCustomerId(),

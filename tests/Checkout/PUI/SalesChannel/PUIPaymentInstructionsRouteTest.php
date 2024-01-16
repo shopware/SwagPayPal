@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\PUI\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
@@ -45,6 +46,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUICompleted;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUIPending;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUIVoided;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 
@@ -156,7 +158,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
     {
         /** @var EntityRepository $orderTransactionRepository */
         $orderTransactionRepository = $this->getContainer()->get('order_transaction.repository');
-        $orderResource = new OrderResource($this->createPayPalClientFactory());
+        $orderResource = new OrderResource(new PayPalClientFactoryMock(new NullLogger()));
 
         return new PUIPaymentInstructionsRoute(
             $orderTransactionRepository,

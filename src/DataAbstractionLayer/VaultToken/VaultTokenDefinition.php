@@ -51,6 +51,7 @@ class VaultTokenDefinition extends EntityDefinition
             (new FkField('payment_method_id', 'paymentMethodId', PaymentMethodDefinition::class))->addFlags(new Required(), new ApiAware()),
 
             (new StringField('token', 'token'))->addFlags(new Required())->removeFlag(ApiAware::class),
+            (new StringField('token_customer', 'tokenCustomer'))->removeFlag(ApiAware::class),
             (new StringField('identifier', 'identifier'))->addFlags(new Required(), new ApiAware()),
 
             (new ManyToOneAssociationField('customer', 'customer_id', CustomerDefinition::class))->addFlags(new ApiAware()),

@@ -8,13 +8,14 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
-use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 
 /**
  * @internal
@@ -22,8 +23,6 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 #[Package('checkout')]
 class OrdersResourceTest extends TestCase
 {
-    use ServicesTrait;
-
     public function testGet(): void
     {
         $ordersResponse = $this->createOrdersResource()->get(
@@ -66,8 +65,6 @@ class OrdersResourceTest extends TestCase
 
     private function createOrdersResource(): OrdersResource
     {
-        return new OrdersResource(
-            $this->createPayPalClientFactory()
-        );
+        return new OrdersResource(new PayPalClientFactoryMock(new NullLogger()));
     }
 }

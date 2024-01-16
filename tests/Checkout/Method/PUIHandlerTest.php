@@ -37,6 +37,7 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -197,7 +198,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
     private function processPayment(OrderEntity $order, RequestDataBag $requestData, SalesChannelContext $context, array $settings): void
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $clientFactory = $this->createPayPalClientFactoryWithService($systemConfig);
+        $clientFactory = new PayPalClientFactoryMock(new NullLogger());
         $orderResource = new OrderResource($clientFactory);
         $logger = new NullLogger();
 
