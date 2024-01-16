@@ -12,37 +12,21 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
-use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
 #[Package('checkout')]
 class PayPalClient extends AbstractClient implements PayPalClientInterface
 {
-    private TokenResourceInterface $tokenResource;
-
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
     public function __construct(
-        TokenResourceInterface $tokenResource,
+        array $credentials,
+        string $baseUrl,
         LoggerInterface $logger,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC,
-        ?OAuthCredentials $credentials = null
     ) {
-        $this->tokenResource = $tokenResource;
-
-        if ($credentials === null) {
-            throw new \RuntimeException('Credentials have to be provided');
-        }
-
-        $authorizationHeader = $this->createAuthorizationHeaderValue($credentials);
-
         $client = new Client([
-            'base_uri' => $credentials->getUrl(),
+            'base_uri' => $baseUrl,
             'headers' => [
                 'PayPal-Partner-Attribution-Id' => $partnerAttributionId,
-                'Authorization' => $authorizationHeader,
+                ...$credentials,
             ],
         ]);
 
@@ -100,12 +84,5 @@ class PayPalClient extends AbstractClient implements PayPalClientInterface
         ];
 
         return $this->delete($resourceUri, $options);
-    }
-
-    private function createAuthorizationHeaderValue(OAuthCredentials $credentials): string
-    {
-        $token = $this->tokenResource->getToken($credentials);
-
-        return \sprintf('%s %s', $token->getTokenType(), $token->getAccessToken());
     }
 }

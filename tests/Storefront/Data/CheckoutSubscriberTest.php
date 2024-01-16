@@ -48,6 +48,7 @@ use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ClientTokenResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -303,7 +304,7 @@ class CheckoutSubscriberTest extends TestCase
         $router = $this->getContainer()->get('router');
         $sepaDataService = new SEPACheckoutDataService(
             $this->paymentMethodDataRegistry,
-            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
+            new IdentityResource(new PayPalClientFactoryMock(new NullLogger())),
             $localeCodeProvider,
             $router,
             $settings,
@@ -312,7 +313,7 @@ class CheckoutSubscriberTest extends TestCase
 
         $payLaterDataService = new PayLaterCheckoutDataService(
             $this->paymentMethodDataRegistry,
-            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
+            new IdentityResource(new PayPalClientFactoryMock(new NullLogger())),
             $localeCodeProvider,
             $router,
             $settings,
@@ -321,7 +322,7 @@ class CheckoutSubscriberTest extends TestCase
 
         $venmoDataService = new VenmoCheckoutDataService(
             $this->paymentMethodDataRegistry,
-            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
+            new IdentityResource(new PayPalClientFactoryMock(new NullLogger())),
             $localeCodeProvider,
             $router,
             $settings,
@@ -330,7 +331,7 @@ class CheckoutSubscriberTest extends TestCase
 
         $acdcDataService = new ACDCCheckoutDataService(
             $this->paymentMethodDataRegistry,
-            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
+            new IdentityResource(new PayPalClientFactoryMock(new NullLogger())),
             $localeCodeProvider,
             $router,
             $settings,
@@ -339,7 +340,7 @@ class CheckoutSubscriberTest extends TestCase
 
         $spbDataService = new SPBCheckoutDataService(
             $this->paymentMethodDataRegistry,
-            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
+            new IdentityResource(new PayPalClientFactoryMock(new NullLogger())),
             $localeCodeProvider,
             $router,
             $settings,

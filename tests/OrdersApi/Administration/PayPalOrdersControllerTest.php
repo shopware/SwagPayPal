@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\OrdersApi\Administration;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -28,6 +29,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Util\PriceFormatter;
@@ -234,7 +236,7 @@ Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must n
 
     private function createController(): PayPalOrdersController
     {
-        $clientFactory = $this->createPayPalClientFactory();
+        $clientFactory = new PayPalClientFactoryMock(new NullLogger());
         $orderTransactionRepo = new OrderTransactionRepoMock();
 
         return new PayPalOrdersController(

@@ -8,14 +8,15 @@
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Resource\AuthorizationResource;
-use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 
 /**
  * @internal
@@ -23,8 +24,6 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 #[Package('checkout')]
 class AuthorizationResourceTest extends TestCase
 {
-    use ServicesTrait;
-
     public function testGet(): void
     {
         $authorizationId = GetAuthorization::ID;
@@ -49,6 +48,6 @@ class AuthorizationResourceTest extends TestCase
 
     private function createResource(): AuthorizationResource
     {
-        return new AuthorizationResource($this->createPayPalClientFactory());
+        return new AuthorizationResource(new PayPalClientFactoryMock(new NullLogger()));
     }
 }

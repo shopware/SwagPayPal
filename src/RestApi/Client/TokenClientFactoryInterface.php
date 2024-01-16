@@ -8,14 +8,10 @@
 namespace Swag\PayPal\RestApi\Client;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 
 #[Package('checkout')]
-interface PayPalClientFactoryInterface
+interface TokenClientFactoryInterface
 {
-    public function getPayPalClient(
-        ?string $salesChannelId,
-        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC,
-        bool $isFirstParty = false,
-    ): PayPalClientInterface;
+    public function createTokenClient(OAuthCredentials $credentials): TokenClientInterface;
 }

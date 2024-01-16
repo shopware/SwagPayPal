@@ -267,8 +267,7 @@ class VaultTokenServiceTest extends TestCase
         $order->setOrderCustomer($orderCustomer);
 
         $salesChannelContext = Generator::createSalesChannelContext();
-        $vault = new Vault();
-        $vault->setId('vault-id');
+        $vault = (new Vault())->assign(['id' => 'vault-id', 'customer' => ['id' => 'customer-id']]);
         $attributes = new Attributes();
         $attributes->setVault($vault);
         $paymentSource = new Paypal();
@@ -278,6 +277,7 @@ class VaultTokenServiceTest extends TestCase
 
         static::assertArrayHasKey('id', $vaultTokenRepository->upserts[0][0]);
         static::assertSame($vaultTokenRepository->upserts[0][0]['token'], 'vault-id');
+        static::assertSame($vaultTokenRepository->upserts[0][0]['tokenCustomer'], 'customer-id');
         static::assertSame($vaultTokenRepository->upserts[0][0]['paymentMethodId'], $transaction->getPaymentMethodId());
         static::assertSame($vaultTokenRepository->upserts[0][0]['identifier'], $paymentSource->getVaultIdentifier());
         static::assertSame($vaultTokenRepository->upserts[0][0]['customerId'], $salesChannelContext->getCustomerId());
@@ -316,8 +316,7 @@ class VaultTokenServiceTest extends TestCase
         $subscription->setNextSchedule(new \DateTime());
 
         $salesChannelContext = Generator::createSalesChannelContext();
-        $vault = new Vault();
-        $vault->setId('vault-id');
+        $vault = (new Vault())->assign(['id' => 'vault-id', 'customer' => ['id' => 'customer-id']]);
         $attributes = new Attributes();
         $attributes->setVault($vault);
         $paymentSource = new Paypal();
@@ -326,6 +325,7 @@ class VaultTokenServiceTest extends TestCase
         $vaultTokenService->saveToken(new SyncPaymentTransactionStruct($transaction, new OrderEntity(), new SubscriptionRecurringDataStruct($subscription)), $paymentSource, $salesChannelContext);
 
         static::assertSame($vaultTokenRepository->upserts[0][0]['token'], 'vault-id');
+        static::assertSame($vaultTokenRepository->upserts[0][0]['tokenCustomer'], 'customer-id');
         static::assertSame($vaultTokenRepository->upserts[0][0]['paymentMethodId'], $transaction->getPaymentMethodId());
         static::assertSame($vaultTokenRepository->upserts[0][0]['identifier'], $paymentSource->getVaultIdentifier());
         static::assertSame($vaultTokenRepository->upserts[0][0]['customerId'], $salesChannelContext->getCustomerId());

@@ -34,6 +34,7 @@ use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftNo;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftUnknown;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -89,7 +90,7 @@ Credit card validation failed, 3D secure was not validated.');
     protected function createPaymentHandler(array $settings = []): ACDCHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $this->clientFactory = $this->createPayPalClientFactoryWithService($systemConfig);
+        $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
         $orderResource = new OrderResource($this->clientFactory);
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();

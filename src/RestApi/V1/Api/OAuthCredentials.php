@@ -65,4 +65,24 @@ class OAuthCredentials
     {
         $this->url = $url;
     }
+
+    public static function createFromRestCredentials(string $clientId, string $clientSecret, string $url): self
+    {
+        $credentials = new self();
+        $credentials->setRestId($clientId);
+        $credentials->setRestSecret($clientSecret);
+        $credentials->setUrl($url);
+
+        return $credentials;
+    }
+
+    public static function createEmpty(string $url): self
+    {
+        $credentials = new self();
+        $credentials->setRestId('');
+        $credentials->setRestSecret('');
+        $credentials->setUrl($url);
+
+        return $credentials;
+    }
 }

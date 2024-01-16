@@ -38,6 +38,7 @@ use Swag\PayPal\Checkout\Plus\PlusSubscriber;
 use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
 use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
+use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
@@ -47,6 +48,7 @@ use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Swag\PayPal\Util\PriceFormatter;
@@ -463,7 +465,7 @@ class PlusSubscriberTest extends TestCase
                 $settings,
                 $currencyRepo
             ),
-            $this->createPaymentResource($settings),
+            new PaymentResource(new PayPalClientFactoryMock(new NullLogger())),
             $router,
             $this->paymentMethodUtil,
             $this->getContainer()->get(LocaleCodeProvider::class),

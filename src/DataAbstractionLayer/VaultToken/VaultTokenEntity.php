@@ -25,6 +25,8 @@ class VaultTokenEntity extends Entity
 
     protected string $token;
 
+    protected ?string $tokenCustomer = null;
+
     protected string $identifier;
 
     protected ?CustomerEntity $customer = null;
@@ -61,6 +63,16 @@ class VaultTokenEntity extends Entity
     public function setToken(string $token): void
     {
         $this->token = $token;
+    }
+
+    public function getTokenCustomer(): ?string
+    {
+        return $this->tokenCustomer;
+    }
+
+    public function setTokenCustomer(?string $tokenCustomer): void
+    {
+        $this->tokenCustomer = $tokenCustomer;
     }
 
     public function getIdentifier(): string

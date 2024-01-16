@@ -55,7 +55,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
         ?OrderEntity $order = null
     ): ?SPBCheckoutButtonData {
         $salesChannelId = $context->getSalesChannelId();
-        $currency = $order ? $order->getCurrency() ?? $context->getCurrency() : $context->getCurrency();
+        $currency = $order?->getCurrency() ?? $context->getCurrency();
 
         if ($cart && $cart->getExtension(ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {
             return null;

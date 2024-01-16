@@ -12,19 +12,17 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 
 #[Package('checkout')]
-class TokenClientFactory
+class TokenClientFactory implements TokenClientFactoryInterface
 {
-    private LoggerInterface $logger;
-
     /**
      * @internal
      */
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
+    public function __construct(
+        private LoggerInterface $logger,
+    ) {
     }
 
-    public function createTokenClient(OAuthCredentials $credentials): TokenClient
+    public function createTokenClient(OAuthCredentials $credentials): TokenClientInterface
     {
         return new TokenClient($credentials, $this->logger);
     }

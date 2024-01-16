@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -141,7 +142,7 @@ class WebhookResourceTest extends TestCase
 
     private function createWebHookResource(): WebhookResource
     {
-        $this->clientFactory = $this->createPayPalClientFactory();
+        $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
 
         return new WebhookResource(
             $this->clientFactory

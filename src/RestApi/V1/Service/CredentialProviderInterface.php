@@ -5,15 +5,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\RestApi\V1\Resource;
+namespace Swag\PayPal\RestApi\V1\Service;
 
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Api\Token;
 
 #[Package('checkout')]
-interface TokenResourceInterface
+interface CredentialProviderInterface
 {
-    public function getToken(?string $salesChannelId): Token;
+    public function createCredentialsObject(?string $salesChannelId): OAuthCredentials;
 
-    public function getUserIdToken(?string $salesChannelId, ?string $targetCustomerId = null): Token;
+    public function createAuthorizationHeaders(Token $token, ?string $merchantPayerId): array;
 }

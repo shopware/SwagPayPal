@@ -21,6 +21,7 @@ use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
 use Swag\PayPal\Webhook\WebhookRegistry;
@@ -81,7 +82,7 @@ class WebhookSubscriberTest extends TestCase
     private function createWebhookSubscriber(array $configuration): WebhookSubscriber
     {
         $webhookService = new WebhookService(
-            new WebhookResource($this->createPayPalClientFactoryWithService($this->systemConfigService)),
+            new WebhookResource(new PayPalClientFactoryMock(new NullLogger())),
             new WebhookRegistry([]),
             $this->systemConfigService,
             $this->createMock(RouterInterface::class),
