@@ -79,7 +79,7 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
                 $transactionId,
                 $paypalOrderId,
                 PartnerAttributionId::PAYPAL_PPCP,
-                $salesChannelContext->getContext()
+                $salesChannelContext
             );
 
             $this->orderPatchService->patchOrder(

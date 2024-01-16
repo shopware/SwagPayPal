@@ -98,7 +98,7 @@ class PayPalHandler
             $transaction->getOrderTransaction()->getId(),
             $paypalOrderResponse->getId(),
             PartnerAttributionId::PAYPAL_CLASSIC,
-            $salesChannelContext->getContext()
+            $salesChannelContext
         );
 
         if ($paypalOrderResponse->getStatus() !== PaymentStatusV2::ORDER_PAYER_ACTION_REQUIRED
@@ -136,7 +136,7 @@ class PayPalHandler
             $transaction->getOrderTransaction()->getId(),
             $paypalOrderId,
             $isECS ? PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT : PartnerAttributionId::SMART_PAYMENT_BUTTONS,
-            $salesChannelContext->getContext()
+            $salesChannelContext
         );
 
         $this->orderPatchService->patchOrder(

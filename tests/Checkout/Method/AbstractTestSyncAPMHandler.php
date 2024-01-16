@@ -35,6 +35,7 @@ use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Patch as PatchV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
@@ -258,6 +259,7 @@ Missing PayPal order id');
             ),
             new TransactionDataService(
                 $this->orderTransactionRepo,
+                new CredentialsUtil($systemConfig),
             ),
             $logger,
             $orderResource,
