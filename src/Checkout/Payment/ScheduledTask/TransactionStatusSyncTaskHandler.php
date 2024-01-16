@@ -20,7 +20,6 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessage;
 use Swag\PayPal\SwagPayPal;
-use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -54,10 +53,7 @@ class TransactionStatusSyncTaskHandler extends ScheduledTaskHandler
 
         $criteria = (new Criteria())
             ->addAssociation('order')
-            ->addFilter(new EqualsAnyFilter('paymentMethod.handlerIdentifier', \array_map(
-                fn (AbstractMethodData $method) => $method->getHandler(),
-                $this->methodDataRegistry->getPaymentMethods()
-            )))
+            ->addFilter(new EqualsAnyFilter('paymentMethod.handlerIdentifier', $this->methodDataRegistry->getPaymentHandlers()))
             ->addFilter(new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_UNCONFIRMED))
             ->addFilter(new RangeFilter('createdAt', [RangeFilter::LTE => $hourAgo, RangeFilter::GTE => $twoDaysAgo]));
 

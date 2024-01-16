@@ -52,6 +52,7 @@ use Swag\PayPal\RestApi\V1\Api\Patch;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V2\Api\Patch as PatchV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
@@ -683,6 +684,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
                 ),
                 new TransactionDataService(
                     $this->orderTransactionRepo,
+                    new CredentialsUtil($systemConfig),
                 ),
                 $this->createMock(VaultTokenService::class),
                 $logger

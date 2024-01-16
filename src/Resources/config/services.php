@@ -24,6 +24,7 @@ return static function (ContainerBuilder $container): void {
     $loader->load('payments_api.xml');
     $loader->load('plus.xml');
     $loader->load('pui.xml');
+    $loader->load('reporting.xml');
     $loader->load('resource_v1.xml');
     $loader->load('resource_v2.xml');
     $loader->load('service_v1.xml');

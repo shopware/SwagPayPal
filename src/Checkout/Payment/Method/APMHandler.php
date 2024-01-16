@@ -115,7 +115,7 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
             $transactionId,
             $response->getId(),
             PartnerAttributionId::PAYPAL_PPCP,
-            $salesChannelContext->getContext()
+            $salesChannelContext
         );
 
         $link = $response->getLinks()->getRelation(Link::RELATION_PAYER_ACTION);
