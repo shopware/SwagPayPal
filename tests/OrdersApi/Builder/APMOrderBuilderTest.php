@@ -78,9 +78,8 @@ class APMOrderBuilderTest extends TestCase
     /**
      * @param class-string<AbstractAPMOrderBuilder> $orderBuilderClass
      * @param class-string<AbstractAPMPaymentSource> $structClass
-     *
-     * @dataProvider dataProviderAPM
      */
+    #[DataProvider('dataProviderAPM')]
     public function testGetOrder(string $orderBuilderClass, array $requestData, string $structClass, array $expectedStructData): void
     {
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
@@ -116,9 +115,8 @@ class APMOrderBuilderTest extends TestCase
 
     /**
      * @param class-string<AbstractAPMOrderBuilder> $orderBuilderClass
-     *
-     * @dataProvider dataProviderAPM
      */
+    #[DataProvider('dataProviderAPM')]
     public function testGetOrderNoBillingAddress(string $orderBuilderClass, array $requestData): void
     {
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
@@ -138,9 +136,8 @@ class APMOrderBuilderTest extends TestCase
 
     /**
      * @param class-string<AbstractAPMOrderBuilder> $orderBuilderClass
-     *
-     * @dataProvider dataProviderAPM
      */
+    #[DataProvider('dataProviderAPM')]
     public function testGetOrderNoShippingAddress(string $orderBuilderClass, array $requestData): void
     {
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
@@ -160,9 +157,8 @@ class APMOrderBuilderTest extends TestCase
 
     /**
      * @param class-string<AbstractAPMOrderBuilder> $orderBuilderClass
-     *
-     * @dataProvider dataProviderAPM
      */
+    #[DataProvider('dataProviderAPM')]
     public function testGetOrderPrefix(string $orderBuilderClass, array $requestData): void
     {
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);

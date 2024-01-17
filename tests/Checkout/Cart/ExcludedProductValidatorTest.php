@@ -151,9 +151,8 @@ class ExcludedProductValidatorTest extends TestCase
 
     /**
      * this test is related to the ExpressCheckoutSubscriber
-     *
-     * @dataProvider dataProviderConstellations
      */
+    #[DataProvider('dataProviderConstellations')]
     public function testExcludedProductTaggedInSearchResults(?string $settingKey, ?string $settingIdName, ?string $expectedIdName): void
     {
         if ($settingKey && $settingIdName) {
@@ -179,9 +178,8 @@ class ExcludedProductValidatorTest extends TestCase
 
     /**
      * this test is related to the ExpressCheckoutSubscriber
-     *
-     * @dataProvider dataProviderConstellations
      */
+    #[DataProvider('dataProviderConstellations')]
     public function testExcludedProductTaggedInSearchResultsWithListingDisabled(?string $settingKey, ?string $settingIdName): void
     {
         if ($settingKey && $settingIdName) {

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Swag\PayPal\Test\Migration;
 
 use Doctrine\DBAL\Connection;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
@@ -17,11 +18,10 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Migration\Migration1692001928VaultToken;
 
 /**
- * @covers \Swag\PayPal\Migration\Migration1692001928VaultToken
- *
  * @internal
  */
 #[Package('checkout')]
+#[CoversClass(\Swag\PayPal\Migration\Migration1692001928VaultToken::class)]
 class Migration1692001928VaultTokenTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

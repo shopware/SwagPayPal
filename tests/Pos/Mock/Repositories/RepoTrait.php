@@ -73,7 +73,7 @@ trait RepoTrait
             $entity->setUniqueIdentifier($this->getUniqueIdentifier($entity));
 
             if ($this->entityCollection->has($entity->getUniqueIdentifier())) {
-                $entity = $this->entityCollection->get($entity->getUniqueIdentifier()) ?? $entity;
+                $entity = $this->entityCollection->get($entity->getUniqueIdentifier());
                 $entity->assign($entry);
             }
 

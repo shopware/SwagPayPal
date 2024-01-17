@@ -133,7 +133,7 @@ class TestBootstrapper
                 if (\is_string($paths)) {
                     $paths = [$paths];
                 }
-                $mappedPaths = $this->mapPsrPaths($paths, realpath(dirname($pathToComposerJson)));
+                $mappedPaths = $this->mapPsrPaths($paths, dirname($pathToComposerJson));
 
                 $this->classLoader->addPsr4($namespace, $mappedPaths);
                 if ($this->classLoader->isClassMapAuthoritative()) {
@@ -145,7 +145,7 @@ class TestBootstrapper
                 if (\is_string($paths)) {
                     $paths = [$paths];
                 }
-                $mappedPaths = $this->mapPsrPaths($paths, realpath(dirname($pathToComposerJson)));
+                $mappedPaths = $this->mapPsrPaths($paths, dirname($pathToComposerJson));
 
                 $this->classLoader->add($namespace, $mappedPaths);
                 if ($this->classLoader->isClassMapAuthoritative()) {
@@ -157,6 +157,10 @@ class TestBootstrapper
         return $classLoader;
     }
 
+    /**
+     * @param list<string> $psr
+     * @return list<string>
+     */
     private function mapPsrPaths(array $psr, string $pluginRootPath): array
     {
         $mappedPaths = [];
