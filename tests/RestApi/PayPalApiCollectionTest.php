@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -85,7 +87,7 @@ class PayPalApiCollectionTest extends TestCase
 
         $collection->add((new Money())->assign(['value' => '1']));
         $collection->add((new Money())->assign(['value' => '2']));
-        $result = $collection->map(fn (Money $element) => $element->getValue() . '_test');
+        $result = $collection->map(fn(Money $element) => $element->getValue() . '_test');
         static::assertEquals(['1_test', '2_test'], $result);
     }
 
@@ -98,7 +100,7 @@ class PayPalApiCollectionTest extends TestCase
 
         $collection->add((new Money())->assign(['value' => '1']));
         $collection->add((new Money())->assign(['value' => '2']));
-        $filtered = $collection->fmap(fn (Money $element) => $element->getValue() === '1' ? false : $element->getValue() . '_test');
+        $filtered = $collection->fmap(fn(Money $element) => $element->getValue() === '1' ? false : $element->getValue() . '_test');
         static::assertEquals([1 => '2_test'], $filtered);
     }
 
@@ -114,7 +116,7 @@ class PayPalApiCollectionTest extends TestCase
         $collection->add((new Money())->assign(['value' => '1']));
         $collection->add((new Money())->assign(['value' => '2']));
 
-        $collection->sort(fn (Money $a, Money $b) => \strcmp($a->getValue(), $b->getValue()));
+        $collection->sort(fn(Money $a, Money $b) => \strcmp($a->getValue(), $b->getValue()));
 
         static::assertEquals([1, 2, 0], $collection->getKeys());
     }
@@ -130,7 +132,7 @@ class PayPalApiCollectionTest extends TestCase
         $collection->add((new Money())->assign(['value' => '2']));
         $collection->add((new Money())->assign(['value' => '3']));
 
-        $filtered = $collection->filter(fn (Money $element) => $element->getValue() !== '2');
+        $filtered = $collection->filter(fn(Money $element) => $element->getValue() !== '2');
         static::assertEquals([0, 2], $filtered->getKeys());
     }
 

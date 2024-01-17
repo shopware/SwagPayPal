@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -19,6 +21,4 @@ use Swag\PayPal\RestApi\V1\Api\Common\Money;
  * It is currently not used within the plugin itself. Use with caution.
  */
 #[Package('checkout')]
-class OutstandingBalance extends Money
-{
-}
+class OutstandingBalance extends Money {}

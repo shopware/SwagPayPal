@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -67,7 +69,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->expects(static::once())
             ->method('searchIds')
             ->willReturnCallback(
-                fn (Criteria $criteria, Context $context) => new IdSearchResult(1, [['primaryKey' => 'id', 'data' => []]], $criteria, $context)
+                fn(Criteria $criteria, Context $context) => new IdSearchResult(1, [['primaryKey' => 'id', 'data' => []]], $criteria, $context)
             );
 
         $payPalOrder = (new Order())->assign([
@@ -125,7 +127,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->expects(static::once())
             ->method('searchIds')
             ->willReturnCallback(
-                fn (Criteria $criteria, Context $context) => new IdSearchResult(1, [['primaryKey' => 'id', 'data' => []]], $criteria, $context)
+                fn(Criteria $criteria, Context $context) => new IdSearchResult(1, [['primaryKey' => 'id', 'data' => []]], $criteria, $context)
             );
 
         $payPalOrder = (new Order())->assign([
@@ -181,7 +183,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->expects(static::once())
             ->method('searchIds')
             ->willReturnCallback(
-                fn (Criteria $criteria, Context $context) => new IdSearchResult(1, [['primaryKey' => 'id', 'data' => []]], $criteria, $context)
+                fn(Criteria $criteria, Context $context) => new IdSearchResult(1, [['primaryKey' => 'id', 'data' => []]], $criteria, $context)
             );
 
         $exception = new PayPalApiException('General error', '404 Not found');
@@ -218,7 +220,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->expects(static::once())
             ->method('searchIds')
             ->willReturnCallback(
-                fn (Criteria $criteria, Context $context) => new IdSearchResult(0, [], $criteria, $context)
+                fn(Criteria $criteria, Context $context) => new IdSearchResult(0, [], $criteria, $context)
             );
 
         $this->orderResource->expects(static::never())->method('get');

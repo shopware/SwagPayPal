@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -10,6 +12,4 @@ namespace Swag\PayPal\Checkout\Payment\Method;
 use Shopware\Core\Framework\Log\Package;
 
 #[Package('checkout')]
-class PayLaterHandler extends AbstractSyncAPMHandler
-{
-}
+class PayLaterHandler extends AbstractSyncAPMHandler {}

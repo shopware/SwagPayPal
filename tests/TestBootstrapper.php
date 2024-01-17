@@ -1,4 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Shopware\Core;
 
@@ -111,7 +118,7 @@ class TestBootstrapper
         $classLoader = $this->classLoader = require $this->getProjectDir() . '/vendor/autoload.php';
 
         foreach ($this->activePlugins as $pluginName) {
-            $pathToComposerJson = $this->getProjectDir()  . '/custom/plugins/' . $pluginName . '/composer.json';
+            $pathToComposerJson = $this->getProjectDir() . '/custom/plugins/' . $pluginName . '/composer.json';
 
             if (!\is_file($pathToComposerJson)) {
                 throw new \RuntimeException('Could not auto detect plugin name via composer.json. Path: ' . $pathToComposerJson);

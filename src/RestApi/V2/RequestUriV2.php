@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -17,7 +19,5 @@ final class RequestUriV2
     public const ORDERS_RESOURCE = 'v2/checkout/orders';
     public const REFUNDS_RESOURCE = 'v2/payments/refunds';
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

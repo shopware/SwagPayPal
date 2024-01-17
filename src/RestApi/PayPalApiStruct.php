@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -13,9 +15,7 @@ use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
 #[Package('checkout')]
 abstract class PayPalApiStruct implements \JsonSerializable
 {
-    final public function __construct()
-    {
-    }
+    final public function __construct() {}
 
     /**
      * @param array<string, mixed> $arrayDataWithSnakeCaseKeys
