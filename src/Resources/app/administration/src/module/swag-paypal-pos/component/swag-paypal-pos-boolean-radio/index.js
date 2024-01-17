@@ -7,11 +7,6 @@ const utils = Shopware.Utils;
 Component.register('swag-paypal-pos-boolean-radio', {
     template,
 
-    model: {
-        prop: 'value',
-        event: 'change',
-    },
-
     inject: ['feature'],
 
     props: {

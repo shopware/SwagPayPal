@@ -82,7 +82,7 @@
                                                         :isLoading="isLoading"
                                                         :options="salesChannels"
                                                         :disabled="!acl.can('swag_paypal.editor')"
-                                                        @change="onInput">
+                                                        @update:value="onInput">
                                                     </sw-single-select>
                                                 {% endblock %}
 

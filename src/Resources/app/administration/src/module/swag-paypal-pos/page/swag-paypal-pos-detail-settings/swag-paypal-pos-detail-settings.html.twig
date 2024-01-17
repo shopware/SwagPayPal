@@ -47,7 +47,7 @@
                             :disabled="!acl.can('sales_channel.editor')"
                             :label="$tc('swag-paypal-pos.detail.settings.domain')"
                             :helpText="$tc('swag-paypal-pos.detail.settings.domainHelpText')"
-                            @input="forceUpdate">
+                            @update:value="forceUpdate">
                     </swag-paypal-pos-url-field>
                 {% endblock %}
 
@@ -58,7 +58,7 @@
                             required
                             :disabled="!acl.can('sales_channel.editor')"
                             :label="$tc('global.entities.language')"
-                            @change="changeLanguage">
+                            @update:value="changeLanguage">
                     </sw-entity-single-select>
                 {% endblock %}
 
@@ -70,7 +70,7 @@
                             entity="product_stream"
                             :disabled="!acl.can('sales_channel.editor')"
                             :label="$tc('swag-paypal-pos.detail.settings.productStream')"
-                            @change="forceUpdate">
+                            @update:value="forceUpdate">
                     </sw-entity-single-select>
                 {% endblock %}
 
@@ -90,7 +90,7 @@
                             class="swag-paypal-pos-boolean-radio"
                             :options="optionsReplace"
                             :disabled="!acl.can('sales_channel.editor')"
-                            @input="forceUpdate">
+                            @update:value="forceUpdate">
                         </sw-radio-field>
                     {% endblock %}
 
@@ -112,7 +112,7 @@
                             :optionTrue="optionSyncPrices"
                             :optionFalse="optionNotSyncPrices"
                             :disabled="!acl.can('sales_channel.editor')"
-                            @input="forceUpdate">
+                            @update:value="forceUpdate">
                         </swag-paypal-pos-boolean-radio>
                     {% endblock %}
 
@@ -134,7 +134,7 @@
                                 :label="$tc('swag-paypal-pos.authentication.labelApiKey')"
                                 :disabled="!acl.can('sales_channel.editor')"
                                 :placeholder="$tc('swag-paypal-pos.authentication.placeholderApiKey')"
-                                @input="forceUpdate">
+                                @update:value="forceUpdate">
                             <template #suffix>
 
                                 {% block swag_paypal_pos_detail_settings_credentials_apikey_suffix %}

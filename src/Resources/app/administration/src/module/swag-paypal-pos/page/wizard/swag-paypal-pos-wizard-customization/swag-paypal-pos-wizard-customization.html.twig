@@ -10,7 +10,7 @@
                 required
                 :label="$tc('swag-paypal-pos.wizard.customization.salesChannelLabel')"
                 :placeholder="$tc('sw-sales-channel.detail.placeholderName')"
-                @input="forceUpdate">
+                @update:value="forceUpdate">
             </sw-text-field>
         {% endblock %}
 
@@ -20,7 +20,7 @@
                 entity="language"
                 required
                 :label="$tc('global.entities.language')"
-                @change="changeLanguage">
+                @update:value="changeLanguage">
             </sw-entity-single-select>
         {% endblock %}
 
