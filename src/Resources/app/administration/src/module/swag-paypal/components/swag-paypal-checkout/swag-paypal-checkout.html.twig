@@ -45,7 +45,7 @@
                                      :helpText="$tc('swag-paypal.settingForm.checkout.sandbox.helpText')"
                                      :disabled="sandboxToggleDisabled || props.isInherited || !acl.can('swag_paypal.editor')"
                                      :value="props.currentValue"
-                                     @change="props.updateCurrentValue">
+                                     @update:value="props.updateCurrentValue">
                     </sw-switch-field>
                 </template>
             </sw-inherit-wrapper>

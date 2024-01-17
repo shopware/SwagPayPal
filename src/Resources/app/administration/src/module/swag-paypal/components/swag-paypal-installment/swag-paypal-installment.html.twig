@@ -8,7 +8,7 @@
 
                 {% block swag_paypal_content_card_channel_config_installment_settings_detail_page_enabled %}
                     <sw-inherit-wrapper
-                        v-model="actualConfigData['SwagPayPal.settings.installmentBannerDetailPageEnabled']"
+                        v-model:value="actualConfigData['SwagPayPal.settings.installmentBannerDetailPageEnabled']"
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerDetailPageEnabled']"
                         :customInheritationCheckFunction="checkBoolFieldInheritance">
                         <template #content="props">
@@ -27,7 +27,7 @@
 
                 {% block swag_paypal_content_card_channel_config_installment_settings_cart_enabled %}
                     <sw-inherit-wrapper
-                        v-model="actualConfigData['SwagPayPal.settings.installmentBannerCartEnabled']"
+                        v-model:value="actualConfigData['SwagPayPal.settings.installmentBannerCartEnabled']"
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerCartEnabled']"
                         :customInheritationCheckFunction="checkBoolFieldInheritance">
                         <template #content="props">
@@ -46,7 +46,7 @@
 
                 {% block swag_paypal_content_card_channel_config_installment_settings_off_canvas_cart_enabled %}
                     <sw-inherit-wrapper
-                        v-model="actualConfigData['SwagPayPal.settings.installmentBannerOffCanvasCartEnabled']"
+                        v-model:value="actualConfigData['SwagPayPal.settings.installmentBannerOffCanvasCartEnabled']"
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerOffCanvasCartEnabled']"
                         :customInheritationCheckFunction="checkBoolFieldInheritance">
                         <template #content="props">
@@ -57,7 +57,7 @@
                                              :helpText="$tc('swag-paypal.settingForm.installment.installmentBannerEnabled.offCanvasCart.helpText')"
                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             @update:value="props.updateCurrentValue">
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
@@ -76,7 +76,7 @@
                                              :helpText="$tc('swag-paypal.settingForm.installment.installmentBannerEnabled.loginPage.helpText')"
                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             @update:value="props.updateCurrentValue">
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
@@ -84,7 +84,7 @@
 
                 {% block swag_paypal_content_card_channel_config_installment_settings_footer_enabled %}
                     <sw-inherit-wrapper
-                        v-model="actualConfigData['SwagPayPal.settings.installmentBannerFooterEnabled']"
+                        v-model:value="actualConfigData['SwagPayPal.settings.installmentBannerFooterEnabled']"
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerFooterEnabled']"
                         :customInheritationCheckFunction="checkBoolFieldInheritance">
                         <template #content="props">
@@ -95,7 +95,7 @@
                                              :helpText="$tc('swag-paypal.settingForm.installment.installmentBannerEnabled.footer.helpText')"
                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
+                                             @update:value="props.updateCurrentValue">
                             </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
