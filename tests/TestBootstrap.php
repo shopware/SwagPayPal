@@ -14,8 +14,7 @@ if (is_readable(__DIR__ . '/../vendor/shopware/platform/src/Core/TestBootstrappe
 } elseif (is_readable(__DIR__ . '/../vendor/shopware/core/TestBootstrapper.php')) {
     require __DIR__ . '/../vendor/shopware/core/TestBootstrapper.php';
 } else {
-    //require __DIR__ . '/../../../../src/Core/TestBootstrapper.php';
-    require __DIR__ . '/TestBootstrapper.php';
+    require __DIR__ . '/../../../../src/Core/TestBootstrapper.php';
 }
 
 return (new TestBootstrapper())
