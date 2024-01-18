@@ -127,6 +127,10 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
                 ? $this->getOrderFromOrder($orderId, $customer, $requestDataBag, $salesChannelContext)
                 : $this->getOrderFromCart($salesChannelContext, $request, $customer);
 
+            if ($requestDataBag->get('product') === 'acdc') {
+                $paypalOrder->setPaymentSource(null);
+            }
+
             $salesChannelId = $salesChannelContext->getSalesChannelId();
             $response = $this->orderResource->create($paypalOrder, $salesChannelId, $this->getPartnerAttributionId($requestDataBag));
 
