@@ -51,7 +51,7 @@ class SofortMethodData extends AbstractMethodData
 
     public function getInitialState(): bool
     {
-        return true;
+        return false;
     }
 
     public function getMediaFileName(): ?string
@@ -61,6 +61,6 @@ class SofortMethodData extends AbstractMethodData
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        return self::CAPABILITY_ACTIVE;
+        return 'sofort';
     }
 }

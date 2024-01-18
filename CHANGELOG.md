@@ -3,6 +3,9 @@
 - PPI-827 - Added automated payment status polling for unconfirmed transactions
 - PPI-831 - Improved management of payment status webhooks
 
+# 7.3.2
+- PPI-855 - Added deprecation notice for Sofort payment method
+
 # 7.3.1
 - PPI-844 - Fixes an issue, where the installment banner was not toggleable on CMS product detail pages
 

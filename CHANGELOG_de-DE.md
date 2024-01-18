@@ -3,6 +3,9 @@
 - PPI-827 - Automatische Abfrage des Zahlungsstatus für unbestätigte Transaktionen hinzugefügt
 - PPI-831 - Verbesserte Verwaltung des Zahlungsstatus-Webhooks
 
+# 7.3.2
+- PPI-855 - Abschaltungshinweis für Sofort-Zahlungsart hinzugefügt
+
 # 7.3.1
 - PPI-844 - Behebt ein Problem, bei dem der Ratenzahlungs-Banner nicht auf CMS-Produktdetailseiten deaktivierbar war
 
