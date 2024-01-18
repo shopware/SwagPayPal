@@ -45,7 +45,7 @@ class MyBankMethodData extends AbstractMethodData
 
     public function getInitialState(): bool
     {
-        return true;
+        return false;
     }
 
     public function getMediaFileName(): ?string

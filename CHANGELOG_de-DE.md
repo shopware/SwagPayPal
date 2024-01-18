@@ -1,3 +1,6 @@
+# 6.3.2
+- PPI-855 - Abschaltungshinweis für Sofort-Zahlungsart hinzugefügt
+
 # 6.3.1
 - PPI-844 - Behebt ein Problem, bei dem der Ratenzahlungs-Banner nicht auf CMS-Produktdetailseiten deaktivierbar war
 
