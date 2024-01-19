@@ -27,6 +27,7 @@ use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
@@ -121,6 +122,7 @@ Credit card validation failed, 3D secure was not validated.');
             ),
             new TransactionDataService(
                 $this->orderTransactionRepo,
+                new CredentialsUtil($systemConfig),
             ),
             $logger,
             $orderResource,

@@ -136,6 +136,7 @@
 
         <service id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService">
             <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService">
