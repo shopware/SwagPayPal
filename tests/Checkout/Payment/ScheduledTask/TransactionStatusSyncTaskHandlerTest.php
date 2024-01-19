@@ -58,7 +58,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
     {
         $this->paymentMethodDataRegistry
             ->expects(static::once())
-            ->method('getPaymentMethods')
+            ->method('getPaymentHandlers')
             ->willReturn([]);
 
         $order = (new OrderEntity())->assign(['salesChannelId' => 'sales-channel-id']);
@@ -100,7 +100,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
     {
         $this->paymentMethodDataRegistry
             ->expects(static::once())
-            ->method('getPaymentMethods')
+            ->method('getPaymentHandlers')
             ->willReturn([]);
 
         $transaction = (new OrderTransactionEntity())->assign([

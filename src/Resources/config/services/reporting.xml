@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Reporting\DataAbstractionLayer\TransactionReport\TransactionReportDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_vault_token"/>
+        </service>
+
+        <service id="Swag\PayPal\Reporting\ScheduledTask\TurnoverReportingTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+
+        <service id="Swag\PayPal\Reporting\ScheduledTask\TurnoverReportingTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="swag_paypal_transaction_report.repository"/>
+            <argument>%kernel.shopware_version%</argument>
+            <argument>%instance_id%</argument>
+            <tag name="messenger.message_handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Reporting\Subscriber\OrderTransactionSubscriber">
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="swag_paypal_transaction_report.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
+</container>
