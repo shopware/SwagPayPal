@@ -1,0 +1,12 @@
+name: Release to Store
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    uses: shopware/github-actions/.github/workflows/store-release.yml@main
+    with:
+      extensionName: ${{ github.event.repository.name }}
+    secrets:
+      accountUser: ${{ secrets.SHOPWARE_ACCOUNT_USER }}
+      accountPassword: ${{ secrets.SHOPWARE_ACCOUNT_PASSWORD }}
+      ghToken: ${{ secrets.GITHUB_TOKEN }}

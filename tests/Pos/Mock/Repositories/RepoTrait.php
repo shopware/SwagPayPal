@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -71,7 +73,7 @@ trait RepoTrait
             $entity->setUniqueIdentifier($this->getUniqueIdentifier($entity));
 
             if ($this->entityCollection->has($entity->getUniqueIdentifier())) {
-                $entity = $this->entityCollection->get($entity->getUniqueIdentifier()) ?? $entity;
+                $entity = $this->entityCollection->get($entity->getUniqueIdentifier());
                 $entity->assign($entry);
             }
 

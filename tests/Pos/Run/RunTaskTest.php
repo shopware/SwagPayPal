@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -69,10 +71,9 @@ class RunTaskTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderRunTaskName
-     *
      * @param class-string<AbstractTask> $taskName
      */
+    #[DataProvider('dataProviderRunTaskName')]
     public function testNames(string $taskName, string $expectedName): void
     {
         /** @var AbstractTask&MockObject $task */
@@ -118,10 +119,9 @@ class RunTaskTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderExecution
-     *
      * @param class-string<AbstractTask> $taskName
      */
+    #[DataProvider('dataProviderExecution')]
     public function testExecution(string $taskName, array $serviceCalls): void
     {
         $context = Context::createDefaultContext();

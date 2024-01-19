@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -33,8 +35,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
     public function __construct(
         protected readonly EntityRepository $orderTransactionRepository,
         protected readonly OrderTransactionStateHandler $orderTransactionStateHandler
-    ) {
-    }
+    ) {}
 
     abstract public function getEventType(): string;
 

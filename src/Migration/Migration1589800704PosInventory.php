@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -41,7 +43,5 @@ class Migration1589800704PosInventory extends MigrationStep
         ');
     }
 
-    public function updateDestructive(Connection $connection): void
-    {
-    }
+    public function updateDestructive(Connection $connection): void {}
 }

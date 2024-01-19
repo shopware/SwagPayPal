@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -149,7 +151,7 @@ class ImageSyncer
 
         $ids = $this->posMediaRepository->searchIds($criteria, $context)->getIds();
         if (!empty($ids)) {
-            $ids = \array_filter($ids, static fn ($id) => \is_array($id));
+            $ids = \array_filter($ids, static fn($id) => \is_array($id));
             $this->posMediaRepository->delete(\array_filter($ids), $context);
         }
     }

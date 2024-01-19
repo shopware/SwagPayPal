@@ -1,0 +1,67 @@
+name: PHP
+on:
+  pull_request:
+    paths:
+      - '**/*.php'
+      - .github/workflows/php.yml
+
+  push:
+    paths:
+      - '**/*.php'
+    branches:
+      - trunk
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
+
+env:
+  SHOPWARE_TOOL_CACHE_PHPSTAN: ${{ github.workspace }}/var/phpstan
+jobs:
+  cs:
+    if: github.event_name != 'schedule'
+    uses: shopware/github-actions/.github/workflows/cs-fixer.yml@main
+  phpstan:
+    uses: shopware/github-actions/.github/workflows/phpstan.yml@main
+    with:
+      extensionName: SwagPayPal
+      shopwareVersion: trunk
+      dependencies: |-
+        [
+          {"name": "SwagCommercial", "repo": "https://shopware:$COMMERCIAL_TOKEN@gitlab.shopware.com/shopware/6/product/commercial.git"},
+          {"name": "SwagCmsExtensions", "repo": "https://shopware:$CMS_TOKEN@gitlab.shopware.com/shopware/6/services/cms-extensions.git"}
+        ]
+    secrets:
+      env: |-
+        CMS_TOKEN=${{ secrets.CMS_GITLAB_TOKEN }}
+        COMMERCIAL_TOKEN=${{ secrets.COMMERCIAL_GITLAB_TOKEN }}
+  phpunit:
+    uses: shopware/github-actions/.github/workflows/phpunit.yml@main
+    strategy:
+      matrix:
+        phpVersion: [ 8.2, 8.3 ]
+        mysqlVersion: ["mysql:8.0", "mariadb:10.11"]
+        dependencies:
+          - |-
+            [
+              {"name": "SwagCommercial", "repo": "https://shopware:$COMMERCIAL_TOKEN@gitlab.shopware.com/shopware/6/product/commercial.git"},
+              {"name": "SwagCmsExtensions", "repo": "https://shopware:$CMS_TOKEN@gitlab.shopware.com/shopware/6/services/cms-extensions.git"}
+            ]
+          - |-
+            [
+              {"name": "SwagCmsExtensions", "repo": "https://shopware:$CMS_TOKEN@gitlab.shopware.com/shopware/6/services/cms-extensions.git"}
+            ]
+    with:
+      uploadCoverage: true
+      extensionName: SwagPayPal
+      shopwareVersion: ${{ matrix.shopware-version }}
+      phpVersion: ${{ matrix.phpVersion }}
+      mysqlVersion: ${{ matrix.mysqlVersion }}
+      dependencies: ${{ matrix.dependencies }}
+    secrets:
+      env: |-
+        CMS_TOKEN=${{ secrets.CMS_GITLAB_TOKEN }}
+        COMMERCIAL_TOKEN=${{ secrets.COMMERCIAL_GITLAB_TOKEN }}
+      codecovToken: ${{ secrets.CODECOV_TOKEN }}
+
+
+

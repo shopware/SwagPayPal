@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -19,7 +21,5 @@ final class PosBaseURL
     public const SECURE = 'https://secure.izettle.com/';
     public const PUSHER = 'https://pusher.izettle.com/';
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

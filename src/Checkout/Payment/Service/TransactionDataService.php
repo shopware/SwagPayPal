@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -25,8 +27,7 @@ class TransactionDataService
     public function __construct(
         private readonly EntityRepository $orderTransactionRepository,
         private readonly CredentialsUtilInterface $credentialsUtil,
-    ) {
-    }
+    ) {}
 
     public function setOrderId(
         string $orderTransactionId,

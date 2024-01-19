@@ -1,0 +1,40 @@
+name: Storefront
+on:
+  push:
+    branches:
+      - trunk
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Shopware
+        uses: actions/checkout@v4
+        with:
+          repository: shopware/shopware
+          ref: trunk
+      - name: Clone Extension
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install Shopware Dependencies
+        working-directory: src/Storefront/Resources/app/storefront
+        run: npm install --no-audit --no-fund --prefer-offline
+
+      - name: Install Plugin Dependencies
+        working-directory: custom/plugins/${{ github.event.repository.name }}/src/Resources/app/storefront
+        run: npm install --no-audit --no-fund --prefer-offline
+
+      - name: Run ESLint
+        working-directory: custom/plugins/${{ github.event.repository.name }}/src/Resources/app/storefront
+        run: |
+          ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/.eslintrc.js ./src
+          ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/stylelint --config ../../../../../../../src/Storefront/Resources/app/storefront/stylelint.config.js ./src
+

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -21,9 +23,7 @@ class ClassCheckoutPackageRector extends AbstractRector
 {
     private const AREA_CHECKOUT = 'checkout';
 
-    public function __construct(private readonly PhpAttributeGroupFactory $phpAttributeGroupFactory)
-    {
-    }
+    public function __construct(private readonly PhpAttributeGroupFactory $phpAttributeGroupFactory) {}
 
     public function getNodeTypes(): array
     {
@@ -67,7 +67,7 @@ class Foo{}'
     private function hasPackageAnnotation(ClassLike $class): bool
     {
         $names = \array_map(
-            fn (AttributeGroup $group) => $group->attrs[0]->name->toString(),
+            fn(AttributeGroup $group) => $group->attrs[0]->name->toString(),
             $class->attrGroups
         );
 
