@@ -1,0 +1,21 @@
+name: Administration
+on:
+  push:
+    branches:
+      - trunk
+  pull_request:
+
+jobs:
+  unit:
+    name: Jest
+    uses: shopware/github-actions/.github/workflows/admin-jest.yml@main
+    with:
+      extensionName: ${{ github.event.repository.name }}
+      uploadCoverage: true
+    secrets:
+      codecovToken: ${{ secrets.CODECOV_TOKEN }}
+  lint:
+    name: ESLint
+    uses: shopware/github-actions/.github/workflows/admin-eslint.yml@main
+    with:
+      extensionName: ${{ github.event.repository.name }}
