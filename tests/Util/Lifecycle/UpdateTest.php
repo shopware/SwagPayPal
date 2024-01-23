@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodDefinition;
@@ -18,6 +19,7 @@ use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\RestrictDeleteViolationException;
 use Shopware\Core\Framework\Log\Package;
@@ -25,7 +27,6 @@ use Shopware\Core\Framework\Migration\MigrationCollectionLoader;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeDefinition;
@@ -214,15 +215,14 @@ class UpdateTest extends TestCase
         $updateContext = $this->createUpdateContext('1.9.1', '2.0.0');
         $context = $updateContext->getContext();
 
-        $paypalId = Uuid::randomHex();
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', PayPalPaymentHandler::class));
+        $paypalId = $this->paymentMethodRepository->searchIds($criteria, $context)->firstId();
+        static::assertNotNull($paypalId, 'Unable to find PayPalPaymentHandler');
 
-        $this->paymentMethodRepository->create([
-            [
-                'id' => $paypalId,
-                'handlerIdentifier' => 'Swag\PayPal\Payment\PayPalPaymentHandler',
-                'name' => 'Test old PayPal payment handler',
-            ],
-        ], $context);
+        $this->paymentMethodRepository->upsert([[
+            'id' => $paypalId,
+            'handlerIdentifier' => 'Swag\PayPal\Payment\PayPalPaymentHandler',
+        ]], $context);
 
         $updater = $this->createUpdateService(SystemConfigServiceMock::createWithoutCredentials());
         $updater->update($updateContext);
@@ -311,15 +311,14 @@ class UpdateTest extends TestCase
         $updateContext = $this->createUpdateContext('1.0.0', '5.0.0');
         $context = $updateContext->getContext();
 
-        $paypalPuiId = Uuid::randomHex();
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', PUIHandler::class));
+        $paypalPuiId = $this->paymentMethodRepository->searchIds($criteria, $context)->firstId();
+        static::assertNotNull($paypalPuiId, 'Unable to find PayPalPuiPaymentHandler');
 
-        $this->paymentMethodRepository->create([
-            [
-                'id' => $paypalPuiId,
-                'handlerIdentifier' => 'Swag\PayPal\Payment\PayPalPuiPaymentHandler',
-                'name' => 'Test old PayPal PUI payment handler',
-            ],
-        ], $context);
+        $this->paymentMethodRepository->upsert([[
+            'id' => $paypalPuiId,
+            'handlerIdentifier' => 'Swag\PayPal\Payment\PayPalPuiPaymentHandler',
+        ]], $context);
 
         $updater = $this->createUpdateService(SystemConfigServiceMock::createWithoutCredentials());
         $updater->update($updateContext);
@@ -376,6 +375,36 @@ class UpdateTest extends TestCase
         static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED));
     }
 
+    public function testUpdateTo900(): void
+    {
+        $updateContext = $this->createUpdateContext('7.3.0', '9.0.0');
+
+        $updater = $this->createUpdateService(SystemConfigServiceMock::createWithoutCredentials());
+        $updater->update($updateContext);
+
+        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
+
+        $criteria = (new Criteria())
+            ->addFilter(new EqualsAnyFilter(
+                'handlerIdentifier',
+                $paymentMethodDataRegistry->getPaymentHandlers()
+            ));
+
+        /** @var PaymentMethodCollection $paymentMethods */
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext())->getEntities();
+
+        foreach ($paymentMethods as $method) {
+            $handler = $paymentMethodDataRegistry->getPaymentMethodByHandler($method->getHandlerIdentifier());
+            static::assertNotNull($handler, 'Unable to find handler `' . $method->getHandlerIdentifier() . '` in registry');
+
+            static::assertSame(
+                $handler->getTechnicalName(),
+                $method->getTechnicalName(),
+                \sprintf('Technical name `%s` for handler `%s` doesn\'t match expected `%s`', $method->getTechnicalName(), $method->getHandlerIdentifier(), $handler->getTechnicalName())
+            );
+        }
+    }
+
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext
     {
         return new UpdateContext(
@@ -423,6 +452,7 @@ class UpdateTest extends TestCase
                 $paymentMethodDataRegistry,
                 $this->paymentMethodRepository,
             ),
+            $paymentMethodDataRegistry,
         );
     }
 

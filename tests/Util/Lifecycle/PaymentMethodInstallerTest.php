@@ -23,6 +23,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
@@ -122,6 +123,36 @@ class PaymentMethodInstallerTest extends TestCase
             'Installer from container' => [true],
             'Installer created manually' => [false],
         ];
+    }
+
+    public function testInstallAllTechnicalNames(): void
+    {
+        $context = Context::createDefaultContext();
+
+        $installer = $this->createInstaller(true);
+        $installer->installAll($context);
+
+        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
+
+        $criteria = (new Criteria())
+            ->addFilter(new EqualsAnyFilter(
+                'handlerIdentifier',
+                $paymentMethodDataRegistry->getPaymentHandlers()
+            ));
+
+        /** @var PaymentMethodCollection $paymentMethods */
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, $context)->getEntities();
+
+        foreach ($paymentMethods as $method) {
+            $handler = $paymentMethodDataRegistry->getPaymentMethodByHandler($method->getHandlerIdentifier());
+            static::assertNotNull($handler, 'Unable to find handler `' . $method->getHandlerIdentifier() . '` in registry');
+
+            static::assertSame(
+                $handler->getTechnicalName(),
+                $method->getTechnicalName(),
+                \sprintf('Technical name `%s` for handler `%s` doesn\'t match expected `%s`', $method->getTechnicalName(), $method->getHandlerIdentifier(), $handler->getTechnicalName())
+            );
+        }
     }
 
     private function createInstaller(bool $useContainer): PaymentMethodInstaller

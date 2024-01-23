@@ -18,6 +18,8 @@ use Swag\PayPal\Util\Availability\AvailabilityContext;
 #[Package('checkout')]
 class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
+    public const TECHNICAL_NAME = 'swag_paypal_pay_later';
+
     public const PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID = 'payPalPayLaterFieldData';
 
     /**
@@ -48,6 +50,11 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
     public function getHandler(): string
     {
         return PayLaterHandler::class;
+    }
+
+    public function getTechnicalName(): string
+    {
+        return self::TECHNICAL_NAME;
     }
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool

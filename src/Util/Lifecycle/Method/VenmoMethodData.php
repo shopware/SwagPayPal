@@ -19,6 +19,8 @@ use Swag\PayPal\Util\Availability\AvailabilityContext;
 #[Package('checkout')]
 class VenmoMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
+    public const TECHNICAL_NAME = 'swag_paypal_venmo';
+
     public const PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID = 'payPalVenmoFieldData';
 
     /**
@@ -49,6 +51,11 @@ class VenmoMethodData extends AbstractMethodData implements CheckoutDataMethodIn
     public function getHandler(): string
     {
         return VenmoHandler::class;
+    }
+
+    public function getTechnicalName(): string
+    {
+        return self::TECHNICAL_NAME;
     }
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool

@@ -149,7 +149,8 @@ class SwagPayPal extends Plugin
             $paymentMethodStateService ?? new PaymentMethodStateService(
                 $paymentMethodDataRegistry,
                 $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
-            )
+            ),
+            $paymentMethodDataRegistry,
         ))->update($updateContext);
 
         parent::update($updateContext);
