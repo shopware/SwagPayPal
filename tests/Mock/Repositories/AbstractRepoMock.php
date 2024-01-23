@@ -22,8 +22,6 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * @phpstan-ignore-next-line ignore finality of repository in tests
- *
  * @internal
  *
  * @template TEntityCollection of EntityCollection

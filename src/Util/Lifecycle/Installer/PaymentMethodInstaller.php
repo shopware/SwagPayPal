@@ -153,6 +153,7 @@ class PaymentMethodInstaller
             'id' => Uuid::randomHex(),
             'handlerIdentifier' => $method->getHandler(),
             'name' => $defaultTranslation['name'],
+            'technicalName' => $method->getTechnicalName(),
             'position' => $method->getPosition(),
             'afterOrderEnabled' => true,
             'pluginId' => $pluginId,

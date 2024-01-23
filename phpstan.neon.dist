@@ -33,6 +33,10 @@ parameters:
             message: '#Service ".*" is private#'
             path: tests/**/*.php
 
+        -   # Ignore finality of repository in tests
+            message: '#.*extends @final class (\w|\\)*(SalesChannel|Entity)Repository#'
+            path: tests/**/*.php
+
         -   # ignore own deprecations in tests
             message: '#.*tag:v9.0.0 -#'
             path: tests/**/*.php
@@ -44,6 +48,12 @@ parameters:
             message: '#Call to deprecated method batchSaveConfiguration#'
             path: tests/Webhook/Registration/WebhookSystemConfigControllerTest.php
             count: 11
+
+        -   # ignore shopware v6.7 deprecations
+            message: '#.*tag:v6.7.0 -#'
+            paths:
+                - tests/**/*.php
+                - src/Util/Lifecycle/Update.php
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
