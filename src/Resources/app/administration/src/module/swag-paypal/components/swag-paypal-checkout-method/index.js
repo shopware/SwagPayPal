@@ -64,7 +64,7 @@ Component.register('swag-paypal-checkout-method', {
         },
 
         showEditLink() {
-            return ['active', 'limited', 'mybank'].includes(this.onboardingStatus);
+            return ['active', 'limited', 'mybank', 'sofort'].includes(this.onboardingStatus);
         },
 
         statusBadgeVariant() {
@@ -72,7 +72,7 @@ Component.register('swag-paypal-checkout-method', {
 
             switch (this.onboardingStatus) {
                 case 'active': variant = 'success'; break;
-                case 'limited': case 'mybank': variant = 'danger'; break;
+                case 'limited': case 'mybank': case 'sofort': variant = 'danger'; break;
                 case 'inactive': case 'ineligible': variant = 'neutral'; break;
                 case 'pending': variant = 'info'; break;
                 default: variant = 'neutral';
@@ -90,6 +90,7 @@ Component.register('swag-paypal-checkout-method', {
                     break;
                 case 'limited':
                 case 'mybank':
+                case 'sofort':
                     variant = '#ff9800';
                     break;
                 case 'inactive':

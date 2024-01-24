@@ -2,7 +2,7 @@ variables:
   PLATFORM_MIN_VERSION: 'v6.5.4.1'
   PLATFORM_DEFAULT_VERSION: '6.5.x'
   PLATFORM_BRANCH: $PLATFORM_DEFAULT_VERSION
-  CMS_EXTENSION_BRANCH: 'master'
+  CMS_EXTENSION_BRANCH: '6.5.x'
   PLUGIN_DEPENDENCIES:
     value: >
       [
@@ -59,7 +59,11 @@ linting:
     - composer lint:admin:ci
     - composer lint:storefront
 
+jest (administration vue3):
+  rules:
+    - when: never
+
 include:
   project: 'shopware/6/product/platform'
-  ref: 'trunk'
+  ref: '6.5.x'
   file: '.gitlab/templates/plugin.yml'
