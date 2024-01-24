@@ -108,12 +108,14 @@
                     "pending": "Authorisierung ausstehend",
                     "ineligible": "Gesperrt",
                     "inactive": "Onboarding benötigt",
-                    "mybank": "Limitiert"
+                    "mybank": "Limitiert",
+                    "sofort": "Limitiert"
                 },
                 "onboardingStatusTooltip": {
                   "ineligible": "PayPal hat uns informiert, dass diese Zahlungsmethode aktuell für Ihren Account nicht freigeschaltet ist.",
                   "limited": "PayPal hat uns informiert, dass Einschränkugen dieser Zahlungsart für Ihren Account bestehen.",
-                  "mybank": "Händler, die MyBank nach Februar 2023 aktivieren, benötigen eine manuelle Genehmigung von PayPal. Wenden Sie sich an den PayPal-Support, um weitere Informationen zu erhalten."
+                  "mybank": "Händler, die MyBank nach Februar 2023 aktivieren, benötigen eine manuelle Genehmigung von PayPal. Wenden Sie sich an den PayPal-Support, um weitere Informationen zu erhalten.",
+                  "sofort": "Die Aktivierung von SOFORT ist für Neukunden ab Oktober 2023 nicht mehr gestattet. Dies geschieht in Vorbereitung auf das Ende des Produkts zum September 2024 — wie von Klarna angekündigt."
                 },
                 "paymentMethodStatusChangedSuccess": {
                     "active": "Zahlungsart \"{name}\" ist jetzt aktiv.",
