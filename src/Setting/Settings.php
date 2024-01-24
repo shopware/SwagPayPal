@@ -102,7 +102,7 @@ final class Settings
         self::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED => true,
         self::INSTALLMENT_BANNER_FOOTER_ENABLED => true,
         self::PUI_CUSTOMER_SERVICE_INSTRUCTIONS => 'Details zum Kundenservice finden Sie auf unserer Webseite',
-        self::ACDC_FORCE_3DS => true,
+        self::ACDC_FORCE_3DS => false,
         self::EXCLUDED_PRODUCT_IDS => [],
         self::EXCLUDED_PRODUCT_STREAM_IDS => [],
         self::VAULTING_ENABLED => false,
