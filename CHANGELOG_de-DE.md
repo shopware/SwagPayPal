@@ -1,4 +1,5 @@
 # 6.3.2
+- PPI-845 - Behebt ein Problem, bei dem eine Bestellung aufgrund zu langer Produktnamen fehlschlug
 - PPI-855 - Abschaltungshinweis für Sofort-Zahlungsart hinzugefügt
 
 # 6.3.1
