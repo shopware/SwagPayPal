@@ -58,7 +58,7 @@ Credit card validation failed, 3D secure was not validated.');
 
     public function testPayCaptureLiabilityShiftNo(): void
     {
-        $handler = $this->createPaymentHandler($this->getDefaultConfigData());
+        $handler = $this->createPaymentHandler(\array_merge($this->getDefaultConfigData(), [Settings::ACDC_FORCE_3DS => true]));
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
@@ -72,7 +72,7 @@ Credit card validation failed, 3D secure was not validated.');
 
     public function testPayCaptureLiabilityShiftNoWithoutForced3DS(): void
     {
-        $handler = $this->createPaymentHandler(\array_merge($this->getDefaultConfigData(), [Settings::ACDC_FORCE_3DS => false]));
+        $handler = $this->createPaymentHandler($this->getDefaultConfigData());
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
