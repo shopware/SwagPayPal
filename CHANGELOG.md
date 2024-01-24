@@ -1,3 +1,6 @@
+# 6.3.2
+- PPI-855 - Added deprecation notice for Sofort payment method
+
 # 6.3.1
 - PPI-844 - Fixes an issue, where the installment banner was not toggleable on CMS product detail pages
 
