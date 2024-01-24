@@ -311,8 +311,8 @@
             "acdc": {
                 "cardTitle": "Credit- or debit card",
                 "acdcForce3DS": {
-                    "label": "Execute transactions with 3D Secure only",
-                    "helpText": "Transaction will not be accepted, if 3D Secure is unavailable."
+                    "label": "Block payments from non-3DS countries",
+                    "helpText": "PayPal checks whether 3DS (Strong Customer Authentication) is required based on the credit or debit card presented. Setting this option will reject payment attempts without a 3DS check."
                 }
             },
             "pui": {
