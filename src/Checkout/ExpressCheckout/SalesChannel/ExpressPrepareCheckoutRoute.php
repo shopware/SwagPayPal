@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\RoutingException;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -94,7 +95,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
             }
 
             $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannel()->getId());
-            $newContextToken = $this->expressCustomerService->loginCustomer($paypalOrder, $salesChannelContext);
+            $newContextToken = $this->expressCustomerService->loginCustomer($paypalOrder, $salesChannelContext, new RequestDataBag($request->request->all()));
 
             // Since a new customer was logged in, the context changed in the system,
             // but this doesn't effect the current context given as parameter.
