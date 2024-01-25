@@ -5,6 +5,7 @@
 
 # 7.3.2
 - PPI-845 - Fixes an issue, where an order failed due to product names are too long
+- PPI-849 - Added campaign and affiliate codes to express checkout
 - PPI-855 - Added deprecation notice for Sofort payment method
 
 # 7.3.1
