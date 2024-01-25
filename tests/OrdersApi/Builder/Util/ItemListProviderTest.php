@@ -96,6 +96,26 @@ class ItemListProviderTest extends TestCase
         static::assertSame($expectedItemName, $itemList->first()?->getName());
     }
 
+    public function testLineItemLabelTooLongIsTruncatedWithPriceMismatch(): void
+    {
+        $lineItem = $this->createLineItem(\str_repeat('a', Item::MAX_LENGTH_NAME + 10), 10, quantity: 10);
+
+        // provoke a price mismatch
+        $lineItem->setTotalPrice(5);
+
+        $order = (new OrderEntity())->assign([
+            'lineItems' => new OrderLineItemCollection([$lineItem]),
+            'taxStatus' => CartPrice::TAX_STATE_GROSS,
+        ]);
+
+        $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
+        static::assertCount(1, $itemList);
+
+        $name = $itemList->getElements()[0]->getName();
+        static::assertStringStartsWith('10 x ', $name);
+        static::assertCount(Item::MAX_LENGTH_NAME, \mb_str_split($name));
+    }
+
     public function testLineItemProductNumberTooLongIsTruncated(): void
     {
         $productNumber = 'SW-100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';

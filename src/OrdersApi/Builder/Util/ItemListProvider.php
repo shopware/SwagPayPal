@@ -122,7 +122,7 @@ class ItemListProvider
         $unitAmount->setValue($this->priceFormatter->formatPrice($lineItem->getTotalPrice(), $currencyCode));
         $tax->setValue($this->getTax($lineItem, $isNet, false, $currencyCode));
         $item->setQuantity(1);
-        $item->setName(\sprintf('%s x %s', $lineItem->getQuantity(), $item->getName()));
+        $item->setName(\mb_substr(\sprintf('%s x %s', $lineItem->getQuantity(), $item->getName()), 0, Item::MAX_LENGTH_NAME));
     }
 
     private function getTax(OrderLineItemEntity $lineItem, bool $isNet, bool $perUnit, string $currencyCode): string
