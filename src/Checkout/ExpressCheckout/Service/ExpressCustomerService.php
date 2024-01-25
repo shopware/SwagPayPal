@@ -81,7 +81,10 @@ class ExpressCustomerService
         $this->logger = $logger;
     }
 
-    public function loginCustomer(Order $paypalOrder, SalesChannelContext $salesChannelContext): string
+    /**
+     * @deprecated tag:v8.0.0 - reason:parameter-type-change - parameter $data will be required
+     */
+    public function loginCustomer(Order $paypalOrder, SalesChannelContext $salesChannelContext, ?RequestDataBag $data = null): string
     {
         $this->logger->debug('Searching for existing customer');
         $newContextToken = $this->findExistingCustomer($paypalOrder, $salesChannelContext);
@@ -92,7 +95,7 @@ class ExpressCustomerService
 
         $this->logger->debug('No existing customer found');
 
-        return $this->registerNewCustomer($paypalOrder, $salesChannelContext);
+        return $this->registerNewCustomer($paypalOrder, $salesChannelContext, $data);
     }
 
     private function findExistingCustomer(Order $paypalOrder, SalesChannelContext $salesChannelContext): ?string
@@ -126,10 +129,13 @@ class ExpressCustomerService
         return $this->accountService->loginById($customer->getId(), $salesChannelContext);
     }
 
-    private function registerNewCustomer(Order $paypalOrder, SalesChannelContext $salesChannelContext): string
+    /**
+     * @deprecated tag:v8.0.0 - reason:parameter-type-change - parameter $data will be required
+     */
+    private function registerNewCustomer(Order $paypalOrder, SalesChannelContext $salesChannelContext, ?RequestDataBag $data = null): string
     {
         $salesChannelContext->getContext()->addExtension(self::EXPRESS_CHECKOUT_ACTIVE, new ArrayStruct());
-        $customerDataBag = $this->getRegisterCustomerDataBag($paypalOrder, $salesChannelContext);
+        $customerDataBag = $this->getRegisterCustomerDataBag($paypalOrder, $salesChannelContext, $data);
         $response = $this->registerRoute->register($customerDataBag, $salesChannelContext, false);
         $salesChannelContext->getContext()->removeExtension(self::EXPRESS_CHECKOUT_ACTIVE);
         $this->logger->debug('Customer created and logged in');
@@ -143,11 +149,16 @@ class ExpressCustomerService
         return $newToken;
     }
 
-    private function getRegisterCustomerDataBag(Order $paypalOrder, SalesChannelContext $salesChannelContext): RequestDataBag
+    /**
+     * @deprecated tag:v8.0.0 - reason:parameter-type-change - parameter $data will be required
+     */
+    private function getRegisterCustomerDataBag(Order $paypalOrder, SalesChannelContext $salesChannelContext, ?RequestDataBag $data = null): RequestDataBag
     {
         $salutationId = $this->getSalutationId($salesChannelContext->getContext());
 
-        return new RequestDataBag([
+        $data = $data ?? new RequestDataBag();
+
+        $data->add([
             'guest' => true,
             'storefrontUrl' => $this->getStorefrontUrl($salesChannelContext),
             'salutationId' => $salutationId,
@@ -158,6 +169,8 @@ class ExpressCustomerService
             'acceptedDataProtection' => true,
             self::EXPRESS_PAYER_ID => $paypalOrder->getPayer()->getPayerId(),
         ]);
+
+        return $data->toRequestDataBag();
     }
 
     /**
