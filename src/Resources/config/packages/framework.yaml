@@ -6,3 +6,5 @@ framework:
       log_level: notice
     Swag\PayPal\PaymentsApi\Administration\Exception\PaymentNotFoundException:
       log_level: notice
+    Swag\PayPal\Checkout\Exception\OrderAmountZeroException:
+      log_level: notice
