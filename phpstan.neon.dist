@@ -42,7 +42,9 @@ parameters:
 
         -   # ignore own deprecations in tests
             message: '#.*tag:v8.0.0 -#'
-            path: tests/**/*.php
+            paths:
+                - src/Checkout/ExpressCheckout/SalesChannel/ExpressPrepareCheckoutRoute.php
+                - tests/**/*.php
 
         -   # ignore Plus deprecations
             message: '#deprecated.*(Plus|PLUS|_PAYMENT_|MERCHANT_LOCATION)#'
