@@ -18,6 +18,7 @@ use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
+use Shopware\Storefront\Framework\AffiliateTracking\AffiliateTrackingListener;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
@@ -132,6 +133,17 @@ class PayPalController extends StorefrontController
      */
     public function expressPrepareCheckout(Request $request, SalesChannelContext $context): ContextTokenResponse
     {
+        $affiliateCode = $request->getSession()->get(AffiliateTrackingListener::AFFILIATE_CODE_KEY);
+        $campaignCode = $request->getSession()->get(AffiliateTrackingListener::CAMPAIGN_CODE_KEY);
+
+        if ($affiliateCode !== null) {
+            $request->request->set(AffiliateTrackingListener::AFFILIATE_CODE_KEY, $affiliateCode);
+        }
+
+        if ($campaignCode !== null) {
+            $request->request->set(AffiliateTrackingListener::CAMPAIGN_CODE_KEY, $campaignCode);
+        }
+
         return $this->expressPrepareCheckoutRoute->prepareCheckout($context, $request);
     }
 
