@@ -129,6 +129,16 @@
                                         />
                                         {% endblock %}
 
+                                        {% block swag_paypal_content_card_channel_config_cross_border %}
+                                        <swag-paypal-cross-border
+                                            v-if="tab === 'advanced'"
+                                            :isLoading="isLoading"
+                                            :actual-config-data="actualConfigData"
+                                            :all-configs="allConfigs"
+                                            :selected-sales-channel-id="selectedSalesChannelId"
+                                        />
+                                        {% endblock %}
+
                                         {% block swag_paypal_content_card_channel_config_credentials_card %}
                                             <swag-paypal-credentials v-if="tab === 'general'"
                                                                      :actualConfigData="actualConfigData"
