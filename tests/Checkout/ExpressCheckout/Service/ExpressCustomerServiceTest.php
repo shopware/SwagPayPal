@@ -16,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\Test\TestDefaults;
@@ -119,7 +120,7 @@ class ExpressCustomerServiceTest extends TestCase
 
     private function doLogin(Order $order): CustomerEntity
     {
-        $contextToken = $this->createCustomerService()->loginCustomer($order, $this->getSalesChannelContext());
+        $contextToken = $this->createCustomerService()->loginCustomer($order, $this->getSalesChannelContext(), new RequestDataBag());
 
         $context = $this->getContainer()->get(SalesChannelContextService::class)->get(
             new SalesChannelContextServiceParameters(
