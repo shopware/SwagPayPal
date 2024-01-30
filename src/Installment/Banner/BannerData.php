@@ -45,6 +45,8 @@ class BannerData extends Struct
 
     protected bool $detailPageEnabled;
 
+    protected ?string $crossBorderBuyerCountry;
+
     public function getPaymentMethodId(): string
     {
         return $this->paymentMethodId;
@@ -203,5 +205,15 @@ class BannerData extends Struct
     public function setDetailPageEnabled(bool $detailPageEnabled): void
     {
         $this->detailPageEnabled = $detailPageEnabled;
+    }
+
+    public function getCrossBorderBuyerCountry(): ?string
+    {
+        return $this->crossBorderBuyerCountry;
+    }
+
+    public function setCrossBorderBuyerCountry(?string $crossBorderBuyerCountry): void
+    {
+        $this->crossBorderBuyerCountry = $crossBorderBuyerCountry;
     }
 }

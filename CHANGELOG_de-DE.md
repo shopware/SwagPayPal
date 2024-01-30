@@ -3,6 +3,9 @@
 - PPI-827 - Automatische Abfrage des Zahlungsstatus für unbestätigte Transaktionen hinzugefügt
 - PPI-831 - Verbesserte Verwaltung des Zahlungsstatus-Webhooks
 
+# 7.4.0
+- PPI-853 - Fügt eine Option zum Einstellen des Käuferlandes für "Später bezahlen" Banner hinzu
+
 # 7.3.2
 - PPI-845 - Behebt ein Problem, bei dem eine Bestellung aufgrund zu langer Produktnamen fehlschlug
 - PPI-849 - Fügt Kampagnen- und Affiliatecodes zum Express Checkout

@@ -1,4 +1,7 @@
 {
+    "locale": {
+        "en-AU": "Englisch (AU)"
+    },
     "sw-privileges": {
         "permissions": {
             "parents": {
@@ -49,6 +52,14 @@
             "valid": "Gültig"
           },
           "infoText": "Der Webhook dient dazu, den Status einer Transaktion asynchron zu aktualisieren. Falsch registrierte Webhooks, z.B. auf einem anderen oder nicht öffentlich zugänglichen Server, können zu unbestätigten Transaktionen führen, unabhängig davon, ob die Transaktion von PayPal verarbeitet wurde."
+        },
+        "cross-border": {
+            "cardTitle": "Später bezahlen - Länderübergreifende Nachrichten",
+            "infoText": "Mit länderübergreifende Nachrichten für \"Später bezahlen\" wird die \"Später bezahlen\"-Nachricht in der Sprache des Kunden anzeigt. Diese Funktion ist nur für bestimmte Länder verfügbar. {0}",
+            "warningText": "Bitte wenden Sie sich an Ihren PayPal-Vertreter, um diese Funktion für Ihr Konto zu aktivieren.",
+            "crossBorderBuyerCountryOverride" : "Lokalisierung",
+            "crossBorderBuyerCountryAuto": "Automatische Bestimmung",
+            "crossBorderMessagingEnable" : "Länderübergreifende Lokalisierung der \"Später bezahlen\"-Nachricht aktivieren"
         },
         "messageNotBlank": "Dieser Wert darf nicht leer sein.",
         "settingForm": {

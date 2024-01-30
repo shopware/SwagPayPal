@@ -157,13 +157,13 @@ class PayPalApiStructStructureTest extends TestCase
 
     private function getMockValue(?\ReflectionType $propertyType): mixed
     {
-        if ($propertyType === null) {
-            return null;
-        }
-
         if ($propertyType instanceof \ReflectionUnionType) {
             $types = $propertyType->getTypes();
             $propertyType = $types[0];
+        }
+
+        if (!$propertyType instanceof \ReflectionNamedType) {
+            return null;
         }
 
         return match ($propertyType->getName()) {
