@@ -25,21 +25,21 @@
 
 
     {% block swag_paypal_webhook_info_text %}
-        <span class="swag-paypal-webhook__info-text">
-            {{ $tc('swag-paypal.webhook.infoText') }}
-        </span>
+    <span class="swag-paypal-webhook__info-text">
+        {{ $tc('swag-paypal.webhook.infoText') }}
+    </span>
     {% endblock %}
 
     {% block swag_paypal_webhook_refresh_button %}
-        <sw-button
-            class="swag-paypal-webhook__refresh-button"
-            variant=""
-            :disabled="isLoading || isRefreshing || isFetchingStatus || !allowRefresh || !acl.can('swag_paypal.editor')"
-            :isLoading="isRefreshing"
-            @click="onRefreshWebhook"
-        >
-            {{ $tc('swag-paypal.webhook.buttonRefresh') }}
-        </sw-button>
+    <sw-button
+        class="swag-paypal-webhook__refresh-button"
+        variant=""
+        :disabled="isLoading || isRefreshing || isFetchingStatus || !allowRefresh || !acl.can('swag_paypal.editor')"
+        :isLoading="isRefreshing"
+        @click="onRefreshWebhook"
+    >
+        {{ $tc('swag-paypal.webhook.buttonRefresh') }}
+    </sw-button>
     {% endblock %}
 </sw-card>
 {% endblock %}

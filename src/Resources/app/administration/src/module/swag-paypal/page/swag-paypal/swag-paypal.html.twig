@@ -121,12 +121,12 @@
 
                                 {% block swag_paypal_content_card_channel_config_cards %}
                                     <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
-                                        {% block swag_paypal_content_tabs %}
-                                            <swag-paypal-webhook
-                                                v-if="tab === 'advanced'"
-                                                :isLoading="isLoading"
-                                                :selectedSalesChannelId="selectedSalesChannelId"
-                                            />
+                                        {% block swag_paypal_content_card_channel_config_webhook %}
+                                        <swag-paypal-webhook
+                                            v-if="tab === 'advanced'"
+                                            :isLoading="isLoading"
+                                            :selectedSalesChannelId="selectedSalesChannelId"
+                                        />
                                         {% endblock %}
 
                                         {% block swag_paypal_content_card_channel_config_credentials_card %}
