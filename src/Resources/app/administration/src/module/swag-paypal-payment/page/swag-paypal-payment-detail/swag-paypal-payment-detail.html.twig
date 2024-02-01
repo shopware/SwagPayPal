@@ -1,55 +1,54 @@
 {% block swag_paypal_payment_detail %}
-    <div class="swag-paypal-payment-detail">
+<div v-if="isLoading || loading" class="swag-paypal-payment-detail">
+    {% block swag_paypal_payment_detail_loading_state %}
+    <sw-skeleton />
+    <sw-skeleton />
+    {% endblock %}
+</div>
 
-        {% block swag_paypal_payment_detail_components %}
-            <component v-if="!isLoading && showPayPalPayment"
-                       :is="'swag-paypal-payment-details-v1'"
-                       :paymentResource="paymentResource"
-                       :orderId="order.id">
-            </component>
-
-            <component v-if="!isLoading && showPayPalOrder"
-                       :is="'swag-paypal-payment-details-v2'"
-                       :paypalOrder="paypalOrder"
-                       :orderTransaction="orderTransaction"
-                       :orderTransactionId="orderTransaction.id"
-                       :paypalPartnerAttributionId="orderTransaction.customFields.swag_paypal_partner_attribution_id">
-            </component>
+<div v-else-if="!hasPayPalDetails" class="swag-paypal-payment-detail">
+    {% block swag_paypal_payment_detail_error_page %}
+        {% block swag_paypal_payment_detail_error_page_cancelled %}
+        <sw-empty-state
+            v-if="stateFailedCancelled"
+            :title="$tc('swag-paypal-payment.errorPage.title')"
+            :subline="$tc('swag-paypal-payment.errorPage.canceledPaymentContent')"
+            icon="regular-shopping-bag"
+            color="#A092F0"
+        />
         {% endblock %}
 
-        {% block swag_paypal_payment_detail_error_page %}
-            {% block swag_paypal_payment_detail_error_page_canceled %}
-                <div v-if="showCanceledPaymentError">
-                    <sw-empty-state
-                            :title="$tc('swag-paypal-payment.errorPage.title')"
-                            :subline="$tc('swag-paypal-payment.errorPage.canceledPaymentContent')"
-                            icon="regular-shopping-bag"
-                            color="#A092F0">
-                    </sw-empty-state>
-                </div>
-            {% endblock %}
-
-            {% block swag_paypal_payment_detail_error_page_sandbox_live %}
-                <div v-if="showSandboxLiveError">
-                    <sw-empty-state
-                            :title="$tc('swag-paypal-payment.errorPage.title')"
-                            :subline="$tc('swag-paypal-payment.errorPage.sandboxLiveContent')"
-                            icon="regular-shopping-bag"
-                            color="#A092F0">
-                    </sw-empty-state>
-                </div>
-            {% endblock %}
-
-            {% block swag_paypal_payment_detail_error_page_other %}
-                <div v-if="showGeneralError">
-                    <sw-empty-state
-                            :title="$tc('swag-paypal-payment.errorPage.title')"
-                            :subline="$tc('swag-paypal-payment.errorPage.other')"
-                            icon="regular-shopping-bag"
-                            color="#A092F0">
-                    </sw-empty-state>
-                </div>
-            {% endblock %}
+        {% block swag_paypal_payment_detail_error_page_other %}
+        <sw-empty-state
+            v-else
+            :title="$tc('swag-paypal-payment.errorPage.title')"
+            :subline="$tc('swag-paypal-payment.errorPage.other')"
+            icon="regular-shopping-bag"
+            color="#A092F0"
+        />
         {% endblock %}
-    </div>
+    {% endblock %}
+</div>
+
+<div v-else class="swag-paypal-payment-detail">
+    {% block swag_paypal_payment_detail_components %}
+        {% block swag_paypal_payment_detail_details_v1 %}
+        <swag-paypal-payment-details-v1
+            v-if="!!paymentResource"
+            :paymentResource="paymentResource"
+            :orderId="order.id"
+        />
+        {% endblock %}
+
+        {% block swag_paypal_payment_detail_details_v2 %}
+        <swag-paypal-payment-details-v2
+            v-if="!!paypalOrder"
+            :paypalOrder="paypalOrder"
+            :orderTransaction="orderTransaction"
+            :orderTransactionId="orderTransaction.id"
+            :paypalPartnerAttributionId="orderTransaction.customFields.swag_paypal_partner_attribution_id"
+        />
+        {% endblock %}
+    {% endblock %}
+</div>
 {% endblock %}
