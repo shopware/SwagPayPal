@@ -138,6 +138,13 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          * @type string
          */
         addErrorUrl: '',
+
+        /**
+         * User ID token for vaulting
+         *
+         * @type string|null
+         */
+        userIdToken: null,
     };
 
     init() {
