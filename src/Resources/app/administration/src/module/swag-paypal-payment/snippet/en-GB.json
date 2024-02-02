@@ -138,8 +138,7 @@
         "errorPage": {
             "title": "Payment details not available",
             "canceledPaymentContent": "An error occurred while retrieving payment details from PayPal. If you see this message, it was probably a payment that was cancelled by the customer. Cancelled payments will be deleted by PayPal after a while and are then no longer available.",
-            "sandboxLiveContent": "An error occurred while retrieving payment details from PayPal. If you see this message, it was probably a payment that was created with sandbox enabled and has now been requested with live data, or vice versa. Correct your PayPal settings or delete test orders from the system.",
-            "other": "An error occurred while retrieving payment details from PayPal."
+            "other": "Payment details could not be retrieved from PayPal. It is likely that the payment was not completed by the customer, or was created with sandbox enabled and has now been requested with live data. Details for uncompleted payments are only available for about 6 hours on the PayPal side."
         }
     },
     "sw-order-detail": {
