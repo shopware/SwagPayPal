@@ -38,6 +38,7 @@ use Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
+use Swag\PayPal\Storefront\Data\Service\VaultDataService;
 use Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 use Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutData;
@@ -344,7 +345,8 @@ class CheckoutSubscriberTest extends TestCase
             $localeCodeProvider,
             $router,
             $settings,
-            $credentialsUtil
+            $credentialsUtil,
+            $this->createMock(VaultDataService::class),
         );
 
         $sessionMock = $this->createMock(Session::class);

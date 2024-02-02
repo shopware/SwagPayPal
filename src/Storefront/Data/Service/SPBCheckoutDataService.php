@@ -31,8 +31,6 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
     private const APM_P24 = 'p24';
     private const APM_SOFORT = 'sofort';
 
-    private SystemConfigService $systemConfigService;
-
     /**
      * @internal
      */
@@ -41,12 +39,11 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
         IdentityResource $identityResource,
         LocaleCodeProvider $localeCodeProvider,
         RouterInterface $router,
-        SystemConfigService $systemConfigService,
-        CredentialsUtilInterface $credentialsUtil
+        private readonly SystemConfigService $systemConfigService,
+        CredentialsUtilInterface $credentialsUtil,
+        private readonly VaultDataService $vaultDataService,
     ) {
         parent::__construct($paymentMethodDataRegistry, $identityResource, $localeCodeProvider, $router, $systemConfigService, $credentialsUtil);
-
-        $this->systemConfigService = $systemConfigService;
     }
 
     public function buildCheckoutData(
@@ -77,14 +74,13 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
 
         $data = $this->getBaseData($context, $order);
 
-        $spbCheckoutButtonData = (new SPBCheckoutButtonData())->assign(\array_merge($data, [
+        return (new SPBCheckoutButtonData())->assign(\array_merge($data, [
             'buttonColor' => $this->systemConfigService->getString(Settings::SPB_BUTTON_COLOR, $salesChannelId),
             'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
             'disabledAlternativePaymentMethods' => $this->getDisabledAlternativePaymentMethods($price, $currency->getIsoCode()),
             'showPayLater' => $this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId),
+            'userIdToken' => $this->vaultDataService->getUserIdToken($context),
         ]));
-
-        return $spbCheckoutButtonData;
     }
 
     public function getMethodDataClass(): string

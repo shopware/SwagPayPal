@@ -29,6 +29,8 @@ class AbstractCheckoutData extends Struct
 
     protected ?string $clientToken = null;
 
+    protected ?string $userIdToken = null;
+
     protected string $paymentMethodId;
 
     protected string $createOrderUrl;
@@ -101,6 +103,16 @@ class AbstractCheckoutData extends Struct
     public function setClientToken(?string $clientToken): void
     {
         $this->clientToken = $clientToken;
+    }
+
+    public function getUserIdToken(): ?string
+    {
+        return $this->userIdToken;
+    }
+
+    public function setUserIdToken(?string $userIdToken): void
+    {
+        $this->userIdToken = $userIdToken;
     }
 
     public function getPaymentMethodId(): string
