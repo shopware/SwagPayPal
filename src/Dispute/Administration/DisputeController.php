@@ -7,16 +7,18 @@
 
 namespace Swag\PayPal\Dispute\Administration;
 
-use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\Dispute\Exception\NotAuthorizedException;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use Swag\PayPal\RestApi\V1\Resource\DisputeResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Package('checkout')]
@@ -72,9 +74,17 @@ class DisputeController extends AbstractController
         $salesChannelId = $this->validateSalesChannelId($request);
         $disputeStateFilter = $this->validateDisputeStateFilter($request);
 
-        $disputeList = $this->disputeResource->list($salesChannelId, $disputeStateFilter);
+        try {
+            $disputeList = $this->disputeResource->list($salesChannelId, $disputeStateFilter);
 
-        return new JsonResponse($disputeList);
+            return new JsonResponse($disputeList);
+        } catch (PayPalApiException $e) {
+            if ($e->getStatusCode() === Response::HTTP_UNAUTHORIZED) {
+                throw new NotAuthorizedException();
+            }
+
+            throw $e;
+        }
     }
 
     /**
