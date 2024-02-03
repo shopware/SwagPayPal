@@ -8,11 +8,11 @@
 namespace Swag\PayPal\Test\Storefront\Data\Service;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\Core\Test\Stub\SystemConfigService\StaticSystemConfigService;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
@@ -109,6 +109,7 @@ class VaultDataServiceTest extends TestCase
 
         $service = new VaultDataService(
             new StaticEntityRepository([new VaultTokenCollection()]),
+            // @phpstan-ignore-next-line
             new StaticSystemConfigService([$salesChannelContext->getSalesChannelId() => [Settings::VAULTING_ENABLE_ALWAYS => true]]),
             $paymentMethodDataRegistry,
             $this->createMock(TokenResourceInterface::class),
@@ -155,6 +156,7 @@ class VaultDataServiceTest extends TestCase
 
         $service = new VaultDataService(
             $repository,
+            // @phpstan-ignore-next-line
             new StaticSystemConfigService([$salesChannelContext->getSalesChannelId() => [Settings::VAULTING_ENABLE_ALWAYS => true]]),
             $paymentMethodDataRegistry,
             $this->createMock(TokenResourceInterface::class),

@@ -16,6 +16,8 @@ use Swag\PayPal\RestApi\V2\Api\Order;
 interface ACDCValidatorInterface
 {
     public const LIABILITY_SHIFT_POSSIBLE = 'POSSIBLE';
+
+    public const LIABILITY_SHIFT_YES = 'YES';
     public const LIABILITY_SHIFT_NO = 'NO';
     public const LIABILITY_SHIFT_UNKNOWN = 'UNKNOWN';
 

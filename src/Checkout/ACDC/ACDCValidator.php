@@ -53,7 +53,8 @@ class ACDCValidator implements ACDCValidatorInterface
             throw new MissingPayloadException($order->getId(), 'payment_source.card.authentication_result');
         }
 
-        if ($authenticationResult->getLiabilityShift() === self::LIABILITY_SHIFT_POSSIBLE) {
+        if ($authenticationResult->getLiabilityShift() === self::LIABILITY_SHIFT_POSSIBLE
+         || $authenticationResult->getLiabilityShift() === self::LIABILITY_SHIFT_YES) {
             return true;
         }
 
