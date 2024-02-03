@@ -13,9 +13,9 @@ use Shopware\Core\Framework\Log\Package;
 #[Package('checkout')]
 class ACDCValidationFailedException extends PaymentException
 {
-    public static function syncACDCValidationFailed(string $orderTransactionId, ?string $message = null): PaymentException
+    public static function asyncACDCValidationFailed(string $orderTransactionId, ?string $message = null): PaymentException
     {
-        return PaymentException::syncProcessInterrupted(
+        return PaymentException::asyncProcessInterrupted(
             $orderTransactionId,
             $message ?? 'Credit card validation failed, 3D secure was not validated.'
         );
