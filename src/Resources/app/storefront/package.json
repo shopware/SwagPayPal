@@ -5,6 +5,6 @@
   "description": "Shopware Storefront PayPal",
   "license": "MIT",
   "dependencies": {
-    "@paypal/paypal-js": "~5"
+    "@paypal/paypal-js": "~8"
   }
 }
