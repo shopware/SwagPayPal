@@ -27,10 +27,10 @@ class VaultDataService
      * @internal
      */
     public function __construct(
-        private EntityRepository $vaultRepository,
-        private SystemConfigService $systemConfigService,
-        private PaymentMethodDataRegistry $paymentMethodDataRegistry,
-        private TokenResourceInterface $tokenResource,
+        private readonly EntityRepository $vaultRepository,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        private readonly TokenResourceInterface $tokenResource,
     ) {
     }
 

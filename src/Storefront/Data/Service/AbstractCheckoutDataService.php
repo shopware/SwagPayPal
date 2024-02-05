@@ -14,7 +14,6 @@ use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
@@ -28,35 +27,16 @@ abstract class AbstractCheckoutDataService
 {
     public const PAYPAL_ERROR = 'isPayPalError';
 
-    private PaymentMethodDataRegistry $paymentMethodDataRegistry;
-
-    private IdentityResource $identityResource;
-
-    private LocaleCodeProvider $localeCodeProvider;
-
-    private RouterInterface $router;
-
-    private SystemConfigService $systemConfigService;
-
-    private CredentialsUtilInterface $credentialsUtil;
-
     /**
      * @internal
      */
     public function __construct(
-        PaymentMethodDataRegistry $paymentMethodDataRegistry,
-        IdentityResource $identityResource,
-        LocaleCodeProvider $localeCodeProvider,
-        RouterInterface $router,
-        SystemConfigService $systemConfigService,
-        CredentialsUtilInterface $credentialsUtil
+        private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        private readonly LocaleCodeProvider $localeCodeProvider,
+        private readonly RouterInterface $router,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly CredentialsUtilInterface $credentialsUtil
     ) {
-        $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
-        $this->identityResource = $identityResource;
-        $this->localeCodeProvider = $localeCodeProvider;
-        $this->router = $router;
-        $this->systemConfigService = $systemConfigService;
-        $this->credentialsUtil = $credentialsUtil;
     }
 
     abstract public function buildCheckoutData(SalesChannelContext $context, ?Cart $cart = null, ?OrderEntity $order = null): ?AbstractCheckoutData;
@@ -66,7 +46,7 @@ abstract class AbstractCheckoutDataService
      */
     abstract public function getMethodDataClass(): string;
 
-    protected function getBaseData(SalesChannelContext $context, ?OrderEntity $order = null, bool $generateToken = false): array
+    protected function getBaseData(SalesChannelContext $context, ?OrderEntity $order = null): array
     {
         $paymentMethodId = $this->paymentMethodDataRegistry->getEntityIdFromData(
             $this->paymentMethodDataRegistry->getPaymentMethod($this->getMethodDataClass()),
@@ -93,10 +73,6 @@ abstract class AbstractCheckoutDataService
                 : $this->router->generate('frontend.paypal.create_order'),
             'addErrorUrl' => $this->router->generate('frontend.paypal.error'),
         ];
-
-        if ($generateToken) {
-            $data['clientToken'] = $this->identityResource->getClientToken($salesChannelId)->getClientToken();
-        }
 
         if ($order !== null) {
             $data['orderId'] = $order->getId();

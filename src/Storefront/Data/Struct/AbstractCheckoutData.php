@@ -27,8 +27,6 @@ class AbstractCheckoutData extends Struct
 
     protected string $buttonColor;
 
-    protected ?string $clientToken = null;
-
     protected ?string $userIdToken = null;
 
     protected string $paymentMethodId;
@@ -93,16 +91,6 @@ class AbstractCheckoutData extends Struct
     public function setIntent(string $intent): void
     {
         $this->intent = $intent;
-    }
-
-    public function getClientToken(): ?string
-    {
-        return $this->clientToken;
-    }
-
-    public function setClientToken(?string $clientToken): void
-    {
-        $this->clientToken = $clientToken;
     }
 
     public function getUserIdToken(): ?string
