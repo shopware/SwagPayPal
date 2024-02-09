@@ -20,9 +20,9 @@ class CrawlWebhookEventNamesCommand extends Command
     private const WEBHOOK_NAME_KEY = 'webhookName';
     private const WEBHOOK_DESCRIPTION_KEY = 'webhookDescription';
 
-    protected static $defaultName = 'swag:paypal:crawl:webhooks';
+    protected static string $defaultName = 'swag:paypal:crawl:webhooks';
 
-    protected static $defaultDescription = 'Crawls the PayPal developer website for webhook event names and updates "Swag\PayPal\Webhook\WebhookEventTypes"';
+    protected static string $defaultDescription = 'Crawls the PayPal developer website for webhook event names and updates "Swag\PayPal\Webhook\WebhookEventTypes"';
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

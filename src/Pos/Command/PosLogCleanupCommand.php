@@ -17,9 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[Package('checkout')]
 class PosLogCleanupCommand extends AbstractPosCommand
 {
-    protected static $defaultName = 'swag:paypal:pos:log:cleanup';
+    protected static string $defaultName = 'swag:paypal:pos:log:cleanup';
 
-    protected static $defaultDescription = 'Cleanup Zettle sync log';
+    protected static string $defaultDescription = 'Cleanup Zettle sync log';
 
     private LogCleaner $logCleaner;
 

@@ -45,25 +45,13 @@ class ShippingServiceTest extends TestCase
     private const RESOURCE_ID = 'resource_id';
     private const CARRIER_NAME = 'carrier_name';
 
-    /**
-     * @var ShippingResource&MockObject
-     */
-    private $shippingResource;
+    private ShippingResource&MockObject $shippingResource;
 
-    /**
-     * @var EntityRepository&MockObject
-     */
-    private $salesChannelRepository;
+    private EntityRepository&MockObject $salesChannelRepository;
 
-    /**
-     * @var EntityRepository&MockObject
-     */
-    private $orderTransactionRepository;
+    private EntityRepository&MockObject $orderTransactionRepository;
 
-    /**
-     * @var EntityRepository&MockObject
-     */
-    private $shippingMethodRepository;
+    private EntityRepository&MockObject $shippingMethodRepository;
 
     protected function setUp(): void
     {
@@ -71,6 +59,70 @@ class ShippingServiceTest extends TestCase
         $this->salesChannelRepository = $this->createMock(EntityRepository::class);
         $this->orderTransactionRepository = $this->createMock(EntityRepository::class);
         $this->shippingMethodRepository = $this->createMock(EntityRepository::class);
+    }
+
+    public static function updateDataProvider(): array
+    {
+        return [
+            'add code' => [
+                [self::TEST_CODE_A],
+                [],
+                [
+                    [
+                        'transaction_id' => self::RESOURCE_ID,
+                        'tracking_number' => self::TEST_CODE_A,
+                        'status' => 'SHIPPED',
+                        'carrier' => self::CARRIER_NAME,
+                    ],
+                ],
+                [],
+            ],
+            'remove code' => [
+                [],
+                [self::TEST_CODE_A],
+                [],
+                [
+                    [
+                        'transaction_id' => self::RESOURCE_ID,
+                        'tracking_number' => self::TEST_CODE_A,
+                        'status' => 'CANCELLED',
+                        'carrier' => self::CARRIER_NAME,
+                    ],
+                ],
+            ],
+            'complex' => [
+                [self::TEST_CODE_C, self::TEST_CODE_D, self::TEST_CODE_B],
+                [self::TEST_CODE_A, self::TEST_CODE_B, self::TEST_CODE_E],
+                [
+                    [
+                        'transaction_id' => self::RESOURCE_ID,
+                        'tracking_number' => self::TEST_CODE_C,
+                        'status' => 'SHIPPED',
+                        'carrier' => self::CARRIER_NAME,
+                    ],
+                    [
+                        'transaction_id' => self::RESOURCE_ID,
+                        'tracking_number' => self::TEST_CODE_D,
+                        'status' => 'SHIPPED',
+                        'carrier' => self::CARRIER_NAME,
+                    ],
+                ],
+                [
+                    [
+                        'transaction_id' => self::RESOURCE_ID,
+                        'tracking_number' => self::TEST_CODE_A,
+                        'status' => 'CANCELLED',
+                        'carrier' => self::CARRIER_NAME,
+                    ],
+                    [
+                        'transaction_id' => self::RESOURCE_ID,
+                        'tracking_number' => self::TEST_CODE_E,
+                        'status' => 'CANCELLED',
+                        'carrier' => self::CARRIER_NAME,
+                    ],
+                ],
+            ],
+        ];
     }
 
     public function testUpdateWithoutChanges(): void
@@ -148,70 +200,6 @@ class ShippingServiceTest extends TestCase
         ), static::isType('string'));
 
         $this->getService()->updateTrackingCodes(Uuid::randomHex(), $after, $before, Context::createDefaultContext());
-    }
-
-    public static function updateDataProvider(): array
-    {
-        return [
-            'add code' => [
-                [self::TEST_CODE_A],
-                [],
-                [
-                    [
-                        'transaction_id' => self::RESOURCE_ID,
-                        'tracking_number' => self::TEST_CODE_A,
-                        'status' => 'SHIPPED',
-                        'carrier' => self::CARRIER_NAME,
-                    ],
-                ],
-                [],
-            ],
-            'remove code' => [
-                [],
-                [self::TEST_CODE_A],
-                [],
-                [
-                    [
-                        'transaction_id' => self::RESOURCE_ID,
-                        'tracking_number' => self::TEST_CODE_A,
-                        'status' => 'CANCELLED',
-                        'carrier' => self::CARRIER_NAME,
-                    ],
-                ],
-            ],
-            'complex' => [
-                [self::TEST_CODE_C, self::TEST_CODE_D, self::TEST_CODE_B],
-                [self::TEST_CODE_A, self::TEST_CODE_B, self::TEST_CODE_E],
-                [
-                    [
-                        'transaction_id' => self::RESOURCE_ID,
-                        'tracking_number' => self::TEST_CODE_C,
-                        'status' => 'SHIPPED',
-                        'carrier' => self::CARRIER_NAME,
-                    ],
-                    [
-                        'transaction_id' => self::RESOURCE_ID,
-                        'tracking_number' => self::TEST_CODE_D,
-                        'status' => 'SHIPPED',
-                        'carrier' => self::CARRIER_NAME,
-                    ],
-                ],
-                [
-                    [
-                        'transaction_id' => self::RESOURCE_ID,
-                        'tracking_number' => self::TEST_CODE_A,
-                        'status' => 'CANCELLED',
-                        'carrier' => self::CARRIER_NAME,
-                    ],
-                    [
-                        'transaction_id' => self::RESOURCE_ID,
-                        'tracking_number' => self::TEST_CODE_E,
-                        'status' => 'CANCELLED',
-                        'carrier' => self::CARRIER_NAME,
-                    ],
-                ],
-            ],
-        ];
     }
 
     private function getService(): ShippingService

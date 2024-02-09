@@ -17,19 +17,16 @@ class ExecutePaymentSaleResponseFixture
 {
     public const SALE_ID = '5GB9720606957970A';
 
-    /**
-     * @var bool
-     */
-    private static $duplicateTransaction = false;
-
-    public static function setDuplicateTransaction(bool $duplicateTransaction): void
-    {
-        self::$duplicateTransaction = $duplicateTransaction;
-    }
+    private static bool $duplicateTransaction = false;
 
     public static function isDuplicateTransaction(): bool
     {
         return self::$duplicateTransaction;
+    }
+
+    public static function setDuplicateTransaction(bool $duplicateTransaction): void
+    {
+        self::$duplicateTransaction = $duplicateTransaction;
     }
 
     public static function get(): array

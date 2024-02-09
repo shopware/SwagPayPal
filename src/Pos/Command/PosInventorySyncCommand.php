@@ -17,9 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[Package('checkout')]
 class PosInventorySyncCommand extends AbstractPosCommand
 {
-    protected static $defaultName = 'swag:paypal:pos:sync:inventory';
+    protected static string $defaultName = 'swag:paypal:pos:sync:inventory';
 
-    protected static $defaultDescription = 'Sync only inventory to Zettle';
+    protected static string $defaultDescription = 'Sync only inventory to Zettle';
 
     private InventoryTask $inventoryTask;
 
