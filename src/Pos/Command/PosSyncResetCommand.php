@@ -17,9 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[Package('checkout')]
 class PosSyncResetCommand extends AbstractPosCommand
 {
-    protected static $defaultName = 'swag:paypal:pos:sync:reset';
+    protected static string $defaultName = 'swag:paypal:pos:sync:reset';
 
-    protected static $defaultDescription = 'Reset Zettle sync';
+    protected static string $defaultDescription = 'Reset Zettle sync';
 
     private SyncResetter $resetSyncService;
 

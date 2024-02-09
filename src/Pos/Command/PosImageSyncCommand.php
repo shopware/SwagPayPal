@@ -17,9 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[Package('checkout')]
 class PosImageSyncCommand extends AbstractPosCommand
 {
-    protected static $defaultName = 'swag:paypal:pos:sync:images';
+    protected static string $defaultName = 'swag:paypal:pos:sync:images';
 
-    protected static $defaultDescription = 'Sync only images to Zettle';
+    protected static string $defaultDescription = 'Sync only images to Zettle';
 
     private ImageTask $imageTask;
 

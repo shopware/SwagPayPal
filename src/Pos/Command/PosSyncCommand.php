@@ -17,9 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[Package('checkout')]
 class PosSyncCommand extends AbstractPosCommand
 {
-    protected static $defaultName = 'swag:paypal:pos:sync';
+    protected static string $defaultName = 'swag:paypal:pos:sync';
 
-    protected static $defaultDescription = 'Sync to Zettle';
+    protected static string $defaultDescription = 'Sync to Zettle';
 
     private CompleteTask $completeTask;
 

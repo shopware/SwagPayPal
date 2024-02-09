@@ -37,10 +37,45 @@ class ShippingSubscriberTest extends TestCase
 {
     private const TEST_CODE = 'test_code';
 
-    /**
-     * @var ShippingService&MockObject
-     */
-    private $shippingService;
+    private ShippingService&MockObject $shippingService;
+
+    public static function dataProviderWriteResult(): array
+    {
+        return [
+            [
+                new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => [self::TEST_CODE]], 'order_delivery', EntityWriteResult::OPERATION_INSERT, null, null),
+                [self::TEST_CODE],
+                [],
+            ],
+            [
+                new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => [self::TEST_CODE]], 'order_delivery', EntityWriteResult::OPERATION_UPDATE, null, new ChangeSet(
+                    ['tracking_codes' => null],
+                    ['tracking_codes' => '["test_code"]'],
+                    false,
+                )),
+                [self::TEST_CODE],
+                [],
+            ],
+            [
+                new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => null], 'order_delivery', EntityWriteResult::OPERATION_UPDATE, null, new ChangeSet(
+                    ['tracking_codes' => '["test_code"]'],
+                    ['tracking_codes' => null],
+                    false,
+                )),
+                [],
+                [self::TEST_CODE],
+            ],
+            [
+                new EntityWriteResult(Uuid::randomHex(), [], 'order_delivery', EntityWriteResult::OPERATION_DELETE, null, new ChangeSet(
+                    ['tracking_codes' => '["test_code"]'],
+                    [],
+                    true,
+                )),
+                null,
+                [],
+            ],
+        ];
+    }
 
     public function testTriggerChangeSet(): void
     {
@@ -114,44 +149,6 @@ class ShippingSubscriberTest extends TestCase
             ->expects(static::never())->method('updateTrackingCodes');
 
         $subscriber->onOrderDeliveryWritten($event);
-    }
-
-    public static function dataProviderWriteResult(): array
-    {
-        return [
-            [
-                new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => [self::TEST_CODE]], 'order_delivery', EntityWriteResult::OPERATION_INSERT, null, null),
-                [self::TEST_CODE],
-                [],
-            ],
-            [
-                new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => [self::TEST_CODE]], 'order_delivery', EntityWriteResult::OPERATION_UPDATE, null, new ChangeSet(
-                    ['tracking_codes' => null],
-                    ['tracking_codes' => '["test_code"]'],
-                    false,
-                )),
-                [self::TEST_CODE],
-                [],
-            ],
-            [
-                new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => null], 'order_delivery', EntityWriteResult::OPERATION_UPDATE, null, new ChangeSet(
-                    ['tracking_codes' => '["test_code"]'],
-                    ['tracking_codes' => null],
-                    false,
-                )),
-                [],
-                [self::TEST_CODE],
-            ],
-            [
-                new EntityWriteResult(Uuid::randomHex(), [], 'order_delivery', EntityWriteResult::OPERATION_DELETE, null, new ChangeSet(
-                    ['tracking_codes' => '["test_code"]'],
-                    [],
-                    true,
-                )),
-                null,
-                [],
-            ],
-        ];
     }
 
     private function getSubscriber(): ShippingSubscriber
