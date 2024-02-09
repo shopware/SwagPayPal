@@ -63,7 +63,9 @@
                                     <div>
                                         <div>
                                             {{ formatTechnicalText(item.dispute_state) }}
-                                            <template v-if="item.dispute_state !== item.status"> ({{ formatTechnicalText(item.status) }})</template>
+                                            <template v-if="item.dispute_state !== item.status">
+                                                ({{ formatTechnicalText(item.status) }})
+                                            </template>
                                         </div>
                                         <div class="swag-paypal-disputes-list__reason">
                                             {{ formatTechnicalText(item.reason) }}
@@ -74,7 +76,8 @@
 
                             {% block swag_paypal_disputes_list_content_grid_column_dispute_id %}
                                 <template #column-dispute_id="{ item }">
-                                    <router-link :to="{ name: 'swag.paypal.disputes.detail', params: { disputeId: item.dispute_id , salesChannelId} }">
+                                    <router-link
+                                        :to="{ name: 'swag.paypal.disputes.detail', params: { disputeId: item.dispute_id , salesChannelId} }">
                                         {{ item.dispute_id }}
                                     </router-link>
                                 </template>
@@ -83,11 +86,11 @@
                             {% block swag_paypal_disputes_list_content_grid_column_dispute_life_cycle_stage %}
                                 <template #column-dispute_life_cycle_stage="{ item }">
                                     <div v-if="item.dispute_life_cycle_stage === 'INQUIRY'"
-                                          class="swag-paypal-disputes-list__stage-inquiry">
+                                         class="swag-paypal-disputes-list__stage-inquiry">
                                         {{ formatTechnicalText(item.dispute_life_cycle_stage) }}
                                     </div>
                                     <div v-else
-                                          class="swag-paypal-disputes-list__stage-other">
+                                         class="swag-paypal-disputes-list__stage-other">
                                         {{ formatTechnicalText(item.dispute_life_cycle_stage) }}
                                     </div>
                                 </template>
@@ -115,7 +118,28 @@
 
                     {% block swag_paypal_disputes_list_content_empty_state %}
                         <sw-empty-state
-                            v-if="disputes.length === 0"
+                                v-if="notAuthorized"
+                                :title="$tc('swag-paypal-disputes.list.emptyStateNotAuthorized.title')"
+                                icon="regular-exclamation-triangle"
+                                color="#F88962">
+                            <i18n-t
+                                    tag="p"
+                                    keypath="swag-paypal-disputes.list.emptyStateNotAuthorized.subline"
+                            >
+                                <template #link>
+                                    <sw-internal-link
+                                            :routerLink="{ name: 'sw.settings.payment.overview' }"
+                                            :inline="true"
+                                            :hideIcon="true"
+                                    >
+                                        {{ $tc('swag-paypal-disputes.list.emptyStateNotAuthorized.link') }}
+                                    </sw-internal-link>
+                                </template>
+                            </i18n-t>
+                        </sw-empty-state>
+
+                        <sw-empty-state
+                            v-else-if="showEmptyStateWithNoDisputes"
                             :title="$tc('swag-paypal-disputes.list.emptyState.title')"
                             :subline="$tc('swag-paypal-disputes.list.emptyState.subline')"
                             icon="regular-comments"
@@ -145,8 +169,9 @@
 
                             {% block swag_paypal_disputes_list_sidebar_filter_items %}
                                 {% block swag_paypal_disputes_list_sidebar_filter_sales_channel %}
-                                    <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
-                                                             @change-sales-channel-id="onSalesChannelChanged">
+                                    <sw-sales-channel-switch
+                                        :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                                        @change-sales-channel-id="onSalesChannelChanged">
                                     </sw-sales-channel-switch>
                                 {% endblock %}
 

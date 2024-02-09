@@ -1,5 +1,6 @@
 import template from './swag-paypal-disputes-list.html.twig';
 import {
+    DISPUTE_AUTH_ERROR,
     DISPUTE_STATE_APPEALABLE,
     DISPUTE_STATE_OPEN_INQUIRIES,
     DISPUTE_STATE_REQUIRED_ACTION,
@@ -26,6 +27,7 @@ Component.register('swag-paypal-disputes-list', {
     data() {
         return {
             isLoading: false,
+            notAuthorized: false,
             disputes: [],
             disputeStates: [
                 {
@@ -65,6 +67,10 @@ Component.register('swag-paypal-disputes-list', {
     computed: {
         dateFilter() {
             return Filter.getByName('date');
+        },
+
+        showEmptyStateWithNoDisputes() {
+            return !this.notAuthorized && this.disputes.length === 0;
         },
 
         disputesColumns() {
@@ -157,11 +163,16 @@ Component.register('swag-paypal-disputes-list', {
         }, 850),
 
         handleError(errorResponse) {
-            const errorDetail = errorResponse.response.data.errors[0].detail;
-            this.createNotificationError({
-                message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${errorDetail}`,
-                autoClose: false,
-            });
+            if (errorResponse.response.data.errors[0].code === DISPUTE_AUTH_ERROR) {
+                this.notAuthorized = true;
+            } else {
+                const errorDetail = errorResponse.response.data.errors[0].detail;
+                this.createNotificationError({
+                    message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${errorDetail}`,
+                    autoClose: false,
+                });
+            }
+
             this.isLoading = false;
         },
 

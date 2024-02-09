@@ -8,3 +8,5 @@ framework:
       log_level: notice
     Swag\PayPal\Checkout\Exception\OrderAmountZeroException:
       log_level: notice
+    Swag\PayPal\Dispute\Exception\NotAuthorizedException:
+      log_level: notice

@@ -24,6 +24,11 @@
             "emptyState": {
                 "title": "No disputes found",
                 "subline": "Change the filter to show all disputes."
+            },
+            "emptyStateNotAuthorized": {
+                "title": "No PayPal account setup",
+                "subline": "Go to the {link} for PayPal setup.",
+                "link": "Payment methods"
             }
         },
         "detail": {

@@ -24,6 +24,11 @@
             "emptyState": {
                 "title": "Es wurden keine Konflikte gefunden",
                 "subline": "Ändere den Filter, um alle Konflikte anzuzeigen."
+            },
+            "emptyStateNotAuthorized": {
+                "title": "PayPal nicht eingerichtet",
+                "subline": "Gehe zu den {link}, um PayPal einzurichten.",
+                "link": "Zahlungsarten"
             }
         },
         "detail": {
