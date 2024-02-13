@@ -36,7 +36,7 @@
 
         <service id="Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute" public="true">
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
             <argument type="service" id="monolog.logger.paypal"/>

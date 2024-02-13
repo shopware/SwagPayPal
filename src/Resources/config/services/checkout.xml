@@ -35,10 +35,11 @@
         <service id="Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute" public="true">
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="order.repository"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute"
@@ -79,6 +80,9 @@
             <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\ACDC\ACDCValidator"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
 
             <tag name="shopware.payment.method.async"/>
         </service>
@@ -109,7 +113,7 @@
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Handler\PayPalHandler">
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>

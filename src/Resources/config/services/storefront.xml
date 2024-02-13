@@ -39,7 +39,6 @@
 
         <service id="Swag\PayPal\Storefront\Data\VaultSubscriber">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Storefront\Data\Service\VaultDataService"/>
             <tag name="kernel.event_subscriber"/>
         </service>

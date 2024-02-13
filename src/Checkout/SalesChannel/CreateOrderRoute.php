@@ -15,7 +15,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderException;
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\AbstractPaymentTransactionStructFactory;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -25,14 +25,11 @@ use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\TokenResponse;
-use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
-use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Verification;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,35 +40,18 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
 {
     public const FAKE_URL = 'https://www.example.com/';
 
-    private OrderFromCartBuilder $orderFromCartBuilder;
-
-    private OrderFromOrderBuilder $orderFromOrderBuilder;
-
-    private CartService $cartService;
-
-    private EntityRepository $orderRepository;
-
-    private OrderResource $orderResource;
-
-    private LoggerInterface $logger;
-
     /**
      * @internal
      */
     public function __construct(
-        CartService $cartService,
-        EntityRepository $orderRepository,
-        OrderFromOrderBuilder $orderFromOrderBuilder,
-        OrderFromCartBuilder $orderFromCartBuilder,
-        OrderResource $orderResource,
-        LoggerInterface $logger
+        private readonly CartService $cartService,
+        private readonly EntityRepository $orderRepository,
+        private readonly PayPalOrderBuilder $payPalOrderBuilder,
+        private readonly ACDCOrderBuilder $acdcOrderBuilder,
+        private readonly OrderResource $orderResource,
+        private readonly LoggerInterface $logger,
+        private readonly AbstractPaymentTransactionStructFactory $paymentTransactionStructFactory,
     ) {
-        $this->cartService = $cartService;
-        $this->orderRepository = $orderRepository;
-        $this->orderFromOrderBuilder = $orderFromOrderBuilder;
-        $this->orderFromCartBuilder = $orderFromCartBuilder;
-        $this->orderResource = $orderResource;
-        $this->logger = $logger;
     }
 
     public function getDecorated(): AbstractCreateOrderRoute
@@ -127,13 +107,14 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             }
 
             $orderId = $requestDataBag->getAlnum('orderId');
-            $paypalOrder = $orderId
-                ? $this->getOrderFromOrder($orderId, $customer, $requestDataBag, $salesChannelContext)
-                : $this->getOrderFromCart($salesChannelContext, $request, $customer);
 
-            if ($requestDataBag->get('product') === 'acdc') {
-                $this->addACDCAdjustments($paypalOrder->getPaymentSource());
-            }
+            $orderBuilder = $requestDataBag->get('product') === 'acdc'
+                ? $this->acdcOrderBuilder
+                : $this->payPalOrderBuilder;
+
+            $paypalOrder = $orderId
+                ? $this->getOrderFromOrder($orderBuilder, $orderId, $customer, $requestDataBag, $salesChannelContext)
+                : $this->getOrderFromCart($orderBuilder, $salesChannelContext, $requestDataBag);
 
             $salesChannelId = $salesChannelContext->getSalesChannelId();
             $response = $this->orderResource->create($paypalOrder, $salesChannelId, $this->getPartnerAttributionId($requestDataBag));
@@ -146,14 +127,18 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         }
     }
 
-    private function getOrderFromCart(SalesChannelContext $salesChannelContext, Request $request, CustomerEntity $customer): Order
-    {
+    private function getOrderFromCart(
+        AbstractOrderBuilder $orderBuilder,
+        SalesChannelContext $salesChannelContext,
+        RequestDataBag $requestDataBag,
+    ): Order {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
-        return $this->orderFromCartBuilder->getOrder($cart, $request, $salesChannelContext, $customer);
+        return $orderBuilder->getOrderFromCart($cart, $salesChannelContext, $requestDataBag);
     }
 
     private function getOrderFromOrder(
+        AbstractOrderBuilder $orderBuilder,
         string $orderId,
         CustomerEntity $customer,
         RequestDataBag $requestDataBag,
@@ -165,6 +150,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         $criteria->addAssociation('billingAddress.country');
         $criteria->addAssociation('orderCustomer');
         $criteria->addAssociation('deliveries.shippingOrderAddress.country');
+        $criteria->addAssociation('subscription');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->first();
@@ -188,10 +174,10 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             throw PaymentException::invalidOrder($orderId);
         }
 
-        return $this->orderFromOrderBuilder->getOrder(
-            new AsyncPaymentTransactionStruct($transaction, $order, self::FAKE_URL),
-            $requestDataBag,
+        return $orderBuilder->getOrder(
+            $this->paymentTransactionStructFactory->sync($transaction, $order),
             $salesChannelContext,
+            $requestDataBag,
         );
     }
 
@@ -208,22 +194,5 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         }
 
         return PartnerAttributionId::PRODUCT_ATTRIBUTION[$product];
-    }
-
-    private function addACDCAdjustments(?PaymentSource $paymentSource): void
-    {
-        $paypal = $paymentSource?->getPaypal();
-        if (!$paypal) {
-            return;
-        }
-
-        $card = new Card();
-        $card->setExperienceContext($paypal->getExperienceContext());
-        $attributes = new Attributes();
-        $attributes->setVerification(new Verification());
-        $card->setAttributes($attributes);
-
-        $paymentSource->setCard($card);
-        $paymentSource->setPaypal(null);
     }
 }

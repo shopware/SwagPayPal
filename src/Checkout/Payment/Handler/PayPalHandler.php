@@ -20,7 +20,7 @@ use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
-use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Common\Link;
@@ -36,7 +36,7 @@ class PayPalHandler
      * @internal
      */
     public function __construct(
-        private readonly OrderFromOrderBuilder $orderBuilder,
+        private readonly PayPalOrderBuilder $orderBuilder,
         private readonly OrderResource $orderResource,
         private readonly OrderExecuteService $orderExecuteService,
         private readonly OrderPatchService $orderPatchService,
@@ -58,8 +58,8 @@ class PayPalHandler
 
         $paypalOrder = $this->orderBuilder->getOrder(
             $transaction,
-            $requestDataBag,
             $salesChannelContext,
+            $requestDataBag,
         );
 
         $transactionId = $transaction->getOrderTransaction()->getId();

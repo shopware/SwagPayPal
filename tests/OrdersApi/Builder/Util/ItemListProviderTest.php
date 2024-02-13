@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\OrdersApi\Builder\Util;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
@@ -36,7 +39,7 @@ class ItemListProviderTest extends TestCase
     {
         $order = $this->createOrder('Test Product Name', 10);
 
-        $childLineItem = $this->createLineItem('Test Child Product', 10);
+        $childLineItem = $this->createOrderLineItem('Test Child Product', 10);
         $orderLineItems = $order->getLineItems();
         static::assertNotNull($orderLineItems);
         $firstOrderLineItem = $orderLineItems->first();
@@ -51,7 +54,7 @@ class ItemListProviderTest extends TestCase
     #[DataProvider('dataProviderTaxConstellation')]
     public function testTaxes(bool $hasTaxes): void
     {
-        $lineItem = $this->createLineItem('test', 10.00, null, $hasTaxes);
+        $lineItem = $this->createOrderLineItem('test', 10.00, null, $hasTaxes);
         $lineItems = new OrderLineItemCollection([$lineItem]);
 
         $order = new OrderEntity();
@@ -65,10 +68,27 @@ class ItemListProviderTest extends TestCase
         static::assertSame($hasTaxes ? '1.90' : '0.00', $item->getTax()->getValue());
     }
 
+    #[DataProvider('dataProviderTaxConstellation')]
+    public function testTaxesCart(bool $hasTaxes): void
+    {
+        $lineItem = $this->createCartLineItem('test', 10.00, null, $hasTaxes);
+        $lineItems = new LineItemCollection([$lineItem]);
+
+        $cart = new Cart(Uuid::randomHex());
+        $cart->setLineItems($lineItems);
+        $cart->getPrice()->assign(['taxStatus' => $hasTaxes ? CartPrice::TAX_STATE_NET : CartPrice::TAX_STATE_GROSS]);
+
+        $itemList = $this->createItemListProvider()->getItemListFromCart($this->createCurrency(), $cart);
+        $item = $itemList->first();
+        static::assertInstanceOf(Item::class, $item);
+        static::assertSame($hasTaxes ? 19.0 : 0.0, $item->getTaxRate());
+        static::assertSame($hasTaxes ? '1.90' : '0.00', $item->getTax()->getValue());
+    }
+
     #[DataProvider('dataProviderQuantityConstellation')]
     public function testRoundingError(float $productPrice, int $quantity, string $title, int $expectedQuantity, string $expectedUnitPrice, string $expectedTaxValue, bool $hasTaxes): void
     {
-        $lineItem = $this->createLineItem('test', $productPrice, null, $hasTaxes, $quantity);
+        $lineItem = $this->createOrderLineItem('test', $productPrice, null, $hasTaxes, $quantity);
         $lineItems = new OrderLineItemCollection([$lineItem]);
 
         $order = new OrderEntity();
@@ -76,6 +96,26 @@ class ItemListProviderTest extends TestCase
         $order->setTaxStatus($hasTaxes ? CartPrice::TAX_STATE_NET : CartPrice::TAX_STATE_GROSS);
 
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
+        $item = $itemList->first();
+        static::assertInstanceOf(Item::class, $item);
+        static::assertSame($title, $item->getName());
+        static::assertSame($expectedQuantity, $item->getQuantity());
+        static::assertSame($expectedUnitPrice, $item->getUnitAmount()->getValue());
+        static::assertSame($hasTaxes ? 19.0 : 0.0, $item->getTaxRate());
+        static::assertSame($expectedTaxValue, $item->getTax()->getValue());
+    }
+
+    #[DataProvider('dataProviderQuantityConstellation')]
+    public function testRoundingErrorCart(float $productPrice, int $quantity, string $title, int $expectedQuantity, string $expectedUnitPrice, string $expectedTaxValue, bool $hasTaxes): void
+    {
+        $lineItem = $this->createCartLineItem('test', $productPrice, null, $hasTaxes, $quantity);
+        $lineItems = new LineItemCollection([$lineItem]);
+
+        $cart = new Cart(Uuid::randomHex());
+        $cart->setLineItems($lineItems);
+        $cart->getPrice()->assign(['taxStatus' => $hasTaxes ? CartPrice::TAX_STATE_NET : CartPrice::TAX_STATE_GROSS]);
+
+        $itemList = $this->createItemListProvider()->getItemListFromCart($this->createCurrency(), $cart);
         $item = $itemList->first();
         static::assertInstanceOf(Item::class, $item);
         static::assertSame($title, $item->getName());
@@ -98,10 +138,10 @@ class ItemListProviderTest extends TestCase
 
     public function testLineItemLabelTooLongIsTruncatedWithPriceMismatch(): void
     {
-        $lineItem = $this->createLineItem(\str_repeat('a', Item::MAX_LENGTH_NAME + 10), 10, quantity: 10);
+        $lineItem = $this->createOrderLineItem(\str_repeat('a', Item::MAX_LENGTH_NAME + 10), 10, quantity: 10);
 
         // provoke a price mismatch
-        $lineItem->setTotalPrice(5);
+        $lineItem->getPrice()?->assign(['totalPrice' => 5]);
 
         $order = (new OrderEntity())->assign([
             'lineItems' => new OrderLineItemCollection([$lineItem]),
@@ -169,7 +209,7 @@ class ItemListProviderTest extends TestCase
 
     private function createOrder(string $productName, float $productPrice, ?string $productNumber = null): OrderEntity
     {
-        $lineItem = $this->createLineItem($productName, $productPrice, $productNumber);
+        $lineItem = $this->createOrderLineItem($productName, $productPrice, $productNumber);
 
         $lineItems = new OrderLineItemCollection([$lineItem]);
 
@@ -180,7 +220,7 @@ class ItemListProviderTest extends TestCase
         return $order;
     }
 
-    private function createLineItem(
+    private function createOrderLineItem(
         string $productName,
         float $productPrice,
         ?string $productNumber = null,
@@ -191,8 +231,32 @@ class ItemListProviderTest extends TestCase
         $lineItem->setId(Uuid::randomHex());
         $lineItem->setLabel($productName);
         $lineItem->setQuantity($quantity);
-        $lineItem->setUnitPrice($productPrice);
-        $lineItem->setTotalPrice($productPrice * $quantity);
+
+        if ($productNumber !== null) {
+            $lineItem->setPayload(['productNumber' => $productNumber]);
+        }
+
+        $price = new CalculatedPrice(
+            $productPrice,
+            $productPrice * $quantity,
+            new CalculatedTaxCollection([new CalculatedTax($withTaxes ? $productPrice * $quantity * 0.19 : 0.0, $withTaxes ? 19.0 : 0.0, $productPrice)]),
+            new TaxRuleCollection()
+        );
+        $lineItem->setPrice($price);
+
+        return $lineItem;
+    }
+
+    private function createCartLineItem(
+        string $productName,
+        float $productPrice,
+        ?string $productNumber = null,
+        ?bool $withTaxes = false,
+        int $quantity = 1
+    ): LineItem {
+        $id = Uuid::randomHex();
+        $lineItem = new LineItem($id, LineItem::PRODUCT_LINE_ITEM_TYPE, $id, $quantity);
+        $lineItem->setLabel($productName);
 
         if ($productNumber !== null) {
             $lineItem->setPayload(['productNumber' => $productNumber]);

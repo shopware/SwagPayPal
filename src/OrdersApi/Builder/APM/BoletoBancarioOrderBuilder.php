@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\OrdersApi\Builder\APM;
 
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -18,7 +18,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario;
 class BoletoBancarioOrderBuilder extends AbstractAPMOrderBuilder
 {
     protected function buildPaymentSource(
-        AsyncPaymentTransactionStruct $paymentTransaction,
+        SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
         PaymentSource $paymentSource
