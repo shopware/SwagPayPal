@@ -36,6 +36,7 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\ApplePayMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\GooglePayMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
@@ -159,8 +160,8 @@ class Update
             $this->updateTo802($updateContext->getContext());
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.1.0', '<')) {
-            $this->updateTo910($updateContext->getContext());
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '8.1.0', '<')) {
+            $this->updateTo810($updateContext->getContext());
         }
     }
 
@@ -508,8 +509,9 @@ class Update
         }
     }
 
-    private function updateTo910(Context $context): void
+    private function updateTo810(Context $context): void
     {
         $this->paymentMethodInstaller->install(ApplePayMethodData::class, $context);
+        $this->paymentMethodInstaller->install(GooglePayMethodData::class, $context);
     }
 }

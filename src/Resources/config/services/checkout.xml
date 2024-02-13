@@ -113,6 +113,10 @@
             <tag name="shopware.payment.method.sync"/>
         </service>
 
+        <service id="Swag\PayPal\Checkout\Payment\Method\GooglePayHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
+            <tag name="shopware.payment.method.sync"/>
+        </service>
+
         <service id="Swag\PayPal\Checkout\Payment\PayPalPaymentHandler">
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\PayPalHandler"/>

@@ -48,6 +48,7 @@ class PaymentMethodStateServiceTest extends TestCase
         'Swag\PayPal\Checkout\Payment\Method\VenmoHandler' => false,
         'Swag\PayPal\Checkout\Payment\Method\PayLaterHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\ApplePayHandler' => false,
+        'Swag\PayPal\Checkout\Payment\Method\GooglePayHandler' => false,
     ];
 
     private EntityRepository&MockObject $paymentMethodRepository;
