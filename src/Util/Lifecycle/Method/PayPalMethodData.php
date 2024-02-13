@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
@@ -54,7 +55,7 @@ class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodI
         if ($availabilityContext->isSubscription()) {
             $systemConfigService = $this->container->get(SystemConfigService::class);
 
-            return $systemConfigService->getBool(Settings::VAULTING_ENABLED, $availabilityContext->getSalesChannelId());
+            return $systemConfigService->getBool(Settings::VAULTING_ENABLED_WALLET, $availabilityContext->getSalesChannelId());
         }
 
         return true;
@@ -85,8 +86,10 @@ class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodI
         return self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID;
     }
 
-    public function isVaultable(): bool
+    public function isVaultable(SalesChannelContext $context): bool
     {
-        return true;
+        $systemConfigService = $this->container->get(SystemConfigService::class);
+
+        return $systemConfigService->getBool(Settings::VAULTING_ENABLED_WALLET, $context->getSalesChannelId());
     }
 }

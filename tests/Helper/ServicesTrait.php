@@ -11,7 +11,7 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
-use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
@@ -69,7 +69,7 @@ trait ServicesTrait
         );
     }
 
-    protected function createOrderBuilder(?SystemConfigService $systemConfig = null): OrderFromOrderBuilder
+    protected function createOrderBuilder(?SystemConfigService $systemConfig = null): PayPalOrderBuilder
     {
         $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
 
@@ -78,7 +78,7 @@ trait ServicesTrait
         $addressProvider = new AddressProvider();
         $customIdProvider = new CustomIdProviderMock();
 
-        return new OrderFromOrderBuilder(
+        return new PayPalOrderBuilder(
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,

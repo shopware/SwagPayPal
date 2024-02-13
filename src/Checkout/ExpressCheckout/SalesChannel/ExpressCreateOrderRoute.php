@@ -12,9 +12,10 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\TokenResponse;
-use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
+use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -25,27 +26,15 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['store-api']])]
 class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 {
-    private CartService $cartService;
-
-    private OrderFromCartBuilder $orderFromCartBuilder;
-
-    private OrderResource $orderResource;
-
-    private LoggerInterface $logger;
-
     /**
      * @internal
      */
     public function __construct(
-        CartService $cartService,
-        OrderFromCartBuilder $orderFromCartBuilder,
-        OrderResource $orderResource,
-        LoggerInterface $logger
+        private readonly CartService $cartService,
+        private readonly PayPalOrderBuilder $paypalOrderBuilder,
+        private readonly OrderResource $orderResource,
+        private readonly LoggerInterface $logger,
     ) {
-        $this->cartService = $cartService;
-        $this->orderFromCartBuilder = $orderFromCartBuilder;
-        $this->orderResource = $orderResource;
-        $this->logger = $logger;
     }
 
     public function getDecorated(): AbstractExpressCreateOrderRoute
@@ -73,7 +62,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
             $this->logger->debug('Started');
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
             $this->logger->debug('Building order');
-            $order = $this->orderFromCartBuilder->getOrder($cart, $request, $salesChannelContext, null);
+            $order = $this->paypalOrderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag($request->request->all()));
             $order->getPaymentSource()?->getPaypal()?->getExperienceContext()->setShippingPreference(ApplicationContext::SHIPPING_PREFERENCE_GET_FROM_FILE);
             $order->getPaymentSource()?->getPaypal()?->getExperienceContext()->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
 

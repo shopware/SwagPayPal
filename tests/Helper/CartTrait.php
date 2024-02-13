@@ -62,6 +62,7 @@ trait CartTrait
         string $lineItemType = LineItem::PRODUCT_LINE_ITEM_TYPE
     ): LineItem {
         $lineItem = new LineItem(Uuid::randomHex(), $lineItemType);
+        $lineItem->setLabel('Test product');
         if ($lineItemPrice !== null) {
             $lineItem->setPrice($lineItemPrice);
         } else {

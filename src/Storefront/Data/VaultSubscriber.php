@@ -8,13 +8,11 @@
 namespace Swag\PayPal\Storefront\Data;
 
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
-use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\VaultDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -28,7 +26,6 @@ class VaultSubscriber implements EventSubscriberInterface
 
     public function __construct(
         private SettingsValidationServiceInterface $settingsValidationService,
-        private SystemConfigService $systemConfigService,
         private VaultDataService $vaultDataService,
     ) {
     }
@@ -46,10 +43,6 @@ class VaultSubscriber implements EventSubscriberInterface
         try {
             $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannelId());
         } catch (PayPalSettingsInvalidException) {
-            return;
-        }
-
-        if (!$this->systemConfigService->getBool(Settings::VAULTING_ENABLED, $event->getSalesChannelContext()->getSalesChannelId())) {
             return;
         }
 

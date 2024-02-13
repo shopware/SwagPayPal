@@ -14,9 +14,10 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
-use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
+use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
@@ -60,21 +61,20 @@ class ExpressCreateOrderRouteTest extends TestCase
         $amountProvider = new AmountProvider($priceFormatter);
         $addressProvider = new AddressProvider();
         $customIdProvider = new CustomIdProviderMock();
+        $itemListProvider = new ItemListProvider($priceFormatter, $this->createMock(EventDispatcherInterface::class), new NullLogger());
 
-        $orderFromCartBuilder = new OrderFromCartBuilder(
-            $priceFormatter,
+        $paypalOrderBuilder = new PayPalOrderBuilder(
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
             $this->createMock(LocaleCodeProvider::class),
-            $this->createMock(EventDispatcherInterface::class),
-            new NullLogger(),
+            $itemListProvider,
             $this->createMock(VaultTokenService::class),
         );
 
         return new ExpressCreateOrderRoute(
             $this->getContainer()->get(CartService::class),
-            $orderFromCartBuilder,
+            $paypalOrderBuilder,
             new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
             new NullLogger()
         );

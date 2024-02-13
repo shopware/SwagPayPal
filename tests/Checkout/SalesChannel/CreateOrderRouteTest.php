@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -21,9 +22,10 @@ use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
-use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
+use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
@@ -145,15 +147,14 @@ class CreateOrderRouteTest extends TestCase
         $amountProvider = new AmountProvider($priceFormatter);
         $addressProvider = new AddressProvider();
         $customIdProvider = new CustomIdProviderMock();
+        $itemListProvider = new ItemListProvider($priceFormatter, $this->createMock(EventDispatcherInterface::class), new NullLogger());
 
-        $orderFromCartBuilder = new OrderFromCartBuilder(
-            $priceFormatter,
+        $acdcOrderBuilder = new ACDCOrderBuilder(
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
             $this->createMock(LocaleCodeProvider::class),
-            $this->createMock(EventDispatcherInterface::class),
-            new NullLogger(),
+            $itemListProvider,
             $this->createMock(VaultTokenService::class),
         );
 
@@ -161,9 +162,10 @@ class CreateOrderRouteTest extends TestCase
             $this->getContainer()->get(CartService::class),
             new OrderRepositoryMock(),
             $this->createOrderBuilder($systemConfig),
-            $orderFromCartBuilder,
+            $acdcOrderBuilder,
             new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
-            new NullLogger()
+            new NullLogger(),
+            new PaymentTransactionStructFactory(),
         );
     }
 }
