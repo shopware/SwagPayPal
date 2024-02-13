@@ -38,6 +38,7 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\ApplePayMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\GooglePayMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -513,5 +514,6 @@ class Update
     private function updateTo910(Context $context): void
     {
         $this->paymentMethodInstaller->install(ApplePayMethodData::class, $context);
+        $this->paymentMethodInstaller->install(GooglePayMethodData::class, $context);
     }
 }

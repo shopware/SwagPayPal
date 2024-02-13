@@ -18,6 +18,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Eps;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Giropay;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\GooglePay;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Ideal;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Multibanco;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\MyBank;
@@ -83,6 +84,11 @@ class PaymentSource extends PayPalApiStruct
 
     #[OA\Property(ref: Trustly::class, nullable: true)]
     protected ?Trustly $trustly = null;
+
+    /**
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_google_pay")
+     */
+    protected ?GooglePay $googlePay = null;
 
     public function getPayUponInvoice(): ?PayUponInvoice
     {
@@ -242,6 +248,16 @@ class PaymentSource extends PayPalApiStruct
     public function setTrustly(?Trustly $trustly): void
     {
         $this->trustly = $trustly;
+    }
+
+    public function getGooglePay(): ?GooglePay
+    {
+        return $this->googlePay;
+    }
+
+    public function setGooglePay(?GooglePay $googlePay): void
+    {
+        $this->googlePay = $googlePay;
     }
 
     /**
