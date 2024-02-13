@@ -12,15 +12,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Administration\SyncResetter;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(
+    name: 'swag:paypal:pos:sync:reset',
+    description: 'Reset Zettle sync',
+)]
 #[Package('checkout')]
 class PosSyncResetCommand extends AbstractPosCommand
 {
-    protected static string $defaultName = 'swag:paypal:pos:sync:reset';
-
-    protected static string $defaultDescription = 'Reset Zettle sync';
-
     private SyncResetter $resetSyncService;
 
     /**
