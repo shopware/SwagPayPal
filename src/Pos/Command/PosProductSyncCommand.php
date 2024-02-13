@@ -12,15 +12,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\ProductTask;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(
+    name: 'swag:paypal:pos:sync:product',
+    description: 'Sync only products to Zettle',
+)]
 #[Package('checkout')]
 class PosProductSyncCommand extends AbstractPosCommand
 {
-    protected static string $defaultName = 'swag:paypal:pos:sync:product';
-
-    protected static string $defaultDescription = 'Sync only products to Zettle';
-
     private ProductTask $productTask;
 
     /**

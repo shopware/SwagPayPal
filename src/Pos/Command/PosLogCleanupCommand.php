@@ -12,15 +12,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(
+    name: 'swag:paypal:pos:log:cleanup',
+    description: 'Cleanup Zettle sync log',
+)]
 #[Package('checkout')]
 class PosLogCleanupCommand extends AbstractPosCommand
 {
-    protected static string $defaultName = 'swag:paypal:pos:log:cleanup';
-
-    protected static string $defaultDescription = 'Cleanup Zettle sync log';
-
     private LogCleaner $logCleaner;
 
     /**
