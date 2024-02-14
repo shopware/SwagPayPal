@@ -7,6 +7,7 @@ import './components/swag-paypal-checkout';
 import './components/swag-paypal-checkout-method';
 import './components/swag-paypal-created-component-helper';
 import './components/swag-paypal-credentials';
+import './components/swag-paypal-cross-border';
 import './components/swag-paypal-express';
 import './components/swag-paypal-installment';
 import './components/swag-paypal-plus';

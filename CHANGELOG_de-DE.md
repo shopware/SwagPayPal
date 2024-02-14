@@ -1,3 +1,6 @@
+# 6.4.0
+- PPI-853 - Fügt eine Option zum Einstellen des Käuferlandes für "Später bezahlen" Banner hinzu
+
 # 6.3.2
 - PPI-845 - Behebt ein Problem, bei dem eine Bestellung aufgrund zu langer Produktnamen fehlschlug
 - PPI-849 - Fügt Kampagnen- und Affiliatecodes zum Express Checkout

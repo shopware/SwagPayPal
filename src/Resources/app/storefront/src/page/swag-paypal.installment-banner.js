@@ -24,6 +24,13 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
         commit: true,
 
         /**
+         * This option holds the buyer country for Pay Later localization
+         *
+         * @type string
+         */
+        crossBorderBuyerCountry: undefined,
+
+        /**
          * Amount of money, which will be used to calculate the examples
          *
          * @type number
@@ -114,6 +121,7 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
     getBannerConfig() {
         return {
             amount: this.options.amount,
+            buyerCountry: this.options.crossBorderBuyerCountry ?? undefined,
             currency: this.options.currency,
             style: {
                 layout: this.options.layout,

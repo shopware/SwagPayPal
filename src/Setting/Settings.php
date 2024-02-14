@@ -66,6 +66,8 @@ final class Settings
     public const SPB_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'spbShowPayLater';
     public const SPB_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbCheckoutEnabled';
     public const SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbAlternativePaymentMethodsEnabled';
+    public const CROSS_BORDER_MESSAGING_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'crossBorderMessagingEnabled';
+    public const CROSS_BORDER_BUYER_COUNTRY = self::SYSTEM_CONFIG_DOMAIN . 'crossBorderBuyerCountry';
 
     /**
      * @deprecated tag:v8.0.0 - Will be removed without replacement.
@@ -112,6 +114,8 @@ final class Settings
         self::ACDC_FORCE_3DS => false,
         self::EXCLUDED_PRODUCT_IDS => [],
         self::EXCLUDED_PRODUCT_STREAM_IDS => [],
+        self::CROSS_BORDER_MESSAGING_ENABLED => false,
+        self::CROSS_BORDER_BUYER_COUNTRY => null,
     ];
 
     /**
