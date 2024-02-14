@@ -1,4 +1,7 @@
 {
+    "locale": {
+      "en-AU": "English (AU)"
+    },
     "sw-privileges": {
         "permissions": {
             "parents": {
@@ -49,6 +52,14 @@
             "valid": "Registered"
           },
           "infoText": "The webhook is used for updating the status of a transaction asynchronously. Incorrectly registered webhooks, e.g. on a different or not publicly available server, may result in unconfirmed transactions, regardless whether the transaction has been processed by PayPal."
+        },
+        "cross-border": {
+          "cardTitle": "Pay Later cross-border messaging",
+          "infoText": "Pay Later messaging is a feature that allows you to display a Pay Later message in the language of the customer. This feature is only available for certain countries. {0}",
+          "warningText": "Please contact your PayPal representative to enable this feature for your account.",
+          "crossBorderBuyerCountryOverride" : "Localization",
+          "crossBorderBuyerCountryAuto": "Automatic determination",
+          "crossBorderMessagingEnable" : "Enable cross-border localization of Pay Later message"
         },
         "messageNotBlank": "This value should not be blank.",
         "settingForm": {

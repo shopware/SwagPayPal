@@ -20,6 +20,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -50,6 +51,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @internal
+ *
+ * @covers \Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber
  */
 #[Package('checkout')]
 class InstallmentBannerSubscriberTest extends TestCase
@@ -58,11 +61,13 @@ class InstallmentBannerSubscriberTest extends TestCase
     private const PRODUCT_PRICE = 678.9;
     private const ADVANCED_PRODUCT_PRICE = 111.22;
 
-    private PaymentMethodUtil&MockObject $paymentMethodUtil;
+    private MockObject&PaymentMethodUtil $paymentMethodUtil;
 
     private string $payPalPaymentMethodId;
 
     private MockObject&ExcludedProductValidator $excludedProductValidator;
+
+    private MockObject&EntityRepository $languageRepository;
 
     protected function setUp(): void
     {
@@ -70,6 +75,7 @@ class InstallmentBannerSubscriberTest extends TestCase
         $this->paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
         $this->paymentMethodUtil->method('getPayPalPaymentMethodId')->willReturn($this->payPalPaymentMethodId);
         $this->excludedProductValidator = $this->createMock(ExcludedProductValidator::class);
+        $this->languageRepository = $this->createMock(EntityRepository::class);
     }
 
     public function testGetSubscribedEvents(): void
@@ -321,7 +327,12 @@ class InstallmentBannerSubscriberTest extends TestCase
         return new InstallmentBannerSubscriber(
             new SettingsValidationService($settings, new NullLogger()),
             $this->paymentMethodUtil,
-            new BannerDataService($this->paymentMethodUtil, new CredentialsUtil($settings), $settings),
+            new BannerDataService(
+                $this->paymentMethodUtil,
+                new CredentialsUtil($settings),
+                $settings,
+                $this->languageRepository
+            ),
             $this->excludedProductValidator,
             new NullLogger(),
         );

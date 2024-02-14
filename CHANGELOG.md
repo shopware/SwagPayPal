@@ -3,6 +3,9 @@
 - PPI-827 - Added automated payment status polling for unconfirmed transactions
 - PPI-831 - Improved management of payment status webhooks
 
+# 7.4.0
+- PPI-853 - Added option to add buyer country to "Pay Later" banners
+
 # 7.3.2
 - PPI-845 - Fixes an issue, where an order failed due to product names are too long
 - PPI-849 - Added campaign and affiliate codes to express checkout
