@@ -12,4 +12,48 @@ use Shopware\Core\Framework\Log\Package;
 #[Package('checkout')]
 class GooglePayCheckoutData extends AbstractCheckoutData
 {
+    protected string $totalPrice;
+
+    protected bool $sandbox;
+
+    /**
+     * @var mixed[]
+     */
+    protected array $displayItems = [];
+
+    public function getTotalPrice(): string
+    {
+        return $this->totalPrice;
+    }
+
+    public function setTotalPrice(string $totalPrice): void
+    {
+        $this->totalPrice = $totalPrice;
+    }
+
+    public function isSandbox(): bool
+    {
+        return $this->sandbox;
+    }
+
+    public function setSandbox(bool $sandbox): void
+    {
+        $this->sandbox = $sandbox;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getDisplayItems(): array
+    {
+        return $this->displayItems;
+    }
+
+    /**
+     * @param mixed[] $displayItems
+     */
+    public function setDisplayItems(array $displayItems): void
+    {
+        $this->displayItems = $displayItems;
+    }
 }
