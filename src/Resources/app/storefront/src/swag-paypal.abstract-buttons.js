@@ -52,7 +52,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
      */
     getScriptOptions() {
         const config = {
-            components: 'buttons,messages,card-fields,funding-eligibility,applepay',
+            components: 'buttons,messages,card-fields,funding-eligibility,applepay,googlepay',
             'client-id': this.options.clientId,
             commit: !!this.options.commit,
             locale: this.options.languageIso,
