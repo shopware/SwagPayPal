@@ -40,6 +40,10 @@ parameters:
         -   # ignore new monolog levels, not supported in Shopware 6.4
             message: '#Use \\Monolog\\Level::.*#'
 
+        -   # ignore finality of repository in tests
+            message: '#.*extends @final class (\w|\\)*(SalesChannel|Entity)Repository#'
+            path: tests/**/*.php
+
         -   # ignore own deprecations in tests
             message: '#.*tag:v8.0.0 -#'
             paths:
