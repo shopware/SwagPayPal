@@ -7,6 +7,10 @@
 
 namespace Swag\PayPal\Installment\Banner\Service;
 
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\Language\LanguageCollection;
+use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
@@ -30,17 +34,21 @@ class BannerDataService implements BannerDataServiceInterface
 
     private SystemConfigService $systemConfigService;
 
+    private EntityRepository $languageRepository;
+
     /**
      * @internal
      */
     public function __construct(
         PaymentMethodUtil $paymentMethodUtil,
         CredentialsUtilInterface $credentialsUtil,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
+        EntityRepository $languageRepository
     ) {
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->credentialsUtil = $credentialsUtil;
         $this->systemConfigService = $systemConfigService;
+        $this->languageRepository = $languageRepository;
     }
 
     /**
@@ -80,6 +88,11 @@ class BannerDataService implements BannerDataServiceInterface
 
         $merchantPayerId = $this->credentialsUtil->getMerchantPayerId($salesChannelContext->getSalesChannelId());
 
+        if ($this->systemConfigService->getBool(Settings::CROSS_BORDER_MESSAGING_ENABLED)) {
+            $crossBorderBuyerCountry = $this->matchBuyerCountry($this->systemConfigService->getString(Settings::CROSS_BORDER_BUYER_COUNTRY), $salesChannelContext);
+            $crossBorderBuyerCountry ??= $this->determineBuyerCountry($salesChannelContext);
+        }
+
         $bannerData->assign([
             'merchantPayerId' => $merchantPayerId,
             'partnerAttributionId' => $merchantPayerId ? PartnerAttributionId::PAYPAL_PPCP : PartnerAttributionId::PAYPAL_CLASSIC,
@@ -88,8 +101,53 @@ class BannerDataService implements BannerDataServiceInterface
             'offCanvasCartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED),
             'loginPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED),
             'detailPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED),
+            'crossBorderBuyerCountry' => $crossBorderBuyerCountry ?? null,
         ]);
 
         return $bannerData;
+    }
+
+    private function determineBuyerCountry(SalesChannelContext $salesChannelContext): ?string
+    {
+        /** @var LanguageCollection $languages */
+        $languages = $this->languageRepository->search(
+            (new Criteria($salesChannelContext->getLanguageIdChain()))->addAssociation('locale'),
+            $salesChannelContext->getContext()
+        )->getEntities();
+
+        return $languages->reduce(
+            fn (?string $languageCode, LanguageEntity $language) => $languageCode ?? $this->matchBuyerCountry(
+                $language->getLocale() ? $language->getLocale()->getCode() : 'en-GB',
+                $salesChannelContext,
+            ),
+        );
+    }
+
+    private function matchBuyerCountry(string $isoCode, SalesChannelContext $salesChannelContext): ?string
+    {
+        $key = \sprintf(
+            '%s-%s',
+            $isoCode,
+            $salesChannelContext->getCurrency()->getIsoCode(),
+        );
+
+        switch ($key) {
+            case 'en-AU-AUD':
+                return 'AU';
+            case 'de-DE-EUR':
+                return 'DE';
+            case 'es-ES-EUR':
+                return 'ES';
+            case 'fr-FR-EUR':
+                return 'FR';
+            case 'it-IT-EUR':
+                return 'IT';
+            case 'en-GB-GBP':
+                return 'UK';
+            case 'en-US-USD':
+                return 'US';
+            default:
+                return null;
+        }
     }
 }
