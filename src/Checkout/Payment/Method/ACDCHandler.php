@@ -155,6 +155,7 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
         $salesChannelContext = $this->orderConverter->assembleSalesChannelContext($transaction->getOrder(), $context);
 
         try {
+            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
             $paypalOrder = $this->orderBuilder->getOrder($transaction, $salesChannelContext, new RequestDataBag());
             $updateTime = $transaction->getOrderTransaction()->getUpdatedAt();
             $response = $this->orderResource->create(
