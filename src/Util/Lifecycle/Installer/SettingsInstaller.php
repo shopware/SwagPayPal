@@ -18,6 +18,9 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class SettingsInstaller
 {

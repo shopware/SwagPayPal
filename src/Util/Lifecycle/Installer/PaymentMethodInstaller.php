@@ -17,6 +17,9 @@ use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class PaymentMethodInstaller
 {

@@ -13,6 +13,9 @@ use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 abstract class AbstractMethodData
 {

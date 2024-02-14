@@ -11,6 +11,9 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class EpsMethodData extends AbstractMethodData
 {

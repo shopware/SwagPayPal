@@ -43,6 +43,9 @@ use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class Update
 {

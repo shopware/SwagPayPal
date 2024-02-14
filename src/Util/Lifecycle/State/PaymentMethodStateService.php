@@ -15,6 +15,9 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class PaymentMethodStateService
 {
