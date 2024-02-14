@@ -174,6 +174,7 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
 
         $possibleMessages = [
             $this->translator->trans('paypal.general.paymentError'),
+            $this->translator->trans('paypal.general.browserUnsupported'),
         ];
 
         foreach ($flashes as $val) {

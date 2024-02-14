@@ -237,7 +237,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
             const button = paypal.Buttons(this.getButtonConfig(paypal.FUNDING.CARD));
 
             if (!button.isEligible()) {
-                this.createError('Neither hosted fields nor standalone buttons are eligible');
+                this.onError('Neither hosted fields nor standalone buttons are eligible');
             }
 
             button.render(this.el);
@@ -424,7 +424,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
     }
 
     onCancel() {
-        this.createError(null, true);
+        this.createError('cancel');
     }
 
     onClick(data, actions) {
@@ -436,7 +436,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
     }
 
     onError(error) {
-        this.createError(error);
+        this.createError('error', error);
     }
 
     getScrollOffset(target) {
