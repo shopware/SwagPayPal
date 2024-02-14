@@ -2,7 +2,8 @@
     "paypal": {
         "general": {
             "paymentCancel": "Der Zahlungsvorgang wurde abgebrochen. Bitte versuchen Sie es noch einmal oder wählen Sie eine andere Zahlungsmethode aus.",
-            "paymentError": "Während des Zahlungsvorgangs ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder wählen Sie eine andere Zahlungsmethode aus."
+            "paymentError": "Während des Zahlungsvorgangs ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder wählen Sie eine andere Zahlungsmethode aus.",
+            "browserUnsupported": "Ihr aktueller Browser wird von der gewählten Zahlungsart nicht unterstützt. Bitte versuchen Sie es mit einem anderen Browser oder wählen Sie eine andere Zahlungsmethode aus."
         },
         "payUponInvoice": {
             "instructions": {

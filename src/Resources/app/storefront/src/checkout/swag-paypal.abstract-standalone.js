@@ -152,7 +152,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         const button = paypal.Buttons(this.getButtonConfig(this.getFundingSource(paypal)));
 
         if (!button.isEligible()) {
-            this.createError(`Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
+            this.onError(`Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
         }
 
         button.render(this.el);
@@ -204,9 +204,9 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
     }
 
     /**
-     * @param product String
+     * @param {String} product
      *
-     * @return {Promise}
+     * @return {Promise<String>}
      */
     createOrder(product) {
         const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
@@ -237,6 +237,11 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         });
     }
 
+    /**
+     * @param {Object} data
+     * @param {String} data.orderId PayPal order id
+     * @param {String=} data.orderID PayPal order id
+     */
     onApprove(data) {
         PageLoadingIndicatorUtil.create();
 
@@ -249,11 +254,13 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).click();
     }
 
-    onCancel() {
-        this.createError(null, true);
-    }
-
-    onClick(data, actions) {
+    /**
+     * Triggers the form validation
+     * @param _
+     * @param {{reject: Function, resolve: Function}} actions
+     * @returns {*}
+     */
+    onClick(_, actions) {
         if (!this.confirmOrderForm.checkValidity()) {
             return actions.reject();
         }
@@ -261,7 +268,18 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         return actions.resolve();
     }
 
+    /**
+     * Stop payment process with an error
+     * Will prevent from re-triggering render function
+     */
     onError(error) {
-        this.createError(error);
+        this.createError('error', error);
+    }
+
+    /**
+     * Cancel the payment process
+     */
+    onCancel() {
+        this.createError('cancel');
     }
 }
