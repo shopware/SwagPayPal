@@ -331,7 +331,12 @@ class InstallmentBannerSubscriberTest extends TestCase
         return new InstallmentBannerSubscriber(
             new SettingsValidationService($settings, new NullLogger()),
             $this->paymentMethodUtil,
-            new BannerDataService($this->paymentMethodUtil, new CredentialsUtil($settings), $settings),
+            new BannerDataService(
+                $this->paymentMethodUtil,
+                new CredentialsUtil($settings),
+                $settings,
+                $this->createMock(EntityRepository::class),
+            ),
             $this->excludedProductValidator,
             new NullLogger(),
         );

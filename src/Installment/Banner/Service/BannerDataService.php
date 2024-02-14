@@ -7,7 +7,12 @@
 
 namespace Swag\PayPal\Installment\Banner\Service;
 
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\Language\LanguageCollection;
+use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
@@ -26,23 +31,15 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 #[Package('checkout')]
 class BannerDataService implements BannerDataServiceInterface
 {
-    private PaymentMethodUtil $paymentMethodUtil;
-
-    private CredentialsUtilInterface $credentialsUtil;
-
-    private SystemConfigService $systemConfigService;
-
     /**
      * @internal
      */
     public function __construct(
-        PaymentMethodUtil $paymentMethodUtil,
-        CredentialsUtilInterface $credentialsUtil,
-        SystemConfigService $systemConfigService
+        private readonly PaymentMethodUtil $paymentMethodUtil,
+        private readonly CredentialsUtilInterface $credentialsUtil,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly EntityRepository $languageRepository
     ) {
-        $this->paymentMethodUtil = $paymentMethodUtil;
-        $this->credentialsUtil = $credentialsUtil;
-        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -82,6 +79,11 @@ class BannerDataService implements BannerDataServiceInterface
 
         $merchantPayerId = $this->credentialsUtil->getMerchantPayerId($salesChannelContext->getSalesChannelId());
 
+        if ($this->systemConfigService->getBool(Settings::CROSS_BORDER_MESSAGING_ENABLED)) {
+            $crossBorderBuyerCountry = $this->matchBuyerCountry($this->systemConfigService->getString(Settings::CROSS_BORDER_BUYER_COUNTRY), $salesChannelContext);
+            $crossBorderBuyerCountry ??= $this->determineBuyerCountry($salesChannelContext);
+        }
+
         $bannerData->assign([
             'merchantPayerId' => $merchantPayerId,
             'partnerAttributionId' => $merchantPayerId ? PartnerAttributionId::PAYPAL_PPCP : PartnerAttributionId::PAYPAL_CLASSIC,
@@ -90,8 +92,45 @@ class BannerDataService implements BannerDataServiceInterface
             'offCanvasCartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED),
             'loginPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED),
             'detailPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED),
+            'crossBorderBuyerCountry' => $crossBorderBuyerCountry ?? null,
         ]);
 
         return $bannerData;
+    }
+
+    private function determineBuyerCountry(SalesChannelContext $salesChannelContext): ?string
+    {
+        /** @var EntitySearchResult<LanguageCollection> $languages */
+        $languages = $this->languageRepository->search(
+            (new Criteria($salesChannelContext->getLanguageIdChain()))->addAssociation('locale'),
+            $salesChannelContext->getContext()
+        );
+
+        return $languages->reduce(
+            fn (?string $languageCode, LanguageEntity $language) => $languageCode ?? $this->matchBuyerCountry(
+                $language->getLocale()?->getCode() ?? 'en-GB',
+                $salesChannelContext,
+            ),
+        );
+    }
+
+    private function matchBuyerCountry(string $isoCode, SalesChannelContext $salesChannelContext): ?string
+    {
+        $key = \sprintf(
+            '%s-%s',
+            $isoCode,
+            $salesChannelContext->getCurrency()->getIsoCode(),
+        );
+
+        return match ($key) {
+            'en-AU-AUD' => 'AU',
+            'de-DE-EUR' => 'DE',
+            'es-ES-EUR' => 'ES',
+            'fr-FR-EUR' => 'FR',
+            'it-IT-EUR' => 'IT',
+            'en-GB-GBP' => 'UK',
+            'en-US-USD' => 'US',
+            default => null,
+        };
     }
 }
