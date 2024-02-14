@@ -18,6 +18,9 @@ use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {

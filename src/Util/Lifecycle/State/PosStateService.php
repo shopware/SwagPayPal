@@ -17,6 +17,9 @@ use Swag\PayPal\Pos\Exception\ExistingPosSalesChannelsException;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\SwagPayPal;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class PosStateService
 {
