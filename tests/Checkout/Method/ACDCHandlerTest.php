@@ -10,11 +10,14 @@ namespace Swag\PayPal\Test\Checkout\Method;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
 use Shopware\Core\Checkout\Cart\Order\OrderConverter;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\RecurringPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -365,6 +368,108 @@ Missing PayPal order id');
             ->method('saveToken');
 
         $this->handler->finalize($paymentTransaction, new Request(), $salesChannelContext);
+    }
+
+    public function testRecurring(): void
+    {
+        if (!\class_exists(SubscriptionRecurringDataStruct::class)) {
+            static::markTestSkipped('Commercial is not available');
+        }
+
+        $salesChannelContext = Generator::createSalesChannelContext();
+
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $order = new OrderEntity();
+        $subscription = new SubscriptionEntity();
+        $subscription->setId('subscriptionId');
+        $subscription->setNextSchedule(new \DateTime());
+        $paymentTransaction = new RecurringPaymentTransactionStruct(
+            $transaction,
+            $order,
+            new SubscriptionRecurringDataStruct($subscription),
+        );
+
+        $paypalOrder = $this->createOrderObject();
+
+        $this->vaultTokenService
+            ->expects(static::once())
+            ->method('getSubscription')
+            ->with($paymentTransaction)
+            ->willReturn($subscription);
+
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setOrderId')
+            ->with(
+                $paymentTransaction->getOrderTransaction()->getId(),
+                'paypalOrderId',
+                PartnerAttributionId::PAYPAL_PPCP,
+                $salesChannelContext
+            );
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setResourceId')
+            ->with($paypalOrder, $paymentTransaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
+
+        $this->orderPatchService
+            ->expects(static::never())
+            ->method('patchOrder');
+
+        $this->settingsValidationService
+            ->expects(static::once())
+            ->method('validate')
+            ->with($salesChannelContext->getSalesChannelId());
+
+        $this->orderBuilder
+            ->expects(static::once())
+            ->method('getOrder')
+            ->with($paymentTransaction, $salesChannelContext, new RequestDataBag())
+            ->willReturn($paypalOrder);
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('create')
+            ->with($paypalOrder)
+            ->willReturn($paypalOrder);
+
+        $this->orderConverter
+            ->expects(static::once())
+            ->method('assembleSalesChannelContext')
+            ->with($order, $salesChannelContext->getContext())
+            ->willReturn($salesChannelContext);
+
+        $this->handler->captureRecurring(
+            $paymentTransaction,
+            $salesChannelContext->getContext(),
+        );
+    }
+
+    public function testRecurringWithoutSubscription(): void
+    {
+        $salesChannelContext = Generator::createSalesChannelContext();
+
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $paymentTransaction = new RecurringPaymentTransactionStruct(
+            $transaction,
+            new OrderEntity(),
+            null,
+        );
+
+        $this->vaultTokenService
+            ->expects(static::once())
+            ->method('getSubscription')
+            ->with($paymentTransaction)
+            ->willReturn(null);
+
+        $this->expectException(PaymentException::class);
+        $this->expectExceptionMessage('The recurring capture process was interrupted due to the following error:
+Subscription not found');
+        $this->handler->captureRecurring(
+            $paymentTransaction,
+            $salesChannelContext->getContext(),
+        );
     }
 
     private function createPaymentTransactionStruct(?string $payPalOrderId = null): AsyncPaymentTransactionStruct
