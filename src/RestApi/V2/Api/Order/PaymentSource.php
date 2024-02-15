@@ -10,6 +10,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractPaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Bancontact;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Blik;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario;
@@ -279,5 +280,23 @@ class PaymentSource extends PayPalApiStruct
     public function jsonSerialize(): array
     {
         return \array_filter(parent::jsonSerialize());
+    }
+
+    /**
+     * @template T
+     *
+     * @param class-string<T> $expectedType
+     *
+     * @return (T&AbstractPaymentSource)|null
+     */
+    public function first(string $expectedType = AbstractPaymentSource::class): ?AbstractPaymentSource
+    {
+        foreach ($this->jsonSerialize() as $paymentSource) {
+            if ($paymentSource instanceof $expectedType && $paymentSource instanceof AbstractPaymentSource) {
+                return $paymentSource;
+            }
+        }
+
+        return null;
     }
 }

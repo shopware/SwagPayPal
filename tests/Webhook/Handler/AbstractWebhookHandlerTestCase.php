@@ -15,12 +15,10 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
-use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
@@ -44,7 +42,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
 
     protected StateMachineRegistry $stateMachineRegistry;
 
-    private AbstractWebhookHandler $webhookHandler;
+    protected AbstractWebhookHandler $webhookHandler;
 
     protected function setUp(): void
     {
@@ -60,22 +58,17 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         static::assertSame($type, $this->webhookHandler->getEventType());
     }
 
-    /**
-     * @param WebhookV1|WebhookV2 $webhook
-     */
     protected function assertInvoke(
         string $expectedStateName,
-        PayPalApiStruct $webhook,
+        Webhook $webhook,
         string $initialStateName = OrderTransactionStates::STATE_OPEN
     ): void {
         $context = Context::createDefaultContext();
         $container = $this->getContainer();
         $transactionId = $this->getTransactionId($context, $container, $initialStateName);
-        if ($webhook instanceof WebhookV2) {
-            $resource = $webhook->getResource();
-            if ($resource instanceof Payment) {
-                $resource->setCustomId(\json_encode(['orderTransactionId' => $transactionId]) ?: null);
-            }
+        $resource = $webhook->getResource();
+        if ($resource instanceof Payment) {
+            $resource->setCustomId(\json_encode(['orderTransactionId' => $transactionId]) ?: null);
         }
         $this->webhookHandler->invoke($webhook, $context);
 
@@ -101,10 +94,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $this->webhookHandler->invoke($webhook, $context);
     }
 
-    /**
-     * @param WebhookV1|WebhookV2 $webhook
-     */
-    protected function assertInvokeWithoutTransaction(string $webhookName, PayPalApiStruct $webhook, string $reason): void
+    protected function assertInvokeWithoutTransaction(string $webhookName, Webhook $webhook, string $reason): void
     {
         $context = Context::createDefaultContext();
 
@@ -135,17 +125,17 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $this->webhookHandler->invoke($webhook, $context);
     }
 
-    protected function createWebhookV1(?string $parentPayment = OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID): WebhookV1
+    protected function createWebhookV1(?string $parentPayment = OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID): Webhook
     {
-        return (new WebhookV1())->assign(['resource' => ['parent_payment' => $parentPayment]]);
+        return (new Webhook())->assign(['resource' => ['parent_payment' => $parentPayment]]);
     }
 
-    protected function createWebhookV2(string $resourceType, ?string $orderTransactionId = null): WebhookV2
+    protected function createWebhookV2(string $resourceType, ?string $orderTransactionId = null): Webhook
     {
         $customId = \json_encode(['orderTransactionId' => $orderTransactionId]);
 
-        $webhook = new WebhookV2();
-        $webhook->assign(['resource_type' => $resourceType, 'resource' => ['custom_id' => $customId]]);
+        $webhook = new Webhook();
+        $webhook->assign(['resource_type' => $resourceType, 'resource_version' => '2.0', 'resource' => ['custom_id' => $customId]]);
         $resource = $webhook->getResource();
         if ($resource instanceof Capture) {
             $resource->setFinalCapture(true);

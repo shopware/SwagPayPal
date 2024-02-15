@@ -16,7 +16,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Exception\SubscriptionTypeNotSupportedException;
 use Swag\PayPal\DataAbstractionLayer\Extension\CustomerExtension;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
@@ -72,14 +71,14 @@ class VaultTokenService
         return $token;
     }
 
-    public function saveToken(SyncPaymentTransactionStruct $struct, VaultablePaymentSourceInterface $paymentSource, SalesChannelContext $context): void
+    public function saveToken(SyncPaymentTransactionStruct $struct, VaultablePaymentSourceInterface $paymentSource, string $customerId, Context $context): void
     {
         $token = $paymentSource->getAttributes()?->getVault();
         if (!$token || !$token->getId()) {
             return;
         }
 
-        $tokenId = $this->findTokenId($token->getId(), $context);
+        $tokenId = $this->findTokenId($token->getId(), $customerId, $context);
         if (!$tokenId) {
             $tokenId = Uuid::randomHex();
             $this->vaultTokenRepository->upsert([
@@ -89,18 +88,15 @@ class VaultTokenService
                     'tokenCustomer' => $token->getCustomer()?->getId(),
                     'paymentMethodId' => $struct->getOrderTransaction()->getPaymentMethodId(),
                     'identifier' => $paymentSource->getVaultIdentifier(),
-                    'customerId' => $context->getCustomerId(),
+                    'customerId' => $customerId,
                 ],
-            ], $context->getContext());
+            ], $context);
         }
 
-        $customerId = $struct->getOrder()->getOrderCustomer()?->getCustomerId();
-        if ($customerId !== null) {
-            $this->saveTokenToCustomer($tokenId, $struct->getOrderTransaction()->getPaymentMethodId(), $context);
-        }
+        $this->saveTokenToCustomer($tokenId, $struct->getOrderTransaction()->getPaymentMethodId(), $customerId, $context);
 
         if ($subscription = $this->getSubscription($struct)) {
-            $this->saveTokenToSubscription($subscription, $tokenId, $struct->getOrderTransaction()->getPaymentMethodId(), $context->getContext());
+            $this->saveTokenToSubscription($subscription, $tokenId, $struct->getOrderTransaction()->getPaymentMethodId(), $context);
         }
     }
 
@@ -144,25 +140,25 @@ class VaultTokenService
         ]], $context);
     }
 
-    private function saveTokenToCustomer(string $tokenId, string $paymentMethodId, SalesChannelContext $context): void
+    private function saveTokenToCustomer(string $tokenId, string $paymentMethodId, string $customerId, Context $context): void
     {
         $this->customerRepository->upsert([[
-            'id' => $context->getCustomerId(),
+            'id' => $customerId,
             CustomerExtension::CUSTOMER_VAULT_TOKEN_MAPPING_EXTENSION => [[
-                'customerId' => $context->getCustomerId(),
+                'customerId' => $customerId,
                 'paymentMethodId' => $paymentMethodId,
                 'tokenId' => $tokenId,
             ]],
-        ]], $context->getContext());
+        ]], $context);
     }
 
-    private function findTokenId(string $token, SalesChannelContext $context): ?string
+    private function findTokenId(string $token, string $customerId, Context $context): ?string
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('token', $token));
-        $criteria->addFilter(new EqualsFilter('customerId', $context->getCustomerId()));
+        $criteria->addFilter(new EqualsFilter('customerId', $customerId));
 
-        return $this->vaultTokenRepository->searchIds($criteria, $context->getContext())->firstId();
+        return $this->vaultTokenRepository->searchIds($criteria, $context)->firstId();
     }
 
     private function getSubscriptionCustomFieldKey(string $paymentMethodId): string

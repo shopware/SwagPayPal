@@ -10,8 +10,9 @@ namespace Swag\PayPal\Webhook\Handler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
+use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
 #[Package('checkout')]
@@ -22,12 +23,13 @@ class SaleComplete extends AbstractWebhookHandler
         return WebhookEventTypes::PAYMENT_SALE_COMPLETED;
     }
 
-    /**
-     * @param WebhookV1 $webhook
-     */
-    public function invoke(PayPalApiStruct $webhook, Context $context): void
+    public function invoke(Webhook $webhook, Context $context): void
     {
-        $orderTransaction = $this->getOrderTransaction($webhook, $context);
+        if (!$webhook->getResource() instanceof Resource) {
+            throw new WebhookException($this->getEventType(), 'Given webhook does not have needed resource data');
+        }
+
+        $orderTransaction = $this->getOrderTransaction($webhook->getResource(), $context);
 
         if ($this->isChangeAllowed($orderTransaction, OrderTransactionStates::STATE_PAID)) {
             $this->orderTransactionStateHandler->paid($orderTransaction->getId(), $context);

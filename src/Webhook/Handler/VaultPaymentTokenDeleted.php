@@ -13,10 +13,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Token;
-use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\RestApi\V3\Api\PaymentToken;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -39,12 +37,9 @@ class VaultPaymentTokenDeleted extends AbstractWebhookHandler
         return WebhookEventTypes::VAULT_PAYMENT_TOKEN_DELETED;
     }
 
-    /**
-     * @param WebhookV1|WebhookV2 $webhook
-     */
-    public function invoke(PayPalApiStruct $webhook, Context $context): void
+    public function invoke(Webhook $webhook, Context $context): void
     {
-        if (!$webhook->getResource() instanceof Token) {
+        if (!$webhook->getResource() instanceof PaymentToken) {
             throw new WebhookException($this->getEventType(), 'Given webhook does not have needed resource data');
         }
 
