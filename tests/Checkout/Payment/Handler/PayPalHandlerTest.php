@@ -22,7 +22,7 @@ use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
-use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
@@ -91,7 +91,7 @@ class PayPalHandlerTest extends TestCase
             );
 
         $handler = new PayPalHandler(
-            $this->createMock(OrderFromOrderBuilder::class),
+            $this->createMock(PayPalOrderBuilder::class),
             $orderResource,
             $orderExecuteService,
             $this->createMock(OrderPatchService::class),
@@ -160,7 +160,7 @@ class PayPalHandlerTest extends TestCase
             ->method('saveToken');
 
         $handler = new PayPalHandler(
-            $this->createMock(OrderFromOrderBuilder::class),
+            $this->createMock(PayPalOrderBuilder::class),
             $orderResource,
             $orderExecuteService,
             $this->createMock(OrderPatchService::class),

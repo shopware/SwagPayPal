@@ -10,10 +10,14 @@ namespace Swag\PayPal\Test\Checkout\Method;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
+use Shopware\Core\Checkout\Cart\Order\OrderConverter;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\RecurringPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -24,7 +28,12 @@ use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
+use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V2\Api\Common\Link;
+use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
@@ -33,6 +42,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -57,6 +67,12 @@ class ACDCHandlerTest extends TestCase
 
     private OrderResource&MockObject $orderResource;
 
+    private VaultTokenService&MockObject $vaultTokenService;
+
+    private ACDCOrderBuilder&MockObject $orderBuilder;
+
+    private OrderConverter&MockObject $orderConverter;
+
     protected function setUp(): void
     {
         $this->handler = new ACDCHandler(
@@ -68,13 +84,22 @@ class ACDCHandlerTest extends TestCase
             new NullLogger(),
             $this->orderResource = $this->createMock(OrderResource::class),
             $this->acdcValidator = $this->createMock(ACDCValidatorInterface::class),
+            $this->vaultTokenService = $this->createMock(VaultTokenService::class),
+            $this->orderBuilder = $this->createMock(ACDCOrderBuilder::class),
+            $this->orderConverter = $this->createMock(OrderConverter::class),
         );
     }
 
-    public function testPay(): void
+    public function testPayWithExistingOrder(): void
     {
         $salesChannelContext = Generator::createSalesChannelContext();
         $paymentTransaction = $this->createPaymentTransactionStruct();
+
+        $this->vaultTokenService
+            ->expects(static::once())
+            ->method('getAvailableToken')
+            ->with($paymentTransaction, $salesChannelContext->getContext())
+            ->willReturn(null);
 
         $this->transactionDataService
             ->expects(static::once())
@@ -112,6 +137,66 @@ class ACDCHandlerTest extends TestCase
             new RequestDataBag([AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => 'paypalOrderId']),
             $salesChannelContext,
         );
+    }
+
+    public function testPayWithoutExistingOrder(): void
+    {
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $link = new Link();
+        $link->setHref('payerAction');
+        $link->setRel(Link::RELATION_PAYER_ACTION);
+        $order = $this->createOrderObject($link);
+
+        $this->vaultTokenService
+            ->expects(static::once())
+            ->method('getAvailableToken')
+            ->with($paymentTransaction, $salesChannelContext->getContext())
+            ->willReturn(new VaultTokenEntity());
+
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setOrderId')
+            ->with(
+                $paymentTransaction->getOrderTransaction()->getId(),
+                'paypalOrderId',
+                PartnerAttributionId::PAYPAL_PPCP,
+                $salesChannelContext
+            );
+
+        $this->orderPatchService
+            ->expects(static::never())
+            ->method('patchOrder');
+
+        $this->orderTransactionStateHandler
+            ->expects(static::once())
+            ->method('processUnconfirmed')
+            ->with($paymentTransaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
+
+        $this->settingsValidationService
+            ->expects(static::once())
+            ->method('validate')
+            ->with($salesChannelContext->getSalesChannelId());
+
+        $this->orderBuilder
+            ->expects(static::once())
+            ->method('getOrder')
+            ->with($paymentTransaction, $salesChannelContext, new RequestDataBag())
+            ->willReturn($order);
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('create')
+            ->with($order)
+            ->willReturn($order);
+
+        $response = $this->handler->pay(
+            $paymentTransaction,
+            new RequestDataBag(),
+            $salesChannelContext,
+        );
+
+        static::assertSame('payerAction', $response->getTargetUrl());
     }
 
     public function testPayWithInvalidSettingsException(): void
@@ -167,7 +252,7 @@ Missing PayPal order id');
         $paypalOrderId = 'paypalOrderId';
 
         $salesChannelContext = Generator::createSalesChannelContext();
-        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $paymentTransaction = $this->createPaymentTransactionStruct($paypalOrderId);
         $order = $this->createOrderObject();
 
         $this->orderResource
@@ -184,7 +269,7 @@ Missing PayPal order id');
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 Credit card validation failed, 3D secure was not validated.');
-        $this->handler->finalize($paymentTransaction, new Request([AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $paypalOrderId]), $salesChannelContext);
+        $this->handler->finalize($paymentTransaction, new Request(), $salesChannelContext);
     }
 
     public function testFinalizeWithoutOrderId(): void
@@ -203,7 +288,7 @@ Missing PayPal order id');
         $paypalOrderId = 'paypalOrderId';
 
         $salesChannelContext = Generator::createSalesChannelContext();
-        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $paymentTransaction = $this->createPaymentTransactionStruct($paypalOrderId);
         $order = $this->createOrderObject();
 
         $this->orderResource
@@ -234,7 +319,12 @@ Missing PayPal order id');
             ->method('setResourceId')
             ->with($order, $paymentTransaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
 
-        $this->handler->finalize($paymentTransaction, new Request([AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $paypalOrderId]), $salesChannelContext);
+        $this->vaultTokenService
+            ->expects(static::once())
+            ->method('saveToken')
+            ->with($paymentTransaction, $order->getPaymentSource()?->getCard(), $salesChannelContext);
+
+        $this->handler->finalize($paymentTransaction, new Request(), $salesChannelContext);
     }
 
     public function testFinalizeFallbackButton(): void
@@ -242,7 +332,7 @@ Missing PayPal order id');
         $paypalOrderId = 'paypalOrderId';
 
         $salesChannelContext = Generator::createSalesChannelContext();
-        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $paymentTransaction = $this->createPaymentTransactionStruct($paypalOrderId);
         $order = $this->createOrderObject();
         $order->getPaymentSource()?->setCard(null);
         $order->getPaymentSource()?->setPaypal(new Paypal());
@@ -273,13 +363,122 @@ Missing PayPal order id');
             ->method('setResourceId')
             ->with($order, $paymentTransaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
 
-        $this->handler->finalize($paymentTransaction, new Request([AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $paypalOrderId]), $salesChannelContext);
+        $this->vaultTokenService
+            ->expects(static::never())
+            ->method('saveToken');
+
+        $this->handler->finalize($paymentTransaction, new Request(), $salesChannelContext);
     }
 
-    private function createPaymentTransactionStruct(): AsyncPaymentTransactionStruct
+    public function testRecurring(): void
+    {
+        if (!\class_exists(SubscriptionRecurringDataStruct::class)) {
+            static::markTestSkipped('Commercial is not available');
+        }
+
+        $salesChannelContext = Generator::createSalesChannelContext();
+
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $order = new OrderEntity();
+        $subscription = new SubscriptionEntity();
+        $subscription->setId('subscriptionId');
+        $subscription->setNextSchedule(new \DateTime());
+        $paymentTransaction = new RecurringPaymentTransactionStruct(
+            $transaction,
+            $order,
+            new SubscriptionRecurringDataStruct($subscription),
+        );
+
+        $paypalOrder = $this->createOrderObject();
+
+        $this->vaultTokenService
+            ->expects(static::once())
+            ->method('getSubscription')
+            ->with($paymentTransaction)
+            ->willReturn($subscription);
+
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setOrderId')
+            ->with(
+                $paymentTransaction->getOrderTransaction()->getId(),
+                'paypalOrderId',
+                PartnerAttributionId::PAYPAL_PPCP,
+                $salesChannelContext
+            );
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setResourceId')
+            ->with($paypalOrder, $paymentTransaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
+
+        $this->orderPatchService
+            ->expects(static::never())
+            ->method('patchOrder');
+
+        $this->settingsValidationService
+            ->expects(static::once())
+            ->method('validate')
+            ->with($salesChannelContext->getSalesChannelId());
+
+        $this->orderBuilder
+            ->expects(static::once())
+            ->method('getOrder')
+            ->with($paymentTransaction, $salesChannelContext, new RequestDataBag())
+            ->willReturn($paypalOrder);
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('create')
+            ->with($paypalOrder)
+            ->willReturn($paypalOrder);
+
+        $this->orderConverter
+            ->expects(static::once())
+            ->method('assembleSalesChannelContext')
+            ->with($order, $salesChannelContext->getContext())
+            ->willReturn($salesChannelContext);
+
+        $this->handler->captureRecurring(
+            $paymentTransaction,
+            $salesChannelContext->getContext(),
+        );
+    }
+
+    public function testRecurringWithoutSubscription(): void
+    {
+        $salesChannelContext = Generator::createSalesChannelContext();
+
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $paymentTransaction = new RecurringPaymentTransactionStruct(
+            $transaction,
+            new OrderEntity(),
+            null,
+        );
+
+        $this->vaultTokenService
+            ->expects(static::once())
+            ->method('getSubscription')
+            ->with($paymentTransaction)
+            ->willReturn(null);
+
+        $this->expectException(PaymentException::class);
+        $this->expectExceptionMessage('The recurring capture process was interrupted due to the following error:
+Subscription not found');
+        $this->handler->captureRecurring(
+            $paymentTransaction,
+            $salesChannelContext->getContext(),
+        );
+    }
+
+    private function createPaymentTransactionStruct(?string $payPalOrderId = null): AsyncPaymentTransactionStruct
     {
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $payPalOrderId,
+        ]);
 
         return new AsyncPaymentTransactionStruct(
             $transaction,
@@ -288,10 +487,11 @@ Missing PayPal order id');
         );
     }
 
-    private function createOrderObject(): Order
+    private function createOrderObject(?Link $link = null): Order
     {
         $order = new Order();
         $order->setId('paypalOrderId');
+        $order->setLinks(new LinkCollection($link ? [$link] : []));
 
         $card = new Card();
         $card->setAuthenticationResult(new AuthenticationResult());

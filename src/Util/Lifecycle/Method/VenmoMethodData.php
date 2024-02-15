@@ -16,6 +16,9 @@ use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class VenmoMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {

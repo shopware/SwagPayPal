@@ -8,14 +8,20 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
@@ -88,5 +94,12 @@ class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInt
     public function getCheckoutTemplateExtensionId(): string
     {
         return self::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID;
+    }
+
+    public function isVaultable(SalesChannelContext $context): bool
+    {
+        $systemConfigService = $this->container->get(SystemConfigService::class);
+
+        return $systemConfigService->getBool(Settings::VAULTING_ENABLED_ACDC, $context->getSalesChannelId());
     }
 }

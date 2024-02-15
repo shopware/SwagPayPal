@@ -368,8 +368,11 @@
                 "title": "Einmal-Paypal-Checkout",
                 "text": "PayPal-Kontos mit aktiviertem 'Vaulting' können kontinuierlich belastet werden, ohne dass Deine Kunden während der Transaktionen anwesend sein müssen. Auch weitere Transaktionen können durchgeführt werden, ohne dass sich Deine Kunden erneut bei PayPal authentifizieren müssen."
               },
-              "enable": {
-                "label": "Vaulting verwenden"
+              "enableWallet": {
+                "label": "Vaulting für PayPal-Zahlungen aktivieren"
+              },
+              "enableACDC": {
+                "label": "Vaulting für Kredit- und Debitkarten-Zahlungen verwenden"
               },
               "enableAlways": {
                 "label": "Vaulting im Paypal-Checkout vorausgewählt"

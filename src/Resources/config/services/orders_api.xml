@@ -22,54 +22,36 @@
             <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
         </service>
 
-        <service id="Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder">
-            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
+        <service id="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" abstract="true">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AddressProvider"/>
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
-            <argument type="service" id="event_dispatcher"/>
-            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
+        </service>
+
+        <service id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder">
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
         </service>
 
-        <service id="Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AddressProvider"/>
-            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
+        <service id="Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder">
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
         </service>
 
-        <service id="Swag\PayPal\OrdersApi\Builder\PUIOrderBuilder">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AddressProvider"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
-            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
-        </service>
+        <service id="Swag\PayPal\OrdersApi\Builder\PUIOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\BoletoBancarioOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\EpsOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\GiropayOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\IdealOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\MultibancoOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\MyBankOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\OxxoOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\P24OrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\SofortOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\TrustlyOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
 
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" abstract="true">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AddressProvider"/>
-            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
-        </service>
-
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\BoletoBancarioOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\EpsOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\GiropayOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\IdealOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\MultibancoOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\MyBankOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\OxxoOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\P24OrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\SofortOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\TrustlyOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
 
         <service id="Swag\PayPal\OrdersApi\Builder\Util\AddressProvider"/>
 

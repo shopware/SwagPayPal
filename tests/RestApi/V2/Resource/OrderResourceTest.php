@@ -91,8 +91,8 @@ class OrderResourceTest extends TestCase
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
+            $salesChannelContext,
             new RequestDataBag(),
-            $salesChannelContext
         );
 
         static::assertNotNull($order->getPurchaseUnits()->first()?->getItems());

@@ -12,11 +12,12 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\TokenResponse;
-use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
+use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -32,7 +33,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
      */
     public function __construct(
         private readonly CartService $cartService,
-        private readonly OrderFromCartBuilder $orderFromCartBuilder,
+        private readonly PayPalOrderBuilder $paypalOrderBuilder,
         private readonly OrderResource $orderResource,
         private readonly CartPriceService $cartPriceService,
         private readonly LoggerInterface $logger,
@@ -69,7 +70,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
             }
 
             $this->logger->debug('Building order');
-            $order = $this->orderFromCartBuilder->getOrder($cart, $request, $salesChannelContext, null);
+            $order = $this->paypalOrderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag($request->request->all()));
             $order->getPaymentSource()?->getPaypal()?->getExperienceContext()->setShippingPreference(ApplicationContext::SHIPPING_PREFERENCE_GET_FROM_FILE);
             $order->getPaymentSource()?->getPaypal()?->getExperienceContext()->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
 

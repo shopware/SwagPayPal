@@ -19,6 +19,9 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class MediaInstaller
 {

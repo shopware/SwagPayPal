@@ -19,6 +19,8 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Storefront\Data\Event\PayPalPageExtensionAddedEvent;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
+use Swag\PayPal\Storefront\Data\Struct\VaultData;
+use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -84,6 +86,11 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
                 continue;
             }
 
+            $vaultData = $event->getPage()->getExtensionOfType(VaultSubscriber::VAULT_EXTENSION, VaultData::class);
+            if ($vaultData?->getIdentifier() && $checkoutMethod instanceof ACDCMethodData) {
+                return;
+            }
+
             $this->addExtension($checkoutMethod, $event, null, $event->getPage()->getOrder());
         }
     }
@@ -97,6 +104,11 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
         foreach ($this->apmCheckoutMethods as $checkoutMethod) {
             if (!$this->checkSettings($event->getSalesChannelContext(), $checkoutMethod->getHandler())) {
                 continue;
+            }
+
+            $vaultData = $event->getPage()->getExtensionOfType(VaultSubscriber::VAULT_EXTENSION, VaultData::class);
+            if ($vaultData?->getIdentifier() && $checkoutMethod instanceof ACDCMethodData) {
+                return;
             }
 
             $this->addExtension($checkoutMethod, $event, $event->getPage()->getCart());

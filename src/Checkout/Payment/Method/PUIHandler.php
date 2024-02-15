@@ -103,7 +103,7 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
             $order = $this->puiOrderBuilder->getOrder(
                 $transaction,
                 $salesChannelContext,
-                $customer
+                $dataBag,
             );
 
             try {

@@ -8,10 +8,14 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 abstract class AbstractMethodData
 {
@@ -49,7 +53,7 @@ abstract class AbstractMethodData
 
     abstract public function getMediaFileName(): ?string;
 
-    public function isVaultable(): bool
+    public function isVaultable(SalesChannelContext $context): bool
     {
         return false;
     }
