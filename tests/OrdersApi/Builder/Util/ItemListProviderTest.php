@@ -266,6 +266,7 @@ class ItemListProviderTest extends TestCase
         $lineItem->setLabel($productName);
 
         if ($productNumber !== null) {
+            // @phpstan-ignore-next-line deprecation in core
             $lineItem->setPayload(['productNumber' => $productNumber]);
         }
 
