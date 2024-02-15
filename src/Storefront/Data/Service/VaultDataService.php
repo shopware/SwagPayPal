@@ -41,7 +41,7 @@ class VaultDataService
             return null;
         }
 
-        $isVaultable = $this->paymentMethodDataRegistry->getPaymentMethodByHandler($context->getPaymentMethod()->getHandlerIdentifier())?->isVaultable();
+        $isVaultable = $this->paymentMethodDataRegistry->getPaymentMethodByHandler($context->getPaymentMethod()->getHandlerIdentifier())?->isVaultable($context);
         if (!$isVaultable) {
             return null;
         }

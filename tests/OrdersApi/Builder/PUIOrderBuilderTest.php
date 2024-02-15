@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\PUI\Exception\MissingBirthdayException;
@@ -61,7 +62,7 @@ class PUIOrderBuilderTest extends TestCase
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
-            $customer
+            new RequestDataBag(),
         );
 
         $shipping = $order->getPurchaseUnits()->first()?->getShipping();
@@ -95,7 +96,7 @@ class PUIOrderBuilderTest extends TestCase
         $orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
-            $customer
+            new RequestDataBag(),
         );
     }
 
@@ -114,7 +115,7 @@ class PUIOrderBuilderTest extends TestCase
         $orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
-            $customer
+            new RequestDataBag(),
         );
     }
 
@@ -135,7 +136,7 @@ class PUIOrderBuilderTest extends TestCase
         $orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
-            $customer
+            new RequestDataBag(),
         );
     }
 
@@ -152,7 +153,7 @@ class PUIOrderBuilderTest extends TestCase
         $order = $this->createPUIOrderBuilder($settings)->getOrder(
             $paymentTransaction,
             $salesChannelContext,
-            $customer
+            new RequestDataBag(),
         );
 
         $invoiceId = $order->getPurchaseUnits()->first()?->getInvoiceId();
@@ -174,8 +175,8 @@ class PUIOrderBuilderTest extends TestCase
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
-            new ItemListProvider($priceFormatter, $this->createMock(EventDispatcherInterface::class), new NullLogger()),
             $this->getContainer()->get(LocaleCodeProvider::class),
+            new ItemListProvider($priceFormatter, $this->createMock(EventDispatcherInterface::class), new NullLogger()),
         );
     }
 }

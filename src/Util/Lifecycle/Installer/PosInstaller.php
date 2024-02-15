@@ -16,6 +16,9 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogDefinition;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class PosInstaller
 {

@@ -15,6 +15,9 @@ use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class SEPAMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {

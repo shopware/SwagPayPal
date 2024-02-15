@@ -7,19 +7,33 @@
 
 namespace Swag\PayPal\OrdersApi\Builder;
 
+use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Common\Name;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
@@ -36,7 +50,108 @@ abstract class AbstractOrderBuilder
         protected readonly PurchaseUnitProvider $purchaseUnitProvider,
         protected readonly AddressProvider $addressProvider,
         protected readonly LocaleCodeProvider $localeCodeProvider,
+        protected readonly ItemListProvider $itemListProvider,
     ) {
+    }
+
+    public function getOrder(
+        SyncPaymentTransactionStruct $paymentTransaction,
+        SalesChannelContext $salesChannelContext,
+        RequestDataBag $requestDataBag
+    ): Order {
+        $purchaseUnit = $this->createPurchaseUnitFromOrder(
+            $salesChannelContext,
+            $paymentTransaction->getOrder(),
+            $paymentTransaction->getOrderTransaction(),
+        );
+
+        $order = new Order();
+        $order->setIntent($this->getIntent($salesChannelContext->getSalesChannelId()));
+        $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
+        $paymentSource = new PaymentSource();
+        $this->buildPaymentSource($paymentTransaction, $salesChannelContext, $requestDataBag, $paymentSource);
+        $order->setPaymentSource($paymentSource);
+
+        return $order;
+    }
+
+    public function getOrderFromCart(
+        Cart $cart,
+        SalesChannelContext $salesChannelContext,
+        RequestDataBag $requestDataBag
+    ): Order {
+        $purchaseUnit = $this->createPurchaseUnitFromCart($salesChannelContext, $cart);
+
+        $order = new Order();
+        $order->setIntent($this->getIntent($salesChannelContext->getSalesChannelId()));
+        $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
+        $paymentSource = new PaymentSource();
+        $this->buildPaymentSourceFromCart($cart, $salesChannelContext, $requestDataBag, $paymentSource);
+        $order->setPaymentSource($paymentSource);
+
+        return $order;
+    }
+
+    abstract protected function buildPaymentSource(
+        SyncPaymentTransactionStruct $paymentTransaction,
+        SalesChannelContext $salesChannelContext,
+        RequestDataBag $requestDataBag,
+        PaymentSource $paymentSource,
+    ): void;
+
+    abstract protected function buildPaymentSourceFromCart(
+        Cart $cart,
+        SalesChannelContext $salesChannelContext,
+        RequestDataBag $requestDataBag,
+        PaymentSource $paymentSource,
+    ): void;
+
+    protected function createPurchaseUnitFromOrder(
+        SalesChannelContext $salesChannelContext,
+        OrderEntity $order,
+        OrderTransactionEntity $orderTransaction
+    ): PurchaseUnit {
+        $items = $this->submitCart($salesChannelContext) ? $this->itemListProvider->getItemList($salesChannelContext->getCurrency(), $order) : null;
+
+        $purchaseUnit = $this->purchaseUnitProvider->createPurchaseUnit(
+            $orderTransaction->getAmount(),
+            $order->getShippingCosts(),
+            null,
+            $items,
+            $salesChannelContext,
+            $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS,
+            $order,
+            $orderTransaction
+        );
+
+        if (!$purchaseUnit->isset('shipping')) {
+            throw new MissingPayloadException('created', 'purchaseUnit.shipping');
+        }
+
+        return $purchaseUnit;
+    }
+
+    protected function createPurchaseUnitFromCart(
+        SalesChannelContext $salesChannelContext,
+        Cart $cart,
+    ): PurchaseUnit {
+        $cartTransaction = $cart->getTransactions()->first();
+        if ($cartTransaction === null) {
+            throw PaymentException::invalidTransaction('');
+        }
+
+        $items = $this->submitCart($salesChannelContext)
+            ? $this->itemListProvider->getItemListFromCart($salesChannelContext->getCurrency(), $cart)
+            : null;
+
+        return $this->purchaseUnitProvider->createPurchaseUnit(
+            $cartTransaction->getAmount(),
+            $cart->getShippingCosts(),
+            $salesChannelContext->getCustomer(),
+            $items,
+            $salesChannelContext,
+            $cart->getPrice()->getTaxStatus() !== CartPrice::TAX_STATE_GROSS
+        );
     }
 
     /**
@@ -90,14 +205,21 @@ abstract class AbstractOrderBuilder
     }
 
     protected function createExperienceContext(
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
+        ?SyncPaymentTransactionStruct $paymentTransaction = null,
     ): ExperienceContext {
         $experienceContext = new ExperienceContext();
         $experienceContext->setBrandName($this->getBrandName($salesChannelContext));
         $experienceContext->setLocale($this->localeCodeProvider->getLocaleCodeFromContext($salesChannelContext->getContext()));
         $experienceContext->setLandingPage($this->getLandingPageType($salesChannelContext->getSalesChannelId()));
-        $experienceContext->setReturnUrl(CreateOrderRoute::FAKE_URL);
-        $experienceContext->setCancelUrl(CreateOrderRoute::FAKE_URL . '?cancel=1');
+
+        if ($paymentTransaction instanceof AsyncPaymentTransactionStruct) {
+            $experienceContext->setReturnUrl($paymentTransaction->getReturnUrl());
+            $experienceContext->setCancelUrl(\sprintf('%s&cancel=1', $paymentTransaction->getReturnUrl()));
+        } else {
+            $experienceContext->setReturnUrl(CreateOrderRoute::FAKE_URL);
+            $experienceContext->setCancelUrl(CreateOrderRoute::FAKE_URL . '?cancel=1');
+        }
 
         return $experienceContext;
     }
@@ -111,6 +233,11 @@ abstract class AbstractOrderBuilder
         }
 
         return $brandName;
+    }
+
+    protected function submitCart(SalesChannelContext $salesChannelContext): bool
+    {
+        return $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId());
     }
 
     /**

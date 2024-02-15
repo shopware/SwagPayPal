@@ -13,6 +13,9 @@ use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class InstallUninstall
 {

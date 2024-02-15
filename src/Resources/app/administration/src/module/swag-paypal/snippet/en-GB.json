@@ -368,14 +368,17 @@
                 "title": "One-time Paypal checkout",
                 "text": "Vaulting a PayPal account will allow you to charge the account in the future without requiring your customer to be present during the transaction or re-authenticate with PayPal when they are present during the transaction."
               },
-              "enable": {
-                "label": "Enable vaulting"
+              "enableWallet": {
+                "label": "Enable Vaulting for PayPal payments"
+              },
+              "enableACDC": {
+                "label": "Eanable Vaulting for credit and debit cards"
               },
               "enableAlways": {
-                "label": "Preselect vaulting on Paypal checkout"
+                "label": "Preselect Vaulting on Paypal checkout"
               },
               "activateButton": {
-                "label": "Activate vaulting"
+                "label": "Activate Vaulting"
               }
             },
             "locale-field": {
