@@ -12,10 +12,11 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
+use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
 #[Package('checkout')]
@@ -40,12 +41,13 @@ class SaleRefunded extends AbstractWebhookHandler
         return WebhookEventTypes::PAYMENT_SALE_REFUNDED;
     }
 
-    /**
-     * @param WebhookV1 $webhook
-     */
-    public function invoke(PayPalApiStruct $webhook, Context $context): void
+    public function invoke(Webhook $webhook, Context $context): void
     {
-        $orderTransaction = $this->getOrderTransaction($webhook, $context);
+        if (!$webhook->getResource() instanceof Resource) {
+            throw new WebhookException($this->getEventType(), 'Given webhook does not have needed resource data');
+        }
+
+        $orderTransaction = $this->getOrderTransaction($webhook->getResource(), $context);
 
         $order = $orderTransaction->getOrder();
         if (!$order) {

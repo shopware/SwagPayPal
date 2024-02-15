@@ -182,6 +182,8 @@ final class WebhookEventTypes
     public const VAULT_CREDIT_CARD_DELETED = 'VAULT.CREDIT-CARD.DELETED';
     /* A credit card is updated. */
     public const VAULT_CREDIT_CARD_UPDATED = 'VAULT.CREDIT-CARD.UPDATED';
+    /* A payment method token is created. */
+    public const VAULT_PAYMENT_TOKEN_CREATED = 'VAULT.PAYMENT-TOKEN.CREATED';
     /* A payment method token is deleted. */
     public const VAULT_PAYMENT_TOKEN_DELETED = 'VAULT.PAYMENT-TOKEN.DELETED';
 }

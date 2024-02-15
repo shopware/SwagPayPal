@@ -15,7 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Webhook;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Handler\VaultPaymentTokenDeleted;
 use Swag\PayPal\Webhook\WebhookEventTypes;
@@ -54,7 +54,7 @@ class VaultPaymentTokenDeletedTest extends TestCase
             ->with([['id' => 'token-id']], $context);
 
         $webhook = new Webhook();
-        $webhook->assign(['resource_type' => 'payment_token', 'resource' => ['id' => 'hatoken']]);
+        $webhook->assign(['resource_type' => 'payment_token', 'resource_version' => '3.0', 'resource' => ['id' => 'hatoken']]);
 
         $handler = new VaultPaymentTokenDeleted(
             $this->createMock(EntityRepository::class),
@@ -81,7 +81,7 @@ class VaultPaymentTokenDeletedTest extends TestCase
             ->method('delete');
 
         $webhook = new Webhook();
-        $webhook->assign(['resource_type' => 'payment_token', 'resource' => ['id' => 'hatoken']]);
+        $webhook->assign(['resource_type' => 'payment_token', 'resource_version' => '3.0', 'resource' => ['id' => 'hatoken']]);
 
         $handler = new VaultPaymentTokenDeleted(
             $this->createMock(EntityRepository::class),
@@ -101,7 +101,6 @@ class VaultPaymentTokenDeletedTest extends TestCase
         $vaultRepo->expects(static::never())->method('delete');
 
         $webhook = new Webhook();
-        $webhook->setResource(null);
         $handler = new VaultPaymentTokenDeleted(
             $this->createMock(EntityRepository::class),
             $this->createMock(OrderTransactionStateHandler::class),

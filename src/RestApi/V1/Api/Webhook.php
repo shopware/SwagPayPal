@@ -12,6 +12,10 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
+use Swag\PayPal\RestApi\V3\Api\PaymentToken;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_webhook")
@@ -19,6 +23,11 @@ use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
 #[Package('checkout')]
 class Webhook extends PayPalApiStruct
 {
+    public const RESOURCE_TYPE_AUTHORIZATION = 'authorization';
+    public const RESOURCE_TYPE_CAPTURE = 'capture';
+    public const RESOURCE_TYPE_REFUND = 'refund';
+    public const RESOURCE_TYPE_PAYMENT_TOKEN = 'payment_token';
+
     /**
      * @OA\Property(type="string")
      */
@@ -27,7 +36,7 @@ class Webhook extends PayPalApiStruct
     /**
      * @OA\Property(type="string")
      */
-    protected string $resourceType;
+    protected string $resourceType = '';
 
     /**
      * @OA\Property(type="string")
@@ -40,9 +49,9 @@ class Webhook extends PayPalApiStruct
     protected string $summary;
 
     /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_webhook_resource")
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_webhook_resource", nullable=true)
      */
-    protected Resource $resource;
+    protected ?PayPalApiStruct $resource = null;
 
     /**
      * @OA\Property(type="string")
@@ -58,6 +67,11 @@ class Webhook extends PayPalApiStruct
      * @OA\Property(type="string")
      */
     protected string $eventVersion;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    protected string $resourceVersion = '1.0';
 
     public function getId(): string
     {
@@ -99,12 +113,12 @@ class Webhook extends PayPalApiStruct
         $this->summary = $summary;
     }
 
-    public function getResource(): Resource
+    public function getResource(): ?PayPalApiStruct
     {
         return $this->resource;
     }
 
-    public function setResource(Resource $resource): void
+    public function setResource(?PayPalApiStruct $resource): void
     {
         $this->resource = $resource;
     }
@@ -137,5 +151,59 @@ class Webhook extends PayPalApiStruct
     public function setEventVersion(string $eventVersion): void
     {
         $this->eventVersion = $eventVersion;
+    }
+
+    public function getResourceVersion(): string
+    {
+        return $this->resourceVersion;
+    }
+
+    public function setResourceVersion(string $resourceVersion): void
+    {
+        $this->resourceVersion = $resourceVersion;
+    }
+
+    /**
+     * @param array<string, mixed> $arrayDataWithSnakeCaseKeys
+     */
+    public function assign(array $arrayDataWithSnakeCaseKeys): static
+    {
+        $resourceData = $arrayDataWithSnakeCaseKeys['resource'] ?? null;
+        unset($arrayDataWithSnakeCaseKeys['resource']);
+        $webhook = parent::assign($arrayDataWithSnakeCaseKeys);
+        if ($resourceData === null) {
+            return $webhook;
+        }
+
+        $resourceClass = $this->identifyResourceType($this->resourceVersion, $this->resourceType);
+        if ($resourceClass === null) {
+            return $webhook;
+        }
+
+        $resource = new $resourceClass();
+        $resource->assign($resourceData);
+        $webhook->setResource($resource);
+
+        return $webhook;
+    }
+
+    /**
+     * @return class-string<PayPalApiStruct>|null
+     */
+    protected function identifyResourceType(string $resourceVersion, string $resourceType): ?string
+    {
+        return match ($resourceVersion) {
+            '3.0' => match ($resourceType) {
+                self::RESOURCE_TYPE_PAYMENT_TOKEN => PaymentToken::class,
+                default => null,
+            },
+            '2.0' => match ($resourceType) {
+                self::RESOURCE_TYPE_AUTHORIZATION => Authorization::class,
+                self::RESOURCE_TYPE_CAPTURE => Capture::class,
+                self::RESOURCE_TYPE_REFUND => Refund::class,
+                default => null,
+            },
+            default => Resource::class,
+        };
     }
 }

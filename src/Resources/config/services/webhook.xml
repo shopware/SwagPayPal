@@ -81,6 +81,15 @@
             <tag name="swag.paypal.webhook.handler"/>
         </service>
 
+        <service id="Swag\PayPal\Webhook\Handler\VaultPaymentTokenCreated">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
         <service id="Swag\PayPal\Webhook\Handler\VaultPaymentTokenDeleted">
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>

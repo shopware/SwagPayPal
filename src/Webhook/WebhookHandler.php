@@ -9,9 +9,7 @@ namespace Swag\PayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
-use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
 
 #[Package('checkout')]
 interface WebhookHandler
@@ -23,10 +21,5 @@ interface WebhookHandler
      */
     public function getEventType(): string;
 
-    /**
-     * Invokes the webhook using the provided data.
-     *
-     * @param WebhookV1|WebhookV2 $webhook
-     */
-    public function invoke(PayPalApiStruct $webhook, Context $context): void;
+    public function invoke(Webhook $webhook, Context $context): void;
 }

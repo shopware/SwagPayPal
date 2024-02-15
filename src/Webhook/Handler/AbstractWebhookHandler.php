@@ -14,10 +14,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
-use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\Exception\ParentPaymentNotFoundException;
 use Swag\PayPal\Webhook\Exception\WebhookException;
@@ -38,18 +37,15 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 
     abstract public function getEventType(): string;
 
-    /**
-     * @param WebhookV1|WebhookV2 $webhook
-     */
-    abstract public function invoke(PayPalApiStruct $webhook, Context $context): void;
+    abstract public function invoke(Webhook $webhook, Context $context): void;
 
     /**
      * @throws ParentPaymentNotFoundException
      * @throws WebhookOrderTransactionNotFoundException
      */
-    protected function getOrderTransaction(WebhookV1 $webhook, Context $context): OrderTransactionEntity
+    protected function getOrderTransaction(Resource $resource, Context $context): OrderTransactionEntity
     {
-        $payPalTransactionId = $webhook->getResource()->getParentPayment();
+        $payPalTransactionId = $resource->getParentPayment();
 
         if ($payPalTransactionId === null) {
             throw new ParentPaymentNotFoundException($this->getEventType());
