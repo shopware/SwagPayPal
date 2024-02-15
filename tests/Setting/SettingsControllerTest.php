@@ -86,10 +86,10 @@ class SettingsControllerTest extends TestCase
                 )
             ),
             new MerchantIntegrationsService(
-                new MerchantIntegrationsResource($this->createPayPalClientFactory()),
+                new MerchantIntegrationsResource(new PayPalClientFactoryMock($logger)),
                 new CredentialsUtil($this->createDefaultSystemConfig()),
                 $this->getContainer()->get(PaymentMethodDataRegistry::class),
-                new PayPalClientFactoryMock($this->createDefaultSystemConfig(), $logger)
+                new PayPalClientFactoryMock($logger)
             )
         );
     }

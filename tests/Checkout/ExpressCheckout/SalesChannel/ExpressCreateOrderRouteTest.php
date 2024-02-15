@@ -22,10 +22,12 @@ use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -54,7 +56,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         $route = new ExpressCreateOrderRoute(
             $cartService,
             $this->getContainer()->get(OrderFromCartBuilder::class),
-            $this->createOrderResource(),
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
             $this->getContainer()->get(CartPriceService::class),
             new NullLogger(),
         );
@@ -97,12 +99,10 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->createMock(VaultTokenService::class),
         );
 
-        $orderResource = $this->createOrderResource($systemConfig);
-
         return new ExpressCreateOrderRoute(
             $this->getContainer()->get(CartService::class),
             $orderFromCartBuilder,
-            $orderResource,
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
             $this->getContainer()->get(CartPriceService::class),
             new NullLogger(),
         );

@@ -47,6 +47,7 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderAPM;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -163,7 +164,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
     private function getPaymentHandler(AbstractAPMOrderBuilder $orderBuilder, array $settings): APMHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $clientFactory = $this->createPayPalClientFactoryWithService($systemConfig);
+        $clientFactory = new PayPalClientFactoryMock(new NullLogger());
         $orderResource = new OrderResource($clientFactory);
         $logger = new NullLogger();
 

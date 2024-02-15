@@ -32,6 +32,7 @@ use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
@@ -159,7 +160,7 @@ class CreateOrderRouteTest extends TestCase
             new OrderRepositoryMock(),
             $this->createOrderBuilder($systemConfig),
             $orderFromCartBuilder,
-            new OrderResource($this->createPayPalClientFactory()),
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
             new NullLogger()
         );
     }

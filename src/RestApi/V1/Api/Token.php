@@ -52,6 +52,11 @@ final class Token extends PayPalApiStruct
     private string $appId;
 
     /**
+     * @OA\Property(type="string")
+     */
+    private ?string $idToken = null;
+
+    /**
      * The lifetime of the access token, in seconds.
      *
      * @OA\Property(type="integer")
@@ -130,6 +135,16 @@ final class Token extends PayPalApiStruct
     public function setAppId(string $appId): void
     {
         $this->appId = $appId;
+    }
+
+    public function getIdToken(): ?string
+    {
+        return $this->idToken;
+    }
+
+    public function setIdToken(?string $idToken): void
+    {
+        $this->idToken = $idToken;
     }
 
     public function getExpiresIn(): int

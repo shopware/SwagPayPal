@@ -70,9 +70,17 @@
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\Payment\Method\ACDCHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
+        <service id="Swag\PayPal\Checkout\Payment\Method\ACDCHandler">
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\ACDC\ACDCValidator"/>
-            <tag name="shopware.payment.method.sync"/>
+
+            <tag name="shopware.payment.method.async"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Method\PayLaterHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">

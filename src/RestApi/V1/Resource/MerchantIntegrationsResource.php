@@ -17,15 +17,11 @@ use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 #[Package('checkout')]
 class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterface
 {
-    private PayPalClientFactoryInterface $payPalClientFactory;
-
     /**
      * @internal
      */
-    public function __construct(
-        PayPalClientFactoryInterface $payPalClientFactory
-    ) {
-        $this->payPalClientFactory = $payPalClientFactory;
+    public function __construct(private readonly PayPalClientFactoryInterface $payPalClientFactory)
+    {
     }
 
     public function get(string $merchantId, ?string $salesChannelId = null, bool $sandboxActive = true): MerchantIntegrations
@@ -36,7 +32,7 @@ class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterf
 
         $partnerId = $sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE;
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, isFirstParty: true)->sendGetRequest(
             \sprintf(RequestUriV1::MERCHANT_INTEGRATIONS_RESOURCE, $partnerId, $merchantId)
         );
 

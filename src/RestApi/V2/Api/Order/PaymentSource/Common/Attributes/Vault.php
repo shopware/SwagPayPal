@@ -41,6 +41,8 @@ class Vault extends PayPalApiStruct
      */
     protected string $status;
 
+    protected string $confirmPaymentToken;
+
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_attributes_customer")
      */
@@ -89,6 +91,16 @@ class Vault extends PayPalApiStruct
     public function setStatus(string $status): void
     {
         $this->status = $status;
+    }
+
+    public function getConfirmPaymentToken(): string
+    {
+        return $this->confirmPaymentToken;
+    }
+
+    public function setConfirmPaymentToken(string $confirmPaymentToken): void
+    {
+        $this->confirmPaymentToken = $confirmPaymentToken;
     }
 
     public function getCustomer(): ?Customer

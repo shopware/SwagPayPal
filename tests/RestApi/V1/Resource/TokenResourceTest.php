@@ -16,6 +16,7 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
+use Swag\PayPal\RestApi\V1\Service\CredentialProviderInterface;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateTokenResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
@@ -30,7 +31,7 @@ class TokenResourceTest extends TestCase
 
     public function testGetToken(): void
     {
-        $token = $this->getTokenResource(false)->getToken($this->getCredentials());
+        $token = $this->getTokenResource(false)->getToken('salesChannelId');
 
         $dateNow = new \DateTime('now');
 
@@ -41,7 +42,7 @@ class TokenResourceTest extends TestCase
 
     public function testGetTokenFromCache(): void
     {
-        $token = $this->getTokenResource()->getToken($this->getCredentials());
+        $token = $this->getTokenResource()->getToken('salesChannelId');
 
         static::assertSame(self::CACHED_ACCESS_TOKEN, $token->getAccessToken());
         static::assertSame(CreateTokenResponseFixture::TOKEN_TYPE, $token->getTokenType());
@@ -54,11 +55,15 @@ class TokenResourceTest extends TestCase
         $item->method('get')->willReturn($withToken ? $this->getCacheContent() : null);
         $cacheItemPool->method('getItem')->willReturn($item);
 
+        $credentialProvider = $this->createMock(CredentialProviderInterface::class);
+        $credentialProvider->method('createCredentialsObject')->with('salesChannelId')->willReturn($this->getCredentials());
+
         $logger = new NullLogger();
 
         return new TokenResource(
             $cacheItemPool,
             new TokenClientFactoryMock($logger),
+            $credentialProvider,
             new TokenValidator()
         );
     }

@@ -224,7 +224,7 @@ Missing PayPal order id');
     protected function createPaymentHandler(array $settings = []): AbstractSyncAPMHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $this->clientFactory = $this->createPayPalClientFactoryWithService($systemConfig);
+        $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
         $orderResource = new OrderResource($this->clientFactory);
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();

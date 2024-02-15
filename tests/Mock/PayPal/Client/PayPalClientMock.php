@@ -11,8 +11,6 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClient;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
-use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 
 /**
  * @internal
@@ -21,11 +19,9 @@ use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 class PayPalClientMock extends PayPalClient
 {
     public function __construct(
-        TokenResource $tokenResource,
-        OAuthCredentials $credentials,
         LoggerInterface $logger
     ) {
-        parent::__construct($tokenResource, $logger, PartnerAttributionId::PAYPAL_CLASSIC, $credentials);
+        parent::__construct([], 'baseUrl', $logger, PartnerAttributionId::PAYPAL_CLASSIC);
         $this->client = new GuzzleClientMock([]);
     }
 

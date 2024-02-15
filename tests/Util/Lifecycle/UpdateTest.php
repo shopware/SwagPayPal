@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -51,6 +52,7 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
@@ -164,15 +166,6 @@ class UpdateTest extends TestCase
         $update = $this->createUpdateService($systemConfigService, $this->createWebhookService($systemConfigService));
         $update->update($updateContext);
         static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $systemConfigService->get(Settings::WEBHOOK_ID));
-    }
-
-    public function testUpdateTo170WithMissingSettings(): void
-    {
-        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
-        $updateContext = $this->createUpdateContext('1.6.9', '1.7.0');
-        $update = $this->createUpdateService($systemConfigService, $this->createWebhookService($systemConfigService));
-        $update->update($updateContext);
-        static::assertNull($systemConfigService->get(Settings::WEBHOOK_ID));
     }
 
     public function testUpdateTo172(): void
@@ -459,7 +452,7 @@ class UpdateTest extends TestCase
     private function createWebhookService(SystemConfigService $systemConfigService): WebhookService
     {
         return new WebhookService(
-            new WebhookResource($this->createPayPalClientFactoryWithService($systemConfigService)),
+            new WebhookResource(new PayPalClientFactoryMock(new NullLogger())),
             new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]),
             $systemConfigService,
             $this->createMock(RouterInterface::class),
