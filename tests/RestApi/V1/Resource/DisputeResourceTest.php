@@ -8,12 +8,13 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Resource\DisputeResource;
-use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDispute;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDisputesList;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 
 /**
  * @internal
@@ -21,8 +22,6 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDisputesList;
 #[Package('checkout')]
 class DisputeResourceTest extends TestCase
 {
-    use ServicesTrait;
-
     public function testList(): void
     {
         $disputes = $this->createResource()->list(TestDefaults::SALES_CHANNEL)->getItems();
@@ -42,8 +41,6 @@ class DisputeResourceTest extends TestCase
 
     private function createResource(): DisputeResource
     {
-        $clientFactory = $this->createPayPalClientFactory();
-
-        return new DisputeResource($clientFactory);
+        return new DisputeResource(new PayPalClientFactoryMock(new NullLogger()));
     }
 }

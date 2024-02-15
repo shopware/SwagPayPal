@@ -15,6 +15,7 @@ interface PayPalClientFactoryInterface
 {
     public function getPayPalClient(
         ?string $salesChannelId,
-        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
+        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC,
+        bool $isFirstParty = false,
     ): PayPalClientInterface;
 }

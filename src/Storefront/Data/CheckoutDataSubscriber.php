@@ -19,7 +19,6 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Storefront\Data\Event\PayPalPageExtensionAddedEvent;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
-use Swag\PayPal\Storefront\Data\Struct\VaultData;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -80,12 +79,6 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
             return;
         }
 
-        /** @var VaultData|null $vaultData */
-        $vaultData = $event->getPage()->getExtensionOfType(VaultSubscriber::VAULT_EXTENSION, VaultData::class);
-        if ($vaultData?->getIdentifier()) {
-            return;
-        }
-
         foreach ($this->apmCheckoutMethods as $checkoutMethod) {
             if (!$this->checkSettings($event->getSalesChannelContext(), $checkoutMethod->getHandler())) {
                 continue;
@@ -98,11 +91,6 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
         if ($this->apmCheckoutMethods === null || $event->getPage()->getCart()->getErrors()->blockOrder()) {
-            return;
-        }
-
-        $vaultData = $event->getPage()->getExtensionOfType(VaultSubscriber::VAULT_EXTENSION, VaultData::class);
-        if ($vaultData?->getIdentifier()) {
             return;
         }
 

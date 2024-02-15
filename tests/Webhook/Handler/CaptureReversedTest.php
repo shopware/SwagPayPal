@@ -7,12 +7,15 @@
 
 namespace Swag\PayPal\Test\Webhook\Handler;
 
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\RestApi\V2\Api\Webhook;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Webhook\Handler\CaptureReversed;
 use Swag\PayPal\Webhook\WebhookEventTypes;
@@ -61,7 +64,7 @@ class CaptureReversedTest extends AbstractWebhookHandlerTestCase
             $this->orderTransactionRepository,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
             $this->getContainer()->get(PaymentStatusUtilV2::class),
-            $this->createOrderResource($this->createDefaultSystemConfig())
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
         );
     }
 }

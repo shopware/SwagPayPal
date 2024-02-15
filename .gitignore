@@ -9,3 +9,4 @@ phpstan.neon
 var/
 composer.lock
 node_modules
+.phpunit.cache

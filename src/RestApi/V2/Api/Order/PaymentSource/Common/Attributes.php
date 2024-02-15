@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Customer;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Vault;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Verification;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_payment_source_attributes")
@@ -28,6 +29,11 @@ class Attributes extends PayPalApiStruct
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_attributes_customer")
      */
     protected ?Customer $customer = null;
+
+    /**
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_attributes_verification")
+     */
+    protected ?Verification $verification = null;
 
     public function getVault(): ?Vault
     {
@@ -47,5 +53,15 @@ class Attributes extends PayPalApiStruct
     public function setCustomer(?Customer $customer): void
     {
         $this->customer = $customer;
+    }
+
+    public function getVerification(): ?Verification
+    {
+        return $this->verification;
+    }
+
+    public function setVerification(?Verification $verification): void
+    {
+        $this->verification = $verification;
     }
 }

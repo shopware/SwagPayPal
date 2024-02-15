@@ -9,15 +9,16 @@ namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
@@ -56,7 +57,7 @@ class WebhookServiceTest extends TestCase
         $this->router = $this->createMock(RouterInterface::class);
 
         $this->webhookService = new WebhookService(
-            $this->createWebhookResource($this->systemConfig),
+            new WebhookResource(new PayPalClientFactoryMock(new NullLogger())),
             new WebhookRegistry([new DummyWebhook($this->orderTransactionRepo)]),
             $this->systemConfig,
             $this->router,
@@ -211,12 +212,5 @@ class WebhookServiceTest extends TestCase
         static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
         static::assertNull($this->systemConfig->get(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
         static::assertNull($this->systemConfig->get(Settings::WEBHOOK_EXECUTE_TOKEN, TestDefaults::SALES_CHANNEL));
-    }
-
-    private function createWebhookResource(SystemConfigService $systemConfigService): WebhookResource
-    {
-        return new WebhookResource(
-            $this->createPayPalClientFactoryWithService($systemConfigService)
-        );
     }
 }

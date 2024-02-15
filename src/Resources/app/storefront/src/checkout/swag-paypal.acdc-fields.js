@@ -1,5 +1,4 @@
 import DomAccess from 'src/helper/dom-access.helper';
-import Iterator from 'src/helper/iterator.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import HttpClient from 'src/service/http-client.service';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
@@ -135,28 +134,21 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
          *
          * @type string
          */
-        expirationFieldSelector: '#swag-paypal-acdc-form-expiration',
+        cardExpiryFieldSelector: '#swag-paypal-acdc-form-expiration',
 
         /**
          * Selector of the cvv field
          *
          * @type string
          */
-        cvvFieldSelector: '#swag-paypal-acdc-form-cvv',
+        cardCvvFieldSelector: '#swag-paypal-acdc-form-cvv',
 
         /**
          * Selector of the cardholder field
          *
          * @type string
          */
-        cardholderFieldSelector: '#swag-paypal-acdc-form-cardholder',
-
-        /**
-         * Selector of the zip field
-         *
-         * @type string
-         */
-        zipFieldSelector: '#swag-paypal-acdc-form-zip',
+        cardNameFieldSelector: '#swag-paypal-acdc-form-cardholder',
 
         /**
          * Selector of the submit button of the order confirm form
@@ -181,7 +173,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
         validatedStyleClass: 'was-validated',
 
         /**
-         * Styling information for the hosted fields at PayPal
+         * Styling information for the card fields at PayPal
          *
          * @type object
          */
@@ -190,39 +182,19 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
                 'font-family': '"Inter", sans-serif',
                 'font-size': '0.875rem',
                 'font-weight': 300,
-                'letter-spacing': '0.02rem',
+                'letter-spacing': '0.03rem',
+                padding: '0.5625rem',
             },
             'input::placeholder': {
                 color: '#c3c3c3',
                 opacity: 1,
             },
-        },
-
-        /**
-         * Cardholder Data for the hosted fields
-         *
-         * @type object
-         */
-        cardholderData: {
-            cardholderName: '',
-            // Billing Address
-            billingAddress: {
-                // Street address, line 1
-                streetAddress: '',
-                // Street address, line 2 (Ex: Unit, Apartment, etc.)
-                extendedAddress: '',
-                // State
-                region: '',
-                // City
-                locality: '',
-                // Postal Code
-                postalCode: '',
-                // Country Code
-                countryCodeAlpha2: '',
+            body: {
+                padding: 0,
             },
-            contingencies: [
-                'SCA_ALWAYS',
-            ],
+            'input.card-field-number.display-icon': {
+                'padding-left': 'calc(2rem + 40px) !important',
+            },
         },
 
         /**
@@ -255,10 +227,12 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
     render(paypal) {
         this.cardFieldForm = DomAccess.querySelector(document, this.options.cardFieldFormSelector);
 
-        if (paypal.HostedFields.isEligible()) {
-            this.cardFieldForm.classList.remove('d-none');
+        const cardFields = paypal.CardFields(this.getFieldConfig());
 
-            paypal.HostedFields.render(this.getFieldConfig()).then(this.bindFieldActions.bind(this));
+        if (cardFields.isEligible()) {
+            this.cardFieldForm.classList.remove('d-none');
+            this.renderIndividualFields(cardFields)
+            this.bindFieldActions(cardFields);
         } else {
             const button = paypal.Buttons(this.getButtonConfig(paypal.FUNDING.CARD));
 
@@ -277,32 +251,46 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
 
             onError: this.onError.bind(this),
 
-            styles: this.options.cardFieldStyleConfig,
+            onApprove: this.onApprove.bind(this),
 
-            fields: {
-                number: {
-                    selector: this.options.cardNumberFieldSelector,
-                    placeholder: DomAccess.querySelector(
-                        this.cardFieldForm,
-                        this.options.cardNumberFieldSelector,
-                    ).dataset.placeholder,
-                },
-                cvv: {
-                    selector: this.options.cvvFieldSelector,
-                    placeholder: DomAccess.querySelector(
-                        this.cardFieldForm,
-                        this.options.cvvFieldSelector,
-                    ).dataset.placeholder,
-                },
-                expirationDate: {
-                    selector: this.options.expirationFieldSelector,
-                    placeholder: DomAccess.querySelector(
-                        this.cardFieldForm,
-                        this.options.expirationFieldSelector,
-                    ).dataset.placeholder,
-                },
-            },
-        };
+            style: this.options.cardFieldStyleConfig,
+        }
+    }
+
+    renderIndividualFields(cardFields) {
+        this.fields = {};
+
+        this.fields.cardNameField = cardFields.NameField({
+            placeholder: DomAccess.querySelector(
+                this.cardFieldForm,
+                this.options.cardNameFieldSelector,
+            ).dataset.placeholder,
+        });
+        this.fields.cardNameField.render(this.options.cardNameFieldSelector);
+
+        this.fields.cardNumberField = cardFields.NumberField({
+            placeholder: DomAccess.querySelector(
+                this.cardFieldForm,
+                this.options.cardNumberFieldSelector,
+            ).dataset.placeholder,
+        });
+        this.fields.cardNumberField.render(this.options.cardNumberFieldSelector);
+
+        this.fields.cardCvvField = cardFields.CVVField({
+            placeholder: DomAccess.querySelector(
+                this.cardFieldForm,
+                this.options.cardCvvFieldSelector,
+            ).dataset.placeholder,
+        });
+        this.fields.cardCvvField.render(this.options.cardCvvFieldSelector);
+
+        this.fields.cardExpiryField = cardFields.ExpiryField({
+            placeholder: DomAccess.querySelector(
+                this.cardFieldForm,
+                this.options.cardExpiryFieldSelector,
+            ).dataset.placeholder,
+        });
+        this.fields.cardExpiryField.render(this.options.cardExpiryFieldSelector);
     }
 
     getButtonConfig(fundingSource) {
@@ -344,17 +332,11 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
     }
 
     bindFieldActions(cardFields) {
-        cardFields.on('validityChange', event => {
-            this.setFieldValidity(event.fields[event.emittedBy]);
-        });
-
-        const regularFormFields = DomAccess.querySelectorAll(this.cardFieldForm, 'input');
-        Iterator.iterate(regularFormFields, field => {
-            field.addEventListener('invalid', this.onFormFieldInvalid.bind(this, cardFields));
-        });
-
         DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.remove('d-none');
         this.confirmOrderForm.addEventListener('submit', this.onFieldSubmit.bind(this, cardFields));
+
+        // remove history listener, it messes up errors
+        window.PluginManager.getPluginInstanceFromElement(this.confirmOrderForm, 'FormAddHistory').options.entries = [];
     }
 
     /**
@@ -406,34 +388,26 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
         event.preventDefault();
         event.stopPropagation();
 
-        const state = cardFields.getState();
-        const firstInvalidFieldKey = Object.keys(state.fields).find((key) => {
-            return !state.fields[key].isValid;
-        });
+        cardFields.getState().then((state) => {
+            if (state.isFormValid) {
+                // form and card fields filled correctly
+                cardFields.submit();
 
-        if (!firstInvalidFieldKey) {
-            // form and card fields filled correctly
-            cardFields
-                .submit(this.buildCardholderData())
-                .then(this.onApprove.bind(this))
-                .catch(this.onError.bind(this));
+                return;
+            }
 
-            return;
-        }
+            const buttonLoadingIndicator = new ButtonLoadingIndicator(
+                DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector),
+            );
+            buttonLoadingIndicator.remove();
 
-        const buttonLoadingIndicator = new ButtonLoadingIndicator(
-            DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector),
-        );
-        buttonLoadingIndicator.remove();
+            const firstInvalidFieldKey = Object.keys(state.fields).find((key) => !state.fields[key].isValid);
+            this.fields[firstInvalidFieldKey]?.focus();
 
-        cardFields.focus(firstInvalidFieldKey);
-        window.scrollTo({
-            top: this.getScrollOffset(state.fields[firstInvalidFieldKey].container),
-            behavior: 'smooth',
-        });
-
-        Object.keys(state.fields).forEach((key) => {
-            this.setFieldValidity(state.fields[key], false);
+            window.scrollTo({
+                top: this.getScrollOffset(DomAccess.querySelector(this.cardFieldForm, this.options[firstInvalidFieldKey + 'Selector'])),
+                behavior: 'smooth',
+            });
         });
     }
 
@@ -477,41 +451,5 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
         }
 
         return offset;
-    }
-
-    setFieldValidity(field, skipPotentialValidity = true) {
-        // Remove any previously applied error or warning classes
-        field.container.classList.remove('is-valid', 'is-invalid');
-
-        if (field.isValid) {
-            field.container.classList.add('is-valid');
-        } else if (!field.isPotentiallyValid || !skipPotentialValidity) {
-            field.container.classList.add('is-invalid');
-        }
-    }
-
-    onFormFieldInvalid(cardFields) {
-        this.cardFieldForm.classList.add(this.options.validatedStyleClass);
-
-        const state = cardFields.getState();
-        Object.keys(state.fields).forEach((key) => {
-            this.setFieldValidity(state.fields[key], false);
-        });
-    }
-
-    buildCardholderData() {
-        const data = { ...this.options.cardholderData };
-        const cardholderName = DomAccess.querySelector(this.cardFieldForm, this.options.cardholderFieldSelector).value;
-        const zip = DomAccess.querySelector(this.cardFieldForm, this.options.zipFieldSelector).value;
-
-        if (cardholderName) {
-            data.cardholderName = cardholderName;
-        }
-
-        if (zip) {
-            data.billingAddress.postalCode = zip;
-        }
-
-        return data;
     }
 }

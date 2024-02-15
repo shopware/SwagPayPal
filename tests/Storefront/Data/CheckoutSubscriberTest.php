@@ -27,7 +27,6 @@ use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
@@ -37,6 +36,7 @@ use Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
+use Swag\PayPal\Storefront\Data\Service\VaultDataService;
 use Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 use Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutData;
@@ -46,7 +46,6 @@ use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ClientTokenResponseFixture;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -322,7 +321,6 @@ class CheckoutSubscriberTest extends TestCase
         $router = $this->getContainer()->get('router');
         $sepaDataService = new SEPACheckoutDataService(
             $this->paymentMethodDataRegistry,
-            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
             $localeCodeProvider,
             $router,
             $settings,
@@ -331,7 +329,6 @@ class CheckoutSubscriberTest extends TestCase
 
         $payLaterDataService = new PayLaterCheckoutDataService(
             $this->paymentMethodDataRegistry,
-            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
             $localeCodeProvider,
             $router,
             $settings,
@@ -340,7 +337,6 @@ class CheckoutSubscriberTest extends TestCase
 
         $venmoDataService = new VenmoCheckoutDataService(
             $this->paymentMethodDataRegistry,
-            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
             $localeCodeProvider,
             $router,
             $settings,
@@ -349,7 +345,6 @@ class CheckoutSubscriberTest extends TestCase
 
         $acdcDataService = new ACDCCheckoutDataService(
             $this->paymentMethodDataRegistry,
-            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
             $localeCodeProvider,
             $router,
             $settings,
@@ -358,11 +353,11 @@ class CheckoutSubscriberTest extends TestCase
 
         $spbDataService = new SPBCheckoutDataService(
             $this->paymentMethodDataRegistry,
-            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
             $localeCodeProvider,
             $router,
             $settings,
-            $credentialsUtil
+            $credentialsUtil,
+            $this->createMock(VaultDataService::class),
         );
 
         $sessionMock = $this->createMock(Session::class);
@@ -471,7 +466,6 @@ class CheckoutSubscriberTest extends TestCase
         $acdcExtension = $event->getPage()->getExtension($extensionName);
 
         static::assertNotNull($acdcExtension);
-        static::assertSame(ClientTokenResponseFixture::CLIENT_TOKEN, $acdcExtension->getClientToken());
     }
 
     /**

@@ -53,7 +53,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
     getScriptOptions() {
 
         const config = {
-            components: 'buttons,messages,hosted-fields,funding-eligibility',
+            components: 'buttons,messages,card-fields,funding-eligibility',
             'client-id': this.options.clientId,
             commit: !!this.options.commit,
             locale: this.options.languageIso,
@@ -78,6 +78,10 @@ export default class SwagPaypalAbstractButtons extends Plugin {
 
         if (this.options.clientToken) {
             config['data-client-token'] = this.options.clientToken;
+        }
+
+        if (this.options.userIdToken) {
+            config['data-user-id-token'] = this.options.userIdToken;
         }
 
         if (this.options.partnerAttributionId) {

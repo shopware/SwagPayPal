@@ -14,7 +14,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
-use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -31,22 +30,18 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
     private const APM_P24 = 'p24';
     private const APM_SOFORT = 'sofort';
 
-    private SystemConfigService $systemConfigService;
-
     /**
      * @internal
      */
     public function __construct(
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
-        IdentityResource $identityResource,
         LocaleCodeProvider $localeCodeProvider,
         RouterInterface $router,
-        SystemConfigService $systemConfigService,
-        CredentialsUtilInterface $credentialsUtil
+        private readonly SystemConfigService $systemConfigService,
+        CredentialsUtilInterface $credentialsUtil,
+        private readonly VaultDataService $vaultDataService,
     ) {
-        parent::__construct($paymentMethodDataRegistry, $identityResource, $localeCodeProvider, $router, $systemConfigService, $credentialsUtil);
-
-        $this->systemConfigService = $systemConfigService;
+        parent::__construct($paymentMethodDataRegistry, $localeCodeProvider, $router, $systemConfigService, $credentialsUtil);
     }
 
     public function buildCheckoutData(
@@ -55,7 +50,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
         ?OrderEntity $order = null
     ): ?SPBCheckoutButtonData {
         $salesChannelId = $context->getSalesChannelId();
-        $currency = $order ? $order->getCurrency() ?? $context->getCurrency() : $context->getCurrency();
+        $currency = $order?->getCurrency() ?? $context->getCurrency();
 
         if ($cart && $cart->getExtension(ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {
             return null;
@@ -77,14 +72,13 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
 
         $data = $this->getBaseData($context, $order);
 
-        $spbCheckoutButtonData = (new SPBCheckoutButtonData())->assign(\array_merge($data, [
+        return (new SPBCheckoutButtonData())->assign(\array_merge($data, [
             'buttonColor' => $this->systemConfigService->getString(Settings::SPB_BUTTON_COLOR, $salesChannelId),
             'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
             'disabledAlternativePaymentMethods' => $this->getDisabledAlternativePaymentMethods($price, $currency->getIsoCode()),
             'showPayLater' => $this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId),
+            'userIdToken' => $this->vaultDataService->getUserIdToken($context),
         ]));
-
-        return $spbCheckoutButtonData;
     }
 
     public function getMethodDataClass(): string

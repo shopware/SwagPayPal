@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Migration\Migration1692001928VaultToken;
+use Swag\PayPal\Migration\Migration1706111604AddCustomerIdToVault;
 
 /**
  * @covers \Swag\PayPal\Migration\Migration1692001928VaultToken
@@ -35,8 +36,6 @@ class Migration1692001928VaultTokenTest extends TestCase
         $migration = new Migration1692001928VaultToken();
         $migration->update($connection);
         $migration->update($connection);
-
-        $connection->beginTransaction();
 
         $manager = $connection->createSchemaManager();
 
@@ -75,6 +74,9 @@ class Migration1692001928VaultTokenTest extends TestCase
         static::assertArrayHasKey('primary', $indexes);
         static::assertArrayHasKey('fk.swag_paypal_vault_token_mapping.payment_method_id', $indexes);
         static::assertArrayHasKey('uniq.swag_paypal_vault_token_mapping.token_id', $indexes);
+
+        (new Migration1706111604AddCustomerIdToVault())->update($connection);
+        $connection->beginTransaction();
     }
 
     private function rollback(Connection $connection): void

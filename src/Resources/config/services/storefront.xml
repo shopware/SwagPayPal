@@ -56,11 +56,11 @@
             <argument type="service" id="swag_paypal_vault_token.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\TokenResource"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" abstract="true">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\IdentityResource"/>
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
@@ -70,7 +70,9 @@
         <service id="Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
         <service id="Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
         <service id="Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
-        <service id="Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
+        <service id="Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService">
+            <argument type="service" id="Swag\PayPal\Storefront\Data\Service\VaultDataService"/>
+        </service>
         <service id="Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
 
         <service id="Swag\PayPal\Storefront\Data\CheckoutDataSubscriber">

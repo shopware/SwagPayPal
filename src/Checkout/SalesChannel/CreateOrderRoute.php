@@ -29,6 +29,10 @@ use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Verification;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -128,7 +132,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
                 : $this->getOrderFromCart($salesChannelContext, $request, $customer);
 
             if ($requestDataBag->get('product') === 'acdc') {
-                $paypalOrder->setPaymentSource(null);
+                $this->addACDCAdjustments($paypalOrder->getPaymentSource());
             }
 
             $salesChannelId = $salesChannelContext->getSalesChannelId();
@@ -204,5 +208,22 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         }
 
         return PartnerAttributionId::PRODUCT_ATTRIBUTION[$product];
+    }
+
+    private function addACDCAdjustments(?PaymentSource $paymentSource): void
+    {
+        $paypal = $paymentSource?->getPaypal();
+        if (!$paypal) {
+            return;
+        }
+
+        $card = new Card();
+        $card->setExperienceContext($paypal->getExperienceContext());
+        $attributes = new Attributes();
+        $attributes->setVerification(new Verification());
+        $card->setAttributes($attributes);
+
+        $paymentSource->setCard($card);
+        $paymentSource->setPaypal(null);
     }
 }

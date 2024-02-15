@@ -10,6 +10,9 @@ namespace Swag\PayPal\Storefront\Data\Struct\ACDC;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
+/**
+ * @deprecated tag:v10.0.0 - will be removed without replacement
+ */
 #[Package('checkout')]
 class BillingAddress extends Struct
 {

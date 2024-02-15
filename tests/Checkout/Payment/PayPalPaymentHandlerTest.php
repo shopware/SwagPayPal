@@ -646,7 +646,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
         ?EntityRepository $orderTransactionRepository = null
     ): PayPalPaymentHandler {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $this->clientFactory = $this->createPayPalClientFactoryWithService($systemConfig);
+        $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
         $orderResource = new OrderResource($this->clientFactory);
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();
