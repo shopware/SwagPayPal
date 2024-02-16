@@ -57,8 +57,11 @@
             <argument type="service" id="order.repository"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\ACDC\ACDCValidator">
+        <service id="Swag\PayPal\Checkout\Card\AbstractCardValidator">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Card\ACDCValidator" parent="Swag\PayPal\Checkout\Card\AbstractCardValidator">
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler" abstract="true">
@@ -79,7 +82,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
             <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
-            <argument type="service" id="Swag\PayPal\Checkout\ACDC\ACDCValidator"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Card\ACDCValidator"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
