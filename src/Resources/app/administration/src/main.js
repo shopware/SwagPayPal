@@ -1,24 +1,36 @@
-import './mixin/swag-paypal-credentials-loader.mixin';
-import './mixin/swag-paypal-pos-catch-error.mixin';
-import './mixin/swag-paypal-pos-log-label.mixin';
+import { location } from '@shopware-ag/meteor-admin-sdk';
 
-import './module/extension/sw-dashboard/sw-dashboard-index';
-import './module/extension/sw-dashboard/component/swag-paypal-campaign-banner';
-import './module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials';
-import './module/extension/sw-sales-channel-modal-detail';
-import './module/extension/sw-sales-channel-modal-grid';
-import './module/extension/sw-settings-payment/components/swag-paypal-overview-card';
-import './module/extension/sw-settings-payment/sw-settings-payment-list';
-import './module/extension/sw-settings-payment/sw-settings-payment-detail';
-import './module/extension/sw-settings-shipping/sw-settings-shipping-detail';
+const bootPromise = window.Shopware ? Shopware.Plugin.addBootPromise() : undefined;
 
-import './module/swag-paypal';
-import './module/swag-paypal-payment';
+(async () => {
+    if (!location.isIframe()) {
+        await import('./mixin/swag-paypal-credentials-loader.mixin');
+        await import('./mixin/swag-paypal-pos-catch-error.mixin');
+        await import('./mixin/swag-paypal-pos-log-label.mixin');
 
-import './init/api-service.init';
-import './init/translation.init';
-import './init/svg-icons.init';
+        await import('./module/extension/sw-dashboard/sw-dashboard-index');
+        await import('./module/extension/sw-dashboard/component/swag-paypal-campaign-banner');
+        await import('./module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials');
+        await import('./module/extension/sw-sales-channel-modal-detail');
+        await import('./module/extension/sw-sales-channel-modal-grid');
+        await import('./module/extension/sw-settings-payment/sw-settings-payment-list');
+        await import('./module/extension/sw-settings-payment/sw-settings-payment-detail');
+        await import('./module/extension/sw-settings-shipping/sw-settings-shipping-detail');
+        await import('./module/extension/sw-settings-payment/components/swag-paypal-overview-card');
 
-import './module/swag-paypal-pos';
+        await import('./module/swag-paypal');
+        await import('./module/swag-paypal-payment');
 
-import './module/swag-paypal-disputes';
+        await import('./init/api-service.init');
+        await import('./init/translation.init');
+        await import('./init/svg-icons.init');
+
+        await import('./module/swag-paypal-pos');
+
+        await import('./module/swag-paypal-disputes');
+    }
+
+    if (bootPromise) {
+        bootPromise();
+    }
+})();
