@@ -85,9 +85,7 @@ class PaymentSource extends PayPalApiStruct
     #[OA\Property(ref: Trustly::class, nullable: true)]
     protected ?Trustly $trustly = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_google_pay")
-     */
+    #[OA\Property(ref: GooglePay::class, nullable: true)]
     protected ?GooglePay $googlePay = null;
 
     public function getPayUponInvoice(): ?PayUponInvoice
