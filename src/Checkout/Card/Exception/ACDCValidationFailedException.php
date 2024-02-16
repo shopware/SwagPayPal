@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\ACDC\Exception;
+namespace Swag\PayPal\Checkout\Card\Exception;
 
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Framework\Log\Package;

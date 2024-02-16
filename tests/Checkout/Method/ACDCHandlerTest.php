@@ -22,7 +22,7 @@ use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Swag\PayPal\Checkout\ACDC\ACDCValidatorInterface;
+use Swag\PayPal\Checkout\Card\CardValidatorInterface;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -63,7 +63,7 @@ class ACDCHandlerTest extends TestCase
 
     private SettingsValidationService&MockObject $settingsValidationService;
 
-    private ACDCValidatorInterface&MockObject $acdcValidator;
+    private CardValidatorInterface&MockObject $acdcValidator;
 
     private OrderResource&MockObject $orderResource;
 
@@ -83,7 +83,7 @@ class ACDCHandlerTest extends TestCase
             $this->transactionDataService = $this->createMock(TransactionDataService::class),
             new NullLogger(),
             $this->orderResource = $this->createMock(OrderResource::class),
-            $this->acdcValidator = $this->createMock(ACDCValidatorInterface::class),
+            $this->acdcValidator = $this->createMock(CardValidatorInterface::class),
             $this->vaultTokenService = $this->createMock(VaultTokenService::class),
             $this->orderBuilder = $this->createMock(ACDCOrderBuilder::class),
             $this->orderConverter = $this->createMock(OrderConverter::class),

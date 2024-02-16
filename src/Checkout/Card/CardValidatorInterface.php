@@ -5,15 +5,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\ACDC;
+namespace Swag\PayPal\Checkout\Card;
 
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult;
 
 #[Package('checkout')]
-interface ACDCValidatorInterface
+interface CardValidatorInterface
 {
     public const LIABILITY_SHIFT_POSSIBLE = 'POSSIBLE';
 
@@ -36,4 +37,6 @@ interface ACDCValidatorInterface
     public const AUTHENTICATION_STATUS_DECOUPLED = 'D';
 
     public function validate(Order $order, SyncPaymentTransactionStruct $transaction, SalesChannelContext $salesChannelContext): bool;
+
+    public function validateAuthenticationResult(AuthenticationResult $authenticationResult, SalesChannelContext $salesChannelContext): bool;
 }
