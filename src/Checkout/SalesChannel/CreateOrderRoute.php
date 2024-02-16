@@ -28,6 +28,7 @@ use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\ApplePayOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\GooglePayOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order;
@@ -50,6 +51,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         private readonly PayPalOrderBuilder $payPalOrderBuilder,
         private readonly ACDCOrderBuilder $acdcOrderBuilder,
         private readonly ApplePayOrderBuilder $applePayOrderBuilder,
+        private readonly GooglePayOrderBuilder $googlePayOrderBuilder,
         private readonly OrderResource $orderResource,
         private readonly LoggerInterface $logger,
         private readonly AbstractPaymentTransactionStructFactory $paymentTransactionStructFactory,
@@ -108,6 +110,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             $orderBuilder = match ($requestDataBag->get('product')) {
                 'acdc' => $this->acdcOrderBuilder,
                 'applepay' => $this->applePayOrderBuilder,
+                'googlepay' => $this->googlePayOrderBuilder,
                 default => $this->payPalOrderBuilder,
             };
 
