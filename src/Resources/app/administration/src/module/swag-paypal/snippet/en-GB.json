@@ -374,9 +374,6 @@
               "enableACDC": {
                 "label": "Eanable Vaulting for credit and debit cards"
               },
-              "enableAlways": {
-                "label": "Preselect Vaulting on Paypal checkout"
-              },
               "activateButton": {
                 "label": "Activate Vaulting"
               }

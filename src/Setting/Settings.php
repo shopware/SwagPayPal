@@ -74,8 +74,6 @@ final class Settings
 
     public const VAULTING_ENABLED_ACDC = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledACDC';
 
-    public const VAULTING_ENABLE_ALWAYS = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnableAlways';
-
     /**
      * @internal these may change at any time
      */
@@ -111,7 +109,6 @@ final class Settings
         self::EXCLUDED_PRODUCT_STREAM_IDS => [],
         self::VAULTING_ENABLED_ACDC => false,
         self::VAULTING_ENABLED_WALLET => false,
-        self::VAULTING_ENABLE_ALWAYS => false,
         self::CROSS_BORDER_MESSAGING_ENABLED => false,
         self::CROSS_BORDER_BUYER_COUNTRY => null,
     ];

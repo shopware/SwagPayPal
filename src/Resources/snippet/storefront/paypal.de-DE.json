@@ -57,8 +57,14 @@
             "name": "PayPal-Zahlungen"
         },
         "vault": {
-          "clearAccount": "Konto entfernen",
-          "createToken": "Konto für zukünftige Käufe speichern"
+          "account": {
+            "clear": "Konto entfernen",
+            "create": "Konto für zukünftige Käufe speichern"
+          },
+          "card": {
+            "clear": "Karte entfernen",
+            "create": "Karte für zukünftige Käufe speichern"
+          }
         }
     }
 }
