@@ -27,13 +27,13 @@
         {% if payPalVaultData.identifier %}
             <div>{{ payPalVaultData.identifier }}</div>
             <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
-                {{ "paypal.vault.clearAccount"|trans }}
+                {{ "paypal.vault." ~ payPalVaultData.snippetType ~ ".clear"|trans }}
             </a>
-        {% else %}
+        {% elseif context.extensions.subscription is not defined %}
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="createVault" id="swagPaypalCreateVault" form="confirmOrderForm" value="1" {% if payPalVaultData.preselect %}checked{% endif %} />
+                <input class="form-check-input" type="checkbox" name="createVault" id="swagPaypalCreateVault" form="confirmOrderForm" value="1" />
                 <label class="form-check-label" for="swagPaypalCreateVault" >
-                    {{ "paypal.vault.createToken"|trans }}
+                    {{ ("paypal.vault." ~ payPalVaultData.snippetType ~ ".create")|trans }}
                 </label>
             </div>
         {% endif %}
