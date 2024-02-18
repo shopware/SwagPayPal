@@ -8,9 +8,12 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService;
@@ -56,8 +59,18 @@ class VenmoMethodData extends AbstractMethodData implements CheckoutDataMethodIn
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return $availabilityContext->getCurrencyCode() === 'USD'
-            && $availabilityContext->getBillingCountryCode() === 'US';
+        if ($availabilityContext->getCurrencyCode() !== 'USD'
+            || $availabilityContext->getBillingCountryCode() !== 'US') {
+            return false;
+        }
+
+        if ($availabilityContext->isSubscription()) {
+            $systemConfigService = $this->container->get(SystemConfigService::class);
+
+            return $systemConfigService->getBool(Settings::VAULTING_ENABLED_VENMO, $availabilityContext->getSalesChannelId());
+        }
+
+        return true;
     }
 
     public function getInitialState(): bool
@@ -88,5 +101,12 @@ class VenmoMethodData extends AbstractMethodData implements CheckoutDataMethodIn
         }
 
         return self::CAPABILITY_INELIGIBLE;
+    }
+
+    public function isVaultable(SalesChannelContext $context): bool
+    {
+        $systemConfigService = $this->container->get(SystemConfigService::class);
+
+        return $systemConfigService->getBool(Settings::VAULTING_ENABLED_VENMO, $context->getSalesChannelId());
     }
 }

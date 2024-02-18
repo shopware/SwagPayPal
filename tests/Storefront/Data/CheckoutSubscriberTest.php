@@ -340,7 +340,8 @@ class CheckoutSubscriberTest extends TestCase
             $localeCodeProvider,
             $router,
             $settings,
-            $credentialsUtil
+            $credentialsUtil,
+            $this->createMock(VaultDataService::class),
         );
 
         $acdcDataService = new ACDCCheckoutDataService(

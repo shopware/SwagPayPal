@@ -1,5 +1,6 @@
 # 8.1.0
 - PPI-850 - Added automated payment status polling for authorized and in-progress transactions
+- PPI-862 - Added vaulting (save customer) to Venmo payment method
 - PPI-863 - Added Apple Pay payment method
 - PPI-863 - Added Google Pay payment method
 

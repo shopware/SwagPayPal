@@ -7,6 +7,7 @@ import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
 export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButtons {
     static scriptLoading = new SwagPayPalScriptLoading();
+    static product = 'spb';
 
     static options = {
         /**
@@ -186,7 +187,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
             /**
              * Will be called if when the payment process starts
              */
-            createOrder: this.createOrder.bind(this),
+            createOrder: this.createOrder.bind(this, this.constructor.product),
 
             /**
              * Will be called if the payment process is approved by paypal
