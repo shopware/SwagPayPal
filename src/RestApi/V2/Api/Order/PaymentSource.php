@@ -29,6 +29,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Sofort;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Token;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Trustly;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Venmo;
 
 #[OA\Schema(schema: 'swag_paypal_v2_order_payment_source')]
 #[Package('checkout')]
@@ -87,6 +88,9 @@ class PaymentSource extends PayPalApiStruct
 
     #[OA\Property(ref: GooglePay::class, nullable: true)]
     protected ?GooglePay $googlePay = null;
+
+    #[OA\Property(ref: Venmo::class, nullable: true)]
+    protected ?Venmo $venmo = null;
 
     public function getPayUponInvoice(): ?PayUponInvoice
     {
@@ -256,6 +260,16 @@ class PaymentSource extends PayPalApiStruct
     public function setGooglePay(?GooglePay $googlePay): void
     {
         $this->googlePay = $googlePay;
+    }
+
+    public function getVenmo(): ?Venmo
+    {
+        return $this->venmo;
+    }
+
+    public function setVenmo(?Venmo $venmo): void
+    {
+        $this->venmo = $venmo;
     }
 
     /**

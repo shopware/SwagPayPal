@@ -23,6 +23,7 @@ use Swag\PayPal\Checkout\Payment\Method\GooglePayHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -52,6 +53,7 @@ class GooglePayHandlerTest extends TestCase
             $this->createMock(TransactionDataService::class),
             $this->createMock(LoggerInterface::class),
             $this->orderResource,
+            $this->createMock(VaultTokenService::class),
             $this->cardValidator,
         );
     }

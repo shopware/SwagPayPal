@@ -8,16 +8,16 @@
 namespace Swag\PayPal\Test\Checkout\Method;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
+use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 
 /**
  * @internal
  */
 #[Package('checkout')]
-class PayLaterHandlerTestSyncAPMHandler extends AbstractTestSyncAPMHandler
+class SEPAHandlerTest extends AbstractTestSyncAPMHandler
 {
     protected function getPaymentHandlerClassName(): string
     {
-        return PayLaterHandler::class;
+        return SEPAHandler::class;
     }
 }
