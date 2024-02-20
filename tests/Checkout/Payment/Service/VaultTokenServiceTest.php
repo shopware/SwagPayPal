@@ -22,7 +22,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Swag\PayPal\Checkout\Exception\SubscriptionTypeNotSupportedException;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
@@ -266,26 +265,27 @@ class VaultTokenServiceTest extends TestCase
         $orderCustomer->setCustomerId('customer-id');
         $order->setOrderCustomer($orderCustomer);
 
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $context = Context::createDefaultContext();
+        $customerId = 'customer-id';
         $vault = (new Vault())->assign(['id' => 'vault-id', 'customer' => ['id' => 'customer-id']]);
         $attributes = new Attributes();
         $attributes->setVault($vault);
         $paymentSource = new Paypal();
         $paymentSource->setEmailAddress('test@hatoken.de');
         $paymentSource->setAttributes($attributes);
-        $vaultTokenService->saveToken(new SyncPaymentTransactionStruct($transaction, $order), $paymentSource, $salesChannelContext);
+        $vaultTokenService->saveToken(new SyncPaymentTransactionStruct($transaction, $order), $paymentSource, $customerId, $context);
 
         static::assertArrayHasKey('id', $vaultTokenRepository->upserts[0][0]);
         static::assertSame($vaultTokenRepository->upserts[0][0]['token'], 'vault-id');
         static::assertSame($vaultTokenRepository->upserts[0][0]['tokenCustomer'], 'customer-id');
         static::assertSame($vaultTokenRepository->upserts[0][0]['paymentMethodId'], $transaction->getPaymentMethodId());
         static::assertSame($vaultTokenRepository->upserts[0][0]['identifier'], $paymentSource->getVaultIdentifier());
-        static::assertSame($vaultTokenRepository->upserts[0][0]['customerId'], $salesChannelContext->getCustomerId());
+        static::assertSame($vaultTokenRepository->upserts[0][0]['customerId'], $customerId);
 
         static::assertSame([
-            'id' => $salesChannelContext->getCustomerId(),
+            'id' => $customerId,
             CustomerExtension::CUSTOMER_VAULT_TOKEN_MAPPING_EXTENSION => [[
-                'customerId' => $salesChannelContext->getCustomerId(),
+                'customerId' => $customerId,
                 'paymentMethodId' => $transaction->getPaymentMethodId(),
                 'tokenId' => $vaultTokenRepository->upserts[0][0]['id'],
             ]],
@@ -315,20 +315,21 @@ class VaultTokenServiceTest extends TestCase
         $subscription->setId(Uuid::randomHex());
         $subscription->setNextSchedule(new \DateTime());
 
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $context = Context::createDefaultContext();
+        $customerId = 'customer-id';
         $vault = (new Vault())->assign(['id' => 'vault-id', 'customer' => ['id' => 'customer-id']]);
         $attributes = new Attributes();
         $attributes->setVault($vault);
         $paymentSource = new Paypal();
         $paymentSource->setEmailAddress('test@hatoken.de');
         $paymentSource->setAttributes($attributes);
-        $vaultTokenService->saveToken(new SyncPaymentTransactionStruct($transaction, new OrderEntity(), new SubscriptionRecurringDataStruct($subscription)), $paymentSource, $salesChannelContext);
+        $vaultTokenService->saveToken(new SyncPaymentTransactionStruct($transaction, new OrderEntity(), new SubscriptionRecurringDataStruct($subscription)), $paymentSource, $customerId, $context);
 
         static::assertSame($vaultTokenRepository->upserts[0][0]['token'], 'vault-id');
         static::assertSame($vaultTokenRepository->upserts[0][0]['tokenCustomer'], 'customer-id');
         static::assertSame($vaultTokenRepository->upserts[0][0]['paymentMethodId'], $transaction->getPaymentMethodId());
         static::assertSame($vaultTokenRepository->upserts[0][0]['identifier'], $paymentSource->getVaultIdentifier());
-        static::assertSame($vaultTokenRepository->upserts[0][0]['customerId'], $salesChannelContext->getCustomerId());
+        static::assertSame($vaultTokenRepository->upserts[0][0]['customerId'], $customerId);
 
         static::assertSame([
             'id' => $subscription->getId(),
@@ -360,7 +361,8 @@ class VaultTokenServiceTest extends TestCase
         $subscription->setId(Uuid::randomHex());
         $subscription->setNextSchedule(new \DateTime());
 
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $context = Context::createDefaultContext();
+        $customerId = 'customer-id';
         $vault = new Vault();
         $vault->setId('vault-id');
         $attributes = new Attributes();
@@ -370,6 +372,6 @@ class VaultTokenServiceTest extends TestCase
         $paymentSource->setAttributes($attributes);
 
         $this->expectException(ServiceNotFoundException::class);
-        $vaultTokenService->saveToken(new SyncPaymentTransactionStruct($transaction, new OrderEntity(), new SubscriptionRecurringDataStruct($subscription)), $paymentSource, $salesChannelContext);
+        $vaultTokenService->saveToken(new SyncPaymentTransactionStruct($transaction, new OrderEntity(), new SubscriptionRecurringDataStruct($subscription)), $paymentSource, $customerId, $context);
     }
 }

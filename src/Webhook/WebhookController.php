@@ -14,9 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
-use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
-use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
@@ -88,10 +86,8 @@ class WebhookController extends AbstractController
 
     /**
      * @throws BadRequestHttpException
-     *
-     * @return WebhookV1|WebhookV2
      */
-    protected function createWebhookFromPostData(Request $request): PayPalApiStruct
+    protected function createWebhookFromPostData(Request $request): Webhook
     {
         $postData = $request->request->all();
         $this->logger->debug('Received webhook', ['payload' => $postData]);
@@ -100,23 +96,16 @@ class WebhookController extends AbstractController
             throw new BadRequestHttpException('No webhook data sent');
         }
 
-        if (isset($postData['resource_version']) && $postData['resource_version'] === '2.0') {
-            $webhook = new WebhookV2();
-        } else {
-            $webhook = new WebhookV1();
-        }
-
+        $webhook = new Webhook();
         $webhook->assign($postData);
 
         return $webhook;
     }
 
     /**
-     * @param WebhookV1|WebhookV2 $webhook
-     *
      * @throws BadRequestHttpException
      */
-    protected function tryToExecuteWebhook(Context $context, PayPalApiStruct $webhook): void
+    protected function tryToExecuteWebhook(Context $context, Webhook $webhook): void
     {
         try {
             $this->webhookService->executeWebhook($webhook, $context);

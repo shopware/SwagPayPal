@@ -9,10 +9,11 @@ namespace Swag\PayPal\Test\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\RestApi\V2\Api\Webhook;
-use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Handler\AuthorizationVoided;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -29,13 +30,18 @@ class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
 
     public function testInvoke(): void
     {
-        $webhook = $this->createWebhookV2(WebhookV2::RESOURCE_TYPE_AUTHORIZATION);
+        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_AUTHORIZATION);
         $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook);
     }
 
     public function testInvokeWithoutResource(): void
     {
-        $this->assertInvokeWithoutResource();
+        $webhook = $this->createWebhookV2('no-valid-resource-type');
+        $context = Context::createDefaultContext();
+
+        $this->expectException(WebhookException::class);
+        $this->expectExceptionMessage('Order transaction could not be resolved');
+        $this->webhookHandler->invoke($webhook, $context);
     }
 
     public function testInvokeWithoutCustomId(): void
@@ -53,7 +59,7 @@ class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
 
     public function testInvokeWithSameInitialState(): void
     {
-        $webhook = $this->createWebhookV2(WebhookV2::RESOURCE_TYPE_AUTHORIZATION);
+        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_AUTHORIZATION);
         $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook, OrderTransactionStates::STATE_CANCELLED);
     }
 

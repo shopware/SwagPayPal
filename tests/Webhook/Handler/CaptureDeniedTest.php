@@ -11,7 +11,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\RestApi\V2\Api\Webhook;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\Webhook\Handler\CaptureDenied;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 

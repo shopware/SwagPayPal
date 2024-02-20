@@ -188,6 +188,11 @@ class PayPalHandler
             );
         }
 
-        $this->vaultTokenService->saveToken($transaction, $paymentSource, $context);
+        $customerId = $context->getCustomerId();
+        if (!$customerId) {
+            return;
+        }
+
+        $this->vaultTokenService->saveToken($transaction, $paymentSource, $customerId, $context->getContext());
     }
 }

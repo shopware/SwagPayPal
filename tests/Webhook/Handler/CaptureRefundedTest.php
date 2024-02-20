@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\RestApi\V2\Api\Webhook;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;

@@ -13,6 +13,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Customer;
+use Swag\PayPal\RestApi\V3\Api\PaymentToken\Metadata;
 
 /**
  * @OA\Schema(schema="swag_paypal_v3_payment_token")
@@ -44,6 +45,11 @@ class PaymentToken extends PayPalApiStruct
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
     protected LinkCollection $links;
+
+    /**
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v3_payment_token_metadata")
+     */
+    protected ?Metadata $metadata = null;
 
     public function getId(): string
     {
@@ -93,5 +99,15 @@ class PaymentToken extends PayPalApiStruct
     public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
+    }
+
+    public function getMetadata(): ?Metadata
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(?Metadata $metadata): void
+    {
+        $this->metadata = $metadata;
     }
 }
