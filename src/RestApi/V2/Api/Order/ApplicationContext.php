@@ -7,13 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_application_context")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_application_context')]
 #[Package('checkout')]
 class ApplicationContext extends PayPalApiStruct
 {
@@ -33,34 +31,26 @@ class ApplicationContext extends PayPalApiStruct
     public const USER_ACTION_CONTINUE = 'CONTINUE';
     public const USER_ACTION_PAY_NOW = 'PAY_NOW';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $brandName;
 
-    /**
-     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE)
-     */
+    #[OA\Property(type: 'string', default: self::LANDING_PAGE_TYPE_NO_PREFERENCE, enum: self::LANDING_PAGE_TYPES)]
     protected string $landingPage = self::LANDING_PAGE_TYPE_NO_PREFERENCE;
 
-    /**
-     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS)
-     */
+    #[OA\Property(
+        type: 'string',
+        default: self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS,
+        enum: [self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS, self::SHIPPING_PREFERENCE_NO_SHIPPING, self::SHIPPING_PREFERENCE_GET_FROM_FILE],
+    )]
     protected string $shippingPreference = self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS;
 
-    /**
-     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::USER_ACTION_PAY_NOW)
-     */
+    #[OA\Property(type: 'string', default: self::USER_ACTION_PAY_NOW, enum: [self::USER_ACTION_CONTINUE, self::USER_ACTION_PAY_NOW])]
     protected string $userAction = self::USER_ACTION_PAY_NOW;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $returnUrl;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $cancelUrl;
 
     public function getBrandName(): string

@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Log\Package;
@@ -42,19 +42,16 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
         throw new DecorationPatternException(self::class);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/store-api/paypal/express/create-order",
-     *     description="Creates a PayPal order from the existing cart",
-     *     operationId="createPayPalExpressOrder",
-     *     tags={"Store API", "PayPal"},
-     *
-     *     @OA\Response(
-     *         response="200",
-     *         description="The new token of the order"
-     *    )
-     * )
-     */
+    #[OA\Post(
+        path: '/store-api/paypal/express/create-order',
+        operationId: 'createPayPalExpressOrder',
+        description: 'Creates a PayPal order from the existing cart',
+        tags: ['Store API', 'PayPal'],
+        responses: [new OA\Response(
+            response: '200',
+            description: 'The new token of the order'
+        )]
+    )]
     #[Route(path: '/store-api/paypal/express/create-order', name: 'store-api.paypal.express.create_order', methods: ['POST'])]
     public function createPayPalOrder(Request $request, SalesChannelContext $salesChannelContext): TokenResponse
     {

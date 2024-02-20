@@ -7,13 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
- * @OA\Schema(schema="swag_paypal_v1_subscription_application_context")
- *
  * @codeCoverageIgnore
  *
  * @experimental
@@ -21,40 +19,29 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[OA\Schema(schema: 'swag_paypal_v1_subscription_application_context')]
 #[Package('checkout')]
 class ApplicationContext extends PayPalApiStruct
 {
     public const USER_ACTION_TYPE_SUBSCRIBE_NOW = 'SUBSCRIBE_NOW';
     public const USER_ACTION_TYPE_CONTINUE = 'CONTINUE';
 
-    /**
-     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V1\Api\Subscription\ApplicationContext::USER_ACTION_TYPE_SUBSCRIBE_NOW)
-     */
+    #[OA\Property(type: 'string', default: self::USER_ACTION_TYPE_SUBSCRIBE_NOW)]
     protected string $userAction = self::USER_ACTION_TYPE_SUBSCRIBE_NOW;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $brandName;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $locale;
 
-    /**
-     * @OA\Property(type="string", default="SET_PROVIDED_ADDRESS")
-     */
+    #[OA\Property(type: 'string', default: 'SET_PROVIDED_ADDRESS')]
     protected string $shippingPreference = 'SET_PROVIDED_ADDRESS';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $returnUrl;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $cancelUrl;
 
     public function getUserAction(): string

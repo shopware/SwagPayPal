@@ -7,27 +7,33 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Common\Link;
 use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Adjudication;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\AdjudicationCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\CommunicationDetails;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputeAmount;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputedTransaction;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputedTransactionCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputeOutcome;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\EvidenceCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Message;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\MessageCollection;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\MoneyMovement;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\MoneyMovementCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\PartnerAction;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\PartnerActionCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\RefundDetails;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\SupportingInfo;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\SupportingInfoCollection;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_item")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_item')]
 #[Package('checkout')]
 class Item extends PayPalApiStruct
 {
@@ -47,129 +53,79 @@ class Item extends PayPalApiStruct
         self::DISPUTE_STATE_APPEALABLE,
     ];
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $disputeId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $createTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $updateTime;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_disputed_transaction"}, nullable=true)
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: DisputedTransaction::class), nullable: true)]
     protected ?DisputedTransactionCollection $disputedTransactions = null;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $reason;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $status;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', enum: self::DISPUTE_STATES, nullable: true)]
     protected ?string $disputeState = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
-     */
+    #[OA\Property(ref: DisputeAmount::class)]
     protected DisputeAmount $disputeAmount;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $externalReasonCode = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_dispute_outcome", nullable=true)
-     */
+    #[OA\Property(ref: DisputeOutcome::class, nullable: true)]
     protected ?DisputeOutcome $disputeOutcome = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_adjudication"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Adjudication::class))]
     protected AdjudicationCollection $adjudications;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_money_movement"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: MoneyMovement::class))]
     protected MoneyMovementCollection $moneyMovements;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $disputeLifeCycleStage;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $disputeChannel = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_message"}, nullable=true)
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Message::class), nullable: true)]
     protected ?MessageCollection $messages = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions")
-     */
+    #[OA\Property(ref: Extensions::class)]
     protected Extensions $extensions;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence"}, nullable=true)
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Evidence::class), nullable: true)]
     protected ?EvidenceCollection $evidences = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $buyerResponseDueDate = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $sellerResponseDueDate = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_offer", nullable=true)
-     */
+    #[OA\Property(ref: Offer::class, nullable: true)]
     protected ?Offer $offer = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_refund_details", nullable=true)
-     */
+    #[OA\Property(ref: RefundDetails::class, nullable: true)]
     protected ?RefundDetails $refundDetails = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_communication_details", nullable=true)
-     */
+    #[OA\Property(ref: CommunicationDetails::class, nullable: true)]
     protected ?CommunicationDetails $communicationDetails = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_partner_action"}, nullable=true)
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: PartnerAction::class), nullable: true)]
     protected ?PartnerActionCollection $partnerActions = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_supporting_info"}, nullable=true)
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: SupportingInfo::class), nullable: true)]
     protected ?SupportingInfoCollection $supportingInfo = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Link::class))]
     protected LinkCollection $links;
 
     public function getDisputeId(): string

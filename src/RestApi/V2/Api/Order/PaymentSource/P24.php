@@ -7,18 +7,14 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment_source_p24")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_p24')]
 #[Package('checkout')]
 class P24 extends AbstractAPMPaymentSource
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $email;
 
     public function getEmail(): string

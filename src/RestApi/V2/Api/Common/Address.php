@@ -7,54 +7,44 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Common;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_common_address")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_common_address')]
 #[Package('checkout')]
 class Address extends PayPalApiStruct
 {
     /**
      * The first line of the address. For example, number or street. For example, 173 Drury Lane.
      * Required for data entry and compliance and risk checks. Must contain the full address.
-     *
-     * @OA\Property(type="string", nullable=true)
      */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $addressLine_1 = null;
 
     /**
      * The second line of the address. For example, suite or apartment number.
-     *
-     * @OA\Property(type="string", nullable=true)
      */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $addressLine_2 = null;
 
     /**
      * A city, town, or village. Smaller than $adminArea1
-     *
-     * @OA\Property(type="string", nullable=true)
      */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $adminArea_2 = null;
 
     /**
      * The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision.
      * Format for postal delivery. For example, CA and not California.
-     *
-     * @OA\Property(type="string", nullable=true)
      */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $adminArea_1 = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $postalCode = null;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $countryCode;
 
     public function getAddressLine1(): ?string

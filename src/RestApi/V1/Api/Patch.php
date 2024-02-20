@@ -7,32 +7,24 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_patch")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_patch')]
 #[Package('checkout')]
 class Patch extends PayPalApiStruct
 {
     public const OPERATION_ADD = 'add';
     public const OPERATION_REPLACE = 'replace';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string', enum: [self::OPERATION_ADD, self::OPERATION_REPLACE])]
     protected string $op;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $path;
 
-    /**
-     * @OA\Property(oneOf=[{"type":"string"},{"type":"array"}])
-     */
+    #[OA\Property(oneOf: [new OA\Schema(type: 'string'), new OA\Schema(type: 'array', items: new OA\Items(type: 'mixed'))])]
     protected array|string $value;
 
     public function getOp(): string

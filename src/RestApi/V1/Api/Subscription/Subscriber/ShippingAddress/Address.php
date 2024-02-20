@@ -8,13 +8,11 @@ declare(strict_types=1);
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
- * @OA\Schema(schema="swag_paypal_v1_subscription_shipping_address_address")
- *
  * @codeCoverageIgnore
  *
  * @experimental
@@ -22,37 +20,26 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[OA\Schema(schema: 'swag_paypal_v1_subscription_subscriber_shipping_address_address')]
 #[Package('checkout')]
 class Address extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $addressLine_1 = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $addressLine_2 = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)*
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $adminArea_1 = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $adminArea_2 = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $postalCode = null;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $countryCode;
 
     public function getAddressLine1(): ?string

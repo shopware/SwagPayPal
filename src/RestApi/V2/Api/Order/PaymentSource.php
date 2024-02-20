@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractPaymentSource;
@@ -28,90 +28,56 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Sofort;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Token;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Trustly;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment_source")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source')]
 #[Package('checkout')]
 class PaymentSource extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_pay_upon_invoice")
-     */
+    #[OA\Property(ref: PayUponInvoice::class, nullable: true)]
     protected ?PayUponInvoice $payUponInvoice = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_bancontact")
-     */
+    #[OA\Property(ref: Bancontact::class, nullable: true)]
     protected ?Bancontact $bancontact = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_blik")
-     */
+    #[OA\Property(ref: Blik::class, nullable: true)]
     protected ?Blik $blik = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_boletobancario")
-     */
+    #[OA\Property(ref: Boletobancario::class, nullable: true)]
     protected ?Boletobancario $boletobancario = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_card")
-     */
+    #[OA\Property(ref: Card::class, nullable: true)]
     protected ?Card $card = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_eps")
-     */
+    #[OA\Property(ref: Eps::class, nullable: true)]
     protected ?Eps $eps = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_giropay")
-     */
+    #[OA\Property(ref: Giropay::class, nullable: true)]
     protected ?Giropay $giropay = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_ideal")
-     */
+    #[OA\Property(ref: Ideal::class, nullable: true)]
     protected ?Ideal $ideal = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_multibanco")
-     */
+    #[OA\Property(ref: Multibanco::class, nullable: true)]
     protected ?Multibanco $multibanco = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_mybank")
-     */
+    #[OA\Property(ref: MyBank::class, nullable: true)]
     protected ?MyBank $myBank = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_oxxo")
-     */
+    #[OA\Property(ref: Oxxo::class, nullable: true)]
     protected ?Oxxo $oxxo = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_p24")
-     */
+    #[OA\Property(ref: P24::class, nullable: true)]
     protected ?P24 $p24 = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_paypal")
-     */
+    #[OA\Property(ref: PayPal::class, nullable: true)]
     protected ?PayPal $paypal = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_sofort")
-     */
+    #[OA\Property(ref: Sofort::class, nullable: true)]
     protected ?Sofort $sofort = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_token")
-     */
+    #[OA\Property(ref: Token::class, nullable: true)]
     protected ?Token $token = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_trustly")
-     */
+    #[OA\Property(ref: Trustly::class, nullable: true)]
     protected ?Trustly $trustly = null;
 
     public function getPayUponInvoice(): ?PayUponInvoice

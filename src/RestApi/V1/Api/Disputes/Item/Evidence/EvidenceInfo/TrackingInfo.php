@@ -7,34 +7,24 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_evidence_tracking_info")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_item_evidence_evidence_info_tracking_info')]
 #[Package('checkout')]
 class TrackingInfo extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $carrierName;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $carrierNameOther;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $trackingUrl;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $trackingNumber;
 
     public function getCarrierName(): string

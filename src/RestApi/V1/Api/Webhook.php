@@ -7,9 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Common\Link;
 use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
@@ -17,9 +18,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V3\Api\PaymentToken;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_webhook")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_webhook')]
 #[Package('checkout')]
 class Webhook extends PayPalApiStruct
 {
@@ -28,49 +27,37 @@ class Webhook extends PayPalApiStruct
     public const RESOURCE_TYPE_REFUND = 'refund';
     public const RESOURCE_TYPE_PAYMENT_TOKEN = 'payment_token';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $id;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $resourceType = '';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $eventType;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $summary;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_webhook_resource", nullable=true)
-     */
+    #[OA\Property(nullable: true, oneOf: [
+        new OA\Schema(ref: PaymentToken::class),
+        new OA\Schema(ref: Authorization::class),
+        new OA\Schema(ref: Capture::class),
+        new OA\Schema(ref: Refund::class),
+        new OA\Schema(ref: Resource::class),
+    ])]
     protected ?PayPalApiStruct $resource = null;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $createTime;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Link::class))]
     protected LinkCollection $links;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $eventVersion;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $resourceVersion = '1.0';
 
     public function getId(): string

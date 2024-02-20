@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Checkout\SalesChannel;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -50,35 +50,22 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
         throw new DecorationPatternException(self::class);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/store-api/paypal/payment-method-eligibility",
-     *     description="Sets ineligible payment methods to be removed from the session",
-     *     operationId="setPaymentMethodEligibility",
-     *     tags={"Store API", "PayPal"},
-     *
-     *     @OA\RequestBody(
-     *
-     *         @OA\JsonContent(
-     *
-     *             @OA\Property(
-     *                 property="paymentMethods",
-     *                 type="array",
-     *
-     *                 @OA\Items(
-     *                     type="string",
-     *                 ),
-     *                 description="List of PayPal payment method identifiers according to constant REMOVABLE_PAYMENT_HANDLERS"
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *          response="204"
-     *     )
-     * )
-     */
-    #[Route(path: '/store-api/paypal/payment-method-eligibility', name: 'store-api.paypal.payment-method-eligibility', methods: ['POST'], defaults: ['XmlHttpRequest' => true])]
+    #[OA\Post(
+        path: '/store-api/paypal/payment-method-eligibility',
+        operationId: 'setPaymentMethodEligibility',
+        description: 'Sets ineligible payment methods to be removed from the session',
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+            new OA\Property(
+                property: 'paymentMethods',
+                description: 'List of PayPal payment method identifiers according to constant REMOVABLE_PAYMENT_HANDLERS',
+                type: 'array',
+                items: new OA\Items(type: 'string')
+            ),
+        ])),
+        tags: ['Store API', 'PayPal'],
+        responses: [new OA\Response(response: '204')],
+    )]
+    #[Route(path: '/store-api/paypal/payment-method-eligibility', name: 'store-api.paypal.payment-method-eligibility', defaults: ['XmlHttpRequest' => true], methods: ['POST'])]
     public function setPaymentMethodEligibility(Request $request, Context $context): Response
     {
         /** @var mixed|array $paymentMethods */

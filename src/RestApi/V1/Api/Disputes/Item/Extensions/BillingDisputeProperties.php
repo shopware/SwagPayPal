@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CanceledRecurringBilling;
@@ -16,35 +16,23 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\IncorrectTransactionAmount;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\PaymentByOtherMeans;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_billing_dispute_properties")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_item_extensions_billing_dispute_properties')]
 #[Package('checkout')]
 class BillingDisputeProperties extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_duplicate_transaction")
-     */
+    #[OA\Property(ref: DuplicateTransaction::class)]
     protected DuplicateTransaction $duplicateTransaction;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_incorrect_transaction_amount")
-     */
+    #[OA\Property(ref: IncorrectTransactionAmount::class)]
     protected IncorrectTransactionAmount $incorrectTransactionAmount;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_payment_by_other_means")
-     */
+    #[OA\Property(ref: PaymentByOtherMeans::class)]
     protected PaymentByOtherMeans $paymentByOtherMeans;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_cretid_not_processed")
-     */
+    #[OA\Property(ref: CreditNotProcessed::class)]
     protected CreditNotProcessed $creditNotProcessed;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_canceled_recurring_billing")
-     */
+    #[OA\Property(ref: CanceledRecurringBilling::class)]
     protected CanceledRecurringBilling $canceledRecurringBilling;
 
     public function getDuplicateTransaction(): DuplicateTransaction

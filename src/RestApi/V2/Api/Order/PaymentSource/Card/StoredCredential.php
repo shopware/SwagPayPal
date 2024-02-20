@@ -7,13 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment_source_card_stored_credential")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_card_stored_credential')]
 #[Package('checkout')]
 class StoredCredential extends PayPalApiStruct
 {
@@ -28,24 +26,16 @@ class StoredCredential extends PayPalApiStruct
     public const USAGE_SUBSEQUENT = 'SUBSEQUENT';
     public const USAGE_DERIVED = 'DERIVED';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string', enum: [self::PAYMENT_INITIATOR_MERCHANT, self::PAYMENT_INITIATOR_CUSTOMER])]
     protected string $paymentInitiator;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string', enum: [self::PAYMENT_TYPE_RECURRING, self::PAYMENT_TYPE_ONE_TIME, self::PAYMENT_TYPE_UNSCHEDULED])]
     protected string $paymentType;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string', enum: [self::USAGE_DERIVED, self::USAGE_FIRST, self::USAGE_SUBSEQUENT])]
     protected string $usage;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $previousNetworkTransactionReference;
 
     public function getPaymentInitiator(): string

@@ -7,41 +7,30 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\Document;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\DocumentCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_evidence")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_item_evidence')]
 #[Package('checkout')]
 class Evidence extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $evidenceType;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_evidence_info")
-     */
+    #[OA\Property(ref: EvidenceInfo::class)]
     protected EvidenceInfo $evidenceInfo;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_document"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Document::class))]
     protected DocumentCollection $documents;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $notes;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $itemId;
 
     public function getEvidenceType(): string

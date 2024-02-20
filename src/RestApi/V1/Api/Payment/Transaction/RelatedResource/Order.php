@@ -7,18 +7,14 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_payment_transaction_order")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_payment_transaction_related_resource_order')]
 #[Package('checkout')]
 class Order extends RelatedResource
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $reasonCode;
 
     public function getReasonCode(): string

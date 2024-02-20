@@ -7,71 +7,47 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Common\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\Link;
 use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_payment_transaction_abstract_related_resource")
- */
 #[Package('checkout')]
 abstract class RelatedResource extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $id;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $state;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
-     */
+    #[OA\Property(ref: Amount::class)]
     protected Amount $amount;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $paymentMode;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $createTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $updateTime;
 
-    /**
-     * @OA\Property(type="string")*
-     */
+    #[OA\Property(type: 'string')]
     protected string $protectionEligibility;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $protectionEligibilityType;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $receiptId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $parentPayment;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Link::class))]
     protected LinkCollection $links;
 
     public function getId(): string

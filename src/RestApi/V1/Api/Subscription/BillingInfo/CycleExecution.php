@@ -7,13 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
- * @OA\Schema(schema="swag_paypal_v1_subscription_cycle_execution")
- *
  * @codeCoverageIgnore
  *
  * @experimental
@@ -21,32 +19,22 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
-#[Package('checkout')]
+#[Package('checkout'), OA\Schema(schema: 'swag_paypal_v1_subscription_billing_info_cycle_execution')]
 class CycleExecution extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $tenureType;
 
-    /**
-     * @OA\Property(type="integer")
-     */
+    #[OA\Property(type: 'integer')]
     protected int $sequence;
 
-    /**
-     * @OA\Property(type="integer")
-     */
+    #[OA\Property(type: 'integer')]
     protected int $cyclesCompleted;
 
-    /**
-     * @OA\Property(type="integer")
-     */
+    #[OA\Property(type: 'integer')]
     protected int $cyclesRemaining;
 
-    /**
-     * @OA\Property(type="integer")
-     */
+    #[OA\Property(type: 'integer')]
     protected int $totalCycles;
 
     public function getTenureType(): string

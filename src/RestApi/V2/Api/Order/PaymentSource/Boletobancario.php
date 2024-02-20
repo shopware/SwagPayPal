@@ -7,35 +7,25 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario\TaxInfo;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment_source_boletobancario")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_boletobancario')]
 #[Package('checkout')]
 class Boletobancario extends AbstractAPMPaymentSource
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $email;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $expiryDate;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_boletobancario_taxinfo")
-     */
+    #[OA\Property(ref: TaxInfo::class)]
     protected TaxInfo $taxInfo;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_address")
-     */
+    #[OA\Property(ref: Address::class)]
     protected Address $billingAddress;
 
     public function getEmail(): string

@@ -7,37 +7,29 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ItemCollection;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingAddress;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingOption;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingOptionCollection;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_payment_transaction_item_list")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_payment_transaction_item_list')]
 #[Package('checkout')]
 class ItemList extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_shipping_address")
-     */
+    #[OA\Property(ref: ShippingAddress::class)]
     protected ShippingAddress $shippingAddress;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_item"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Item::class))]
     protected ItemCollection $items;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_shipping_option"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: ShippingOption::class))]
     protected ShippingOptionCollection $shippingOptions;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $shippingPhoneNumber;
 
     public function getShippingAddress(): ShippingAddress

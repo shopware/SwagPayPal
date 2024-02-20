@@ -7,19 +7,15 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_create_webhooks_event_type")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_create_webhooks_event_type')]
 #[Package('checkout')]
 class EventType extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $name;
 
     public function getName(): string

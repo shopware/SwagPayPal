@@ -7,70 +7,46 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Common;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Common\Money;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_common_transaction")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_common_transaction')]
 #[Package('checkout')]
 class Transaction extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $buyerTransactionId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $sellerTransactionId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $referenceId;
 
-    /**
-     * @OA\Property(type="string")*
-     */
+    #[OA\Property(type: 'string')]
     protected string $createTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $transactionStatus;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $grossAmount;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $invoiceNumber;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $custom;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_buyer")
-     */
+    #[OA\Property(ref: Buyer::class)]
     protected Buyer $buyer;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_seller")
-     */
+    #[OA\Property(ref: Seller::class)]
     protected Seller $seller;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_item"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Item::class))]
     protected ItemCollection $items;
 
     public function getBuyerTransactionId(): string

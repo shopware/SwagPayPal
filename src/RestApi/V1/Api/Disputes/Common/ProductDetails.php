@@ -7,39 +7,27 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Common;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_common_product_details")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_common_product_details')]
 #[Package('checkout')]
 class ProductDetails extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $productReceived;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $productReceivedTime;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_sub_reason"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: SubReason::class))]
     protected SubReasonCollection $subReasons;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $purchaseUrl;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_return_details")
-     */
+    #[OA\Property(ref: ReturnDetails::class)]
     protected ReturnDetails $returnDetails;
 
     public function getProductReceived(): string

@@ -7,58 +7,41 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Common\Link;
 use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment_source_attributes_vault")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_common_attributes_vault')]
 #[Package('checkout')]
 class Vault extends PayPalApiStruct
 {
     public const STORE_IN_VAULT_ON_SUCCESS = 'ON_SUCCESS';
     public const USAGE_TYPE_MERCHANT = 'MERCHANT';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $id = null;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $storeInVault;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $usageType;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $status;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $confirmPaymentToken;
 
-    /**
-     * @OA\Property(type="bool")
-     */
+    #[OA\Property(type: 'boolean')]
     protected bool $permitMultiplePaymentTokens = true;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_attributes_customer")
-     */
+    #[OA\Property(ref: Customer::class, nullable: true)]
     protected ?Customer $customer = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Link::class))]
     protected LinkCollection $links;
 
     public function getId(): ?string
