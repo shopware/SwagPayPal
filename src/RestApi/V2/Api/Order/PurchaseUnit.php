@@ -7,64 +7,45 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payee;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_purchase_unit")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit')]
 #[Package('checkout')]
 class PurchaseUnit extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $referenceId;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_amount")
-     */
+    #[OA\Property(ref: Amount::class)]
     protected Amount $amount;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payee")
-     */
+    #[OA\Property(ref: Payee::class)]
     protected Payee $payee;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $description;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $customId = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $invoiceId = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_item"}, nullable=true)
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Item::class), nullable: true)]
     protected ?ItemCollection $items = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_shipping")
-     */
+    #[OA\Property(ref: Shipping::class)]
     protected Shipping $shipping;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payments", nullable=true)
-     */
+    #[OA\Property(ref: Payments::class, nullable: true)]
     protected ?Payments $payments = null;
 
     public function getReferenceId(): string

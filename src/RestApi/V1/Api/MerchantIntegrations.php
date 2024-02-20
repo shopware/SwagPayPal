@@ -7,71 +7,51 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\CapabilityCollection;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\OauthIntegration;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\OauthIntegrationCollection;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\ProductCollection;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_merchant_integrations")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_merchant_integrations')]
 #[Package('checkout')]
 class MerchantIntegrations extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $merchantId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $trackingId;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_product"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Product::class))]
     protected ProductCollection $products;
 
-    /**     *
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_capability"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Capability::class))]
     protected CapabilityCollection $capabilities;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_oauth_integration"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: OauthIntegration::class))]
     protected OauthIntegrationCollection $oauthIntegrations;
 
     /**
      * @var string[]
-     *
-     * @OA\Property(type="array", items={"type": "string"})
      */
+    #[OA\Property(type: 'array', items: new OA\Items(type: 'string'))]
     protected array $grantedPermissions = [];
 
-    /**
-     * @OA\Property(type="boolean")
-     */
+    #[OA\Property(type: 'boolean')]
     protected bool $paymentsReceivable;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $legalName;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $primaryEmail;
 
-    /**
-     * @OA\Property(type="boolean")
-     */
+    #[OA\Property(type: 'boolean')]
     protected bool $primaryEmailConfirmed;
 
     public function getMerchantId(): string

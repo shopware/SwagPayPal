@@ -8,15 +8,13 @@ declare(strict_types=1);
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress\Address;
 use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress\Name;
 
 /**
- * @OA\Schema(schema="swag_paypal_v1_subscription_shipping_address")
- *
  * @codeCoverageIgnore
  *
  * @experimental
@@ -24,17 +22,14 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress\Name;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[OA\Schema(schema: 'swag_paypal_v1_subscription_subscriber_shipping_address')]
 #[Package('checkout')]
 class ShippingAddress extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_shipping_address_name", nullable=true)
-     */
+    #[OA\Property(ref: Name::class, nullable: true)]
     protected ?Name $name = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_shipping_address_address", nullable=true)
-     */
+    #[OA\Property(ref: Address::class, nullable: true)]
     protected ?Address $address = null;
 
     public function getName(): ?Name

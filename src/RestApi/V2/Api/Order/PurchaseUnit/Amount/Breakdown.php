@@ -7,50 +7,34 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_breakdown")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_amount_breakdown')]
 #[Package('checkout')]
 class Breakdown extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $itemTotal;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $shipping;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $handling;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money", nullable=true)
-     */
+    #[OA\Property(ref: Money::class, nullable: true)]
     protected ?Money $taxTotal = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $insurance;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $shippingDiscount;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $discount;
 
     public function getItemTotal(): Money

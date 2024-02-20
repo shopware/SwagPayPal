@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\PaymentsApi\Administration;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Framework\Context;
@@ -46,79 +46,49 @@ class PayPalPaymentController extends AbstractController
     public const REQUEST_PARAMETER_DESCRIPTION = 'description';
     public const REQUEST_PARAMETER_REASON = 'reason';
 
-    private PaymentResource $paymentResource;
-
-    private SaleResource $saleResource;
-
-    private AuthorizationResource $authorizationResource;
-
-    private OrdersResource $ordersResource;
-
-    private CaptureResource $captureResource;
-
-    private PaymentStatusUtil $paymentStatusUtil;
-
-    private EntityRepository $orderRepository;
-
-    private PriceFormatter $priceFormatter;
-
     /**
      * @internal
      */
     public function __construct(
-        PaymentResource $paymentResource,
-        SaleResource $saleResource,
-        AuthorizationResource $authorizationResource,
-        OrdersResource $ordersResource,
-        CaptureResource $captureResource,
-        PaymentStatusUtil $paymentStatusUtil,
-        EntityRepository $orderRepository,
-        PriceFormatter $priceFormatter
+        private readonly PaymentResource $paymentResource,
+        private readonly SaleResource $saleResource,
+        private readonly AuthorizationResource $authorizationResource,
+        private readonly OrdersResource $ordersResource,
+        private readonly CaptureResource $captureResource,
+        private readonly PaymentStatusUtil $paymentStatusUtil,
+        private readonly EntityRepository $orderRepository,
+        private readonly PriceFormatter $priceFormatter
     ) {
-        $this->paymentResource = $paymentResource;
-        $this->saleResource = $saleResource;
-        $this->authorizationResource = $authorizationResource;
-        $this->ordersResource = $ordersResource;
-        $this->captureResource = $captureResource;
-        $this->paymentStatusUtil = $paymentStatusUtil;
-        $this->orderRepository = $orderRepository;
-        $this->priceFormatter = $priceFormatter;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/paypal/payment-details/{orderId}/{paymentId}",
-     *     description="Loads the Payment details of the given PayPal ID",
-     *     operationId="paymentDetails",
-     *     tags={"Admin API", "PayPal"},
-     *
-     *     @OA\Parameter(
-     *         parameter="orderId",
-     *         name="orderId",
-     *         in="path",
-     *         description="ID of the order which contains the PayPal payment",
-     *
-     *         @OA\Schema(type="string")
-     *     ),
-     *
-     *     @OA\Parameter(
-     *         parameter="paymentId",
-     *         name="paymentId",
-     *         in="path",
-     *         description="ID of the PayPal payment",
-     *
-     *         @OA\Schema(type="string")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response="200",
-     *         description="Details of the PayPal payment",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_payment")
-     *     )
-     * )
-     */
-    #[Route(path: '/api/paypal/payment-details/{orderId}/{paymentId}', name: 'api.paypal.payment_details', methods: ['GET'], defaults: ['_acl' => ['order.viewer']])]
+    #[OA\Get(
+        path: '/paypal/payment-details/{orderId}/{paymentId}',
+        operationId: 'paymentDetails',
+        description: 'Loads the Payment details of the given PayPal ID',
+        tags: ['Admin API', 'PayPal'],
+        parameters: [
+            new OA\Parameter(
+                parameter: 'orderId',
+                name: 'orderId',
+                description: 'ID of the order which contains the PayPal payment',
+                in: 'path',
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                parameter: 'paymentId',
+                name: 'paymentId',
+                description: 'ID of the PayPal payment',
+                in: 'path',
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [new OA\Response(
+            response: '200',
+            description: 'Details of the PayPal payment',
+            content: new OA\JsonContent(ref: '#/components/schemas/swag_paypal_v1_payment')
+        )]
+    )]
+    #[Route(path: '/api/paypal/payment-details/{orderId}/{paymentId}', name: 'api.paypal.payment_details', defaults: ['_acl' => ['order.viewer']], methods: ['GET'])]
     public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
     {
         try {
@@ -134,55 +104,46 @@ class PayPalPaymentController extends AbstractController
         return new JsonResponse($payment);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/paypal/resource-details/{resourceType}/{resourceId}/{orderId}",
-     *     description="Loads the PayPal resource details of the given resource ID",
-     *     operationId="resourceDetails",
-     *     tags={"Admin API", "PayPal"},
-     *
-     *     @OA\Parameter(
-     *         parameter="resourceType",
-     *         name="resourceType",
-     *         in="path",
-     *         description="Type of the resource. Possible values: sale, authorization, order, capture, refund",
-     *
-     *         @OA\Schema(type="string")
-     *     ),
-     *
-     *     @OA\Parameter(
-     *         parameter="resourceId",
-     *         name="resourceId",
-     *         in="path",
-     *         description="ID of the PayPal resource",
-     *
-     *         @OA\Schema(type="string")
-     *     ),
-     *
-     *     @OA\Parameter(
-     *         parameter="orderId",
-     *         name="orderId",
-     *         in="path",
-     *         description="ID of the order which contains the PayPal resource",
-     *
-     *         @OA\Schema(type="string")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response="200",
-     *         description="Details of the PayPal resource",
-     *
-     *         @OA\JsonContent(oneOf={
-     *
-     *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_payment_transaction_sale"),
-     *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_payment_transaction_authorization"),
-     *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_payment_transaction_order"),
-     *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_capture")
-     *         })
-     *     )
-     * )
-     */
-    #[Route(path: '/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}', name: 'api.paypal.resource_details', methods: ['GET'], defaults: ['_acl' => ['order.viewer']])]
+    #[OA\Get(
+        path: '/paypal/resource-details/{resourceType}/{resourceId}/{orderId}',
+        operationId: 'resourceDetails',
+        description: 'Loads the PayPal resource details of the given resource ID',
+        tags: ['Admin API', 'PayPal'],
+        parameters: [
+            new OA\Parameter(
+                parameter: 'resourceType',
+                name: 'resourceType',
+                description: 'Type of the resource. Possible values: sale, authorization, order, capture, refund',
+                in: 'path',
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                parameter: 'resourceId',
+                name: 'resourceId',
+                description: 'ID of the PayPal resource',
+                in: 'path',
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                parameter: 'orderId',
+                name: 'orderId',
+                description: 'ID of the order which contains the PayPal resource',
+                in: 'path',
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [new OA\Response(
+            response: '200',
+            description: 'Details of the PayPal resource',
+            content: new OA\JsonContent(oneOf: [
+                new OA\Schema(ref: '#/components/schemas/swag_paypal_v1_payment_transaction_sale'),
+                new OA\Schema(ref: '#/components/schemas/swag_paypal_v1_payment_transaction_authorization'),
+                new OA\Schema(ref: '#/components/schemas/swag_paypal_v1_payment_transaction_order'),
+                new OA\Schema(ref: '#/components/schemas/swag_paypal_v1_capture'),
+            ])
+        )]
+    )]
+    #[Route(path: '/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}', name: 'api.paypal.resource_details', defaults: ['_acl' => ['order.viewer']], methods: ['GET'])]
     public function resourceDetails(Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
     {
         $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);

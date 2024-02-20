@@ -7,25 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Common\PhoneNumber;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_phone")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_common_phone')]
 #[Package('checkout')]
 class Phone extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $phoneType;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_phone_number")
-     */
+    #[OA\Property(ref: PhoneNumber::class)]
     protected PhoneNumber $phoneNumber;
 
     public function getPhoneType(): string

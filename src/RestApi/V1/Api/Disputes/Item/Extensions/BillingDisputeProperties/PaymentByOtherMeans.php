@@ -7,34 +7,24 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_payment_by_other_means")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_payment_by_other_means')]
 #[Package('checkout')]
 class PaymentByOtherMeans extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="boolean")
-     */
+    #[OA\Property(type: 'boolean')]
     protected bool $chargeDifferentFromOriginal;
 
-    /**
-     * @OA\Property(type="boolean")
-     */
+    #[OA\Property(type: 'boolean')]
     protected bool $receivedDuplicate;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $paymentMethod;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $paymentInstrumentSuffix;
 
     public function isChargeDifferentFromOriginal(): bool

@@ -7,9 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Common\Link;
 use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V1\Api\Common\Money;
 use Swag\PayPal\RestApi\V1\Api\Subscription\ApplicationContext;
@@ -17,8 +18,6 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo;
 use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber;
 
 /**
- * @OA\Schema(schema="swag_paypal_v1_subscription")
- *
  * @codeCoverageIgnore
  *
  * @experimental
@@ -26,72 +25,47 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[OA\Schema(schema: 'swag_paypal_v1_subscription')]
 #[Package('checkout')]
 class Subscription extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $id;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $planId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $startTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $quantity;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $shippingAmount;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_subscriber")
-     */
+    #[OA\Property(ref: Subscriber::class)]
     protected Subscriber $subscriber;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_billing_info", nullable=true)
-     */
+    #[OA\Property(ref: BillingInfo::class, nullable: true)]
     protected ?BillingInfo $billingInfo = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_application_context")
-     */
+    #[OA\Property(ref: ApplicationContext::class)]
     protected ApplicationContext $applicationContext;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $status;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $statusUpdateTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $createTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $updateTime;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Link::class))]
     protected LinkCollection $links;
 
     public function getId(): string

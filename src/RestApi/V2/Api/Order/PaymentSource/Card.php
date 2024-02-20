@@ -7,51 +7,34 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\StoredCredential;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment_source_card")
- */
-#[Package('checkout')]
+#[Package('checkout'), OA\Schema(schema: 'swag_paypal_v2_order_payment_source_card')]
 class Card extends AbstractAPMPaymentSource implements VaultablePaymentSourceInterface
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $lastDigits;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $brand;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $type;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $vaultId;
 
-    /**
-     * @OA\Property(type="swag_paypal_v2_order_payment_source_card_authentication_result", nullable=true)
-     */
+    #[OA\Property(ref: AuthenticationResult::class, nullable: true)]
     protected ?AuthenticationResult $authenticationResult = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes", nullable=true)
-     */
+    #[OA\Property(ref: Attributes::class, nullable: true)]
     protected ?Attributes $attributes = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_card_stored_credential", nullable=true)
-     */
+    #[OA\Property(ref: StoredCredential::class, nullable: true)]
     protected ?StoredCredential $storedCredential = null;
 
     public function getLastDigits(): string

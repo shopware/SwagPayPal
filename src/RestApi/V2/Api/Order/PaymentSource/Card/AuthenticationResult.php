@@ -7,25 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult\ThreeDSecure;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment_source_card_authentication_result")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_card_authentication_result')]
 #[Package('checkout')]
 class AuthenticationResult extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $liabilityShift;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(ref: ThreeDSecure::class, nullable: true)]
     protected ?ThreeDSecure $threeDSecure = null;
 
     public function getLiabilityShift(): string

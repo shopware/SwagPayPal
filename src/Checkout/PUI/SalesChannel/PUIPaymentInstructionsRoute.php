@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Checkout\PUI\SalesChannel;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\OrderException;
@@ -32,27 +32,15 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['store-api']])]
 class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
 {
-    private EntityRepository $orderTransactionRepository;
-
-    private OrderResource $orderResource;
-
-    private OrderTransactionStateHandler $orderTransactionStateHandler;
-
-    private TransactionDataService $transactionDataService;
-
     /**
      * @internal
      */
     public function __construct(
-        EntityRepository $orderTransactionRepository,
-        OrderResource $orderResource,
-        OrderTransactionStateHandler $orderTransactionStateHandler,
-        TransactionDataService $transactionDataService
+        private readonly EntityRepository $orderTransactionRepository,
+        private readonly OrderResource $orderResource,
+        private readonly OrderTransactionStateHandler $orderTransactionStateHandler,
+        private readonly TransactionDataService $transactionDataService
     ) {
-        $this->orderTransactionRepository = $orderTransactionRepository;
-        $this->orderResource = $orderResource;
-        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
-        $this->transactionDataService = $transactionDataService;
     }
 
     public function getDecorated(): AbstractPUIPaymentInstructionsRoute
@@ -61,30 +49,26 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
     }
 
     /**
-     * @OA\Get(
-     *     path="/store-api/paypal/pui/payment-instructions/{transactionId}",
-     *     description="Tries to get payment instructions for PUI payments",
-     *     operationId="getPUIPaymentInstructions",
-     *     tags={"Store API", "PayPal"},
-     *
-     *     @OA\Parameter(
-     *         name="transactionId",
-     *         description="Identifier of the order transaction to be fetched",
-     *
-     *         @OA\Schema(type="string", pattern="^[0-9a-f]{32}$"),
-     *         in="path",
-     *         required=true
-     *     ),
-     *
-     *     @OA\Response(
-     *         response="200",
-     *         description="The payment instructions of the order"
-     *    )
-     * )
-     *
      * @throws ShopwareHttpException
      */
-    #[Route(path: '/store-api/paypal/pui/payment-instructions/{transactionId}', name: 'store-api.paypal.pui.payment_instructions', methods: ['GET'], defaults: ['_loginRequired' => true, '_loginRequiredAllowGuest' => true])]
+    #[OA\Get(
+        path: '/store-api/paypal/pui/payment-instructions/{transactionId}',
+        operationId: 'getPUIPaymentInstructions',
+        description: 'Tries to get payment instructions for PUI payments',
+        tags: ['Store API', 'PayPal'],
+        parameters: [new OA\Parameter(
+            name: 'transactionId',
+            description: 'Identifier of the order transaction to be fetched',
+            in: 'path',
+            required: true,
+            schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+        )],
+        responses: [new OA\Response(
+            response: '200',
+            description: 'The payment instructions of the order'
+        )]
+    )]
+    #[Route(path: '/store-api/paypal/pui/payment-instructions/{transactionId}', name: 'store-api.paypal.pui.payment_instructions', defaults: ['_loginRequired' => true, '_loginRequiredAllowGuest' => true], methods: ['GET'])]
     public function getPaymentInstructions(string $transactionId, SalesChannelContext $salesChannelContext): PUIPaymentInstructionsResponse
     {
         /** @var OrderTransactionEntity|null $transaction */

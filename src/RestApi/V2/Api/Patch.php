@@ -7,13 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V2\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_patch")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_patch')]
 #[Package('checkout')]
 class Patch extends PayPalApiStruct
 {
@@ -21,24 +19,22 @@ class Patch extends PayPalApiStruct
     public const OPERATION_REPLACE = 'replace';
     public const OPERATION_REMOVE = 'remove';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $op;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $path;
 
-    /**
-     * @OA\Property(oneOf=[{ "type": "integer" },{ "type": "float" },{ "type": "string" },{ "type": "boolean" },{ "type": "array" }], nullable=true)
-     */
+    #[OA\Property(nullable: true, oneOf: [
+        new OA\Schema(type: 'integer'),
+        new OA\Schema(type: 'float'),
+        new OA\Schema(type: 'string'),
+        new OA\Schema(type: 'boolean'),
+        new OA\Schema(type: 'array', items: new OA\Items(type: 'mixed')),
+    ])]
     protected int|float|string|bool|array|null $value;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $from;
 
     public function getOp(): string

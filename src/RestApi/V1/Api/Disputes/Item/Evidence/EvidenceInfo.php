@@ -7,26 +7,22 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo\RefundId;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo\RefundIdCollection;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo\TrackingInfo;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo\TrackingInfoCollection;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_evidence_info")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_item_evidence_evidence_info')]
 #[Package('checkout')]
 class EvidenceInfo extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_tracking_info"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: TrackingInfo::class))]
     protected TrackingInfoCollection $trackingInfo;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_refund_id"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: RefundId::class))]
     protected RefundIdCollection $refundIds;
 
     public function getTrackingInfo(): TrackingInfoCollection

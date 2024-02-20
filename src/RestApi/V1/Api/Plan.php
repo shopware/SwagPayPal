@@ -7,16 +7,15 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle;
 use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycleCollection;
 use Swag\PayPal\RestApi\V1\Api\Plan\PaymentPreferences;
 use Swag\PayPal\RestApi\V1\Api\Plan\Taxes;
 
 /**
- * @OA\Schema(schema="swag_paypal_v1_plan")
- *
  * @codeCoverageIgnore
  *
  * @experimental
@@ -24,42 +23,29 @@ use Swag\PayPal\RestApi\V1\Api\Plan\Taxes;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[OA\Schema(schema: 'swag_paypal_v1_plan')]
 #[Package('checkout')]
 class Plan extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $productId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $name;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $description = null;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $status;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_plan_billing_cycle"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: BillingCycle::class))]
     protected BillingCycleCollection $billingCycles;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_payment_preferences")
-     */
+    #[OA\Property(ref: PaymentPreferences::class)]
     protected PaymentPreferences $paymentPreferences;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_taxes")
-     */
+    #[OA\Property(ref: Taxes::class)]
     protected Taxes $taxes;
 
     public function getProductId(): string

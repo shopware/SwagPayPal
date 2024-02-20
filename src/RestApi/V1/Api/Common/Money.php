@@ -7,31 +7,18 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Common;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_common_money")
- *
- * @codeCoverageIgnore
- *
- * @experimental
- *
- * This class is experimental and not officially supported.
- * It is currently not used within the plugin itself. Use with caution.
- */
+#[OA\Schema(schema: 'swag_paypal_v1_common_money')]
 #[Package('checkout')]
 class Money extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $value;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $currencyCode;
 
     public function getValue(): string

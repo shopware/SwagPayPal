@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Authorization;
@@ -17,9 +17,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Refund;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Sale;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_payment_transaction_related_resource")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_payment_transaction_related_resource')]
 #[Package('checkout')]
 class RelatedResource extends PayPalApiStruct
 {
@@ -29,29 +27,19 @@ class RelatedResource extends PayPalApiStruct
     public const REFUND = 'refund';
     public const CAPTURE = 'capture';
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_sale", nullable=true)
-     */
+    #[OA\Property(ref: Sale::class, nullable: true)]
     protected ?Sale $sale = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_authorization", nullable=true)
-     */
+    #[OA\Property(ref: Authorization::class, nullable: true)]
     protected ?Authorization $authorization = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_order", nullable=true)
-     */
+    #[OA\Property(ref: Order::class, nullable: true)]
     protected ?Order $order = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_refund", nullable=true)
-     */
+    #[OA\Property(ref: Refund::class, nullable: true)]
     protected ?Refund $refund = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_capture", nullable=true)
-     */
+    #[OA\Property(ref: Capture::class, nullable: true)]
     protected ?Capture $capture = null;
 
     public function getSale(): ?Sale

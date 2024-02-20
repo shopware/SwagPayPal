@@ -7,20 +7,17 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
 use Swag\PayPal\RestApi\V1\Api\Shipping\TrackerCollection;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_shipping_batch")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_shipping')]
 #[Package('checkout')]
 class Shipping extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Tracker::class))]
     protected TrackerCollection $trackers;
 
     public function getTrackers(): TrackerCollection

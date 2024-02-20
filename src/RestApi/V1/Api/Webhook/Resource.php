@@ -7,102 +7,67 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Webhook;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Common\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\Link;
 use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V1\Api\Common\Value;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_webhook_resource")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_webhook_resource')]
 #[Package('checkout')]
 class Resource extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $id;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $parentPayment = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $billingAgreementId = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $saleId = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $refundReasonCode = null;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $updateTime;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
-     */
+    #[OA\Property(ref: Amount::class)]
     protected Amount $amount;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $paymentMode;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $createTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $clearingTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $protectionEligibilityType;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $protectionEligibility;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
-     */
+    #[OA\Property(ref: Value::class)]
     protected Value $transactionFee;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $invoiceNumber;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Link::class))]
     protected LinkCollection $links;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $state;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $merchantId = null;
 
     public function getId(): string

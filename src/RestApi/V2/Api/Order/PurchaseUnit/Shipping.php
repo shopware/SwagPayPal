@@ -7,26 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Name;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_shipping")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_shipping')]
 #[Package('checkout')]
 class Shipping extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_shipping_name")
-     */
+    #[OA\Property(ref: Name::class)]
     protected Name $name;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_address")
-     */
+    #[OA\Property(ref: Address::class)]
     protected Address $address;
 
     public function getName(): Name

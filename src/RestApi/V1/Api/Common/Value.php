@@ -7,24 +7,18 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Common;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_common_value")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_common_value')]
 #[Package('checkout')]
 class Value extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $currency;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $value;
 
     public function getCurrency(): string

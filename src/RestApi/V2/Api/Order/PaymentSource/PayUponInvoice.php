@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Common\Name;
@@ -15,45 +15,29 @@ use Swag\PayPal\RestApi\V2\Api\Common\PhoneNumber;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\DepositBankDetails;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_pay_upon_invoice")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_pay_upon_invoice')]
 #[Package('checkout')]
 class PayUponInvoice extends AbstractPaymentSource
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_name")
-     */
+    #[OA\Property(ref: Name::class)]
     protected Name $name;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $email;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $birthDate;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_phone_number")
-     */
+    #[OA\Property(ref: PhoneNumber::class)]
     protected PhoneNumber $phone;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_address")
-     */
+    #[OA\Property(ref: Address::class)]
     protected Address $billingAddress;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $paymentReference;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_pay_upon_invoice_deposit_bank_details")
-     */
+    #[OA\Property(ref: DepositBankDetails::class)]
     protected DepositBankDetails $depositBankDetails;
 
     public function getName(): Name

@@ -7,26 +7,21 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Common;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_common_seller_protection")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_payments_common_seller_protection')]
 #[Package('checkout')]
 class SellerProtection extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $status;
 
     /**
      * @var string[]
-     *
-     * @OA\Property(type="array", items="string")
      */
+    #[OA\Property(type: 'array', items: new OA\Items(type: 'string'))]
     protected array $disputeCategories;
 
     public function getStatus(): string

@@ -7,48 +7,35 @@
 
 namespace Swag\PayPal\RestApi\V3\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Common\Link;
 use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Customer;
 use Swag\PayPal\RestApi\V3\Api\PaymentToken\Metadata;
 
-/**
- * @OA\Schema(schema="swag_paypal_v3_payment_token")
- */
+#[OA\Schema(schema: 'swag_paypal_v3_payment_token')]
 #[Package('checkout')]
 class PaymentToken extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $id;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $status;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_attributes_customer")
-     */
+    #[OA\Property(ref: Customer::class)]
     protected ?Customer $customer = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source")
-     */
+    #[OA\Property(ref: PaymentSource::class)]
     protected PaymentSource $paymentSource;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Link::class))]
     protected LinkCollection $links;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v3_payment_token_metadata")
-     */
+    #[OA\Property(ref: Metadata::class, nullable: true)]
     protected ?Metadata $metadata = null;
 
     public function getId(): string
