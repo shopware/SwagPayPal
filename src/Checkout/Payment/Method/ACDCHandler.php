@@ -141,7 +141,12 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
             return;
         }
 
-        $this->vaultTokenService->saveToken($transaction, $card, $salesChannelContext);
+        $customerId = $salesChannelContext->getCustomerId();
+        if (!$customerId) {
+            return;
+        }
+
+        $this->vaultTokenService->saveToken($transaction, $card, $customerId, $salesChannelContext->getContext());
     }
 
     public function captureRecurring(RecurringPaymentTransactionStruct $transaction, Context $context): void

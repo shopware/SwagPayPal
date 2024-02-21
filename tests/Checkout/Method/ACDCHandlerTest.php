@@ -323,7 +323,7 @@ Missing PayPal order id');
         $this->vaultTokenService
             ->expects(static::once())
             ->method('saveToken')
-            ->with($paymentTransaction, $order->getPaymentSource()?->getCard(), $salesChannelContext);
+            ->with($paymentTransaction, $order->getPaymentSource()?->getCard(), $salesChannelContext->getCustomerId(), $salesChannelContext->getContext());
 
         $this->handler->finalize($paymentTransaction, new Request(), $salesChannelContext);
     }

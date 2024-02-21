@@ -87,7 +87,8 @@ class PayPalHandlerTest extends TestCase
             ->with(
                 $struct,
                 $payPalOrder->getPaymentSource()?->getPaypal(),
-                $salesChannelContext
+                $salesChannelContext->getCustomerId(),
+                $salesChannelContext->getContext(),
             );
 
         $handler = new PayPalHandler(
