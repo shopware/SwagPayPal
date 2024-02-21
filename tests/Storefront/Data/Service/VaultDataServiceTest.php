@@ -14,14 +14,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
-use Shopware\Core\Test\Stub\SystemConfigService\StaticSystemConfigService;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Swag\PayPal\RestApi\V1\Api\Token;
 use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
-use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\VaultDataService;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
 /**
@@ -49,7 +48,6 @@ class VaultDataServiceTest extends TestCase
 
         $service = new VaultDataService(
             new StaticEntityRepository([]),
-            new StaticSystemConfigService(),
             $paymentMethodDataRegistry,
             $this->createMock(TokenResourceInterface::class),
         );
@@ -65,7 +63,6 @@ class VaultDataServiceTest extends TestCase
 
         $service = new VaultDataService(
             new StaticEntityRepository([]),
-            new StaticSystemConfigService(),
             $this->createMock(PaymentMethodDataRegistry::class),
             $this->createMock(TokenResourceInterface::class),
         );
@@ -81,7 +78,6 @@ class VaultDataServiceTest extends TestCase
 
         $service = new VaultDataService(
             new StaticEntityRepository([]),
-            new StaticSystemConfigService(),
             $this->createMock(PaymentMethodDataRegistry::class),
             $this->createMock(TokenResourceInterface::class),
         );
@@ -109,8 +105,6 @@ class VaultDataServiceTest extends TestCase
 
         $service = new VaultDataService(
             new StaticEntityRepository([new VaultTokenCollection()]),
-            // @phpstan-ignore-next-line
-            new StaticSystemConfigService([$salesChannelContext->getSalesChannelId() => [Settings::VAULTING_ENABLE_ALWAYS => true]]),
             $paymentMethodDataRegistry,
             $this->createMock(TokenResourceInterface::class),
         );
@@ -118,7 +112,7 @@ class VaultDataServiceTest extends TestCase
         $data = $service->buildData($salesChannelContext);
         static::assertNotNull($data);
         static::assertNull($data->getIdentifier());
-        static::assertTrue($data->isPreselect());
+        static::assertSame('account', $data->getSnippetType());
     }
 
     public function testBuildDataWithExistingToken(): void
@@ -126,7 +120,7 @@ class VaultDataServiceTest extends TestCase
         $salesChannelContext = Generator::createSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(false);
 
-        $method = $this->createMock(AbstractMethodData::class);
+        $method = $this->createMock(ACDCMethodData::class);
         $method
             ->expects(static::once())
             ->method('isVaultable')
@@ -156,8 +150,6 @@ class VaultDataServiceTest extends TestCase
 
         $service = new VaultDataService(
             $repository,
-            // @phpstan-ignore-next-line
-            new StaticSystemConfigService([$salesChannelContext->getSalesChannelId() => [Settings::VAULTING_ENABLE_ALWAYS => true]]),
             $paymentMethodDataRegistry,
             $this->createMock(TokenResourceInterface::class),
         );
@@ -165,7 +157,7 @@ class VaultDataServiceTest extends TestCase
         $data = $service->buildData($salesChannelContext);
         static::assertNotNull($data);
         static::assertSame('test-identifier', $data->getIdentifier());
-        static::assertTrue($data->isPreselect());
+        static::assertSame('card', $data->getSnippetType());
     }
 
     public function testGetUserIdTokenWithGuestCustomer(): void
@@ -175,7 +167,6 @@ class VaultDataServiceTest extends TestCase
 
         $service = new VaultDataService(
             new StaticEntityRepository([]),
-            new StaticSystemConfigService(),
             $this->createMock(PaymentMethodDataRegistry::class),
             $this->createMock(TokenResourceInterface::class),
         );
@@ -216,7 +207,6 @@ class VaultDataServiceTest extends TestCase
 
         $service = new VaultDataService(
             $repository,
-            new StaticSystemConfigService(),
             $this->createMock(PaymentMethodDataRegistry::class),
             $tokenResource,
         );
@@ -241,7 +231,6 @@ class VaultDataServiceTest extends TestCase
 
         $service = new VaultDataService(
             new StaticEntityRepository([new VaultTokenCollection()]),
-            new StaticSystemConfigService(),
             $this->createMock(PaymentMethodDataRegistry::class),
             $tokenResource,
         );

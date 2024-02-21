@@ -53,7 +53,6 @@
 
         <service id="Swag\PayPal\Storefront\Data\Service\VaultDataService">
             <argument type="service" id="swag_paypal_vault_token.repository"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
             <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\TokenResource"/>
         </service>

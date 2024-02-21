@@ -35,6 +35,7 @@ class VaultSubscriber implements EventSubscriberInterface
         return [
             AccountEditOrderPageLoadedEvent::class => ['addVaultData', 20],
             CheckoutConfirmPageLoadedEvent::class => ['addVaultData', 20],
+            'subscription.' . CheckoutConfirmPageLoadedEvent::class => ['addVaultData', 20],
         ];
     }
 
