@@ -26,6 +26,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Package('checkout')]
@@ -64,7 +65,7 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
             schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
         )],
         responses: [new OA\Response(
-            response: '200',
+            response: Response::HTTP_OK,
             description: 'The payment instructions of the order'
         )]
     )]

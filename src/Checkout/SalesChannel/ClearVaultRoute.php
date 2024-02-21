@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\SalesChannel;
 
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
@@ -36,6 +37,19 @@ class ClearVaultRoute extends AbstractClearVaultRoute
         throw new DecorationPatternException(self::class);
     }
 
+    #[OA\Post(
+        path: '/store-api/paypal/vault/clear',
+        operationId: 'paypalVaultClear',
+        description: 'Clears the vault for the current customer',
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'type', type: 'string', enum: ['cancel', 'browser', 'error']),
+        ])),
+        tags: ['Store API', 'PayPal'],
+        responses: [new OA\Response(
+            response: Response::HTTP_NO_CONTENT,
+            description: 'Vault has been cleared successfully',
+        )]
+    )]
     #[Route(path: '/store-api/paypal/vault/clear', name: 'store-api.paypal.vault.clear', methods: ['POST'], defaults: ['_loginRequired' => true])]
     public function clearVault(Request $request, SalesChannelContext $salesChannelContext): Response
     {

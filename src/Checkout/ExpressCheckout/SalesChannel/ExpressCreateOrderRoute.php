@@ -20,6 +20,7 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Package('checkout')]
@@ -48,7 +49,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
         description: 'Creates a PayPal order from the existing cart',
         tags: ['Store API', 'PayPal'],
         responses: [new OA\Response(
-            response: '200',
+            response: Response::HTTP_OK,
             description: 'The new token of the order'
         )]
     )]

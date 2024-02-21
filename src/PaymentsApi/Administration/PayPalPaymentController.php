@@ -19,6 +19,8 @@ use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidExc
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\Common\Amount;
+use Swag\PayPal\RestApi\V1\Api\DoVoid;
+use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 use Swag\PayPal\RestApi\V1\Api\Refund;
 use Swag\PayPal\RestApi\V1\Resource\AuthorizationResource;
@@ -62,7 +64,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/paypal/payment-details/{orderId}/{paymentId}',
+        path: '/api/paypal/payment-details/{orderId}/{paymentId}',
         operationId: 'paymentDetails',
         description: 'Loads the Payment details of the given PayPal ID',
         tags: ['Admin API', 'PayPal'],
@@ -72,7 +74,7 @@ class PayPalPaymentController extends AbstractController
                 name: 'orderId',
                 description: 'ID of the order which contains the PayPal payment',
                 in: 'path',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
             ),
             new OA\Parameter(
                 parameter: 'paymentId',
@@ -83,9 +85,9 @@ class PayPalPaymentController extends AbstractController
             ),
         ],
         responses: [new OA\Response(
-            response: '200',
+            response: Response::HTTP_OK,
             description: 'Details of the PayPal payment',
-            content: new OA\JsonContent(ref: '#/components/schemas/swag_paypal_v1_payment')
+            content: new OA\JsonContent(ref: Payment::class)
         )]
     )]
     #[Route(path: '/api/paypal/payment-details/{orderId}/{paymentId}', name: 'api.paypal.payment_details', defaults: ['_acl' => ['order.viewer']], methods: ['GET'])]
@@ -105,7 +107,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/paypal/resource-details/{resourceType}/{resourceId}/{orderId}',
+        path: '/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}',
         operationId: 'resourceDetails',
         description: 'Loads the PayPal resource details of the given resource ID',
         tags: ['Admin API', 'PayPal'],
@@ -115,7 +117,7 @@ class PayPalPaymentController extends AbstractController
                 name: 'resourceType',
                 description: 'Type of the resource. Possible values: sale, authorization, order, capture, refund',
                 in: 'path',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string', enum: [RelatedResource::SALE, RelatedResource::AUTHORIZE, RelatedResource::ORDER, RelatedResource::CAPTURE])
             ),
             new OA\Parameter(
                 parameter: 'resourceId',
@@ -129,17 +131,17 @@ class PayPalPaymentController extends AbstractController
                 name: 'orderId',
                 description: 'ID of the order which contains the PayPal resource',
                 in: 'path',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
             ),
         ],
         responses: [new OA\Response(
-            response: '200',
+            response: Response::HTTP_OK,
             description: 'Details of the PayPal resource',
             content: new OA\JsonContent(oneOf: [
-                new OA\Schema(ref: '#/components/schemas/swag_paypal_v1_payment_transaction_sale'),
-                new OA\Schema(ref: '#/components/schemas/swag_paypal_v1_payment_transaction_authorization'),
-                new OA\Schema(ref: '#/components/schemas/swag_paypal_v1_payment_transaction_order'),
-                new OA\Schema(ref: '#/components/schemas/swag_paypal_v1_capture'),
+                new OA\Schema(ref: RelatedResource\Sale::class),
+                new OA\Schema(ref: RelatedResource\Authorization::class),
+                new OA\Schema(ref: RelatedResource\Order::class),
+                new OA\Schema(ref: Capture::class),
             ])
         )]
     )]
@@ -174,6 +176,39 @@ class PayPalPaymentController extends AbstractController
     /**
      * @throws RequiredParameterInvalidException
      */
+    #[OA\Post(
+        path: '/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}',
+        operationId: 'paypalRefundPayment',
+        tags: ['Admin Api', 'PayPal'],
+        parameters: [
+            new OA\Parameter(
+                parameter: 'resourceType',
+                name: 'resourceType',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: [RelatedResource::AUTHORIZE, RelatedResource::ORDER])
+            ),
+            new OA\Parameter(
+                parameter: 'resourceId',
+                name: 'resourceId',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                parameter: 'orderId',
+                name: 'orderId',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+            ),
+        ],
+        responses: [new OA\Response(
+            response: Response::HTTP_OK,
+            description: 'Capture for the given resource',
+            content: new OA\JsonContent(ref: DoVoid::class)
+        )]
+    )]
     #[Route(path: '/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.refund_payment', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
     public function refundPayment(
         Request $request,
@@ -215,6 +250,39 @@ class PayPalPaymentController extends AbstractController
     /**
      * @throws RequiredParameterInvalidException
      */
+    #[OA\Post(
+        path: '/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}',
+        operationId: 'paypalCapturePayment',
+        tags: ['Admin Api', 'PayPal'],
+        parameters: [
+            new OA\Parameter(
+                parameter: 'resourceType',
+                name: 'resourceType',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: [RelatedResource::AUTHORIZE, RelatedResource::ORDER])
+            ),
+            new OA\Parameter(
+                parameter: 'resourceId',
+                name: 'resourceId',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                parameter: 'orderId',
+                name: 'orderId',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+            ),
+        ],
+        responses: [new OA\Response(
+            response: Response::HTTP_OK,
+            description: 'Capture for the given resource',
+            content: new OA\JsonContent(ref: DoVoid::class)
+        )]
+    )]
     #[Route(path: '/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.catpure_payment', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
     public function capturePayment(
         Request $request,
@@ -251,6 +319,39 @@ class PayPalPaymentController extends AbstractController
     /**
      * @throws RequiredParameterInvalidException
      */
+    #[OA\Post(
+        path: '/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}',
+        operationId: 'paypalVoidPayment',
+        tags: ['Admin Api', 'PayPal'],
+        parameters: [
+            new OA\Parameter(
+                parameter: 'resourceType',
+                name: 'resourceType',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: [RelatedResource::AUTHORIZE, RelatedResource::ORDER])
+            ),
+            new OA\Parameter(
+                parameter: 'resourceId',
+                name: 'resourceId',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                parameter: 'orderId',
+                name: 'orderId',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+            ),
+        ],
+        responses: [new OA\Response(
+            response: Response::HTTP_OK,
+            description: 'Voidance for the given resource',
+            content: new OA\JsonContent(ref: DoVoid::class)
+        )]
+    )]
     #[Route(path: '/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.void_payment', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
     public function voidPayment(
         Context $context,

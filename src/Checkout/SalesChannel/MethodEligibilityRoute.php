@@ -63,7 +63,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
             ),
         ])),
         tags: ['Store API', 'PayPal'],
-        responses: [new OA\Response(response: '204')],
+        responses: [new OA\Response(response: Response::HTTP_NO_CONTENT, description: 'Success')],
     )]
     #[Route(path: '/store-api/paypal/payment-method-eligibility', name: 'store-api.paypal.payment-method-eligibility', defaults: ['XmlHttpRequest' => true], methods: ['POST'])]
     public function setPaymentMethodEligibility(Request $request, Context $context): Response

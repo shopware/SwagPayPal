@@ -7,18 +7,22 @@
 
 namespace Swag\PayPal\Setting\Struct;
 
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 
+#[OA\Schema(schema: 'swag_paypal_setting_merchant_information')]
 #[Package('checkout')]
 class MerchantInformationStruct extends Struct
 {
+    #[OA\Property(ref: MerchantIntegrations::class)]
     protected ?MerchantIntegrations $merchantIntegrations;
 
     /**
      * @var array<string, string> key: paymentMethodId, value: capability (see AbstractMethodData)
      */
+    #[OA\Property(type: 'object', additionalProperties: new OA\AdditionalProperties(type: 'string'))]
     protected array $capabilities;
 
     public function getMerchantIntegrations(): ?MerchantIntegrations

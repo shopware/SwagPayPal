@@ -30,7 +30,7 @@ class PayPalPaymentMethodController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/_action/paypal/saleschannel-default',
+        path: '/api/_action/paypal/saleschannel-default',
         operationId: 'setPayPalAsDefault',
         description: 'Sets PayPal as the default payment method for a given Saleschannel, or all.',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [new OA\Property(
@@ -40,7 +40,7 @@ class PayPalPaymentMethodController extends AbstractController
             nullable: true
         )])),
         tags: ['Admin Api', 'SwagPayPalPaymentMethod'],
-        responses: [new OA\Response(response: '204')],
+        responses: [new OA\Response(response: Response::HTTP_NO_CONTENT, description: 'Setting PayPal as default was successful')],
     )]
     #[Route(path: '/api/_action/paypal/saleschannel-default', name: 'api.action.paypal.saleschannel_default', defaults: ['_acl' => ['swag_paypal.editor']], methods: ['POST'])]
     public function setPayPalPaymentMethodAsSalesChannelDefault(Request $request, Context $context): Response

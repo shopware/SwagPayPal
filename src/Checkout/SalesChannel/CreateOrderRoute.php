@@ -79,7 +79,15 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
                 type: 'string',
             ),
         ])),
-        tags: ['Store API', 'PayPal']
+        tags: ['Store API', 'PayPal'],
+        responses: [new OA\Response(
+            response: 200,
+            description: 'Returns the created PayPal order id',
+            content: new OA\JsonContent(properties: [new OA\Property(
+                property: 'token',
+                type: 'string',
+            )])
+        )]
     )]
     #[Route(path: '/store-api/paypal/create-order', name: 'store-api.paypal.create_order', methods: ['POST'])]
     #[Route(path: '/store-api/subscription/paypal/create-order', name: 'store-api.subscription.paypal.create_order', defaults: ['_isSubscriptionCart' => true, '_isSubscriptionContext' => true], methods: ['POST'])]

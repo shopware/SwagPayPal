@@ -7,14 +7,18 @@
 
 namespace Swag\PayPal\Pos\Setting\Struct;
 
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
+#[OA\Schema(schema: 'swag_paypal_pos_setting_product_count')]
 #[Package('checkout')]
 class ProductCount extends Struct
 {
+    #[OA\Property(type: 'integer')]
     protected int $localCount;
 
+    #[OA\Property(type: 'integer')]
     protected int $remoteCount;
 
     public function getLocalCount(): int
