@@ -374,9 +374,6 @@
               "enableACDC": {
                 "label": "Vaulting für Kredit- und Debitkarten-Zahlungen verwenden"
               },
-              "enableAlways": {
-                "label": "Vaulting im Paypal-Checkout vorausgewählt"
-              },
               "activateButton": {
                 "label": "Vaulting freischalten"
               }

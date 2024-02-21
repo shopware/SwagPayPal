@@ -13,11 +13,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
-use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Struct\VaultData;
+use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
 #[Package('checkout')]
@@ -28,7 +27,6 @@ class VaultDataService
      */
     public function __construct(
         private readonly EntityRepository $vaultRepository,
-        private readonly SystemConfigService $systemConfigService,
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
         private readonly TokenResourceInterface $tokenResource,
     ) {
@@ -41,7 +39,12 @@ class VaultDataService
             return null;
         }
 
-        $isVaultable = $this->paymentMethodDataRegistry->getPaymentMethodByHandler($context->getPaymentMethod()->getHandlerIdentifier())?->isVaultable($context);
+        $paymentMethod = $this->paymentMethodDataRegistry->getPaymentMethodByHandler($context->getPaymentMethod()->getHandlerIdentifier());
+        if ($paymentMethod === null) {
+            return null;
+        }
+
+        $isVaultable = $paymentMethod->isVaultable($context);
         if (!$isVaultable) {
             return null;
         }
@@ -50,7 +53,10 @@ class VaultDataService
 
         $struct = new VaultData();
         $struct->setIdentifier($vault ? $vault->getIdentifier() : null);
-        $struct->setPreselect($this->systemConfigService->getBool(Settings::VAULTING_ENABLE_ALWAYS, $context->getSalesChannelId()));
+
+        if ($paymentMethod instanceof ACDCMethodData) {
+            $struct->setSnippetType(VaultData::SNIPPET_TYPE_CARD);
+        }
 
         return $struct;
     }

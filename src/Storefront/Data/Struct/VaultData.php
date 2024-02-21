@@ -13,9 +13,12 @@ use Shopware\Core\Framework\Struct\Struct;
 #[Package('checkout')]
 class VaultData extends Struct
 {
+    public const SNIPPET_TYPE_ACCOUNT = 'account';
+    public const SNIPPET_TYPE_CARD = 'card';
+
     protected ?string $identifier = null;
 
-    protected bool $preselect = false;
+    protected string $snippetType = self::SNIPPET_TYPE_ACCOUNT;
 
     public function getIdentifier(): ?string
     {
@@ -27,13 +30,13 @@ class VaultData extends Struct
         $this->identifier = $identifier;
     }
 
-    public function isPreselect(): bool
+    public function getSnippetType(): string
     {
-        return $this->preselect;
+        return $this->snippetType;
     }
 
-    public function setPreselect(bool $preselect): void
+    public function setSnippetType(string $snippetType): void
     {
-        $this->preselect = $preselect;
+        $this->snippetType = $snippetType;
     }
 }
