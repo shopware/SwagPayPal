@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Dispute\Exception\NotAuthorizedException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\V1\Api\Disputes;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use Swag\PayPal\RestApi\V1\Resource\DisputeResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,7 +46,7 @@ class DisputeController extends AbstractController
                 name: 'salesChannelId',
                 description: 'ID of the sales channel to which the disputes belong',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
             ),
             new OA\Parameter(
                 parameter: 'disputeStateFilter',
@@ -56,9 +57,9 @@ class DisputeController extends AbstractController
             ),
         ],
         responses: [new OA\Response(
-            response: '200',
+            response: Response::HTTP_OK,
             description: 'List of PayPal disputes',
-            content: new OA\JsonContent(ref: '#/components/schemas/swag_paypal_v1_disputes')
+            content: new OA\JsonContent(ref: Disputes::class)
         )]
     )]
     #[Route(path: '/api/paypal/dispute', name: 'api.paypal.dispute_list', defaults: ['_acl' => ['swag_paypal_disputes.viewer']], methods: ['GET'])]
@@ -81,7 +82,7 @@ class DisputeController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/paypal/dispute/{disputeId}',
+        path: '/api/paypal/dispute/{disputeId}',
         operationId: 'disputeDetails',
         description: 'Loads the dispute details of the given PayPal dispute ID',
         tags: ['Admin API', 'PayPal'],
@@ -91,7 +92,7 @@ class DisputeController extends AbstractController
                 name: 'salesChannelId',
                 description: 'ID of the sales channel to which the disputes belong',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
             ),
             new OA\Parameter(
                 parameter: 'disputeId',
@@ -103,9 +104,9 @@ class DisputeController extends AbstractController
             ),
         ],
         responses: [new OA\Response(
-            response: '200',
+            response: Response::HTTP_OK,
             description: 'Details of the PayPal dispute',
-            content: new OA\JsonContent(ref: '#/components/schemas/swag_paypal_v1_disputes_item')
+            content: new OA\JsonContent(ref: Item::class)
         )]
     )]
     #[Route(path: '/api/paypal/dispute/{disputeId}', name: 'api.paypal.dispute_details', defaults: ['_acl' => ['swag_paypal_disputes.viewer']], methods: ['GET'])]

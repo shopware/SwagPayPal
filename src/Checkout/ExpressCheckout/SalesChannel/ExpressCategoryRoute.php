@@ -20,6 +20,7 @@ use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Package('checkout')]
@@ -44,28 +45,22 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
     }
 
     #[OA\Post(
-        path: '/category/{categoryId}',
+        path: '/store-api/category/{navigationId}',
         operationId: 'readCategory',
         description: 'This endpoint returns information about the category, as well as a fully resolved (hydrated with mapping values) CMS page, if one is assigned to the category. You can pass slots which should be resolved exclusively.',
         tags: ['Store API', 'Category'],
         parameters: [
             new OA\Parameter(
-                name: 'categoryId',
-                description: 'Identifier of the category to be fetched',
+                name: 'navigationId',
+                description: 'Identifier of the navigation to be fetched',
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
             ),
-            new OA\Parameter(
-                name: 'slots',
-                description: 'Resolves only the given slot identifiers. The identifiers have to be seperated by a \'|\' character',
-                in: 'query',
-                schema: new OA\Schema(type: 'string'),
-            ),
         ],
         responses: [new OA\Response(
             ref: '#/components/schemas/category_flat',
-            response: '200',
+            response: Response::HTTP_OK,
             description: 'The loaded category with cms page'
         )]
     )]

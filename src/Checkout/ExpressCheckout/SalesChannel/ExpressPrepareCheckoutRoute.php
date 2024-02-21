@@ -22,6 +22,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Package('checkout')]
@@ -57,6 +58,14 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
             type: 'string'
         )])),
         tags: ['Store API', 'PayPal'],
+        responses: [new OA\Response(
+            response: Response::HTTP_OK,
+            description: 'The url to redirect to',
+            content: new OA\JsonContent(properties: [new OA\Property(
+                property: 'redirectUrl',
+                type: 'string'
+            )])
+        )],
     )]
     #[Route(path: '/store-api/paypal/express/prepare-checkout', name: 'store-api.paypal.express.prepare_checkout', methods: ['POST'])]
     public function prepareCheckout(SalesChannelContext $salesChannelContext, Request $request): ContextTokenResponse

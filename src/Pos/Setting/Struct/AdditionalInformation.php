@@ -7,26 +7,36 @@
 
 namespace Swag\PayPal\Pos\Setting\Struct;
 
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
+#[OA\Schema(schema: 'swag_paypal_pos_setting_additional_information')]
 #[Package('checkout')]
 class AdditionalInformation extends Struct
 {
+    #[OA\Property(type: 'string')]
     protected string $countryId;
 
+    #[OA\Property(type: 'string')]
     protected string $currencyId;
 
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $languageId = null;
 
+    #[OA\Property(type: 'string')]
     protected string $customerGroupId;
 
+    #[OA\Property(type: 'string')]
     protected string $navigationCategoryId;
 
+    #[OA\Property(type: 'string')]
     protected string $shippingMethodId;
 
+    #[OA\Property(type: 'string')]
     protected string $paymentMethodId;
 
+    #[OA\Property(type: 'array')]
     protected array $merchantInformation;
 
     public function setCountryId(string $countryId): void
