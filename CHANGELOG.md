@@ -1,7 +1,14 @@
+# 9.0.0
+- PPI-830 - Added compatibility with Showpare 6.6 & Symfony 7
+- PPI-857 - Added technical names for payment methods
+
 # 8.0.0
 - PPI-763 - Move "Pay later" banner underneath price display on product detail page
+- PPI-779 - Added new Vaulting feature (save customer) for PayPal and Credit-/Debit card payments
+- PPI-800 - Improved API struct structure & PayPal order building process
 - PPI-827 - Added automated payment status polling for unconfirmed transactions
 - PPI-831 - Improved management of payment status webhooks
+- PPI-860 - Migrated to new card fields replacing hosted fields for Credit-/Debit card payments
 
 # 7.4.0
 - PPI-853 - Added option to add buyer country to "Pay Later" banners

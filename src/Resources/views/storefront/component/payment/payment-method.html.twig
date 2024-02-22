@@ -27,7 +27,7 @@
         {% if payPalVaultData.identifier %}
             <div>{{ payPalVaultData.identifier }}</div>
             <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
-                {{ "paypal.vault." ~ payPalVaultData.snippetType ~ ".clear"|trans }}
+                {{ ("paypal.vault." ~ payPalVaultData.snippetType ~ ".clear")|trans }}
             </a>
         {% elseif context.extensions.subscription is not defined %}
             <div class="form-check">
