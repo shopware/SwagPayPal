@@ -121,7 +121,7 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
     getBannerConfig() {
         return {
             amount: this.options.amount,
-            buyerCountry: this.options.crossBorderBuyerCountry ?? undefined,
+            buyerCountry: this.options.crossBorderBuyerCountry || undefined,
             currency: this.options.currency,
             style: {
                 layout: this.options.layout,
