@@ -121,9 +121,14 @@ class PayPalController extends StorefrontController
     #[Route(path: '/paypal/error', name: 'frontend.paypal.error', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function addErrorMessage(Request $request): Response
     {
-        if ($request->request->getBoolean('cancel')) {
+        $type = $request->request->get('type');
+
+        if ($type === 'cancel' || $request->request->getBoolean('cancel')) {
             $this->addFlash(self::DANGER, $this->trans('paypal.general.paymentCancel'));
-            $this->logger->notice('Storefront checkout cancellation');
+            $this->logger->notice('Storefront checkout cancellation', ['reason' => $request->request->get('error')]);
+        } elseif ($type === 'browser') {
+            $this->addFlash(self::DANGER, $this->trans('paypal.general.browserUnsupported'));
+            $this->logger->notice('Storefront checkout browser unsupported', ['error' => $request->request->get('error')]);
         } else {
             $this->addFlash(self::DANGER, $this->trans('paypal.general.paymentError'));
             $this->logger->notice('Storefront checkout error', ['error' => $request->request->get('error')]);

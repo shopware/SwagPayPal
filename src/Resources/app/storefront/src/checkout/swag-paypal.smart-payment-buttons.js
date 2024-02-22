@@ -251,7 +251,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     }
 
     onCancel() {
-        this.createError(null, true);
+        this.createError('cancel');
     }
 
     onClick(data, actions) {
@@ -263,6 +263,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     }
 
     onError(error) {
-        this.createError(error);
+        this.createError('error', error);
     }
 }
