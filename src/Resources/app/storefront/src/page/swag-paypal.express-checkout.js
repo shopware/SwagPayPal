@@ -377,16 +377,16 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                     return actions.redirect(this.options.checkoutConfirmUrl);
                 }
 
-                return this.createError(response, false, this.options.cancelRedirectUrl);
+                return this.createError('error', response, this.options.cancelRedirectUrl);
             },
         );
     }
 
     onError(error) {
-        this.createError(error);
+        this.createError('error', error);
     }
 
     onCancel(error) {
-        this.createError(error, true, this.options.cancelRedirectUrl);
+        this.createError('cancel', error, this.options.cancelRedirectUrl);
     }
 }

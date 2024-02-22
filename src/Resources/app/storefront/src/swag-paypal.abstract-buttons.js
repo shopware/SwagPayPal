@@ -42,7 +42,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             delete window.paypal;
         }
 
-        this.constructor.scriptLoading.callbacks.forEach(callback => {
+        this.constructor.scriptLoading.callbacks.forEach((callback) => {
             callback.call(this, this.constructor.scriptLoading.paypal);
         });
     }
@@ -51,7 +51,6 @@ export default class SwagPaypalAbstractButtons extends Plugin {
      * @return {Object}
      */
     getScriptOptions() {
-
         const config = {
             components: 'buttons,messages,card-fields,funding-eligibility',
             'client-id': this.options.clientId,
@@ -91,7 +90,13 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         return config;
     }
 
-    createError(error, cancel = false, redirect = '') {
+    /**
+     * @param {'cancel'|'browser'|'error'} type
+     * @param {*=} error
+     * @param {String=} redirect
+     * @returns {void}
+     */
+    createError(type, error = undefined, redirect = '') {
         if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && typeof this._client === 'undefined') {
             console.error('No HttpClient defined in child plugin class');
             return;
@@ -107,20 +112,21 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         }
 
         if (this.options.accountOrderEditCancelledUrl && this.options.accountOrderEditFailedUrl) {
-            window.location = cancel ? this.options.accountOrderEditCancelledUrl : this.options.accountOrderEditFailedUrl;
+            window.location = type === 'cancel' ? this.options.accountOrderEditCancelledUrl : this.options.accountOrderEditFailedUrl;
 
             return;
         }
 
-        this._client.post(addErrorUrl, JSON.stringify({error, cancel}), () => {
-            if (!redirect) {
-                window.onbeforeunload = () => {
-                    window.scrollTo(0, 0);
-                };
-                window.location.reload();
-            } else {
+        this._client.post(addErrorUrl, JSON.stringify({error, type}), () => {
+            if (redirect) {
                 window.location = redirect;
+                return;
             }
+
+            window.onbeforeunload = () => {
+                window.scrollTo(0, 0);
+            };
+            window.location.reload();
         });
     }
 }
