@@ -26,39 +26,18 @@ use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 #[Package('checkout')]
 abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler implements SynchronousPaymentHandlerInterface
 {
-    private OrderExecuteService $orderExecuteService;
-
-    private OrderPatchService $orderPatchService;
-
-    private TransactionDataService $transactionDataService;
-
-    private OrderTransactionStateHandler $orderTransactionStateHandler;
-
-    private SettingsValidationServiceInterface $settingsValidationService;
-
-    private LoggerInterface $logger;
-
-    private OrderResource $orderResource;
-
     /**
      * @internal
      */
     public function __construct(
-        SettingsValidationServiceInterface $settingsValidationService,
-        OrderTransactionStateHandler $orderTransactionStateHandler,
-        OrderExecuteService $orderExecuteService,
-        OrderPatchService $orderPatchService,
-        TransactionDataService $transactionDataService,
-        LoggerInterface $logger,
-        OrderResource $orderResource
+        private readonly SettingsValidationServiceInterface $settingsValidationService,
+        private readonly OrderTransactionStateHandler $orderTransactionStateHandler,
+        private readonly OrderExecuteService $orderExecuteService,
+        private readonly OrderPatchService $orderPatchService,
+        private readonly TransactionDataService $transactionDataService,
+        private readonly LoggerInterface $logger,
+        private readonly OrderResource $orderResource
     ) {
-        $this->settingsValidationService = $settingsValidationService;
-        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
-        $this->orderPatchService = $orderPatchService;
-        $this->orderExecuteService = $orderExecuteService;
-        $this->transactionDataService = $transactionDataService;
-        $this->logger = $logger;
-        $this->orderResource = $orderResource;
     }
 
     public function pay(SyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): void

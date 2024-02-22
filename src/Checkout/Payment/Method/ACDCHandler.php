@@ -20,8 +20,8 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Checkout\ACDC\ACDCValidatorInterface;
-use Swag\PayPal\Checkout\ACDC\Exception\ACDCValidationFailedException;
+use Swag\PayPal\Checkout\Card\CardValidatorInterface;
+use Swag\PayPal\Checkout\Card\Exception\ACDCValidationFailedException;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
@@ -51,7 +51,7 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
         private readonly TransactionDataService $transactionDataService,
         private readonly LoggerInterface $logger,
         private readonly OrderResource $orderResource,
-        private readonly ACDCValidatorInterface $acdcValidator,
+        private readonly CardValidatorInterface $acdcValidator,
         private readonly VaultTokenService $vaultTokenService,
         private readonly ACDCOrderBuilder $orderBuilder,
         private readonly OrderConverter $orderConverter,
