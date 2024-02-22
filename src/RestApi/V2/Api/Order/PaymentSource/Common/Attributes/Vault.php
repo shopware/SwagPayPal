@@ -41,7 +41,15 @@ class Vault extends PayPalApiStruct
      */
     protected string $status;
 
+    /**
+     * @OA\Property(type="string")
+     */
     protected string $confirmPaymentToken;
+
+    /**
+     * @OA\Property(type="bool")
+     */
+    protected bool $permitMultiplePaymentTokens = true;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_attributes_customer")
@@ -101,6 +109,16 @@ class Vault extends PayPalApiStruct
     public function setConfirmPaymentToken(string $confirmPaymentToken): void
     {
         $this->confirmPaymentToken = $confirmPaymentToken;
+    }
+
+    public function isPermitMultiplePaymentTokens(): bool
+    {
+        return $this->permitMultiplePaymentTokens;
+    }
+
+    public function setPermitMultiplePaymentTokens(bool $permitMultiplePaymentTokens): void
+    {
+        $this->permitMultiplePaymentTokens = $permitMultiplePaymentTokens;
     }
 
     public function getCustomer(): ?Customer
