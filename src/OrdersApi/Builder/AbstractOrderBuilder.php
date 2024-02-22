@@ -169,7 +169,7 @@ abstract class AbstractOrderBuilder
     }
 
     /**
-     * @deprecated tag:v9.0.0 - will be removed, use payment source attributes instead
+     * @deprecated tag:v10.0.0 - will be removed, use payment source attributes instead
      */
     protected function createPayer(CustomerEntity $customer): Payer
     {
@@ -192,7 +192,7 @@ abstract class AbstractOrderBuilder
     }
 
     /**
-     * @deprecated tag:v9.0.0 - will be removed, use experience context instead
+     * @deprecated tag:v10.0.0 - will be removed, use experience context instead
      */
     protected function createApplicationContext(
         SalesChannelContext $salesChannelContext

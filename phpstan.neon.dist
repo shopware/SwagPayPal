@@ -38,7 +38,7 @@ parameters:
             path: tests/**/*.php
 
         -   # ignore own deprecations in tests
-            message: '#.*tag:v9.0.0 -#'
+            message: '#.*tag:v10.0.0 -#'
             path: tests/**/*.php
 
         -   # ignore Plus deprecations

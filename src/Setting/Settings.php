@@ -61,12 +61,12 @@ final class Settings
     public const CROSS_BORDER_BUYER_COUNTRY = self::SYSTEM_CONFIG_DOMAIN . 'crossBorderBuyerCountry';
 
     /**
-     * @deprecated tag:v9.0.0 - Will be removed without replacement.
+     * @deprecated tag:v10.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION = self::SYSTEM_CONFIG_DOMAIN . 'merchantLocation';
 
     /**
-     * @deprecated tag:v9.0.0 - Will be removed without replacement.
+     * @deprecated tag:v10.0.0 - Will be removed without replacement.
      */
     public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
 
@@ -114,17 +114,17 @@ final class Settings
     ];
 
     /**
-     * @deprecated tag:v9.0.0 - Will be removed without replacement.
+     * @deprecated tag:v10.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION_GERMANY = 'germany';
 
     /**
-     * @deprecated tag:v9.0.0 - Will be removed without replacement.
+     * @deprecated tag:v10.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION_OTHER = 'other';
 
     /**
-     * @deprecated tag:v9.0.0 - Will be removed without replacement.
+     * @deprecated tag:v10.0.0 - Will be removed without replacement.
      */
     public const VALID_MERCHANT_LOCATIONS = [
         self::MERCHANT_LOCATION_GERMANY,

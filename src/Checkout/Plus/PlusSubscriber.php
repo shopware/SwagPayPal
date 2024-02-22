@@ -29,7 +29,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @deprecated tag:v9.0.0 - Will be removed without replacement.
+ * @deprecated tag:v10.0.0 - Will be removed without replacement.
  *
  * @internal
  */

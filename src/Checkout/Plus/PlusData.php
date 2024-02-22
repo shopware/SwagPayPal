@@ -11,7 +11,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * @deprecated tag:v9.0.0 - Will be removed without replacement.
+ * @deprecated tag:v10.0.0 - Will be removed without replacement.
  */
 #[Package('checkout')]
 class PlusData extends Struct
