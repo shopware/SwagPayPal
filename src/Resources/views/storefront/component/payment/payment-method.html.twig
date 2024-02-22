@@ -9,7 +9,7 @@
     {{ parent() }}
 
     {# @var \Swag\PayPal\Checkout\Plus\PlusData payPalPlusData #}
-    {# @deprecated tag:v9.0.0 - Will be removed without replacement #}
+    {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
     {% set payPalPlusData = page.extensions[constant('Swag\\PayPal\\Checkout\\Plus\\PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Storefront\Data\Struct\VaultData payPalVaultData #}
     {% set payPalVaultData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\VaultSubscriber::VAULT_EXTENSION')] %}
@@ -27,7 +27,7 @@
         {% if payPalVaultData.identifier %}
             <div>{{ payPalVaultData.identifier }}</div>
             <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
-                {{ "paypal.vault." ~ payPalVaultData.snippetType ~ ".clear"|trans }}
+                {{ ("paypal.vault." ~ payPalVaultData.snippetType ~ ".clear")|trans }}
             </a>
         {% elseif context.extensions.subscription is not defined %}
             <div class="form-check">

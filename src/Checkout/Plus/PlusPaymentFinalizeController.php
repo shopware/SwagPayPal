@@ -30,7 +30,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * @deprecated tag:v9.0.0 - Will be removed without replacement.
+ * @deprecated tag:v10.0.0 - Will be removed without replacement.
  */
 #[Package('checkout')]
 class PlusPaymentFinalizeController extends AbstractController

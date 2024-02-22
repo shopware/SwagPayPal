@@ -1,7 +1,14 @@
+# 9.0.0
+- PPI-830 - Kompatibilität mit Shopware 6.6 und Symfony 7 hinzugefügt
+- PPI-857 - Technische Namen für PayPal-Zahlungsarten hinzugefügt 
+
 # 8.0.0
 - PPI-763 - "Später bezahlen" Banner wird unterhalb des Preises auf der Produktdetailseite angezeigt
+- PPI-779 - Neues Vaulting-Feature (Kunden speichern) für PayPal und Kredit-/Debitkartenzahlungen hinzugefügt
+- PPI-800 - API-Struktur & PayPal-Order-Erstellung verbessert
 - PPI-827 - Automatische Abfrage des Zahlungsstatus für unbestätigte Transaktionen hinzugefügt
 - PPI-831 - Verbesserte Verwaltung des Zahlungsstatus-Webhooks
+- PPI-860 - Kredit-/Debitkartenzahlungen auf neue Card Fields statt Hosted Fields migriert
 
 # 7.4.0
 - PPI-853 - Fügt eine Option zum Einstellen des Käuferlandes für "Später bezahlen" Banner hinzu
