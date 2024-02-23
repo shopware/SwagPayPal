@@ -7,39 +7,25 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration\ThirdPartyDetails;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_referral_rest_api_integration")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_referral_operation_integration_preference_integration')]
 #[Package('checkout')]
 class RestApiIntegration extends PayPalApiStruct
 {
     public const INTEGRATION_METHOD_TYPE_PAYPAL = 'PAYPAL';
     public const INTEGRATION_TYPE_THIRD_PARTY = 'THIRD_PARTY';
 
-    /**
-     * @OA\Property(
-     *     type="string",
-     *     default=Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration::INTEGRATION_METHOD_TYPE_PAYPAL
-     * )
-     */
+    #[OA\Property(type: 'string', default: self::INTEGRATION_METHOD_TYPE_PAYPAL)]
     protected string $integrationMethod = self::INTEGRATION_METHOD_TYPE_PAYPAL;
 
-    /**
-     * @OA\Property(
-     *     type="string",
-     *     default=Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration::INTEGRATION_TYPE_THIRD_PARTY
-     * )
-     */
+    #[OA\Property(type: 'string', default: self::INTEGRATION_TYPE_THIRD_PARTY)]
     protected string $integrationType = self::INTEGRATION_TYPE_THIRD_PARTY;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_referral_third_party_details")
-     */
+    #[OA\Property(ref: ThirdPartyDetails::class)]
     protected ThirdPartyDetails $thirdPartyDetails;
 
     public function getIntegrationMethod(): string

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Storefront\Controller;
 
+use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Framework\Context;
@@ -118,6 +119,19 @@ class PayPalController extends StorefrontController
         return $this->createActionResponse($request);
     }
 
+    #[OA\Post(
+        path: '/paypal/error',
+        operationId: 'paypalError',
+        description: 'Adds an error message to the flash bag',
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'type', type: 'string', enum: ['cancel', 'browser', 'error']),
+        ])),
+        tags: ['Store API', 'PayPal'],
+        responses: [new OA\Response(
+            response: Response::HTTP_NO_CONTENT,
+            description: 'Error was added to the flash bag',
+        )]
+    )]
     #[Route(path: '/paypal/error', name: 'frontend.paypal.error', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function addErrorMessage(Request $request): Response
     {

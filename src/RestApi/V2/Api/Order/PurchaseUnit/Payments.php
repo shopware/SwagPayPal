@@ -7,32 +7,27 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\AuthorizationCollection;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\CaptureCollection;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\RefundCollection;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payments")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_payments')]
 #[Package('checkout')]
 class Payments extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_authorization"}, nullable=true)
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Authorization::class), nullable: true)]
     protected ?AuthorizationCollection $authorizations = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_capture"}, nullable=true)
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Capture::class), nullable: true)]
     protected ?CaptureCollection $captures = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_refund"}, nullable=true)
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Refund::class), nullable: true)]
     protected ?RefundCollection $refunds = null;
 
     public function getAuthorizations(): ?AuthorizationCollection

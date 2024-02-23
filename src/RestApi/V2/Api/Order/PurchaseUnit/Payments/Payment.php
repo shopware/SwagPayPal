@@ -7,54 +7,38 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Common\Link;
 use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment")
- */
 #[Package('checkout')]
 abstract class Payment extends PayPalApiStruct
 {
     public const MAX_LENGTH_INVOICE_ID = 127;
     public const MAX_LENGTH_NOTE_TO_PAYER = 255;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $status;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $id;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class, nullable: true)]
     protected ?Money $amount = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $customId = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Link::class))]
     protected LinkCollection $links;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $createTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $updateTime;
 
     public function getStatus(): string

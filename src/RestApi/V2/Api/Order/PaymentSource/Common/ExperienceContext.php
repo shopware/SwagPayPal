@@ -7,13 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_experience_context")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_common_experience_context')]
 #[Package('checkout')]
 class ExperienceContext extends PayPalApiStruct
 {
@@ -36,60 +34,42 @@ class ExperienceContext extends PayPalApiStruct
     public const PAYMENT_METHOD_PREFERENCE_UNRESTRICTED = 'UNRESTRICTED';
     public const PAYMENT_METHOD_PREFERENCE_IMMEDIATE_REQUIRED = 'IMMEDIATE_PAYMENT_REQUIRED';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $locale;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $brandName;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $logoUrl;
 
-    /**
-     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE)
-     */
+    #[OA\Property(type: 'string', default: self::LANDING_PAGE_TYPE_NO_PREFERENCE, enum: self::LANDING_PAGE_TYPES)]
     protected string $landingPage = self::LANDING_PAGE_TYPE_NO_PREFERENCE;
 
-    /**
-     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS)
-     */
+    #[OA\Property(type: 'string', default: self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS, enum: [self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS, self::SHIPPING_PREFERENCE_NO_SHIPPING, self::SHIPPING_PREFERENCE_GET_FROM_FILE])]
     protected string $shippingPreference = self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS;
 
-    /**
-     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::USER_ACTION_PAY_NOW)
-     */
+    #[OA\Property(type: 'string', default: self::USER_ACTION_PAY_NOW, enum: [self::USER_ACTION_CONTINUE, self::USER_ACTION_PAY_NOW])]
     protected string $userAction = self::USER_ACTION_PAY_NOW;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $returnUrl;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $cancelUrl;
 
     /**
      * Only: PayPal Wallet
-     *
-     * @OA\Property(type="string")
      */
+    #[OA\Property(type: 'string', enum: [self::PAYMENT_METHOD_PREFERENCE_UNRESTRICTED, self::PAYMENT_METHOD_PREFERENCE_IMMEDIATE_REQUIRED])]
     protected string $paymentMethodPreference;
 
     /**
      * Only: PUI
      *
      * @var string[]
-     *
-     * @OA\Property(type="array", items="string")
      */
+    #[OA\Property(type: 'array', items: new OA\Items(type: 'string'))]
     protected array $customerServiceInstructions;
 
     public function getLocale(): string

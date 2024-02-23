@@ -7,20 +7,21 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Token;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment_source_token_stored_payment_source")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_token_stored_payment_source')]
 #[Package('checkout')]
 class StoredPaymentSource extends PayPalApiStruct
 {
+    #[OA\Property(type: 'string')]
     protected string $paymentInitiator;
 
+    #[OA\Property(type: 'string')]
     protected string $paymentType;
 
+    #[OA\Property(type: 'string')]
     protected string $usage;
 
     public function getPaymentInitiator(): string

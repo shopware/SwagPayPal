@@ -7,45 +7,30 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerReceivableBreakdown;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Common\SellerProtection;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_capture")
- */
-#[Package('checkout')]
+#[Package('checkout'), OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_payments_capture')]
 class Capture extends Payment
 {
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $invoiceId = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $noteToPayer = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_capture_seller_protection")
-     */
+    #[OA\Property(ref: SellerProtection::class)]
     protected SellerProtection $sellerProtection;
 
-    /**
-     * @OA\Property(type="boolean")
-     */
+    #[OA\Property(type: 'boolean')]
     protected bool $finalCapture;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_capture_seller_receivable_breakdown")
-     */
+    #[OA\Property(ref: SellerReceivableBreakdown::class)]
     protected SellerReceivableBreakdown $sellerReceivableBreakdown;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $disbursementMode;
 
     public function getInvoiceId(): ?string

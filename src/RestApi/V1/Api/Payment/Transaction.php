@@ -7,58 +7,41 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Common\Amount;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Payee;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResourceCollection;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_payment_transaction")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_payment_transaction')]
 #[Package('checkout')]
 class Transaction extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
-     */
+    #[OA\Property(ref: Amount::class)]
     protected Amount $amount;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_payee")
-     */
+    #[OA\Property(ref: Payee::class)]
     protected Payee $payee;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_item_list", nullable=true)
-     */
+    #[OA\Property(ref: ItemList::class, nullable: true)]
     protected ?ItemList $itemList = null;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_related_resource"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: RelatedResource::class))]
     protected RelatedResourceCollection $relatedResources;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $invoiceNumber = null;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $softDescriptor;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $description;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $custom;
 
     public function getAmount(): Amount

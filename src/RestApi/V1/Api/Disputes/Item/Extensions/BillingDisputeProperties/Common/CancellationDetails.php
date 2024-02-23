@@ -5,36 +5,26 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CanceledRecurringBilling;
+namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\Common;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_cancellation_details")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_common_cancellation_details')]
 #[Package('checkout')]
 class CancellationDetails extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $cancellationDate;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $cancellationNumber;
 
-    /**
-     * @OA\Property(type="boolean")
-     */
+    #[OA\Property(type: 'boolean')]
     protected bool $cancelled;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $cancellationMode;
 
     public function getCancellationDate(): string

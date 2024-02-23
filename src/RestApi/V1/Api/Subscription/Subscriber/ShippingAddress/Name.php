@@ -8,13 +8,11 @@ declare(strict_types=1);
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
- * @OA\Schema(schema="swag_paypal_v1_subscription_shipping_address_name")
- *
  * @codeCoverageIgnore
  *
  * @experimental
@@ -22,12 +20,11 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[OA\Schema(schema: 'swag_paypal_v1_subscription_subscriber_shipping_address_name')]
 #[Package('checkout')]
 class Name extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $fullName;
 
     public function getFullName(): string

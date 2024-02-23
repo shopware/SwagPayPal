@@ -7,78 +7,55 @@
 
 namespace Swag\PayPal\RestApi\V2\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Common\Link;
 use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
-use Swag\PayPal\RestApi\V2\Api\Order\Link;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order')]
 #[Package('checkout')]
 class Order extends PayPalApiStruct
 {
     public const PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL = 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $createTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $updateTime;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $id;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $intent = PaymentIntentV2::CAPTURE;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payer")
-     */
+    #[OA\Property(ref: Payer::class)]
     protected Payer $payer;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"}, nullable=true)
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: PurchaseUnit::class), nullable: true)]
     protected ?PurchaseUnitCollection $purchaseUnits;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_application_context")
-     */
+    #[OA\Property(ref: ApplicationContext::class)]
     protected ApplicationContext $applicationContext;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source", nullable=true)
-     */
+    #[OA\Property(ref: PaymentSource::class, nullable: true)]
     protected ?PaymentSource $paymentSource = null;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $status;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $processingInstruction;
 
-    /**
-     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
-     */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Link::class))]
     protected LinkCollection $links;
 
     public function getCreateTime(): string

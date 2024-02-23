@@ -7,35 +7,25 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_refund_seller_paypable_breakdown")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_payments_refund_seller_payable_breakdown')]
 #[Package('checkout')]
 class SellerPayableBreakdown extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $grossAmount;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $paypalFee;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $netAmount;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $totalRefundedAmount;
 
     public function getGrossAmount(): Money

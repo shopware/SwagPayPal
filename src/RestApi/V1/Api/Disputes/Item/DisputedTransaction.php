@@ -7,19 +7,15 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Common\Transaction;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_disputed_transaction")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_item_disputed_transaction')]
 #[Package('checkout')]
 class DisputedTransaction extends Transaction
 {
-    /**
-     * @OA\Property(type="boolean")
-     */
+    #[OA\Property(type: 'boolean')]
     protected bool $sellerProtectionEligible;
 
     public function isSellerProtectionEligible(): bool

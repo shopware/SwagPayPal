@@ -7,67 +7,54 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_token")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_token')]
 #[Package('checkout')]
 final class Token extends PayPalApiStruct
 {
     /**
      * Scopes expressed in the form of resource URL endpoints. The value of the scope parameter
      * is expressed as a list of space-delimited, case-sensitive strings.
-     *
-     * @OA\Property(type="string")
      */
+    #[OA\Property(type: 'string')]
     private string $scope;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     private string $nonce;
 
     /**
      * The access token issued by PayPal. After the access token
      * expires (see $expiresIn), you must request a new access token.
-     *
-     * @OA\Property(type="string")
      */
+    #[OA\Property(type: 'string')]
     private string $accessToken;
 
     /**
      * The type of the token issued as described in OAuth2.0 RFC6749,
      * Section 7.1. Value is case insensitive.
-     *
-     * @OA\Property(type="string")
      */
+    #[OA\Property(type: 'string')]
     private string $tokenType;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     private string $appId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     private ?string $idToken = null;
 
     /**
      * The lifetime of the access token, in seconds.
-     *
-     * @OA\Property(type="integer")
      */
+    #[OA\Property(type: 'integer')]
     private int $expiresIn;
 
     /**
      * Calculated expiration date
-     *
-     * @OA\Property(type="date")
      */
+    #[OA\Property(type: 'string', format: 'date-time')]
     private \DateTime $expireDateTime;
 
     /**

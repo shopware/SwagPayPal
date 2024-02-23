@@ -7,49 +7,34 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Payer;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Common\Address;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingAddress;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_payment_payer_info")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_payment_payer_payer_info')]
 #[Package('checkout')]
 class PayerInfo extends ExecutePayerInfo
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $email;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $firstName;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $lastName;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_address", nullable=true)
-     */
+    #[OA\Property(ref: Address::class, nullable: true)]
     protected ?Address $billingAddress = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_payer_info_shipping_address")
-     */
-    protected Address $shippingAddress;
+    #[OA\Property(ref: ShippingAddress::class)]
+    protected ShippingAddress $shippingAddress;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $phone;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $countryCode;
 
     public function getEmail(): string
@@ -92,12 +77,12 @@ class PayerInfo extends ExecutePayerInfo
         $this->billingAddress = $billingAddress;
     }
 
-    public function getShippingAddress(): Address
+    public function getShippingAddress(): ShippingAddress
     {
         return $this->shippingAddress;
     }
 
-    public function setShippingAddress(Address $shippingAddress): void
+    public function setShippingAddress(ShippingAddress $shippingAddress): void
     {
         $this->shippingAddress = $shippingAddress;
     }

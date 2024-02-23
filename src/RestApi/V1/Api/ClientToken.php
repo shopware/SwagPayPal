@@ -7,33 +7,27 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_client_token")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_client_token')]
 #[Package('checkout')]
 class ClientToken extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $clientToken;
 
     /**
      * The lifetime of the access token, in seconds.
-     *
-     * @OA\Property(type="integer")
      */
+    #[OA\Property(type: 'integer')]
     protected int $expiresIn;
 
     /**
      * Calculated expiration date
-     *
-     * @OA\Property(type="date")
      */
+    #[OA\Property(type: 'string', format: 'date-time')]
     protected \DateTime $expireDateTime;
 
     public function assign(array $arrayDataWithSnakeCaseKeys): static

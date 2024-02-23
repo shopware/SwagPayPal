@@ -7,41 +7,30 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\OauthIntegration;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_merchant_integrations_oauth_integration_third_party")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_merchant_integrations_oauth_integration_oauth_third_party')]
 #[Package('checkout')]
 class OauthThirdParty extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $accessToken;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $merchantClientId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $partnerClientId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $refreshToken;
 
     /**
      * @var string[]
-     *
-     * @OA\Property(type="array", items={"type": "string"})
      */
+    #[OA\Property(type: 'array', items: new OA\Items(type: 'string'))]
     protected array $scopes;
 
     public function getAccessToken(): string

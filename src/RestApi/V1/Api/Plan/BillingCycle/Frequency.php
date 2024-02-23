@@ -7,13 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
- * @OA\Schema(schema="swag_paypal_v1_plan_frequency")
- *
  * @codeCoverageIgnore
  *
  * @experimental
@@ -21,17 +19,14 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[OA\Schema(schema: 'swag_paypal_v1_plan_billing_cycle_frequency')]
 #[Package('checkout')]
 class Frequency extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $intervalUnit;
 
-    /**
-     * @OA\Property(type="integer")
-     */
+    #[OA\Property(type: 'integer')]
     protected int $intervalCount;
 
     public function getIntervalUnit(): string

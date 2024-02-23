@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Webhook;
 
+use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -29,25 +30,35 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['api']])]
 class WebhookController extends AbstractController
 {
-    private LoggerInterface $logger;
-
-    private WebhookServiceInterface $webhookService;
-
-    private EntityRepository $systemConfigRepository;
-
     /**
      * @internal
      */
     public function __construct(
-        LoggerInterface $logger,
-        WebhookServiceInterface $webhookService,
-        EntityRepository $systemConfigRepository
+        private readonly LoggerInterface $logger,
+        private readonly WebhookServiceInterface $webhookService,
+        private readonly EntityRepository $systemConfigRepository
     ) {
-        $this->logger = $logger;
-        $this->webhookService = $webhookService;
-        $this->systemConfigRepository = $systemConfigRepository;
     }
 
+    #[OA\Get(
+        path: '/api/_action/paypal/webhook/status/{salesChannelId}',
+        operationId: 'getWebhookStatus',
+        tags: ['Admin Api', 'SwagPayPalWebhook'],
+        parameters: [new OA\Parameter(
+            parameter: 'salesChannelId',
+            name: 'salesChannelId',
+            in: 'path',
+            schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+        )],
+        responses: [new OA\Response(
+            response: Response::HTTP_OK,
+            description: 'Returns the status of the PayPal webhook',
+            content: new OA\JsonContent(properties: [new OA\Property(
+                property: 'result',
+                type: 'string',
+            )])
+        )]
+    )]
     #[Route(path: '/api/_action/paypal/webhook/status/{salesChannelId}', name: 'api.action.paypal.webhook.status', methods: ['GET'], defaults: ['_acl' => ['swag_paypal.viewer']])]
     public function statusWebhook(string $salesChannelId): JsonResponse
     {
@@ -56,6 +67,25 @@ class WebhookController extends AbstractController
         return new JsonResponse(['result' => $status]);
     }
 
+    #[OA\Post(
+        path: '/api/_action/paypal/webhook/register/{salesChannelId}',
+        operationId: 'registerWebhook',
+        tags: ['Admin Api', 'SwagPayPalWebhook'],
+        parameters: [new OA\Parameter(
+            parameter: 'salesChannelId',
+            name: 'salesChannelId',
+            in: 'path',
+            schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+        )],
+        responses: [new OA\Response(
+            response: Response::HTTP_OK,
+            description: 'Returns the action taken for the webhook registration',
+            content: new OA\JsonContent(properties: [new OA\Property(
+                property: 'result',
+                type: 'string',
+            )])
+        )]
+    )]
     #[Route(path: '/api/_action/paypal/webhook/register/{salesChannelId}', name: 'api.action.paypal.webhook.register', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function registerWebhook(string $salesChannelId): JsonResponse
     {
@@ -64,6 +94,25 @@ class WebhookController extends AbstractController
         return new JsonResponse(['result' => $result]);
     }
 
+    #[OA\Delete(
+        path: '/api/_action/paypal/webhook/deregister/{salesChannelId}',
+        operationId: 'deregisterWebhook',
+        tags: ['Admin Api', 'SwagPayPalWebhook'],
+        parameters: [new OA\Parameter(
+            parameter: 'salesChannelId',
+            name: 'salesChannelId',
+            in: 'path',
+            schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+        )],
+        responses: [new OA\Response(
+            response: Response::HTTP_OK,
+            description: 'Returns the action taken for the webhook deregistration',
+            content: new OA\JsonContent(properties: [new OA\Property(
+                property: 'result',
+                type: 'string',
+            )])
+        )]
+    )]
     #[Route(path: '/api/_action/paypal/webhook/deregister/{salesChannelId}', name: 'api.action.paypal.webhook.deregister', methods: ['DELETE'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function deregisterWebhook(string $salesChannelId): JsonResponse
     {
@@ -72,6 +121,19 @@ class WebhookController extends AbstractController
         return new JsonResponse(['result' => $result]);
     }
 
+    #[OA\Post(
+        path: '/api/_action/paypal/webhook/execute',
+        operationId: 'executeWebhook',
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(ref: Webhook::class)),
+        tags: ['Admin Api', 'SwagPayPalPosWebhook'],
+        parameters: [new OA\Parameter(
+            parameter: WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME,
+            name: WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME,
+            in: 'query',
+            schema: new OA\Schema(type: 'string')
+        )],
+        responses: [new OA\Response(response: Response::HTTP_NO_CONTENT, description: 'Webhook execution was successful')]
+    )]
     #[Route(path: '/api/_action/paypal/webhook/execute', name: 'api.action.paypal.webhook.execute', methods: ['POST'], defaults: ['auth_required' => false])]
     public function executeWebhook(Request $request, Context $context): Response
     {

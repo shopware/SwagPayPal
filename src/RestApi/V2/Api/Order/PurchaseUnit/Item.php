@@ -7,14 +7,12 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_item")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_item')]
 #[Package('checkout')]
 class Item extends PayPalApiStruct
 {
@@ -25,39 +23,25 @@ class Item extends PayPalApiStruct
     public const CATEGORY_DIGITAL_GOODS = 'DIGITAL_GOODS';
     public const CATEGORY_DONATION = 'DONATION';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $name;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $unitAmount;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $tax;
 
-    /**
-     * @OA\Property(oneOf=[{ "type": "integer" },{ "type": "float" },{ "type": "string" }])
-     */
+    #[OA\Property(oneOf: [new OA\Schema(type: 'string'), new OA\Schema(type: 'integer'), new OA\Schema(type: 'float')])]
     protected string|int|float $taxRate;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string', enum: [self::CATEGORY_PHYSICAL_GOODS, self::CATEGORY_DIGITAL_GOODS, self::CATEGORY_DONATION])]
     protected string $category;
 
-    /**
-     * @OA\Property(type="integer")
-     */
+    #[OA\Property(type: 'integer')]
     protected int $quantity;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $sku = null;
 
     public function getName(): string

@@ -7,49 +7,36 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Shipping;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_shipping_tracker")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_shipping_tracker')]
 #[Package('checkout')]
 class Tracker extends PayPalApiStruct
 {
     public const STATUS_SHIPPED = 'SHIPPED';
     public const STATUS_CANCELLED = 'CANCELLED';
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $transactionId;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $trackingNumber;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $status;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $carrier;
 
-    /**
-     * @OA\Property(type="boolean")
-     */
+    #[OA\Property(type: 'boolean')]
     protected bool $notifyBuyer;
 
     /**
      * Pattern: '2022-08-15'
-     *
-     * @OA\Property(type="string")
      */
+    #[OA\Property(type: 'string')]
     protected string $shipmentDate;
 
     public function getTransactionId(): string

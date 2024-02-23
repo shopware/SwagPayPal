@@ -7,29 +7,21 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_communication_details")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_item_communication_details')]
 #[Package('checkout')]
 class CommunicationDetails extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $email;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $note;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $timePosted;
 
     public function getEmail(): string
