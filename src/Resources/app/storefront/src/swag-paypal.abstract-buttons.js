@@ -117,6 +117,10 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             return;
         }
 
+        if (!!error && typeof error !== 'string') {
+            error = String(error);
+        }
+
         this._client.post(addErrorUrl, JSON.stringify({error, type}), () => {
             if (redirect) {
                 window.location = redirect;
