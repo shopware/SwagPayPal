@@ -372,7 +372,7 @@
                 "label": "Enable Vaulting for PayPal payments"
               },
               "enableACDC": {
-                "label": "Eanable Vaulting for credit and debit cards"
+                "label": "Enable Vaulting for credit and debit cards"
               },
               "activateButton": {
                 "label": "Activate Vaulting"
