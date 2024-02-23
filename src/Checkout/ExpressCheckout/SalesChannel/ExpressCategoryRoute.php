@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRouteResponse;
 use Shopware\Core\Framework\Log\Package;
@@ -20,37 +20,23 @@ use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Package('checkout')]
 #[Route(defaults: ['_routeScope' => ['store-api']])]
 class ExpressCategoryRoute extends AbstractCategoryRoute
 {
-    private AbstractCategoryRoute $inner;
-
-    private ExpressCheckoutDataServiceInterface $expressCheckoutDataService;
-
-    private SettingsValidationServiceInterface $settingsValidationService;
-
-    private SystemConfigService $systemConfigService;
-
-    private PaymentMethodUtil $paymentMethodUtil;
-
     /**
      * @internal
      */
     public function __construct(
-        AbstractCategoryRoute $inner,
-        ExpressCheckoutDataServiceInterface $expressCheckoutDataService,
-        SettingsValidationServiceInterface $settingsValidationService,
-        SystemConfigService $systemConfigService,
-        PaymentMethodUtil $paymentMethodUtil
+        private readonly AbstractCategoryRoute $inner,
+        private readonly ExpressCheckoutDataServiceInterface $expressCheckoutDataService,
+        private readonly SettingsValidationServiceInterface $settingsValidationService,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly PaymentMethodUtil $paymentMethodUtil
     ) {
-        $this->inner = $inner;
-        $this->expressCheckoutDataService = $expressCheckoutDataService;
-        $this->settingsValidationService = $settingsValidationService;
-        $this->systemConfigService = $systemConfigService;
-        $this->paymentMethodUtil = $paymentMethodUtil;
     }
 
     public function getDecorated(): AbstractCategoryRoute
@@ -58,41 +44,26 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
         return $this->inner;
     }
 
-    /**
-     * @OA\Post(
-     *     path="/category/{categoryId}",
-     *     summary="Fetch a single category",
-     *     description="This endpoint returns information about the category, as well as a fully resolved (hydrated with mapping values) CMS page, if one is assigned to the category. You can pass slots which should be resolved exclusively.",
-     *     operationId="readCategory",
-     *     tags={"Store API", "Category"},
-     *
-     *     @OA\Parameter(
-     *         name="categoryId",
-     *         description="Identifier of the category to be fetched",
-     *
-     *         @OA\Schema(type="string", pattern="^[0-9a-f]{32}$"),
-     *         in="path",
-     *         required=true
-     *     ),
-     *
-     *     @OA\Parameter(
-     *         name="slots",
-     *         description="Resolves only the given slot identifiers. The identifiers have to be seperated by a '|' character",
-     *
-     *         @OA\Schema(type="string"),
-     *         in="query",
-     *     ),
-     *
-     *     @OA\Parameter(name="Api-Basic-Parameters"),
-     *
-     *     @OA\Response(
-     *          response="200",
-     *          description="The loaded category with cms page",
-     *
-     *          @OA\JsonContent(ref="#/components/schemas/category_flat")
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/store-api/category/{navigationId}',
+        operationId: 'readCategory',
+        description: 'This endpoint returns information about the category, as well as a fully resolved (hydrated with mapping values) CMS page, if one is assigned to the category. You can pass slots which should be resolved exclusively.',
+        tags: ['Store API', 'Category'],
+        parameters: [
+            new OA\Parameter(
+                name: 'navigationId',
+                description: 'Identifier of the navigation to be fetched',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+            ),
+        ],
+        responses: [new OA\Response(
+            ref: '#/components/schemas/category_flat',
+            response: Response::HTTP_OK,
+            description: 'The loaded category with cms page'
+        )]
+    )]
     #[Route(path: '/store-api/category/{navigationId}', name: 'store-api.category.detail', methods: ['GET', 'POST'])]
     public function load(string $navigationId, Request $request, SalesChannelContext $context): CategoryRouteResponse
     {

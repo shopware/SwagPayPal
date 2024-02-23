@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Capture;
 
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Common\Value;
 
+#[OA\Schema(schema: 'swag_paypal_v1_capture_transaction_fee')]
 #[Package('checkout')]
 class TransactionFee extends Value
 {

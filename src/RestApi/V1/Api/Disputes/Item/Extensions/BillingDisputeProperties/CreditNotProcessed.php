@@ -7,49 +7,35 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Common\Money;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Common\ProductDetails;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Common\ServiceDetails;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CreditNotProcessed\AgreedRefundDetails;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CreditNotProcessed\CancellationDetails;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\Common\AgreedRefundDetails;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\Common\CancellationDetails;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_cretid_not_processed")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_credit_not_processed')]
 #[Package('checkout')]
 class CreditNotProcessed extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $issueType;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $expectedRefund;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_cancellation_details")
-     */
+    #[OA\Property(ref: CancellationDetails::class)]
     protected CancellationDetails $cancellationDetails;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_product_details")
-     */
+    #[OA\Property(ref: ProductDetails::class)]
     protected ProductDetails $productDetails;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_service_details")
-     */
+    #[OA\Property(ref: ServiceDetails::class)]
     protected ServiceDetails $serviceDetails;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_aggred_refund_details")
-     */
+    #[OA\Property(ref: AgreedRefundDetails::class)]
     protected AgreedRefundDetails $agreedRefundDetails;
 
     public function getIssueType(): string

@@ -7,12 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment_source_multibanco")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_multibanco')]
 #[Package('checkout')]
 class Multibanco extends AbstractAPMPaymentSource
 {

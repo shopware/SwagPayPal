@@ -7,20 +7,16 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Referral\Operation;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_referral_api_integration_preference")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_referral_operation_integration_preference')]
 #[Package('checkout')]
 class ApiIntegrationPreference extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_referral_rest_api_integration")
-     */
+    #[OA\Property(ref: RestApiIntegration::class)]
     protected RestApiIntegration $restApiIntegration;
 
     public function getRestApiIntegration(): RestApiIntegration

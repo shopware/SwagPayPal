@@ -7,47 +7,33 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_payment_transaction_item")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_payment_transaction_item_list_item')]
 #[Package('checkout')]
 class Item extends PayPalApiStruct
 {
     public const MAX_LENGTH_NAME = 127;
     public const MAX_LENGTH_SKU = 127;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $name;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $currency;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $price;
 
-    /**
-     * @OA\Property(type="integer")
-     */
+    #[OA\Property(type: 'integer')]
     protected int $quantity;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $sku = null;
 
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $tax;
 
     public function getName(): string

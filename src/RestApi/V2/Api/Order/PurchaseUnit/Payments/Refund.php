@@ -7,29 +7,21 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_refund")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_payments_refund')]
 #[Package('checkout')]
 class Refund extends Payment
 {
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $invoiceId = null;
 
-    /**
-     * @OA\Property(type="string", nullable=true)
-     */
+    #[OA\Property(type: 'string', nullable: true)]
     protected ?string $noteToPayer = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_refund_seller_paypable_breakdown")
-     */
+    #[OA\Property(ref: SellerPayableBreakdown::class)]
     protected SellerPayableBreakdown $sellerPayableBreakdown;
 
     public function getInvoiceId(): ?string

@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Checkout\SalesChannel;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
@@ -60,40 +60,35 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
     }
 
     /**
-     * @OA\Post(
-     *     path="/store-api/paypal/create-order",
-     *     description="Creates a PayPal order from the existing cart or an order",
-     *     operationId="createPayPalOrder",
-     *     tags={"Store API", "PayPal"},
-     *
-     *     @OA\RequestBody(
-     *
-     *         @OA\JsonContent(
-     *
-     *             @OA\Property(
-     *                 property="product",
-     *                 type="string",
-     *                 default="ppcp",
-     *                 required=false,
-     *                 description="Use an existing order id to create PayPal order",
-     *             ),
-     *             @OA\Property(
-     *                 property="orderId",
-     *                 type="string",
-     *                 required=false,
-     *                 description="Use an existing order id to create PayPal order",
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response="200",
-     *         description="The new token of the order"
-     *    )
-     * )
-     *
      * @throws CustomerNotLoggedInException
      */
+    #[OA\Post(
+        path: '/store-api/paypal/create-order',
+        operationId: 'createPayPalOrder',
+        description: 'Creates a PayPal order from the existing cart or an order',
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+            new OA\Property(
+                property: 'product',
+                description: 'Use an existing order id to create PayPal order',
+                type: 'string',
+                default: 'ppcp',
+            ),
+            new OA\Property(
+                property: 'orderId',
+                description: 'Use an existing order id to create PayPal order',
+                type: 'string',
+            ),
+        ])),
+        tags: ['Store API', 'PayPal'],
+        responses: [new OA\Response(
+            response: 200,
+            description: 'Returns the created PayPal order id',
+            content: new OA\JsonContent(properties: [new OA\Property(
+                property: 'token',
+                type: 'string',
+            )])
+        )]
+    )]
     #[Route(path: '/store-api/paypal/create-order', name: 'store-api.paypal.create_order', methods: ['POST'])]
     #[Route(path: '/store-api/subscription/paypal/create-order', name: 'store-api.subscription.paypal.create_order', defaults: ['_isSubscriptionCart' => true, '_isSubscriptionContext' => true], methods: ['POST'])]
     public function createPayPalOrder(SalesChannelContext $salesChannelContext, Request $request): TokenResponse

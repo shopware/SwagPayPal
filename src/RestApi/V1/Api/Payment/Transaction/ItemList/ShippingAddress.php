@@ -7,19 +7,15 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Common\Address;
 
-/**
- * @OA\Schema(schema="swag_paypal_v1_payment_transaction_shipping_address")
- */
+#[OA\Schema(schema: 'swag_paypal_v1_payment_transaction_item_list_shipping_address')]
 #[Package('checkout')]
 class ShippingAddress extends Address
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $recipientName;
 
     public function getRecipientName(): string

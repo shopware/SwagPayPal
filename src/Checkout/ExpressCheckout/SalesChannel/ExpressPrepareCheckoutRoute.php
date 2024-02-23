@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Log\Package;
@@ -22,6 +22,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Package('checkout')]
@@ -30,31 +31,16 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 {
     public const PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID = 'payPalEcsCartData';
 
-    private ExpressCustomerService $expressCustomerService;
-
-    private AbstractSalesChannelContextFactory $salesChannelContextFactory;
-
-    private OrderResource $orderResource;
-
-    private CartService $cartService;
-
-    private LoggerInterface $logger;
-
     /**
      * @internal
      */
     public function __construct(
-        ExpressCustomerService $expressCustomerService,
-        AbstractSalesChannelContextFactory $salesChannelContextFactory,
-        OrderResource $orderResource,
-        CartService $cartService,
-        LoggerInterface $logger
+        private readonly ExpressCustomerService $expressCustomerService,
+        private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        private readonly OrderResource $orderResource,
+        private readonly CartService $cartService,
+        private readonly LoggerInterface $logger
     ) {
-        $this->expressCustomerService = $expressCustomerService;
-        $this->salesChannelContextFactory = $salesChannelContextFactory;
-        $this->orderResource = $orderResource;
-        $this->cartService = $cartService;
-        $this->logger = $logger;
     }
 
     public function getDecorated(): AbstractExpressPrepareCheckoutRoute
@@ -62,27 +48,25 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
         throw new DecorationPatternException(self::class);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/store-api/paypal/express/prepare-checkout",
-     *     description="Loggs in a guest customer, with the data of a paypal order",
-     *     operationId="preparePayPalExpressCheckout",
-     *     tags={"Store API", "PayPal"},
-     *
-     *     @OA\RequestBody(
-     *
-     *         @OA\JsonContent(
-     *
-     *             @OA\Property(property="token", description="ID of the paypal order", type="string")
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response="200",
-     *         description="The new context token"
-     *    )
-     * )
-     */
+    #[OA\Post(
+        path: '/store-api/paypal/express/prepare-checkout',
+        operationId: 'preparePayPalExpressCheckout',
+        description: 'Logs in a guest customer, with the data of a paypal order',
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [new OA\Property(
+            property: 'token',
+            description: 'ID of the paypal order',
+            type: 'string'
+        )])),
+        tags: ['Store API', 'PayPal'],
+        responses: [new OA\Response(
+            response: Response::HTTP_OK,
+            description: 'The url to redirect to',
+            content: new OA\JsonContent(properties: [new OA\Property(
+                property: 'redirectUrl',
+                type: 'string'
+            )])
+        )],
+    )]
     #[Route(path: '/store-api/paypal/express/prepare-checkout', name: 'store-api.paypal.express.prepare_checkout', methods: ['POST'])]
     public function prepareCheckout(SalesChannelContext $salesChannelContext, Request $request): ContextTokenResponse
     {

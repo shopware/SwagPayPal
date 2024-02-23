@@ -7,29 +7,23 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Token\StoredPaymentSource;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_payment_source_token_stored_payment_source")
- */
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_token')]
 #[Package('checkout')]
 class Token extends AbstractPaymentSource
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    public const TYPE_BILLING_AGREEMENT = 'BILLING_AGREEMENT';
+
+    #[OA\Property(type: 'string')]
     protected string $id;
 
-    /**
-     * @OA\Property(type="string")
-     */
-    protected string $type = 'BILLING_AGREEMENT';
+    #[OA\Property(type: 'string')]
+    protected string $type = self::TYPE_BILLING_AGREEMENT;
 
-    /**
-     * @OA\Property(type="swag_paypal_v2_order_payment_source_token_stored_payment_source")
-     */
+    #[OA\Property(ref: StoredPaymentSource::class)]
     protected ?StoredPaymentSource $storedPaymentSource = null;
 
     public function getId(): string

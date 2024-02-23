@@ -7,19 +7,15 @@
 
 namespace Swag\PayPal\RestApi\V3\Api\PaymentToken;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-/**
- * @OA\Schema(schema="swag_paypal_v3_payment_token_metadata")
- */
+#[OA\Schema(schema: 'swag_paypal_v3_payment_token_metadata')]
 #[Package('checkout')]
 class Metadata extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(type="string")
-     */
+    #[OA\Property(type: 'string')]
     protected string $orderId;
 
     public function getOrderId(): string

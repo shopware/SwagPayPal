@@ -7,14 +7,12 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Common\Money;
 
 /**
- * @OA\Schema(schema="swag_paypal_v1_plan_pricing_scheme")
- *
  * @codeCoverageIgnore
  *
  * @experimental
@@ -22,12 +20,11 @@ use Swag\PayPal\RestApi\V1\Api\Common\Money;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[OA\Schema(schema: 'swag_paypal_v1_plan_billing_cycle_pricing_scheme')]
 #[Package('checkout')]
 class PricingScheme extends PayPalApiStruct
 {
-    /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
-     */
+    #[OA\Property(ref: Money::class)]
     protected Money $fixedPrice;
 
     public function getFixedPrice(): Money

@@ -7,20 +7,27 @@
 
 namespace Swag\PayPal\Pos\Api\Webhook;
 
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[OA\Schema(schema: 'swag_paypal_pos_webhook')]
 #[Package('checkout')]
 class Webhook extends PosStruct
 {
+    #[OA\Property(type: 'string')]
     protected string $organizationUuid;
 
+    #[OA\Property(type: 'string')]
     protected string $messageUuid;
 
+    #[OA\Property(type: 'string')]
     protected string $eventName;
 
+    #[OA\Property(type: 'string')]
     protected string $payload;
 
+    #[OA\Property(type: 'string')]
     protected string $timestamp;
 
     public function getOrganizationUuid(): string
