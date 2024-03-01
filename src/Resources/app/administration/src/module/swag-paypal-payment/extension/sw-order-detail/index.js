@@ -12,8 +12,8 @@ Component.override('sw-order-detail', {
 
             return this.order
                 && !isEmpty(transaction)
-                && (transaction.customFields.swag_paypal_order_id
-                    || transaction.customFields.swag_paypal_transaction_id);
+                && (transaction?.customFields?.swag_paypal_order_id
+                    || transaction?.customFields?.swag_paypal_transaction_id);
         },
 
         isEditable() {
