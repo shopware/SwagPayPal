@@ -65,7 +65,11 @@
             "../../../vendor/bin/phpstan analyze"
         ],
         "rector": "../../../vendor/bin/rector process",
-        "rector-dry": "../../../vendor/bin/rector process --dry-run"
+        "rector-dry": "../../../vendor/bin/rector process --dry-run",
+        "openapi:generate": [
+            "../../../bin/console swag:paypal:openapi:generate",
+            "npm run openapi-types --prefix src/Resources/app/administration"
+        ]
     },
     "autoload": {
         "psr-4": {

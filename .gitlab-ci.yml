@@ -43,6 +43,19 @@ phpunit:
           PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
           PLUGIN_DEPENDENCIES: [ $DEPENDENCIES_WITH_COMMERCIAL, $DEPENDENCIES_WITHOUT_COMMERCIAL ]
 
+validate openapi typescript:
+  stage: build
+  needs: []
+  rules:
+    - changes:
+        - 'src/**/*'
+  script:
+    - $CI_PROJECT_DIR/bin/console bundle:dump
+    - composer init:admin
+    - composer openapi:generate
+    - git update-index --refresh || printf ''
+    - git diff-index "${CI_COMMIT_SHA}" --quiet -- src/Resources/app/administration/src/types/openapi.d.ts || (echo "Please run 'composer openapi:generate' to update openapi.d.ts" && exit 1)
+
 phpstan:
   variables:
     DEV_IMAGE: 'shopware/development:8.1-composer-2'

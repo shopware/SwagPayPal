@@ -11,7 +11,11 @@ use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 
-#[OA\Schema(schema: 'swag_paypal_pos_setting_additional_information')]
+#[OA\Schema(schema: 'swag_paypal_pos_setting_additional_information', properties: [new OA\Property(
+    property: 'extensions',
+    type: 'object',
+    additionalProperties: true,
+)])]
 #[Package('checkout')]
 class AdditionalInformation extends Struct
 {
@@ -36,7 +40,7 @@ class AdditionalInformation extends Struct
     #[OA\Property(type: 'string')]
     protected string $paymentMethodId;
 
-    #[OA\Property(type: 'array')]
+    #[OA\Property(type: 'array', items: new OA\Items(type: 'mixed'))]
     protected array $merchantInformation;
 
     public function setCountryId(string $countryId): void

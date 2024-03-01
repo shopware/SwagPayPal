@@ -26,6 +26,7 @@ class DeprecatedTagTest extends TestCase
         'coverage/',
         'Resources/public/',
         'node_modules/',
+        'types/openapi.d.ts', // generated file
     ];
 
     public function testAllFilesForDeprecated(): void
