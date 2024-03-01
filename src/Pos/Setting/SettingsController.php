@@ -97,9 +97,9 @@ class SettingsController extends AbstractController
         ])),
         tags: ['Admin Api', 'PayPal'],
         responses: [new OA\Response(
-            ref: AdditionalInformation::class,
             response: Response::HTTP_OK,
             description: 'Fetched information',
+            content: new OA\JsonContent(ref: AdditionalInformation::class),
         )]
     )]
     #[Route(path: '/api/paypal/pos/fetch-information', name: 'api.paypal.pos.fetch.information', methods: ['POST'], defaults: ['_acl' => ['sales_channel.viewer']])]
