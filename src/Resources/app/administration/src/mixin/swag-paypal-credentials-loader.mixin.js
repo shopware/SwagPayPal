@@ -66,15 +66,15 @@ Mixin.register('swag-paypal-credentials-loader', {
     },
 
     created() {
-        this.$root.$on('paypal-onboarding-finish', this.getPayPalCredentials);
-        window.onboardingCallbackLive = function onboardingCallback(authCode, sharedId) {
-            Shopware.Application.getApplicationRoot().$emit(
+        this.$on('paypal-onboarding-finish', this.getPayPalCredentials);
+        window.onboardingCallbackLive = (authCode, sharedId) => {
+            this.$emit(
                 'paypal-onboarding-finish',
                 { authCode, sharedId, sandbox: false },
             );
         };
-        window.onboardingCallbackSandbox = function onboardingCallbackSandbox(authCode, sharedId) {
-            Shopware.Application.getApplicationRoot().$emit(
+        window.onboardingCallbackSandbox = (authCode, sharedId) => {
+            this.$emit(
                 'paypal-onboarding-finish',
                 { authCode, sharedId, sandbox: true },
             );
@@ -86,7 +86,7 @@ Mixin.register('swag-paypal-credentials-loader', {
     },
 
     destroyed() {
-        this.$root.$off('paypal-onboarding-finish');
+        this.$off('paypal-onboarding-finish');
     },
 
     methods: {
