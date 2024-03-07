@@ -26,6 +26,11 @@ class DeprecatedTagTest extends TestCase
         'coverage/',
         'Resources/public/',
         'node_modules/',
+
+        /** @deprecated beta:vaulting - will be removed */
+        'src/Resources/app/administration/src/module/swag-paypal/components/swag-paypal-vaulting/swag-paypal-vaulting.html.twig',
+        /** @deprecated beta:vaulting - will be removed */
+        'src/Resources/app/administration/src/module/swag-paypal/components/swag-paypal-vaulting/swag-paypal-vaulting.scss',
     ];
 
     public function testAllFilesForDeprecated(): void
