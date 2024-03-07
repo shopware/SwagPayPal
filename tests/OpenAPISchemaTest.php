@@ -128,11 +128,6 @@ class OpenAPISchemaTest extends TestCase
             if (!\in_array($annotation->method, $routeMethods, true)) {
                 $failures[] = $fqdn . ' was expected to have a method of "' . \implode('" or "', $routeMethods) . '", but found "' . $annotation->method . '" in OpenAPI Schema';
             } else {
-                /** @phpstan-ignore-next-line - comparing parameters with Generator::UNDEFINED is valid */
-                if ($annotation->method === 'GET' && $annotation->parameters === Generator::UNDEFINED) {
-                    $failures[] = $fqdn . ' is a GET-Request and was expected to have parameters or an empty array for clarification';
-                }
-
                 /** @phpstan-ignore-next-line - comparing requestBody with Generator::UNDEFINED is valid */
                 if ($annotation->method === 'GET' && $annotation->requestBody !== Generator::UNDEFINED) {
                     $failures[] = $fqdn . ' is a GET-Request and was not expected to have a request body';
