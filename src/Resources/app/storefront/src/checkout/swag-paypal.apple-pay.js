@@ -22,10 +22,11 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
 
     async render(paypal) {
         if (!window.ApplePaySession?.supportsVersion(4) || !window.ApplePaySession?.canMakePayments()) {
-            this.createError('browser', 'Device is not supported');
+            this.createError('browser');
+            return;
         }
 
-        this.renderButton(paypal);
+        this.renderButton(paypal).catch(this.onError.bind(this));
     }
 
     async renderButton(paypal) {
@@ -37,16 +38,16 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
         button.style.width = '100%';
         button.addEventListener('click',() => {
             if (this.confirmOrderForm.checkValidity()){
-                this.handleApplePayButtonSubmit(config, paypal);
+                this.handleApplePayButtonSubmit(config, paypal)
+                    .catch(this.createError.bind(this, 'cancel'));
             }
-
         })
 
-        if (config.isEligible) {
-            this.el.appendChild(button);
-        } else {
-            this.createError('error', 'Funding for Apple Pay is not eligible');
+        if (!config.isEligible) {
+            throw new Error('Funding for Apple Pay is not eligible');
         }
+
+        this.el.appendChild(button);
     }
 
     async handleApplePayButtonSubmit(config, paypal) {

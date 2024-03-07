@@ -27,6 +27,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\ApplePayOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order;
@@ -48,6 +49,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         private readonly EntityRepository $orderRepository,
         private readonly PayPalOrderBuilder $payPalOrderBuilder,
         private readonly ACDCOrderBuilder $acdcOrderBuilder,
+        private readonly ApplePayOrderBuilder $applePayOrderBuilder,
         private readonly OrderResource $orderResource,
         private readonly LoggerInterface $logger,
         private readonly AbstractPaymentTransactionStructFactory $paymentTransactionStructFactory,
@@ -103,9 +105,11 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
 
             $orderId = $requestDataBag->getAlnum('orderId');
 
-            $orderBuilder = $requestDataBag->get('product') === 'acdc'
-                ? $this->acdcOrderBuilder
-                : $this->payPalOrderBuilder;
+            $orderBuilder = match ($requestDataBag->get('product')) {
+                'acdc' => $this->acdcOrderBuilder,
+                'applepay' => $this->applePayOrderBuilder,
+                default => $this->payPalOrderBuilder,
+            };
 
             $paypalOrder = $orderId
                 ? $this->getOrderFromOrder($orderBuilder, $orderId, $customer, $requestDataBag, $salesChannelContext)

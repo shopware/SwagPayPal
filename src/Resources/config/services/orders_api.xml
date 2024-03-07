@@ -38,6 +38,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
         </service>
 
+        <service id="Swag\PayPal\OrdersApi\Builder\ApplePayOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\PUIOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
