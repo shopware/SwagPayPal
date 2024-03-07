@@ -136,6 +136,7 @@
                 :key="paymentMethod.id"
                 :payment-method="paymentMethod"
                 :onboarding-status="onboardingStatus(paymentMethod)"
+                :actual-config-data="actualConfigData"
             />
             {% endblock %}
 
@@ -196,6 +197,5 @@
         {% endblock %}
     </sw-modal>
     {% endblock %}
-
 </sw-card>
 {% endblock %}

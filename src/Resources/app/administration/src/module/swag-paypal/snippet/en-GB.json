@@ -90,6 +90,10 @@
                 "switch": {
                     "label": "Active"
                 },
+                "domainAssociation": {
+                    "title": "Please make sure your domain is set correctly for Apple Pay to work properly. The domain association file is already present.",
+                    "link": "Open domains settings"
+                },
                 "paymentMethodText": "Payment methods",
                 "showCredentials": "Show credentials",
                 "appImageAlt": "PayPal",
