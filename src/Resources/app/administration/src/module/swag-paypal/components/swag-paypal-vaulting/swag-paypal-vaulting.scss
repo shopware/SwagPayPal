@@ -1,14 +1,30 @@
 @import "~scss/variables";
 
-.swag-paypal-settings-vaulting {
-    &-description-title {
-        color: $color-darkgray-200;
-        font-weight: $font-weight-bold;
-        font-size: $font-size-m;
-        margin-bottom: 16px;
+.swag-paypal-vaulting {
+    .swag-paypal-settings-vaulting {
+        &-description-title {
+            color: $color-darkgray-200;
+            font-weight: $font-weight-bold;
+            font-size: $font-size-m;
+            margin-bottom: 16px;
+        }
+
+        &-activate-button {
+            margin-top: 24px;
+        }
     }
 
-    &-activate-button {
-        margin-top: 24px;
+    /** @deprecated beta:vaulting - will be removed */
+    .sw-status {
+        display: inline-block;
+        margin-left: 4px;
+
+        .sw-color-badge {
+            display: none;
+        }
+
+        .sw-help-text {
+            margin-left: 4px;
+        }
     }
 }

@@ -484,6 +484,6 @@ class Update
             ];
         }
 
-        $this->paymentRepository->upsert(\array_values($upsertData), $context);
+        $this->paymentRepository->upsert($upsertData, $context);
     }
 }
