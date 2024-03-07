@@ -1,5 +1,6 @@
 # 9.1.0
-- PPI-850 - Automatische Abfrage des Zahlungsstatus für autorisierte und in Bearbeitung befindliche Transaktionen
+- PPI-850 - Automatische Abfrage des Zahlungsstatus für autorisierte und in Bearbeitung befindliche Transaktionen erweitert
+- PPI-863 - Fügt die Zahlungsart Apple Pay hinzu
 
 # 9.0.3
 - PPI-906 - Änderung der Express Buttons, sodass diese freien Platz besser nutzen und zum restlichen Layout passen
