@@ -15,10 +15,10 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
 #[Package('checkout')]
 class ApplePay extends AbstractAPMPaymentSource
 {
-    #[OA\Property(ref: Card::class)]
+    #[OA\Property(ref: Card::class, nullable: true)]
     protected ?Card $card = null;
 
-    #[OA\Property(ref: Attributes::class)]
+    #[OA\Property(ref: Attributes::class, nullable: true)]
     protected ?Attributes $attributes = null;
 
     public function getCard(): ?Card

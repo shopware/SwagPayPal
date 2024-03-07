@@ -83,5 +83,12 @@
             <argument type="tagged_iterator" tag="swag.paypal.payment.storefront.checkout.data"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Swag\PayPal\Storefront\Controller\ApplePayController" public="true">
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
     </services>
 </container>
