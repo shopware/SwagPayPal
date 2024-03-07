@@ -35,7 +35,7 @@ abstract class AbstractCheckoutDataService
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
         private readonly LocaleCodeProvider $localeCodeProvider,
         private readonly RouterInterface $router,
-        private readonly SystemConfigService $systemConfigService,
+        protected readonly SystemConfigService $systemConfigService,
         private readonly CredentialsUtilInterface $credentialsUtil
     ) {
     }

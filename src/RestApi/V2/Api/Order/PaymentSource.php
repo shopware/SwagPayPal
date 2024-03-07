@@ -11,6 +11,7 @@ use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractPaymentSource;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\ApplePay;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Bancontact;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Blik;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario;
@@ -32,6 +33,9 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Trustly;
 #[Package('checkout')]
 class PaymentSource extends PayPalApiStruct
 {
+    #[OA\Property(ref: ApplePay::class)]
+    protected ?ApplePay $applePay = null;
+
     #[OA\Property(ref: PayUponInvoice::class, nullable: true)]
     protected ?PayUponInvoice $payUponInvoice = null;
 
@@ -264,5 +268,15 @@ class PaymentSource extends PayPalApiStruct
         }
 
         return null;
+    }
+
+    public function getApplePay(): ?ApplePay
+    {
+        return $this->applePay;
+    }
+
+    public function setApplePay(?ApplePay $applePay): void
+    {
+        $this->applePay = $applePay;
     }
 }

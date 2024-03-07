@@ -1,5 +1,6 @@
 # 8.1.0
-- PPI-850 - Added automated payment status polling for authorized and in-progress transactions 
+- PPI-850 - Added automated payment status polling for authorized and in-progress transactions
+- PPI-863 - Added Apple Pay payment method
 
 # 8.0.3
 - PPI-896 - Changed the wording of the checkout Smart Payment Buttons from 'PayPal Checkout' to 'Pay with PayPal'

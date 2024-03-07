@@ -98,7 +98,14 @@
             <tag name="shopware.payment.method.sync"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\Payment\Method\VenmoHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
+        <service id="Swag\PayPal\Checkout\Payment\Method\VenmoHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
+            <tag name="shopware.payment.method.sync"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\ApplePayHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
+            <argument type="service" id="Swag\PayPal\Checkout\Card\ApplePayValidator" index-by="applePayValidator" />
             <tag name="shopware.payment.method.sync"/>
         </service>
 
