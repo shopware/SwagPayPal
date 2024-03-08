@@ -4,7 +4,7 @@
 
 # 8.0.0
 - PPI-763 - Move "Pay later" banner underneath price display on product detail page
-- PPI-779 - Added new Vaulting feature (save customer) for PayPal and Credit-/Debit card payments
+- PPI-779 - Added new Vaulting beta feature (save customer) for PayPal and Credit-/Debit card payments
 - PPI-800 - Improved API struct structure & PayPal order building process
 - PPI-827 - Added automated payment status polling for unconfirmed transactions
 - PPI-831 - Improved management of payment status webhooks
