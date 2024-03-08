@@ -1,6 +1,7 @@
 # 9.0.0
 - PPI-830 - Kompatibilität mit Shopware 6.6 und Symfony 7 hinzugefügt
-- PPI-857 - Technische Namen für PayPal-Zahlungsarten hinzugefügt 
+- PPI-857 - Technische Namen für PayPal-Zahlungsarten hinzugefügt
+- PPI-896 - Änderung der Checkout Smart Payment Buttons von 'Direkt zu PayPal' zu 'Mit PayPal zahlen'.
 
 # 8.0.0
 - PPI-763 - "Später bezahlen" Banner wird unterhalb des Preises auf der Produktdetailseite angezeigt
