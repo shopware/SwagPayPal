@@ -363,6 +363,8 @@
                 }
             },
             "vaulting": {
+              "beta": "Beta",
+              "betaHelpText": "Entdecke unser neuestes Feature \"Vaulting\". Dieses Feature ist noch in der Beta-Phase. Wir werden über die nächsten Wochen weitere Erweiterungen vornehmen und freuen uns über euer Feedback.",
               "cardTitle": "Vaulting",
               "description": {
                 "title": "Einmal-Paypal-Checkout",
