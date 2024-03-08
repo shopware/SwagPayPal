@@ -1,4 +1,5 @@
 # 7.4.1
+- PPI-896 - Änderung der Checkout Smart Payment Buttons von 'Direkt zu PayPal' zu 'Mit PayPal zahlen'.
 - PPI-904 - Behebt ein Timestamp-Problem, welches den Shop mit bestimmten Cache-Konfigurationen unbenutzbar macht
 
 # 7.4.0
