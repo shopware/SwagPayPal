@@ -12,7 +12,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use PHPUnit\Framework\TestCase;
@@ -312,12 +311,14 @@ class TurnoverReportingTaskHandlerTest extends TestCase
     /**
      * Extracts all turnover reports, successful and failed ones
      *
-     * @param array<int, array{request: Request, response: Response}> $history
+     * @param array|\ArrayAccess<int, array> $history
      *
      * @return array<int, array<string, mixed>>
      */
-    private function extractTurnoverReports(array $history): array
+    private function extractTurnoverReports(array|\ArrayAccess $history): array
     {
+        static::assertIsArray($history);
+
         return \array_map(
             function (array $entry) {
                 $body = \json_decode($entry['request']->getBody()->getContents(), true);
