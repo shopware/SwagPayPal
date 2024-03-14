@@ -30,8 +30,8 @@ class MerchantIntegrations extends PayPalApiStruct
     #[OA\Property(type: 'array', items: new OA\Items(ref: Product::class))]
     protected ProductCollection $products;
 
-    #[OA\Property(type: 'array', items: new OA\Items(ref: Capability::class))]
-    protected CapabilityCollection $capabilities;
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Capability::class), nullable: true)]
+    protected ?CapabilityCollection $capabilities = null;
 
     #[OA\Property(type: 'array', items: new OA\Items(ref: OauthIntegration::class))]
     protected OauthIntegrationCollection $oauthIntegrations;
@@ -84,12 +84,12 @@ class MerchantIntegrations extends PayPalApiStruct
         $this->products = $products;
     }
 
-    public function getCapabilities(): CapabilityCollection
+    public function getCapabilities(): ?CapabilityCollection
     {
         return $this->capabilities;
     }
 
-    public function setCapabilities(CapabilityCollection $capabilities): void
+    public function setCapabilities(?CapabilityCollection $capabilities): void
     {
         $this->capabilities = $capabilities;
     }
@@ -162,7 +162,7 @@ class MerchantIntegrations extends PayPalApiStruct
 
     public function getSpecificCapability(string $name): ?Capability
     {
-        foreach ($this->capabilities as $capability) {
+        foreach (($this->capabilities ?? []) as $capability) {
             if ($capability->getName() === $name) {
                 return $capability;
             }
