@@ -1,3 +1,6 @@
+# 8.0.1
+- PPI-900 - Behebt ein Problem, bei dem Händler Integrationen für Zahlungsmethoden nicht korrekt geladen werden
+
 # 8.0.0
 - PPI-763 - "Später bezahlen" Banner wird unterhalb des Preises auf der Produktdetailseite angezeigt
 - PPI-779 - Neues Beta-Feature Vaulting (Kunden speichern) für PayPal und Kredit-/Debitkartenzahlungen hinzugefügt

@@ -1,3 +1,6 @@
+# 8.0.1
+- PPI-900 - Fixes an issue, where merchant integrations for payment methods are not loaded correctly
+
 # 8.0.0
 - PPI-763 - Move "Pay later" banner underneath price display on product detail page
 - PPI-779 - Added new Vaulting beta feature (save customer) for PayPal and Credit-/Debit card payments
