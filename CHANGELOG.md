@@ -4,6 +4,7 @@
 # 9.0.0
 - PPI-830 - Added compatibility with Showpare 6.6 & Symfony 7
 - PPI-857 - Added technical names for payment methods
+- PPI-896 - Changed the wording of the checkout Smart Payment Buttons from 'PayPal Checkout' to 'Pay with PayPal'.
 
 # 8.0.1
 - PPI-900 - Fixes an issue, where merchant integrations for payment methods are not loaded correctly
