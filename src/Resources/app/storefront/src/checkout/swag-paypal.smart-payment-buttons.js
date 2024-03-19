@@ -166,7 +166,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
                 size: this.options.buttonSize,
                 shape: this.options.buttonShape,
                 color: this.options.buttonColor,
-                label: 'checkout',
+                label: 'pay',
             },
 
             /**
