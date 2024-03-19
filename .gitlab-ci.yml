@@ -75,6 +75,14 @@ eslint (storefront):
     - composer init:storefront
     - composer lint:storefront:ci
 
+build and validate zip:
+  after_script:
+    - mv ${PLUGIN_NAME}.zip ${PLUGIN_NAME}_untouched.zip
+    - unzip ${PLUGIN_NAME}_untouched.zip
+    - find . -type f -exec touch {} +
+    - apt-get update && apt-get install -y zip gzip
+    - zip -r ${PLUGIN_NAME}.zip ${PLUGIN_NAME}
+
 include:
   project: 'shopware/6/product/platform'
   ref: 'trunk'
