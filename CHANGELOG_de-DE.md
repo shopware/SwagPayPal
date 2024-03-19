@@ -1,6 +1,7 @@
 # 8.0.1
 - PPI-896 - Änderung der Checkout Smart Payment Buttons von 'Direkt zu PayPal' zu 'Mit PayPal zahlen'.
 - PPI-900 - Behebt ein Problem, bei dem Händler Integrationen für Zahlungsmethoden nicht korrekt geladen werden
+- PPI-904 - Behebt ein Timestamp-Problem, welches den Shop mit bestimmten Cache-Konfigurationen unbenutzbar macht
 
 # 8.0.0
 - PPI-763 - "Später bezahlen" Banner wird unterhalb des Preises auf der Produktdetailseite angezeigt
