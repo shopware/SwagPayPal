@@ -1,3 +1,6 @@
+# 7.4.1
+- PPI-904 - Behebt ein Timestamp-Problem, welches den Shop mit bestimmten Cache-Konfigurationen unbenutzbar macht
+
 # 7.4.0
 - PPI-853 - Fügt eine Option zum Einstellen des Käuferlandes für "Später bezahlen" Banner hinzu
 

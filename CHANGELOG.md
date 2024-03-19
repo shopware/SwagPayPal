@@ -1,3 +1,6 @@
+# 7.4.1
+- PPI-904 - Fixes timestamp issue that caused the Shop to be inoperable with certain cache configurations
+
 # 7.4.0
 - PPI-853 - Added option to add buyer country to "Pay Later" banners
 
