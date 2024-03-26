@@ -31,6 +31,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
@@ -126,6 +127,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '9.0.0', '<')) {
             $this->updateTo900($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.0.2', '<')) {
+            $this->updateTo902($updateContext->getContext());
         }
     }
 
@@ -485,5 +490,18 @@ class Update
         }
 
         $this->paymentRepository->upsert($upsertData, $context);
+    }
+
+    private function updateTo902(Context $context): void
+    {
+        $salesChannelIds = $this->getSalesChannelIds($context);
+
+        foreach ($salesChannelIds as $salesChannelId) {
+            $landingPage = $this->systemConfig->getString(Settings::LANDING_PAGE, $salesChannelId);
+
+            if ($landingPage === ApplicationContextV2::LANDING_PAGE_TYPE_BILLING) {
+                $this->systemConfig->set(Settings::LANDING_PAGE, ExperienceContext::LANDING_PAGE_TYPE_GUEST, $salesChannelId);
+            }
+        }
     }
 }
