@@ -51,7 +51,7 @@ class PayPalHandlerTest extends TestCase
 
         $payPalOrder = new Order();
         $payPalOrder->setPaymentSource(new PaymentSource());
-        $payPalOrder->getPaymentSource()?->setPaypal(new PayPal());
+        $payPalOrder->getPaymentSource()?->setPaypal(new Paypal());
         $payPalOrder->setId('paypalOrderId');
 
         $orderResource = $this->createMock(OrderResource::class);

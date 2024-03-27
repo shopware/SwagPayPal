@@ -68,8 +68,8 @@ class PaymentSource extends PayPalApiStruct
     #[OA\Property(ref: P24::class, nullable: true)]
     protected ?P24 $p24 = null;
 
-    #[OA\Property(ref: PayPal::class, nullable: true)]
-    protected ?PayPal $paypal = null;
+    #[OA\Property(ref: Paypal::class, nullable: true)]
+    protected ?Paypal $paypal = null;
 
     #[OA\Property(ref: Sofort::class, nullable: true)]
     protected ?Sofort $sofort = null;

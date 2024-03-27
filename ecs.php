@@ -23,9 +23,7 @@ file that was distributed with this source code.', 'separate' => 'bottom', 'loca
     ]);
     $ecsConfig->rule(MbStrFunctionsFixer::class);
 
-    $parameters = $ecsConfig->parameters();
-
-    $parameters->set(Option::CACHE_DIRECTORY, __DIR__ . '/var/cache/cs_fixer');
-    $parameters->set(Option::CACHE_NAMESPACE, 'SwagPayPal');
-    $parameters->set(Option::PATHS, [__DIR__ . '/src', __DIR__ . '/tests']);
+    $ecsConfig->cacheDirectory(__DIR__ . '/var/cache/cs_fixer');
+    $ecsConfig->cacheNamespace('SwagPayPal');
+    $ecsConfig->paths([__DIR__ . '/src', __DIR__ . '/tests']);
 };
