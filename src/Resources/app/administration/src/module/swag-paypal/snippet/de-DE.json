@@ -202,12 +202,12 @@
                     "label": "PayPal-Landingpage",
                     "helpText": {
                         "login": "Anmeldung: Auf der PayPal-Seite wird der Login als Landingpage angezeigt.",
-                        "billing": "Registrierung: Auf der PayPal-Seite wird die Registrierung als Landingpage angezeigt.",
+                        "guest_checkout": "Gast-Checkout: Auf der PayPal-Seite werden direkt Zahlungsdaten des Kunden abgefragt, ohne dass dieser sich bei PayPal einloggen muss.",
                         "no_preference": "Keine Präferenz: PayPal entscheidet auf Grundlage früherer Interaktionen des Kunden mit PayPal welche Seite angezeigt wird."
                     },
                     "options": {
                         "login": "Anmeldung",
-                        "billing": "Registrierung",
+                        "guest_checkout": "Gast-Checkout",
                         "no_preference": "Keine Präferenz"
                     }
                 },

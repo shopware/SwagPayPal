@@ -47,6 +47,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
@@ -243,7 +244,7 @@ class UpdateTest extends TestCase
         static::assertSame(PaymentIntentV2::CAPTURE, $systemConfig->get(Settings::INTENT, null, false));
         static::assertSame(PaymentIntentV2::AUTHORIZE, $systemConfig->get(Settings::INTENT, TestDefaults::SALES_CHANNEL, false));
         static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_LOGIN, $systemConfig->get(Settings::LANDING_PAGE, null, false));
-        static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
+        static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
     }
 
     public function testUpdateTo200MigrateIntentSettingWithInvalidIntent(): void
@@ -396,6 +397,19 @@ class UpdateTest extends TestCase
                 \sprintf('Technical name `%s` for handler `%s` doesn\'t match expected `%s`', $method->getTechnicalName(), $method->getHandlerIdentifier(), $handler->getTechnicalName())
             );
         }
+    }
+
+    public function testUpdateTo902(): void
+    {
+        $updateContext = $this->createUpdateContext('9.0.1', '9.0.2');
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
+
+        $systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, TestDefaults::SALES_CHANNEL);
+
+        $updater = $this->createUpdateService($systemConfig);
+        $updater->update($updateContext);
+
+        static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
     }
 
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext
