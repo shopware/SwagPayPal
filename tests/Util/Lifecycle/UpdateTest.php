@@ -46,6 +46,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
@@ -243,7 +244,7 @@ class UpdateTest extends TestCase
         static::assertSame(PaymentIntentV2::CAPTURE, $systemConfig->get(Settings::INTENT, null, false));
         static::assertSame(PaymentIntentV2::AUTHORIZE, $systemConfig->get(Settings::INTENT, TestDefaults::SALES_CHANNEL, false));
         static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_LOGIN, $systemConfig->get(Settings::LANDING_PAGE, null, false));
-        static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
+        static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
     }
 
     public function testUpdateTo200MigrateIntentSettingWithInvalidIntent(): void
@@ -367,6 +368,18 @@ class UpdateTest extends TestCase
         static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED));
         static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED));
         static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED));
+    }
+
+    public function testUpdateTo802(): void
+    {
+        $updateContext = $this->createUpdateContext('7.3.0', '8.0.2');
+        $systemConfigServiceMock = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigServiceMock->set(Settings::LANDING_PAGE, ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, TestDefaults::SALES_CHANNEL);
+
+        $updater = $this->createUpdateService($systemConfigServiceMock);
+        $updater->update($updateContext);
+
+        static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfigServiceMock->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
     }
 
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext

@@ -72,8 +72,8 @@ Component.register('swag-paypal-behavior', {
                     name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.login'),
                 },
                 {
-                    id: 'BILLING',
-                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.billing'),
+                    id: 'GUEST_CHECKOUT',
+                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.guest_checkout'),
                 },
                 {
                     id: 'NO_PREFERENCE',

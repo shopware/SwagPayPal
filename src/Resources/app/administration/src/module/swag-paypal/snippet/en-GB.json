@@ -202,12 +202,12 @@
                     "label": "PayPal landing page",
                     "helpText": {
                         "login": "Login: The PayPal site displays a login screen as landing page.",
-                        "billing": "Registration: The PayPal site displays a registration form as landing page.",
+                        "guest_checkout": "Guest Checkout: The PayPal site displays a form for payment information, the customer does not need to log in.",
                         "no_preference": "No preference: PayPal decides which page is shown, depending on the previous interaction of the customer with PayPal."
                     },
                     "options": {
                         "login": "Login",
-                        "billing": "Registration",
+                        "guest_checkout": "Guest Checkout",
                         "no_preference": "No preference"
                     }
                 },
