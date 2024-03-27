@@ -44,7 +44,7 @@ class PlusDataService
 
     private PaymentResource $paymentResource;
 
-    private PaymentMethodUtil$paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
 
     private LocaleCodeProvider $localeCodeProvider;
 
