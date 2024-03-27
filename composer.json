@@ -86,10 +86,6 @@
         "shopware/storefront": "Require '*'. Enables special payment features like 'Smart Payment Buttons' or 'Express Checkout'",
         "shopware/administration": "Require '*'. Allows you to to set up the plugin easily"
     },
-    "conflict": {
-        "shopware/storefront": "<6,>=7",
-        "shopware/administration": "<6,>=7"
-    },
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
