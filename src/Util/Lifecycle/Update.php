@@ -29,6 +29,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
@@ -151,6 +152,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '7.3.0', '<')) {
             $this->updateTo730();
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '8.0.2', '<')) {
+            $this->updateTo802($updateContext->getContext());
         }
     }
 
@@ -483,5 +488,18 @@ class Update
         $this->systemConfig->set(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED, $installmentBannerEnabled);
         $this->systemConfig->set(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED, $installmentBannerEnabled);
         $this->systemConfig->set(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED, $installmentBannerEnabled);
+    }
+
+    private function updateTo802(Context $context): void
+    {
+        $salesChannelIds = $this->getSalesChannelIds($context);
+
+        foreach ($salesChannelIds as $salesChannelId) {
+            $landingPage = $this->systemConfig->getString(Settings::LANDING_PAGE, $salesChannelId);
+
+            if ($landingPage === ApplicationContextV2::LANDING_PAGE_TYPE_BILLING) {
+                $this->systemConfig->set(Settings::LANDING_PAGE, ExperienceContext::LANDING_PAGE_TYPE_GUEST, $salesChannelId);
+            }
+        }
     }
 }
