@@ -19,13 +19,13 @@
 
                 {% block page_checkout_address_login_toggle_paypal_express %}
                     {% if expressEnabled %}
-                        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'col-5'} %}
+                        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'col-12 col-sm-6 col-xl-5'} %}
                     {% endif %}
                 {% endblock %}
 
                 {% block page_checkout_address_login_toggle_paypal_installment_banner %}
                     {% if installmentBannerEnabled %}
-                        <div class="col-5 {{ isBootstrap5 ? '' : 'mt-2' }}"
+                        <div class="col-12 col-sm-6 {{ isBootstrap5 ? '' : 'mt-2' }}"
                              data-swag-paypal-installment-banner="true"
                              data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
                         </div>
