@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
@@ -43,19 +44,26 @@ class TransactionStatusSyncTaskHandler extends ScheduledTaskHandler
     public function run(): void
     {
         // Check all transactions from the last 48h, but offset by an hour
-        $hourAgo = (new \DateTime('now -1 hour'))
-            ->setTimezone(new \DateTimeZone('UTC'))
-            ->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $hourAgo = (new \DateTimeImmutable('now -1 hour'))
+            ->setTimezone(new \DateTimeZone('UTC'));
 
-        $twoDaysAgo = (new \DateTime('now -49 hour'))
-            ->setTimezone(new \DateTimeZone('UTC'))
-            ->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $twoDaysAgo = $hourAgo->modify('-48 hours');
 
         $criteria = (new Criteria())
             ->addAssociation('order')
             ->addFilter(new EqualsAnyFilter('paymentMethod.handlerIdentifier', $this->methodDataRegistry->getPaymentHandlers()))
-            ->addFilter(new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_UNCONFIRMED))
-            ->addFilter(new RangeFilter('createdAt', [RangeFilter::LTE => $hourAgo, RangeFilter::GTE => $twoDaysAgo]));
+            ->addFilter(new MultiFilter(
+                MultiFilter::CONNECTION_OR,
+                [
+                    new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_UNCONFIRMED),
+                    new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_AUTHORIZED),
+                    new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_IN_PROGRESS),
+                ]
+            ))
+            ->addFilter(new RangeFilter('createdAt', [
+                RangeFilter::LTE => $hourAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                RangeFilter::GTE => $twoDaysAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            ]));
 
         $transactions = $this->orderTransactionRepository->search($criteria, Context::createDefaultContext());
 

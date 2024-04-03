@@ -4,6 +4,7 @@
 - PPI-914 - Behebt ein Problem, bei dem Bestellungen mit ausschließlich digitalen Produkten fehlschlugen und inkorrekt kategorisiert wurden
 - PPI-916 - Behebt ein Problem, bei dem Bestellungen mit der Landingpage-Einstellung "Gast-Checkout" fehlschlagen können
 - PPI-917 - Rechnungskauf-Disclaimer über den Bestätigungsbutton verschoben
+- PPI-850 - Automatische Abfrage des Zahlungsstatus für autorisierte und in Bearbeitung befindliche Transaktionen
 
 # 8.0.2
 - PPI-908 - Behebt ein Problem, welches eine falsche Landingpage Einstellung an PayPal übermittelt.
