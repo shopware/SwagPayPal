@@ -119,7 +119,7 @@ abstract class AbstractOrderBuilder
             null,
             $items,
             $salesChannelContext,
-            $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS,
+            $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS, /* @phpstan-ignore-line */
             $order,
             $orderTransaction
         );
