@@ -13,12 +13,15 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\StateMachineException;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessage;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessageHandler;
@@ -65,9 +68,14 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     {
         $this->orderTransactionRepository
             ->expects(static::once())
-            ->method('searchIds')
+            ->method('search')
             ->willReturnCallback(
-                fn (Criteria $criteria, Context $context) => new IdSearchResult(1, [['primaryKey' => 'id', 'data' => []]], $criteria, $context)
+                function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
             );
 
         $payPalOrder = (new Order())->assign([
@@ -123,9 +131,14 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     {
         $this->orderTransactionRepository
             ->expects(static::once())
-            ->method('searchIds')
+            ->method('search')
             ->willReturnCallback(
-                fn (Criteria $criteria, Context $context) => new IdSearchResult(1, [['primaryKey' => 'id', 'data' => []]], $criteria, $context)
+                function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
             );
 
         $payPalOrder = (new Order())->assign([
@@ -179,9 +192,14 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     {
         $this->orderTransactionRepository
             ->expects(static::once())
-            ->method('searchIds')
+            ->method('search')
             ->willReturnCallback(
-                fn (Criteria $criteria, Context $context) => new IdSearchResult(1, [['primaryKey' => 'id', 'data' => []]], $criteria, $context)
+                function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
             );
 
         $exception = new PayPalApiException('General error', '404 Not found');
@@ -216,9 +234,9 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     {
         $this->orderTransactionRepository
             ->expects(static::once())
-            ->method('searchIds')
+            ->method('search')
             ->willReturnCallback(
-                fn (Criteria $criteria, Context $context) => new IdSearchResult(0, [], $criteria, $context)
+                fn (Criteria $criteria, Context $context) => new EntitySearchResult('order_transaction', 0, new EntityCollection(), null, $criteria, $context)
             );
 
         $this->orderResource->expects(static::never())->method('get');
@@ -249,6 +267,52 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             'transaction-id',
             'sales-channel-id',
             null,
+        );
+
+        ($this->handler)($message);
+    }
+
+    public function testInvokeWithAuthorizedTransactionAndOrderWillSkip(): void
+    {
+        $this->orderTransactionRepository
+            ->expects(static::once())
+            ->method('search')
+            ->willReturnCallback(
+                function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+                    $orderTransactionEntity->setStateMachineState(new StateMachineStateEntity());
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
+            );
+
+        $payPalOrder = (new Order())->assign([
+            'intent' => PaymentIntentV2::AUTHORIZE,
+            'purchaseUnits' => [[
+                'payments' => [
+                    'authorizations' => [['status' => PaymentIntentV2::AUTHORIZE]],
+                ],
+            ]],
+        ]);
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('get')
+            ->with('paypal-order-id', 'sales-channel-id')
+            ->willReturn($payPalOrder);
+
+        $this->orderTransactionStateHandler
+            ->expects(static::never())
+            ->method('authorize')
+            ->with('transaction-id');
+
+        $this->logger->expects(static::never())->method(static::anything());
+
+        $message = new TransactionStatusSyncMessage(
+            'transaction-id',
+            'sales-channel-id',
+            'paypal-order-id'
         );
 
         ($this->handler)($message);

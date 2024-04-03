@@ -12,11 +12,16 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessage;
 use Swag\PayPal\Checkout\Payment\ScheduledTask\TransactionStatusSyncTaskHandler;
@@ -80,14 +85,44 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
         $this->orderTransactionRepository
             ->expects(static::once())
             ->method('search')
-            ->willReturnCallback(fn (Criteria $criteria, Context $context) => new EntitySearchResult(
-                'order_transaction',
-                $collection->count(),
-                $collection,
-                null,
-                $criteria,
-                $context,
-            ));
+            ->willReturnCallback(function (Criteria $criteria, Context $context) use ($collection) {
+                static::assertCount(3, $criteria->getFilters());
+
+                static::assertInstanceOf(EqualsAnyFilter::class, $criteria->getFilters()[0]);
+
+                static::assertSame([], $criteria->getFilters()[0]->getValue());
+
+                static::assertInstanceOf(MultiFilter::class, $criteria->getFilters()[1]);
+
+                $queries = $criteria->getFilters()[1]->getQueries();
+
+                static::assertCount(3, $queries);
+                static::assertInstanceOf(EqualsFilter::class, $queries[0]);
+                static::assertSame(OrderTransactionStates::STATE_UNCONFIRMED, $queries[0]->getValue());
+                static::assertInstanceOf(EqualsFilter::class, $queries[1]);
+                static::assertSame(OrderTransactionStates::STATE_AUTHORIZED, $queries[1]->getValue());
+                static::assertInstanceOf(EqualsFilter::class, $queries[2]);
+                static::assertSame(OrderTransactionStates::STATE_IN_PROGRESS, $queries[2]->getValue());
+                static::assertInstanceOf(RangeFilter::class, $criteria->getFilters()[2]);
+
+                $lte = $criteria->getFilters()[2]->getParameters()['lte'];
+                $gte = $criteria->getFilters()[2]->getParameters()['gte'];
+                static::assertIsString($lte);
+                static::assertIsString($gte);
+
+                $diff = (new \DateTime($lte))->diff(new \DateTime($gte));
+
+                static::assertSame(2, $diff->days);
+
+                return new EntitySearchResult(
+                    'order_transaction',
+                    $collection->count(),
+                    $collection,
+                    null,
+                    $criteria,
+                    $context
+                );
+            });
 
         $matcher = static::exactly(2);
         $this->bus
@@ -131,14 +166,44 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
         $this->orderTransactionRepository
             ->expects(static::once())
             ->method('search')
-            ->willReturnCallback(fn (Criteria $criteria, Context $context) => new EntitySearchResult(
-                'order_transaction',
-                $collection->count(),
-                $collection,
-                null,
-                $criteria,
-                $context,
-            ));
+            ->willReturnCallback(function (Criteria $criteria, Context $context) use ($collection) {
+                static::assertCount(3, $criteria->getFilters());
+
+                static::assertInstanceOf(EqualsAnyFilter::class, $criteria->getFilters()[0]);
+
+                static::assertSame([], $criteria->getFilters()[0]->getValue());
+
+                static::assertInstanceOf(MultiFilter::class, $criteria->getFilters()[1]);
+
+                $queries = $criteria->getFilters()[1]->getQueries();
+
+                static::assertCount(3, $queries);
+                static::assertInstanceOf(EqualsFilter::class, $queries[0]);
+                static::assertSame(OrderTransactionStates::STATE_UNCONFIRMED, $queries[0]->getValue());
+                static::assertInstanceOf(EqualsFilter::class, $queries[1]);
+                static::assertSame(OrderTransactionStates::STATE_AUTHORIZED, $queries[1]->getValue());
+                static::assertInstanceOf(EqualsFilter::class, $queries[2]);
+                static::assertSame(OrderTransactionStates::STATE_IN_PROGRESS, $queries[2]->getValue());
+                static::assertInstanceOf(RangeFilter::class, $criteria->getFilters()[2]);
+
+                $lte = $criteria->getFilters()[2]->getParameters()['lte'];
+                $gte = $criteria->getFilters()[2]->getParameters()['gte'];
+                static::assertIsString($lte);
+                static::assertIsString($gte);
+
+                $diff = (new \DateTime($lte))->diff(new \DateTime($gte));
+
+                static::assertSame(2, $diff->days);
+
+                return new EntitySearchResult(
+                    'order_transaction',
+                    $collection->count(),
+                    $collection,
+                    null,
+                    $criteria,
+                    $context
+                );
+            });
 
         $this->bus
             ->expects(static::once())
