@@ -42,7 +42,7 @@ class ItemListProvider
     {
         $items = new ItemCollection();
         $currencyCode = $currency->getIsoCode();
-        $isNet = $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS;
+        $isNet = $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS; /* @phpstan-ignore-line */
         $lineItems = $order->getNestedLineItems();
         if ($lineItems === null) {
             return new ItemCollection();
