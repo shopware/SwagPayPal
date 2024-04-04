@@ -1,7 +1,8 @@
 # 8.0.3
 - PPI-896 - Änderung der Checkout Smart Payment Buttons von 'Direkt zu PayPal' zu 'Mit PayPal zahlen'
-- PPI-906 - Änderung der Express Buttons, sodass diese freien Platz besser nutzen und zum restlichen Layout passen.
+- PPI-906 - Änderung der Express Buttons, sodass diese freien Platz besser nutzen und zum restlichen Layout passen
 - PPI-916 - Behebt ein Problem, bei dem Bestellungen mit der Landingpage-Einstellung "Gast-Checkout" fehlschlagen können
+- PPI-917 - Rechnungskauf-Disclaimer über den Bestätigungsbutton verschoben
 
 # 8.0.2
 - PPI-908 - Behebt ein Problem, welches eine falsche Landingpage Einstellung an PayPal übermittelt.

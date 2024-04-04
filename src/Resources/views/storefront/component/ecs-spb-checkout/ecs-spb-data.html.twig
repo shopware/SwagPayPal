@@ -63,7 +63,6 @@
             <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Method\\PUIHandler::PUI_FRAUD_NET_SESSION_ID') }}" value="{{ puiFraudnetData.sessionIdentifier }}">
         {% endblock %}
 
-        <div class="text-muted mb-3">{{ "paypal.payUponInvoice.checkout.confirmDisclaimer"|trans|raw }}</div>
     {% elseif sepaData and sepaData.paymentMethodId is same as(context.paymentMethod.id) %}
 
         {% block swag_paypal_ecs_spb_data_sepa_fields %}
