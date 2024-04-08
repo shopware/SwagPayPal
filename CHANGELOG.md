@@ -1,8 +1,10 @@
+# 8.0.3
+- PPI-896 - Changed the wording of the checkout Smart Payment Buttons from 'PayPal Checkout' to 'Pay with PayPal'
+
 # 8.0.2
 - PPI-908 - Fixes an issue that sends an incorrect landing page setting to PayPal.
 
 # 8.0.1
-- PPI-896 - Changed the wording of the checkout Smart Payment Buttons from 'PayPal Checkout' to 'Pay with PayPal'.
 - PPI-900 - Fixes an issue, where merchant integrations for payment methods are not loaded correctly
 - PPI-904 - Fixes timestamp issue that caused the Shop to be inoperable with certain cache configurations
 

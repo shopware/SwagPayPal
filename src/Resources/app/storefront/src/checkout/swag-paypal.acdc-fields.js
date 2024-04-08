@@ -301,7 +301,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
                 size: this.options.buttonSize,
                 shape: this.options.buttonShape,
                 color: this.options.buttonColor,
-                label: 'checkout',
+                label: 'pay',
             },
 
             /**
