@@ -1,7 +1,7 @@
 {
     "name": "swag/paypal",
     "description": "PayPal integration for Shopware 6",
-    "version": "8.0.2",
+    "version": "8.0.3",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
