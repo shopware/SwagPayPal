@@ -247,7 +247,7 @@ abstract class AbstractOrderBuilder
     {
         $landingPageType = $this->systemConfigService->getString(Settings::LANDING_PAGE, $salesChannelId);
 
-        if (!\in_array($landingPageType, ApplicationContext::LANDING_PAGE_TYPES, true)) {
+        if (!\in_array($landingPageType, ExperienceContext::LANDING_PAGE_TYPES, true)) {
             throw new PayPalSettingsInvalidException('landingPage');
         }
 
