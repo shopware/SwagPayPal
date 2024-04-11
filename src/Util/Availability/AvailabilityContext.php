@@ -23,6 +23,8 @@ class AvailabilityContext extends Struct
 
     protected string $salesChannelId;
 
+    protected bool $hasDigitalProducts;
+
     public function getBillingCountryCode(): string
     {
         return $this->billingCountryCode;
@@ -46,5 +48,10 @@ class AvailabilityContext extends Struct
     public function getSalesChannelId(): string
     {
         return $this->salesChannelId;
+    }
+
+    public function hasDigitalProducts(): bool
+    {
+        return $this->hasDigitalProducts;
     }
 }

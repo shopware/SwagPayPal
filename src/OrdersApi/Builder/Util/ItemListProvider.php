@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\Product\State;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromCartEvent;
@@ -52,7 +53,7 @@ class ItemListProvider
             $item = new Item();
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
-            $item->setCategory(Item::CATEGORY_PHYSICAL_GOODS);
+            $item->setCategory(\in_array(State::IS_DOWNLOAD, $lineItem->getStates(), true) ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS);
             $this->buildPriceData($lineItem, $item, $currencyCode, $isNet);
 
             $event = new PayPalV2ItemFromOrderEvent($item, $lineItem);
@@ -74,7 +75,7 @@ class ItemListProvider
             $item = new Item();
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
-            $item->setCategory(Item::CATEGORY_PHYSICAL_GOODS);
+            $item->setCategory(\in_array(State::IS_DOWNLOAD, $lineItem->getStates(), true) ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS);
             $this->buildPriceData($lineItem, $item, $currencyCode, $isNet);
 
             $event = new PayPalV2ItemFromCartEvent($item, $lineItem);

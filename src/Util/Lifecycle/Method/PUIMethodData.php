@@ -55,7 +55,8 @@ class PUIMethodData extends AbstractMethodData
         return $availabilityContext->getTotalAmount() >= 5.0
             && $availabilityContext->getTotalAmount() <= 2500.0
             && $availabilityContext->getCurrencyCode() === 'EUR'
-            && $availabilityContext->getBillingCountryCode() === 'DE';
+            && $availabilityContext->getBillingCountryCode() === 'DE'
+            && !$availabilityContext->hasDigitalProducts();
     }
 
     public function getInitialState(): bool

@@ -20,6 +20,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\Product\State;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -48,6 +49,16 @@ class ItemListProviderTest extends TestCase
 
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
         static::assertCount(1, $itemList);
+    }
+
+    public function testDigitalProduct(): void
+    {
+        $order = $this->createOrder('Test Product Name', 10);
+        $order->getLineItems()?->first()?->setStates([State::IS_DOWNLOAD]);
+
+        $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
+        static::assertCount(1, $itemList);
+        static::assertSame(Item::CATEGORY_DIGITAL_GOODS, $itemList->first()?->getCategory());
     }
 
     /**
