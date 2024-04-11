@@ -36,6 +36,14 @@
         }
     },
     "scripts": {
+        "jest": [
+            "npm run unit-setup --prefix ../../../src/Administration/Resources/app/administration",
+            "npm run unit --prefix src/Resources/app/administration"
+        ],
+        "jest:watch": [
+            "npm run unit-setup --prefix ../../../src/Administration/Resources/app/administration",
+            "npm run unit-watch --prefix src/Resources/app/administration"
+        ],
         "lint": [
             "@ecs-fix",
             "@phpstan",
