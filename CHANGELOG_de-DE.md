@@ -1,5 +1,6 @@
 # 9.0.3
 - PPI-906 - Änderung der Express Buttons, sodass diese freien Platz besser nutzen und zum restlichen Layout passen
+- PPI-914 - Behebt ein Problem, bei dem Bestellungen mit ausschließlich digitalen Produkten fehlschlugen und inkorrekt kategorisiert wurden
 - PPI-916 - Behebt ein Problem, bei dem Bestellungen mit der Landingpage-Einstellung "Gast-Checkout" fehlschlagen können
 - PPI-917 - Rechnungskauf-Disclaimer über den Bestätigungsbutton verschoben
 

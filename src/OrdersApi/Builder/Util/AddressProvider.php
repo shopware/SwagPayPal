@@ -17,6 +17,8 @@ use Swag\PayPal\RestApi\V2\Api\Common\Address;
 class AddressProvider
 {
     /**
+     * @deprecated tag:v10.0.0 - parameter $customerAddress will strictly typed with CustomerAddressEntity|OrderAddressEntity
+     *
      * @param OrderAddressEntity|CustomerAddressEntity $customerAddress
      */
     public function createAddress(Entity $customerAddress, Address $address): Address
