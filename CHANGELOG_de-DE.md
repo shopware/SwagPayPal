@@ -1,3 +1,6 @@
+# 9.0.3
+- PPI-906 - Änderung der Express Buttons, sodass diese freien Platz besser nutzen und zum restlichen Layout passen.
+
 # 9.0.2
 - PPI-908 - Behebt ein Problem, welches eine falsche Landingpage Einstellung an PayPal übermittelt.
 

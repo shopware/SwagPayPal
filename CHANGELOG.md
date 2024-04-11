@@ -1,3 +1,6 @@
+# 9.0.3
+- PPI-906 - Changed the express checkout button to make better use of remaining space for a more fitting layout 
+
 # 9.0.2
 - PPI-908 - Fixes an issue that sends an incorrect landing page setting to PayPal.
 
