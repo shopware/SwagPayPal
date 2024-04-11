@@ -17,6 +17,7 @@ async function createWrapper(customOptions = {}) {
             stubs: {
                 'sw-button': await wrapTestComponent('sw-button', { sync: true }),
                 'sw-card': await wrapTestComponent('sw-card', { sync: true }),
+                'sw-card-deprecated': await wrapTestComponent('sw-card-deprecated', { sync: true }),
                 'sw-label': await wrapTestComponent('sw-label', { sync: true }),
             },
         },
