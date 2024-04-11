@@ -2,6 +2,7 @@
 - PPI-896 - Changed the wording of the checkout Smart Payment Buttons from 'PayPal Checkout' to 'Pay with PayPal'
 - PPI-906 - Changed the express checkout button to make better use of remaining space for a more fitting layout
 - PPI-916 - Fixes an issue that may fail orders with landing page setting "Guest checkout"
+- PPI-917 - Moved Pay Upon Invoice Disclaimer above Confirm button
 
 # 8.0.2
 - PPI-908 - Fixes an issue that sends an incorrect landing page setting to PayPal.
