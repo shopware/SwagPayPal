@@ -43,7 +43,6 @@ use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
@@ -51,6 +50,7 @@ use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
@@ -158,19 +158,15 @@ class PayPalOrderBuilderTest extends TestCase
     {
         $paymentTransaction = new SyncPaymentTransactionStruct($this->createOrderTransaction(), $this->createOrder());
         $salesChannelContext = $this->createSalesChannelContext();
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
+        $paymentTransaction->getOrder()->getDeliveries()?->clear();
 
-        $paymentTransaction->getOrder()->getDeliveries()?->first()?->assign(['shippingOrderAddress' => null]);
-        $customer->assign(['activeShippingAddress' => null, 'defaultShippingAddress' => null]);
-
-        $this->expectException(MissingPayloadException::class);
-        $this->expectExceptionMessage('Missing request payload purchaseUnit.shipping to order "created" not found');
-        $this->orderBuilder->getOrder(
+        $order = $this->orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
             new RequestDataBag(),
         );
+
+        static::assertSame(ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING, $order->getPaymentSource()?->getPaypal()?->getExperienceContext()?->getShippingPreference());
     }
 
     public function testGetOrderPrefix(): void
@@ -553,6 +549,7 @@ class PayPalOrderBuilderTest extends TestCase
         $address->setPhoneNumber('+41 (0123) 49567-89'); // extra weird for filter testing
         $address->setId(Uuid::randomHex());
         $salesChannelContext->getCustomer()?->setActiveBillingAddress($address);
+        $salesChannelContext->getCustomer()?->setActiveShippingAddress($address);
 
         return $salesChannelContext;
     }

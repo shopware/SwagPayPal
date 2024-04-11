@@ -43,9 +43,8 @@ parameters:
             message: '#.*extends @final class (\w|\\)*(SalesChannel|Entity)Repository#'
             path: tests/**/*.php
 
-        -   # ignore own deprecations in tests
-            message: '#.*tag:v9.0.0 -#'
-            path: tests/**/*.php
+        -   # ignore own deprecations
+            message: '#.*tag:v(9|10).0.0 -#'
 
         -   # ignore Plus deprecations
             message: '#deprecated.*(Plus|PLUS|_PAYMENT_|MERCHANT_LOCATION)#'
