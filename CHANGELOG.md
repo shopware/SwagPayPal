@@ -1,10 +1,12 @@
+# 8.1.0
+- PPI-850 - Added automated payment status polling for authorized and in-progress transactions 
+
 # 8.0.3
 - PPI-896 - Changed the wording of the checkout Smart Payment Buttons from 'PayPal Checkout' to 'Pay with PayPal'
 - PPI-906 - Changed the express checkout button to make better use of remaining space for a more fitting layout- PPI-914 - Fixes an issue, where orders with only digital products could not be processed and were wrongly categorized as physical products
 - PPI-914 - Fixes an issue, where orders with only digital products could not be processed and were wrongly categorized as physical products
 - PPI-916 - Fixes an issue that may fail orders with landing page setting "Guest checkout"
 - PPI-917 - Moved Pay Upon Invoice Disclaimer above Confirm button
-- PPI-850 - Added automated payment status polling for authorized and in-progress transactions
 
 # 8.0.2
 - PPI-908 - Fixes an issue that sends an incorrect landing page setting to PayPal.

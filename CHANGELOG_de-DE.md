@@ -1,10 +1,12 @@
+# 8.1.0
+- PPI-850 - Automatische Abfrage des Zahlungsstatus für autorisierte und in Bearbeitung befindliche Transaktionen erweitert
+
 # 8.0.3
 - PPI-896 - Änderung der Checkout Smart Payment Buttons von 'Direkt zu PayPal' zu 'Mit PayPal zahlen'
 - PPI-906 - Änderung der Express Buttons, sodass diese freien Platz besser nutzen und zum restlichen Layout passen
 - PPI-914 - Behebt ein Problem, bei dem Bestellungen mit ausschließlich digitalen Produkten fehlschlugen und inkorrekt kategorisiert wurden
 - PPI-916 - Behebt ein Problem, bei dem Bestellungen mit der Landingpage-Einstellung "Gast-Checkout" fehlschlagen können
 - PPI-917 - Rechnungskauf-Disclaimer über den Bestätigungsbutton verschoben
-- PPI-850 - Automatische Abfrage des Zahlungsstatus für autorisierte und in Bearbeitung befindliche Transaktionen
 
 # 8.0.2
 - PPI-908 - Behebt ein Problem, welches eine falsche Landingpage Einstellung an PayPal übermittelt.
