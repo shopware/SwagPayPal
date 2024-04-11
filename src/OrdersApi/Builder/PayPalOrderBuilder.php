@@ -94,7 +94,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $paypal = new Paypal();
         $paymentSource->setPaypal($paypal);
 
-        $paypal->setExperienceContext($this->createExperienceContext($salesChannelContext));
+        $paypal->setExperienceContext($this->createExperienceContext($salesChannelContext, $cart));
 
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {

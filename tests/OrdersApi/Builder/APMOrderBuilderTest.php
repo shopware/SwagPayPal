@@ -16,7 +16,6 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder;
@@ -37,6 +36,7 @@ use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractAPMPaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Bancontact;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Blik;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Eps;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Giropay;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Ideal;
@@ -139,21 +139,25 @@ class APMOrderBuilderTest extends TestCase
      *
      * @dataProvider dataProviderAPM
      */
-    public function testGetOrderNoShippingAddress(string $orderBuilderClass, array $requestData): void
+    public function testGetOrderNoShippingAddress(string $orderBuilderClass, array $requestData, string $structClass): void
     {
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $paymentTransaction->getOrder()->getDeliveries()?->clear();
 
-        $paymentTransaction->getOrder()->getDeliveries()?->first()?->assign(['shippingOrderAddress' => null]);
-
-        $this->expectException(MissingPayloadException::class);
-        $this->expectExceptionMessage('Missing request payload purchaseUnit.shipping to order "created" not found');
-        $orderBuilder->getOrder(
+        $order = $orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
             new RequestDataBag($requestData)
         );
+
+        $paymentSource = $order->getPaymentSource();
+        static::assertNotNull($paymentSource);
+        $getter = 'get' . $this->getPropertyName($structClass);
+        $struct = $paymentSource->$getter();
+
+        static::assertSame(ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING, $struct?->getExperienceContext()?->getShippingPreference());
     }
 
     /**

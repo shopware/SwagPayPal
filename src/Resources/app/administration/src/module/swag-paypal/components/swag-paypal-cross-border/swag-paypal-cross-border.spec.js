@@ -10,6 +10,7 @@ async function createWrapper(customOptions = {}) {
             },
             stubs: {
                 'sw-card': await wrapTestComponent('sw-card', { sync: true }),
+                'sw-card-deprecated': await wrapTestComponent('sw-card-deprecated', { sync: true }),
             },
         },
         props: {

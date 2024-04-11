@@ -34,12 +34,12 @@ phpunit:
             - mysql:8.0
           DEV_IMAGE: [ 'shopware/development:8.2-composer-2', 'shopware/development:8.3-composer-2' ]
           MYSQL_CMD: $MYSQL8_CMD
-          # PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
+          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
           PLUGIN_DEPENDENCIES: [ $DEPENDENCIES_WITH_COMMERCIAL, $DEPENDENCIES_WITHOUT_COMMERCIAL ]
       -   MYSQL_IMAGE:
             - mariadb:10.11
           DEV_IMAGE: [ 'shopware/development:8.2-composer-2', 'shopware/development:8.3-composer-2' ]
-          # PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
+          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
           PLUGIN_DEPENDENCIES: [ $DEPENDENCIES_WITH_COMMERCIAL, $DEPENDENCIES_WITHOUT_COMMERCIAL ]
 
 phpstan:
@@ -49,7 +49,7 @@ phpstan:
   parallel:
     matrix:
       -   DEV_IMAGE: [ 'shopware/development:8.2-composer-2', 'shopware/development:8.3-composer-2' ]
-          # PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
+          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
 
 eslint (administration):
   stage: test

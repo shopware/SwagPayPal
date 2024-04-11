@@ -1,5 +1,6 @@
 # 9.0.3
-- PPI-906 - Changed the express checkout button to make better use of remaining space for a more fitting layout 
+- PPI-906 - Changed the express checkout button to make better use of remaining space for a more fitting layout
+- PPI-914 - Fixes an issue, where orders with only digital products could not be processed and were wrongly categorized as physical products
 - PPI-916 - Fixes an issue that may fail orders with landing page setting "Guest checkout"
 - PPI-917 - Moved Pay Upon Invoice Disclaimer above Confirm button
 

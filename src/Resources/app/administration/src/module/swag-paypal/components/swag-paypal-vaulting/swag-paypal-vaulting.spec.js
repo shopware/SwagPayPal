@@ -23,6 +23,7 @@ async function createWrapper(customOptions = {}) {
                     template: '<div class="sw-inherit-wrapper"><slot name="content"></slot></div>',
                 },
                 'sw-card': await wrapTestComponent('sw-card', { sync: true }),
+                'sw-card-deprecated': await wrapTestComponent('sw-card-deprecated', { sync: true }),
                 'sw-switch-field': await wrapTestComponent('sw-switch-field', { sync: true }),
                 'sw-checkbox-field': await wrapTestComponent('sw-checkbox-field', { sync: true }),
             },

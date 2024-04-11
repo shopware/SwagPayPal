@@ -20,7 +20,6 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
@@ -113,7 +112,7 @@ abstract class AbstractOrderBuilder
     ): PurchaseUnit {
         $items = $this->submitCart($salesChannelContext) ? $this->itemListProvider->getItemList($salesChannelContext->getCurrency(), $order) : null;
 
-        $purchaseUnit = $this->purchaseUnitProvider->createPurchaseUnit(
+        return $this->purchaseUnitProvider->createPurchaseUnit(
             $orderTransaction->getAmount(),
             $order->getShippingCosts(),
             null,
@@ -123,12 +122,6 @@ abstract class AbstractOrderBuilder
             $order,
             $orderTransaction
         );
-
-        if (!$purchaseUnit->isset('shipping')) {
-            throw new MissingPayloadException('created', 'purchaseUnit.shipping');
-        }
-
-        return $purchaseUnit;
     }
 
     protected function createPurchaseUnitFromCart(
@@ -204,14 +197,24 @@ abstract class AbstractOrderBuilder
         return $applicationContext;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - parameter $paymentTransaction will be required
+     */
     protected function createExperienceContext(
         SalesChannelContext $salesChannelContext,
-        ?SyncPaymentTransactionStruct $paymentTransaction = null,
+        SyncPaymentTransactionStruct|Cart|null $paymentTransaction = null,
     ): ExperienceContext {
         $experienceContext = new ExperienceContext();
         $experienceContext->setBrandName($this->getBrandName($salesChannelContext));
         $experienceContext->setLocale($this->localeCodeProvider->getLocaleCodeFromContext($salesChannelContext->getContext()));
         $experienceContext->setLandingPage($this->getLandingPageType($salesChannelContext->getSalesChannelId()));
+        $delivery = $paymentTransaction instanceof Cart
+            ? $paymentTransaction->getDeliveries()->first()
+            : $paymentTransaction?->getOrder()?->getDeliveries()?->first();
+
+        $experienceContext->setShippingPreference($delivery !== null
+            ? ExperienceContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS
+            : ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING);
 
         if ($paymentTransaction instanceof AsyncPaymentTransactionStruct) {
             $experienceContext->setReturnUrl($paymentTransaction->getReturnUrl());

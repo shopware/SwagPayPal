@@ -119,18 +119,11 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         }
 
         $order = $this->checkOrder($request, $context->getContext());
-        if ($order !== null) {
-            $this->removePaymentMethods(
-                $response->getPaymentMethods(),
-                $this->availabilityService->filterPaymentMethodsByOrder($response->getPaymentMethods(), $cart, $order, $context)
-            );
-
-            return $response;
-        }
-
         $this->removePaymentMethods(
             $response->getPaymentMethods(),
-            $this->availabilityService->filterPaymentMethods($response->getPaymentMethods(), $cart, $context)
+            $order
+                ? $this->availabilityService->filterPaymentMethodsByOrder($response->getPaymentMethods(), $cart, $order, $context)
+                : $this->availabilityService->filterPaymentMethods($response->getPaymentMethods(), $cart, $context)
         );
 
         return $response;
@@ -159,26 +152,15 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
     private function checkOrder(Request $request, Context $context): ?OrderEntity
     {
-        $orderId = $request->attributes->getAlnum('orderId');
-        if ($orderId) {
-            /** @var OrderEntity|null $order */
-            $order = $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
-
-            return $order;
-        }
-
-        $actualRequest = $this->requestStack->getCurrentRequest();
-        if (!$actualRequest) {
-            return null;
-        }
-
-        $orderId = $actualRequest->attributes->getAlnum('orderId');
+        $orderId = $request->attributes->getAlnum('orderId') ?: $this->requestStack->getCurrentRequest()?->attributes->getAlnum('orderId');
         if (!$orderId) {
             return null;
         }
 
+        $criteria = new Criteria([$orderId]);
+        $criteria->addAssociation('lineItems');
         /** @var OrderEntity|null $order */
-        $order = $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
+        $order = $this->orderRepository->search($criteria, $context)->first();
 
         return $order;
     }
