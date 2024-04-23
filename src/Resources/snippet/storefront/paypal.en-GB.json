@@ -55,7 +55,8 @@
             "paymentDescriptionExtension": "Payment by direct debit or credit card is possible without a PayPal account."
         },
         "cookie": {
-            "name": "PayPal payments"
+            "name": "PayPal payments",
+            "googlePay": "Google Pay payments"
         },
         "vault": {
           "account": {
