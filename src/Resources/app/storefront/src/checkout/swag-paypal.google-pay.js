@@ -24,8 +24,9 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
     init() {
         super.init();
 
-        if (!this.options.preventErrorReload)
+        if (!this.options.preventErrorReload) {
             ElementLoadingIndicatorUtil.create(this.el);
+        }
     }
 
     async render(paypal) {
@@ -35,8 +36,9 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
     }
 
     async renderGooglePay(paypal) {
-        if (!window?.google?.payments?.api?.PaymentsClient)
+        if (!window?.google?.payments?.api?.PaymentsClient) {
             throw new Error('Google Pay script wasn\'t load');
+        }
 
         const {
             isEligible,
@@ -47,13 +49,17 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
             countryCode,
         } = await paypal.Googlepay().config();
 
-        if (!isEligible) throw new Error('Funding for Google Pay is not eligible');
+        if (!isEligible) {
+            throw new Error('Funding for Google Pay is not eligible');
+        }
 
         const gpClient = this.createGPClient(paypal);
         const { result } = await gpClient.isReadyToPay({ apiVersion, apiVersionMinor, allowedPaymentMethods });
 
         // Quote Docs: "If the browser supports Google Pay, isReadyToPay returns true"
-        if (!result) return void this.createError('browser');
+        if (!result) {
+            return void this.createError('browser');
+        }
 
         const paymentDataRequest = {
             apiVersion,
@@ -95,11 +101,13 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
             paymentMethodData: paymentData.paymentMethodData,
         });
 
-        if (!['APPROVED','PAYER_ACTION_REQUIRED'].includes(confirmOrderResponse.status))
+        if (!['APPROVED','PAYER_ACTION_REQUIRED'].includes(confirmOrderResponse.status)) {
             throw new Error('PayPal didn\'t approve the transaction.');
+        }
 
-        if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status)
-            await paypal.Googlepay().initiatePayerAction({ orderId });
+        if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status) {
+            await paypal.Googlepay().initiatePayerAction({orderId});
+        }
 
         this.onApprove({ orderId });
     }

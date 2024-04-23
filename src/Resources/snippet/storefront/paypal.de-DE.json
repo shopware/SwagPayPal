@@ -55,7 +55,8 @@
             "paymentDescriptionExtension": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne ein PayPal-Konto möglich."
         },
         "cookie": {
-            "name": "PayPal-Zahlungen"
+            "name": "PayPal-Zahlungen",
+            "googlePay": "Google Pay Zahlungen"
         },
         "vault": {
           "account": {
