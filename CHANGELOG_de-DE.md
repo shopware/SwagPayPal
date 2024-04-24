@@ -1,3 +1,6 @@
+# 8.1.0
+- PPI-850 - Automatische Abfrage des Zahlungsstatus für autorisierte und in Bearbeitung befindliche Transaktionen erweitert
+
 # 8.0.3
 - PPI-896 - Änderung der Checkout Smart Payment Buttons von 'Direkt zu PayPal' zu 'Mit PayPal zahlen'
 - PPI-906 - Änderung der Express Buttons, sodass diese freien Platz besser nutzen und zum restlichen Layout passen

@@ -9,12 +9,15 @@ namespace Swag\PayPal\Checkout\Payment\MessageQueue;
 
 use Monolog\Level;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\StateMachineException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -30,6 +33,9 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class TransactionStatusSyncMessageHandler
 {
+    /**
+     * @param EntityRepository<OrderTransactionCollection> $orderTransactionRepository
+     */
     public function __construct(
         private readonly EntityRepository $orderTransactionRepository,
         private readonly OrderTransactionStateHandler $orderTransactionStateHandler,
@@ -51,9 +57,20 @@ class TransactionStatusSyncMessageHandler
 
             // Check if transaction is still unconfirmed at time of execution
             $criteria = (new Criteria([$message->getTransactionId()]))
-                ->addFilter(new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_UNCONFIRMED));
+                ->addFilter(new MultiFilter(
+                    MultiFilter::CONNECTION_OR,
+                    [
+                        new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_UNCONFIRMED),
+                        new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_AUTHORIZED),
+                        new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_IN_PROGRESS),
+                    ]
+                ));
 
-            if (!$this->orderTransactionRepository->searchIds($criteria, $context)->firstId()) {
+            /**
+             * @var OrderTransactionEntity|null $transaction
+             */
+            $transaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+            if ($transaction === null) {
                 return;
             }
 
@@ -68,7 +85,7 @@ class TransactionStatusSyncMessageHandler
             } elseif ($order->getIntent() === PaymentIntentV2::AUTHORIZE) {
                 match ($order->getPurchaseUnits()->first()?->getPayments()?->getAuthorizations()?->first()?->getStatus()) {
                     PaymentStatusV2::ORDER_AUTHORIZATION_CAPTURED => $this->orderTransactionStateHandler->paid($message->getTransactionId(), $context),
-                    PaymentStatusV2::ORDER_AUTHORIZATION_CREATED => $this->orderTransactionStateHandler->authorize($message->getTransactionId(), $context),
+                    PaymentStatusV2::ORDER_AUTHORIZATION_CREATED => $transaction->getStateMachineState()?->getTechnicalName() !== OrderTransactionStates::STATE_AUTHORIZED ? $this->orderTransactionStateHandler->authorize($message->getTransactionId(), $context) : null,
                     PaymentStatusV2::ORDER_AUTHORIZATION_VOIDED => $this->orderTransactionStateHandler->cancel($message->getTransactionId(), $context),
                     PaymentStatusV2::ORDER_AUTHORIZATION_DENIED => $this->orderTransactionStateHandler->fail($message->getTransactionId(), $context),
                     default => null,
