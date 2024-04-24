@@ -1,3 +1,6 @@
+# 9.1.0
+- PPI-850 - Added automated payment status polling for authorized and in-progress transactions 
+
 # 9.0.3
 - PPI-906 - Changed the express checkout button to make better use of remaining space for a more fitting layout
 - PPI-914 - Fixes an issue, where orders with only digital products could not be processed and were wrongly categorized as physical products
