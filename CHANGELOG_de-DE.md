@@ -1,7 +1,7 @@
 # 8.1.0
 - PPI-850 - Automatische Abfrage des Zahlungsstatus für autorisierte und in Bearbeitung befindliche Transaktionen erweitert
-- PPI-863 - Fügt die Zahlungsart Apple Pay hinzu
-- PPI-863 - Fügt die Zahlungsart Google Pay hinzu
+- PPI-863 - Zahlungsart Apple Pay hinzugefügt
+- PPI-863 - Zahlungsart Google Pay hinzugefügt
 
 # 8.0.3
 - PPI-896 - Änderung der Checkout Smart Payment Buttons von 'Direkt zu PayPal' zu 'Mit PayPal zahlen'
