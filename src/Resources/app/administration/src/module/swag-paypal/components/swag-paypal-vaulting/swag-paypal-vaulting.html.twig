@@ -1,20 +1,10 @@
 {% block swag_paypal_content_card_channel_config_vaulting %}
     <sw-card positionIdentifier="swag-paypal-card-channel-config-vaulting"
+             :title="$tc('swag-paypal.settingForm.vaulting.cardTitle')"
              class="swag-paypal-vaulting"
              :is-loading="isLoadingMerchantInformation"
              help-text="test"
     >
-        <template #title>
-            {{ $tc('swag-paypal.settingForm.vaulting.cardTitle') }}
-
-            {# @deprecated beta:vaulting - will be removed and set title through props #}
-            <sw-status color="blue">
-                {{ $tc('swag-paypal.settingForm.vaulting.beta') }}
-
-                <sw-help-text :text="$tc('swag-paypal.settingForm.vaulting.betaHelpText')"/>
-            </sw-status>
-        </template>
-
         {% block swag_paypal_content_card_channel_config_vaulting_settings %}
             <div v-if="actualConfigData" class="swag-paypal-settings-vaulting">
 
