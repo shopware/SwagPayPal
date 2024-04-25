@@ -46,6 +46,8 @@ class PaymentMethodDataRegistry
         TrustlyMethodData::class,
         VenmoMethodData::class,
         PayLaterMethodData::class,
+        ApplePayMethodData::class,
+        GooglePayMethodData::class,
     ];
 
     private EntityRepository $paymentMethodRepository;

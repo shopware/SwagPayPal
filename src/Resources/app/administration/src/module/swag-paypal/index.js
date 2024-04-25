@@ -5,6 +5,7 @@ import './components/swag-paypal-acdc';
 import './components/swag-paypal-behavior';
 import './components/swag-paypal-checkout';
 import './components/swag-paypal-checkout-method';
+import './components/swag-paypal-checkout-domain-association';
 import './components/swag-paypal-created-component-helper';
 import './components/swag-paypal-credentials';
 import './components/swag-paypal-cross-border';

@@ -81,5 +81,9 @@
         {% endif %}
     />
     {% endblock %}
+
+    {% block swag_paypal_checkout_method_apple_pay_domain_association %}
+        <swag-paypal-checkout-domain-association v-if="isApplePayAndActive" :is-sandbox="actualConfigData['SwagPayPal.settings.sandbox']" />
+    {% endblock %}
 </div>
 {% endblock %}

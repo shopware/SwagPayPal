@@ -23,6 +23,8 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\ApplePayOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\GooglePayOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
@@ -158,11 +160,29 @@ class CreateOrderRouteTest extends TestCase
             $this->createMock(VaultTokenService::class),
         );
 
+        $applePayOrderBuilder = new ApplePayOrderBuilder(
+            $systemConfig,
+            new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
+            $addressProvider,
+            $this->createMock(LocaleCodeProvider::class),
+            $itemListProvider
+        );
+
+        $googlePayOrderBuilder = new GooglePayOrderBuilder(
+            $systemConfig,
+            new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
+            $addressProvider,
+            $this->createMock(LocaleCodeProvider::class),
+            $itemListProvider,
+        );
+
         return new CreateOrderRoute(
             $this->getContainer()->get(CartService::class),
             new OrderRepositoryMock(),
             $this->createOrderBuilder($systemConfig),
             $acdcOrderBuilder,
+            $applePayOrderBuilder,
+            $googlePayOrderBuilder,
             new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
             new NullLogger(),
             new PaymentTransactionStructFactory(),

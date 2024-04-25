@@ -35,6 +35,8 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\ApplePayMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\GooglePayMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
@@ -156,6 +158,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '8.0.2', '<')) {
             $this->updateTo802($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '8.1.0', '<')) {
+            $this->updateTo810($updateContext->getContext());
         }
     }
 
@@ -501,5 +507,11 @@ class Update
                 $this->systemConfig->set(Settings::LANDING_PAGE, ExperienceContext::LANDING_PAGE_TYPE_GUEST, $salesChannelId);
             }
         }
+    }
+
+    private function updateTo810(Context $context): void
+    {
+        $this->paymentMethodInstaller->install(ApplePayMethodData::class, $context);
+        $this->paymentMethodInstaller->install(GooglePayMethodData::class, $context);
     }
 }

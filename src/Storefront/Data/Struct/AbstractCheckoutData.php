@@ -43,6 +43,8 @@ class AbstractCheckoutData extends Struct
 
     protected ?string $accountOrderEditFailedUrl = null;
 
+    protected string $brandName;
+
     public function getClientId(): string
     {
         return $this->clientId;
@@ -191,5 +193,15 @@ class AbstractCheckoutData extends Struct
     public function setButtonColor(string $buttonColor): void
     {
         $this->buttonColor = $buttonColor;
+    }
+
+    public function getBrandName(): string
+    {
+        return $this->brandName;
+    }
+
+    public function setBrandName(string $brandName): void
+    {
+        $this->brandName = $brandName;
     }
 }

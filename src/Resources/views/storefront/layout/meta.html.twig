@@ -6,4 +6,12 @@
     {% if page.extensions[constant('Swag\\PayPal\\Checkout\\Plus\\PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID')] %}
         <script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js"></script>
     {% endif %}
+
+    {% if page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ApplePayMethodData::PAYPAL_APPLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
+        <script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
+    {% endif %}
+
+    {% if page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\GooglePayMethodData::PAYPAL_GOOGLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
+        <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+    {% endif %}
 {% endblock %}

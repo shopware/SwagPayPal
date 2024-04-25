@@ -37,7 +37,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
         LocaleCodeProvider $localeCodeProvider,
         RouterInterface $router,
-        private readonly SystemConfigService $systemConfigService,
+        SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
         private readonly VaultDataService $vaultDataService,
     ) {

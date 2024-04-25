@@ -13,6 +13,10 @@
     {% set venmoData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\VenmoMethodData::PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Storefront\Data\Struct\PayLaterCheckoutData payLaterData #}
     {% set payLaterData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\PayLaterMethodData::PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Storefront\Data\Struct\ApplePayCheckoutData applePayData #}
+    {% set applePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ApplePayMethodData::PAYPAL_APPLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Storefront\Data\Struct\GooglePayCheckoutData googlePayData #}
+    {% set googlePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\GooglePayMethodData::PAYPAL_GOOGLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Checkout\Plus\PlusData plusData #}
     {% set plusData = page.extensions[constant('Swag\\PayPal\\Checkout\\Plus\\PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID')] %}
 
@@ -85,6 +89,26 @@
             <div data-swag-paypal-pay-later="true"
                  data-swag-paypal-pay-later-options="{{ payLaterData|json_encode }}">
             </div>
+        {% endblock %}
+
+    {% elseif applePayData and applePayData.paymentMethodId is same as(context.paymentMethod.id) %}
+
+        {% block swag_paypal_ecs_spb_data_apple_pay_fields %}
+            <div
+                class="swag-paypal-ecs-spb-apple-pay"
+                data-swag-paypal-apple-pay="true"
+                data-swag-paypal-apple-pay-options="{{ applePayData|json_encode }}"
+            />
+        {% endblock %}
+
+    {% elseif googlePayData and googlePayData.paymentMethodId is same as(context.paymentMethod.id) %}
+
+        {% block swag_paypal_ecs_spb_data_google_pay_fields %}
+            <div
+                class="swag-paypal-ecs-spb-google-pay"
+                data-swag-paypal-google-pay="true"
+                data-swag-paypal-google-pay-options="{{ googlePayData|json_encode }}"
+            />
         {% endblock %}
 
     {% endif %}

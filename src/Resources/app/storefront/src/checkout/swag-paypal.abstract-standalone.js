@@ -128,6 +128,13 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
          * @type boolean
          */
         preventErrorReload: false,
+
+        /**
+         * The brand name of the shop
+         *
+         * @type string
+         */
+        brandName: '',
     };
 
     init() {

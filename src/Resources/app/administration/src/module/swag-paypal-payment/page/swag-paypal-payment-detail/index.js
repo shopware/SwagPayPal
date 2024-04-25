@@ -83,17 +83,19 @@ Component.register('swag-paypal-payment-detail', {
         },
 
         handlePayPalOrder(paypalOrderId) {
-            return this.SwagPayPalOrderService.getOrderDetails(this.orderTransaction.id, paypalOrderId).then((paypalOrder) => {
-                this.paypalOrder = paypalOrder;
-                this.loading = false;
-            }).catch(this.handleError);
+            return this.SwagPayPalOrderService.getOrderDetails(this.orderTransaction.id, paypalOrderId)
+                .then((paypalOrder) => {
+                    this.paypalOrder = paypalOrder;
+                    this.loading = false;
+                }).catch(this.handleError);
         },
 
         handlePayPalPayment(paypalPaymentId) {
-            return this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
-                this.paymentResource = payment;
-                this.loading = false;
-            }).catch(this.handleError);
+            return this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId)
+                .then((payment) => {
+                    this.paymentResource = payment;
+                    this.loading = false;
+                }).catch(this.handleError);
         },
 
         handleError(errorResponse) {

@@ -9,6 +9,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\StoredCredential;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
@@ -27,6 +28,9 @@ class Card extends AbstractAPMPaymentSource implements VaultablePaymentSourceInt
 
     #[OA\Property(type: 'string')]
     protected string $vaultId;
+
+    #[OA\Property(ref: Address::class, nullable: true)]
+    protected ?Address $billingAddress = null;
 
     #[OA\Property(ref: AuthenticationResult::class, nullable: true)]
     protected ?AuthenticationResult $authenticationResult = null;
@@ -75,6 +79,16 @@ class Card extends AbstractAPMPaymentSource implements VaultablePaymentSourceInt
     public function setVaultId(string $vaultId): void
     {
         $this->vaultId = $vaultId;
+    }
+
+    public function getBillingAddress(): ?Address
+    {
+        return $this->billingAddress;
+    }
+
+    public function setBillingAddress(?Address $billingAddress): void
+    {
+        $this->billingAddress = $billingAddress;
     }
 
     public function getAuthenticationResult(): ?AuthenticationResult

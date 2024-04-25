@@ -90,6 +90,10 @@
                 "switch": {
                     "label": "Aktiv"
                 },
+                "domainAssociation": {
+                    "title": "Bitte vergewissere dich, dass die Domain korrekt eingestellt ist, damit Apple Pay funktioniert. Die Domain-Zuordnungsdatei ist bereits hinterlegt.",
+                    "link": "Domain Einstellungen öffnen"
+                },
                 "paymentMethodText": "Zahlungsmöglichkeiten",
                 "showCredentials": "Zeige API-Zugangsdaten",
                 "appImageAlt": "PayPal",

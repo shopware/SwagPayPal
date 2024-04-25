@@ -25,6 +25,11 @@ Component.register('swag-paypal-checkout-method', {
             required: false,
             default: 'inactive',
         },
+        actualConfigData: {
+            type: Object,
+            required: true,
+            default: () => { return {}; },
+        },
     },
 
     data() {
@@ -34,6 +39,14 @@ Component.register('swag-paypal-checkout-method', {
     },
 
     computed: {
+        isApplePayAndActive() {
+            const handlerElements = this.paymentMethod.formattedHandlerIdentifier.split('_');
+
+            return handlerElements[handlerElements.length - 1] === 'applepayhandler'
+                && this.paymentMethod.active;
+        },
+
+
         paymentMethodRepository() {
             return this.repositoryFactory.create('payment_method');
         },
