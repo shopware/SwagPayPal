@@ -65,7 +65,10 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
             apiVersion,
             apiVersionMinor,
             allowedPaymentMethods,
-            merchantInfo,
+            merchantInfo: {
+                ...merchantInfo,
+                merchantName: this.options.brandName,
+            },
             callbackIntents: ['PAYMENT_AUTHORIZATION'],
             transactionInfo: {
                 countryCode,

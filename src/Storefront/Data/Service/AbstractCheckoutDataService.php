@@ -73,6 +73,8 @@ abstract class AbstractCheckoutDataService
                 ? $this->router->generate('frontend.subscription.paypal.create_order', ['subscriptionToken' => $context->getToken()])
                 : $this->router->generate('frontend.paypal.create_order'),
             'addErrorUrl' => $this->router->generate('frontend.paypal.error'),
+            'brandName' => $this->systemConfigService->getString(Settings::BRAND_NAME, $salesChannelId)
+                ?: ($context->getSalesChannel()->getTranslation('name') ?? ''),
         ];
 
         if ($order !== null) {
