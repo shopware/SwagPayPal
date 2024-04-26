@@ -37,6 +37,8 @@
             <argument type="service" id="order.repository"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\ApplePayOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\GooglePayOrderBuilder"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory"/>
@@ -60,6 +62,12 @@
         <service id="Swag\PayPal\Checkout\Card\AbstractCardValidator">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
+
+        <service id="Swag\PayPal\Checkout\Card\ApplePayValidator"
+                 parent="Swag\PayPal\Checkout\Card\AbstractCardValidator"/>
+
+        <service id="Swag\PayPal\Checkout\Card\GooglePayValidator"
+                 parent="Swag\PayPal\Checkout\Card\AbstractCardValidator"/>
 
         <service id="Swag\PayPal\Checkout\Card\ACDCValidator" parent="Swag\PayPal\Checkout\Card\AbstractCardValidator">
         </service>
@@ -99,6 +107,16 @@
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Method\VenmoHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
+            <tag name="shopware.payment.method.sync"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\ApplePayHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
+            <argument type="service" id="Swag\PayPal\Checkout\Card\ApplePayValidator" index-by="applePayValidator" />
+            <tag name="shopware.payment.method.sync"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\GooglePayHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
+            <argument type="service" id="Swag\PayPal\Checkout\Card\GooglePayValidator" index-by="googlePayValidator" />
             <tag name="shopware.payment.method.sync"/>
         </service>
 

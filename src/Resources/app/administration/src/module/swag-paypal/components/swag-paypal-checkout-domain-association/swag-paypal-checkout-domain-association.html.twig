@@ -1,0 +1,14 @@
+<sw-alert
+        class="swag-plugin-apple-pay-warning"
+        variant="warning"
+>
+    {{ $tc('swag-paypal.settingForm.checkout.domainAssociation.title') }}
+
+    <br />
+    <sw-external-link
+            class="mt-1"
+            :href="domainAssociationLink"
+    >
+        {{ $tc('swag-paypal.settingForm.checkout.domainAssociation.link') }}
+    </sw-external-link>
+</sw-alert>

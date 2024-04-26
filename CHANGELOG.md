@@ -1,5 +1,7 @@
 # 9.1.0
-- PPI-850 - Added automated payment status polling for authorized and in-progress transactions 
+- PPI-850 - Added automated payment status polling for authorized and in-progress transactions
+- PPI-863 - Added Apple Pay payment method
+- PPI-863 - Added Google Pay payment method
 
 # 9.0.3
 - PPI-906 - Changed the express checkout button to make better use of remaining space for a more fitting layout

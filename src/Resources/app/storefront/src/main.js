@@ -36,6 +36,16 @@ PluginManager.register(
     '[data-swag-paypal-venmo]',
 );
 PluginManager.register(
+    'SwagPaypalApplePay',
+    () => import('./checkout/swag-paypal.apple-pay'),
+    '[data-swag-paypal-apple-pay]',
+);
+PluginManager.register(
+    'SwagPaypalGooglePay',
+    () => import('./checkout/swag-paypal.google-pay'),
+    '[data-swag-paypal-google-pay]',
+);
+PluginManager.register(
     'SwagPaypalPayLater',
     () => import('./checkout/swag-paypal.pay-later'),
     '[data-swag-paypal-pay-later]',

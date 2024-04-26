@@ -11,12 +11,14 @@ use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractPaymentSource;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\ApplePay;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Bancontact;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Blik;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Eps;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Giropay;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\GooglePay;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Ideal;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Multibanco;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\MyBank;
@@ -32,6 +34,9 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Trustly;
 #[Package('checkout')]
 class PaymentSource extends PayPalApiStruct
 {
+    #[OA\Property(ref: ApplePay::class)]
+    protected ?ApplePay $applePay = null;
+
     #[OA\Property(ref: PayUponInvoice::class, nullable: true)]
     protected ?PayUponInvoice $payUponInvoice = null;
 
@@ -79,6 +84,9 @@ class PaymentSource extends PayPalApiStruct
 
     #[OA\Property(ref: Trustly::class, nullable: true)]
     protected ?Trustly $trustly = null;
+
+    #[OA\Property(ref: GooglePay::class, nullable: true)]
+    protected ?GooglePay $googlePay = null;
 
     public function getPayUponInvoice(): ?PayUponInvoice
     {
@@ -240,6 +248,16 @@ class PaymentSource extends PayPalApiStruct
         $this->trustly = $trustly;
     }
 
+    public function getGooglePay(): ?GooglePay
+    {
+        return $this->googlePay;
+    }
+
+    public function setGooglePay(?GooglePay $googlePay): void
+    {
+        $this->googlePay = $googlePay;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -264,5 +282,15 @@ class PaymentSource extends PayPalApiStruct
         }
 
         return null;
+    }
+
+    public function getApplePay(): ?ApplePay
+    {
+        return $this->applePay;
+    }
+
+    public function setApplePay(?ApplePay $applePay): void
+    {
+        $this->applePay = $applePay;
     }
 }

@@ -26,6 +26,11 @@
             <argument type="service" id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider.inner"/>
         </service>
 
+        <service id="Swag\PayPal\Storefront\Framework\Cookie\GooglePayCookieProvider"
+                 decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
+            <argument type="service" id="Swag\PayPal\Storefront\Framework\Cookie\GooglePayCookieProvider.inner"/>
+        </service>
+
         <service id="Swag\PayPal\Storefront\RequestSubscriber">
             <argument type="service" id="monolog.logger.paypal"/>
             <tag name="kernel.event_subscriber"/>
@@ -66,6 +71,8 @@
         </service>
 
         <service id="Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
+        <service id="Swag\PayPal\Storefront\Data\Service\ApplePayCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService"/>
+        <service id="Swag\PayPal\Storefront\Data\Service\GooglePayCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
         <service id="Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
         <service id="Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
         <service id="Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService">
@@ -81,6 +88,13 @@
             <argument type="service" id="event_dispatcher"/>
             <argument type="tagged_iterator" tag="swag.paypal.payment.storefront.checkout.data"/>
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\Storefront\Controller\ApplePayController" public="true">
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
     </services>
 </container>

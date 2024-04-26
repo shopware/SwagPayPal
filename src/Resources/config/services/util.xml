@@ -165,6 +165,16 @@
             <tag name="swag.paypal.payment.method.data"/>
             <tag name="swag.paypal.payment.storefront.checkout.data"/>
         </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\ApplePayMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\GooglePayMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
+        </service>
 
         <service id="Swag\PayPal\Util\Availability\AvailabilityService">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
