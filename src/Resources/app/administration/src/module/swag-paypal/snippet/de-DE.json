@@ -380,6 +380,9 @@
               "enableACDC": {
                 "label": "Vaulting für Kredit- und Debitkarten-Zahlungen verwenden"
               },
+              "enableVenmo": {
+                "label": "Vaulting für Venmo-Zahlungen verwenden"
+              },
               "activateButton": {
                 "label": "Vaulting freischalten"
               }

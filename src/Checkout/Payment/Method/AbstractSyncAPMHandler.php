@@ -18,8 +18,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractPaymentSource;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\VaultablePaymentSourceInterface;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 
@@ -30,13 +33,14 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
      * @internal
      */
     public function __construct(
-        private readonly SettingsValidationServiceInterface $settingsValidationService,
+        protected readonly SettingsValidationServiceInterface $settingsValidationService,
         private readonly OrderTransactionStateHandler $orderTransactionStateHandler,
-        private readonly OrderExecuteService $orderExecuteService,
+        protected readonly OrderExecuteService $orderExecuteService,
         private readonly OrderPatchService $orderPatchService,
-        private readonly TransactionDataService $transactionDataService,
-        private readonly LoggerInterface $logger,
-        private readonly OrderResource $orderResource
+        protected readonly TransactionDataService $transactionDataService,
+        protected readonly LoggerInterface $logger,
+        protected readonly OrderResource $orderResource,
+        protected readonly VaultTokenService $vaultTokenService,
     ) {
     }
 
@@ -44,8 +48,9 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
     {
         $transactionId = $transaction->getOrderTransaction()->getId();
         $paypalOrderId = $dataBag->get(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        $customerId = $salesChannelContext->getCustomerId();
 
-        if (!$paypalOrderId) {
+        if (!$paypalOrderId || !$customerId) {
             throw PaymentException::syncProcessInterrupted($transactionId, 'Missing PayPal order id');
         }
 
@@ -76,6 +81,12 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
             );
 
             $this->transactionDataService->setResourceId($paypalOrder, $transactionId, $salesChannelContext->getContext());
+
+            /** @var (VaultablePaymentSourceInterface&AbstractPaymentSource)|null $vaultable */
+            $vaultable = $paypalOrder->getPaymentSource()?->first(VaultablePaymentSourceInterface::class);
+            if ($vaultable) {
+                $this->vaultTokenService->saveToken($transaction, $vaultable, $customerId, $salesChannelContext->getContext());
+            }
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 

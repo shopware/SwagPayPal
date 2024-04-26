@@ -30,6 +30,7 @@ use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\ApplePayOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\GooglePayOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\VenmoOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -52,6 +53,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         private readonly ACDCOrderBuilder $acdcOrderBuilder,
         private readonly ApplePayOrderBuilder $applePayOrderBuilder,
         private readonly GooglePayOrderBuilder $googlePayOrderBuilder,
+        private readonly VenmoOrderBuilder $venmoOrderBuilder,
         private readonly OrderResource $orderResource,
         private readonly LoggerInterface $logger,
         private readonly AbstractPaymentTransactionStructFactory $paymentTransactionStructFactory,
@@ -111,6 +113,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
                 'acdc' => $this->acdcOrderBuilder,
                 'applepay' => $this->applePayOrderBuilder,
                 'googlepay' => $this->googlePayOrderBuilder,
+                'venmo' => $this->venmoOrderBuilder,
                 default => $this->payPalOrderBuilder,
             };
 

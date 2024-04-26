@@ -178,6 +178,13 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
                 $salesChannelContext
             );
             $this->transactionDataService->setResourceId($response, $transactionId, $salesChannelContext->getContext());
+            $this->orderExecuteService->captureOrAuthorizeOrder(
+                $transactionId,
+                $response,
+                $salesChannelContext->getSalesChannelId(),
+                $salesChannelContext->getContext(),
+                PartnerAttributionId::PAYPAL_PPCP
+            );
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 

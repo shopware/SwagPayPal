@@ -78,7 +78,9 @@
         <service id="Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService">
             <argument type="service" id="Swag\PayPal\Storefront\Data\Service\VaultDataService"/>
         </service>
-        <service id="Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
+        <service id="Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService">
+            <argument type="service" id="Swag\PayPal\Storefront\Data\Service\VaultDataService"/>
+        </service>
 
         <service id="Swag\PayPal\Storefront\Data\CheckoutDataSubscriber">
             <argument type="service" id="logger"/>

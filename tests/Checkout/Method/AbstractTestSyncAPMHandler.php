@@ -26,6 +26,7 @@ use Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
@@ -263,6 +264,11 @@ Missing PayPal order id');
             ),
             $logger,
             $orderResource,
+            new VaultTokenService(
+                $this->createMock(EntityRepository::class),
+                $this->createMock(EntityRepository::class),
+                null,
+            )
         );
     }
 
