@@ -3,6 +3,7 @@
 - PPI-862 - Vaulting (Kunden speichern) für Zahlungsart Venmo hinzugefügt
 - PPI-863 - Zahlungsart Apple Pay hinzugefügt
 - PPI-863 - Zahlungsart Google Pay hinzugefügt
+- PPI-918 - Behebt ein Problem, bei dem der rückerstattbare Betrag in der Administration nicht korrekt angezeigt wurde
 
 # 8.0.3
 - PPI-896 - Änderung der Checkout Smart Payment Buttons von 'Direkt zu PayPal' zu 'Mit PayPal zahlen'

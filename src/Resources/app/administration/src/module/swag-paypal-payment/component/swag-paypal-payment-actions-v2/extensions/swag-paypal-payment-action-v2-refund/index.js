@@ -2,7 +2,6 @@ import template from './swag-paypal-payment-action-v2-refund.html.twig';
 import { ORDER_CAPTURE_REFUNDED } from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
 
 const { Component, Filter } = Shopware;
-const utils = Shopware.Utils;
 
 Component.register('swag-paypal-payment-action-v2-refund', {
     template,
@@ -28,6 +27,12 @@ Component.register('swag-paypal-payment-action-v2-refund', {
             type: String,
             required: true,
         },
+
+        refundableAmount: {
+            type: Number,
+            required: false,
+            default: 0,
+        },
     },
 
     data() {
@@ -46,6 +51,14 @@ Component.register('swag-paypal-payment-action-v2-refund', {
         dateFilter() {
             return Filter.getByName('date');
         },
+
+        refundableAmountForSelectedCapture() {
+            if (this.selectedCapture.amount.value > this.refundableAmount) {
+                return Number(this.refundableAmount);
+            }
+
+            return Number(this.selectedCapture.amount.value);
+        },
     },
 
     created() {
@@ -58,7 +71,7 @@ Component.register('swag-paypal-payment-action-v2-refund', {
             const firstCapture = this.captures[0];
             this.selectedCaptureId = firstCapture.id;
             this.selectedCapture = firstCapture;
-            this.refundAmount = Number(firstCapture.amount.value);
+            this.refundAmount = this.refundableAmountForSelectedCapture;
             this.isLoading = false;
         },
 
@@ -80,7 +93,7 @@ Component.register('swag-paypal-payment-action-v2-refund', {
                 return selectedCapture.id === this.selectedCaptureId;
             });
 
-            this.refundAmount = Number(this.selectedCapture.amount.value);
+            this.refundAmount = this.refundableAmountForSelectedCapture;
         },
 
         refund() {
@@ -106,9 +119,6 @@ Component.register('swag-paypal-payment-action-v2-refund', {
                 });
                 this.isLoading = false;
                 this.$emit('modal-close');
-                this.$nextTick(() => {
-                    this.$router.replace(`${this.$route.path}?hash=${utils.createId()}`);
-                });
             }).catch((errorResponse) => {
                 try {
                     this.createNotificationError({

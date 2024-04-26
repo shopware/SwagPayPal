@@ -1,7 +1,6 @@
 import template from './swag-paypal-payment-action-v2-capture.html.twig';
 
 const { Component } = Shopware;
-const utils = Shopware.Utils;
 
 Component.register('swag-paypal-payment-action-v2-capture', {
     template,
@@ -86,9 +85,6 @@ Component.register('swag-paypal-payment-action-v2-capture', {
                 });
                 this.isLoading = false;
                 this.$emit('modal-close');
-                this.$nextTick(() => {
-                    this.$router.replace(`${this.$route.path}?hash=${utils.createId()}`);
-                });
             }).catch((errorResponse) => {
                 try {
                     this.createNotificationError({
