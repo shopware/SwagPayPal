@@ -47,6 +47,7 @@
             :orderTransaction="orderTransaction"
             :orderTransactionId="orderTransaction.id"
             :paypalPartnerAttributionId="orderTransaction.customFields.swag_paypal_partner_attribution_id"
+            @reloadPaypalOrder="fetchPayPalDetails"
         />
         {% endblock %}
     {% endblock %}

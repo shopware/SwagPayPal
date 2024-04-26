@@ -12,7 +12,8 @@
                                 :paypalPartnerAttributionId="orderTransaction.customFields.swag_paypal_partner_attribution_id"
                                 :refundableAmount="refundableAmount"
                                 :captureableAmount="captureableAmount"
-                                :showVoidButton="showVoidButton">
+                                :showVoidButton="showVoidButton"
+                                @reloadPaypalOrder="$emit('reload-paypal-order')">
                         </swag-paypal-payment-actions-v2>
                     </sw-card-section>
                 {% endblock %}

@@ -27,7 +27,7 @@
         {% block swag_paypal_payment_action_refund_v2_amount %}
             <sw-number-field
                     v-model:value="refundAmount"
-                    :max="Number(selectedCapture.amount.value)"
+                    :max="refundableAmountForSelectedCapture"
                     :min="0"
                     :label="$tc('swag-paypal-payment.refundAction.refundAmount.label')"
                     :helpText="$tc('swag-paypal-payment.refundAction.refundAmount.helpText')">

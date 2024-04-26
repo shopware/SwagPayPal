@@ -3,6 +3,7 @@
 - PPI-862 - Vaulting (Kunden speichern) für Zahlungsart Venmo hinzugefügt
 - PPI-863 - Zahlungsart Apple Pay hinzugefügt
 - PPI-863 - Zahlungsart Google Pay hinzugefügt
+- PPI-918 - Behebt ein Problem, bei dem der rückerstattbare Betrag in der Administration nicht korrekt angezeigt wurde
 
 # 9.0.3
 - PPI-906 - Änderung der Express Buttons, sodass diese freien Platz besser nutzen und zum restlichen Layout passen
