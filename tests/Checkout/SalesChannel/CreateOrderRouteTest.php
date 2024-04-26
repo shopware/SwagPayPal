@@ -29,6 +29,7 @@ use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\OrdersApi\Builder\VenmoOrderBuilder;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -160,6 +161,15 @@ class CreateOrderRouteTest extends TestCase
             $this->createMock(VaultTokenService::class),
         );
 
+        $venmoOrderBuilder = new VenmoOrderBuilder(
+            $systemConfig,
+            new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
+            $addressProvider,
+            $this->createMock(LocaleCodeProvider::class),
+            $itemListProvider,
+            $this->createMock(VaultTokenService::class),
+        );
+
         $applePayOrderBuilder = new ApplePayOrderBuilder(
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
@@ -183,6 +193,7 @@ class CreateOrderRouteTest extends TestCase
             $acdcOrderBuilder,
             $applePayOrderBuilder,
             $googlePayOrderBuilder,
+            $venmoOrderBuilder,
             new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
             new NullLogger(),
             new PaymentTransactionStructFactory(),

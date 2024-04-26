@@ -378,6 +378,9 @@
               "enableACDC": {
                 "label": "Enable Vaulting for credit and debit cards"
               },
+              "enableVenmo": {
+                "label": "Enable Vaulting for Venmo payments"
+              },
               "activateButton": {
                 "label": "Activate Vaulting"
               }

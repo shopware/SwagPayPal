@@ -1,5 +1,6 @@
 # 8.1.0
 - PPI-850 - Automatische Abfrage des Zahlungsstatus für autorisierte und in Bearbeitung befindliche Transaktionen erweitert
+- PPI-862 - Vaulting (Kunden speichern) für Zahlungsart Venmo hinzugefügt
 - PPI-863 - Zahlungsart Apple Pay hinzugefügt
 - PPI-863 - Zahlungsart Google Pay hinzugefügt
 
