@@ -13,18 +13,4 @@
             margin-top: 24px;
         }
     }
-
-    /** @deprecated beta:vaulting - will be removed */
-    .sw-status {
-        display: inline-block;
-        margin-left: 4px;
-
-        .sw-color-badge {
-            display: none;
-        }
-
-        .sw-help-text {
-            margin-left: 4px;
-        }
-    }
 }
