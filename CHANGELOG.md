@@ -3,6 +3,7 @@
 - PPI-862 - Added vaulting (save customer) to Venmo payment method
 - PPI-863 - Added Apple Pay payment method
 - PPI-863 - Added Google Pay payment method
+- PPI-918 - Fixes an issue, where the refundable amount in the Administration was not shown correctly
 
 # 8.0.3
 - PPI-896 - Changed the wording of the checkout Smart Payment Buttons from 'PayPal Checkout' to 'Pay with PayPal'
