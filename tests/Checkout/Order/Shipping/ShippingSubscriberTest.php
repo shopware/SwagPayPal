@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryDefinition;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Command\ChangeSet;
@@ -79,12 +80,17 @@ class ShippingSubscriberTest extends TestCase
 
     public function testTriggerChangeSet(): void
     {
+        $orderDeliveryDefinition = new OrderDeliveryDefinition();
+        $orderDeliveryDefinition->compile($this->createMock(DefinitionInstanceRegistry::class));
+        $orderDefinition = new OrderDefinition();
+        $orderDefinition->compile($this->createMock(DefinitionInstanceRegistry::class));
+
         $event = new PreWriteValidationEvent(WriteContext::createFromContext(Context::createDefaultContext()), [
-            new DeleteCommand(new OrderDeliveryDefinition(), ['id' => Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, [])), // not touched, wrong command
-            new UpdateCommand(new OrderDeliveryDefinition(), [], ['id' => Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, no payload
-            new UpdateCommand(new OrderDefinition(), ['tracking_codes' => '["code"]'], ['id' => Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, wrong entity
-            new InsertCommand(new OrderDeliveryDefinition(), ['tracking_codes' => '["code"]'], ['id' => Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, not changeset aware
-            new UpdateCommand(new OrderDeliveryDefinition(), ['tracking_codes' => '["code"]'], ['id' => Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // touched
+            new DeleteCommand($orderDeliveryDefinition, ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, [])), // not touched, wrong command
+            new UpdateCommand($orderDeliveryDefinition, [], ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, no payload
+            new UpdateCommand($orderDefinition, ['tracking_codes' => '["code"]'], ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, wrong entity
+            new InsertCommand($orderDeliveryDefinition, ['tracking_codes' => '["code"]'], ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, not changeset aware
+            new UpdateCommand($orderDeliveryDefinition, ['tracking_codes' => '["code"]'], ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // touched
         ]);
 
         $this->getSubscriber()->triggerChangeSet($event);
@@ -99,8 +105,11 @@ class ShippingSubscriberTest extends TestCase
 
     public function testTriggerChangeSetNonLiveVersion(): void
     {
+        $entityDefinition = new OrderDeliveryDefinition();
+        $entityDefinition->compile($this->createMock(DefinitionInstanceRegistry::class));
+
         $event = new PreWriteValidationEvent(WriteContext::createFromContext(Context::createDefaultContext()->createWithVersionId(Uuid::randomHex())), [
-            new UpdateCommand(new OrderDeliveryDefinition(), [], ['id' => Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, no payload
+            new UpdateCommand($entityDefinition, [], ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, no payload
         ]);
 
         $this->getSubscriber()->triggerChangeSet($event);

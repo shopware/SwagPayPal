@@ -56,7 +56,7 @@ class ShippingSubscriber implements EventSubscriberInterface
                 continue;
             }
 
-            if ($command->getDefinition()->getEntityName() !== OrderDeliveryDefinition::ENTITY_NAME) {
+            if ($command->getEntityName() !== OrderDeliveryDefinition::ENTITY_NAME) {
                 continue;
             }
 
