@@ -56,7 +56,7 @@
         },
         "cookie": {
             "name": "PayPal-Zahlungen",
-            "googlePay": "Google Pay Zahlungen"
+            "googlePay": "Google-Pay-Zahlungen"
         },
         "vault": {
           "account": {
