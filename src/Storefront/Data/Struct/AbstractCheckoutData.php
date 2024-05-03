@@ -33,7 +33,12 @@ class AbstractCheckoutData extends Struct
 
     protected string $createOrderUrl;
 
+    /**
+     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
+     */
     protected string $addErrorUrl;
+
+    protected string $handleErrorUrl;
 
     protected bool $preventErrorReload;
 
@@ -125,14 +130,30 @@ class AbstractCheckoutData extends Struct
         $this->createOrderUrl = $createOrderUrl;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
+     */
     public function getAddErrorUrl(): string
     {
         return $this->addErrorUrl;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
+     */
     public function setAddErrorUrl(string $addErrorUrl): void
     {
         $this->addErrorUrl = $addErrorUrl;
+    }
+
+    public function getHandleErrorUrl(): string
+    {
+        return $this->handleErrorUrl;
+    }
+
+    public function setHandleErrorUrl(string $handleErrorUrl): void
+    {
+        $this->handleErrorUrl = $handleErrorUrl;
     }
 
     public function getPreventErrorReload(): bool

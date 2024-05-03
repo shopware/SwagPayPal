@@ -18,6 +18,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
@@ -216,7 +217,6 @@ class PayPalPaymentHandlerTest extends TestCase
         $dataBag->set(PlusPuiHandler::PAYPAL_PAYMENT_ID_INPUT_NAME, self::PAYPAL_PATCH_THROWS_EXCEPTION);
         $this->expectException(AsyncPaymentProcessException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
-The asynchronous payment process was interrupted due to the following error:
 An error occurred during the communication with PayPal
 The error "TEST" occurred with the following message: generalClientExceptionMessage');
         $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
@@ -296,9 +296,8 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
             AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_PATCH_THROWS_EXCEPTION,
         ]);
 
-        $this->expectException(AsyncPaymentProcessException::class);
-        $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
-The error "TEST" occurred with the following message: generalClientExceptionMessage');
+        $this->expectException(PaymentException::class);
+        $this->expectExceptionMessage('The error "TEST" occurred with the following message: generalClientExceptionMessage');
         $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
     }
 

@@ -1,3 +1,6 @@
+# 8.2.0
+- PPI-924 - Explizitere Fehlermeldungen für Fehler beim Checkout hinzugefügt (z.B. Postleitzahl fehlt)
+
 # 8.1.1
 - PPI-925 - Behebt ein Problem, bei dem nicht auf die Zettle-Einstellungen zugegriffen werden konnte
 - PPI-926 - Behebt ein Problem, bei dem die Zahlungsartenübersicht nicht dargestellt wurde
