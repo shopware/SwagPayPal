@@ -100,6 +100,8 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
             );
 
             $this->logger->debug('Created order');
+        } catch (PaymentException $e) {
+            throw $e;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 

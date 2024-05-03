@@ -10,6 +10,8 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
     static product = 'spb';
 
     static options = {
+        ...super.options,
+
         /**
          * This option holds the client id specified in the settings
          *
@@ -97,12 +99,16 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         /**
          * URL to the after order edit page, as the payment has failed
          *
+         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
+         *
          * @type string|null
          */
         accountOrderEditFailedUrl: '',
 
         /**
          * URL to the after order edit page, as the user has cancelled
+         *
+         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
          *
          * @type string|null
          */
@@ -160,7 +166,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         const button = paypal.Buttons(this.getButtonConfig(this.getFundingSource(paypal)));
 
         if (!button.isEligible()) {
-            this.onError(`Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
+            return void this.handleError(this.NOT_ELIGIBLE, true, `Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
         }
 
         button.render(this.el);
@@ -247,8 +253,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
 
     /**
      * @param {Object} data
-     * @param {String} data.orderId PayPal order id
-     * @param {String=} data.orderID PayPal order id
+     * @param {String} data.orderID PayPal order id
      */
     onApprove(data) {
         PageLoadingIndicatorUtil.create();
@@ -256,7 +261,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         const input = document.createElement('input');
         input.setAttribute('type', 'hidden');
         input.setAttribute('name', 'paypalOrderId');
-        input.setAttribute('value', Object.prototype.hasOwnProperty.call(data,'orderId') ? data.orderId : data.orderID);
+        input.setAttribute('value', data.orderID ?? data.orderId);
 
         this.confirmOrderForm.appendChild(input);
         DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).click();
@@ -274,20 +279,5 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         }
 
         return actions.resolve();
-    }
-
-    /**
-     * Stop payment process with an error
-     * Will prevent from re-triggering render function
-     */
-    onError(error) {
-        this.createError('error', error);
-    }
-
-    /**
-     * Cancel the payment process
-     */
-    onCancel() {
-        this.createError('cancel');
     }
 }

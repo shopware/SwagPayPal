@@ -1,63 +1,15 @@
 import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
-import HttpClient from 'src/service/http-client.service';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
-import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
+import SwagPaypalAbstractStandalone from './swag-paypal.abstract-standalone';
 import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
-export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
+export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
     static scriptLoading = new SwagPayPalScriptLoading();
 
     static options = {
-        /**
-         * This option holds the client id specified in the settings
-         *
-         * @type string
-         */
-        clientId: '',
-
-        /**
-         * This option holds the merchant id specified in the settings
-         *
-         * @type string
-         */
-        merchantPayerId: '',
-
-        /**
-         * This option holds the client token required for field rendering
-         *
-         * @type string
-         */
-        clientToken: '',
-
-        /**
-         * This options specifies the currency of the PayPal button
-         *
-         * @type string
-         */
-        currency: 'EUR',
-
-        /**
-         * This options defines the payment intent
-         *
-         * @type string
-         */
-        intent: 'capture',
-
-        /**
-         * This option toggles the PayNow/Login text at PayPal
-         *
-         * @type boolean
-         */
-        commit: true,
-
-        /**
-         * This option specifies the language of the PayPal button
-         *
-         * @type string
-         */
-        languageIso: 'en_GB',
+        ...super.options,
 
         /**
          * This option specifies the PayPal button color
@@ -65,55 +17,6 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
          * @type string
          */
         buttonColor: 'black',
-
-        /**
-         * This option specifies the PayPal button shape
-         *
-         * @type string
-         */
-        buttonShape: 'rect',
-
-        /**
-         * This option specifies the PayPal button size
-         *
-         * @type string
-         */
-        buttonSize: 'small',
-
-        /**
-         * URL to create a new PayPal order
-         *
-         * @type string
-         */
-        createOrderUrl: '',
-
-        /**
-         * Is set, if the plugin is used on the order edit page
-         *
-         * @type string|null
-         */
-        orderId: null,
-
-        /**
-         * URL to the after order edit page, as the payment has failed
-         *
-         * @type string|null
-         */
-        accountOrderEditFailedUrl: '',
-
-        /**
-         * URL to the after order edit page, as the user has cancelled
-         *
-         * @type string|null
-         */
-        accountOrderEditCancelledUrl: '',
-
-        /**
-         * Selector of the order confirm form
-         *
-         * @type string
-         */
-        confirmOrderFormSelector: '#confirmOrderForm',
 
         /**
          * Selector of the card field form
@@ -149,13 +52,6 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
          * @type string
          */
         cardNameFieldSelector: '#swag-paypal-acdc-form-cardholder',
-
-        /**
-         * Selector of the submit button of the order confirm form
-         *
-         * @type string
-         */
-        confirmOrderButtonSelector: 'button[type="submit"]',
 
         /**
          * how much px the scrolling should be offset
@@ -196,33 +92,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
                 'padding-left': 'calc(2rem + 40px) !important',
             },
         },
-
-        /**
-         * If set to true, the payment method caused an error and already reloaded the page.
-         * This could for example happen if the funding type is not eligible.
-         *
-         * @type boolean
-         */
-        preventErrorReload: false,
     };
-
-    init() {
-        this.confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
-
-        if (this.options.preventErrorReload) {
-            DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).disabled = 'disabled';
-
-            return;
-        }
-
-        DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
-
-        this._client = new HttpClient();
-
-        this.createScript((paypal) => {
-            this.render(paypal);
-        });
-    }
 
     render(paypal) {
         this.cardFieldForm = DomAccess.querySelector(document, this.options.cardFieldFormSelector);
@@ -231,13 +101,13 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
 
         if (cardFields.isEligible()) {
             this.cardFieldForm.classList.remove('d-none');
-            this.renderIndividualFields(cardFields)
+            this.renderIndividualFields(cardFields);
             this.bindFieldActions(cardFields);
         } else {
             const button = paypal.Buttons(this.getButtonConfig(paypal.FUNDING.CARD));
 
             if (!button.isEligible()) {
-                this.onError('Neither hosted fields nor standalone buttons are eligible');
+                return void this.handleError(this.NOT_ELIGIBLE, true, 'Neither hosted fields nor standalone buttons are eligible');
             }
 
             button.render(this.el);
@@ -293,84 +163,12 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
         this.fields.cardExpiryField.render(this.options.cardExpiryFieldSelector);
     }
 
-    getButtonConfig(fundingSource) {
-        return {
-            fundingSource,
-
-            style: {
-                size: this.options.buttonSize,
-                shape: this.options.buttonShape,
-                color: this.options.buttonColor,
-                label: 'pay',
-            },
-
-            /**
-             * Will be called if when the payment process starts
-             */
-            createOrder: this.createOrder.bind(this, 'spb'),
-
-            /**
-             * Will be called if the payment process is approved by paypal
-             */
-            onApprove: this.onApprove.bind(this),
-
-            /**
-             * Remove loading spinner when user comes back
-             */
-            onCancel: this.onCancel.bind(this),
-
-            /**
-             * Check form validity & show loading spinner on confirm click
-             */
-            onClick: this.onClick.bind(this),
-
-            /**
-             * Will be called if an error occurs during the payment process.
-             */
-            onError: this.onError.bind(this),
-        };
-    }
-
     bindFieldActions(cardFields) {
         DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.remove('d-none');
         this.confirmOrderForm.addEventListener('submit', this.onFieldSubmit.bind(this, cardFields));
 
         // remove history listener, it messes up errors
         window.PluginManager.getPluginInstanceFromElement(this.confirmOrderForm, 'FormAddHistory').options.entries = [];
-    }
-
-    /**
-     * @param product String
-     *
-     * @return {Promise}
-     */
-    createOrder(product) {
-        const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
-        formData.set('product', product);
-
-        const orderId = this.options.orderId;
-        if (orderId !== null) {
-            formData.set('orderId', orderId);
-        }
-
-        return new Promise((resolve, reject) => {
-            this._client.post(
-                this.options.createOrderUrl,
-                formData,
-                (responseText, request) => {
-                    if (request.status >= 400) {
-                        reject(responseText);
-                    }
-
-                    try {
-                        const response = JSON.parse(responseText);
-                        resolve(response.token);
-                    } catch (error) {
-                        reject(error);
-                    }
-                },
-            );
-        });
     }
 
     onFieldSubmit(cardFields, event) {
@@ -417,26 +215,10 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
         const input = document.createElement('input');
         input.setAttribute('type', 'hidden');
         input.setAttribute('name', 'paypalOrderId');
-        input.setAttribute('value', Object.prototype.hasOwnProperty.call(data,'orderId') ? data.orderId : data.orderID);
+        input.setAttribute('value', data.orderID ?? data.orderId);
 
         this.confirmOrderForm.appendChild(input);
         this.confirmOrderForm.submit();
-    }
-
-    onCancel() {
-        this.createError('cancel');
-    }
-
-    onClick(data, actions) {
-        if (!this.confirmOrderForm.checkValidity()) {
-            return actions.reject();
-        }
-
-        return actions.resolve();
-    }
-
-    onError(error) {
-        this.createError('error', error);
     }
 
     getScrollOffset(target) {

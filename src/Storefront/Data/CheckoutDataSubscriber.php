@@ -17,6 +17,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Storefront\Controller\PayPalController;
 use Swag\PayPal\Storefront\Data\Event\PayPalPageExtensionAddedEvent;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Struct\VaultData;
@@ -24,7 +25,6 @@ use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @internal
@@ -32,33 +32,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Package('checkout')]
 class CheckoutDataSubscriber implements EventSubscriberInterface
 {
-    private LoggerInterface $logger;
-
-    private SettingsValidationServiceInterface $settingsValidationService;
-
-    private RequestStack $requestStack;
-
-    private TranslatorInterface $translator;
-
-    private EventDispatcherInterface $eventDispatcher;
-
-    private ?iterable $apmCheckoutMethods;
-
     public function __construct(
-        LoggerInterface $logger,
-        SettingsValidationServiceInterface $settingsValidationService,
-        RequestStack $requestStack,
-        TranslatorInterface $translator,
-        EventDispatcherInterface $eventDispatcher,
-        ?iterable $apmCheckoutMethods = null
+        private readonly LoggerInterface $logger,
+        private readonly SettingsValidationServiceInterface $settingsValidationService,
+        private readonly RequestStack $requestStack,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private ?iterable $apmCheckoutMethods = null
     ) {
-        $this->logger = $logger;
-        $this->settingsValidationService = $settingsValidationService;
-        $this->requestStack = $requestStack;
-        $this->translator = $translator;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->apmCheckoutMethods = $apmCheckoutMethods;
-
         if ($this->apmCheckoutMethods !== null) {
             if (!\is_array($this->apmCheckoutMethods)) {
                 $this->apmCheckoutMethods = [...$this->apmCheckoutMethods];
@@ -145,7 +125,7 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $checkoutData->setPreventErrorReload($this->isErrorReload());
+        $checkoutData->setPreventErrorReload($this->isErrorReload($event->getSalesChannelContext()));
 
         $page = $event->getPage();
         $page->addExtension($methodData->getCheckoutTemplateExtensionId(), $checkoutData);
@@ -155,10 +135,10 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Checks if a PayPal error was added via Swag\PayPal\Checkout\SalesChannel\ErrorRoute::addErrorMessage
+     * Checks if a PayPal error was added via {@link PayPalController::onHandleError}
      * and sets the preventErrorReload property of the $checkoutData accordingly.
      */
-    private function isErrorReload(): bool
+    private function isErrorReload(SalesChannelContext $context): bool
     {
         $request = $this->requestStack->getCurrentRequest();
         if ($request !== null && $request->query->has(AbstractCheckoutDataService::PAYPAL_ERROR)) {
@@ -166,25 +146,11 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
         }
 
         $session = $this->requestStack->getSession();
-        if (!\method_exists($session, 'getFlashBag')) {
-            return false;
-        }
 
-        $flashes = $session->getFlashBag()->peekAll();
-
-        $possibleMessages = [
-            $this->translator->trans('paypal.general.paymentError'),
-            $this->translator->trans('paypal.general.browserUnsupported'),
-        ];
-
-        foreach ($flashes as $val) {
-            if (\is_array($val) && \array_intersect($val, $possibleMessages)) {
-                return true;
-            }
-
-            if (\is_string($val) && \in_array($val, $possibleMessages, true)) {
-                return true;
-            }
+        $paymentMethodId = $session->get(PayPalController::PAYMENT_METHOD_FATAL_ERROR);
+        $session->remove(PayPalController::PAYMENT_METHOD_FATAL_ERROR);
+        if ($paymentMethodId === $context->getPaymentMethod()->getId()) {
+            return true;
         }
 
         return false;

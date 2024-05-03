@@ -18,6 +18,28 @@ const availableAPMs = [
 
 export default class SwagPaypalAbstractButtons extends Plugin {
     static scriptLoading = new SwagPayPalScriptLoading();
+    static options = {
+        /**
+         * URL for adding flash error message
+         *
+         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
+         *
+         * @type string
+         */
+        addErrorUrl: '',
+
+        /**
+         * URL for adding flash error message
+         *
+         * @type string
+         */
+        handleErrorUrl: '',
+    }
+
+    GENERIC_ERROR = 'SWAG_PAYPAL__GENERIC_ERROR';
+    NOT_ELIGIBLE = 'SWAG_PAYPAL__NOT_ELIGIBLE';
+    USER_CANCELLED = 'SWAG_PAYPAL__USER_CANCELLED';
+    BROWSER_UNSUPPORTED = 'SWAG_PAYPAL__BROWSER_UNSUPPORTED';
 
     createScript(callback) {
         if (this.constructor.scriptLoading.paypal !== null) {
@@ -91,6 +113,68 @@ export default class SwagPaypalAbstractButtons extends Plugin {
     }
 
     /**
+     * @param {String} code - The error code. Will be replaced by an extracted error code from {@link error} if available
+     * @param {Boolean} [fatal=false] - A fatal error will not allow a rerender of the PayPal buttons
+     * @param {*} [error=undefined] - The error. Can be any type, but will be converted to a string
+     */
+    handleError(code, fatal = false, error = undefined) {
+        if (error && typeof error !== 'string') {
+            error = String(error);
+        }
+
+        const errorCode = this._extractErrorCode(error);
+        if (errorCode) {
+            code = errorCode;
+        }
+
+        if (!this.options.handleErrorUrl) {
+            console.error(`PayPal ${fatal ? 'fatal ' : ''}error occurred: ${code} - ${String(error ?? '')}`);
+            return;
+        }
+
+        this._client.post(this.options.handleErrorUrl, JSON.stringify({
+            code,
+            error,
+            fatal,
+        }), () => {
+            window.onbeforeunload = () => { window.scrollTo(0, 0); };
+            window.location.reload();
+        });
+    }
+
+    /**
+     * Stop payment process with a generic __fatal__ error.
+     * Will prevent rendering the button through the render function.
+     *
+     * @param {*} [error=undefined] - Can be any type, but will be converted to a string
+     */
+    onFatalError(error = undefined) {
+        this.handleError(this.GENERIC_ERROR, true, error);
+    }
+
+    /**
+     * Stop payment process with a generic error.
+     * Will __NOT__ prevent rendering the button through the render function.
+     *
+     * @param {*} [error=undefined] - Can be any type, but will be converted to a string
+     */
+    onError(error = undefined) {
+        this.handleError(this.GENERIC_ERROR, false, error);
+    }
+
+    /**
+     * Cancel the payment process with a generic cancellation.
+     * Will __NOT__ prevent rendering the button through the render function.
+     *
+     * @param {*} [error=undefined] - Can be any type, but will be converted to a string
+     */
+    onCancel(error = undefined) {
+        this.handleError(this.USER_CANCELLED, false, error);
+    }
+
+    /**
+     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleError} instead
+     *
      * @param {'cancel'|'browser'|'error'} type
      * @param {*=} error
      * @param {String=} redirect
@@ -132,5 +216,31 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             };
             window.location.reload();
         });
+    }
+
+    /**
+     * @private
+     * @returns {String|null}
+     */
+    _extractErrorCode(error) {
+        try {
+            const errors = JSON.parse(error)?.errors;
+
+            if (!Array.isArray(errors)) {
+                return null;
+            }
+
+            for (const error of errors) {
+                if (typeof error !== 'object') {
+                    continue;
+                }
+
+                if (typeof error.code === 'string') {
+                    return error.code;
+                }
+            }
+        } catch { /* no error handling needed */ }
+
+        return null;
     }
 }

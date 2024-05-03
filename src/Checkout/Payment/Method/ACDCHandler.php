@@ -107,6 +107,8 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
             $action = $response?->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref();
 
             return new RedirectResponse($action ?? $transaction->getReturnUrl());
+        } catch (PaymentException $e) {
+            throw $e;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 
@@ -211,7 +213,7 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
         }
 
         if (!$this->acdcValidator->validate($paypalOrder, $transaction, $salesChannelContext)) {
-            throw CardValidationFailedException::asyncCardValidationFailed($transaction->getOrderTransaction()->getId());
+            throw CardValidationFailedException::cardValidationFailed($transaction->getOrderTransaction()->getId());
         }
 
         return $this->orderExecuteService->captureOrAuthorizeOrder(
