@@ -1,3 +1,6 @@
+# 8.1.1
+- PPI-926 - Fixes an issue, where payment method overview was not displayed
+
 # 8.1.0
 - PPI-850 - Added automated payment status polling for authorized and in-progress transactions
 - PPI-862 - Added vaulting (save customer) to Venmo payment method
