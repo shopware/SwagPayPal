@@ -1,3 +1,6 @@
+# 8.1.1
+- PPI-926 - Behebt ein Problem, bei dem die Zahlungsartenübersicht nicht dargestellt wurde
+
 # 8.1.0
 - PPI-850 - Automatische Abfrage des Zahlungsstatus für autorisierte und in Bearbeitung befindliche Transaktionen erweitert
 - PPI-862 - Vaulting (Kunden speichern) für Zahlungsart Venmo hinzugefügt
