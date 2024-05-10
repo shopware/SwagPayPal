@@ -27,7 +27,7 @@
             <swag-paypal-text-field
                     {% if VUE3 %}
                     v-model:value="refundInvoiceNumber"
-                    {% elseif %}
+                    {% else %}
                     v-model="refundInvoiceNumber"
                     {% endif %}
                     maxLength="127"
@@ -40,7 +40,7 @@
             <swag-paypal-text-field
                     {% if VUE3 %}
                     v-model:value="refundReason"
-                    {% elseif %}
+                    {% else %}
                     v-model="refundReason"
                     {% endif %}
                     maxLength="30"
