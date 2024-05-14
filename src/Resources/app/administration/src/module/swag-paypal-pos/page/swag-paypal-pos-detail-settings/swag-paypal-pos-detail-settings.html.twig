@@ -49,9 +49,9 @@
                 {% block swag_paypal_pos_detail_settings_input_media_domain %}
                     <swag-paypal-pos-url-field
                             {% if VUE3 %}
-                            v-model:value="swagPaypalPosSalesChannel.mediaDomain"
+                            v-model:value="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
                             {% else %}
-                            v-model="swagPayPalPosSalesChannel.mediaDomain"
+                            v-model="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
                             {% endif %}
                             required
                             validation="required"

@@ -1,4 +1,5 @@
 # 8.1.1
+- PPI-925 - Behebt ein Problem, bei dem nicht auf die Zettle-Einstellungen zugegriffen werden konnte
 - PPI-926 - Behebt ein Problem, bei dem die Zahlungsartenübersicht nicht dargestellt wurde
 - PPI-927 - Behebt ein Problem, bei dem Rückerstattungen für PayPal Plus nicht funktionierten
 
