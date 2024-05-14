@@ -11,8 +11,11 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
 use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
+use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
@@ -20,18 +23,17 @@ use Swag\PayPal\Webhook\WebhookEventTypes;
 #[Package('checkout')]
 class CaptureCompleted extends AbstractWebhookHandler
 {
-    private PaymentStatusUtilV2 $paymentStatusUtil;
-
     /**
      * @internal
      */
     public function __construct(
         EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,
-        PaymentStatusUtilV2 $paymentStatusUtil
+        private readonly PaymentStatusUtilV2 $paymentStatusUtil,
+        private readonly PaymentMethodDataRegistry $methodDataRegistry,
+        private readonly PUIInstructionsFetchService $instructionsFetchService,
     ) {
         parent::__construct($orderTransactionRepository, $orderTransactionStateHandler);
-        $this->paymentStatusUtil = $paymentStatusUtil;
     }
 
     public function getEventType(): string
@@ -46,6 +48,19 @@ class CaptureCompleted extends AbstractWebhookHandler
             throw new WebhookException($this->getEventType(), 'Given webhook does not have needed resource data');
         }
         $orderTransaction = $this->getOrderTransactionV2($capture, $context);
+
+        $puiMethodId = $this->methodDataRegistry->getEntityIdFromData(
+            $this->methodDataRegistry->getPaymentMethod(PUIMethodData::class),
+            $context
+        );
+
+        if ($orderTransaction->getPaymentMethodId() === $puiMethodId) {
+            // AbstractWebhookHandler::getOrderTransactionV2 ensures a present order
+            $salesChannelId = (string) $orderTransaction->getOrder()?->getSalesChannelId();
+            $this->instructionsFetchService->fetchPUIInstructions($orderTransaction, $salesChannelId, $context);
+
+            return;
+        }
 
         $this->paymentStatusUtil->applyCaptureState($orderTransaction->getId(), $capture, $context);
     }
