@@ -8,7 +8,7 @@
         "payUponInvoice": {
             "instructions": {
                 "transferRequestDate": "Please transfer %value% until %date% to PayPal.",
-                "transferRequest": "Please transfer %value% to the account below.",
+                "transferRequest": "Please transfer %value% to the account below:",
                 "table": {
                     "bank": "Bank:",
                     "iban": "IBAN:",
