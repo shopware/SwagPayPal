@@ -163,7 +163,7 @@ class ItemListProvider
             return 0.0;
         }
 
-        return $calculatedTax->getTaxRate();
+        return \round($calculatedTax->getTaxRate(), 4);
     }
 
     private function hasMismatchingPrice(OrderLineItemEntity|LineItem $lineItem, Item $item, bool $isNet, string $currencyCode): bool
