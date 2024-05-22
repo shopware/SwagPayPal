@@ -39,8 +39,8 @@ module.exports = {
         // Force module uuid to resolve with the CJS entry point, because Jest does not support package.json.exports.
         // See https://github.com/uuidjs/uuid/issues/451
         '^uuid$': require.resolve('uuid'),
-        '^\@shopware-ag\/admin-extension-sdk\/es\/(.*)':
-            `${process.env.ADMIN_PATH}/node_modules/@shopware-ag/admin-extension-sdk/umd/$1`,
+        '^\@shopware-ag\/meteor-admin-sdk\/es\/(.*)':
+            `${process.env.ADMIN_PATH}/node_modules/@shopware-ag/meteor-admin-sdk/umd/$1`,
         vue$: '@vue/compat/dist/vue.cjs.js',
     },
 
