@@ -2,6 +2,7 @@
 - PPI-925 - Fixes an issue, where Zettle settings couldn't be accessed
 - PPI-926 - Fixes an issue, where payment method overview was not displayed
 - PPI-927 - Fixes an issue, where refunds for PayPal Plus weren't working
+- PPI-933 - Fixes an issue, where Apple Pay domains may not be registerable correctly
 
 # 8.1.0
 - PPI-850 - Added automated payment status polling for authorized and in-progress transactions
