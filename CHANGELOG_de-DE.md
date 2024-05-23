@@ -1,3 +1,6 @@
+# 9.1.1
+- PPI-933 - Behebt ein Problem, bei dem Apple Pay-Domains möglicherweise nicht korrekt registriert werden können
+
 # 9.1.0
 - PPI-850 - Automatische Abfrage des Zahlungsstatus für autorisierte und in Bearbeitung befindliche Transaktionen erweitert
 - PPI-862 - Vaulting (Kunden speichern) für Zahlungsart Venmo hinzugefügt
