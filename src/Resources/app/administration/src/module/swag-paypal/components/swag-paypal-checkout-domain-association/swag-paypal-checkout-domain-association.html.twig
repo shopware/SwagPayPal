@@ -1,6 +1,8 @@
 <sw-alert
         class="swag-plugin-apple-pay-warning"
         variant="warning"
+        :closable="true"
+        @close="onCloseAlert"
 >
     {{ $tc('swag-paypal.settingForm.checkout.domainAssociation.title') }}
 

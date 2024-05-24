@@ -19,4 +19,10 @@ Component.register('swag-paypal-checkout-domain-association', {
                 : 'https://www.paypal.com/uccservicing/apm/applepay';
         },
     },
+
+    methods: {
+        onCloseAlert() {
+            this.$emit('hideDomainAssociationEvent');
+        },
+    },
 });
