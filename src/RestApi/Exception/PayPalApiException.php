@@ -7,17 +7,15 @@
 
 namespace Swag\PayPal\RestApi\Exception;
 
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
-class PayPalApiException extends ShopwareHttpException
+class PayPalApiException extends PaymentException
 {
     public const ERROR_CODE_DUPLICATE_ORDER_NUMBER = 'DUPLICATE_TRANSACTION';
     public const ERROR_CODE_DUPLICATE_INVOICE_ID = 'DUPLICATE_INVOICE_ID';
-
-    private int $payPalApiStatusCode;
 
     private ?string $issue;
 
@@ -27,26 +25,21 @@ class PayPalApiException extends ShopwareHttpException
         int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
         ?string $issue = null
     ) {
-        $this->payPalApiStatusCode = $payPalApiStatusCode;
         $this->issue = $issue;
         parent::__construct(
+            $payPalApiStatusCode,
+            'SWAG_PAYPAL__API_' . ($issue ?? 'EXCEPTION'),
             'The error "{{ name }}" occurred with the following message: {{ message }}',
-            ['name' => $name, 'message' => $message]
+            [
+                'name' => $name,
+                'message' => $message,
+                'issue' => $issue,
+            ]
         );
-    }
-
-    public function getStatusCode(): int
-    {
-        return $this->payPalApiStatusCode;
     }
 
     public function getIssue(): ?string
     {
         return $this->issue;
-    }
-
-    public function getErrorCode(): string
-    {
-        return 'SWAG_PAYPAL__API_EXCEPTION';
     }
 }

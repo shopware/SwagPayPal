@@ -45,7 +45,7 @@ class GooglePayHandler extends AbstractSyncAPMHandler
     protected function executeOrder(SyncPaymentTransactionStruct $transaction, Order $paypalOrder, SalesChannelContext $salesChannelContext): Order
     {
         if (!$this->googlePayValidator->validate($paypalOrder, $transaction, $salesChannelContext)) {
-            throw CardValidationFailedException::syncCardValidationFailed($transaction->getOrderTransaction()->getId());
+            throw CardValidationFailedException::cardValidationFailed($transaction->getOrderTransaction()->getId());
         }
 
         return parent::executeOrder($transaction, $paypalOrder, $salesChannelContext);

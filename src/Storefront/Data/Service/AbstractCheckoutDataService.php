@@ -71,13 +71,16 @@ abstract class AbstractCheckoutDataService
             'createOrderUrl' => $context->hasExtension('subscription')
                 ? $this->router->generate('frontend.subscription.paypal.create_order', ['subscriptionToken' => $context->getToken()])
                 : $this->router->generate('frontend.paypal.create_order'),
+            /** @deprecated tag:v10.0.0 - Will be removed, use handleErrorUrl instead */
             'addErrorUrl' => $this->router->generate('frontend.paypal.error'),
+            'handleErrorUrl' => $this->router->generate('frontend.paypal.handle-error'),
             'brandName' => $this->systemConfigService->getString(Settings::BRAND_NAME, $salesChannelId)
                 ?: ($context->getSalesChannel()->getTranslation('name') ?? ''),
         ];
 
         if ($order !== null) {
             $data['orderId'] = $order->getId();
+            /** @deprecated tag:v10.0.0 - Will be removed, use handleErrorUrl instead */
             $data['accountOrderEditFailedUrl'] = $this->router->generate(
                 'frontend.account.edit-order.page',
                 [
@@ -87,6 +90,7 @@ abstract class AbstractCheckoutDataService
                 ],
                 RouterInterface::ABSOLUTE_URL
             );
+            /** @deprecated tag:v10.0.0 - Will be removed, use handleErrorUrl instead */
             $data['accountOrderEditCancelledUrl'] = $this->router->generate(
                 'frontend.account.edit-order.page',
                 [

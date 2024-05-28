@@ -30,7 +30,8 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
     }
 
     async render(paypal) {
-        await this.renderGooglePay(paypal).catch(this.onError.bind(this));
+        await this.renderGooglePay(paypal)
+            .catch(this.onFatalError.bind(this));
 
         ElementLoadingIndicatorUtil.remove(this.el);
     }
@@ -50,7 +51,7 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
         } = await paypal.Googlepay().config();
 
         if (!isEligible) {
-            throw new Error('Funding for Google Pay is not eligible');
+            return void this.handleError(this.NOT_ELIGIBLE, true, 'Funding for Google Pay is not eligible');
         }
 
         const gpClient = this.createGPClient(paypal);
@@ -58,7 +59,7 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
 
         // Quote Docs: "If the browser supports Google Pay, isReadyToPay returns true"
         if (!result) {
-            return void this.createError('browser');
+            return void this.handleError(this.BROWSER_UNSUPPORTED, true, 'Browser does not support Google Pay');
         }
 
         const paymentDataRequest = {
@@ -95,7 +96,7 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
 
     async onPaymentAuthorized(paypal, paymentData) {
         const orderId = await this.createOrder('googlepay').catch((e) => {
-            this.createError('cancel', e);
+            this.onError(e);
             throw e;
         });
 

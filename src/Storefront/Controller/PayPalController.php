@@ -10,6 +10,7 @@ namespace Swag\PayPal\Storefront\Controller;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
+use Shopware\Core\Framework\Api\EventListener\ErrorResponseFactory;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -28,6 +29,7 @@ use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
 use Swag\PayPal\Checkout\TokenResponse;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -39,6 +41,8 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class PayPalController extends StorefrontController
 {
+    public const PAYMENT_METHOD_FATAL_ERROR = 'SWAG_PAYPAL__PAYMENT_METHOD_FATAL_ERROR';
+
     /**
      * @internal
      */
@@ -57,9 +61,13 @@ class PayPalController extends StorefrontController
 
     #[Route(path: '/paypal/create-order', name: 'frontend.paypal.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     #[Route(path: '/subscription/paypal/create-order/{subscriptionToken}', name: 'frontend.subscription.paypal.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false, '_subscriptionCart' => true, '_subscriptionContext' => true])]
-    public function createOrder(SalesChannelContext $salesChannelContext, Request $request): TokenResponse
+    public function createOrder(SalesChannelContext $salesChannelContext, Request $request): Response
     {
-        return $this->createOrderRoute->createPayPalOrder($salesChannelContext, $request);
+        try {
+            return $this->createOrderRoute->createPayPalOrder($salesChannelContext, $request);
+        } catch (PayPalApiException $e) {
+            return (new ErrorResponseFactory())->getResponseFromException($e);
+        }
     }
 
     #[Route(path: '/paypal/payment-method-eligibility', name: 'frontend.paypal.payment-method-eligibility', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
@@ -119,6 +127,9 @@ class PayPalController extends StorefrontController
         return $this->createActionResponse($request);
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - Will be removed, use {@link onHandleError} instead
+     */
     #[OA\Post(
         path: '/paypal/error',
         operationId: 'paypalError',
@@ -147,6 +158,56 @@ class PayPalController extends StorefrontController
             $this->addFlash(self::DANGER, $this->trans('paypal.general.paymentError'));
             $this->logger->notice('Storefront checkout error', ['error' => $request->request->get('error')]);
         }
+
+        return new NoContentResponse();
+    }
+
+    #[OA\Post(
+        path: '/paypal/handle-error',
+        operationId: 'paypalHandleError',
+        description: 'Adds an error message to the flash bag',
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'code', type: 'string'),
+            new OA\Property(property: 'fatal', description: 'Will prevent reinitiate the corresponding payment method.', type: 'boolean', default: false),
+            new OA\Property(property: 'error', type: 'string', default: null),
+        ])),
+        tags: ['Store API', 'PayPal'],
+        responses: [new OA\Response(
+            response: Response::HTTP_NO_CONTENT,
+            description: 'Error was added to the flash bag',
+        )]
+    )]
+    #[Route(path: '/paypal/handle-error', name: 'frontend.paypal.handle-error', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
+    public function onHandleError(Request $request, SalesChannelContext $context): Response
+    {
+        $code = $request->request->getString('code');
+        $fatal = $request->request->getBoolean('fatal');
+
+        // Simply add a snippet for the error code to create a flash
+        $snippetGeneric = \sprintf('paypal.error.%s', $code);
+        $snippetByMethod = \sprintf('paypal.error.%s.%s', $context->getPaymentMethod()->getFormattedHandlerIdentifier(), $code);
+
+        $transSnippetGeneric = $this->trans($snippetGeneric);
+        $transSnippetByMethod = $this->trans($snippetByMethod);
+        if ($transSnippetByMethod !== $snippetByMethod) {
+            $this->addFlash(self::DANGER, $transSnippetByMethod);
+        } elseif ($transSnippetGeneric !== $snippetGeneric) {
+            $this->addFlash(self::DANGER, $transSnippetGeneric);
+        } else {
+            $this->addFlash(self::DANGER, $this->trans('paypal.error.SWAG_PAYPAL__GENERIC_ERROR'));
+        }
+
+        if ($fatal) {
+            $request->getSession()->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
+        }
+
+        $this->logger->notice('Storefront checkout error', [
+            'error' => $request->request->get('error'),
+            'code' => $code,
+            'fatal' => $fatal,
+            'paymentMethodId' => $context->getPaymentMethod()->getId(),
+            'paymentMethodName' => $context->getPaymentMethod()->getName(),
+        ]);
 
         return new NoContentResponse();
     }

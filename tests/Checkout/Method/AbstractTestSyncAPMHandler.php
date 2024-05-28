@@ -153,8 +153,7 @@ Order "%s" failed', AuthorizeOrderDenied::ID));
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
-The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. The instrument presented  was either declined by the processor or bank, or it can\'t be used for this payment. INSTRUMENT_DECLINED ');
+        $this->expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. The instrument presented  was either declined by the processor or bank, or it can\'t be used for this payment. INSTRUMENT_DECLINED ');
         $handler->pay($paymentTransaction, $this->createRequest(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED), $salesChannelContext);
     }
 

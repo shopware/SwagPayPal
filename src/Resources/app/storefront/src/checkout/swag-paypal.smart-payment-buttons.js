@@ -6,6 +6,8 @@ import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractButtons {
     static options = {
+        ...super.options,
+
         /**
          * This option specifies the PayPal button color
          *
@@ -250,19 +252,11 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         this.confirmOrderForm.submit();
     }
 
-    onCancel() {
-        this.createError('cancel');
-    }
-
     onClick(data, actions) {
         if (!this.confirmOrderForm.checkValidity()) {
             return actions.reject();
         }
 
         return actions.resolve();
-    }
-
-    onError(error) {
-        this.createError('error', error);
     }
 }

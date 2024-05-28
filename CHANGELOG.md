@@ -1,3 +1,6 @@
+# 9.2.0
+- PPI-924 - Added more explicit error messages for errors happening while checkout (e.g. postal code is missing)
+
 # 9.1.1
 - PPI-933 - Fixes an issue, where Apple Pay domains may not be registerable correctly
 

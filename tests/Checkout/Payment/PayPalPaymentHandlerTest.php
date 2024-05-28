@@ -214,7 +214,6 @@ class PayPalPaymentHandlerTest extends TestCase
         $dataBag->set(PlusPuiHandler::PAYPAL_PAYMENT_ID_INPUT_NAME, self::PAYPAL_PATCH_THROWS_EXCEPTION);
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
-The asynchronous payment process was interrupted due to the following error:
 An error occurred during the communication with PayPal
 The error "TEST" occurred with the following message: generalClientExceptionMessage');
         $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
@@ -295,8 +294,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         ]);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
-The error "TEST" occurred with the following message: generalClientExceptionMessage');
+        $this->expectExceptionMessage('The error "TEST" occurred with the following message: generalClientExceptionMessage');
         $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
     }
 

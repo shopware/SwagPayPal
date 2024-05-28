@@ -53,6 +53,7 @@ parameters:
             paths:
                 - tests/**/*.php
                 - src/Util/Lifecycle/Update.php
+                - src/Storefront/Controller/PayPalController.php
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

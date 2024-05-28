@@ -1,0 +1,10 @@
+shopware:
+    logger:
+        error_code_log_levels:
+            SWAG_PAYPAL__USER_CANCELLED: notice
+            SWAG_PAYPAL__BROWSER_UNSUPPORTED: notice
+            SWAG_PAYPAL__CARD_VALIDATION_FAILED: notice
+            SWAG_PAYPAL__API_POSTAL_CODE_REQUIRED: notice
+            SWAG_PAYPAL__API_CANNOT_BE_ZERO_OR_NEGATIVE: notice
+            SWAG_PAYPAL__API_PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED: notice
+            SWAG_PAYPAL__API_PAYMENT_SOURCE_DECLINED_BY_PROCESSOR: notice

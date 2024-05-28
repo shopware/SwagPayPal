@@ -22,11 +22,11 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
 
     async render(paypal) {
         if (!window.ApplePaySession?.supportsVersion(4) || !window.ApplePaySession?.canMakePayments()) {
-            this.createError('browser');
+            this.handleError(this.BROWSER_UNSUPPORTED, true, 'Browser does not support Apple Pay');
             return;
         }
 
-        this.renderButton(paypal).catch(this.onError.bind(this));
+        this.renderButton(paypal).catch(this.onFatalError.bind(this));
     }
 
     async renderButton(paypal) {
@@ -39,12 +39,12 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
         button.addEventListener('click',() => {
             if (this.confirmOrderForm.checkValidity()){
                 this.handleApplePayButtonSubmit(config, paypal)
-                    .catch(this.createError.bind(this, 'cancel'));
+                    .catch(this.onError.bind(this));
             }
         })
 
         if (!config.isEligible) {
-            throw new Error('Funding for Apple Pay is not eligible');
+            return void this.handleError(this.NOT_ELIGIBLE, true, 'Funding for Apple Pay is not eligible');
         }
 
         this.el.appendChild(button);
@@ -75,7 +75,7 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
 
         session.onvalidatemerchant = this.handleValidateMerchant.bind(this, session, paypal);
         session.onpaymentauthorized = this.handlePaymentAuthorized.bind(this, session, paypal);
-        session.oncancel = this.handleCancel.bind(this);
+        session.oncancel = this.onCancel.bind(this);
 
         session.begin();
     }
@@ -89,7 +89,7 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
 
             session.completeMerchantValidation(merchantSession);
         } catch (e) {
-            this.createError('cancel', e);
+            this.onError(e);
             session.abort();
         }
     }
@@ -111,12 +111,8 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
 
             this.onApprove({ orderId });
         } catch (e) {
-            this.createError('cancel', e);
+            this.onError(e);
             session.abort();
         }
-    }
-
-    handleCancel() {
-        this.createError('cancel', 'Apple Pay session was canceled')
     }
 }

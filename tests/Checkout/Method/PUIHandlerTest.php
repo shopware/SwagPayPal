@@ -152,22 +152,18 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        try {
-            $this->processPayment(
-                $order,
-                new RequestDataBag([
-                    PUIHandler::PUI_FRAUD_NET_SESSION_ID => Uuid::randomHex(),
-                    PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
-                    PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
-                ]),
-                $context,
-                $this->getDefaultConfigData()
-            );
-        } catch (PaymentException $e) {
-            static::assertSame('The synchronous payment process was interrupted due to the following error:
-The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. The provided payment source is declined by the processor. Please try again with a different payment source by creating a new order. PAYMENT_SOURCE_DECLINED_BY_PROCESSOR ', $e->getMessage());
-            static::assertTrue($this->session->getFlashBag()->has('danger'));
-        }
+        static::expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. The provided payment source is declined by the processor. Please try again with a different payment source by creating a new order. PAYMENT_SOURCE_DECLINED_BY_PROCESSOR ');
+
+        $this->processPayment(
+            $order,
+            new RequestDataBag([
+                PUIHandler::PUI_FRAUD_NET_SESSION_ID => Uuid::randomHex(),
+                PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
+                PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
+            ]),
+            $context,
+            $this->getDefaultConfigData()
+        );
     }
 
     public function testPayWithPaymentInfoCannotBeVerified(): void
@@ -177,22 +173,18 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        try {
-            $this->processPayment(
-                $order,
-                new RequestDataBag([
-                    PUIHandler::PUI_FRAUD_NET_SESSION_ID => Uuid::randomHex(),
-                    PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
-                    PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
-                ]),
-                $context,
-                $this->getDefaultConfigData()
-            );
-        } catch (PaymentException $e) {
-            static::assertSame('The synchronous payment process was interrupted due to the following error:
-The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. The combination of the payment_source name, billing address, shipping name and shipping address could not be verified. Please correct this information and try again by creating a new order. PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED ', $e->getMessage());
-            static::assertTrue($this->session->getFlashBag()->has('danger'));
-        }
+        static::expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. The combination of the payment_source name, billing address, shipping name and shipping address could not be verified. Please correct this information and try again by creating a new order. PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED ');
+
+        $this->processPayment(
+            $order,
+            new RequestDataBag([
+                PUIHandler::PUI_FRAUD_NET_SESSION_ID => Uuid::randomHex(),
+                PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
+                PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
+            ]),
+            $context,
+            $this->getDefaultConfigData()
+        );
     }
 
     private function processPayment(OrderEntity $order, RequestDataBag $requestData, SalesChannelContext $context, array $settings): void
