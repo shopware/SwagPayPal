@@ -1,5 +1,6 @@
 # 6.5.0
 - PPI-896 - Änderung der Checkout Smart Payment Buttons von 'Direkt zu PayPal' zu 'Mit PayPal zahlen'.
+- PPI-936 - Behebt ein Problem, bei dem Zettle evtl. inkorrekte Steuersätze erhält
 
 # 6.4.0
 - PPI-853 - Fügt eine Option zum Einstellen des Käuferlandes für "Später bezahlen" Banner hinzu

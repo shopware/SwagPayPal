@@ -1,5 +1,6 @@
 # 6.5.0
 - PPI-896 - Changed the wording of the checkout Smart Payment Buttons from 'PayPal Checkout' to 'Pay with PayPal'.
+- PPI-936 - Fixes an issue, where Zettle may receive incorrect tax rates
 
 # 6.4.0
 - PPI-853 - Added option to add buyer country to "Pay Later" banners
