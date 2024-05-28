@@ -1,5 +1,7 @@
 # 9.2.0
+- PPI-666 - Zusätzliche Informationen auf Rechnung für Rechnungskäufe hinzugefügt
 - PPI-924 - Explizitere Fehlermeldungen für Fehler beim Checkout hinzugefügt (z.B. Postleitzahl fehlt)
+- PPI-936 - Behebt ein Problem, bei dem Zettle evtl. inkorrekte Steuersätze erhält
 
 # 9.1.1
 - PPI-933 - Behebt ein Problem, bei dem Apple Pay-Domains möglicherweise nicht korrekt registriert werden können

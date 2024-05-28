@@ -85,7 +85,7 @@ class ProductConverter
             // no warning to produce, since it will also be added in VariantConverter
         }
 
-        $tax = $shopwareProduct->getTax();
+        $tax = $shopwareProduct->getCalculatedPrice()->getTaxRules()->first();
         if ($tax !== null) {
             $product->setVatPercentage($tax->getTaxRate());
         }
