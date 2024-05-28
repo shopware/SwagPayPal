@@ -59,7 +59,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @internal
@@ -393,14 +392,10 @@ class CheckoutSubscriberTest extends TestCase
         $spbMethodDataMock->method('getCheckoutTemplateExtensionId')->willReturn(PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID);
         $spbMethodDataMock->method('getHandler')->willReturn(PayPalPaymentHandler::class);
 
-        /** @var TranslatorInterface $translator */
-        $translator = $this->getContainer()->get('translator');
-
         return new CheckoutDataSubscriber(
             new NullLogger(),
             new SettingsValidationService($settings, new NullLogger()),
             $requestStack,
-            $translator,
             $this->eventDispatcher,
             [
                 $acdcMethodDataMock,
@@ -493,6 +488,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $extension->getIntent());
         static::assertSame('/paypal/create-order', $extension->getCreateOrderUrl());
         static::assertSame('/paypal/error', $extension->getAddErrorUrl());
+        static::assertSame('/paypal/handle-error', $extension->getHandleErrorUrl());
 
         if ($event instanceof AccountEditOrderPageLoadedEvent) {
             $accountOrderEditUrl = $extension->getAccountOrderEditCancelledUrl();

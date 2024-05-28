@@ -1,3 +1,6 @@
+# 8.2.0
+- PPI-924 - Added more explicit error messages for errors happening while checkout (e.g. postal code is missing)
+
 # 8.1.1
 - PPI-925 - Fixes an issue, where Zettle settings couldn't be accessed
 - PPI-926 - Fixes an issue, where payment method overview was not displayed
@@ -13,7 +16,7 @@
 
 # 8.0.3
 - PPI-896 - Changed the wording of the checkout Smart Payment Buttons from 'PayPal Checkout' to 'Pay with PayPal'
-- PPI-906 - Changed the express checkout button to make better use of remaining space for a more fitting layout- PPI-914 - Fixes an issue, where orders with only digital products could not be processed and were wrongly categorized as physical products
+- PPI-906 - Changed the express checkout button to make better use of remaining space for a more fitting layout
 - PPI-914 - Fixes an issue, where orders with only digital products could not be processed and were wrongly categorized as physical products
 - PPI-916 - Fixes an issue that may fail orders with landing page setting "Guest checkout"
 - PPI-917 - Moved Pay Upon Invoice Disclaimer above Confirm button

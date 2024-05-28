@@ -74,8 +74,7 @@ class GooglePayHandlerTest extends TestCase
         $this->cardValidator->method('validate')->willReturn(false);
 
         static::expectException(PaymentException::class);
-        static::expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
-Credit card validation failed, 3D secure was not validated.');
+        static::expectExceptionMessage('Credit card validation failed, 3D secure was not validated.');
 
         $this->googlePayHandler->pay(
             $this->createMock(SyncPaymentTransactionStruct::class),

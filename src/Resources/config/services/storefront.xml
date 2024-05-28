@@ -86,7 +86,6 @@
             <argument type="service" id="logger"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <argument type="service" id="request_stack"/>
-            <argument type="service" id="translator"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="tagged_iterator" tag="swag.paypal.payment.storefront.checkout.data"/>
             <tag name="kernel.event_subscriber"/>

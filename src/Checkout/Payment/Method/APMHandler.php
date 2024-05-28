@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandle
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -102,6 +103,8 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
             );
 
             $this->logger->debug('Created order');
+        } catch (PaymentException $e) {
+            throw $e;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 

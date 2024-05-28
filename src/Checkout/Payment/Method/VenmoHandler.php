@@ -82,6 +82,8 @@ class VenmoHandler extends AbstractSyncAPMHandler implements RecurringPaymentHan
                 $salesChannelContext->getContext(),
                 PartnerAttributionId::PAYPAL_PPCP
             );
+        } catch (PaymentException $e) {
+            throw $e;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 

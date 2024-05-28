@@ -5,6 +5,18 @@
             "paymentError": "An error occurred during the payment process. Please try again later or choose another payment method.",
             "browserUnsupported": "Your current Browser is unsupported by the selected payment method. Please try another Browser or choose another payment method."
         },
+        "error": {
+            "SWAG_PAYPAL__GENERIC_ERROR": "An error occurred during the payment process. Please try again later or choose another payment method.",
+            "SWAG_PAYPAL__USER_CANCELLED": "The payment process has been cancelled. Please try again or choose another payment method.",
+            "SWAG_PAYPAL__BROWSER_UNSUPPORTED": "The selected payment method does not support your current browser. Please try again with another browser or choose another payment method.",
+            "SWAG_PAYPAL__CARD_VALIDATION_FAILED": "The entered credit card details could not be validated. Please check your entries and try again.",
+            "SWAG_PAYPAL__API_POSTAL_CODE_REQUIRED": "The provided address does not contain a postal code. Please add your postal code.",
+            "SWAG_PAYPAL__API_CANNOT_BE_ZERO_OR_NEGATIVE": "The total amount must not be zero or negative. Please try again with an amount greater than zero or choose another payment method.",
+            "handler_swag_puihandler": {
+                "SWAG_PAYPAL__API_PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED": "Your name and/or address could not be validated. Please check your entries and try again. For further information read the <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\" >Ratepay data privacy statement</a> or use the Ratepay <a href=\"https://www.ratepay.com/kontakt\" target=\"_blank\">contact form</a>.",
+                "SWAG_PAYPAL__API_PAYMENT_SOURCE_DECLINED_BY_PROCESSOR": "The selected payment method was rejected due to an automated data processing procedure. For more information read the <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\">Ratepay data privacy statement</a> or use the Ratepay <a href=\"https://www.ratepay.com/kontakt\" target=\"_blank\">contact form</a>."
+            }
+        },
         "payUponInvoice": {
             "instructions": {
                 "transferRequestDate": "Please transfer %value% until %date% to PayPal.",

@@ -106,6 +106,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
             }
 
             return $this->payPalHandler->handlePayPalOrder($transaction, $dataBag, $salesChannelContext);
+        } catch (PaymentException $e) {
+            throw $e;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['error' => $e]);
 
