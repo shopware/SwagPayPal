@@ -1,5 +1,7 @@
 # 8.2.0
+- PPI-666 - Added information on invoices for Pay Upon Invoice payments
 - PPI-924 - Added more explicit error messages for errors happening while checkout (e.g. postal code is missing)
+- PPI-936 - Fixes an issue, where Zettle may receive incorrect tax rates
 
 # 8.1.1
 - PPI-925 - Fixes an issue, where Zettle settings couldn't be accessed
