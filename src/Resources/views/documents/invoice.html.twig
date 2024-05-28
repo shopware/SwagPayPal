@@ -1,6 +1,5 @@
 {% sw_extends '@Framework/documents/invoice.html.twig' %}
 
-{% set payPalPuiPaymentInstruction = null %}
 {% set customFieldKey = constant('Swag\\PayPal\\SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION') %}
 {% set payPalPuiPaymentInstruction = order.transactions.last.customFields[customFieldKey] %}
 
@@ -16,50 +15,37 @@
     {{ parent() }}
 
     {% if payPalPuiPaymentInstruction %}
-        {% if payPalPuiPaymentInstruction.payment_due_date is not defined %}
-            <br>
-            <div>{{ 'paypal.payUponInvoice.document.paymentNoteRatepay'|trans({"%companyName%": config.companyName}) }}</div>
-        {% else %}
-            <br>
-            <div>{{ 'paypal.payUponInvoice.document.paymentNote'|trans({"%companyName%": config.companyName}) }}</div>
-            <br>
-            <div>{{ "paypal.payUponInvoice.instructions.transferRequest"|trans({"%value%": payPalPuiPaymentInstruction.amount.value, "%currency%": payPalPuiPaymentInstruction.amount.currency, "%date%": payPalPuiPaymentInstruction.payment_due_date|format_date('short', locale=app.request.locale)}) }}</div>
-            <br>
-            <div>
-                <table>
-                    <tr>
-                        <td>{{ "paypal.payUponInvoice.instructions.table.bank"|trans() }}</td>
-                        <th>{{ payPalPuiPaymentInstruction.recipient_banking_instruction.bank_name }}</th>
-                    </tr>
-                    <tr>
-                        <td>{{ "paypal.payUponInvoice.instructions.table.iban"|trans() }}</td>
-                        <th>{{ payPalPuiPaymentInstruction.recipient_banking_instruction.international_bank_account_number }}</th>
-                    </tr>
-                    <tr>
-                        <td>{{ "paypal.payUponInvoice.instructions.table.bic"|trans() }}</td>
-                        <th>{{ payPalPuiPaymentInstruction.recipient_banking_instruction.bank_identifier_code }}</th>
-                    </tr>
-                    <tr>
-                        <td>{{ "paypal.payUponInvoice.instructions.table.holder"|trans() }}</td>
-                        <th>{{ payPalPuiPaymentInstruction.recipient_banking_instruction.account_holder_name }}</th>
-                    </tr>
-                    <tr>
-                        <td>{{ "paypal.payUponInvoice.instructions.table.amount"|trans() }}</td>
-                        <th>{{ payPalPuiPaymentInstruction.amount.value }}{{ payPalPuiPaymentInstruction.amount.currency }}</th>
-                    </tr>
-                    <tr>
-                        <td>{{ "paypal.payUponInvoice.instructions.table.reference"|trans() }}</td>
-                        <th>{{ payPalPuiPaymentInstruction.reference_number }}</th>
-                    </tr>
-                </table>
-            </div>
-        {% endif %}
+        <br>
+        <div>{{ 'paypal.payUponInvoice.document.paymentNoteRatepay'|trans({"%companyName%": config.companyName}) }}</div>
+        <br>
+        <div>{{ "paypal.payUponInvoice.instructions.transferRequest"|trans({"%value%": order.amountTotal|currency}) }}</div>
+        <table cellspacing="0">
+            <tr>
+                <th align="left">{{ "paypal.payUponInvoice.instructions.table.bank"|trans() }}</th>
+                <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.bank_name }}</td>
+            </tr>
+            <tr>
+                <th align="left">{{ "paypal.payUponInvoice.instructions.table.iban"|trans() }}</th>
+                <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.iban }}</td>
+            </tr>
+            <tr>
+                <th align="left">{{ "paypal.payUponInvoice.instructions.table.bic"|trans() }}</th>
+                <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.bic }}</td>
+            </tr>
+            <tr>
+                <th align="left">{{ "paypal.payUponInvoice.instructions.table.holder"|trans() }}</th>
+                <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.account_holder_name }}</td>
+            </tr>
+            <tr>
+                <th align="left">{{ "paypal.payUponInvoice.instructions.table.reference"|trans() }}</th>
+                <td>{{ payPalPuiPaymentInstruction.payment_reference }}</td>
+            </tr>
+        </table>
     {% endif %}
 {% endblock %}
 
 {% block document_footer_second_column %}
     {% set payPalPuiPaymentInstruction = null %}
-    {% set customFieldKey = constant('Swag\\PayPal\\SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION') %}
     {% for transaction in order.transactions %}
         {% if transaction.customFields[customFieldKey] %}
             {% set payPalPuiPaymentInstruction = transaction.customFields[customFieldKey] %}
@@ -67,6 +53,7 @@
     {% endfor %}
 
     {% if payPalPuiPaymentInstruction %}
+        <ul></ul>
     {% else %}
         {{ parent() }}
     {% endif %}

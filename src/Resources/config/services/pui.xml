@@ -30,9 +30,7 @@
 
         <service id="Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsRoute" public="true">
             <argument type="service" id="order_transaction.repository"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
-            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\PUI\Service\PUIPaymentInstructionDataService">
@@ -41,12 +39,37 @@
             <argument type="service" id="router"/>
         </service>
 
+        <service id="Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler" />
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService" />
+        </service>
+
         <service id="Swag\PayPal\Checkout\PUI\PUISubscriber">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUIFraudNetDataService"/>
             <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUIPaymentInstructionDataService"/>
             <argument type="service" id="monolog.logger.paypal"/>
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\PUI\ScheduledTask\PUIInstructionsFetchTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\PUI\ScheduledTask\PUIInstructionsFetchTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+            <tag name="messenger.message_handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\PUI\MessageQueue\PUIInstructionsFetchMessageHandler">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService"/>
+            <tag name="messenger.message_handler" />
         </service>
     </services>
 </container>
