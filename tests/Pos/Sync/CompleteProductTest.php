@@ -25,7 +25,6 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\Tax\TaxEntity;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\Api\Product\Presentation;
@@ -202,7 +201,6 @@ class CompleteProductTest extends TestCase
 
         $context = Context::createDefaultContext();
         $salesChannel = $this->getSalesChannel($context);
-        $tax = $this->getTax();
         $category = $this->getCategory();
         $currency = $salesChannel->getCurrency();
         static::assertNotNull($currency);
@@ -219,24 +217,24 @@ class CompleteProductTest extends TestCase
           * F - removed
           * G - manually added to Zettle
           */
-        $productA = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productA', ConstantsForTesting::PRODUCT_A_ID);
+        $productA = $salesChannelProductRepository->createMockEntity($category, $currency, 'productA', ConstantsForTesting::PRODUCT_A_ID);
         $productRepository->addMockEntity($productA);
-        $productB = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productB', ConstantsForTesting::PRODUCT_B_ID);
+        $productB = $salesChannelProductRepository->createMockEntity($category, $currency, 'productB', ConstantsForTesting::PRODUCT_B_ID);
         $productRepository->addMockEntity($productB);
-        $variantA = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productB_variantA', ConstantsForTesting::VARIANT_A_ID, ConstantsForTesting::PRODUCT_B_ID);
+        $variantA = $salesChannelProductRepository->createMockEntity($category, $currency, 'productB_variantA', ConstantsForTesting::VARIANT_A_ID, ConstantsForTesting::PRODUCT_B_ID);
         $productRepository->addMockEntity($variantA);
-        $variantB = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productB_variantB', ConstantsForTesting::VARIANT_B_ID, ConstantsForTesting::PRODUCT_B_ID);
+        $variantB = $salesChannelProductRepository->createMockEntity($category, $currency, 'productB_variantB', ConstantsForTesting::VARIANT_B_ID, ConstantsForTesting::PRODUCT_B_ID);
         $productRepository->addMockEntity($variantB);
         $productB->setChildCount(2);
-        $productC = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productC', ConstantsForTesting::PRODUCT_C_ID, null, $mediaB);
+        $productC = $salesChannelProductRepository->createMockEntity($category, $currency, 'productC', ConstantsForTesting::PRODUCT_C_ID, null, $mediaB);
         $productRepository->addMockEntity($productC);
-        $productD = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productD', ConstantsForTesting::PRODUCT_D_ID);
+        $productD = $salesChannelProductRepository->createMockEntity($category, $currency, 'productD', ConstantsForTesting::PRODUCT_D_ID);
         $productRepository->addMockEntity($productD);
-        $productE = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productE', ConstantsForTesting::PRODUCT_E_ID);
+        $productE = $salesChannelProductRepository->createMockEntity($category, $currency, 'productE', ConstantsForTesting::PRODUCT_E_ID);
         $productRepository->addMockEntity($productE);
-        $variantC = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productE_variantC', ConstantsForTesting::VARIANT_C_ID, ConstantsForTesting::PRODUCT_E_ID, $mediaA);
+        $variantC = $salesChannelProductRepository->createMockEntity($category, $currency, 'productE_variantC', ConstantsForTesting::VARIANT_C_ID, ConstantsForTesting::PRODUCT_E_ID, $mediaA);
         $productRepository->addMockEntity($variantC);
-        $variantD = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productE_variantD', ConstantsForTesting::VARIANT_D_ID, ConstantsForTesting::PRODUCT_E_ID, $mediaA);
+        $variantD = $salesChannelProductRepository->createMockEntity($category, $currency, 'productE_variantD', ConstantsForTesting::VARIANT_D_ID, ConstantsForTesting::PRODUCT_E_ID, $mediaA);
         $productRepository->addMockEntity($variantD);
         $productE->setChildCount(2);
         static::assertCount(9, $productRepository->getCollection());
@@ -295,21 +293,6 @@ class CompleteProductTest extends TestCase
         static::assertFalse($posMediaRepository->getCollection()->has($removableMedia->getUniqueIdentifier()));
     }
 
-    private function getTax(): TaxEntity
-    {
-        $criteria = new Criteria();
-        $criteria->setLimit(1);
-
-        /** @var EntityRepository $taxRepository */
-        $taxRepository = $this->getContainer()->get('tax.repository');
-        /** @var TaxEntity|null $tax */
-        $tax = $taxRepository->search($criteria, Context::createDefaultContext())->first();
-
-        static::assertNotNull($tax);
-
-        return $tax;
-    }
-
     private function getMedia(string $id, string $url): MediaEntity
     {
         $media = new MediaEntity();
@@ -346,8 +329,6 @@ class CompleteProductTest extends TestCase
         static::assertNotNull($categories);
         $category = $categories->first();
         static::assertNotNull($category);
-        $tax = $productEntity->getTax();
-        static::assertNotNull($tax);
         $presentation = new Presentation();
         $presentation->setImageUrl(self::MEDIA_UPLOADED_URL);
 
@@ -360,7 +341,7 @@ class CompleteProductTest extends TestCase
                 'uuid' => $uuidConverter->convertUuidToV1($category->getId()),
                 'name' => $category->getName(),
             ],
-            'vatPercentage' => $tax->getTaxRate(),
+            'vatPercentage' => 19.0,
             'metadata' => [
                 'inPos' => true,
                 'source' => [

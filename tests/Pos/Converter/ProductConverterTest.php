@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Pos\Converter;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -27,7 +28,6 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Shopware\Core\System\Tax\TaxEntity;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\Api\Product\Category;
 use Swag\PayPal\Pos\Api\Product\Variant;
@@ -76,13 +76,10 @@ class ProductConverterTest extends TestCase
 
     public function testConvertMaximal(): void
     {
-        $tax = $this->getTax();
-
         $productEntity = $this->createProductEntity();
         $productEntity->addTranslated('name', self::PRODUCT_NAME . self::TRANSLATION_MARK);
         $productEntity->addTranslated('description', self::PRODUCT_DESCRIPTION . self::TRANSLATION_MARK);
         $productEntity->setCategories(new CategoryCollection([$this->getCategory()]));
-        $productEntity->setTax($tax);
 
         $converted = $this->createProductConverter()->convertShopwareProducts(
             new ProductCollection([$productEntity]),
@@ -96,7 +93,6 @@ class ProductConverterTest extends TestCase
         $product->setName(self::PRODUCT_NAME . self::TRANSLATION_MARK);
         $product->setDescription(self::PRODUCT_DESCRIPTION . self::TRANSLATION_MARK);
         $product->setCategory(new Category());
-        $product->setVatPercentage($tax->getTaxRate());
 
         static::assertNotNull($convertedGrouping);
         static::assertEquals($product, $convertedGrouping->getProduct());
@@ -202,7 +198,7 @@ class ProductConverterTest extends TestCase
         $productEntity->setName(self::PRODUCT_NAME);
         $productEntity->setDescription(self::PRODUCT_DESCRIPTION);
         $productEntity->setProductNumber(self::PRODUCT_NUMBER);
-        $shopwarePrice = new CalculatedPrice(self::PRODUCT_PRICE, self::PRODUCT_PRICE, new CalculatedTaxCollection(), new TaxRuleCollection());
+        $shopwarePrice = new CalculatedPrice(self::PRODUCT_PRICE, self::PRODUCT_PRICE, new CalculatedTaxCollection(), new TaxRuleCollection([new TaxRule(19.0)]));
         $productEntity->setCalculatedPrice($shopwarePrice);
 
         return $productEntity;
@@ -213,6 +209,7 @@ class ProductConverterTest extends TestCase
         $product = new Product();
         $product->setName(self::PRODUCT_NAME);
         $product->setDescription(self::PRODUCT_DESCRIPTION);
+        $product->setVatPercentage(19.0);
         $product->addVariant(new Variant());
         $product->assign([
             'metadata' => [
@@ -266,21 +263,6 @@ class ProductConverterTest extends TestCase
         $currency = $currencyRepository->search($criteria, Context::createDefaultContext())->first();
 
         return $currency;
-    }
-
-    private function getTax(): TaxEntity
-    {
-        $criteria = new Criteria();
-
-        /** @var EntityRepository $taxRepository */
-        $taxRepository = $this->getContainer()->get('tax.repository');
-
-        /** @var TaxEntity|null $tax */
-        $tax = $taxRepository->search($criteria, Context::createDefaultContext())->first();
-
-        static::assertNotNull($tax);
-
-        return $tax;
     }
 
     private function getCategory(): CategoryEntity
