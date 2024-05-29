@@ -97,8 +97,8 @@
             <div
                 class="swag-paypal-ecs-spb-apple-pay"
                 data-swag-paypal-apple-pay="true"
-                data-swag-paypal-apple-pay-options="{{ applePayData|json_encode }}"
-            />
+                data-swag-paypal-apple-pay-options="{{ applePayData|json_encode }}">
+            </div>
         {% endblock %}
 
     {% elseif googlePayData and googlePayData.paymentMethodId is same as(context.paymentMethod.id) %}
@@ -107,8 +107,8 @@
             <div
                 class="swag-paypal-ecs-spb-google-pay"
                 data-swag-paypal-google-pay="true"
-                data-swag-paypal-google-pay-options="{{ googlePayData|json_encode }}"
-            />
+                data-swag-paypal-google-pay-options="{{ googlePayData|json_encode }}">
+            </div>
         {% endblock %}
 
     {% endif %}
