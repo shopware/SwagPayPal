@@ -13,6 +13,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Sofort;
 
+/**
+ * @deprecated tag:v10.0.0 - Will be removed.
+ */
 class SofortOrderBuilder extends AbstractAPMOrderBuilder
 {
     protected function buildPaymentSource(

@@ -90,6 +90,7 @@
                  parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\SofortOrderBuilder"/>
             <tag name="shopware.payment.method.async"/>
+            <deprecated package="swag/paypal" version="10.0.0">tag:v10.0.0 - The %service_id% service will be removed</deprecated>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Method\TrustlyAPMHandler"

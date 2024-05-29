@@ -108,7 +108,6 @@
                     "paylaterhandler": "Pay Later is available for the following countries: Australia, France, Germany, Italy, Spain, United Kingdom, United States",
                     "puihandler": "Pay upon invoice is available for the following countries: Germany",
                     "sepahandler": "SEPA Lastschrift is available for the following countries: Germany",
-                    "sofortapmhandler": "Sofort is available for the following countries: Austria, Belgium, Germany, Italy, Netherlands, Spain, United Kingdom",
                     "venmohandler": "Venmo is available for the following countries: United States",
                     "trustlyapmhandler": "Trustly is available for the following countries: Estonia, Finland, Netherlands, Sweden"
                 },
@@ -118,14 +117,12 @@
                     "pending": "Authorization pending",
                     "ineligible": "Ineligible",
                     "inactive": "Onboarding needed",
-                    "mybank": "Limited",
-                    "sofort": "Limited"
+                    "mybank": "Limited"
                 },
                 "onboardingStatusTooltip": {
                     "ineligible": "PayPal informed us, that this payment method is currently ineligible for your account.",
                     "limited": "PayPal informed us, that this payment method has some limitations for your account.",
-                    "mybank": "Merchants enabling MyBank after February 2023 will need manual approval by PayPal. Reach out to PayPal support for further information on this.",
-                    "sofort": "Enabling SOFORT after October 2023 is no longer allowed for new merchants. This is in preparation of the full product sunset by September 2024 — as announced by Klarna."
+                    "mybank": "Merchants enabling MyBank after February 2023 will need manual approval by PayPal. Reach out to PayPal support for further information on this."
                 },
                 "paymentMethodStatusChangedSuccess": {
                     "active": "Payment method \"{name}\" is now active.",

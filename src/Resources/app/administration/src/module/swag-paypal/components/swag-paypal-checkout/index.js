@@ -262,7 +262,8 @@ Component.register('swag-paypal-checkout', {
                 .then((response) => {
                     return response.filter((paymentMethod) => {
                         return paymentMethod.formattedHandlerIdentifier !== 'handler_swag_pospayment'
-                            && paymentMethod.formattedHandlerIdentifier !== 'handler_swag_trustlyapmhandler';
+                            && paymentMethod.formattedHandlerIdentifier !== 'handler_swag_trustlyapmhandler'
+                            && paymentMethod.formattedHandlerIdentifier !== 'handler_swag_sofortapmhandler';
                     });
                 });
         },

@@ -147,7 +147,6 @@
         </service>
         <service id="Swag\PayPal\Util\Lifecycle\Method\SofortMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
-            <tag name="swag.paypal.payment.method.data"/>
         </service>
         <service id="Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
