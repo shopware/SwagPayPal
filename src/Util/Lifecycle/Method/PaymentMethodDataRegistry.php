@@ -42,7 +42,6 @@ class PaymentMethodDataRegistry
         MyBankMethodData::class,
         OxxoMethodData::class,
         P24MethodData::class,
-        SofortMethodData::class,
         TrustlyMethodData::class,
         VenmoMethodData::class,
         PayLaterMethodData::class,

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Util\Lifecycle;
 
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Content\Category\Exception\CategoryNotFoundException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -40,6 +41,7 @@ use Swag\PayPal\Util\Lifecycle\Method\GooglePayMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\SofortMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
@@ -162,6 +164,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '8.1.0', '<')) {
             $this->updateTo810($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '8.2.0', '<')) {
+            $this->updateTo820($updateContext->getContext());
         }
     }
 
@@ -513,5 +519,14 @@ class Update
     {
         $this->paymentMethodInstaller->install(ApplePayMethodData::class, $context);
         $this->paymentMethodInstaller->install(GooglePayMethodData::class, $context);
+    }
+
+    private function updateTo820(Context $context): void
+    {
+        try {
+            $this->paymentMethodStateService->setPaymentMethodState(SofortMethodData::class, false, $context);
+        } catch (PaymentException) {
+            return;
+        }
     }
 }

@@ -1,6 +1,7 @@
 # 8.2.0
 - PPI-666 - Zusätzliche Informationen auf Rechnung für Rechnungskäufe hinzugefügt
 - PPI-924 - Explizitere Fehlermeldungen für Fehler beim Checkout hinzugefügt (z.B. Postleitzahl fehlt)
+- PPI-932 - Entfernt die nicht mehr unterstützte Sofort-Zahlungsart
 - PPI-936 - Behebt ein Problem, bei dem Zettle evtl. inkorrekte Steuersätze erhält
 
 # 8.1.1
