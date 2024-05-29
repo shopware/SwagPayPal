@@ -1,6 +1,7 @@
 # 9.2.0
 - PPI-666 - Added information on invoices for Pay Upon Invoice payments
 - PPI-924 - Added more explicit error messages for errors happening while checkout (e.g. postal code is missing)
+- PPI-932 - Removed the no longer supported Sofort payment method
 - PPI-936 - Fixes an issue, where Zettle may receive incorrect tax rates
 
 # 9.1.1

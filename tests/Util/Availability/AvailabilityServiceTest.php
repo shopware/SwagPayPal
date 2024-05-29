@@ -39,7 +39,6 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData;
-use Swag\PayPal\Util\Lifecycle\Method\SofortMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 
@@ -133,7 +132,6 @@ class AvailabilityServiceTest extends TestCase
             [PayPalMethodData::class, true],
             [PUIMethodData::class, true],
             [SEPAMethodData::class, true],
-            [SofortMethodData::class, true],
             [TrustlyMethodData::class, false],
             [VenmoMethodData::class, false],
         ];
