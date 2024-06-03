@@ -35,6 +35,7 @@ Component.register('swag-paypal-checkout-method', {
     data() {
         return {
             merchantIntegrations: {},
+            isAlertActive: !localStorage.getItem('domain-association-hidden'),
         };
     },
 
@@ -42,10 +43,8 @@ Component.register('swag-paypal-checkout-method', {
         isApplePayAndActive() {
             const handlerElements = this.paymentMethod.formattedHandlerIdentifier.split('_');
 
-            return handlerElements[handlerElements.length - 1] === 'applepayhandler'
-                && this.paymentMethod.active;
+            return this.paymentMethod.active && handlerElements[handlerElements.length - 1] === 'applepayhandler';
         },
-
 
         paymentMethodRepository() {
             return this.repositoryFactory.create('payment_method');
@@ -142,6 +141,11 @@ Component.register('swag-paypal-checkout-method', {
 
     methods: {
         onChangePaymentMethodActive() {
+            if (this.isApplePayAndActive) {
+                localStorage.removeItem('domain-association-hidden');
+                this.isAlertActive = true;
+            }
+
             this.paymentMethod.active = !this.paymentMethod.active;
 
             this.paymentMethodRepository.save(this.paymentMethod, Context.api)
@@ -156,6 +160,11 @@ Component.register('swag-paypal-checkout-method', {
                         ),
                     });
                 });
+        },
+
+        hideDomainAssociationAlert() {
+            localStorage.setItem('domain-association-hidden', 'true');
+            this.isAlertActive = false;
         },
     },
 });
