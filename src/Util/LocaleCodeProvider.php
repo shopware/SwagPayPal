@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Util;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -18,7 +19,13 @@ use Symfony\Contracts\Service\ResetInterface;
 #[Package('checkout')]
 class LocaleCodeProvider implements ResetInterface
 {
+    private const SUPPORTED_LOCALE_CODE_LENGTH = 5;
+
+    private const DEFAULT_LOCALE_CODE = 'en_GB';
+
     private EntityRepository $languageRepository;
+
+    private LoggerInterface $logger;
 
     /**
      * @var array<string, string>
@@ -30,9 +37,10 @@ class LocaleCodeProvider implements ResetInterface
      *
      * @internal
      */
-    public function __construct(EntityRepository $languageRepository)
+    public function __construct(EntityRepository $languageRepository, LoggerInterface $logger)
     {
         $this->languageRepository = $languageRepository;
+        $this->logger = $logger;
     }
 
     public function getLocaleCodeFromContext(Context $context): string
@@ -53,6 +61,25 @@ class LocaleCodeProvider implements ResetInterface
         $locale = $language->getLocale()?->getCode();
 
         return $this->cache[$context->getLanguageId()] = $locale;
+    }
+
+    public function getFormattedLocaleCode(string $localeCode): string
+    {
+        $canonicalizedCode = \Locale::canonicalize($localeCode);
+
+        if (\mb_strlen($canonicalizedCode) !== self::SUPPORTED_LOCALE_CODE_LENGTH) {
+            $this->logger->notice(
+                \sprintf(
+                    'PayPal does not support locale code %s. Switch to default %s',
+                    $localeCode,
+                    self::DEFAULT_LOCALE_CODE
+                )
+            );
+
+            return self::DEFAULT_LOCALE_CODE;
+        }
+
+        return $canonicalizedCode;
     }
 
     public function reset(): void

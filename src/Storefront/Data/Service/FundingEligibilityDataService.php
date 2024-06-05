@@ -66,12 +66,10 @@ class FundingEligibilityDataService
     private function getButtonLanguage(SalesChannelContext $context): string
     {
         if ($settingsLocale = $this->systemConfigService->getString(Settings::SPB_BUTTON_LANGUAGE_ISO, $context->getSalesChannelId())) {
-            return $settingsLocale;
+            return $this->localeCodeProvider->getFormattedLocaleCode($settingsLocale);
         }
 
-        return \str_replace(
-            '-',
-            '_',
+        return $this->localeCodeProvider->getFormattedLocaleCode(
             $this->localeCodeProvider->getLocaleCodeFromContext($context->getContext())
         );
     }

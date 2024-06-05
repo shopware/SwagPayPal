@@ -118,12 +118,10 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
     private function getInContextButtonLanguage(string $salesChannelId, Context $context): string
     {
         if ($settingsLocale = $this->systemConfigService->getString(Settings::ECS_BUTTON_LANGUAGE_ISO, $salesChannelId)) {
-            return $settingsLocale;
+            return $this->localeCodeProvider->getFormattedLocaleCode($settingsLocale);
         }
 
-        return \str_replace(
-            '-',
-            '_',
+        return $this->localeCodeProvider->getFormattedLocaleCode(
             $this->localeCodeProvider->getLocaleCodeFromContext($context)
         );
     }

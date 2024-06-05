@@ -26,6 +26,7 @@
 
         <service id="Swag\PayPal\Util\LocaleCodeProvider">
             <argument type="service" id="language.repository"/>
+            <argument type="service" id="monolog.logger.paypal"/>
 
             <tag name="kernel.reset" method="reset"/>
         </service>
