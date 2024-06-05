@@ -35,7 +35,6 @@ use Swag\PayPal\OrdersApi\Builder\APM\MultibancoOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\MyBankOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\OxxoOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\P24OrderBuilder;
-use Swag\PayPal\OrdersApi\Builder\APM\SofortOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\TrustlyOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -116,7 +115,6 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
             [$this->getContainer()->get(MyBankOrderBuilder::class)],
             [$this->getContainer()->get(OxxoOrderBuilder::class)],
             [$this->getContainer()->get(P24OrderBuilder::class)],
-            [$this->getContainer()->get(SofortOrderBuilder::class)],
             [$this->getContainer()->get(TrustlyOrderBuilder::class)],
         ];
     }
