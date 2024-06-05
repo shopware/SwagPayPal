@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Checkout\ExpressCheckout\Service;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
@@ -80,7 +81,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
 
         $this->expressCheckoutDataService = new PayPalExpressCheckoutDataService(
             $this->cartService,
-            new LocaleCodeProvider(new LanguageRepoMock()),
+            new LocaleCodeProvider(new LanguageRepoMock(), $this->createMock(LoggerInterface::class)),
             $router,
             $this->paymentMethodUtil,
             $this->systemConfigService,
