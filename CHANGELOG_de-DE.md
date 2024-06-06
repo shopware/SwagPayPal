@@ -1,3 +1,6 @@
+# 8.3.0
+- PPI-934 - Übermittlung von Sendungsverfolgungsdaten auf neue PayPal-API-Endpunkte umgezogen
+
 # 8.2.0
 - PPI-666 - Zusätzliche Informationen auf Rechnung für Rechnungskäufe hinzugefügt
 - PPI-924 - Explizitere Fehlermeldungen für Fehler beim Checkout hinzugefügt (z.B. Postleitzahl fehlt)

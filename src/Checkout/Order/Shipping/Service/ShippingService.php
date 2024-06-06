@@ -16,12 +16,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessageHandler;
 use Swag\PayPal\RestApi\V1\Api\Shipping;
 use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
 use Swag\PayPal\RestApi\V1\Api\Shipping\TrackerCollection;
 use Swag\PayPal\RestApi\V1\Resource\ShippingResource;
 use Swag\PayPal\SwagPayPal;
 
+/**
+ * @deprecated tag:v10.0.0 - Will be removed and is replaced by {@see ShippingInformationMessageHandler}
+ */
 #[Package('checkout')]
 class ShippingService
 {

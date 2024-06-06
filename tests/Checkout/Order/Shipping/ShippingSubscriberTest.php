@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Checkout\Order\Shipping;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryDefinition;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Framework\Context;
@@ -25,8 +24,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\PreWriteValida
 use Shopware\Core\Framework\DataAbstractionLayer\Write\WriteContext;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\Checkout\Order\Shipping\Service\ShippingService;
+use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessage;
 use Swag\PayPal\Checkout\Order\Shipping\ShippingSubscriber;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * @internal
@@ -36,22 +37,66 @@ class ShippingSubscriberTest extends TestCase
 {
     private const TEST_CODE = 'test_code';
 
-    /**
-     * @var ShippingService&MockObject
-     */
-    private $shippingService;
+    private ShippingSubscriber $subscriber;
+
+    private MessageBusInterface&MockObject $bus;
+
+    protected function setUp(): void
+    {
+        $this->bus = $this->createMock(MessageBusInterface::class);
+        $this->subscriber = new ShippingSubscriber($this->bus);
+    }
+
+    public static function dataProviderWriteResult(): \Generator
+    {
+        yield 'inserted one tracking code, without changeset' => [
+            new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => [self::TEST_CODE]], 'order_delivery', EntityWriteResult::OPERATION_INSERT, null, null),
+            [self::TEST_CODE],
+            [],
+        ];
+
+        yield 'updated one tracking code, with changeset' => [
+            new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => [self::TEST_CODE]], 'order_delivery', EntityWriteResult::OPERATION_UPDATE, null, new ChangeSet(
+                ['tracking_codes' => null],
+                ['tracking_codes' => '["test_code"]'],
+                false,
+            )),
+            [self::TEST_CODE],
+            [],
+        ];
+
+        yield 'deleted one existing tracking code, with changeset' => [
+            new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => null], 'order_delivery', EntityWriteResult::OPERATION_UPDATE, null, new ChangeSet(
+                ['tracking_codes' => '["test_code"]'],
+                ['tracking_codes' => null],
+                false,
+            )),
+            [],
+            [self::TEST_CODE],
+        ];
+
+        yield 'deleted one not existing tracking code, with changeset' => [
+            new EntityWriteResult(Uuid::randomHex(), [], 'order_delivery', EntityWriteResult::OPERATION_DELETE, null, new ChangeSet(
+                ['tracking_codes' => '["test_code"]'],
+                [],
+                true,
+            )),
+            null,
+            [],
+        ];
+    }
 
     public function testTriggerChangeSet(): void
     {
         $event = new PreWriteValidationEvent(WriteContext::createFromContext(Context::createDefaultContext()), [
-            new DeleteCommand(new OrderDeliveryDefinition(), [Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, [])), // not touched, wrong command
-            new UpdateCommand(new OrderDeliveryDefinition(), [], [Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, no payload
-            new UpdateCommand(new OrderDefinition(), ['tracking_codes' => '["code"]'], [Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, wrong entity
-            new InsertCommand(new OrderDeliveryDefinition(), ['tracking_codes' => '["code"]'], [Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, not changeset aware
-            new UpdateCommand(new OrderDeliveryDefinition(), ['tracking_codes' => '["code"]'], [Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // touched
+            new DeleteCommand(new OrderDeliveryDefinition(), ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, [])), // not touched, wrong command
+            new UpdateCommand(new OrderDeliveryDefinition(), [], ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, no payload
+            new UpdateCommand(new OrderDefinition(), ['tracking_codes' => '["code"]'], ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, wrong entity
+            new InsertCommand(new OrderDeliveryDefinition(), ['tracking_codes' => '["code"]'], ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, not changeset aware
+            new UpdateCommand(new OrderDeliveryDefinition(), ['tracking_codes' => '["code"]'], ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // touched
         ]);
 
-        $this->getSubscriber()->triggerChangeSet($event);
+        $this->subscriber->triggerChangeSet($event);
 
         foreach ($event->getCommands() as $index => $command) {
             static::assertSame(
@@ -64,10 +109,10 @@ class ShippingSubscriberTest extends TestCase
     public function testTriggerChangeSetNonLiveVersion(): void
     {
         $event = new PreWriteValidationEvent(WriteContext::createFromContext(Context::createDefaultContext()->createWithVersionId(Uuid::randomHex())), [
-            new UpdateCommand(new OrderDeliveryDefinition(), [], [Uuid::randomHex()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, no payload
+            new UpdateCommand(new OrderDeliveryDefinition(), [], ['id' => Uuid::randomBytes()], new EntityExistence('order_delivery', ['id' => Uuid::randomHex()], true, false, false, []), ''), // not touched, no payload
         ]);
 
-        $this->getSubscriber()->triggerChangeSet($event);
+        $this->subscriber->triggerChangeSet($event);
 
         foreach ($event->getCommands() as $command) {
             static::assertInstanceOf(ChangeSetAware::class, $command);
@@ -89,13 +134,16 @@ class ShippingSubscriberTest extends TestCase
             [],
         );
 
-        $subscriber = $this->getSubscriber();
-        $this->shippingService
+        $this->bus
             ->expects($expectedAfter === null ? static::never() : static::once())
-            ->method('updateTrackingCodes')
-            ->with($result->getPrimaryKey(), $expectedAfter, $expectedBefore, $event->getContext());
+            ->method('dispatch')
+            ->willReturnCallback(function (ShippingInformationMessage $message) use (&$result): Envelope {
+                static::assertSame($result->getPrimaryKey(), $message->getOrderDeliveryId());
 
-        $subscriber->onOrderDeliveryWritten($event);
+                return new Envelope($message);
+            });
+
+        $this->subscriber->onOrderDeliveryWritten($event);
     }
 
     /**
@@ -112,58 +160,10 @@ class ShippingSubscriberTest extends TestCase
             [],
         );
 
-        $subscriber = $this->getSubscriber();
-        $this->shippingService
-            ->expects(static::never())->method('updateTrackingCodes');
+        $this->bus
+            ->expects(static::never())
+            ->method('dispatch');
 
-        $subscriber->onOrderDeliveryWritten($event);
-    }
-
-    public function dataProviderWriteResult(): array
-    {
-        return [
-            [
-                new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => [self::TEST_CODE]], 'order_delivery', EntityWriteResult::OPERATION_INSERT, null, null),
-                [self::TEST_CODE],
-                [],
-            ],
-            [
-                new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => [self::TEST_CODE]], 'order_delivery', EntityWriteResult::OPERATION_UPDATE, null, new ChangeSet(
-                    ['tracking_codes' => null],
-                    ['tracking_codes' => '["test_code"]'],
-                    false,
-                )),
-                [self::TEST_CODE],
-                [],
-            ],
-            [
-                new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => null], 'order_delivery', EntityWriteResult::OPERATION_UPDATE, null, new ChangeSet(
-                    ['tracking_codes' => '["test_code"]'],
-                    ['tracking_codes' => null],
-                    false,
-                )),
-                [],
-                [self::TEST_CODE],
-            ],
-            [
-                new EntityWriteResult(Uuid::randomHex(), [], 'order_delivery', EntityWriteResult::OPERATION_DELETE, null, new ChangeSet(
-                    ['tracking_codes' => '["test_code"]'],
-                    [],
-                    true,
-                )),
-                null,
-                [],
-            ],
-        ];
-    }
-
-    private function getSubscriber(): ShippingSubscriber
-    {
-        $this->shippingService = $this->createMock(ShippingService::class);
-
-        return new ShippingSubscriber(
-            $this->shippingService,
-            $this->createMock(LoggerInterface::class),
-        );
+        $this->subscriber->onOrderDeliveryWritten($event);
     }
 }
