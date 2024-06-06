@@ -33,6 +33,8 @@ use Swag\PayPal\SwagPayPal;
 
 /**
  * @internal
+ *
+ * @deprecated tag:v10.0.0 - Will be removed
  */
 #[Package('checkout')]
 class ShippingServiceTest extends TestCase
