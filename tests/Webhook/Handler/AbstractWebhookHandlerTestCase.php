@@ -33,8 +33,8 @@ use Swag\PayPal\Webhook\Handler\AbstractWebhookHandler;
 #[Package('checkout')]
 abstract class AbstractWebhookHandlerTestCase extends TestCase
 {
-    use DatabaseTransactionBehaviour;
     use KernelTestBehaviour;
+    use DatabaseTransactionBehaviour;
     use OrderTransactionTrait;
     use StateMachineStateTrait;
 
