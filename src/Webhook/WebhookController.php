@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\Exception\WebhookException;
@@ -179,6 +180,14 @@ class WebhookController extends AbstractController
             $this->logger->error($logMessage, $logContext);
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
+        } catch (PayPalApiException $exception) {
+            if ($exception->getIssue() === PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND) {
+                $this->logger->warning(\sprintf('[PayPal Webhook] %s', $exception->getMessage()), ['webhook', \json_encode($webhook)]);
+
+                return;
+            }
+
+            throw $exception;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['error' => $e]);
 
