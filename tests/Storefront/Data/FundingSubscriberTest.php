@@ -69,6 +69,7 @@ class FundingSubscriberTest extends TestCase
         $subscriber->addFundingAvailabilityData($event);
 
         $extension = $event->getPagelet()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION);
+
         static::assertInstanceOf(FundingEligibilityData::class, $extension);
         static::assertSame(self::TEST_CLIENT_ID, $extension->getClientId());
         static::assertSame('EUR', $extension->getCurrency());
@@ -83,7 +84,7 @@ class FundingSubscriberTest extends TestCase
         $credentialsUtil = new CredentialsUtil($systemConfig);
 
         $localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
-        $localeCodeProvider->method('getLocaleCodeFromContext')->willReturn('en_GB');
+        $localeCodeProvider->method('getFormattedLocaleCode')->willReturn('en_GB');
 
         $router = $this->createMock(RouterInterface::class);
         $router->expects(static::atMost(1))->method('generate')->willReturn('/paypal/payment-method-eligibility');
