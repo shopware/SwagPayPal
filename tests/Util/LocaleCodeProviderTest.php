@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Util;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
@@ -19,11 +20,27 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 #[Package('checkout')]
 class LocaleCodeProviderTest extends TestCase
 {
+    private LocaleCodeProvider $provider;
+
+    protected function setUp(): void
+    {
+        $this->provider = new LocaleCodeProvider(
+            new LanguageRepoMock(),
+            $this->createMock(LoggerInterface::class)
+        );
+    }
+
     public function testGetLocaleCodeFromDefaultContext(): void
     {
-        $localeCodeProvider = new LocaleCodeProvider(new LanguageRepoMock());
-        $iso = $localeCodeProvider->getLocaleCodeFromContext(Context::createDefaultContext());
+        $iso = $this->provider->getLocaleCodeFromContext(Context::createDefaultContext());
 
         static::assertSame(LanguageRepoMock::LOCALE_CODE, $iso);
+    }
+
+    public function testGetDefaultLocale(): void
+    {
+        $locale = $this->provider->getFormattedLocaleCode('cch-NG');
+
+        static::assertSame('en_GB', $locale);
     }
 }
