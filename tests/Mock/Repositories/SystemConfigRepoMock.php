@@ -8,13 +8,13 @@
 namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigEntity;
 use Swag\PayPal\Setting\Settings;
@@ -23,6 +23,8 @@ use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<SystemConfigCollection>
  */
 #[Package('checkout')]
 class SystemConfigRepoMock extends AbstractRepoMock
@@ -34,15 +36,15 @@ class SystemConfigRepoMock extends AbstractRepoMock
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        /** @var EqualsFilter $filter */
         $filter = $criteria->getFilters()[0];
+        \assert($filter instanceof EqualsFilter);
         if ($context->hasExtension(WebhookControllerTest::EMPTY_TOKEN)
             || $filter->getValue() !== WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN
         ) {
             return new EntitySearchResult(
                 $this->getDefinition()->getEntityName(),
                 0,
-                new EntityCollection([]),
+                new SystemConfigCollection([]),
                 null,
                 $criteria,
                 $context
@@ -52,7 +54,7 @@ class SystemConfigRepoMock extends AbstractRepoMock
         return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             1,
-            new EntityCollection([
+            new SystemConfigCollection([
                 $this->createConfigEntity(),
             ]),
             null,

@@ -76,7 +76,6 @@ class OpenAPISchemaTest extends TestCase
     {
         $failures = [];
 
-        /** @var LogRecord $record */
         foreach ($this->logHandler->getRecords() as $record) {
             if ($record->level->isLowerThan(Level::Notice) || $this->ignorableRecord($record)) {
                 continue;
@@ -122,7 +121,6 @@ class OpenAPISchemaTest extends TestCase
             if (!\in_array($annotation->method, $routeMethods, true)) {
                 $failures[] = $fqdn . ' was expected to have a method of "' . \implode('" or "', $routeMethods) . '", but found "' . $annotation->method . '" in OpenAPI Schema';
             } else {
-                /** @phpstan-ignore-next-line - comparing requestBody with Generator::UNDEFINED is valid */
                 if ($annotation->method === 'GET' && $annotation->requestBody !== Generator::UNDEFINED) {
                     $failures[] = $fqdn . ' is a GET-Request and was not expected to have a request body';
                 }

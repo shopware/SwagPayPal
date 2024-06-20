@@ -23,7 +23,7 @@ class MessageBusMock implements MessageBusInterface
      */
     private array $envelopes = [];
 
-    public function dispatch($message, array $stamps = []): Envelope
+    public function dispatch(object $message, array $stamps = []): Envelope
     {
         $envelope = $message instanceof Envelope ? $message : new Envelope($message);
         $this->envelopes[] = $envelope;

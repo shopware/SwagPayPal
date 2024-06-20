@@ -12,11 +12,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Product;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductEntity;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<PosSalesChannelProductCollection>
  */
 #[Package('checkout')]
 class PosProductRepoMock extends AbstractRepoMock
@@ -51,7 +54,7 @@ class PosProductRepoMock extends AbstractRepoMock
     }
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
     protected function getPrimaryKey(Entity $entity): array
     {

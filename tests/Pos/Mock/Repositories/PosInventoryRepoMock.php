@@ -8,14 +8,18 @@
 namespace Swag\PayPal\Test\Pos\Mock\Repositories;
 
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<PosSalesChannelInventoryCollection>
  */
 #[Package('checkout')]
 class PosInventoryRepoMock extends AbstractRepoMock
@@ -42,17 +46,14 @@ class PosInventoryRepoMock extends AbstractRepoMock
         return $entity;
     }
 
-    public function filterByProduct(ProductEntity $productEntity): ?PosSalesChannelInventoryEntity
+    public function filterByProduct(SalesChannelProductEntity $productEntity): ?PosSalesChannelInventoryEntity
     {
-        /** @var PosSalesChannelInventoryEntity|null $entity */
-        $entity = $this->entityCollection->filter(
+        return $this->entityCollection->filter(
             function (PosSalesChannelInventoryEntity $inventory) use ($productEntity) {
                 return $inventory->getProductId() === $productEntity->getId()
                     && $inventory->getProductVersionId() === $productEntity->getVersionId();
             }
         )->first();
-
-        return $entity;
     }
 
     protected function getUniqueIdentifier(Entity $entity): string
@@ -64,7 +65,7 @@ class PosInventoryRepoMock extends AbstractRepoMock
     }
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
     protected function getPrimaryKey(Entity $entity): array
     {

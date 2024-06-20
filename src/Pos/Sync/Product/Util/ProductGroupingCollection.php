@@ -13,12 +13,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Collection;
 
 /**
- * @method void                        set(string $key, ProductGrouping $entity)
- * @method \Generator<ProductGrouping> getIterator()
- * @method ProductGrouping[]           getElements()
- * @method ProductGrouping|null        get(string $key)
- * @method ProductGrouping|null        first()
- * @method ProductGrouping|null        last()
+ * @extends Collection<ProductGrouping>
  */
 #[Package('checkout')]
 class ProductGroupingCollection extends Collection

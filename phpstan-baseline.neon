@@ -1,0 +1,841 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Checkout/Card/ACDCValidator.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Checkout/Card/ApplePayValidator.php
+
+		-
+			message: "#^Provide more specific return type \"Swag\\\\PayPal\\\\Checkout\\\\Card\\\\Exception\\\\CardValidationFailedException\" over abstract one$#"
+			count: 1
+			path: src/Checkout/Card/Exception/CardValidationFailedException.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Checkout/Card/GooglePayValidator.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Checkout/ExpressCheckout/SalesChannel/ExpressCreateOrderRoute.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 6
+			path: src/Checkout/ExpressCheckout/Service/ExpressCustomerService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/Checkout/PUI/Service/PUIInstructionsFetchService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Checkout/Payment/Method/ACDCHandler.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Checkout/Payment/Method/APMHandler.php
+
+		-
+			message: "#^Mixed variable in a `\\$session\\-\\>getFlashBag\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: src/Checkout/Payment/Method/PUIHandler.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Checkout/Payment/Method/PUIHandler.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/Checkout/Payment/Service/OrderExecuteService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Checkout/Payment/Service/VaultTokenService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/Dispute/Administration/DisputeController.php
+
+		-
+			message: "#^Usage of ALTER TABLE \\.\\. AFTER is disallowed in migrations to avoid implicit temporary table usage\\.$#"
+			count: 1
+			path: src/Migration/Migration1706111604AddCustomerIdToVault.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/OrdersApi/Administration/PayPalOrdersController.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/OrdersApi/Administration/Service/CaptureRefundCreator.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/OrdersApi/Builder/APM/AbstractAPMOrderBuilder.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/OrdersApi/Builder/APM/BoletoBancarioOrderBuilder.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 3
+			path: src/OrdersApi/Builder/AbstractOrderBuilder.php
+
+		-
+			message: "#^Provide more specific return type \"Swag\\\\PayPal\\\\OrdersApi\\\\Builder\\\\Exception\\\\OrderBuildException\" over abstract one$#"
+			count: 1
+			path: src/OrdersApi/Builder/Exception/OrderBuildException.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 3
+			path: src/OrdersApi/Builder/PUIOrderBuilder.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/OrdersApi/Builder/PayPalOrderBuilder.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 5
+			path: src/PaymentsApi/Administration/PayPalPaymentController.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/PaymentsApi/Builder/OrderPaymentBuilder.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/PaymentsApi/Patch/PayerInfoPatchBuilder.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/PaymentsApi/Patch/ShippingAddressPatchBuilder.php
+
+		-
+			message: "#^Use explicit names over dynamic ones$#"
+			count: 5
+			path: src/Pos/Api/Common/PosStruct.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 4
+			path: src/Pos/Api/Service/ApiKeyDecoder.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 4
+			path: src/Pos/Api/Service/Converter/UuidConverter.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/Api/Service/MediaConverter.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/Client/TokenClient.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/DataAbstractionLayer/Entity/PosSalesChannelEntity.php
+
+		-
+			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			count: 1
+			path: src/Pos/MessageQueue/Handler/CloneVisibilityHandler.php
+
+		-
+			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			count: 1
+			path: src/Pos/MessageQueue/Handler/Sync/ImageSyncHandler.php
+
+		-
+			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			count: 1
+			path: src/Pos/MessageQueue/Handler/Sync/InventorySyncHandler.php
+
+		-
+			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			count: 1
+			path: src/Pos/MessageQueue/Handler/Sync/ProductCleanupSyncHandler.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/MessageQueue/Handler/Sync/ProductCleanupSyncHandler.php
+
+		-
+			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			count: 1
+			path: src/Pos/MessageQueue/Handler/Sync/ProductSingleSyncHandler.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/MessageQueue/Handler/Sync/ProductSingleSyncHandler.php
+
+		-
+			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			count: 1
+			path: src/Pos/MessageQueue/Handler/Sync/ProductVariantSyncHandler.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/MessageQueue/Handler/Sync/ProductVariantSyncHandler.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/MessageQueue/Handler/SyncManagerHandler.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 3
+			path: src/Pos/MessageQueue/Manager/ImageSyncManager.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/Pos/MessageQueue/Manager/ProductSyncManager.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/MessageQueue/MessageHydrator.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/Payment/PosPayment.php
+
+		-
+			message: "#^Provide more specific return type \"Symfony\\\\Component\\\\HttpFoundation\\\\JsonResponse\" over abstract one$#"
+			count: 5
+			path: src/Pos/PosSyncController.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/PosSyncController.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/Run/RunService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/Setting/Service/ApiCredentialService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/Pos/Setting/Service/InformationDefaultService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 3
+			path: src/Pos/Setting/Service/InformationFetchService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 3
+			path: src/Pos/Setting/Service/ProductCountService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/Pos/Setting/Service/ProductVisibilityCloneService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/Setting/SettingsController.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Pos\\\\Sync\\\\Context\\\\InventoryContext has an uninitialized property \\$salesChannel\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Pos/Sync/Context/InventoryContext.php
+
+		-
+			message: "#^Array method calls \\[\\$this, \"method\"\\] are not allowed\\. Use explicit method instead to help PhpStorm, PHPStan and Rector understand your code$#"
+			count: 2
+			path: src/Pos/Sync/Context/InventoryContextFactory.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/Sync/Context/InventoryContextFactory.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/Pos/Sync/ImageSyncer.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Pos\\\\Sync\\\\Inventory\\\\Calculator\\\\LocalWebhookCalculator has an uninitialized property \\$fixedUpdates\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Pos/Sync/Inventory/Calculator/LocalWebhookCalculator.php
+
+		-
+			message: "#^Array method calls \\[\\$this, \"method\"\\] are not allowed\\. Use explicit method instead to help PhpStorm, PHPStan and Rector understand your code$#"
+			count: 1
+			path: src/Pos/Sync/Product/DeletedUpdater.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Pos\\\\Sync\\\\Product\\\\Util\\\\ProductGrouping has an uninitialized property \\$product\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Pos/Sync/Product/Util/ProductGrouping.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Pos/Webhook/Handler/AbstractWebhookHandler.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 8
+			path: src/Pos/Webhook/WebhookController.php
+
+		-
+			message: "#^Access to an uninitialized property Swag\\\\PayPal\\\\Pos\\\\Webhook\\\\WebhookRegistry\\:\\:\\$registeredWebhooks\\.$#"
+			count: 2
+			path: src/Pos/Webhook/WebhookRegistry.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/Pos/Webhook/WebhookRegistry.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 5
+			path: src/Pos/Webhook/WebhookService.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Reporting\\\\DataAbstractionLayer\\\\TransactionReport\\\\TransactionReportEntity has an uninitialized property \\$currencyIso\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Reporting/DataAbstractionLayer/TransactionReport/TransactionReportEntity.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Reporting\\\\DataAbstractionLayer\\\\TransactionReport\\\\TransactionReportEntity has an uninitialized property \\$orderTransactionId\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Reporting/DataAbstractionLayer/TransactionReport/TransactionReportEntity.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Reporting\\\\DataAbstractionLayer\\\\TransactionReport\\\\TransactionReportEntity has an uninitialized property \\$orderTransactionVersionId\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Reporting/DataAbstractionLayer/TransactionReport/TransactionReportEntity.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Reporting\\\\DataAbstractionLayer\\\\TransactionReport\\\\TransactionReportEntity has an uninitialized property \\$totalPrice\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Reporting/DataAbstractionLayer/TransactionReport/TransactionReportEntity.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/RestApi/PayPalApiCollection.php
+
+		-
+			message: "#^Use explicit names over dynamic ones$#"
+			count: 7
+			path: src/RestApi/PayPalApiStruct.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/RestApi/V1/Api/Payment/Transaction/ItemList/Item.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/RestApi/V1/Resource/MerchantIntegrationsResource.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 6
+			path: src/RestApi/V1/Resource/WebhookResource.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/RestApi/V2/Api/Order/PurchaseUnit/Item.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/RestApi/V2/Api/Order/PurchaseUnit/Payments/Capture.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/RestApi/V2/Api/Order/PurchaseUnit/Payments/Refund.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Setting/Service/ApiCredentialService.php
+
+		-
+			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\System\\\\SalesChannel\\\\NoContentResponse\" over abstract one$#"
+			count: 3
+			path: src/Storefront/Controller/PayPalController.php
+
+		-
+			message: "#^Mixed variable in a `\\$checkoutMethod\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 2
+			path: src/Storefront/Data/CheckoutDataSubscriber.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$billingCountryCode\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Util/Availability/AvailabilityContext.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$currencyCode\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Util/Availability/AvailabilityContext.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$hasDigitalProducts\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Util/Availability/AvailabilityContext.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$salesChannelId\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Util/Availability/AvailabilityContext.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$subscription\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Util/Availability/AvailabilityContext.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$totalAmount\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: src/Util/Availability/AvailabilityContext.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Util/Lifecycle/State/PosStateService.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 3
+			path: src/Util/Lifecycle/Update.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/Webhook/Command/CrawlWebhookEventNamesCommand.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 4
+			path: src/Webhook/Handler/AbstractWebhookHandler.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Webhook/Handler/AuthorizationVoided.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Webhook/Handler/CaptureCompleted.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Webhook/Handler/CaptureDenied.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 3
+			path: src/Webhook/Handler/CaptureRefunded.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Webhook/Handler/SaleComplete.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Webhook/Handler/SaleDenied.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Webhook/Handler/SaleRefunded.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Webhook/Handler/VaultPaymentTokenCreated.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 1
+			path: src/Webhook/Handler/VaultPaymentTokenDeleted.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 5
+			path: src/Webhook/WebhookController.php
+
+		-
+			message: "#^Access to an uninitialized property Swag\\\\PayPal\\\\Webhook\\\\WebhookRegistry\\:\\:\\$registeredWebhooks\\.$#"
+			count: 2
+			path: src/Webhook/WebhookRegistry.php
+
+		-
+			message: "#^Throwing new exceptions within classes are not allowed\\. Please use domain exception pattern\\. See https\\://github\\.com/shopware/platform/blob/v6\\.4\\.20\\.0/adr/2022\\-02\\-24\\-domain\\-exceptions\\.md$#"
+			count: 2
+			path: src/Webhook/WebhookRegistry.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Card\\\\AbstractCardValidatorTestCase has an uninitialized property \\$systemConfigService\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Checkout/Card/AbstractCardValidatorTestCase.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Card\\\\AbstractCardValidatorTestCase has an uninitialized property \\$validator\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Checkout/Card/AbstractCardValidatorTestCase.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Method\\\\AbstractTestSyncAPMHandler has an uninitialized property \\$clientFactory\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Checkout/Method/AbstractTestSyncAPMHandler.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Method\\\\PUIHandlerTest has an uninitialized property \\$session\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Checkout/Method/PUIHandlerTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Order\\\\Shipping\\\\ShippingSubscriberTest has an uninitialized property \\$shippingService\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Checkout/Order/Shipping/ShippingSubscriberTest.php
+
+		-
+			message: "#^Mixed variable in a `\\$criteria\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: tests/Checkout/PUI/SalesChannel/PUIPaymentInstructionsRouteTest.php
+
+		-
+			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Payment\\\\ScheduledTask\" does not follow PSR\\-4 configuration in composer\\.json$#"
+			count: 1
+			path: tests/Checkout/PUI/ScheduledTask/PUIInstructionsFetchTaskHandlerTest.php
+
+		-
+			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Checkout\\\\PUI\\\\SalesChannel\" does not follow PSR\\-4 configuration in composer\\.json$#"
+			count: 1
+			path: tests/Checkout/PUI/Service/PUIInstructionsFetchServiceTest.php
+
+		-
+			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Payment\\\\ScheduledTask\" does not follow PSR\\-4 configuration in composer\\.json$#"
+			count: 1
+			path: tests/Checkout/Payment/MessageQueue/TransactionStatusSyncMessageHandlerTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Payment\\\\PayPalPaymentHandlerTest has an uninitialized property \\$clientFactory\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Checkout/Payment/PayPalPaymentHandlerTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Plus\\\\PlusPaymentFinalizeControllerTest has an uninitialized property \\$orderTransactionStateHandler\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Checkout/Plus/PlusPaymentFinalizeControllerTest.php
+
+		-
+			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Installment\\\\Banner\" does not follow PSR\\-4 configuration in composer\\.json$#"
+			count: 1
+			path: tests/Installment/Banner/Service/BannerDataServiceTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Mock\\\\PayPal\\\\Client\\\\GuzzleClientMock has an uninitialized property \\$data\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Mock/PayPal/Client/GuzzleClientMock.php
+
+		-
+			message: "#^Mixed variable in a `\\$struct\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
+
+		-
+			message: "#^Mixed variable in a `\\$struct\\?\\-\\>getExperienceContext\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
+
+		-
+			message: "#^Use explicit names over dynamic ones$#"
+			count: 2
+			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct has an uninitialized property \\$bar\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Api/Common/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct has an uninitialized property \\$foo\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Api/Common/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct has an uninitialized property \\$id\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Api/Common/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct has an uninitialized property \\$notExistingClass\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Api/Common/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct has an uninitialized property \\$notExistingCollectionClass\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Api/Common/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct\\\\Bar has an uninitialized property \\$bar\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Api/Common/_fixtures/TestStruct/Bar.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct\\\\Foo has an uninitialized property \\$fooBaz\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Api/Common/_fixtures/TestStruct/Foo.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct\\\\Foo has an uninitialized property \\$fooBoo\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Api/Common/_fixtures/TestStruct/Foo.php
+
+		-
+			message: "#^Provide more specific return type \"GuzzleHttp\\\\Psr7\\\\Response\" over abstract one$#"
+			count: 1
+			path: tests/Pos/Mock/Client/GuzzleClientMock.php
+
+		-
+			message: "#^Use explicit names over dynamic ones$#"
+			count: 1
+			path: tests/Pos/Mock/MessageBusMock.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Mock\\\\ProductContextMock has an uninitialized property \\$status\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Mock/ProductContextMock.php
+
+		-
+			message: "#^Parameter \\#1 \\$entity of method Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityCollection\\<Shopware\\\\Core\\\\Content\\\\Product\\\\ProductEntity\\>\\:\\:add\\(\\) expects Shopware\\\\Core\\\\Content\\\\Product\\\\ProductEntity, Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Entity given\\.$#"
+			count: 2
+			path: tests/Pos/Mock/Repositories/SalesChannelProductRepoMock.php
+
+		-
+			message: "#^Return type \\(Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Search\\\\EntitySearchResult\\<Shopware\\\\Core\\\\Content\\\\Product\\\\SalesChannel\\\\SalesChannelProductCollection\\>\\) of method Swag\\\\PayPal\\\\Test\\\\Pos\\\\Mock\\\\Repositories\\\\SalesChannelProductRepoMock\\:\\:search\\(\\) should be compatible with return type \\(Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Search\\\\EntitySearchResult\\<Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityCollection\\>\\) of method Shopware\\\\Core\\\\System\\\\SalesChannel\\\\Entity\\\\SalesChannelRepository\\<Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityCollection\\>\\:\\:search\\(\\)$#"
+			count: 1
+			path: tests/Pos/Mock/Repositories/SalesChannelProductRepoMock.php
+
+		-
+			message: "#^Use explicit names over dynamic ones$#"
+			count: 2
+			path: tests/Pos/Run/PosSyncControllerTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$messageBus\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Util/SettingsControllerTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$productVisibilityRepository\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Util/SettingsControllerTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$runRepository\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Util/SettingsControllerTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$runService\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Util/SettingsControllerTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$salesChannelProductRepository\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Util/SettingsControllerTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$salesChannelRepository\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Pos/Util/SettingsControllerTest.php
+
+		-
+			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\" does not follow PSR\\-4 configuration in composer\\.json$#"
+			count: 1
+			path: tests/Pos/Webhook/InventoryChangedTest.php
+
+		-
+			message: "#^Mixed variable in a `\\$entry\\['request'\\]\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: tests/Reporting/ScheduledTask/TurnoverReportingTaskHandlerTest.php
+
+		-
+			message: "#^Mixed variable in a `\\$entry\\['request'\\]\\-\\>getBody\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: tests/Reporting/ScheduledTask/TurnoverReportingTaskHandlerTest.php
+
+		-
+			message: "#^Multiple class/interface/trait is not allowed in single file$#"
+			count: 1
+			path: tests/RestApi/PayPalApiCollectionTest.php
+
+		-
+			message: "#^Array method calls \\[\\$this, \"method\"\\] are not allowed\\. Use explicit method instead to help PhpStorm, PHPStan and Rector understand your code$#"
+			count: 1
+			path: tests/RestApi/PayPalApiStructStructureTest.php
+
+		-
+			message: "#^Use explicit names over dynamic ones$#"
+			count: 2
+			path: tests/RestApi/PayPalApiStructStructureTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\V1\\\\Resource\\\\WebhookResourceTest has an uninitialized property \\$clientFactory\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/RestApi/V1/Resource/WebhookResourceTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$bar\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/RestApi/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$foo\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/RestApi/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$id\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/RestApi/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$notExistingClass\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/RestApi/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$notExistingCollectionClass\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/RestApi/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$scalarArray\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/RestApi/_fixtures/TestStruct.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct\\\\Bar has an uninitialized property \\$bar\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/RestApi/_fixtures/TestStruct/Bar.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct\\\\Foo has an uninitialized property \\$fooBaz\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/RestApi/_fixtures/TestStruct/Foo.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Setting\\\\Service\\\\MerchantIntegrationsServiceTest has an uninitialized property \\$clientFactory\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Setting/Service/MerchantIntegrationsServiceTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Setting\\\\Service\\\\MerchantIntegrationsServiceTest has an uninitialized property \\$systemConfigService\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Setting/Service/MerchantIntegrationsServiceTest.php
+
+		-
+			message: "#^Class like namespace \"\" does not follow PSR\\-4 configuration in composer\\.json$#"
+			count: 1
+			path: tests/ShopwarePluginClassTest.php
+
+		-
+			message: "#^Use explicit names over dynamic ones$#"
+			count: 2
+			path: tests/Storefront/Controller/ApplePayControllerTest.php
+
+		-
+			message: "#^Use explicit names over dynamic ones$#"
+			count: 4
+			path: tests/Storefront/Data/CheckoutSubscriberTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Storefront\\\\Data\\\\FundingSubscriberTest has an uninitialized property \\$session\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Storefront/Data/FundingSubscriberTest.php
+
+		-
+			message: "#^Class like namespace \"Shopware\\\\Core\" does not follow PSR\\-4 configuration in composer\\.json$#"
+			count: 1
+			path: tests/TestBootstrapper.php
+
+		-
+			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\Kernel\" over abstract one$#"
+			count: 1
+			path: tests/TestBootstrapper.php
+
+		-
+			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\TestBootstrapper\" over abstract one$#"
+			count: 11
+			path: tests/TestBootstrapper.php
+
+		-
+			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Util\\\\Lifecycle\" does not follow PSR\\-4 configuration in composer\\.json$#"
+			count: 1
+			path: tests/Util/Availability/AvailabilityServiceTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Util\\\\Lifecycle\\\\State\\\\PaymentMethodStateServiceTest has an uninitialized property \\$paymentMethodRepository\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Util/Lifecycle/State/PaymentMethodStateServiceTest.php
+
+		-
+			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Webhook\\\\Handler\\\\SaleRefundedTest has an uninitialized property \\$sale\\. Give it default value or assign it in the constructor\\.$#"
+			count: 1
+			path: tests/Webhook/Handler/SaleRefundedTest.php
