@@ -73,42 +73,37 @@ Component.register('swag-paypal-checkout-method', {
         },
 
         statusBadgeVariant() {
-            let variant;
-
             switch (this.onboardingStatus) {
-                case 'active': variant = 'success'; break;
-                case 'limited': case 'mybank': variant = 'danger'; break;
-                case 'inactive': case 'ineligible': variant = 'neutral'; break;
-                case 'pending': variant = 'info'; break;
-                default: variant = 'neutral';
+                case 'active':
+                    return 'success';
+                case 'limited':
+                case 'mybank':
+                    return 'danger';
+                case 'inactive':
+                case 'ineligible':
+                    return 'neutral';
+                case 'pending':
+                    return 'info';
+                default:
+                    return 'neutral';
             }
-
-            return variant;
         },
 
         statusBadgeColor() {
-            let variant;
-
             switch (this.onboardingStatus) {
                 case 'active':
-                    variant = '#37D046';
-                    break;
+                    return '#37D046';
                 case 'limited':
                 case 'mybank':
-                    variant = '#ff9800';
-                    break;
+                    return '#ff9800';
                 case 'inactive':
                 case 'ineligible':
-                    variant = '#52667A';
-                    break;
+                    return '#52667A';
                 case 'pending':
-                    variant = '#189eff';
-                    break;
+                    return '#189eff';
                 default:
-                    variant = '#189eff';
+                    return '#189eff';
             }
-
-            return variant;
         },
 
         onboardingStatusText() {
@@ -126,6 +121,10 @@ Component.register('swag-paypal-checkout-method', {
         },
 
         availabilityToolTip() {
+            if (!this.paymentMethod.formattedHandlerIdentifier) {
+                return null;
+            }
+
             const handlerElements = this.paymentMethod.formattedHandlerIdentifier.split('_');
             const handlerName = handlerElements[handlerElements.length - 1];
             const snippetKey = `swag-paypal.settingForm.checkout.availabilityToolTip.${handlerName}`;

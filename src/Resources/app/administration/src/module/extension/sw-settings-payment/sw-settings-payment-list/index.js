@@ -12,27 +12,38 @@ Component.override('sw-settings-payment-list', {
 
     data() {
         return {
+            /**
+             * @deprecated tag:v10.0.0 - Will be removed, use this.capabilities instead
+             */
             merchantIntegrations: [],
+            capabilities: [],
         };
     },
 
     methods: {
-        needsOnboarding(item) {
-            const integrationIds = Object.keys(this.merchantIntegrations);
+        needsOnboarding(id) {
+            const capabilityIds = Object.keys(this.capabilities);
 
-            if (!integrationIds.includes(item.id)) {
+            if (!capabilityIds.includes(id)) {
                 return false;
             }
 
-            return this.merchantIntegrations[item.id].toUpperCase() === 'INACTIVE';
+            return this.capabilities[id].toUpperCase() === 'INACTIVE';
         },
 
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed, use this.fetchMerchantCapabilities instead
+         */
         fetchMerchantIntegrations() {
-            this.SwagPayPalApiCredentialsService
-                .getMerchantInformation()
-                .then((response) => {
-                    this.merchantIntegrations = response.merchantIntegrations ?? [];
-                });
+            this.fetchMerchantCapabilities();
+        },
+
+        async fetchMerchantCapabilities() {
+            const merchantInformation = await this.SwagPayPalApiCredentialsService.getMerchantInformation();
+
+            this.capabilities = merchantInformation.capabilities ?? [];
+
+            this.merchantIntegrations = merchantInformation.merchantIntegrations ?? [];
         },
     },
 });

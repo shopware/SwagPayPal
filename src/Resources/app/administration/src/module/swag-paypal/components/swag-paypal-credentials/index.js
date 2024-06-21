@@ -121,35 +121,33 @@ Component.register('swag-paypal-credentials', {
                 clientSecret,
                 sandbox,
             ).then((response) => {
-                const credentialsValid = response.credentialsValid;
+                if (response.credentialsValid !== true) {
+                    return;
+                }
 
-                if (credentialsValid) {
-                    if (sandbox) {
-                        this.isTestingSandbox = false;
-                        this.isTestSandboxSuccessful = true;
-                    } else {
-                        this.isTestingLive = false;
-                        this.isTestLiveSuccessful = true;
-                    }
+                if (sandbox) {
+                    this.isTestingSandbox = false;
+                    this.isTestSandboxSuccessful = true;
+                } else {
+                    this.isTestingLive = false;
+                    this.isTestLiveSuccessful = true;
                 }
             }).catch((errorResponse) => {
-                if (errorResponse.response.data && errorResponse.response.data.errors) {
-                    let message = `<b>${this.$tc('swag-paypal.settingForm.messageTestError')}</b> `;
-                    message += errorResponse.response.data.errors.map((error) => {
-                        return error.detail;
-                    }).join(' / ');
+                if (!errorResponse.response?.data?.errors) {
+                    return;
+                }
 
-                    this.createNotificationError({
-                        message: message,
-                    });
+                let message = `<b>${this.$tc('swag-paypal.settingForm.messageTestError')}</b> `;
+                message += errorResponse.response.data.errors.map((error) => error.detail).join(' / ');
 
-                    if (sandbox) {
-                        this.isTestingSandbox = false;
-                        this.isTestSandboxSuccessful = false;
-                    } else {
-                        this.isTestingLive = false;
-                        this.isTestLiveSuccessful = false;
-                    }
+                this.createNotificationError({ message });
+
+                if (sandbox) {
+                    this.isTestingSandbox = false;
+                    this.isTestSandboxSuccessful = false;
+                } else {
+                    this.isTestingLive = false;
+                    this.isTestLiveSuccessful = false;
                 }
             });
         },
