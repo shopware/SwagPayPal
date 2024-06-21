@@ -1,14 +1,14 @@
 {% block sw_plugin_box_container_button %}
 <template>
     {% block swag_paypal_plugin_box_with_button_link_to_extension %}
-        <sw-button
-            variant="ghost"
-            size="small"
-            class="sw-plugin-box__button"
-            :router-link="{ path: '/swag/paypal/index' }"
-        >
-            {{ $tc('sw-plugin-box.buttonPluginSettings') }}
-        </sw-button>
+    <sw-button
+        variant="ghost"
+        size="small"
+        class="sw-plugin-box__button"
+        :router-link="{ path: '/swag/paypal/index' }"
+    >
+        {{ $tc('sw-plugin-box.buttonPluginSettings') }}
+    </sw-button>
     {% endblock %}
 </template>
 {% endblock %}

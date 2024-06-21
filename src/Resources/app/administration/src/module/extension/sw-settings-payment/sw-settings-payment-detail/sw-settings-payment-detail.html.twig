@@ -6,6 +6,7 @@
         :payment-method="paymentMethod"
     />
 </template>
+
 <template v-else>
     {% parent %}
 </template>
@@ -25,6 +26,7 @@
         :label="$tc('sw-settings-payment.detail.labelActive')"
     />
 </template>
+
 <template v-else>
     {% parent %}
 </template>

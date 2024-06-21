@@ -1,51 +1,56 @@
 {% block sw_text_field %}
     {% block swag_paypal_locale_field %}
-        <div class="swag-paypal-locale-field">
+    <div class="swag-paypal-locale-field">
 
-            {% block swag_paypal_locale_field_contextual_field %}
-                <sw-contextual-field class="sw-field--text"
-                                     v-bind="$attrs"
-                                     :name="formFieldName"
-                                     :error="error"
-                                     @inheritance-restore="$emit('inheritance-restore', $event)"
-                                     @inheritance-remove="$emit('inheritance-remove', $event)"
-                                     {% if VUE2 %}
-                                     v-on="$listeners"
-                                     {% endif %}>
+        {% block swag_paypal_locale_field_contextual_field %}
+        <sw-contextual-field
+            v-bind="$attrs"
+            class="sw-field--text"
+            :name="formFieldName"
+            :error="error"
+            @inheritance-restore="$emit('inheritance-restore', $event)"
+            @inheritance-remove="$emit('inheritance-remove', $event)"
+            {% if VUE2 %}
+            v-on="$listeners"
+            {% endif %}
+        >
 
-                    <template #sw-field-input="{ identification, error, disabled, size, setFocusClass, removeFocusClass, hasSuffix, hasPrefix }">
-                        <input type="text"
-                               :name="identification"
-                               :id="identification"
-                               :disabled="disabled"
-                               :value="currentValue"
-                               :placeHolder="placeholder"
-                               @input="onInput"
-                               @focus="setFocusClass"
-                               @blur="onBlur($event, removeFocusClass)"
-                               v-on="additionalListeners">
-                    </template>
-                </sw-contextual-field>
+            <template #sw-field-input="{ identification, error, disabled, size, setFocusClass, removeFocusClass, hasSuffix, hasPrefix }">
+                <input
+                    type="text"
+                    :name="identification"
+                    :id="identification"
+                    :disabled="disabled"
+                    :value="currentValue"
+                    :placeHolder="placeholder"
+                    @input="onInput"
+                    @focus="setFocusClass"
+                    @blur="onBlur($event, removeFocusClass)"
+                    v-on="additionalListeners"
+                >
+            </template>
+        </sw-contextual-field>
+        {% endblock %}
+
+        {% block swag_paypal_locale_field_information %}
+        <p class="swag-paypal-locale-field__text">
+
+            {% block swag_paypal_locale_field_information_text %}
+            {{ $tc('swag-paypal.settingForm.locale-field.infobox.text') }}
             {% endblock %}
 
-            {% block swag_paypal_locale_field_information %}
-                <p class="swag-paypal-locale-field__text">
-
-                    {% block swag_paypal_locale_field_information_text %}
-                        {{ $tc('swag-paypal.settingForm.locale-field.infobox.text') }}
-                    {% endblock %}
-
-                    {% block swag_paypal_locale_field_information_href %}
-                        <sw-external-link class="swag-paypal-locale-field__text-href"
-                                          href="https://developer.paypal.com/docs/api/reference/locale-codes/">
-                            {{ $tc('swag-paypal.settingForm.locale-field.infobox.href') }}
-                        </sw-external-link>
-                    {% endblock %}
-
-                </p>
+            {% block swag_paypal_locale_field_information_href %}
+            <sw-external-link
+                class="swag-paypal-locale-field__text-href"
+                href="https://developer.paypal.com/docs/api/reference/locale-codes/"
+            >
+                {{ $tc('swag-paypal.settingForm.locale-field.infobox.href') }}
+            </sw-external-link>
             {% endblock %}
 
-        </div>
+        </p>
+        {% endblock %}
+
+    </div>
     {% endblock %}
-
 {% endblock %}
