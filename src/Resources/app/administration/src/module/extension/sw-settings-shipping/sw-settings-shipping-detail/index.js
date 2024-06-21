@@ -58,12 +58,10 @@ Component.override('sw-settings-shipping-detail', {
         /**
          * @deprecated tag:v10.0.0 - Will be removed, use `fetchConfigCredentials` instead.
          */
-        fetchMerchantIntegrations() {
-            this.SwagPayPalApiCredentialsService
-                .getMerchantInformation()
-                .then((response) => {
-                    this.isPayPalEnabled = !!response.merchantIntegrations;
-                });
+        async fetchMerchantIntegrations() {
+            const merchantInformation = await this.SwagPayPalApiCredentialsService.getMerchantInformation();
+
+            this.isPayPalEnabled = merchantInformation?.merchantIntegrations !== null;
         },
     },
 });

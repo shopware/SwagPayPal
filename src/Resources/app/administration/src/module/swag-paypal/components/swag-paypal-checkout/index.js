@@ -87,7 +87,7 @@ Component.register('swag-paypal-checkout', {
                     legalName: null,
                     primaryEmail: null,
                 },
-                capabilities: [],
+                capabilities: {},
             },
             plusDeprecationModalOpen: false,
             showHintMerchantIdMustBeEnteredManually: false,
@@ -165,9 +165,9 @@ Component.register('swag-paypal-checkout', {
 
         sandboxToggleDisabled() {
             return ((!this.actualConfigData['SwagPayPal.settings.clientSecret']
-                        && this.actualConfigData['SwagPayPal.settings.clientSecretSandbox']
+                        && !!this.actualConfigData['SwagPayPal.settings.clientSecretSandbox']
                         && this.isSandbox)
-                || (this.actualConfigData['SwagPayPal.settings.clientSecret']
+                || (!!this.actualConfigData['SwagPayPal.settings.clientSecret']
                         && !this.actualConfigData['SwagPayPal.settings.clientSecretSandbox']
                         && this.isLive))
                 && !this.selectedSalesChannelId;
@@ -222,8 +222,8 @@ Component.register('swag-paypal-checkout', {
     },
 
     methods: {
-        async createdComponent() {
-            await this.getPaymentMethodsAndMerchantIntegrations();
+        createdComponent() {
+            this.getPaymentMethodsAndMerchantIntegrations();
         },
 
         deactivatePayPalPlus() {
@@ -237,29 +237,24 @@ Component.register('swag-paypal-checkout', {
 
         async getPaymentMethodsAndMerchantIntegrations() {
             this.isLoadingPaymentMethods = true;
-            await this.fetchMerchantIntegrations();
-            await this.getPaymentMethods();
+            await Promise.all([this.fetchMerchantIntegrations(), this.getPaymentMethods()]);
             this.isLoadingPaymentMethods = false;
         },
 
         async getPaymentMethods() {
-            this.paymentMethods = await this.paymentMethodRepository.search(this.paymentMethodCriteria, Context.api)
-                .then((response) => {
-                    return response.filter((paymentMethod) => {
-                        return paymentMethod.formattedHandlerIdentifier !== 'handler_swag_pospayment'
-                            && paymentMethod.formattedHandlerIdentifier !== 'handler_swag_trustlyapmhandler'
-                            && paymentMethod.formattedHandlerIdentifier !== 'handler_swag_giropayapmhandler'
-                            && paymentMethod.formattedHandlerIdentifier !== 'handler_swag_sofortapmhandler';
-                    });
-                });
+            const response = await this.paymentMethodRepository.search(this.paymentMethodCriteria, Context.api);
+
+            this.paymentMethods = response.filter((pm) => ![
+                'handler_swag_pospayment',
+                'handler_swag_trustlyapmhandler',
+                'handler_swag_giropayapmhandler',
+                'handler_swag_sofortapmhandler',
+            ].includes(pm.formattedHandlerIdentifier ?? ''));
         },
 
         async fetchMerchantIntegrations() {
             this.merchantInformation = await this.SwagPayPalApiCredentialsService
-                .getMerchantInformation(this.selectedSalesChannelId)
-                .then((response) => {
-                    return response;
-                });
+                .getMerchantInformation(this.selectedSalesChannelId);
             this.merchantIntegrations = this.merchantInformation.capabilities;
         },
 
@@ -267,21 +262,20 @@ Component.register('swag-paypal-checkout', {
             return this.merchantInformation.capabilities[paymentMethod.id];
         },
 
-        onChangePaymentMethodActive(paymentMethod) {
+        async onChangePaymentMethodActive(paymentMethod) {
             paymentMethod.active = !paymentMethod.active;
 
-            this.paymentMethodRepository.save(paymentMethod, Context.api)
-                .then(() => {
-                    const state = paymentMethod.active ? 'active' : 'inactive';
+            await this.paymentMethodRepository.save(paymentMethod, Context.api);
 
-                    this.createNotificationSuccess({
-                        message: this.$tc(
-                            `swag-paypal.settingForm.checkout.paymentMethodStatusChangedSuccess.${state}`,
-                            0,
-                            { name: paymentMethod.name },
-                        ),
-                    });
-                });
+            const state = paymentMethod.active ? 'active' : 'inactive';
+
+            this.createNotificationSuccess({
+                message: this.$tc(
+                    `swag-paypal.settingForm.checkout.paymentMethodStatusChangedSuccess.${state}`,
+                    0,
+                    { name: paymentMethod.name },
+                ),
+            });
         },
 
         closeModal() {

@@ -114,25 +114,22 @@ Component.register('swag-paypal-disputes-list', {
     },
 
     methods: {
-        createdComponent() {
+        async createdComponent() {
             this.isLoading = true;
 
-            this.systemConfigApiService.getValues('SwagPayPal.settings').then((response) => {
-                if (response['SwagPayPal.settings.sandbox']) {
-                    this.resolutionCenterUrl = 'https://www.sandbox.paypal.com/resolutioncenter';
-                }
+            const config = await this.systemConfigApiService.getValues('SwagPayPal.settings');
 
-                this.getList();
-            });
+            if (config['SwagPayPal.settings.sandbox']) {
+                this.resolutionCenterUrl = 'https://www.sandbox.paypal.com/resolutioncenter';
+            }
+
+            this.getList();
         },
 
         getList() {
             this.isLoading = true;
             this.disputes = [];
-            let disputeStateFilter = null;
-            if (this.disputeStateFilter.length > 0) {
-                disputeStateFilter = this.disputeStateFilter.join(',');
-            }
+            const disputeStateFilter = this.disputeStateFilter.join(',') || null;
 
             this.SwagPayPalDisputeApiService.list(this.salesChannelId, disputeStateFilter).then((disputeList) => {
                 if (disputeList.items !== null) {
@@ -140,12 +137,12 @@ Component.register('swag-paypal-disputes-list', {
                 }
                 this.total = this.disputes.length;
                 this.isLoading = false;
-            }).catch(this.handleError);
+            }).catch(this.handleError.bind(this));
         },
 
         sortDisputes(disputes) {
             // sort resolved disputes as last
-            disputes.sort((a, b) => {
+            return disputes.sort((a, b) => {
                 if (a.status === 'RESOLVED') {
                     return 1;
                 }
@@ -156,8 +153,6 @@ Component.register('swag-paypal-disputes-list', {
 
                 return 0;
             });
-
-            return disputes;
         },
 
         debouncedGetList: debounce(function updateList() {
@@ -165,12 +160,13 @@ Component.register('swag-paypal-disputes-list', {
         }, 850),
 
         handleError(errorResponse) {
-            if (errorResponse.response.data.errors[0].code === DISPUTE_AUTH_ERROR) {
+            const error = errorResponse.response?.data.errors?.[0];
+
+            if (error?.code === DISPUTE_AUTH_ERROR) {
                 this.notAuthorized = true;
             } else {
-                const errorDetail = errorResponse.response.data.errors[0].detail;
                 this.createNotificationError({
-                    message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${errorDetail}`,
+                    message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${error?.detail ?? ''}`,
                     autoClose: false,
                 });
             }

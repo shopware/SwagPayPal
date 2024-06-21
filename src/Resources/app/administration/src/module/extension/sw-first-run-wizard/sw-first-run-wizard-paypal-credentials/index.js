@@ -40,13 +40,13 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         buttonConfig() {
             const prev = this.$super('buttonConfig');
 
-            return prev.reduce((acc, button) => {
+            return prev.map((button) => {
                 if (button.key === 'next') {
                     button.action = this.onClickNext.bind(this);
                 }
 
-                return [...acc, button];
-            }, []);
+                return button;
+            });
         },
 
         credentialsProvided() {
@@ -94,41 +94,35 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
             this.$set(this.config, `SwagPayPal.settings.merchantPayerId${suffix}`, merchantPayerId);
         },
 
-        onClickNext() {
+        async onClickNext() {
             if (!this.credentialsProvided) {
                 this.createNotificationError({
                     message: this.$tc('swag-paypal-frw-credentials.messageNoCredentials'),
                 });
-                return Promise.resolve(true);
+
+                return true;
             }
 
-            // Do not test the credentials if they have been fetched from the PayPal api
-            if (this.isGetCredentialsSuccessful) {
-                return this.saveConfig().then(() => {
-                    this.$emit('frw-redirect', 'sw.first.run.wizard.index.plugins');
+            try {
+                // Do not test the credentials if they have been fetched from the PayPal api
+                if (!this.isGetCredentialsSuccessful) {
+                    await this.testApiCredentials();
+                }
 
-                    return Promise.resolve(false);
-                }).catch(() => {
-                    return Promise.resolve(true);
-                });
+                await this.saveConfig();
+
+                this.$emit('frw-redirect', 'sw.first.run.wizard.index.plugins');
+
+                return false;
+            } catch {
+                return true;
             }
-
-            return this.testApiCredentials()
-                .then(() => {
-                    return this.saveConfig();
-                }).then(() => {
-                    this.$emit('frw-redirect', 'sw.first.run.wizard.index.plugins');
-
-                    return Promise.resolve(false);
-                }).catch(() => {
-                    return Promise.resolve(true);
-                });
         },
 
         fetchPayPalConfig() {
             this.isLoading = true;
             return this.systemConfigApiService.getValues('SwagPayPal.settings', null)
-                .then(values => {
+                .then((values) => {
                     this.config = values;
                 })
                 .finally(() => {
@@ -136,21 +130,18 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
                 });
         },
 
-        saveConfig() {
+        async saveConfig() {
             this.isLoading = true;
-            return this.systemConfigApiService.saveValues(this.config, null)
-                .then(() => {
-                    if (this.setDefault) {
-                        return this.SwagPaypalPaymentMethodService.setDefaultPaymentForSalesChannel();
-                    }
+            await this.systemConfigApiService.saveValues(this.config, null);
 
-                    return Promise.resolve();
-                }).then(() => {
-                    this.isLoading = false;
-                });
+            if (this.setDefault) {
+                await this.SwagPaypalPaymentMethodService.setDefaultPaymentForSalesChannel();
+            }
+
+            this.isLoading = false;
         },
 
-        testApiCredentials() {
+        async testApiCredentials() {
             this.isLoading = true;
 
             const sandbox = this.config['SwagPayPal.settings.sandbox'];
@@ -158,30 +149,21 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
             const clientId = this.config[`SwagPayPal.settings.clientId${sandboxSetting}`];
             const clientSecret = this.config[`SwagPayPal.settings.clientSecret${sandboxSetting}`];
 
-            return this.SwagPayPalApiCredentialsService.validateApiCredentials(clientId, clientSecret, sandbox)
-                .then((response) => {
-                    const credentialsValid = response.credentialsValid;
+            const response = await this.SwagPayPalApiCredentialsService
+                .validateApiCredentials(clientId, clientSecret, sandbox)
+                .catch((errorResponse) => {
+                    if (errorResponse?.response?.data?.errors) {
+                        const message = errorResponse.response.data.errors.map((error) => error.detail).join(' / ');
 
-                    if (credentialsValid) {
-                        this.isLoading = false;
-                        return Promise.resolve();
+                        this.createNotificationError({ message });
                     }
 
-                    return Promise.reject();
-                }).catch((errorResponse) => {
-                    if (errorResponse.response.data && errorResponse.response.data.errors) {
-                        const message = errorResponse.response.data.errors.map((error) => {
-                            return error.detail;
-                        }).join(' / ');
-
-                        this.createNotificationError({
-                            message: message,
-                        });
-                        this.isLoading = false;
-                    }
-
-                    return Promise.reject();
+                    return { credentialsValid: false };
                 });
+
+            this.isLoading = false;
+
+            return response.credentialsValid ? Promise.resolve() : Promise.reject();
         },
 
         onCredentialsChanged() {
