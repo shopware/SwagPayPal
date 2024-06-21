@@ -26,7 +26,6 @@ use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Common\Link;
 use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -172,19 +171,18 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         if ($payments === null) {
             return;
         }
-        $captures = $payments->getCaptures();
-        if (empty($captures)) {
+        $capture = $payments->getCaptures()?->first();
+        if ($capture === null) {
             return;
         }
 
-        /** @var Capture $capture */
-        $capture = \current($captures);
         if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_COMPLETED) {
             $this->orderTransactionStateHandler->paid($transactionId, $context);
         }
 
         if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_DECLINED
-            || $capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_FAILED) {
+            || $capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_FAILED
+        ) {
             throw new OrderFailedException($paypalOrder->getId());
         }
     }

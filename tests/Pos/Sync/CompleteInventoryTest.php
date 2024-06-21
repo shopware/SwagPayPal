@@ -12,6 +12,7 @@ use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -142,16 +143,28 @@ class CompleteInventoryTest extends TestCase
          * G - disabled tracking online afterwards
          */
         $productA = $productRepository->createMockEntity('productA', 2, 1, ConstantsForTesting::PRODUCT_A_ID);
+        $productA = SalesChannelProductEntity::createFrom($productA);
+        $productRepository->addMockEntity($productA);
         $salesChannelProductRepository->addMockEntity($productA);
         $productB = $productRepository->createMockEntity('productB', 2, 2, ConstantsForTesting::PRODUCT_B_ID);
+        $productB = SalesChannelProductEntity::createFrom($productB);
+        $productRepository->addMockEntity($productB);
         $salesChannelProductRepository->addMockEntity($productB);
         $productC = $productRepository->createMockEntity('productC', 3, 1, ConstantsForTesting::PRODUCT_C_ID);
+        $productC = SalesChannelProductEntity::createFrom($productC);
+        $productRepository->addMockEntity($productC);
         $salesChannelProductRepository->addMockEntity($productC);
         $productD = $productRepository->createMockEntity('productD', 3, 2, ConstantsForTesting::PRODUCT_D_ID);
+        $productD = SalesChannelProductEntity::createFrom($productD);
+        $productRepository->addMockEntity($productD);
         $salesChannelProductRepository->addMockEntity($productD);
         $productE = $productRepository->createMockEntity('productE', 3, 3, ConstantsForTesting::PRODUCT_E_ID);
+        $productE = SalesChannelProductEntity::createFrom($productE);
+        $productRepository->addMockEntity($productE);
         $salesChannelProductRepository->addMockEntity($productE);
         $productG = $productRepository->createMockEntity('productG', 3, 3, ConstantsForTesting::PRODUCT_G_ID);
+        $productG = SalesChannelProductEntity::createFrom($productG);
+        $productRepository->addMockEntity($productG);
         $salesChannelProductRepository->addMockEntity($productG);
 
         $inventoryRepository->createMockEntity($productA, TestDefaults::SALES_CHANNEL, 1);

@@ -36,7 +36,6 @@ trait RepoTrait
     {
         /** @var class-string<T> $collectionClass */
         $collectionClass = $this->getDefinition()->getCollectionClass();
-        // @phpstan-ignore-next-line
         $this->entityCollection = new $collectionClass([]);
     }
 
@@ -71,7 +70,8 @@ trait RepoTrait
             $entity->setUniqueIdentifier($this->getUniqueIdentifier($entity));
 
             if ($this->entityCollection->has($entity->getUniqueIdentifier())) {
-                $entity = $this->entityCollection->get($entity->getUniqueIdentifier()) ?? $entity;
+                $entity = $this->entityCollection->get($entity->getUniqueIdentifier());
+                \assert($entity instanceof Entity);
                 $entity->assign($entry);
             }
 
@@ -103,6 +103,9 @@ trait RepoTrait
         return new EntityWrittenContainerEvent($context, new NestedEventCollection([]), []);
     }
 
+    /**
+     * @param T $entityCollection
+     */
     protected function searchCollectionIds(EntityCollection $entityCollection, Criteria $criteria, Context $context): IdSearchResult
     {
         $repository = $this;
@@ -125,6 +128,9 @@ trait RepoTrait
         );
     }
 
+    /**
+     * @param T $entityCollection
+     */
     protected function searchCollection(EntityCollection $entityCollection, Criteria $criteria, Context $context): EntitySearchResult
     {
         return new EntitySearchResult(
@@ -138,7 +144,7 @@ trait RepoTrait
     }
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
     protected function getPrimaryKey(Entity $entity): array
     {

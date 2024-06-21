@@ -13,11 +13,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<PosSalesChannelRunCollection>
  */
 #[Package('checkout')]
 class RunRepoMock extends AbstractRepoMock
@@ -30,7 +33,6 @@ class RunRepoMock extends AbstractRepoMock
     public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
     {
         $sum = 0;
-        /** @var PosSalesChannelRunEntity $entity */
         foreach ($this->search($criteria, $context)->getEntities() as $entity) {
             $sum += $entity->getMessageCount();
         }
@@ -42,7 +44,6 @@ class RunRepoMock extends AbstractRepoMock
 
     public function getFirstRun(): ?PosSalesChannelRunEntity
     {
-        /** @var PosSalesChannelRunEntity|null $run */
         $run = $this->entityCollection->first();
 
         return $run;

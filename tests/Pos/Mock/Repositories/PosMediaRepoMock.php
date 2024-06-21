@@ -24,6 +24,8 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<PosSalesChannelMediaCollection>
  */
 #[Package('checkout')]
 class PosMediaRepoMock extends AbstractRepoMock
@@ -78,7 +80,7 @@ class PosMediaRepoMock extends AbstractRepoMock
     }
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
     protected function getPrimaryKey(Entity $entity): array
     {
@@ -92,14 +94,12 @@ class PosMediaRepoMock extends AbstractRepoMock
     {
         foreach ($criteria->getFilters() as $filter) {
             if ($filter instanceof EqualsFilter && $filter->getField() === 'lookupKey') {
-                /** @var PosSalesChannelMediaCollection $newCollection */
                 $newCollection = $this->entityCollection->filterByProperty('lookupKey', null);
 
                 return $newCollection;
             }
         }
 
-        /** @var PosSalesChannelMediaCollection $entityCollection */
         $entityCollection = $this->entityCollection;
 
         return $entityCollection;

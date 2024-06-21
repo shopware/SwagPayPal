@@ -85,6 +85,7 @@ abstract class AbstractSyncAPMHandlerTest extends TestCase
             (new OrderTransactionDefinition())->getEntityName()
         );
         $this->stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
+        $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
     }
 
     public function testPayCapture(): void
@@ -225,7 +226,6 @@ Missing PayPal order id');
     protected function createPaymentHandler(array $settings = []): AbstractSyncAPMHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
         $orderResource = new OrderResource($this->clientFactory);
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();

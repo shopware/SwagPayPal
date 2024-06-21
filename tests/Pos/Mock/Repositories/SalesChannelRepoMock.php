@@ -24,6 +24,8 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<SalesChannelCollection>
  */
 #[Package('checkout')]
 class SalesChannelRepoMock extends AbstractRepoMock
@@ -95,9 +97,10 @@ class SalesChannelRepoMock extends AbstractRepoMock
     {
         if ($criteria->getIds()) {
             $collection = new SalesChannelCollection();
-            /** @var string $id */
             foreach ($criteria->getIds() as $id) {
-                /** @var SalesChannelEntity|null $entity */
+                if (!\is_string($id)) {
+                    continue;
+                }
                 $entity = $this->entityCollection->get($id);
 
                 if ($entity instanceof SalesChannelEntity) {
@@ -108,9 +111,6 @@ class SalesChannelRepoMock extends AbstractRepoMock
             return $collection;
         }
 
-        /** @var SalesChannelCollection $entityCollection */
-        $entityCollection = $this->entityCollection;
-
-        return $entityCollection;
+        return $this->entityCollection;
     }
 }

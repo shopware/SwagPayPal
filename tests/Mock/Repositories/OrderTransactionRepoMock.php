@@ -7,11 +7,11 @@
 
 namespace Swag\PayPal\Test\Mock\Repositories;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -23,6 +23,8 @@ use Swag\PayPal\Test\Helper\ConstantsForTesting;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<OrderTransactionCollection>
  */
 #[Package('checkout')]
 class OrderTransactionRepoMock extends AbstractRepoMock
@@ -40,6 +42,9 @@ class OrderTransactionRepoMock extends AbstractRepoMock
         return new OrderTransactionDefinition();
     }
 
+    /**
+     * @return EntitySearchResult<OrderTransactionCollection>
+     */
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
         $filters = $criteria->getFilters();
@@ -75,6 +80,9 @@ class OrderTransactionRepoMock extends AbstractRepoMock
         return $this->data;
     }
 
+    /**
+     * @return EntitySearchResult<OrderTransactionCollection>
+     */
     private function createEntitySearchResult(
         Criteria $criteria,
         Context $context,
@@ -90,12 +98,9 @@ class OrderTransactionRepoMock extends AbstractRepoMock
         );
     }
 
-    /**
-     * @return EntityCollection<OrderTransactionEntity>
-     */
-    private function createEntityCollection(bool $withOrder = true): EntityCollection
+    private function createEntityCollection(bool $withOrder = true): OrderTransactionCollection
     {
-        return new EntityCollection([$this->createOrderTransaction($withOrder)]);
+        return new OrderTransactionCollection([$this->createOrderTransaction($withOrder)]);
     }
 
     private function createOrderTransaction(bool $withOrder = true): OrderTransactionEntity
@@ -111,6 +116,9 @@ class OrderTransactionRepoMock extends AbstractRepoMock
         return $orderTransaction;
     }
 
+    /**
+     * @return EntitySearchResult<OrderTransactionCollection>
+     */
     private function createEntitySearchResultWithoutTransaction(
         Criteria $criteria,
         Context $context
@@ -118,7 +126,7 @@ class OrderTransactionRepoMock extends AbstractRepoMock
         return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             ConstantsForTesting::REPO_SEARCH_RESULT_TOTAL_WITHOUT_RESULTS,
-            new EntityCollection([]),
+            new OrderTransactionCollection([]),
             null,
             $criteria,
             $context

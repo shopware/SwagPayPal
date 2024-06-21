@@ -9,28 +9,37 @@ use Symfony\Component\Dotenv\Dotenv;
 
 require_once dirname(__DIR__, 4) . '/vendor/autoload.php';
 
-$cmsExtensionsFound = false;
-$pluginDirectory = dirname(__DIR__, 2);
-$files = \scandir($pluginDirectory);
+$optionalPlugins = [
+    'SwagCmsExtensions' => 'src/SwagCmsExtensions.php',
+    'SwagCommercial' => 'src/Subscription/Subscription.php',
+];
 
-if (!\is_array($files)) {
+$pluginDirectory = dirname(__DIR__, 2);
+$pluginDirs = \scandir($pluginDirectory);
+
+if (!\is_array($pluginDirs)) {
     echo 'Could not check plugin directory';
+    $pluginDirs = [];
 }
 
-foreach ($files as $file) {
-    if (\file_exists($pluginDirectory . '/' . $file . '/src/SwagCmsExtensions.php')) {
-        $cmsExtensionsFound = true;
-        $pathToCmsExtensions = $pluginDirectory . '/' . $file . '/vendor/autoload.php';
-        if (\file_exists($pathToCmsExtensions)) {
-            require_once $pathToCmsExtensions;
-        } else {
-            echo "Please execute 'composer dump-autoload --dev' in your CmsExtensions directory\n";
+foreach ($pluginDirs as $pluginDir) {
+    foreach ($optionalPlugins as $plugin => $path) {
+        if (\file_exists($pluginDirectory . '/' . $pluginDir . '/' . $path)) {
+            unset($optionalPlugins[$plugin]);
+
+            $pathToAutoload = $pluginDirectory . '/' . $pluginDir . '/vendor/autoload.php';
+
+            if (\file_exists($pathToAutoload)) {
+                require_once $pathToAutoload;
+            } else {
+                echo "Please execute 'composer dump-autoload --dev' in your $plugin directory\n";
+            }
         }
     }
 }
 
-if (!$cmsExtensionsFound) {
-    echo "You need the CmsExtensions plugin for static analyze to work.\n";
+foreach ($optionalPlugins as $plugin => $path) {
+    echo 'You need the ' . $plugin . " plugin for static analyze to work properly.\n";
 }
 
 $projectRoot = dirname(__DIR__, 4);

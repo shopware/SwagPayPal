@@ -71,6 +71,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
             ->method('saveToken')
             ->with($struct, $card, 'customerId', $context);
 
+        /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
         $orderTransactionRepo = new StaticEntityRepository([new OrderTransactionCollection([$orderTransaction])]);
         $paymentTransactionStructFactory = $this->createMock(PaymentTransactionStructFactory::class);
         $paymentTransactionStructFactory
@@ -117,6 +118,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
         static::assertInstanceOf(PaymentToken::class, $resource);
         $resource->setMetadata(null);
 
+        /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
         $orderTransactionRepo = new StaticEntityRepository([]);
 
         $handler = new VaultPaymentTokenCreated(
@@ -142,6 +144,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
         $webhook = new Webhook();
         $webhook->assign($this->getResourceFixture());
 
+        /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
         $orderTransactionRepo = new StaticEntityRepository([new OrderTransactionCollection()]);
 
         $handler = new VaultPaymentTokenCreated(
@@ -174,6 +177,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
         $webhook = new Webhook();
         $webhook->assign($this->getResourceFixture());
 
+        /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
         $orderTransactionRepo = new StaticEntityRepository([new OrderTransactionCollection([$orderTransaction])]);
 
         $handler = new VaultPaymentTokenCreated(
@@ -222,6 +226,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
             ->with('00D91479YH268914P', 'salesChannelId')
             ->willReturn(new Order());
 
+        /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
         $orderTransactionRepo = new StaticEntityRepository([new OrderTransactionCollection([$orderTransaction])]);
 
         $handler = new VaultPaymentTokenCreated(

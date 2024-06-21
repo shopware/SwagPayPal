@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Mock\Repositories;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
@@ -20,13 +21,16 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * @phpstan-ignore-next-line ignore finality of repository in tests
+ * @template T of EntityCollection
  *
  * @internal
  */
 #[Package('checkout')]
 abstract class AbstractRepoMock extends EntityRepository
 {
+    /**
+     * @use RepoTrait<T>
+     */
     use RepoTrait;
 
     public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
@@ -39,6 +43,9 @@ abstract class AbstractRepoMock extends EntityRepository
         return $this->searchCollectionIds($this->entityCollection, $criteria, $context);
     }
 
+    /**
+     * @return EntitySearchResult<T>
+     */
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
         return $this->searchCollection($this->entityCollection, $criteria, $context);

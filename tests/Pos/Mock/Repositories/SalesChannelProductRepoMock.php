@@ -15,12 +15,11 @@ use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
-use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price as ShopwarePrice;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
@@ -46,18 +45,21 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
 /**
- * @phpstan-ignore-next-line ignore finality of repository in tests
- *
  * @internal
+ *
+ * @extends SalesChannelRepository<SalesChannelProductCollection>
  */
 #[Package('checkout')]
 class SalesChannelProductRepoMock extends SalesChannelRepository
 {
+    /**
+     * @use RepoTrait<SalesChannelProductCollection>
+     */
     use RepoTrait;
 
-    public function getDefinition(): EntityDefinition
+    public function getDefinition(): SalesChannelProductDefinition
     {
-        return new ProductDefinition();
+        return new SalesChannelProductDefinition();
     }
 
     public function aggregate(Criteria $criteria, SalesChannelContext $salesChannelContext): AggregationResultCollection
@@ -72,8 +74,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
         $parentIds = $criteria->getAggregation('ids');
         if ($parentIds !== null) {
             $buckets = [];
-            /** @var ProductEntity $product */
-            foreach ($this->search($criteria, $salesChannelContext)->getElements() as $product) {
+            foreach ($this->search($criteria, $salesChannelContext)->getEntities() as $product) {
                 $childCount = $product->getChildCount();
 
                 if ($childCount === null || $childCount <= 0) {
@@ -104,6 +105,9 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
         return $this->searchCollectionIds($collection, $criteria, $salesChannelContext->getContext());
     }
 
+    /**
+     * @return EntitySearchResult<SalesChannelProductCollection>
+     */
     public function search(Criteria $criteria, SalesChannelContext $salesChannelContext): EntitySearchResult
     {
         $firstFilter = \current($criteria->getFilters());
@@ -115,8 +119,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
         if ($firstFilter instanceof EqualsFilter
             && $firstFilter->getField() === 'parentId'
             && $firstFilter->getValue() === null) {
-            $collection = new ProductCollection();
-            /** @var ProductEntity $product */
+            $collection = new SalesChannelProductCollection();
             foreach ($this->getCollection()->getElements() as $product) {
                 if ($product->getParentId() === null && !$product->getChildCount()) {
                     $collection->add($product);
@@ -133,8 +136,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
                 && $subFilter instanceof EqualsFilter
                 && $subFilter->getField() === 'parentId'
                 && $subFilter->getValue() === null) {
-                $collection = new ProductCollection();
-                /** @var ProductEntity $product */
+                $collection = new SalesChannelProductCollection();
                 foreach ($this->getCollection()->getElements() as $product) {
                     if ($product->getParentId() !== null) {
                         $collection->add($product);
@@ -146,8 +148,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
 
             if ($subFilter instanceof EqualsAnyFilter
                 && ($subFilter->getField() === 'id' || $subFilter->getField() === 'parentId')) {
-                $collection = new ProductCollection();
-                /** @var ProductEntity $product */
+                $collection = new SalesChannelProductCollection();
                 foreach ($this->getCollection()->getElements() as $product) {
                     if (\in_array($product->getParentId(), $subFilter->getValue(), true)
                         || \in_array($product->getId(), $subFilter->getValue(), true)) {
@@ -161,8 +162,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
 
         if ($firstFilter instanceof EqualsAnyFilter
             && $firstFilter->getField() === 'parentId') {
-            $collection = new ProductCollection();
-            /** @var ProductEntity $product */
+            $collection = new SalesChannelProductCollection();
             foreach ($this->getCollection()->getElements() as $product) {
                 if (\in_array($product->getParentId(), $firstFilter->getValue(), true)) {
                     $collection->add($product);

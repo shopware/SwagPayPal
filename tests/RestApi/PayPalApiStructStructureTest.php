@@ -94,7 +94,7 @@ class PayPalApiStructStructureTest extends TestCase
         $finderFiles = Finder::create()->files()->in($path)->name('*.php');
         $classNames = [];
         foreach ($finderFiles as $finderFile) {
-            $fileName = $finderFile->getRealpath();
+            $fileName = $finderFile->getRealPath();
             $className = $this->getFullNamespace($fileName) . '\\' . $this->getClassName($fileName);
 
             if (!\class_exists($className)) {

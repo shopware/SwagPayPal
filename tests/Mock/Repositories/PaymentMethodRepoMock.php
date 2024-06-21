@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Mock\Repositories;
 
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -18,6 +19,8 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<PaymentMethodCollection>
  */
 #[Package('checkout')]
 class PaymentMethodRepoMock extends AbstractRepoMock
@@ -36,8 +39,8 @@ class PaymentMethodRepoMock extends AbstractRepoMock
             return $this->getIdSearchResult(false, $criteria, $context);
         }
 
-        /** @var EqualsFilter $firstFilter */
         $firstFilter = $criteria->getFilters()[0];
+        \assert($firstFilter instanceof EqualsFilter);
         if ($firstFilter->getValue() === PayPalPaymentHandler::class) {
             return $this->getIdSearchResult(true, $criteria, $context);
         }
