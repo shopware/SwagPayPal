@@ -1,6 +1,8 @@
-const { Mixin } = Shopware;
+export default Shopware.Mixin.register('swag-paypal-pos-catch-error', {
+    mixins: [
+        Shopware.Mixin.getByName('notification'),
+    ],
 
-Mixin.register('swag-paypal-pos-catch-error', {
     methods: {
         /**
          * Creates a notification, if an error has been returned
@@ -15,23 +17,24 @@ Mixin.register('swag-paypal-pos-catch-error', {
             let message = snippet ? this.$tc(snippet) : '';
 
             try {
-                if (errorResponse.response.data && errorResponse.response.data.errors) {
+                if (errorResponse.response?.data?.errors) {
                     const errorText = errorResponse.response.data.errors.map((error) => {
                         if (error.code === 'SWAG_PAYPAL_POS__EXISTING_POS_ACCOUNT') {
                             message = this.$tc('swag-paypal-pos.authentication.messageDuplicateError');
                         }
 
-                        if (error.hasOwnProperty('meta') && error.meta.hasOwnProperty('parameters')) {
-                            if (error.meta.parameters.salesChannelIds) {
-                                return `<br>${error.meta.parameters.salesChannelIds}`;
+                        const params = error.meta?.parameters;
+                        if (params) {
+                            if (params.salesChannelIds) {
+                                return `<br>${params.salesChannelIds}`;
                             }
 
-                            if (error.meta.parameters.message) {
-                                return `${error.meta.parameters.message} (${error.meta.parameters.name})`;
+                            if (params.message) {
+                                return `${params.message} (${params.name ?? ''})`;
                             }
 
-                            if (error.meta.parameters.name) {
-                                return error.meta.parameters.name;
+                            if (params.name) {
+                                return params.name;
                             }
                         }
 
