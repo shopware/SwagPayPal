@@ -14,8 +14,8 @@ Component.register('swag-paypal-checkout', {
     ],
 
     mixins: [
-        'notification',
-        'swag-paypal-credentials-loader',
+        Shopware.Mixin.getByName('notification'),
+        Shopware.Mixin.getByName('swag-paypal-credentials-loader'),
     ],
 
     props: {

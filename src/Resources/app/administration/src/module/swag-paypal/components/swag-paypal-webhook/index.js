@@ -14,7 +14,7 @@ Shopware.Component.register('swag-paypal-webhook', {
     ],
 
     mixins: [
-        'notification',
+        Shopware.Mixin.getByName('notification'),
     ],
 
     props: {

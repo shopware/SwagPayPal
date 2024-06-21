@@ -14,7 +14,9 @@ Component.register('swag-paypal-disputes-detail', {
         'repositoryFactory',
     ],
 
-    mixins: ['notification'],
+    mixins: [
+        Shopware.Mixin.getByName('notification'),
+    ],
 
     props: {
         disputeId: {

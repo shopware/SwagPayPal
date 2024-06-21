@@ -12,8 +12,8 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
     ],
 
     mixin: [
-        'placeholder',
-        'notification',
+        Shopware.Mixin.getByName('placeholder'),
+        Shopware.Mixin.getByName('notification'),
     ],
 
     props: {

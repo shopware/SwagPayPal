@@ -12,8 +12,8 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
     ],
 
     mixins: [
-        'notification',
-        'swag-paypal-credentials-loader',
+        Shopware.Mixin.getByName('notification'),
+        Shopware.Mixin.getByName('swag-paypal-credentials-loader'),
     ],
 
     data() {

@@ -16,7 +16,7 @@ Component.register('swag-paypal', {
     ],
 
     mixins: [
-        'notification',
+        Shopware.Mixin.getByName('notification'),
     ],
 
     data() {

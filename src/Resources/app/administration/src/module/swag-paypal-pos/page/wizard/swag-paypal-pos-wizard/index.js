@@ -20,8 +20,8 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
     ],
 
     mixins: [
-        'swag-paypal-pos-catch-error',
-        'notification',
+        Shopware.Mixin.getByName('swag-paypal-pos-catch-error'),
+        Shopware.Mixin.getByName('notification'),
     ],
 
     data() {
