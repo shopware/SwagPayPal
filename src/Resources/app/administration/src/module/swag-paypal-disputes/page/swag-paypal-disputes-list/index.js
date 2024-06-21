@@ -22,7 +22,9 @@ Component.register('swag-paypal-disputes-list', {
         'systemConfigApiService',
     ],
 
-    mixins: ['notification'],
+    mixins: [
+        Shopware.Mixin.getByName('notification'),
+    ],
 
     data() {
         return {

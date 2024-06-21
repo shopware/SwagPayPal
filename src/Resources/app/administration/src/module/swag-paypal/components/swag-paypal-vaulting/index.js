@@ -12,7 +12,7 @@ Component.register('swag-paypal-vaulting', {
     ],
 
     mixins: [
-        'swag-paypal-credentials-loader',
+        Shopware.Mixin.getByName('swag-paypal-credentials-loader'),
     ],
 
     props: {

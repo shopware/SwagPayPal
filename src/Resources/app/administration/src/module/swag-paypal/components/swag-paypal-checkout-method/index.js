@@ -12,7 +12,7 @@ Component.register('swag-paypal-checkout-method', {
     ],
 
     mixins: [
-        'notification',
+        Shopware.Mixin.getByName('notification'),
     ],
 
     props: {
