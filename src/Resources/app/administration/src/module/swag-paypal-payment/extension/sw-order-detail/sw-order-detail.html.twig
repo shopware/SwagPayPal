@@ -1,16 +1,18 @@
 {% block sw_order_detail_content_tabs_general %}
-    {% parent %}
+{% parent %}
 
-    <sw-tabs-item v-if="isPayPalPayment"
-                  :route="{ name: 'swag.paypal.payment.detail', params: { id: $route.params.id } }"
-                  :title="$tc('swag-paypal.header')">
-        {{ $tc('swag-paypal.header') }}
-    </sw-tabs-item>
+<sw-tabs-item
+    v-if="isPayPalPayment"
+    :route="{ name: 'swag.paypal.payment.detail', params: { id: $route.params.id } }"
+    :title="$tc('swag-paypal.header')"
+>
+    {{ $tc('swag-paypal.header') }}
+</sw-tabs-item>
 {% endblock %}
 
 
 {% block sw_order_detail_actions_slot_smart_bar_actions %}
-    <template v-if="isEditable">
-        {% parent %}
-    </template>
+<template v-if="isEditable">
+    {% parent %}
+</template>
 {% endblock %}

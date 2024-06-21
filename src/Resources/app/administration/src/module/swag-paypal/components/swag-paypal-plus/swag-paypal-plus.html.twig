@@ -1,62 +1,63 @@
 {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
 {% block swag_paypal_content_card_channel_config_plus %}
-    <sw-card position-identifier="swag-paypal-card-channel-config-plus"
-             :title="$tc('swag-paypal.settingForm.plus.cardTitle')">
+<sw-card
+    position-identifier="swag-paypal-card-channel-config-plus"
+    :title="$tc('swag-paypal.settingForm.plus.cardTitle')"
+>
+
+    {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
+    {% block swag_paypal_content_card_channel_config_plus_settings %}
+    <div v-if="actualConfigData" class="swag-paypal-settings-plus-fields">
 
         {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
-        {% block swag_paypal_content_card_channel_config_plus_settings %}
-            <div v-if="actualConfigData" class="swag-paypal-settings-plus-fields">
+        {% block swag_paypal_content_card_channel_config_plus_settings_warning %}
+        <template v-if="isPayPalPLUSActive">
+            <sw-alert variant="warning">
+                <span v-html="$tc('swag-paypal.settingForm.plus.warning.active')"/>
+            </sw-alert>
+        </template>
 
-                {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
-                {% block swag_paypal_content_card_channel_config_plus_settings_warning %}
-                <template v-if="isPayPalPLUSActive">
-                    <sw-alert
-                        variant="warning"
-                    >
-                        <span v-html="$tc('swag-paypal.settingForm.plus.warning.active')"></span>
-                    </sw-alert>
-                </template>
-
-                <template v-if="isPayPalPLUSInActive">
-                    <sw-alert
-                        variant="info"
-                    >
-                        <span v-html="$tc('swag-paypal.settingForm.plus.warning.inactive')"></span>
-                    </sw-alert>
-                </template>
-                {% endblock %}
-
-                {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
-                {% block swag_paypal_content_card_channel_config_plus_settings_onboarding %}
-                    <p v-bind:class="{ 'swag-paypal-payal-plus-disabled': isPayPalPLUSInActive}"
-                       v-html="$tc('swag-paypal.settingForm.plus.introduction')"></p>
-                {% endblock %}
-
-                {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
-                {% block swag_paypal_content_card_channel_config_plus_settings_checkout_enabled %}
-                    <sw-inherit-wrapper
-                        v-model:value="actualConfigData['SwagPayPal.settings.plusCheckoutEnabled']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.plusCheckoutEnabled']"
-                        :customInheritationCheckFunction="checkBoolFieldInheritance">
-                        <template #content="props">
-                            <sw-switch-field name="SwagPayPal.settings.plusCheckoutEnabled"
-                                             bordered
-                                             :mapInheritance="props"
-                                             :label="$tc('swag-paypal.settingForm.plus.plusCheckoutEnabled.label')"
-                                             :disabled="ifItWasNotActive() || props.isInherited || !acl.can('swag_paypal.editor')"
-                                             :value="props.currentValue"
-                                             @update:value="props.updateCurrentValue">
-                            </sw-switch-field>
-
-                            {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
-                            {% block swag_paypal_content_card_channel_config_behaviour_settings_intent_hint %}
-                                <swag-paypal-settings-hint :hintText="$tc('swag-paypal.settingForm.plus.hint')">
-                                </swag-paypal-settings-hint>
-                            {% endblock %}
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
-            </div>
+        <template v-if="isPayPalPLUSInActive">
+            <sw-alert variant="info">
+                <span v-html="$tc('swag-paypal.settingForm.plus.warning.inactive')"/>
+            </sw-alert>
+        </template>
         {% endblock %}
-    </sw-card>
+
+        {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
+        {% block swag_paypal_content_card_channel_config_plus_settings_onboarding %}
+        <p
+            v-bind:class="{ 'swag-paypal-payal-plus-disabled': isPayPalPLUSInActive}"
+            v-html="$tc('swag-paypal.settingForm.plus.introduction')"
+        />
+        {% endblock %}
+
+        {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
+        {% block swag_paypal_content_card_channel_config_plus_settings_checkout_enabled %}
+        <sw-inherit-wrapper
+            v-model:value="actualConfigData['SwagPayPal.settings.plusCheckoutEnabled']"
+            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.plusCheckoutEnabled']"
+            :customInheritationCheckFunction="checkBoolFieldInheritance"
+        >
+            <template #content="props">
+                <sw-switch-field
+                    name="SwagPayPal.settings.plusCheckoutEnabled"
+                    bordered
+                    :mapInheritance="props"
+                    :label="$tc('swag-paypal.settingForm.plus.plusCheckoutEnabled.label')"
+                    :disabled="ifItWasNotActive() || props.isInherited || !acl.can('swag_paypal.editor')"
+                    :value="props.currentValue"
+                    @update:value="props.updateCurrentValue"
+                />
+
+                {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
+                {% block swag_paypal_content_card_channel_config_behaviour_settings_intent_hint %}
+                <swag-paypal-settings-hint :hintText="$tc('swag-paypal.settingForm.plus.hint')"/>
+                {% endblock %}
+            </template>
+        </sw-inherit-wrapper>
+        {% endblock %}
+    </div>
+    {% endblock %}
+</sw-card>
 {% endblock %}

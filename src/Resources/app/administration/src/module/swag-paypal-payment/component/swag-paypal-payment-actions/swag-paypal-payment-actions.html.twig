@@ -1,63 +1,72 @@
 {% block swag_paypal_payment_actions %}
-    <div>
-        <div class="swag-paypal-payment-actions__button-container">
-            <div class="swag-paypal-payment-actions__authorize-button-group">
+<div>
+    <div class="swag-paypal-payment-actions__button-container">
+        <div class="swag-paypal-payment-actions__authorize-button-group">
 
-                {% block swag_paypal_payment_actions_void %}
-                    <sw-button v-if="showVoidButton"
-                               size="small"
-                               :disabled="!acl.can('order.editor')"
-                               @click="spawnModal('void')">
-                        {{ $tc('swag-paypal-payment.buttons.label.void') }}
-                    </sw-button>
-                {% endblock %}
-
-                {% block swag_paypal_payment_actions_capture %}
-                    <sw-button v-if="captureableAmount > 0"
-                               size="small"
-                               :disabled="!acl.can('order.editor')"
-                               @click="spawnModal('capture')">
-                        {{ $tc('swag-paypal-payment.buttons.label.capture') }}
-                    </sw-button>
-                {% endblock %}
-            </div>
-
-            {% block swag_paypal_payment_actions_refund %}
-                <sw-button variant="primary"
-                           size="small"
-                           :disabled="refundableAmount <= 0 || !acl.can('order.editor')"
-                           @click="spawnModal('refund')">
-                    {{ $tc('swag-paypal-payment.buttons.label.refund') }}
-                </sw-button>
+            {% block swag_paypal_payment_actions_void %}
+            <sw-button
+                v-if="showVoidButton"
+                size="small"
+                :disabled="!acl.can('order.editor')"
+                @click="spawnModal('void')"
+            >
+                {{ $tc('swag-paypal-payment.buttons.label.void') }}
+            </sw-button>
             {% endblock %}
 
+            {% block swag_paypal_payment_actions_capture %}
+            <sw-button
+                v-if="captureableAmount > 0"
+                size="small"
+                :disabled="!acl.can('order.editor')"
+                @click="spawnModal('capture')"
+            >
+                {{ $tc('swag-paypal-payment.buttons.label.capture') }}
+            </sw-button>
+            {% endblock %}
         </div>
 
-        {% block swag_paypal_payment_actions_modal %}
-                {% block swag_paypal_payment_actions_modal_capture %}
-                    <swag-paypal-payment-action-capture v-if="modalType === 'capture'"
-                                                        :orderId="orderId"
-                                                        :paymentResource="paymentResource"
-                                                        :maxCaptureValue="captureableAmount"
-                                                        @modal-close="closeModal">
-                    </swag-paypal-payment-action-capture>
-                {% endblock %}
-
-                {% block swag_paypal_payment_actions_modal_refund %}
-                    <swag-paypal-payment-action-refund v-if="modalType === 'refund'"
-                                                       :orderId="orderId"
-                                                       :paymentResource="paymentResource"
-                                                       @modal-close="closeModal">
-                    </swag-paypal-payment-action-refund>
-                {% endblock %}
-
-                {% block swag_paypal_payment_actions_modal_void %}
-                    <swag-paypal-payment-action-void v-if="modalType === 'void'"
-                                                     :orderId="orderId"
-                                                     :paymentResource="paymentResource"
-                                                     @modal-close="closeModal">
-                    </swag-paypal-payment-action-void>
-                {% endblock %}
+        {% block swag_paypal_payment_actions_refund %}
+        <sw-button
+            variant="primary"
+            size="small"
+            :disabled="refundableAmount <= 0 || !acl.can('order.editor')"
+            @click="spawnModal('refund')"
+        >
+            {{ $tc('swag-paypal-payment.buttons.label.refund') }}
+        </sw-button>
         {% endblock %}
+
     </div>
+
+    {% block swag_paypal_payment_actions_modal %}
+        {% block swag_paypal_payment_actions_modal_capture %}
+        <swag-paypal-payment-action-capture
+            v-if="modalType === 'capture'"
+            :orderId="orderId"
+            :paymentResource="paymentResource"
+            :maxCaptureValue="captureableAmount"
+            @modal-close="closeModal"
+        />
+        {% endblock %}
+
+        {% block swag_paypal_payment_actions_modal_refund %}
+        <swag-paypal-payment-action-refund
+            v-if="modalType === 'refund'"
+            :orderId="orderId"
+            :paymentResource="paymentResource"
+            @modal-close="closeModal"
+        />
+        {% endblock %}
+
+        {% block swag_paypal_payment_actions_modal_void %}
+        <swag-paypal-payment-action-void
+            v-if="modalType === 'void'"
+            :orderId="orderId"
+            :paymentResource="paymentResource"
+            @modal-close="closeModal"
+        />
+        {% endblock %}
+    {% endblock %}
+</div>
 {% endblock %}

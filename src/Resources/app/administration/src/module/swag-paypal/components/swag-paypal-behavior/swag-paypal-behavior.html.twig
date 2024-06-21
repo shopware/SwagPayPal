@@ -1,174 +1,192 @@
 {% block swag_paypal_content_card_channel_config_behavior %}
-    <sw-card position-identifier="swag-paypal-card-channel-config-behavior"
-             :title="$tc('swag-paypal.settingForm.behavior.cardTitle')">
+<sw-card
+    position-identifier="swag-paypal-card-channel-config-behavior"
+    :title="$tc('swag-paypal.settingForm.behavior.cardTitle')"
+>
 
-        {% block swag_paypal_content_card_channel_config_behavior_settings %}
-            <div v-if="actualConfigData" class="swag-paypal-settings-behavior-field">
+    {% block swag_paypal_content_card_channel_config_behavior_settings %}
+    <div v-if="actualConfigData" class="swag-paypal-settings-behavior-field">
 
-                {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
-                {% block swag_paypal_content_card_channel_config_behavior_settings_merchant_location %}
-                    <sw-inherit-wrapper
-                        v-if="showMerchantLocation"
-                        v-model:value="actualConfigData['SwagPayPal.settings.merchantLocation']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.merchantLocation']"
-                        :customInheritationCheckFunction="checkTextFieldInheritance"
-                        :label="$tc('swag-paypal.settingForm.behavior.merchantLocation.label')">
-                        <template #content="props">
-                            <sw-single-select name="SwagPayPal.settings.merchantLocation"
-                                              labelProperty="name"
-                                              valueProperty="id"
-                                              :options="merchantLocationOptions"
-                                              :isInherited="props.isInherited"
-                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                              :value="props.currentValue"
-                                              @update:value="props.updateCurrentValue">
-                            </sw-single-select>
-                        </template>
-                    </sw-inherit-wrapper>
+        {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
+        {% block swag_paypal_content_card_channel_config_behavior_settings_merchant_location %}
+        <sw-inherit-wrapper
+            v-if="showMerchantLocation"
+            v-model:value="actualConfigData['SwagPayPal.settings.merchantLocation']"
+            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.merchantLocation']"
+            :customInheritationCheckFunction="checkTextFieldInheritance"
+            :label="$tc('swag-paypal.settingForm.behavior.merchantLocation.label')"
+        >
+            <template #content="props">
+                <sw-single-select
+                    name="SwagPayPal.settings.merchantLocation"
+                    labelProperty="name"
+                    valueProperty="id"
+                    :options="merchantLocationOptions"
+                    :isInherited="props.isInherited"
+                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                    :value="props.currentValue"
+                    @update:value="props.updateCurrentValue"
+                />
+            </template>
+        </sw-inherit-wrapper>
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_behavior_settings_intent %}
+        <sw-inherit-wrapper
+            v-model:value="actualConfigData['SwagPayPal.settings.intent']"
+            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.intent']"
+            :customInheritationCheckFunction="checkTextFieldInheritance"
+            :label="$tc('swag-paypal.settingForm.behavior.intent.label')"
+        >
+            <template #content="props">
+                <sw-single-select
+                    name="SwagPayPal.settings.intent"
+                    labelProperty="name"
+                    valueProperty="id"
+                    :options="intentOptions"
+                    :isInherited="props.isInherited"
+                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                    :value="props.currentValue"
+                    @update:value="props.updateCurrentValue"
+                />
+            </template>
+        </sw-inherit-wrapper>
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_behavior_settings_submit_cart %}
+        <sw-inherit-wrapper
+            v-model:value="actualConfigData['SwagPayPal.settings.submitCart']"
+            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.submitCart']"
+            :customInheritationCheckFunction="checkBoolFieldInheritance"
+        >
+            <template #content="props">
+                <sw-switch-field
+                    name="SwagPayPal.settings.submitCart"
+                    bordered
+                    :mapInheritance="props"
+                    :label="$tc('swag-paypal.settingForm.behavior.submitCart.label')"
+                    :helpText="$tc('swag-paypal.settingForm.behavior.submitCart.helpText')"
+                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                    :value="props.currentValue"
+                    @update:value="props.updateCurrentValue"
+                />
+            </template>
+        </sw-inherit-wrapper>
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_behavior_settings_brand_name %}
+        <sw-inherit-wrapper
+            v-model:value="actualConfigData['SwagPayPal.settings.brandName']"
+            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.brandName']"
+            :customInheritationCheckFunction="checkTextFieldInheritance"
+        >
+            <template #content="props">
+                <sw-text-field
+                    name="SwagPayPal.settings.brandName"
+                    :mapInheritance="props"
+                    :label="$tc('swag-paypal.settingForm.behavior.brandName.label')"
+                    :helpText="$tc('swag-paypal.settingForm.behavior.brandName.tooltipText')"
+                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                    :value="props.currentValue"
+                    @update:value="props.updateCurrentValue"
+                />
+            </template>
+        </sw-inherit-wrapper>
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_behavior_settings_landing_page %}
+        <sw-inherit-wrapper
+            v-model:value="actualConfigData['SwagPayPal.settings.landingPage']"
+            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.landingPage']"
+            :customInheritationCheckFunction="checkTextFieldInheritance"
+            :label="$tc('swag-paypal.settingForm.behavior.landingPage.label')"
+        >
+            <template #content="props">
+                <sw-single-select
+                    name="SwagPayPal.settings.landingPage"
+                    labelProperty="name"
+                    valueProperty="id"
+                    :options="landingPageOptions"
+                    :isInherited="props.isInherited"
+                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                    :value="props.currentValue"
+                    @update:value="props.updateCurrentValue"
+                />
+
+                {% block swag_paypal_content_card_channel_config_behaviour_settings_landing_page_hint %}
+                <swag-paypal-settings-hint :hintText="landingPageHint"/>
                 {% endblock %}
+            </template>
+        </sw-inherit-wrapper>
+        {% endblock %}
 
-                {% block swag_paypal_content_card_channel_config_behavior_settings_intent %}
-                    <sw-inherit-wrapper
-                        v-model:value="actualConfigData['SwagPayPal.settings.intent']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.intent']"
-                        :customInheritationCheckFunction="checkTextFieldInheritance"
-                        :label="$tc('swag-paypal.settingForm.behavior.intent.label')">
-                        <template #content="props">
-                            <sw-single-select name="SwagPayPal.settings.intent"
-                                              labelProperty="name"
-                                              valueProperty="id"
-                                              :options="intentOptions"
-                                              :isInherited="props.isInherited"
-                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                              :value="props.currentValue"
-                                              @update:value="props.updateCurrentValue">
-                            </sw-single-select>
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
-
-                {% block swag_paypal_content_card_channel_config_behavior_settings_submit_cart %}
-                    <sw-inherit-wrapper
-                        v-model:value="actualConfigData['SwagPayPal.settings.submitCart']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.submitCart']"
-                        :customInheritationCheckFunction="checkBoolFieldInheritance">
-                        <template #content="props">
-                            <sw-switch-field name="SwagPayPal.settings.submitCart"
-                                             bordered
-                                             :mapInheritance="props"
-                                             :label="$tc('swag-paypal.settingForm.behavior.submitCart.label')"
-                                             :helpText="$tc('swag-paypal.settingForm.behavior.submitCart.helpText')"
-                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                             :value="props.currentValue"
-                                             @update:value="props.updateCurrentValue">
-                            </sw-switch-field>
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
-
-                {% block swag_paypal_content_card_channel_config_behavior_settings_brand_name %}
-                    <sw-inherit-wrapper
-                        v-model:value="actualConfigData['SwagPayPal.settings.brandName']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.brandName']"
-                        :customInheritationCheckFunction="checkTextFieldInheritance">
-                        <template #content="props">
-                            <sw-text-field name="SwagPayPal.settings.brandName"
-                                           :mapInheritance="props"
-                                           :label="$tc('swag-paypal.settingForm.behavior.brandName.label')"
-                                           :helpText="$tc('swag-paypal.settingForm.behavior.brandName.tooltipText')"
-                                           :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                           :value="props.currentValue"
-                                           @update:value="props.updateCurrentValue">
-                            </sw-text-field>
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
-
-                {% block swag_paypal_content_card_channel_config_behavior_settings_landing_page %}
-                    <sw-inherit-wrapper
-                        v-model:value="actualConfigData['SwagPayPal.settings.landingPage']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.landingPage']"
-                        :customInheritationCheckFunction="checkTextFieldInheritance"
-                        :label="$tc('swag-paypal.settingForm.behavior.landingPage.label')">
-                        <template #content="props">
-                            <sw-single-select name="SwagPayPal.settings.landingPage"
-                                              labelProperty="name"
-                                              valueProperty="id"
-                                              :options="landingPageOptions"
-                                              :isInherited="props.isInherited"
-                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                              :value="props.currentValue"
-                                              @update:value="props.updateCurrentValue">
-                            </sw-single-select>
-
-                            {% block swag_paypal_content_card_channel_config_behaviour_settings_landing_page_hint %}
-                                <swag-paypal-settings-hint :hintText="landingPageHint"></swag-paypal-settings-hint>
-                            {% endblock %}
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
-
-                {% block swag_paypal_content_card_channel_config_behavior_settings_send_order_number %}
-                    <sw-inherit-wrapper
-                        v-model:value="actualConfigData['SwagPayPal.settings.sendOrderNumber']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.sendOrderNumber']"
-                        :customInheritationCheckFunction="checkBoolFieldInheritance">
-                        <template #content="props">
-                            <sw-switch-field name="SwagPayPal.settings.sendOrderNumber"
-                                             bordered
-                                             :mapInheritance="props"
-                                             :label="$tc('swag-paypal.settingForm.behavior.sendOrderNumber.label')"
-                                             :helpText="$tc('swag-paypal.settingForm.behavior.sendOrderNumber.helpText')"
-                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                             :value="props.currentValue"
-                                             @update:value="props.updateCurrentValue">
-                            </sw-switch-field>
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
+        {% block swag_paypal_content_card_channel_config_behavior_settings_send_order_number %}
+        <sw-inherit-wrapper
+            v-model:value="actualConfigData['SwagPayPal.settings.sendOrderNumber']"
+            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.sendOrderNumber']"
+            :customInheritationCheckFunction="checkBoolFieldInheritance"
+        >
+            <template #content="props">
+                <sw-switch-field
+                    name="SwagPayPal.settings.sendOrderNumber"
+                    bordered
+                    :mapInheritance="props"
+                    :label="$tc('swag-paypal.settingForm.behavior.sendOrderNumber.label')"
+                    :helpText="$tc('swag-paypal.settingForm.behavior.sendOrderNumber.helpText')"
+                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                    :value="props.currentValue"
+                    @update:value="props.updateCurrentValue"
+                />
+            </template>
+        </sw-inherit-wrapper>
+        {% endblock %}
 
 
-                {% block swag_paypal_content_card_channel_config_behavior_settings_order_number %}
-                    <sw-container columns="1fr 1fr" gap="0px 30px">
+        {% block swag_paypal_content_card_channel_config_behavior_settings_order_number %}
+        <sw-container columns="1fr 1fr" gap="0px 30px">
 
-                        {% block swag_paypal_content_card_channel_config_behavior_settings_order_number_prefix %}
-                            <sw-inherit-wrapper
-                                v-model:value="actualConfigData['SwagPayPal.settings.orderNumberPrefix']"
-                                :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.orderNumberPrefix']"
-                                :customInheritationCheckFunction="checkTextFieldInheritance">
-                                <template #content="props">
-                                    <sw-text-field name="SwagPayPal.settings.orderNumberPrefix"
-                                                   :mapInheritance="props"
-                                                   :label="$tc('swag-paypal.settingForm.behavior.orderNumberPrefix.label')"
-                                                   :helpText="$tc('swag-paypal.settingForm.behavior.orderNumberPrefix.tooltipText')"
-                                                   :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                                   :value="props.currentValue"
-                                                   @update:value="props.updateCurrentValue">
-                                    </sw-text-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
+            {% block swag_paypal_content_card_channel_config_behavior_settings_order_number_prefix %}
+            <sw-inherit-wrapper
+                v-model:value="actualConfigData['SwagPayPal.settings.orderNumberPrefix']"
+                :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.orderNumberPrefix']"
+                :customInheritationCheckFunction="checkTextFieldInheritance"
+            >
+                <template #content="props">
+                    <sw-text-field
+                        name="SwagPayPal.settings.orderNumberPrefix"
+                        :mapInheritance="props"
+                        :label="$tc('swag-paypal.settingForm.behavior.orderNumberPrefix.label')"
+                        :helpText="$tc('swag-paypal.settingForm.behavior.orderNumberPrefix.tooltipText')"
+                        :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                        :value="props.currentValue"
+                        @update:value="props.updateCurrentValue"
+                    />
+                </template>
+            </sw-inherit-wrapper>
+            {% endblock %}
 
-                        {% block swag_paypal_content_card_channel_config_behavior_settings_order_number_suffix %}
-                            <sw-inherit-wrapper
-                                v-model:value="actualConfigData['SwagPayPal.settings.orderNumberSuffix']"
-                                :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.orderNumberSuffix']"
-                                :customInheritationCheckFunction="checkTextFieldInheritance">
-                                <template #content="props">
-                                    <sw-text-field name="SwagPayPal.settings.orderNumberSuffix"
-                                                   :mapInheritance="props"
-                                                   :label="$tc('swag-paypal.settingForm.behavior.orderNumberSuffix.label')"
-                                                   :helpText="$tc('swag-paypal.settingForm.behavior.orderNumberSuffix.tooltipText')"
-                                                   :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                                   :value="props.currentValue"
-                                                   @update:value="props.updateCurrentValue">
-                                    </sw-text-field>
-                                </template>
-                            </sw-inherit-wrapper>
-                        {% endblock %}
+            {% block swag_paypal_content_card_channel_config_behavior_settings_order_number_suffix %}
+            <sw-inherit-wrapper
+                v-model:value="actualConfigData['SwagPayPal.settings.orderNumberSuffix']"
+                :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.orderNumberSuffix']"
+                :customInheritationCheckFunction="checkTextFieldInheritance"
+            >
+                <template #content="props">
+                    <sw-text-field
+                        name="SwagPayPal.settings.orderNumberSuffix"
+                        :mapInheritance="props"
+                        :label="$tc('swag-paypal.settingForm.behavior.orderNumberSuffix.label')"
+                        :helpText="$tc('swag-paypal.settingForm.behavior.orderNumberSuffix.tooltipText')"
+                        :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                        :value="props.currentValue"
+                        @update:value="props.updateCurrentValue"
+                    />
+                </template>
+            </sw-inherit-wrapper>
+            {% endblock %}
 
-                    </sw-container>
-                {% endblock %}
+        </sw-container>
+        {% endblock %}
 
                 {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids %}
                     <sw-inherit-wrapper
@@ -189,30 +207,30 @@
                                 @update:value="props.updateCurrentValue"
                             >
 
-                                {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids_label_property %}
-                                    <template #selection-label-property="{ item }">
-                                        <sw-product-variant-info
-                                            :variations="item.variation"
-                                        >
-                                            {{ item.translated.name || item.name }}
-                                        </sw-product-variant-info>
-                                    </template>
-                                {% endblock %}
+                    {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids_label_property %}
+                    <template #selection-label-property="{ item }">
+                        <sw-product-variant-info
+                            :variations="item.variation"
+                        >
+                            {{ item.translated.name || item.name }}
+                        </sw-product-variant-info>
+                    </template>
+                    {% endblock %}
 
-                                {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids_result_label_property %}
-                                    <template #result-label-property="{ item, searchTerm, highlightSearchTerm }">
-                                        <sw-product-variant-info
-                                            :variations="item.variation"
-                                        >
-                                            {{ item.translated.name || item.name }}
-                                        </sw-product-variant-info>
-                                    </template>
-                                {% endblock %}
+                    {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids_result_label_property %}
+                    <template #result-label-property="{ item, searchTerm, highlightSearchTerm }">
+                        <sw-product-variant-info
+                            :variations="item.variation"
+                        >
+                            {{ item.translated.name || item.name }}
+                        </sw-product-variant-info>
+                    </template>
+                    {% endblock %}
 
-                            </sw-entity-multi-id-select>
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
+                </sw-entity-multi-id-select>
+            </template>
+        </sw-inherit-wrapper>
+        {% endblock %}
 
                 {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_streams_ids %}
                     <sw-inherit-wrapper
@@ -235,7 +253,7 @@
                     </sw-inherit-wrapper>
                 {% endblock %}
 
-            </div>
-        {% endblock %}
-    </sw-card>
+    </div>
+    {% endblock %}
+</sw-card>
 {% endblock %}
