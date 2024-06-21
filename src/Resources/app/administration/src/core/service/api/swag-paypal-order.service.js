@@ -10,14 +10,10 @@ class SwagPayPalOrderService extends ApiService {
      * @param {String} paypalOrderId
      */
     getOrderDetails(orderTransactionId, paypalOrderId) {
-        const apiRoute = `${this.getApiBasePath()}/order/${orderTransactionId}/${paypalOrderId}`;
-
         return this.httpClient.get(
-            apiRoute,
+            `${this.getApiBasePath()}/order/${orderTransactionId}/${paypalOrderId}`,
             this.getDefaultOptions(),
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     /**
@@ -40,15 +36,11 @@ class SwagPayPalOrderService extends ApiService {
         noteToPayer,
         partnerAttributionId,
     ) {
-        const params = `/${orderTransactionId}/${captureId}/${paypalOrderId}`;
-        const apiRoute = `${this.getApiBasePath('', '_action')}/refund-capture${params}`;
-
-        return this.doPostRequest(apiRoute, partnerAttributionId, {
-            currency,
-            amount,
-            invoiceNumber,
-            noteToPayer,
-        });
+        return this.doPostRequest(
+            `${this.getApiBasePath(null, '_action')}/refund-capture/${orderTransactionId}/${captureId}/${paypalOrderId}`,
+            partnerAttributionId,
+            { currency, amount, invoiceNumber, noteToPayer },
+        );
     }
 
     /**
@@ -71,16 +63,11 @@ class SwagPayPalOrderService extends ApiService {
         partnerAttributionId,
         isFinal,
     ) {
-        const params = `/${orderTransactionId}/${authorizationId}`;
-        const apiRoute = `${this.getApiBasePath('', '_action')}/capture-authorization${params}`;
-
-        return this.doPostRequest(apiRoute, partnerAttributionId, {
-            currency,
-            amount,
-            invoiceNumber,
-            noteToPayer,
-            isFinal,
-        });
+        return this.doPostRequest(
+            `${this.getApiBasePath(null, '_action')}/capture-authorization/${orderTransactionId}/${authorizationId}`,
+            partnerAttributionId,
+            { currency, amount, invoiceNumber, noteToPayer, isFinal },
+        );
     }
 
     /**
@@ -89,10 +76,10 @@ class SwagPayPalOrderService extends ApiService {
      * @param {String} partnerAttributionId
      */
     voidAuthorization(orderTransactionId, authorizationId, partnerAttributionId) {
-        const params = `/${orderTransactionId}/${authorizationId}`;
-        const apiRoute = `${this.getApiBasePath('', '_action')}/void-authorization${params}`;
-
-        return this.doPostRequest(apiRoute, partnerAttributionId);
+        return this.doPostRequest(
+            `${this.getApiBasePath('', '_action')}/void-authorization/${orderTransactionId}/${authorizationId}`,
+            partnerAttributionId,
+        );
     }
 
     /**
@@ -101,14 +88,11 @@ class SwagPayPalOrderService extends ApiService {
      * @param {Object} requestParameters
      */
     doPostRequest(apiRoute, partnerAttributionId, requestParameters = {}) {
-        const params = { partnerAttributionId, ...requestParameters };
         return this.httpClient.post(
             apiRoute,
-            params,
+            { partnerAttributionId, ...requestParameters },
             this.getDefaultOptions(),
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     getDefaultOptions() {

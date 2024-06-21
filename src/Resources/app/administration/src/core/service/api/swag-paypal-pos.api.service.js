@@ -9,123 +9,91 @@ class SwagPayPalPosApiService extends ApiService {
     }
 
     startCompleteSync(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
         return this.httpClient.post(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     startProductSync(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
         return this.httpClient.post(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}/products`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     startInventorySync(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
         return this.httpClient.post(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}/inventory`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     startImageSync(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
         return this.httpClient.post(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}/images`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     startLogCleanup(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
         return this.httpClient.post(
             `_action/${this.getApiBasePath()}/log/cleanup/${salesChannelId}`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     abortSync(runId) {
-        const headers = this.getBasicHeaders();
-
         return this.httpClient.post(
             `_action/${this.getApiBasePath()}/sync/abort/${runId}`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     resetSync(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
         return this.httpClient.post(
             `_action/${this.getApiBasePath()}/sync/reset/${salesChannelId}`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     getProductLog(salesChannelId, page = 1, limit = 10) {
-        const headers = this.getBasicHeaders();
-
         return this.httpClient.get(
             `${this.getApiBasePath()}/product-log/${salesChannelId}`,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
                 params: { page, limit },
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 }
 

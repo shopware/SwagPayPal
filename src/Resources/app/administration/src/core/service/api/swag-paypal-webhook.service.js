@@ -6,26 +6,26 @@ export default class SwagPayPalWebhookService extends ApiService {
     }
 
     register(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .post(`_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`, {}, { headers })
-            .then((response) => ApiService.handleResponse(response));
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`,
+            {},
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     unregister(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .delete(`_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`, {}, { headers })
-            .then((response) => ApiService.handleResponse(response));
+        return this.httpClient.delete(
+            `_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`,
+            {},
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     status(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .get(`_action/${this.getApiBasePath()}/webhook/status/${salesChannelId}`, {}, { headers })
-            .then((response) => ApiService.handleResponse(response));
+        return this.httpClient.get(
+            `_action/${this.getApiBasePath()}/webhook/status/${salesChannelId}`,
+            {},
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 }

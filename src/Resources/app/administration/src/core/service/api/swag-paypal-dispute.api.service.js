@@ -16,18 +16,14 @@ class SwagPayPalDisputeApiService extends ApiService {
      * @returns {Promise}
      */
     list(salesChannelId = null, disputeStateFilter = null) {
-        const headers = this.getBasicHeaders();
-
         return this.httpClient.get(
             this.getApiBasePath(),
             {
                 params: { salesChannelId, disputeStateFilter },
-                headers,
+                headers: this.getBasicHeaders(),
                 version: Shopware.Context.api.apiVersion,
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     /**
@@ -39,18 +35,14 @@ class SwagPayPalDisputeApiService extends ApiService {
      * @returns {Promise}
      */
     detail(disputeId, salesChannelId) {
-        const headers = this.getBasicHeaders();
-
         return this.httpClient.get(
             `${this.getApiBasePath()}/${disputeId}`,
             {
                 params: { salesChannelId },
-                headers,
+                headers: this.getBasicHeaders(),
                 version: Shopware.Context.api.apiVersion,
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this));
     }
 }
 

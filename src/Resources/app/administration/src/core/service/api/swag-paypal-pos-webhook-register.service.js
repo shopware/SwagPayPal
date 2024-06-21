@@ -6,23 +6,19 @@ class SwagPayPalPosWebhookRegisterService extends ApiService {
     }
 
     registerWebhook(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .post(`_action/${this.getApiBasePath()}/webhook/registration/${salesChannelId}`, {}, { headers })
-            .then((response) => {
-                return ApiService.handleResponse(response);
-            });
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/webhook/registration/${salesChannelId}`,
+            {},
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     unregisterWebhook(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .delete(`_action/${this.getApiBasePath()}/webhook/registration/${salesChannelId}`, {}, { headers })
-            .then((response) => {
-                return ApiService.handleResponse(response);
-            });
+        return this.httpClient.delete(
+            `_action/${this.getApiBasePath()}/webhook/registration/${salesChannelId}`,
+            {},
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 }
 
