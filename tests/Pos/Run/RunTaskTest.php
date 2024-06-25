@@ -40,7 +40,7 @@ class RunTaskTest extends TestCase
     private MockObject $runService;
 
     /**
-     * @var AbstractTask[]
+     * @var array<class-string<AbstractTask>, AbstractTask>
      */
     private array $tasks;
 
@@ -69,13 +69,11 @@ class RunTaskTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderRunTaskName
-     *
      * @param class-string<AbstractTask> $taskName
      */
+    #[DataProvider('dataProviderRunTaskName')]
     public function testNames(string $taskName, string $expectedName): void
     {
-        /** @var AbstractTask&MockObject $task */
         $task = $this->getMockBuilder($taskName)
             ->disableOriginalConstructor()
             ->onlyMethods(['execute'])
@@ -118,10 +116,9 @@ class RunTaskTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderExecution
-     *
      * @param class-string<AbstractTask> $taskName
      */
+    #[DataProvider('dataProviderExecution')]
     public function testExecution(string $taskName, array $serviceCalls): void
     {
         $context = Context::createDefaultContext();
@@ -136,8 +133,8 @@ class RunTaskTest extends TestCase
 
         $envelope = \current($this->messageBus->getEnvelopes());
         static::assertNotFalse($envelope);
-        /** @var SyncManagerMessage $message */
         $message = $envelope->getMessage();
+        static::assertInstanceOf(SyncManagerMessage::class, $message);
         static::assertSame($serviceCalls, $message->getSteps());
     }
 }

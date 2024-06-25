@@ -21,6 +21,8 @@ use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<OrderCollection>
  */
 #[Package('checkout')]
 class OrderRepositoryMock extends AbstractRepoMock
@@ -36,6 +38,9 @@ class OrderRepositoryMock extends AbstractRepoMock
         return new OrderDefinition();
     }
 
+    /**
+     * @return EntitySearchResult<OrderCollection>
+     */
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
         if ($context->hasExtension(self::NO_ORDER)) {
@@ -52,8 +57,7 @@ class OrderRepositoryMock extends AbstractRepoMock
             $orderCollection = new OrderCollection([$this->getOrderEntity()]);
         }
 
-        /** @var EntitySearchResult $result */
-        $result = new EntitySearchResult(
+        return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             \count($orderCollection),
             $orderCollection,
@@ -61,8 +65,6 @@ class OrderRepositoryMock extends AbstractRepoMock
             $criteria,
             $context
         );
-
-        return $result;
     }
 
     private function getOrderEntity(): OrderEntity

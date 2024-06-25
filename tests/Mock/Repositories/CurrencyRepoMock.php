@@ -18,12 +18,17 @@ use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<CurrencyCollection>
  */
 #[Package('checkout')]
 class CurrencyRepoMock extends AbstractRepoMock
 {
     public const INVALID_CURRENCY_ID = 'invalid-currency-id';
 
+    /**
+     * @return EntitySearchResult<CurrencyCollection>
+     */
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
         $currencyId = $criteria->getIds()[0];
@@ -37,8 +42,7 @@ class CurrencyRepoMock extends AbstractRepoMock
         $currency->setId($currencyId);
         $currency->setIsoCode(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
 
-        /** @var EntitySearchResult $result */
-        $result = new EntitySearchResult(
+        return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             1,
             new CurrencyCollection([$currency]),
@@ -46,7 +50,5 @@ class CurrencyRepoMock extends AbstractRepoMock
             $criteria,
             $context
         );
-
-        return $result;
     }
 }

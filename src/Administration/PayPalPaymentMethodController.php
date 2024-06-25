@@ -29,6 +29,9 @@ class PayPalPaymentMethodController extends AbstractController
     ) {
     }
 
+    /**
+     * @phpstan-ignore-next-line
+     */
     #[OA\Post(
         path: '/api/_action/paypal/saleschannel-default',
         operationId: 'setPayPalAsDefault',

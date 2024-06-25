@@ -7,12 +7,15 @@
 
 namespace Swag\PayPal\Test\Pos\Mock\Repositories;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\Log\Package;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<OrderLineItemCollection>
  */
 #[Package('checkout')]
 class OrderLineItemRepoMock extends AbstractRepoMock

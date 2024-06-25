@@ -1,65 +1,130 @@
 includes:
+    - phpstan-baseline.neon
     - %ShopwareRoot%/vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - %ShopwareRoot%/src/Core/DevOps/StaticAnalyze/PHPStan/extension.neon
+    - %ShopwareRoot%/src/Core/DevOps/StaticAnalyze/PHPStan/rules.neon
 
 parameters:
-    phpVersion: 80100
+    phpVersion: 80200
     level: 8
     tmpDir: var/cache/phpstan
-    inferPrivatePropertyTypeFromConstructor: true
-    checkGenericClassInNonGenericObjectType: false
-    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
+    checkFunctionNameCase: true
+    checkInternalClassCaseSensitivity: true
+    checkUninitializedProperties: true
+    reportUnmatchedIgnoredErrors: true
 
     paths:
-        -   src
-        -   tests
+        - src
+        - tests
     excludePaths:
-        -   src/Resources
-        -   src/DevOps/Rector
+        - src/Resources
+        - src/DevOps/Rector
+
+    bootstrapFiles:
+        - bin/static-analyze-autoloader.php
 
     symfony:
         constant_hassers: false
         # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
         container_xml_path: '../../..%ShopwareHashedCacheDir%/%ShopwareKernelClass%DevDebugContainer.xml'
 
+    type_perfect:
+        narrow_return: true
+        no_mixed: true
+        null_over_false: true
+
     ignoreErrors:
         # We won't type all arrays/iterables for now
-        -   '#no value type specified in iterable type#'
+        - '#no value type specified in iterable type#'
 
-        -   # This service gets registered within Cms Extensions
+        # NEXT-22942 - Needs to be fixed with a script, rest goes to baseline
+        - '#.* generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository.*not specify its types: TEntityCollection#'
+        - '#.* generic class Shopware\\Core\\System\\SalesChannel\\Entity\\SalesChannelRepository.*not specify its types: TEntityCollection#'
+        - '#.* generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult.*does not specify its types: TEntityCollection#'
+
+        - # Ignore uninitialized property in structs
+            message: '#Class .* has an uninitialized property .* Give it default value or assign it in the constructor#'
+            paths:
+                - src/Checkout/ExpressCheckout/ExpressCheckoutButtonData.php
+                - src/Checkout/PUI/PUIFraudNetData.php
+                - src/Checkout/PUI/PUIPaymentInstructionData.php
+                - src/Checkout/Plus/PlusData.php
+                - src/Checkout/SPBCheckout/SPBCheckoutButtonData.php
+                - src/DataAbstractionLayer
+                - src/Installment/Banner/BannerData.php
+                - src/RestApi
+                - src/Setting/Struct
+                - src/Storefront/Data/Struct
+                - src/Pos/Api
+                - src/Pos/DataAbstractionLayer/Entity
+                - src/Pos/MessageQueue/Message
+                - src/Pos/Setting/Struct
+
+        - # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
 
-        -   # Services in tests are all public
+        - # Services in tests are all public
             message: '#Service ".*" is private#'
             path: tests/**/*.php
 
-        -   # Ignore finality of repository in tests
+        - # Ignore finality of repository in tests
             message: '#.*extends @final class (\w|\\)*(SalesChannel|Entity)Repository#'
             path: tests/**/*.php
 
-        -   # ignore own deprecations
+        - # ignore own deprecations
             message: '#.*tag:v10.0.0 -#'
 
-        -   # ignore Plus deprecations
-            message: '#deprecated.*(Plus|PLUS|_PAYMENT_|MERCHANT_LOCATION)#'
-
-        -   # ignore SystemConfigController context requirement
-            message: '#Call to deprecated method batchSaveConfiguration#'
-            path: tests/Webhook/Registration/WebhookSystemConfigControllerTest.php
-            count: 11
-
-        -   # ignore shopware v6.7 deprecations
+        - # ignore shopware v6.7 deprecations
             message: '#.*tag:v6.7.0 -#'
             paths:
                 - tests/**/*.php
-                - src/Util/Lifecycle/Update.php
-                - src/Storefront/Controller/PayPalController.php
 
-    bootstrapFiles:
-        -   bin/static-analyze-autoloader.php
+        - # Can be removed once the min SW version is 6.6.1.0
+            message: '#Method Context::createDefaultContext\(\) should not be used in CLI context. Use Context::createCLIContext\(\) instead#'
+            paths:
+                - src/Checkout/PUI/ScheduledTask/PUIInstructionsFetchTaskHandler.php
+                - src/Checkout/Payment/ScheduledTask/TransactionStatusSyncTaskHandler.php
+                - src/Pos/Command/AbstractPosCommand.php
+                - src/Pos/Schedule/AbstractSyncTaskHandler.php
+                - src/Reporting/ScheduledTask/TurnoverReportingTaskHandler.php
+
+        - # The RouteScopeRule seems to be broken if extending a controller
+            message: '#Method Shopware\\Core\\System\\SystemConfig\\Api\\SystemConfigController::.* has no route scope defined. Please add a route scope to the method or the class#'
+            path: src/Webhook/Registration/WebhookSystemConfigController.php
+
+services:
+    -   # register the class, so we can decorate it, but don't tag it as a rule, so only our decorator is used by PHPStan
+        class: Symplify\PHPStanRules\Rules\NoReturnSetterMethodRule
 
 rules:
-    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
+    # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalMethodRule
+    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Tests\CoversAttributeRule
+    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Tests\MockingSimpleObjectsNotAllowedRule
+    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\DecorationPatternRule
+    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\AddColumnRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\PackageAnnotationRule
+    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\DomainExceptionRule
+    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\NoAfterStatementRule
+    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\NoNewRequestInStorefrontRule
+
+    # rules from https://github.com/symplify/phpstan-rules
+    # domain
+    - Symplify\PHPStanRules\Rules\Enum\RequireUniqueEnumConstantRule
+    - Symplify\PHPStanRules\Rules\PreventParentMethodVisibilityOverrideRule
+
+    # explicit naming
+    - Symplify\PHPStanRules\Rules\ForbiddenMultipleClassLikeInOneFileRule
+
+    - Symplify\PHPStanRules\Rules\Complexity\ForbiddenArrayMethodCallRule
+
+    # complexity rules
+    - Symplify\PHPStanRules\Rules\NoDynamicNameRule
+
+    # naming rules
+    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Symplify\NoReturnSetterMethodWithFluentSettersRule
+    - Symplify\PHPStanRules\Rules\UppercaseConstantRule
+    - Symplify\PHPStanRules\Rules\CheckClassNamespaceFollowPsr4Rule

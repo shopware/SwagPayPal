@@ -62,10 +62,9 @@ class AvailabilityServiceTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderPaymentMethod
-     *
      * @param class-string<AbstractMethodData> $methodDataClass
      */
+    #[DataProvider('dataProviderPaymentMethod')]
     public function testIsPaymentMethodAvailable(string $methodDataClass, bool $shouldBeAvailable): void
     {
         $salesChannelContext = $this->createSalesChannelContext();
@@ -79,10 +78,9 @@ class AvailabilityServiceTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderPaymentMethod
-     *
      * @param class-string<AbstractMethodData> $methodDataClass
      */
+    #[DataProvider('dataProviderPaymentMethod')]
     public function testFilterPaymentMethods(string $methodDataClass, bool $shouldBeAvailable): void
     {
         $salesChannelContext = $this->createSalesChannelContext();
@@ -96,10 +94,9 @@ class AvailabilityServiceTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderPaymentMethod
-     *
      * @param class-string<AbstractMethodData> $methodDataClass
      */
+    #[DataProvider('dataProviderPaymentMethod')]
     public function testFilterPaymentMethodByOrder(string $methodDataClass, bool $shouldBeAvailable): void
     {
         $salesChannelContext = $this->createSalesChannelContext();

@@ -17,7 +17,7 @@ use Shopware\Core\Framework\Log\Package;
 #[Package('checkout')]
 class CacheMock implements CacheItemPoolInterface
 {
-    public function getItem($key): CacheItemInterface
+    public function getItem(string $key): CacheItemInterface
     {
         return new CacheItemMockTyped();
     }
@@ -27,7 +27,7 @@ class CacheMock implements CacheItemPoolInterface
         return [];
     }
 
-    public function hasItem($key): bool
+    public function hasItem(string $key): bool
     {
         return true;
     }
@@ -37,7 +37,7 @@ class CacheMock implements CacheItemPoolInterface
         return true;
     }
 
-    public function deleteItem($key): bool
+    public function deleteItem(string $key): bool
     {
         return true;
     }

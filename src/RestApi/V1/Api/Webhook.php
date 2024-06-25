@@ -155,7 +155,7 @@ class Webhook extends PayPalApiStruct
      */
     public function assign(array $arrayDataWithSnakeCaseKeys): static
     {
-        $resourceData = $arrayDataWithSnakeCaseKeys['resource'];
+        $resourceData = $arrayDataWithSnakeCaseKeys['resource'] ?? null;
         unset($arrayDataWithSnakeCaseKeys['resource']);
         $webhook = parent::assign($arrayDataWithSnakeCaseKeys);
         if ($resourceData === null) {

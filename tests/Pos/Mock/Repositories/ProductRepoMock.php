@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Mock\Repositories;
 
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -15,6 +16,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<ProductCollection>
  */
 #[Package('checkout')]
 class ProductRepoMock extends AbstractRepoMock

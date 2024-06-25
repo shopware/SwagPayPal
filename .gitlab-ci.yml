@@ -45,11 +45,18 @@ phpunit:
 phpstan:
   script:
     - composer dump-autoload --dev -d "${PROJECT_ROOT}/custom/plugins/SwagCmsExtensions"
+    - "sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist"
+    - - >
+        if [[ $PLATFORM_BRANCH == $PLATFORM_MIN_VERSION ]]; then
+          sed -i '/type_perfect/d' ./phpstan.neon.dist
+          sed -i '/narrow_return: true/d' ./phpstan.neon.dist
+          sed -i '/no_mixed: true/d' ./phpstan.neon.dist
+          sed -i '/null_over_false: true/d' ./phpstan.neon.dist
+        fi
     - composer phpstan
   parallel:
     matrix:
-      -   DEV_IMAGE: [ 'shopware/development:8.2-composer-2', 'shopware/development:8.3-composer-2' ]
-          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
+      -   PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
 
 eslint (administration):
   stage: test

@@ -10,15 +10,13 @@ namespace Swag\PayPal\Test\Checkout\Cart;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\DataAbstractionLayer\ProductStreamUpdater;
-use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\IdsCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Setting\Settings;
@@ -55,7 +53,6 @@ class ExcludedProductValidatorTest extends TestCase
             'parentId' => $this->idsCollection->get('parent'),
         ]));
 
-        /** @var EntityRepository $productStreamRepository */
         $productStreamRepository = $this->getContainer()->get('product_stream.repository');
         $productStreamRepository->create([[
             'id' => $this->idsCollection->get('streamVariant'),
@@ -133,9 +130,7 @@ class ExcludedProductValidatorTest extends TestCase
             $this->systemConfig->set($settingKey, [$this->idsCollection->get($settingIdName)]);
         }
 
-        /** @var EntityRepository $productRepository */
-        $productRepository = $this->getContainer()->get('product.repository');
-        $product = $productRepository->search(
+        $product = $this->getContainer()->get('product.repository')->search(
             new Criteria([$this->idsCollection->get('variant')]),
             Context::createDefaultContext()
         )->first();
@@ -149,22 +144,20 @@ class ExcludedProductValidatorTest extends TestCase
 
     /**
      * this test is related to the ExpressCheckoutSubscriber
-     *
-     * @dataProvider dataProviderConstellations
      */
+    #[DataProvider('dataProviderConstellations')]
     public function testExcludedProductTaggedInSearchResults(?string $settingKey, ?string $settingIdName, ?string $expectedIdName): void
     {
         if ($settingKey && $settingIdName) {
             $this->systemConfig->set($settingKey, [$this->idsCollection->get($settingIdName)]);
         }
 
-        /** @var SalesChannelRepository $productRepository */
         $productRepository = $this->getContainer()->get('sales_channel.product.repository');
-        /** @var ProductCollection $products */
         $products = $productRepository->search(
             new Criteria([$this->idsCollection->get('variant')]),
             $this->registerUser()
         )->getEntities();
+        static::assertInstanceOf(SalesChannelProductCollection::class, $products);
         static::assertNotEmpty($products);
 
         foreach ($products as $product) {
@@ -177,9 +170,8 @@ class ExcludedProductValidatorTest extends TestCase
 
     /**
      * this test is related to the ExpressCheckoutSubscriber
-     *
-     * @dataProvider dataProviderConstellations
      */
+    #[DataProvider('dataProviderConstellations')]
     public function testExcludedProductTaggedInSearchResultsWithListingDisabled(?string $settingKey, ?string $settingIdName): void
     {
         if ($settingKey && $settingIdName) {
@@ -187,7 +179,6 @@ class ExcludedProductValidatorTest extends TestCase
         }
         $this->systemConfig->set(Settings::ECS_LISTING_ENABLED, false);
 
-        /** @var SalesChannelRepository $productRepository */
         $productRepository = $this->getContainer()->get('sales_channel.product.repository');
         $products = $productRepository->search(
             new Criteria([$this->idsCollection->get('variant')]),

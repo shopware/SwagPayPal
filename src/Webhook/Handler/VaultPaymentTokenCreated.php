@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AbstractPaymentTransactionStructFactory;
 use Shopware\Core\Framework\Context;
@@ -53,23 +52,23 @@ class VaultPaymentTokenCreated extends AbstractWebhookHandler
 
     public function invoke(Webhook $webhook, Context $context): void
     {
-        if (!$webhook->getResource() instanceof PaymentToken) {
+        $resource = $webhook->getResource();
+        if (!$resource instanceof PaymentToken) {
             throw new WebhookException($this->getEventType(), 'Given webhook does not have needed resource data');
         }
 
-        $orderId = $webhook->getResource()->getMetaData()?->getOrderId();
+        $orderId = $resource->getMetadata()?->getOrderId();
         if (!$orderId) {
             return;
         }
 
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('customFields.' . SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID, $webhook->getResource()->getId()));
+        $criteria->addFilter(new EqualsFilter('customFields.' . SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID, $resource->getId()));
         $criteria->addAssociation('order.orderCustomer');
         $criteria->addAssociation('order.subscription');
         $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
         $criteria->setLimit(1);
-        /** @var OrderTransactionEntity|null $orderTransaction */
-        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
         $order = $orderTransaction?->getOrder();
         if (!$orderTransaction || !$order) {
             return;
@@ -90,9 +89,9 @@ class VaultPaymentTokenCreated extends AbstractWebhookHandler
         // just to be safe, overwrite the token from the webhook
         $vault = new Vault();
         $vault->assign([
-            'id' => $webhook->getResource()->getId(),
+            'id' => $resource->getId(),
             'customer' => [
-                'id' => $webhook->getResource()->getCustomer()?->getId(),
+                'id' => $resource->getCustomer()?->getId(),
             ],
         ]);
         $attributes = $paymentSource->getAttributes() ?? new Attributes();
