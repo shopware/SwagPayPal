@@ -2,7 +2,7 @@
 
     {% block sw_settings_shipping_detail_paypal_default_carrier %}
     <sw-card
-        v-if="isPayPalEnabled"
+        v-show="isPayPalEnabled"
         class="swag-paypal-settings-shipping-carrier"
         position-identifier="swag-paypal-settings-shipping-carrier"
     >

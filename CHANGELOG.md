@@ -1,3 +1,6 @@
+# 9.3.0
+- PPI-934 - Moved shipping tracking transmission to new PayPal API endpoints
+
 # 9.2.0
 - PPI-666 - Added information on invoices for Pay Upon Invoice payments
 - PPI-924 - Added more explicit error messages for errors happening while checkout (e.g. postal code is missing)
