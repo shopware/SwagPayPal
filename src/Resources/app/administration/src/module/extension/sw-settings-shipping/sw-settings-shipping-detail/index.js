@@ -7,12 +7,12 @@ Component.override('sw-settings-shipping-detail', {
     template,
 
     inject: [
-        'SwagPayPalApiCredentialsService',
+        'systemConfigApiService',
     ],
 
     data() {
         return {
-            isPayPalEnabled: false,
+            isPayPalEnabled: true,
         };
     },
 
@@ -43,16 +43,26 @@ Component.override('sw-settings-shipping-detail', {
         createdComponent() {
             this.$super('createdComponent');
 
-            this.fetchMerchantIntegrations();
+            this.fetchConfigCredentials();
         },
 
+        fetchConfigCredentials() {
+            this.systemConfigApiService
+                .getValues('SwagPayPal.settings', null)
+                .then((values) => {
+                    this.isPayPalEnabled = values['SwagPayPal.settings.merchantPayerId']
+                        || values['SwagPayPal.settings.merchantPayerIdSandbox'];
+                });
+        },
+
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed, use `fetchConfigCredentials` instead.
+         */
         fetchMerchantIntegrations() {
             this.SwagPayPalApiCredentialsService
                 .getMerchantInformation()
                 .then((response) => {
-                    this.isPayPalEnabled =
-                        response.hasOwnProperty('merchantIntegrations')
-                        && response.merchantIntegrations !== null;
+                    this.isPayPalEnabled = !!response.merchantIntegrations;
                 });
         },
     },

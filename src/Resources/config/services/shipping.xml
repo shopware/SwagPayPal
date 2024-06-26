@@ -6,8 +6,8 @@
 
     <services>
         <service id="Swag\PayPal\Checkout\Order\Shipping\ShippingSubscriber">
-            <argument type="service" id="Swag\PayPal\Checkout\Order\Shipping\Service\ShippingService"/>
-            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -17,6 +17,14 @@
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="shipping_method.repository"/>
             <argument type="service" id="monolog.logger.paypal"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessageHandler">
+            <argument type="service" id="order_delivery.repository"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <argument type="service" id="monolog.logger.paypal"/>
+
+            <tag name="messenger.message_handler" />
         </service>
     </services>
 </container>
