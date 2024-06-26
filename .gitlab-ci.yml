@@ -44,13 +44,14 @@ phpunit:
           PLUGIN_DEPENDENCIES: [ $DEPENDENCIES_WITH_COMMERCIAL, $DEPENDENCIES_WITHOUT_COMMERCIAL ]
 
 phpstan:
+  variables:
+    DEV_IMAGE: 'shopware/development:8.1-composer-2'
   script:
     - composer dump-autoload --dev -d "${PROJECT_ROOT}/custom/plugins/SwagCmsExtensions"
     - composer phpstan
   parallel:
     matrix:
-      -   DEV_IMAGE: ['shopware/development:8.1-composer-2', 'shopware/development:8.2-composer-2' ]
-          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
+      -   PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
 
 linting:
   stage: test

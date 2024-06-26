@@ -168,6 +168,9 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         );
     }
 
+    /**
+     * @param SalesChannelEntitySearchResultLoadedEvent<ProductCollection> $event
+     */
     public function addExcludedProductsToSearchResult(SalesChannelEntitySearchResultLoadedEvent $event): void
     {
         if (!$this->checkSettings($event->getSalesChannelContext(), $event::class)) {
@@ -175,7 +178,6 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         }
 
         $productIds = [];
-        /** @var ProductCollection $products */
         $products = $event->getResult()->getEntities();
         foreach ($products as $product) {
             $productIds[] = $product->getId();

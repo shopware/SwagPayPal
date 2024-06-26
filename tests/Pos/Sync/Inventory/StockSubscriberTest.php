@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
 use Doctrine\DBAL\Connection;
 use Monolog\Logger;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
@@ -24,6 +23,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderStates;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -86,10 +86,8 @@ class StockSubscriberTest extends TestCase
     {
         $event = $this->createStateMachineTransitionEvent(Uuid::randomHex(), Context::createDefaultContext());
 
-        /** @var EntityRepository|MockObject $orderLineItemRepo */
         $orderLineItemRepo = $this->getMockBuilder(EntityRepository::class)->disableOriginalConstructor()->getMock();
         $orderLineItemRepo->expects(static::never())->method('search');
-        /** @var EntityRepository $salesChannelRepository */
         $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
 
         $stockSubscriber = new StockSubscriber(
@@ -198,10 +196,13 @@ class StockSubscriberTest extends TestCase
          * C - decreased stock
          */
         $productA = $productRepository->createMockEntity('productA', 2, 1, ConstantsForTesting::PRODUCT_A_ID);
+        $productA = SalesChannelProductEntity::createFrom($productA);
         $salesChannelProductRepository->addMockEntity($productA);
         $productB = $productRepository->createMockEntity('productB', 2, 2, ConstantsForTesting::PRODUCT_B_ID);
+        $productB = SalesChannelProductEntity::createFrom($productB);
         $salesChannelProductRepository->addMockEntity($productB);
         $productC = $productRepository->createMockEntity('productC', 2, 0, ConstantsForTesting::PRODUCT_C_ID);
+        $productC = SalesChannelProductEntity::createFrom($productC);
         $salesChannelProductRepository->addMockEntity($productC);
 
         $inventoryRepository->createMockEntity($productA, TestDefaults::SALES_CHANNEL, 1);
@@ -212,7 +213,6 @@ class StockSubscriberTest extends TestCase
         $lineItems = $order->getLineItems();
         static::assertNotNull($lineItems);
 
-        /** @var OrderLineItemCollection $repoCollection */
         $repoCollection = $orderLineItemRepository->getCollection();
         $repoCollection->merge($lineItems);
 
@@ -240,10 +240,8 @@ class StockSubscriberTest extends TestCase
 
     private function createStockSubscriber(): StockSubscriber
     {
-        /** @var MessageBus|MockObject $messageBus */
         $messageBus = $this->getMockBuilder(MessageBus::class)->disableOriginalConstructor()->getMock();
         $messageBus->expects(static::never())->method('dispatch');
-        /** @var EntityRepository $salesChannelRepository */
         $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
 
         return new StockSubscriber(

@@ -39,7 +39,7 @@ class RunTaskTest extends TestCase
     private MockObject $runService;
 
     /**
-     * @var AbstractTask[]
+     * @var array<class-string<AbstractTask>, AbstractTask>
      */
     private array $tasks;
 
@@ -74,7 +74,6 @@ class RunTaskTest extends TestCase
      */
     public function testNames(string $taskName, string $expectedName): void
     {
-        /** @var AbstractTask&MockObject $task */
         $task = $this->getMockBuilder($taskName)
             ->disableOriginalConstructor()
             ->onlyMethods(['execute'])
@@ -135,8 +134,8 @@ class RunTaskTest extends TestCase
 
         $envelope = \current($this->messageBus->getEnvelopes());
         static::assertNotFalse($envelope);
-        /** @var SyncManagerMessage $message */
         $message = $envelope->getMessage();
+        static::assertInstanceOf(SyncManagerMessage::class, $message);
         static::assertSame($serviceCalls, $message->getSteps());
     }
 }

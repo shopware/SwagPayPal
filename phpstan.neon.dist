@@ -5,9 +5,12 @@ parameters:
     phpVersion: 80100
     level: 8
     tmpDir: var/cache/phpstan
+    treatPhpDocTypesAsCertain: false
+    checkFunctionNameCase: true
+    checkInternalClassCaseSensitivity: true
+    reportUnmatchedIgnoredErrors: false
     inferPrivatePropertyTypeFromConstructor: true
     checkGenericClassInNonGenericObjectType: false
-    reportUnmatchedIgnoredErrors: false
 
     paths:
         -   src
@@ -46,9 +49,6 @@ parameters:
         -   # ignore own deprecations
             message: '#.*tag:v(9|10).0.0 -#'
 
-        -   # ignore Plus deprecations
-            message: '#deprecated.*(Plus|PLUS|_PAYMENT_|MERCHANT_LOCATION)#'
-
         -   # ignore Symfony 6 message queue deprecations
             message: '#AsMessageHandler#'
 
@@ -77,6 +77,16 @@ parameters:
 
         -   # ignore nullable Zip Code (6.6)
             message : '#Call to deprecated method [sg]etZipcode\(\) of class .*OrderAddressEntity#'
+
+        -   # Is not recognized correctly by PHPStan in min SW version
+            message: '#Parameter \#1 \$orderTransactionRepository of class Swag\\PayPal\\Webhook\\Handler\\VaultPaymentTokenCreated constructor expects Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository\<Shopware\\Core\\Checkout\\Order\\Aggregate\\OrderTransaction\\OrderTransactionCollection>, Shopware\\Core\\Test\\Stub\\DataAbstractionLayer\\StaticEntityRepository<Shopware\\Core\\Checkout\\Order\\Aggregate\\OrderTransaction\\OrderTransactionCollection> given#'
+            path: tests/Webhook/Handler/VaultPaymentTokenCreatedTest.php
+
+
+        -   # This would need some fixes in the core, to correctly tie together Definition, Entity and Collection classes.
+            message: "#^Parameter \\#1 \\$entity of method Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityCollection\\<Shopware\\\\Core\\\\Content\\\\Product\\\\ProductEntity\\>\\:\\:add\\(\\) expects Shopware\\\\Core\\\\Content\\\\Product\\\\ProductEntity, Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Entity given\\.$#"
+            count: 2
+            path: tests/Pos/Mock/Repositories/SalesChannelProductRepoMock.php
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

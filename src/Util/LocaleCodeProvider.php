@@ -65,7 +65,7 @@ class LocaleCodeProvider implements ResetInterface
 
     public function getFormattedLocaleCode(string $localeCode): string
     {
-        $canonicalizedCode = \Locale::canonicalize($localeCode);
+        $canonicalizedCode = (string) \Locale::canonicalize($localeCode);
 
         if (\mb_strlen($canonicalizedCode) !== self::SUPPORTED_LOCALE_CODE_LENGTH) {
             $this->logger->notice(

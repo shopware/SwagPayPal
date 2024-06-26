@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPalTestPosUtil;
+namespace Swag\PayPal\Test\Pos\Webhook;
 
 use Doctrine\DBAL\Connection;
 use Monolog\Logger;

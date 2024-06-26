@@ -24,6 +24,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<ProductVisibilityCollection>
  */
 #[Package('checkout')]
 class ProductVisibilityRepoMock extends AbstractRepoMock
@@ -72,7 +74,6 @@ class ProductVisibilityRepoMock extends AbstractRepoMock
 
     public function filterBySalesChannelId(string $id): ProductVisibilityCollection
     {
-        /** @var ProductVisibilityCollection $entityCollection */
         $entityCollection = $this->entityCollection;
 
         return $entityCollection->filter(function (ProductVisibilityEntity $productVisibility) use ($id) {
@@ -93,7 +94,6 @@ class ProductVisibilityRepoMock extends AbstractRepoMock
             return $this->filterBySalesChannelId($salesChannelId);
         }
 
-        /** @var ProductVisibilityCollection $entityCollection */
         $entityCollection = $this->entityCollection;
 
         return $entityCollection;

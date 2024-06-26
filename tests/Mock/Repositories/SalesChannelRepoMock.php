@@ -23,6 +23,8 @@ use Swag\PayPal\Test\Util\PaymentMethodUtilTest;
 
 /**
  * @internal
+ *
+ * @extends AbstractRepoMock<SalesChannelCollection>
  */
 #[Package('checkout')]
 class SalesChannelRepoMock extends AbstractRepoMock
@@ -36,17 +38,19 @@ class SalesChannelRepoMock extends AbstractRepoMock
         return new SalesChannelDefinition();
     }
 
+    /**
+     * @return EntitySearchResult<SalesChannelCollection>
+     */
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        /** @var string[] $ids */
+        /** @var array<string> $ids */
         $ids = $criteria->getIds();
         $id = $ids[0] ?? null;
         $withPaymentMethods = $id === TestDefaults::SALES_CHANNEL;
         $salesChannelId = $id ?? TestDefaults::SALES_CHANNEL;
         $arrayKey = $withPaymentMethods ? $salesChannelId : PaymentMethodUtilTest::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD;
 
-        /** @var EntitySearchResult $result */
-        $result = new EntitySearchResult(
+        return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             1,
             new SalesChannelCollection([$arrayKey => $this->createSalesChannelEntity($salesChannelId, $withPaymentMethods)]),
@@ -54,8 +58,6 @@ class SalesChannelRepoMock extends AbstractRepoMock
             $criteria,
             $context
         );
-
-        return $result;
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent

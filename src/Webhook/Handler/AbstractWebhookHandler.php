@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Webhook\Handler;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
@@ -28,6 +29,8 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 {
     /**
      * @internal
+     *
+     * @param EntityRepository<OrderTransactionCollection> $orderTransactionRepository
      */
     public function __construct(
         protected readonly EntityRepository $orderTransactionRepository,
@@ -59,8 +62,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
                 $payPalTransactionId
             )
         );
-        /** @var OrderTransactionEntity|null $orderTransaction */
-        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
 
         if ($orderTransaction === null) {
             throw new WebhookOrderTransactionNotFoundException(
@@ -88,8 +90,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 
         $criteria = new Criteria([$orderTransactionId]);
         $criteria->addAssociation('order');
-        /** @var OrderTransactionEntity|null $orderTransaction */
-        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
 
         if ($orderTransaction === null) {
             throw new WebhookOrderTransactionNotFoundException(
