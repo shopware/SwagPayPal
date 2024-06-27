@@ -8,8 +8,6 @@ const bootPromise = window.Shopware ? Shopware.Plugin.addBootPromise() : undefin
         await import('./mixin/swag-paypal-pos-catch-error.mixin');
         await import('./mixin/swag-paypal-pos-log-label.mixin');
 
-        await import('./module/extension/sw-dashboard/sw-dashboard-index');
-        await import('./module/extension/sw-dashboard/component/swag-paypal-campaign-banner');
         await import('./module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials');
         await import('./module/extension/sw-sales-channel-modal-detail');
         await import('./module/extension/sw-sales-channel-modal-grid');
