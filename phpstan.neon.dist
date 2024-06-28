@@ -20,6 +20,8 @@ parameters:
     excludePaths:
         - src/Resources
         - src/DevOps/Rector
+        # tag:v6.7.0 - does not fully understand overwrite multiple definitions of DefaultPayment
+        - src/Pos/Payment/PosPayment.php
 
     bootstrapFiles:
         - bin/static-analyze-autoloader.php
@@ -76,7 +78,7 @@ parameters:
         - # ignore own deprecations
             message: '#.*tag:v10.0.0 -#'
 
-        - # ignore shopware v6.7 deprecations
+        - # ignore shopware v6.7 deprecations in tests
             message: '#.*tag:v6.7.0 -#'
             paths:
                 - tests/**/*.php
@@ -93,6 +95,34 @@ parameters:
         - # The RouteScopeRule seems to be broken if extending a controller
             message: '#Method Shopware\\Core\\System\\SystemConfig\\Api\\SystemConfigController::.* has no route scope defined. Please add a route scope to the method or the class#'
             path: src/Webhook/Registration/WebhookSystemConfigController.php
+
+        - # ignore shopware v6.7 payment handlers refactor deprecations
+            message: '#tag:v6.7.0 -.*PaymentTransactionStruct#'
+            paths:
+                - src/Checkout/Card/*Validator.php
+                - src/Checkout/Card/CardValidatorInterface.php
+                - src/Checkout/Payment/**/*Handler.php
+                - src/Checkout/Payment/PayPalPaymentHandler.php
+                - src/Checkout/Payment/Service/VaultTokenService.php
+                - src/OrdersApi/Builder/*Builder.php
+                - src/PaymentsApi/Builder/OrderPaymentBuilderInterface.php
+                - src/PaymentsApi/Builder/*Builder.php
+                - src/PaymentsApi/Patch/*.php
+
+        - # ignore shopware v6.7 payment handlers refactor deprecations
+            message: '#.*tag:v6.7.0 - will be removed, (extend AbstractPaymentHandler)|(use `build`) instead#'
+            paths:
+                - src/Checkout/Payment/**/*Handler.php
+                - src/Checkout/Payment/PayPalPaymentHandler.php
+                - src/Checkout/SalesChannel/CreateOrderRoute.php
+                - src/Webhook/Handler/VaultPaymentTokenCreated.php
+
+        - # ignore shopware v6.7 payment handlers refactor deprecations
+            message: '#Swag\\PayPal\\Pos\\Payment\\PosPayment#'
+            paths:
+                - src/Pos/Setting/Service/InformationDefaultService.php
+                - tests/Checkout/CheckoutSubscriberTest.php
+                - tests/Pos/Util/InformationDefaultServiceTest.php
 
 services:
     -   # register the class, so we can decorate it, but don't tag it as a rule, so only our decorator is used by PHPStan
