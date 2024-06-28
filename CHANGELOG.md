@@ -1,5 +1,6 @@
 # 8.3.0
 - PPI-934 - Moved shipping tracking transmission to new PayPal API endpoints
+- PPI-944 - Fixes an issue, where payment status polling kept retrying with invalid transactions
 
 # 8.2.0
 - PPI-666 - Added information on invoices for Pay Upon Invoice payments
