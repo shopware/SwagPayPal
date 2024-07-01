@@ -556,11 +556,6 @@ parameters:
 			path: tests/Checkout/Method/PUIHandlerTest.php
 
 		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Order\\\\Shipping\\\\ShippingSubscriberTest has an uninitialized property \\$shippingService\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Checkout/Order/Shipping/ShippingSubscriberTest.php
-
-		-
 			message: "#^Mixed variable in a `\\$criteria\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
 			count: 1
 			path: tests/Checkout/PUI/SalesChannel/PUIPaymentInstructionsRouteTest.php
