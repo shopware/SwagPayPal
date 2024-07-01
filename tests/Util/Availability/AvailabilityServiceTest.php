@@ -28,7 +28,6 @@ use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\BancontactMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\BlikMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\EpsMethodData;
-use Swag\PayPal\Util\Lifecycle\Method\GiropayMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\IdealMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\MultibancoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\MyBankMethodData;
@@ -119,7 +118,6 @@ class AvailabilityServiceTest extends TestCase
             [BancontactMethodData::class, false],
             [BlikMethodData::class, false],
             [EpsMethodData::class, false],
-            [GiropayMethodData::class, true],
             [IdealMethodData::class, false],
             [MultibancoMethodData::class, false],
             [MyBankMethodData::class, false],
