@@ -41,7 +41,6 @@ use Swag\PayPal\Util\Lifecycle\Method\GooglePayMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
-use Swag\PayPal\Util\Lifecycle\Method\SofortMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
@@ -168,6 +167,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '8.2.0', '<')) {
             $this->updateTo820($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.3.1', '<')) {
+            $this->updateTo931($updateContext->getContext());
         }
     }
 
@@ -524,9 +527,16 @@ class Update
     private function updateTo820(Context $context): void
     {
         try {
-            $this->paymentMethodStateService->setPaymentMethodState(SofortMethodData::class, false, $context);
+            $this->paymentMethodStateService->setPaymentMethodStateByHandler('Swag\PayPal\Checkout\Payment\Method\SofortAPMHandler', false, $context);
         } catch (PaymentException) {
-            return;
+        }
+    }
+
+    private function updateTo931(Context $context): void
+    {
+        try {
+            $this->paymentMethodStateService->setPaymentMethodStateByHandler('Swag\PayPal\Checkout\Payment\Method\GiropayAPMHandler', false, $context);
+        } catch (PaymentException) {
         }
     }
 }
