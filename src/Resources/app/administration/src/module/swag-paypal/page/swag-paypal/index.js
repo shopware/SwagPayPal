@@ -4,7 +4,6 @@ import constants from './swag-paypal-consts';
 
 const { Component, Defaults } = Shopware;
 const { Criteria } = Shopware.Data;
-const { hasOwnProperty } = Shopware.Utils.object;
 
 Component.register('swag-paypal', {
     template,
@@ -50,39 +49,28 @@ Component.register('swag-paypal', {
     },
 
     computed: {
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed without replacement.
+         */
         showSPBCard() {
-            if (hasOwnProperty(this.config, 'SwagPayPal.settings.merchantLocation') &&
-                    this.config['SwagPayPal.settings.merchantLocation'] !== null
-            ) {
-                return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
+            if (!this.$refs.configComponent?.allConfigs?.null) {
+                return true;
             }
 
-            const defaultConfig = this.$refs.configComponent?.allConfigs.null;
+            const merchantLocation = this.config['SwagPayPal.settings.merchantLocation'] ??
+                this.$refs.configComponent?.allConfigs?.null['SwagPayPal.settings.merchantLocation'];
 
-            if (!defaultConfig) {
-                return false;
-            }
+            const plusEnabled = this.config['SwagPayPal.settings.plusCheckoutEnabled'] ??
+                this.$refs.configComponent?.allConfigs?.null['SwagPayPal.settings.plusCheckoutEnabled'];
 
-            return defaultConfig['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
+            return merchantLocation !== this.MERCHANT_LOCATION_GERMANY || !plusEnabled;
         },
 
         /**
          * @deprecated tag:v9.0.0 - Will be removed without replacement.
          */
         showPlusCard() {
-            if (hasOwnProperty(this.config, 'SwagPayPal.settings.merchantLocation') &&
-                    this.config['SwagPayPal.settings.merchantLocation'] !== null
-            ) {
-                return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
-            }
-
-            const defaultConfig = this.$refs.configComponent?.allConfigs.null;
-
-            if (!defaultConfig) {
-                return false;
-            }
-
-            return defaultConfig['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
+            return !this.showSPBCard;
         },
 
         salesChannelRepository() {

@@ -1,3 +1,6 @@
+# 8.3.1
+- PPI-947 - Behebt ein Problem, bei dem Smart Payment Buttons möglicherweise nicht konfigurierbar waren
+
 # 8.3.0
 - PPI-934 - Übermittlung von Sendungsverfolgungsdaten auf neue PayPal-API-Endpunkte umgezogen
 

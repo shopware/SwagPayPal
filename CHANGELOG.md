@@ -1,3 +1,6 @@
+# 9.3.1
+- PPI-947 - Fixes an issue, where Smart Payment Buttons may have not been configurable
+
 # 8.3.0
 - PPI-934 - Moved shipping tracking transmission to new PayPal API endpoints
 
