@@ -2,6 +2,7 @@
 - PPI-896 - Änderung der Checkout Smart Payment Buttons von 'Direkt zu PayPal' zu 'Mit PayPal zahlen'.
 - PPI-932 - Entfernt die nicht mehr unterstützte Sofort-Zahlungsart
 - PPI-936 - Behebt ein Problem, bei dem Zettle evtl. inkorrekte Steuersätze erhält
+- PPI-947 - Behebt ein Problem, bei dem Smart Payment Buttons möglicherweise nicht konfigurierbar waren
 - PPI-948 - Entfernt die nicht mehr unterstützte Giropay-Zahlungsart
 
 # 6.4.0
