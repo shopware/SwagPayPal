@@ -35,7 +35,6 @@ class PaymentMethodStateServiceTest extends TestCase
         'Swag\PayPal\Checkout\Payment\Method\BancontactAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\BlikAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\EpsAPMHandler' => true,
-        'Swag\PayPal\Checkout\Payment\Method\GiropayAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\IdealAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\MultibancoAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\MyBankAPMHandler' => false,

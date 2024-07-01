@@ -18,7 +18,6 @@ use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\EpsOrderBuilder;
-use Swag\PayPal\OrdersApi\Builder\APM\GiropayOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\IdealOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\MultibancoOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\MyBankOrderBuilder;
@@ -34,7 +33,6 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractAPMPaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Bancontact;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Blik;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Eps;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Giropay;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Ideal;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Multibanco;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\MyBank;
@@ -206,7 +204,6 @@ class APMOrderBuilderTest extends TestCase
             [BlikOrderBuilder::class, [], Blik::class, ['email' => 'test@test.com']],
             //[Boletobancario::class, [], Boletobancario::class, ['email' => 'test@test.com']],
             [EpsOrderBuilder::class, [], Eps::class, []],
-            [GiropayOrderBuilder::class, [], Giropay::class, []],
             [IdealOrderBuilder::class, [], Ideal::class, []],
             [MultibancoOrderBuilder::class, [], Multibanco::class, []],
             [MyBankOrderBuilder::class, [], MyBank::class, []],

@@ -14,7 +14,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Sofort;
 
 /**
- * @deprecated tag:v10.0.0 - Will be removed.
+ * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
  */
 class SofortOrderBuilder extends AbstractAPMOrderBuilder
 {

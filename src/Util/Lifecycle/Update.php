@@ -33,6 +33,7 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\GiropayMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
@@ -489,6 +490,7 @@ class Update
     private function updateTo650(Context $context): void
     {
         try {
+            $this->paymentMethodStateService->setPaymentMethodState(GiropayMethodData::class, false, $context);
             $this->paymentMethodStateService->setPaymentMethodState(SofortMethodData::class, false, $context);
         } catch (\Throwable $e) {
             return;

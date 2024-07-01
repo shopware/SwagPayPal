@@ -62,6 +62,8 @@ class PaymentSource extends PayPalApiStruct
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_giropay")
+     *
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
      */
     protected ?Giropay $giropay = null;
 
@@ -97,6 +99,8 @@ class PaymentSource extends PayPalApiStruct
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_sofort")
+     *
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
      */
     protected ?Sofort $sofort = null;
 
@@ -165,11 +169,17 @@ class PaymentSource extends PayPalApiStruct
         $this->eps = $eps;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+     */
     public function getGiropay(): ?Giropay
     {
         return $this->giropay;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+     */
     public function setGiropay(?Giropay $giropay): void
     {
         $this->giropay = $giropay;
@@ -225,11 +235,17 @@ class PaymentSource extends PayPalApiStruct
         $this->p24 = $p24;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+     */
     public function getSofort(): ?Sofort
     {
         return $this->sofort;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+     */
     public function setSofort(?Sofort $sofort): void
     {
         $this->sofort = $sofort;

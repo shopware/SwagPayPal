@@ -99,7 +99,6 @@
                     "blikapmhandler": "BLIK is available for the following countries: Poland",
                     "boletobancarioapmhandler": "Boleto Bancário is available for the following countries: Brazil",
                     "epsapmhandler": "eps is available for the following countries: Austria",
-                    "giropayapmhandler": "Giropay is available for the following countries: Germany",
                     "idealapmhandler": "iDEAL is available for the following countries: Netherlands",
                     "multibancoapmhandler": "Multibanco is available for the following countries: Portugal",
                     "mybankapmhandler": "MyBank is available for the following countries: Italy",

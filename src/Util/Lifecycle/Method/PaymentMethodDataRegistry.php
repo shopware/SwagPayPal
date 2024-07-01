@@ -31,7 +31,6 @@ class PaymentMethodDataRegistry
         BlikMethodData::class,
         //BoletoBancarioMethodData::class,
         EpsMethodData::class,
-        GiropayMethodData::class,
         IdealMethodData::class,
         MultibancoMethodData::class,
         MyBankMethodData::class,
