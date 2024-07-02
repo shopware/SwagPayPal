@@ -56,6 +56,9 @@ class PaymentSource extends PayPalApiStruct
     #[OA\Property(ref: Eps::class, nullable: true)]
     protected ?Eps $eps = null;
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+     */
     #[OA\Property(ref: Giropay::class, nullable: true)]
     protected ?Giropay $giropay = null;
 
@@ -77,6 +80,9 @@ class PaymentSource extends PayPalApiStruct
     #[OA\Property(ref: Paypal::class, nullable: true)]
     protected ?Paypal $paypal = null;
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+     */
     #[OA\Property(ref: Sofort::class, nullable: true)]
     protected ?Sofort $sofort = null;
 
@@ -152,11 +158,17 @@ class PaymentSource extends PayPalApiStruct
         $this->eps = $eps;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+     */
     public function getGiropay(): ?Giropay
     {
         return $this->giropay;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+     */
     public function setGiropay(?Giropay $giropay): void
     {
         $this->giropay = $giropay;
@@ -222,11 +234,17 @@ class PaymentSource extends PayPalApiStruct
         $this->paypal = $paypal;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+     */
     public function getSofort(): ?Sofort
     {
         return $this->sofort;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+     */
     public function setSofort(?Sofort $sofort): void
     {
         $this->sofort = $sofort;

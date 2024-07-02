@@ -30,7 +30,6 @@ use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\EpsOrderBuilder;
-use Swag\PayPal\OrdersApi\Builder\APM\GiropayOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\IdealOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\MultibancoOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\MyBankOrderBuilder;
@@ -105,7 +104,6 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
             [static::getContainer()->get(BancontactOrderBuilder::class)],
             [static::getContainer()->get(BlikOrderBuilder::class)],
             [static::getContainer()->get(EpsOrderBuilder::class)],
-            [static::getContainer()->get(GiropayOrderBuilder::class)],
             [static::getContainer()->get(IdealOrderBuilder::class)],
             [static::getContainer()->get(MultibancoOrderBuilder::class)],
             [static::getContainer()->get(MyBankOrderBuilder::class)],
