@@ -1,10 +1,10 @@
 # 8.3.1
+- PPI-944 - Behebt ein Problem, bei dem die Abfrage des Zahlungsstatus bei invaliden Transaktionen weiter versucht wurde
 - PPI-947 - Behebt ein Problem, bei dem Smart Payment Buttons möglicherweise nicht konfigurierbar waren
 - PPI-948 - Entfernt die nicht mehr unterstützte Giropay-Zahlungsart
 
 # 8.3.0
 - PPI-934 - Übermittlung von Sendungsverfolgungsdaten auf neue PayPal-API-Endpunkte umgezogen
-- PPI-944 - Behebt ein Problem, bei dem die Abfrage des Zahlungsstatus bei invaliden Transaktionen weiter versucht wurde
 
 # 8.2.0
 - PPI-666 - Zusätzliche Informationen auf Rechnung für Rechnungskäufe hinzugefügt
