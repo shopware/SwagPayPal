@@ -185,8 +185,8 @@
                                 :criteria="excludedProductCriteria"
                                 :mapInheritance="props"
                                 :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                :ids="props.currentValue"
-                                @update:ids="props.updateCurrentValue"
+                                :value="props.currentValue"
+                                @update:value="props.updateCurrentValue"
                             >
 
                                 {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids_label_property %}
@@ -228,8 +228,8 @@
                                 :repository="productStreamRepository"
                                 :mapInheritance="props"
                                 :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                :ids="props.currentValue"
-                                @update:ids="props.updateCurrentValue"
+                                :value="props.currentValue"
+                                @update:value="props.updateCurrentValue"
                             ></sw-entity-multi-id-select>
                         </template>
                     </sw-inherit-wrapper>
