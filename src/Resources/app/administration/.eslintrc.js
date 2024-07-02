@@ -33,6 +33,7 @@ module.exports = {
                         alias: {
                             SwagPayPal: join(__dirname, 'src'),
                             src: process.env.ADMIN_PATH,
+                            '@vue\/test-utils': `${process.env.ADMIN_PATH}/node_modules/@vue/test-utils`,
                         },
                     },
                 },
@@ -52,4 +53,12 @@ module.exports = {
         'internal-rules/no-src-imports': 'error',
         'import/no-extraneous-dependencies': ['error', { optionalDependencies: ['src/**/*.spec.[t|j]s'] }],
     },
+
+    overrides: [{
+        files: 'src/**/*.spec.[t|j]s',
+        rules: {
+            // lets depend on shopware's deps
+            'import/no-extraneous-dependencies': 'off',
+        },
+    }],
 };

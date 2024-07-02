@@ -64,6 +64,8 @@ eslint (administration):
   rules:
     - changes:
         - 'src/Resources/app/administration/**/*'
+  variables:
+    ADMIN_PATH: $CI_PROJECT_DIR/src/Administration/Resources/app/administration
   script:
     - $CI_PROJECT_DIR/bin/console bundle:dump
     - npm ci --prefix $CI_PROJECT_DIR/src/Administration/Resources/app/administration --no-audit --prefer-offline
@@ -76,6 +78,8 @@ eslint (storefront):
   rules:
     - changes:
         - 'src/Resources/app/storefront/**/*'
+  variables:
+    STOREFRONT_PATH: $CI_PROJECT_DIR/src/Storefront/Resources/app/storefront
   script:
     - $CI_PROJECT_DIR/bin/console bundle:dump
     - npm ci --prefix $CI_PROJECT_DIR/src/Storefront/Resources/app/storefront --no-audit --prefer-offline
