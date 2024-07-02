@@ -231,6 +231,44 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         ($this->handler)($message);
     }
 
+    public function testInvokeThrowsPayPalApiExceptionResourceNotFound(): void
+    {
+        $this->orderTransactionRepository
+            ->expects(static::once())
+            ->method('search')
+            ->willReturnCallback(
+                function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
+            );
+
+        $exception = new PayPalApiException('General error', '404 Not found', issue: PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND);
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('get')
+            ->with('paypal-order-id', 'sales-channel-id')
+            ->willThrowException($exception);
+
+        $this->logger->expects(static::never())->method(static::anything());
+
+        $this->orderTransactionStateHandler
+            ->expects(static::once())
+            ->method('fail')
+            ->with('transaction-id');
+
+        $message = new TransactionStatusSyncMessage(
+            'transaction-id',
+            'sales-channel-id',
+            'paypal-order-id'
+        );
+
+        ($this->handler)($message);
+    }
+
     public function testInvokeWithoutUnconfirmedTransaction(): void
     {
         $this->orderTransactionRepository
