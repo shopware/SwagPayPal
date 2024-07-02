@@ -26,9 +26,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
 {
     private const APM_BLIK = 'blik';
     private const APM_EPS = 'eps';
-    private const APM_GIROPAY = 'giropay';
     private const APM_P24 = 'p24';
-    private const APM_SOFORT = 'sofort';
 
     /**
      * @internal
@@ -95,8 +93,6 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
 
         if ($totalPrice < 1.0 && $currencyIsoCode === 'EUR') {
             $disabled[] = self::APM_EPS;
-            $disabled[] = self::APM_GIROPAY;
-            $disabled[] = self::APM_SOFORT;
         }
 
         if ($totalPrice < 1.0 && $currencyIsoCode === 'PLN') {
