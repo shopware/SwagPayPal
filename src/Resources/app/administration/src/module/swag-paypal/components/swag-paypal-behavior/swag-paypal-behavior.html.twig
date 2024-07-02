@@ -8,6 +8,7 @@
                 {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
                 {% block swag_paypal_content_card_channel_config_behavior_settings_merchant_location %}
                     <sw-inherit-wrapper
+                        v-if="showMerchantLocation"
                         v-model:value="actualConfigData['SwagPayPal.settings.merchantLocation']"
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.merchantLocation']"
                         :customInheritationCheckFunction="checkTextFieldInheritance"
