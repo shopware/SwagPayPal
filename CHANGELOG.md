@@ -1,4 +1,5 @@
 # 9.3.1
+- PPI-945 - Fixes an issue, where excluded products were not correctly shown in the Administration
 - PPI-947 - Fixes an issue, where Smart Payment Buttons may have not been configurable
 - PPI-948 - Removed the no longer supported Giropay payment method
 
