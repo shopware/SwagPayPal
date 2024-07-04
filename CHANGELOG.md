@@ -1,4 +1,4 @@
-# 9.3.1
+# 8.3.1
 - PPI-944 - Fixes an issue, where payment status polling kept retrying with invalid transactions
 - PPI-947 - Fixes an issue, where Smart Payment Buttons may have not been configurable
 - PPI-948 - Removed the no longer supported Giropay payment method
