@@ -1,4 +1,5 @@
 # 9.3.1
+- PPI-944 - Behebt ein Problem, bei dem die Abfrage des Zahlungsstatus bei invaliden Transaktionen weiter versucht wurde
 - PPI-945 - Behebt ein Problem, bei dem ausgeschlossene Produkte nicht korrekt in der Administration angezeigt wurden
 - PPI-947 - Behebt ein Problem, bei dem Smart Payment Buttons möglicherweise nicht konfigurierbar waren
 - PPI-948 - Entfernt die nicht mehr unterstützte Giropay-Zahlungsart
