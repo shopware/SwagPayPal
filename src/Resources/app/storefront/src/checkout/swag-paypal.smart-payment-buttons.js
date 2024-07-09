@@ -30,48 +30,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         buttonSize: 'small',
 
         /**
-         * This option specifies the language of the PayPal button
-         *
-         * @type string
-         */
-        languageIso: 'en_GB',
-
-        /**
-         * This option holds the client id specified in the settings
-         *
-         * @type string
-         */
-        clientId: '',
-
-        /**
-         * This option holds the merchant id specified in the settings
-         *
-         * @type string
-         */
-        merchantPayerId: '',
-
-        /**
-         * This options specifies the currency of the PayPal button
-         *
-         * @type string
-         */
-        currency: 'EUR',
-
-        /**
-         * This options defines the payment intent
-         *
-         * @type string
-         */
-        intent: 'capture',
-
-        /**
-         * This option toggles the PayNow/Login text at PayPal
-         *
-         * @type boolean
-         */
-        commit: true,
-
-        /**
          * This option toggles if credit card and ELV should be shown
          *
          * @type boolean
