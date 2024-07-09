@@ -6,67 +6,56 @@ class SwagPayPalPaymentService extends ApiService {
     }
 
     getPaymentDetails(orderId, payPalPaymentId) {
-        const apiRoute = `${this.getApiBasePath()}/payment-details/${orderId}/${payPalPaymentId}`;
         return this.httpClient.get(
-            apiRoute,
-            {
-                headers: this.getBasicHeaders(),
-            },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+            `${this.getApiBasePath()}/payment-details/${orderId}/${payPalPaymentId}`,
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
-    capturePayment(orderId, resourceType, resourceId, captureAmount, currency, isFinalCapture) {
-        const apiRoute = `_action/${this.getApiBasePath()}/capture-payment/${resourceType}/${resourceId}/${orderId}`;
-
+    capturePayment(
+        orderId,
+        resourceType,
+        resourceId,
+        captureAmount,
+        currency,
+        captureIsFinal,
+    ) {
         return this.httpClient.post(
-            apiRoute,
-            {
-                captureAmount: captureAmount,
-                currency: currency,
-                captureIsFinal: isFinalCapture,
-            },
-            {
-                headers: this.getBasicHeaders(),
-            },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+            `_action/${this.getApiBasePath()}/capture-payment/${resourceType}/${resourceId}/${orderId}`,
+            { captureAmount, currency, captureIsFinal },
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
-    refundPayment(orderId, resourceType, resourceId, refundAmount, currency, description, reason, invoiceNumber) {
-        const apiRoute = `_action/${this.getApiBasePath()}/refund-payment/${resourceType}/${resourceId}/${orderId}`;
-
+    refundPayment(
+        orderId,
+        resourceType,
+        resourceId,
+        refundAmount,
+        currency,
+        description,
+        reason,
+        refundInvoiceNumber,
+    ) {
         return this.httpClient.post(
-            apiRoute,
+            `_action/${this.getApiBasePath()}/refund-payment/${resourceType}/${resourceId}/${orderId}`,
             {
-                refundAmount: refundAmount,
-                currency: currency,
-                description: description,
-                reason: reason,
-                refundInvoiceNumber: invoiceNumber,
+                refundAmount,
+                currency,
+                description,
+                reason,
+                refundInvoiceNumber,
             },
-            {
-                headers: this.getBasicHeaders(),
-            },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     voidPayment(orderId, resourceType, resourceId) {
-        const apiRoute = `_action/${this.getApiBasePath()}/void-payment/${resourceType}/${resourceId}/${orderId}`;
-
         return this.httpClient.post(
-            apiRoute,
+            `_action/${this.getApiBasePath()}/void-payment/${resourceType}/${resourceId}/${orderId}`,
             {},
-            {
-                headers: this.getBasicHeaders(),
-            },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 }
 

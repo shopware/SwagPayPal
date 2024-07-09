@@ -9,7 +9,7 @@ Component.register('swag-paypal-payment-action-void', {
     inject: ['SwagPayPalPaymentService'],
 
     mixins: [
-        'notification',
+        Shopware.Mixin.getByName('notification'),
     ],
 
     props: {

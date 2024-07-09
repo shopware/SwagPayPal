@@ -6,53 +6,41 @@ class SwagPayPalApiCredentialsService extends ApiService {
     }
 
     validateApiCredentials(clientId, clientSecret, sandboxActive) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .get(
-                `_action/${this.getApiBasePath()}/validate-api-credentials`,
-                {
-                    params: { clientId, clientSecret, sandboxActive },
-                    headers: headers,
-                },
-            )
-            .then((response) => {
-                return ApiService.handleResponse(response);
-            });
+        return this.httpClient.get(
+            `_action/${this.getApiBasePath()}/validate-api-credentials`,
+            {
+                params: { clientId, clientSecret, sandboxActive },
+                headers: this.getBasicHeaders(),
+            },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
-    getApiCredentials(authCode, sharedId, nonce, sandboxActive, additionalParams = {}, additionalHeaders = {}) {
-        const params = additionalParams;
-        const headers = this.getBasicHeaders(additionalHeaders);
-
-        return this.httpClient
-            .post(
-                `_action/${this.getApiBasePath()}/get-api-credentials`,
-                { authCode, sharedId, nonce, sandboxActive },
-                { params, headers },
-            )
-            .then((response) => {
-                return ApiService.handleResponse(response);
-            });
+    getApiCredentials(
+        authCode,
+        sharedId,
+        nonce,
+        sandboxActive,
+        params = {},
+        additionalHeaders = {},
+    ) {
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/get-api-credentials`,
+            { authCode, sharedId, nonce, sandboxActive },
+            { params, headers: this.getBasicHeaders(additionalHeaders) },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     /**
-     * @param {string=} salesChannelId
+     * @param {string|null} salesChannelId
      */
     getMerchantInformation(salesChannelId = null) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .get(
-                `_action/${this.getApiBasePath()}/merchant-information`,
-                {
-                    params: { salesChannelId },
-                    headers: headers,
-                },
-            )
-            .then((response) => {
-                return ApiService.handleResponse(response);
-            });
+        return this.httpClient.get(
+            `_action/${this.getApiBasePath()}/merchant-information`,
+            {
+                params: { salesChannelId },
+                headers: this.getBasicHeaders(),
+            },
+        ).then(ApiService.handleResponse.bind(this));
     }
 }
 

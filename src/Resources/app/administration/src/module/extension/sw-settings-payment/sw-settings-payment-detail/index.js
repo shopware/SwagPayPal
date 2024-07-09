@@ -12,7 +12,11 @@ Component.override('sw-settings-payment-detail', {
 
     data() {
         return {
+            /**
+             * @deprecated tag:v10.0.0 - Will be removed, use this.capabilities instead
+             */
             merchantIntegrations: [],
+            capabilities: [],
         };
     },
 
@@ -27,24 +31,34 @@ Component.override('sw-settings-payment-detail', {
             this.$super('createdComponent');
 
             this.fetchMerchantIntegrations();
+            this.fetchMerchantCapabilities();
         },
 
         needsOnboarding(id) {
-            const integrationIds = Object.keys(this.merchantIntegrations);
+            const capabilityIds = Object.keys(this.capabilities);
 
-            if (!integrationIds.includes(id)) {
+            if (!capabilityIds.includes(id)) {
                 return false;
             }
 
-            return this.merchantIntegrations[id].toUpperCase() === 'INACTIVE';
+            return this.capabilities[id].toUpperCase() === 'INACTIVE';
         },
 
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed, use this.fetchMerchantCapabilities instead
+         */
         fetchMerchantIntegrations() {
             this.SwagPayPalApiCredentialsService
                 .getMerchantInformation()
                 .then((response) => {
                     this.merchantIntegrations = response.merchantIntegrations ?? [];
                 });
+        },
+
+        async fetchMerchantCapabilities() {
+            const merchantInformation = await this.SwagPayPalApiCredentialsService.getMerchantInformation();
+
+            this.capabilities = merchantInformation.capabilities ?? [];
         },
     },
 });

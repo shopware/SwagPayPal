@@ -13,19 +13,11 @@ class SwagPaypalPaymentMethodService extends ApiService {
      * @returns {Promise}
      */
     setDefaultPaymentForSalesChannel(salesChannelId = null) {
-        const apiRoute = `_action/${this.getApiBasePath()}/saleschannel-default`;
-
         return this.httpClient.post(
-            apiRoute,
-            {
-                salesChannelId,
-            },
-            {
-                headers: this.getBasicHeaders(),
-            },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+            `_action/${this.getApiBasePath()}/saleschannel-default`,
+            { salesChannelId },
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 }
 

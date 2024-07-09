@@ -31,6 +31,9 @@ Component.register('swag-paypal-behavior', {
 
     data() {
         return {
+            /**
+             * @deprecated tag:v10.0.0 - Will be removed, use constants directly
+             */
             ...constants,
         };
     },
@@ -91,9 +94,9 @@ Component.register('swag-paypal-behavior', {
         },
 
         landingPageHint() {
-            let landingPageOption = this.actualConfigData['SwagPayPal.settings.landingPage'] || 'NO_PREFERENCE';
-            landingPageOption = landingPageOption.toLowerCase();
-            const translationKey = `swag-paypal.settingForm.behavior.landingPage.helpText.${landingPageOption}`;
+            const landingPageOption = this.actualConfigData['SwagPayPal.settings.landingPage'] || 'NO_PREFERENCE';
+            const translationKey =
+                `swag-paypal.settingForm.behavior.landingPage.helpText.${landingPageOption.toLowerCase()}`;
             return this.$tc(translationKey);
         },
 

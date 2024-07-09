@@ -1,6 +1,4 @@
-const { Mixin } = Shopware;
-
-Mixin.register('swag-paypal-pos-log-label', {
+export default Shopware.Mixin.register('swag-paypal-pos-log-label', {
     methods: {
         /**
          * Returns the corresponding sw-label variant for a Zettle log

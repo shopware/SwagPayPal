@@ -13,9 +13,9 @@ Component.register('swag-paypal-pos-detail-logs', {
     ],
 
     mixins: [
-        'notification',
-        'swag-paypal-pos-log-label',
-        'listing',
+        Shopware.Mixin.getByName('notification'),
+        Shopware.Mixin.getByName('swag-paypal-pos-log-label'),
+        Shopware.Mixin.getByName('listing'),
     ],
 
     props: {

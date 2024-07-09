@@ -1,35 +1,36 @@
 {% block swag_paypal_overview_card %}
 <sw-sales-channel-config
-        v-model:value="config"
-        ref="swagPayPalConfigComponent"
-        domain="SwagPayPal.settings">
+    v-model:value="config"
+    ref="swagPayPalConfigComponent"
+    domain="SwagPayPal.settings"
+>
 
     {% block swag_paypal_overview_card_select %}
-        <template #select>
-            <div><!-- remove the sales-channel selection --></div>
-        </template>
+    <template #select>
+        <div><!-- remove the sales-channel selection --></div>
+    </template>
     {% endblock %}
 
     {% block swag_paypal_overview_card_content %}
-        <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
-            <div v-if="actualConfigData">
+    <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
+        <div v-if="actualConfigData">
 
-                {% block swag_paypal_overview_card_checkout %}
-                    <swag-paypal-checkout
-                        ref="swagPayPalCheckoutComponent"
-                        :pluginId="pluginId"
-                        :allowShowCredentials="false"
-                        :actualConfigData="actualConfigData"
-                        :allConfigs="allConfigs"
-                        :isLoading="isLoading"
-                        showSettingsLink
-                        @on-save-settings="save"
-                        @on-deactivate-paypal-plus="save"
-                        @on-change-loading="onChangeLoading"
-                    />
-                {% endblock %}
-            </div>
-        </template>
+            {% block swag_paypal_overview_card_checkout %}
+            <swag-paypal-checkout
+                ref="swagPayPalCheckoutComponent"
+                :pluginId="pluginId"
+                :allowShowCredentials="false"
+                :actualConfigData="actualConfigData"
+                :allConfigs="allConfigs"
+                :isLoading="isLoading"
+                showSettingsLink
+                @on-save-settings="save"
+                @on-deactivate-paypal-plus="save"
+                @on-change-loading="onChangeLoading"
+            />
+            {% endblock %}
+        </div>
+    </template>
     {% endblock %}
 
 </sw-sales-channel-config>

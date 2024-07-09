@@ -11,10 +11,4 @@ Component.extend('swag-paypal-plugin-box-with-onboarding', 'sw-plugin-box', {
             required: true,
         },
     },
-
-    methods: {
-        createdComponent() {
-            this.$super('createdComponent');
-        },
-    },
 });

@@ -1,243 +1,264 @@
 {% block swag_paypal %}
-    <sw-page class="swag-paypal">
+<sw-page class="swag-paypal">
 
-        {% block swag_paypal_header %}
-            <template #smart-bar-header>
-                <h2>
-                    {{ $tc('sw-settings.index.title') }}
-                    <sw-icon name="regular-chevron-right-xs" small></sw-icon>
-                    {{ $tc('swag-paypal.header') }}
-                </h2>
-            </template>
+    {% block swag_paypal_header %}
+    <template #smart-bar-header>
+        <h2>
+            {{ $tc('sw-settings.index.title') }}
+            <sw-icon name="regular-chevron-right-xs" small></sw-icon>
+            {{ $tc('swag-paypal.header') }}
+        </h2>
+    </template>
+    {% endblock %}
+
+    {% block swag_paypal_actions %}
+    <template #smart-bar-actions>
+
+        {% block swag_paypal_actions_save %}
+        <sw-button-process
+            v-model:value="isSaveSuccessful"
+            class="sw-settings-login-registration__save-action"
+            variant="primary"
+            :isLoading="isLoading"
+            :disabled="isLoading || savingDisabled || hasError || !acl.can('swag_paypal.editor')"
+            @click="onSave"
+        >
+            {{ $tc('global.default.save') }}
+        </sw-button-process>
         {% endblock %}
 
-        {% block swag_paypal_actions %}
-            <template #smart-bar-actions>
-                {% block swag_paypal_actions_save %}
-                    <sw-button-process
-                        v-model:value="isSaveSuccessful"
-                        class="sw-settings-login-registration__save-action"
-                        variant="primary"
+    </template>
+    {% endblock %}
+
+    {% block swag_paypal_content %}
+    <template #content>
+
+        {% block swag_paypal_content_card %}
+        <sw-card-view>
+
+            {% block swag_paypal_content_tabs %}
+            <sw-tabs
+                default-item="general"
+                position-identifier="swag-paypal-content-tabs"
+            >
+                <template #default="{ active }">
+                    <sw-tabs-item
+                        key="general"
+                        :active-tab="active"
+                        :route="{ name: 'swag.paypal.index', params: { tab: 'general' } }"
+                    >
+                        {{ $tc('swag-paypal.tabs.general') }}
+                    </sw-tabs-item>
+                    <sw-tabs-item
+                        key="storefront"
+                        :active-tab="active"
+                        :route="{ name: 'swag.paypal.index', params: { tab: 'storefront' } }"
+                    >
+                        {{ $tc('swag-paypal.tabs.storefront') }}
+                    </sw-tabs-item>
+                    <sw-tabs-item
+                        key="advanced"
+                        :active-tab="active"
+                        :route="{ name: 'swag.paypal.index', params: { tab: 'advanced' } }"
+                    >
+                        {{ $tc('swag-paypal.tabs.advanced') }}
+                    </sw-tabs-item>
+                </template>
+            </sw-tabs>
+            {% endblock %}
+
+            {% block swag_paypal_content_card_channel_config %}
+            <sw-sales-channel-config
+                v-model:value="config"
+                ref="configComponent"
+                domain="SwagPayPal.settings"
+            >
+
+                {% block swag_paypal_content_card_channel_config_sales_channel %}
+                <template #select="{ onInput, selectedSalesChannelId }">
+
+                    {% block swag_paypal_content_card_channel_config_sales_channel_card %}
+                    <sw-card
+                        position-identifier="swag-paypal-sales-channel-card"
+                        :title="$tc('global.entities.sales_channel', 2)"
+                    >
+
+                        {% block swag_paypal_content_card_channel_config_sales_channel_card_title %}
+                        <sw-single-select
+                            v-model:value="selectedSalesChannelId"
+                            labelProperty="translated.name"
+                            valueProperty="id"
+                            :isLoading="isLoading"
+                            :options="salesChannels"
+                            :disabled="!acl.can('swag_paypal.editor')"
+                            @update:value="onInput"
+                        />
+                        {% endblock %}
+
+                        {% block swag_paypal_content_card_channel_config_sales_channel_card_footer %}
+                        <template #footer>
+
+                            {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container %}
+                            <sw-container
+                                columns="2fr 1fr"
+                                gap="0px 30px"
+                            >
+
+                                {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container_text %}
+                                <p>{{ $tc('swag-paypal.saleschannelCard.button.description') }}</p>
+                                {% endblock %}
+
+                                {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container_button %}
+                                <sw-button-process
+                                    v-model:processSuccess="isSetDefaultPaymentSuccessful"
+                                    :isLoading="isSettingDefaultPaymentMethods"
+                                    :disabled="!acl.can('swag_paypal.editor')"
+                                    @click="onSetPaymentMethodDefault"
+                                >
+                                    {{ $tc('swag-paypal.saleschannelCard.button.label') }}
+                                </sw-button-process>
+                                {% endblock %}
+
+                            </sw-container>
+                            {% endblock %}
+
+                        </template>
+                        {% endblock %}
+
+                    </sw-card>
+                    {% endblock %}
+
+                </template>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_cards %}
+                <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
+                    {% block swag_paypal_content_card_channel_config_webhook %}
+                    <swag-paypal-webhook
+                        v-if="tab === 'advanced'"
                         :isLoading="isLoading"
-                        :disabled="isLoading || savingDisabled || hasError || !acl.can('swag_paypal.editor')"
-                        @click="onSave">
-                        {{ $tc('global.default.save') }}
-                    </sw-button-process>
+                        :selectedSalesChannelId="selectedSalesChannelId"
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_cross_border %}
+                    <swag-paypal-cross-border
+                        v-if="tab === 'advanced'"
+                        :isLoading="isLoading"
+                        :actual-config-data="actualConfigData"
+                        :all-configs="allConfigs"
+                        :selected-sales-channel-id="selectedSalesChannelId"
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_credentials_card %}
+                        <swag-paypal-credentials
+                            v-if="tab === 'general'"
+                            :actualConfigData="actualConfigData"
+                            :allConfigs="allConfigs"
+                            :selectedSalesChannelId="selectedSalesChannelId"
+                            :clientIdErrorState="clientIdErrorState"
+                            :clientSecretErrorState="clientSecretErrorState"
+                            :clientIdSandboxErrorState="clientIdSandboxErrorState"
+                            :clientSecretSandboxErrorState="clientSecretSandboxErrorState"
+                            :clientIdFilled="clientIdFilled"
+                            :clientSecretFilled="clientSecretFilled"
+                            :clientIdSandboxFilled="clientIdSandboxFilled"
+                            :clientSecretSandboxFilled="clientSecretSandboxFilled"
+                            :isLoading="isLoading"
+                        />
+                    {% endblock %}
+
+                    {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
+                    {% block swag_paypal_content_card_channel_config_plus %}
+                    <swag-paypal-plus
+                        v-if="showPlusCard && tab === 'storefront'"
+                        :actualConfigData="actualConfigData"
+                        :allConfigs="allConfigs"
+                        :selectedSalesChannelId="selectedSalesChannelId"
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_behavior %}
+                    <swag-paypal-behavior
+                        v-if="tab === 'general'"
+                        :actualConfigData="actualConfigData"
+                        :allConfigs="allConfigs"
+                        :selectedSalesChannelId="selectedSalesChannelId"
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_vaulting %}
+                    <swag-paypal-vaulting
+                        v-if="tab === 'general'"
+                        :actualConfigData="actualConfigData"
+                        :allConfigs="allConfigs"
+                        :selectedSalesChannelId="selectedSalesChannelId"
+                        :isSaveSuccessful="isSaveSuccessful"
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_express %}
+                    <swag-paypal-express
+                        v-if="tab === 'storefront'"
+                        :actualConfigData="actualConfigData"
+                        :allConfigs="allConfigs"
+                        :selectedSalesChannelId="selectedSalesChannelId"
+                        @preventSave="preventSave"
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_installment %}
+                    <swag-paypal-installment
+                        v-if="tab === 'storefront'"
+                        :actualConfigData="actualConfigData"
+                        :allConfigs="allConfigs"
+                        :selectedSalesChannelId="selectedSalesChannelId"
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_acdc %}
+                    <swag-paypal-acdc
+                        v-if="tab === 'general'"
+                        :actualConfigData="actualConfigData"
+                        :allConfigs="allConfigs"
+                        :selectedSalesChannelId="selectedSalesChannelId"
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_pui %}
+                    <swag-paypal-pui
+                        v-if="tab === 'general'"
+                        :actualConfigData="actualConfigData"
+                        :allConfigs="allConfigs"
+                        :selectedSalesChannelId="selectedSalesChannelId"
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_spb %}
+                    <swag-paypal-spb
+                        v-if="showSPBCard && tab === 'storefront'"
+                        :actualConfigData="actualConfigData"
+                        :allConfigs="allConfigs"
+                        :selectedSalesChannelId="selectedSalesChannelId"
+                        @preventSave="preventSave"
+                    />
+                    {% endblock %}
+                </template>
                 {% endblock %}
 
-            </template>
+            </sw-sales-channel-config>
+            {% endblock %}
+
+            {% block swag_paypal_content_card_loading %}
+            <sw-loader v-if="isLoading"/>
+            {% endblock %}
+
+        </sw-card-view>
         {% endblock %}
 
-        {% block swag_paypal_content %}
-            <template #content>
+    </template>
+    {% endblock %}
 
-                {% block swag_paypal_content_card %}
-                    <sw-card-view>
-
-                        {% block swag_paypal_content_tabs %}
-                            <sw-tabs
-                                default-item="general"
-                                position-identifier="swag-paypal-content-tabs">
-                                <template #default="{ active }">
-                                    <sw-tabs-item
-                                        key="general"
-                                        :active-tab="active"
-                                        :route="{ name: 'swag.paypal.index', params: { tab: 'general' } }">
-                                        {{ $tc('swag-paypal.tabs.general') }}
-                                    </sw-tabs-item>
-                                    <sw-tabs-item
-                                        key="storefront"
-                                        :active-tab="active"
-                                        :route="{ name: 'swag.paypal.index', params: { tab: 'storefront' } }">
-                                        {{ $tc('swag-paypal.tabs.storefront') }}
-                                    </sw-tabs-item>
-                                    <sw-tabs-item
-                                        key="advanced"
-                                        :active-tab="active"
-                                        :route="{ name: 'swag.paypal.index', params: { tab: 'advanced' } }">
-                                        {{ $tc('swag-paypal.tabs.advanced') }}
-                                    </sw-tabs-item>
-                                </template>
-                            </sw-tabs>
-                        {% endblock %}
-
-                        {% block swag_paypal_content_card_channel_config %}
-                            <sw-sales-channel-config
-                                v-model:value="config"
-                                ref="configComponent"
-                                domain="SwagPayPal.settings">
-
-                                {% block swag_paypal_content_card_channel_config_sales_channel %}
-                                    <template #select="{ onInput, selectedSalesChannelId }">
-
-                                        {% block swag_paypal_content_card_channel_config_sales_channel_card %}
-                                            <sw-card position-identifier="swag-paypal-sales-channel-card"
-                                                     :title="$tc('global.entities.sales_channel', 2)">
-
-                                                {% block swag_paypal_content_card_channel_config_sales_channel_card_title %}
-                                                    <sw-single-select
-                                                        v-model:value="selectedSalesChannelId"
-                                                        labelProperty="translated.name"
-                                                        valueProperty="id"
-                                                        :isLoading="isLoading"
-                                                        :options="salesChannels"
-                                                        :disabled="!acl.can('swag_paypal.editor')"
-                                                        @update:value="onInput">
-                                                    </sw-single-select>
-                                                {% endblock %}
-
-                                                {% block swag_paypal_content_card_channel_config_sales_channel_card_footer %}
-                                                    <template #footer>
-
-                                                        {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container %}
-                                                        <sw-container columns="2fr 1fr"
-                                                                      gap="0px 30px">
-
-                                                            {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container_text %}
-                                                                <p>{{ $tc('swag-paypal.saleschannelCard.button.description') }}</p>
-                                                            {% endblock %}
-
-                                                            {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container_button %}
-                                                                <sw-button-process
-                                                                    v-model:processSuccess="isSetDefaultPaymentSuccessful"
-                                                                    :isLoading="isSettingDefaultPaymentMethods"
-                                                                    :disabled="!acl.can('swag_paypal.editor')"
-                                                                    @click="onSetPaymentMethodDefault">
-                                                                    {{ $tc('swag-paypal.saleschannelCard.button.label') }}
-                                                                </sw-button-process>
-                                                            {% endblock %}
-
-                                                        </sw-container>
-                                                        {% endblock %}
-
-                                                    </template>
-                                                {% endblock %}
-
-                                            </sw-card>
-                                        {% endblock %}
-
-                                    </template>
-                                {% endblock %}
-
-                                {% block swag_paypal_content_card_channel_config_cards %}
-                                    <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
-                                        {% block swag_paypal_content_card_channel_config_webhook %}
-                                        <swag-paypal-webhook
-                                            v-if="tab === 'advanced'"
-                                            :isLoading="isLoading"
-                                            :selectedSalesChannelId="selectedSalesChannelId"
-                                        />
-                                        {% endblock %}
-
-                                        {% block swag_paypal_content_card_channel_config_cross_border %}
-                                        <swag-paypal-cross-border
-                                            v-if="tab === 'advanced'"
-                                            :isLoading="isLoading"
-                                            :actual-config-data="actualConfigData"
-                                            :all-configs="allConfigs"
-                                            :selected-sales-channel-id="selectedSalesChannelId"
-                                        />
-                                        {% endblock %}
-
-                                        {% block swag_paypal_content_card_channel_config_credentials_card %}
-                                            <swag-paypal-credentials v-if="tab === 'general'"
-                                                                     :actualConfigData="actualConfigData"
-                                                                     :allConfigs="allConfigs"
-                                                                     :selectedSalesChannelId="selectedSalesChannelId"
-                                                                     :clientIdErrorState="clientIdErrorState"
-                                                                     :clientSecretErrorState="clientSecretErrorState"
-                                                                     :clientIdSandboxErrorState="clientIdSandboxErrorState"
-                                                                     :clientSecretSandboxErrorState="clientSecretSandboxErrorState"
-                                                                     :clientIdFilled="clientIdFilled"
-                                                                     :clientSecretFilled="clientSecretFilled"
-                                                                     :clientIdSandboxFilled="clientIdSandboxFilled"
-                                                                     :clientSecretSandboxFilled="clientSecretSandboxFilled"
-                                                                     :isLoading="isLoading">
-                                            </swag-paypal-credentials>
-                                        {% endblock %}
-
-                                        {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
-                                        {% block swag_paypal_content_card_channel_config_plus %}
-                                            <swag-paypal-plus v-if="showPlusCard && tab === 'storefront'"
-                                                              :actualConfigData="actualConfigData"
-                                                              :allConfigs="allConfigs"
-                                                              :selectedSalesChannelId="selectedSalesChannelId">
-                                            </swag-paypal-plus>
-                                        {% endblock %}
-
-                                        {% block swag_paypal_content_card_channel_config_behavior %}
-                                            <swag-paypal-behavior v-if="tab === 'general'"
-                                                                  :actualConfigData="actualConfigData"
-                                                                  :allConfigs="allConfigs"
-                                                                  :selectedSalesChannelId="selectedSalesChannelId">
-                                            </swag-paypal-behavior>
-                                        {% endblock %}
-
-                                        {% block swag_paypal_content_card_channel_config_vaulting %}
-                                            <swag-paypal-vaulting v-if="tab === 'general'"
-                                                                  :actualConfigData="actualConfigData"
-                                                                  :allConfigs="allConfigs"
-                                                                  :selectedSalesChannelId="selectedSalesChannelId"
-                                                                  :isSaveSuccessful="isSaveSuccessful">
-                                            </swag-paypal-vaulting>
-                                        {% endblock %}
-
-                                        {% block swag_paypal_content_card_channel_config_express %}
-                                            <swag-paypal-express v-if="tab === 'storefront'"
-                                                                 :actualConfigData="actualConfigData"
-                                                                 :allConfigs="allConfigs"
-                                                                 :selectedSalesChannelId="selectedSalesChannelId"
-                                                                 @preventSave="preventSave">
-                                            </swag-paypal-express>
-                                        {% endblock %}
-
-                                        {% block swag_paypal_content_card_channel_config_installment %}
-                                            <swag-paypal-installment v-if="tab === 'storefront'"
-                                                                     :actualConfigData="actualConfigData"
-                                                                     :allConfigs="allConfigs"
-                                                                     :selectedSalesChannelId="selectedSalesChannelId">
-                                            </swag-paypal-installment>
-                                        {% endblock %}
-
-                                        {% block swag_paypal_content_card_channel_config_acdc %}
-                                            <swag-paypal-acdc v-if="tab === 'general'"
-                                                              :actualConfigData="actualConfigData"
-                                                              :allConfigs="allConfigs"
-                                                              :selectedSalesChannelId="selectedSalesChannelId">
-                                            </swag-paypal-acdc>
-                                        {% endblock %}
-
-                                        {% block swag_paypal_content_card_channel_config_pui %}
-                                            <swag-paypal-pui v-if="tab === 'general'"
-                                                             :actualConfigData="actualConfigData"
-                                                             :allConfigs="allConfigs"
-                                                             :selectedSalesChannelId="selectedSalesChannelId">
-                                            </swag-paypal-pui>
-                                        {% endblock %}
-
-                                        {% block swag_paypal_content_card_channel_config_spb %}
-                                            <swag-paypal-spb v-if="showSPBCard && tab === 'storefront'"
-                                                             :actualConfigData="actualConfigData"
-                                                             :allConfigs="allConfigs"
-                                                             :selectedSalesChannelId="selectedSalesChannelId"
-                                                             @preventSave="preventSave">
-                                            </swag-paypal-spb>
-                                        {% endblock %}
-                                    </template>
-                                {% endblock %}
-
-                            </sw-sales-channel-config>
-                        {% endblock %}
-
-                        {% block swag_paypal_content_card_loading %}
-                            <sw-loader v-if="isLoading"></sw-loader>
-                        {% endblock %}
-
-                    </sw-card-view>
-                {% endblock %}
-
-            </template>
-        {% endblock %}
-
-    </sw-page>
+</sw-page>
 {% endblock %}

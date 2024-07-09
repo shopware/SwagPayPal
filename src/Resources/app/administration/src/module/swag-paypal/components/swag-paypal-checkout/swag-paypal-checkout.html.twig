@@ -29,24 +29,27 @@
         <div :class="{'swag-paypal-checkout__box': showMerchantInformation }">
 
             {% block swag_paypal_content_card_channel_config_checkout_container_sandbox_switch %}
-            <sw-inherit-wrapper v-if="showSandboxToggle"
-                                v-model:value="actualConfigData['SwagPayPal.settings.sandbox']"
-                                class="swag-paypal-checkout__sandbox-toggle"
-                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['SwagPayPal.settings.sandbox']"
-                                :customInheritationCheckFunction="checkBoolFieldInheritance">
+            <sw-inherit-wrapper
+                v-if="showSandboxToggle"
+                v-model:value="actualConfigData['SwagPayPal.settings.sandbox']"
+                class="swag-paypal-checkout__sandbox-toggle"
+                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['SwagPayPal.settings.sandbox']"
+                :customInheritationCheckFunction="checkBoolFieldInheritance"
+            >
                 <template #content="props">
-                    <sw-switch-field v-tooltip.left="{
-                                         message: isSandbox ? $tc('swag-paypal.settingForm.checkout.sandbox.onlySandboxTooltip') : $tc('swag-paypal.settingForm.checkout.sandbox.onlyLiveTooltip'),
-                                         disabled: !sandboxToggleDisabled,
-                                     }"
-                                     name="SwagPayPal.settings.sandbox"
-                                     :mapInheritance="props"
-                                     :label="$tc('swag-paypal.settingForm.checkout.sandbox.label')"
-                                     :helpText="$tc('swag-paypal.settingForm.checkout.sandbox.helpText')"
-                                     :disabled="sandboxToggleDisabled || props.isInherited || !acl.can('swag_paypal.editor')"
-                                     :value="props.currentValue"
-                                     @update:value="props.updateCurrentValue">
-                    </sw-switch-field>
+                    <sw-switch-field
+                        v-tooltip.left="{
+                            message: isSandbox ? $tc('swag-paypal.settingForm.checkout.sandbox.onlySandboxTooltip') : $tc('swag-paypal.settingForm.checkout.sandbox.onlyLiveTooltip'),
+                            disabled: !sandboxToggleDisabled,
+                        }"
+                        name="SwagPayPal.settings.sandbox"
+                        :mapInheritance="props"
+                        :label="$tc('swag-paypal.settingForm.checkout.sandbox.label')"
+                        :helpText="$tc('swag-paypal.settingForm.checkout.sandbox.helpText')"
+                        :disabled="sandboxToggleDisabled || props.isInherited || !acl.can('swag_paypal.editor')"
+                        :value="props.currentValue"
+                        @update:value="props.updateCurrentValue"
+                    />
                 </template>
             </sw-inherit-wrapper>
             {% endblock %}

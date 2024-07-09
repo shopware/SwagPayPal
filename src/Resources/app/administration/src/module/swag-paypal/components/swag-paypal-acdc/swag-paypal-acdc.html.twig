@@ -1,29 +1,35 @@
 {% block swag_paypal_content_card_channel_config_acdc %}
-    <sw-card position-identifier="swag-paypal-card-channel-config-acdc"
-             :title="$tc('swag-paypal.settingForm.acdc.cardTitle')">
+<sw-card
+    position-identifier="swag-paypal-card-channel-config-acdc"
+    :title="$tc('swag-paypal.settingForm.acdc.cardTitle')"
+>
 
-        {% block swag_paypal_content_card_channel_config_acdc_settings %}
-            <div v-if="actualConfigData" class="swag-paypal-settings-acdc-fields">
+    {% block swag_paypal_content_card_channel_config_acdc_settings %}
+    <div v-if="actualConfigData" class="swag-paypal-settings-acdc-fields">
 
-                {% block swag_paypal_content_card_channel_config_acdc_settings_detail_enabled %}
-                    <sw-inherit-wrapper
-                        v-model:value="actualConfigData['SwagPayPal.settings.acdcForce3DS']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.acdcForce3DS']"
-                        :customInheritationCheckFunction="checkBoolFieldInheritance">
-                        <template #content="props">
-                            <sw-switch-field name="SwagPayPal.settings.acdcForce3DS"
-                                             bordered
-                                             :mapInheritance="props"
-                                             :label="$tc('swag-paypal.settingForm.acdc.acdcForce3DS.label')"
-                                             :helpText="$tc('swag-paypal.settingForm.acdc.acdcForce3DS.helpText')"
-                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                             :value="props.currentValue"
-                                             @update:value="props.updateCurrentValue">
-                            </sw-switch-field>
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
-            </div>
+        {% block swag_paypal_content_card_channel_config_acdc_settings_detail_enabled %}
+        <sw-inherit-wrapper
+            v-model:value="actualConfigData['SwagPayPal.settings.acdcForce3DS']"
+            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.acdcForce3DS']"
+            :customInheritationCheckFunction="checkBoolFieldInheritance"
+        >
+            <template #content="props">
+                <sw-switch-field
+                    name="SwagPayPal.settings.acdcForce3DS"
+                    bordered
+                    :mapInheritance="props"
+                    :label="$tc('swag-paypal.settingForm.acdc.acdcForce3DS.label')"
+                    :helpText="$tc('swag-paypal.settingForm.acdc.acdcForce3DS.helpText')"
+                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                    :value="props.currentValue"
+                    @update:value="props.updateCurrentValue"
+                />
+            </template>
+        </sw-inherit-wrapper>
         {% endblock %}
-    </sw-card>
+
+    </div>
+    {% endblock %}
+
+</sw-card>
 {% endblock %}

@@ -19,9 +19,9 @@ Component.register('swag-paypal-pos-detail-settings', {
     ],
 
     mixins: [
-        'swag-paypal-pos-catch-error',
-        'placeholder',
-        'notification',
+        Shopware.Mixin.getByName('swag-paypal-pos-catch-error'),
+        Shopware.Mixin.getByName('placeholder'),
+        Shopware.Mixin.getByName('notification'),
     ],
 
     props: {
