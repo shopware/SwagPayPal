@@ -3,6 +3,8 @@ import 'src/app/component/utils/sw-inherit-wrapper';
 import 'src/app/component/base/sw-card';
 import 'src/app/component/form/sw-switch-field';
 import 'src/app/component/form/sw-checkbox-field';
+import 'src/app/mixin/notification.mixin';
+import 'SwagPayPal/mixin/swag-paypal-credentials-loader.mixin';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-vaulting';
 
 const onboardingCallbackLive = 'onboardingCallbackLive';

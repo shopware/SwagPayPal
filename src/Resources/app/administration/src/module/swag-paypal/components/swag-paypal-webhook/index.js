@@ -14,7 +14,7 @@ Shopware.Component.register('swag-paypal-webhook', {
     ],
 
     mixins: [
-        'notification',
+        Shopware.Mixin.getByName('notification'),
     ],
 
     props: {
@@ -81,21 +81,21 @@ Shopware.Component.register('swag-paypal-webhook', {
             this.isFetchingStatus = false;
         },
 
-        onRefreshWebhook() {
+        async onRefreshWebhook() {
             this.isRefreshing = true;
 
-            return this.SwagPayPalWebhookService.register(this.selectedSalesChannelId)
+            await this.SwagPayPalWebhookService
+                .register(this.selectedSalesChannelId)
                 .catch((response) => {
                     this.createNotificationError({
                         title: this.$tc('swag-paypal.webhook.refreshFailed.title'),
-                        message: response.response.data?.errors?.[0]?.detail
+                        message: response.response?.data?.errors?.[0]?.detail
                             ?? this.$tc('swag-paypal.webhook.refreshFailed.errorUnknown'),
                     });
-                })
-                .finally(() => {
-                    this.isRefreshing = false;
-                    return this.fetchWebhookStatus();
                 });
+
+            this.isRefreshing = false;
+            return this.fetchWebhookStatus();
         },
     },
 });

@@ -10,7 +10,7 @@ Component.register('swag-paypal-payment-action-refund', {
     inject: ['SwagPayPalPaymentService'],
 
     mixins: [
-        'notification',
+        Shopware.Mixin.getByName('notification'),
     ],
 
     props: {

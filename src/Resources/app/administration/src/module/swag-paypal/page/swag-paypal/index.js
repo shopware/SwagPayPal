@@ -16,7 +16,7 @@ Component.register('swag-paypal', {
     ],
 
     mixins: [
-        'notification',
+        Shopware.Mixin.getByName('notification'),
     ],
 
     data() {
@@ -35,9 +35,16 @@ Component.register('swag-paypal', {
             isSetDefaultPaymentSuccessful: false,
             isSettingDefaultPaymentMethods: false,
             savingDisabled: false,
-            messageBlankErrorState: null,
+            messageBlankErrorState: {
+                code: 1,
+                detail: this.$tc('swag-paypal.messageNotBlank'),
+            },
             showCredentials: false,
             allowShowCredentials: true,
+
+            /**
+             * @deprecated tag:v10.0.0 - Will be removed, use constants directly
+             */
             ...constants,
         };
     },
@@ -78,7 +85,7 @@ Component.register('swag-paypal', {
         },
 
         clientIdErrorState() {
-            if (this.sandboxChecked || this.clientIdFilled) {
+            if (this.isLoading || this.sandboxChecked || this.clientIdFilled) {
                 return null;
             }
 
@@ -86,7 +93,7 @@ Component.register('swag-paypal', {
         },
 
         clientSecretErrorState() {
-            if (this.sandboxChecked || this.clientSecretFilled) {
+            if (this.isLoading || this.sandboxChecked || this.clientSecretFilled) {
                 return null;
             }
 
@@ -94,7 +101,7 @@ Component.register('swag-paypal', {
         },
 
         clientIdSandboxErrorState() {
-            if (!this.sandboxChecked || this.clientIdSandboxFilled) {
+            if (this.isLoading || !this.sandboxChecked || this.clientIdSandboxFilled) {
                 return null;
             }
 
@@ -102,7 +109,7 @@ Component.register('swag-paypal', {
         },
 
         clientSecretSandboxErrorState() {
-            if (!this.sandboxChecked || this.clientSecretSandboxFilled) {
+            if (this.isLoading || !this.sandboxChecked || this.clientSecretSandboxFilled) {
                 return null;
             }
 
@@ -131,6 +138,7 @@ Component.register('swag-paypal', {
 
     watch: {
         config: {
+            deep: true,
             handler() {
                 const defaultConfig = this.$refs.configComponent?.allConfigs?.null;
                 const salesChannelId = this.$refs.configComponent?.selectedSalesChannelId;
@@ -143,18 +151,17 @@ Component.register('swag-paypal', {
                     this.sandboxChecked = !!this.config['SwagPayPal.settings.sandbox'];
                 } else {
                     this.clientIdFilled = !!this.config['SwagPayPal.settings.clientId']
-                        || !!defaultConfig['SwagPayPal.settings.clientId'];
+                        || !!defaultConfig?.['SwagPayPal.settings.clientId'];
                     this.clientSecretFilled = !!this.config['SwagPayPal.settings.clientSecret']
-                        || !!defaultConfig['SwagPayPal.settings.clientSecret'];
+                        || !!defaultConfig?.['SwagPayPal.settings.clientSecret'];
                     this.clientIdSandboxFilled = !!this.config['SwagPayPal.settings.clientIdSandbox']
-                        || !!defaultConfig['SwagPayPal.settings.clientIdSandbox'];
+                        || !!defaultConfig?.['SwagPayPal.settings.clientIdSandbox'];
                     this.clientSecretSandboxFilled = !!this.config['SwagPayPal.settings.clientSecretSandbox']
-                        || !!defaultConfig['SwagPayPal.settings.clientSecretSandbox'];
+                        || !!defaultConfig?.['SwagPayPal.settings.clientSecretSandbox'];
                     this.sandboxChecked = !!this.config['SwagPayPal.settings.sandbox']
-                        || !!defaultConfig['SwagPayPal.settings.sandbox'];
+                        || !!defaultConfig?.['SwagPayPal.settings.sandbox'];
                 }
             },
-            deep: true,
         },
     },
 
@@ -182,11 +189,6 @@ Component.register('swag-paypal', {
             }).finally(() => {
                 this.isLoading = false;
             });
-
-            this.messageBlankErrorState = {
-                code: 1,
-                detail: this.$tc('swag-paypal.messageNotBlank'),
-            };
         },
 
         onSave() {
@@ -232,12 +234,7 @@ Component.register('swag-paypal', {
         },
 
         preventSave(mode) {
-            if (!mode) {
-                this.savingDisabled = false;
-                return;
-            }
-
-            this.savingDisabled = true;
+            this.savingDisabled = !!mode;
         },
 
         onChangeCredentialsVisibility(visibility) {

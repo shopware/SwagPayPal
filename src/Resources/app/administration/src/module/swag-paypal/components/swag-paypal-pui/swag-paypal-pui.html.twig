@@ -1,36 +1,40 @@
 {% block swag_paypal_content_card_channel_config_pui %}
-    <sw-card position-identifier="swag-paypal-card-channel-config-pui"
-             :title="$tc('swag-paypal.settingForm.pui.cardTitle')">
+<sw-card
+    position-identifier="swag-paypal-card-channel-config-pui"
+    :title="$tc('swag-paypal.settingForm.pui.cardTitle')"
+>
 
-        {% block swag_paypal_content_card_channel_config_pui_settings %}
-            <div v-if="actualConfigData" class="swag-paypal-settings-pui-fields">
+    {% block swag_paypal_content_card_channel_config_pui_settings %}
+    <div v-if="actualConfigData" class="swag-paypal-settings-pui-fields">
 
-                {% block swag_paypal_content_card_channel_config_pui_settings_customer_service_instructions %}
-                    <sw-inherit-wrapper
-                        {% if VUE3 %}
-                        v-model:value="actualConfigData['SwagPayPal.settings.puiCustomerServiceInstructions']"
-                        {% else %}
-                        v-model="actualConfigData['SwagPayPal.settings.puiCustomerServiceInstructions']"
-                        {% endif %}
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.puiCustomerServiceInstructions']"
-                        :customInheritationCheckFunction="checkTextFieldInheritance">
-                        <template #content="props">
-                            <sw-text-field name="SwagPayPal.settings.spbButtonLanguageIso"
-                                           :mapInheritance="props"
-                                           :label="$tc('swag-paypal.settingForm.pui.customerServiceInstructions.label')"
-                                           :helpText="$tc('swag-paypal.settingForm.pui.customerServiceInstructions.helpText')"
-                                           :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                           :value="props.currentValue"
-                                           {% if VUE3 %}
-                                           @update:value="props.updateCurrentValue"
-                                           {% else %}
-                                           @change="props.updateCurrentValue"
-                                           {% endif %}>
-                            </sw-text-field>
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
-            </div>
+        {% block swag_paypal_content_card_channel_config_pui_settings_customer_service_instructions %}
+        <sw-inherit-wrapper
+            {% if VUE3 %}
+            v-model:value="actualConfigData['SwagPayPal.settings.puiCustomerServiceInstructions']"
+            {% else %}
+            v-model="actualConfigData['SwagPayPal.settings.puiCustomerServiceInstructions']"
+            {% endif %}
+            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.puiCustomerServiceInstructions']"
+            :customInheritationCheckFunction="checkTextFieldInheritance"
+        >
+            <template #content="props">
+                <sw-text-field
+                    name="SwagPayPal.settings.spbButtonLanguageIso"
+                    :mapInheritance="props"
+                    :label="$tc('swag-paypal.settingForm.pui.customerServiceInstructions.label')"
+                    :helpText="$tc('swag-paypal.settingForm.pui.customerServiceInstructions.helpText')"
+                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                    :value="props.currentValue"
+                    {% if VUE3 %}
+                    @update:value="props.updateCurrentValue"
+                    {% else %}
+                    @change="props.updateCurrentValue"
+                    {% endif %}
+                />
+            </template>
+        </sw-inherit-wrapper>
         {% endblock %}
-    </sw-card>
+    </div>
+    {% endblock %}
+</sw-card>
 {% endblock %}

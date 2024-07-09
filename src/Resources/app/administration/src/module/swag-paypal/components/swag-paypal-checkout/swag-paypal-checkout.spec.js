@@ -3,6 +3,8 @@ import 'src/app/component/base/sw-card';
 import 'src/app/component/base/sw-container';
 import 'src/app/component/base/sw-icon';
 import 'src/app/component/base/sw-alert';
+import 'src/app/mixin/notification.mixin';
+import 'SwagPayPal/mixin/swag-paypal-credentials-loader.mixin';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-checkout';
 
 const onboardingCallbackLive = 'onboardingCallbackLive';

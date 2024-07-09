@@ -14,7 +14,7 @@ Component.register('swag-paypal-pos-detail-overview', {
     ],
 
     mixins: [
-        'placeholder',
+        Shopware.Mixin.getByName('placeholder'),
     ],
 
     props: {

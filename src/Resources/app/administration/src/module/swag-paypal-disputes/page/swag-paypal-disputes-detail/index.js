@@ -14,7 +14,9 @@ Component.register('swag-paypal-disputes-detail', {
         'repositoryFactory',
     ],
 
-    mixins: ['notification'],
+    mixins: [
+        Shopware.Mixin.getByName('notification'),
+    ],
 
     props: {
         disputeId: {
@@ -44,16 +46,12 @@ Component.register('swag-paypal-disputes-detail', {
         },
 
         orderTransactionCriteria() {
-            if (!this.dispute.disputed_transactions) {
+            const custom = this.dispute?.disputed_transactions?.[0]?.custom;
+            if (!custom) {
                 return null;
             }
 
-            const disputedTransaction = this.dispute.disputed_transactions[0];
-            if (!disputedTransaction?.custom) {
-                return null;
-            }
-
-            const id = JSON.parse(disputedTransaction.custom)?.orderTransactionId ?? disputedTransaction.custom;
+            const id = JSON.parse(custom)?.orderTransactionId ?? custom;
 
             if (!(typeof id === 'string') || id.length !== 32) {
                 return null;
@@ -66,7 +64,7 @@ Component.register('swag-paypal-disputes-detail', {
         },
 
         externalDetailPageLink() {
-            return `${this.resolutionCenterUrl}/${this.dispute.dispute_id}`;
+            return `${this.resolutionCenterUrl}/${this.dispute?.dispute_id ?? ''}`;
         },
 
         dateFilter() {
@@ -79,16 +77,16 @@ Component.register('swag-paypal-disputes-detail', {
     },
 
     methods: {
-        createdComponent() {
+        async createdComponent() {
             this.isLoading = true;
 
-            this.systemConfigApiService.getValues('SwagPayPal.settings').then((response) => {
-                if (response['SwagPayPal.settings.sandbox']) {
-                    this.resolutionCenterUrl = 'https://www.sandbox.paypal.com/resolutioncenter';
-                }
+            const config = await this.systemConfigApiService.getValues('SwagPayPal.settings');
 
-                this.getDetail();
-            });
+            if (config['SwagPayPal.settings.sandbox']) {
+                this.resolutionCenterUrl = 'https://www.sandbox.paypal.com/resolutioncenter';
+            }
+
+            this.getDetail();
         },
 
         getDetail() {
@@ -96,11 +94,11 @@ Component.register('swag-paypal-disputes-detail', {
                 this.dispute = dispute;
                 this.setLinkToOrderModule();
                 this.isLoading = false;
-            }).catch(this.handleError);
+            }).catch(this.handleError.bind(this));
         },
 
         handleError(errorResponse) {
-            const errorDetail = errorResponse.response.data.errors[0].detail;
+            const errorDetail = errorResponse.response?.data.errors?.[0].detail ?? '';
             this.createNotificationError({
                 message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${errorDetail}`,
                 autoClose: false,
@@ -108,21 +106,20 @@ Component.register('swag-paypal-disputes-detail', {
             this.isLoading = false;
         },
 
-        setLinkToOrderModule() {
+        async setLinkToOrderModule() {
             if (!this.orderTransactionCriteria) {
                 this.orderModuleLink = null;
             }
 
-            this.orderTransactionRepository.search(this.orderTransactionCriteria, Context.api, this.orderTransactionCriteria)
-                .then((orderTransactions) => {
-                    const orderTransaction = orderTransactions[0];
+            const orderTransactions = await this.orderTransactionRepository
+                .search(this.orderTransactionCriteria, Context.api, this.orderTransactionCriteria);
+            const orderTransaction = orderTransactions[0];
 
-                    if (orderTransaction === null) {
-                        return;
-                    }
+            if (orderTransaction === null) {
+                return;
+            }
 
-                    this.orderModuleLink = { name: 'sw.order.detail.general', params: { id: orderTransaction.orderId } };
-                });
+            this.orderModuleLink = { name: 'sw.order.detail.general', params: { id: orderTransaction.orderId } };
         },
 
         formatTechnicalText(technicalText) {

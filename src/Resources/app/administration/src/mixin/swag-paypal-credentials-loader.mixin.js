@@ -1,12 +1,12 @@
-const { Mixin } = Shopware;
 const { debug } = Shopware.Utils;
 
-Mixin.register('swag-paypal-credentials-loader', {
+export default Shopware.Mixin.register('swag-paypal-credentials-loader', {
 
     inject: ['SwagPayPalApiCredentialsService'],
 
     data() {
         return {
+            isLoading: false,
             isGetCredentialsSuccessful: false,
             lastOnboardingSandbox: false,
             nonceLive: `${Shopware.Utils.createId()}${Shopware.Utils.createId()}`,

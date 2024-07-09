@@ -2,8 +2,6 @@ import './mixin/swag-paypal-credentials-loader.mixin';
 import './mixin/swag-paypal-pos-catch-error.mixin';
 import './mixin/swag-paypal-pos-log-label.mixin';
 
-import './module/extension/sw-dashboard/sw-dashboard-index';
-import './module/extension/sw-dashboard/component/swag-paypal-campaign-banner';
 import './module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials';
 import './module/extension/sw-sales-channel-modal-detail';
 import './module/extension/sw-sales-channel-modal-grid';

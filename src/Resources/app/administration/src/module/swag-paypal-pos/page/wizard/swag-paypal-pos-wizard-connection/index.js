@@ -11,8 +11,8 @@ Component.register('swag-paypal-pos-wizard-connection', {
     ],
 
     mixins: [
-        'notification',
-        'swag-paypal-pos-catch-error',
+        Shopware.Mixin.getByName('notification'),
+        Shopware.Mixin.getByName('swag-paypal-pos-catch-error'),
     ],
 
     props: {

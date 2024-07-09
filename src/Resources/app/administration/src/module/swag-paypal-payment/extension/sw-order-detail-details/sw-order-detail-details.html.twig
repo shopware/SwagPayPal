@@ -2,8 +2,7 @@
     {% parent %}
 
     {% block sw_order_detail_details_shipping_paypal_carrier %}
-    <div class="swag-paypal-order-carrier"
-         v-if="payPalResourceId">
+    <div v-if="payPalResourceId" class="swag-paypal-order-carrier">
         <sw-text-field
             {% if VUE3 %}
             v-model:value="payPalCarrier"
@@ -19,8 +18,7 @@
         <div
             v-html="payPalCarrierDescription"
             class="swag-paypal-order-carrier__description"
-        >
-        </div>
+        />
     </div>
     {% endblock %}
 

@@ -14,7 +14,9 @@ Component.register('swag-paypal-payment-detail', {
         'repositoryFactory',
     ],
 
-    mixins: ['notification'],
+    mixins: [
+        Shopware.Mixin.getByName('notification'),
+    ],
 
     props: {
         isLoading: {
