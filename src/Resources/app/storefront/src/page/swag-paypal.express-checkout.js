@@ -5,9 +5,13 @@ import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
 export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractButtons {
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     static scriptLoading = new SwagPayPalScriptLoading();
 
     static options = {
+        ...super.options,
 
         /**
          * This option defines the class name which will be added when the button gets disabled.
@@ -43,48 +47,6 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          * @type string
          */
         buttonSize: 'small',
-
-        /**
-         * This option specifies the language of the PayPal button
-         *
-         * @type string
-         */
-        languageIso: 'en_GB',
-
-        /**
-         * This option holds the client id specified in the settings
-         *
-         * @type string
-         */
-        clientId: '',
-
-        /**
-         * This option holds the merchant id specified in the settings
-         *
-         * @type string
-         */
-        merchantPayerId: '',
-
-        /**
-         * This options specifies the currency of the PayPal button
-         *
-         * @type string
-         */
-        currency: 'EUR',
-
-        /**
-         * This options defines the payment intent
-         *
-         * @type string
-         */
-        intent: 'capture',
-
-        /**
-         * This option toggles the PayNow/Login text at PayPal
-         *
-         * @type boolean
-         */
-        commit: false,
 
         /**
          * This option toggles the text below the PayPal Express button
@@ -161,12 +123,14 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          */
         showPayLater: true,
 
-        /**
-         * Show no other buttons
-         *
-         * @type boolean
+        /*
+         * Streamline options for listing pages, overriding the ones
+         * from swag-paypal.script-loading.js
          */
         useAlternativePaymentMethods: false,
+        commit: false,
+        scriptAwaitVisibility: true,
+        partOfDomContentLoading: false,
     };
 
     init() {

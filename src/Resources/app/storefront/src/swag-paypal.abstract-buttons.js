@@ -1,24 +1,9 @@
-import Plugin from 'src/plugin-system/plugin.class';
-import {loadScript} from '@paypal/paypal-js';
-import SwagPayPalScriptLoading from './swag-paypal.script-loading';
+import SwagPayPalScriptBase from './swag-paypal.script-base';
 
-const availableAPMs = [
-    'card',
-    'bancontact',
-    'blik',
-    'eps',
-    'giropay',
-    'ideal',
-    'mybank',
-    'p24',
-    'sepa',
-    'sofort',
-    'venmo',
-];
-
-export default class SwagPaypalAbstractButtons extends Plugin {
-    static scriptLoading = new SwagPayPalScriptLoading();
+export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
     static options = {
+        ...super.options,
+
         /**
          * URL for adding flash error message
          *
@@ -41,76 +26,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
     USER_CANCELLED = 'SWAG_PAYPAL__USER_CANCELLED';
     BROWSER_UNSUPPORTED = 'SWAG_PAYPAL__BROWSER_UNSUPPORTED';
 
-    createScript(callback) {
-        if (this.constructor.scriptLoading.paypal !== null) {
-            callback.call(this, this.constructor.scriptLoading.paypal);
-            return;
-        }
 
-        this.constructor.scriptLoading.callbacks.push(callback);
-
-        if (this.constructor.scriptLoading.loadingScript) {
-            return;
-        }
-
-        this.constructor.scriptLoading.loadingScript = true;
-
-        loadScript(this.getScriptOptions()).then(this.callCallbacks.bind(this));
-    }
-
-    callCallbacks() {
-        if (this.constructor.scriptLoading.paypal === null) {
-            this.constructor.scriptLoading.paypal = window.paypal;
-            delete window.paypal;
-        }
-
-        this.constructor.scriptLoading.callbacks.forEach((callback) => {
-            callback.call(this, this.constructor.scriptLoading.paypal);
-        });
-    }
-
-    /**
-     * @return {Object}
-     */
-    getScriptOptions() {
-        const config = {
-            components: 'buttons,messages,card-fields,funding-eligibility,applepay,googlepay',
-            'client-id': this.options.clientId,
-            commit: !!this.options.commit,
-            locale: this.options.languageIso,
-            currency: this.options.currency,
-            intent: this.options.intent,
-            'enable-funding': 'paylater,venmo',
-        };
-
-        if (this.options.disablePayLater || this.options.showPayLater === false) {
-            config['enable-funding'] = 'venmo';
-        }
-
-        if (this.options.useAlternativePaymentMethods === false) {
-            config['disable-funding'] = availableAPMs.join(',');
-        } else if (Array.isArray(this.options.disabledAlternativePaymentMethods)) {
-            config['disable-funding'] = this.options.disabledAlternativePaymentMethods.join(',');
-        }
-
-        if (this.options.merchantPayerId) {
-            config['merchant-id'] = this.options.merchantPayerId;
-        }
-
-        if (this.options.clientToken) {
-            config['data-client-token'] = this.options.clientToken;
-        }
-
-        if (this.options.userIdToken) {
-            config['data-user-id-token'] = this.options.userIdToken;
-        }
-
-        if (this.options.partnerAttributionId) {
-            config['data-partner-attribution-id'] = this.options.partnerAttributionId;
-        }
-
-        return config;
-    }
 
     /**
      * @param {String} code - The error code. Will be replaced by an extracted error code from {@link error} if available
