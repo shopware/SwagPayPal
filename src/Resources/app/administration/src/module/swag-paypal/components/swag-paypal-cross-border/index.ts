@@ -1,3 +1,4 @@
+import type * as PayPal from 'src/types';
 import template from './swag-paypal-cross-border.html.twig';
 import './swag-paypal-cross-border.scss';
 
@@ -15,12 +16,12 @@ export default Shopware.Component.wrapComponentConfig({
             default: false,
         },
         actualConfigData: {
-            type: Object,
+            type: Object as PropType<Record<string, PayPal.SystemConfig>>,
             required: true,
             default: () => { return {}; },
         },
         allConfigs: {
-            type: Object,
+            type: Object as PropType<Record<string, PayPal.SystemConfig>>,
             required: true,
         },
         selectedSalesChannelId: {

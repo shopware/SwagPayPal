@@ -1,20 +1,19 @@
+import type * as PayPal from 'src/types';
 import template from './swag-paypal-express.html.twig';
 
 export default Shopware.Component.wrapComponentConfig({
     template,
 
-    inject: [
-        'acl',
-    ],
+    inject: ['acl'],
 
     props: {
         actualConfigData: {
-            type: Object,
+            type: Object as PropType<PayPal.SystemConfig>,
             required: true,
             default: () => { return {}; },
         },
         allConfigs: {
-            type: Object,
+            type: Object as PropType<Record<string, PayPal.SystemConfig>>,
             required: true,
         },
         selectedSalesChannelId: {
@@ -74,7 +73,7 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     methods: {
-        checkTextFieldInheritance(value) {
+        checkTextFieldInheritance(value: unknown): boolean {
             if (typeof value !== 'string') {
                 return true;
             }
@@ -82,11 +81,11 @@ export default Shopware.Component.wrapComponentConfig({
             return value.length <= 0;
         },
 
-        checkBoolFieldInheritance(value) {
+        checkBoolFieldInheritance(value: unknown): boolean {
             return typeof value !== 'boolean';
         },
 
-        preventSave(mode) {
+        preventSave(mode: boolean) {
             this.$emit('preventSave', mode);
         },
     },

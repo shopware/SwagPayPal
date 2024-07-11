@@ -1,3 +1,4 @@
+import type * as PayPal from 'src/types';
 import template from './swag-paypal-vaulting.html.twig';
 import './swag-paypal-vaulting.scss';
 
@@ -15,12 +16,12 @@ export default Shopware.Component.wrapComponentConfig({
 
     props: {
         actualConfigData: {
-            type: Object,
+            type: Object as PropType<PayPal.SystemConfig>,
             required: true,
             default: () => { return {}; },
         },
         allConfigs: {
-            type: Object,
+            type: Object as PropType<Record<string, PayPal.SystemConfig>>,
             required: true,
         },
         selectedSalesChannelId: {
@@ -34,7 +35,10 @@ export default Shopware.Component.wrapComponentConfig({
         },
     },
 
-    data() {
+    data(): {
+        merchantInformation: PayPal.Setting<'merchant_information'> | null;
+        isLoadingMerchantInformation: boolean;
+    } {
         return {
             merchantInformation: null,
             isLoadingMerchantInformation: false,
@@ -78,7 +82,7 @@ export default Shopware.Component.wrapComponentConfig({
                 .getMerchantInformation(this.selectedSalesChannelId);
         },
 
-        checkBoolFieldInheritance(value) {
+        checkBoolFieldInheritance(value: unknown): boolean {
             return typeof value !== 'boolean';
         },
     },

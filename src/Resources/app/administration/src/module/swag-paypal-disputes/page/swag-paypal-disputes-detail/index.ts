@@ -1,3 +1,5 @@
+import type * as PayPal from 'src/types';
+import type { RouteLocationRaw } from 'vue-router';
 import template from './swag-paypal-disputes-detail.html.twig';
 import './swag-paypal-disputes-detail.scss';
 
@@ -31,7 +33,12 @@ export default Shopware.Component.wrapComponentConfig({
         },
     },
 
-    data() {
+    data(): {
+        isLoading: boolean;
+        dispute: null | PayPal.V1<'disputes_item'>;
+        resolutionCenterUrl: string;
+        orderModuleLink: null | RouteLocationRaw;
+    } {
         return {
             isLoading: false,
             dispute: null,
@@ -51,6 +58,7 @@ export default Shopware.Component.wrapComponentConfig({
                 return null;
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             const id = JSON.parse(custom)?.orderTransactionId ?? custom;
 
             if (!(typeof id === 'string') || id.length !== 32) {
@@ -80,7 +88,7 @@ export default Shopware.Component.wrapComponentConfig({
         async createdComponent() {
             this.isLoading = true;
 
-            const config = await this.systemConfigApiService.getValues('SwagPayPal.settings');
+            const config = await this.systemConfigApiService.getValues('SwagPayPal.settings') as PayPal.SystemConfig;
 
             if (config['SwagPayPal.settings.sandbox']) {
                 this.resolutionCenterUrl = 'https://www.sandbox.paypal.com/resolutioncenter';
@@ -97,7 +105,7 @@ export default Shopware.Component.wrapComponentConfig({
             }).catch(this.handleError.bind(this));
         },
 
-        handleError(errorResponse) {
+        handleError(errorResponse: PayPal.ServiceError) {
             const errorDetail = errorResponse.response?.data.errors?.[0].detail ?? '';
             this.createNotificationError({
                 message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${errorDetail}`,
@@ -121,11 +129,11 @@ export default Shopware.Component.wrapComponentConfig({
             this.orderModuleLink = { name: 'sw.order.detail.general', params: { id: orderTransaction.orderId } };
         },
 
-        formatTechnicalText(technicalText) {
+        formatTechnicalText(technicalText: string): string {
             return capitalizeString(technicalText).replace(/_/g, ' ');
         },
 
-        getInquiryClass(stage) {
+        getInquiryClass(stage: string): string {
             if (stage === 'INQUIRY') {
                 return 'swag-paypal-disputes-detail__stage-inquiry';
             }
@@ -133,7 +141,7 @@ export default Shopware.Component.wrapComponentConfig({
             return 'swag-paypal-disputes-detail__stage-other';
         },
 
-        getDueDate(sellerResponseDueDate, buyerResponseDueDate) {
+        getDueDate(sellerResponseDueDate: string, buyerResponseDueDate: string) {
             if (sellerResponseDueDate !== null) {
                 return `${this.$tc('swag-paypal-disputes.common.response_due_date.seller')}: ${
                     this.formatDate(sellerResponseDueDate)}`;
@@ -153,6 +161,7 @@ export default Shopware.Component.wrapComponentConfig({
             }
 
             try {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 Utils.dom.copyToClipboard(JSON.stringify(this.dispute));
                 this.createNotificationInfo({
                     message: this.$tc('global.sw-field.notification.notificationCopySuccessMessage'),
@@ -164,7 +173,7 @@ export default Shopware.Component.wrapComponentConfig({
             }
         },
 
-        formatDate(dateTime) {
+        formatDate(dateTime: string) {
             return this.dateFilter(dateTime, {
                 hour: '2-digit',
                 minute: '2-digit',

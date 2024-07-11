@@ -1,7 +1,7 @@
 import { location } from '@shopware-ag/meteor-admin-sdk';
 
 const bootPromise = window.Shopware
-    ? Shopware.Plugin.addBootPromise()
+    ? (Shopware.Plugin.addBootPromise() as () => never) // it's wrongly typed as object in shopware
     : undefined;
 
 (async () => {

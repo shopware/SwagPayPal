@@ -7,7 +7,7 @@ export default Shopware.Mixin.register('swag-paypal-credentials-loader', Shopwar
     data() {
         return {
             isLoading: false,
-            isGetCredentialsSuccessful: false,
+            isGetCredentialsSuccessful: false as boolean | null,
             lastOnboardingSandbox: false,
             nonceLive: `${Shopware.Utils.createId()}${Shopware.Utils.createId()}`,
             nonceSandbox: `${Shopware.Utils.createId()}${Shopware.Utils.createId()}`,
@@ -40,7 +40,7 @@ export default Shopware.Mixin.register('swag-paypal-credentials-loader', Shopwar
     },
 
     computed: {
-        returnUrl() {
+        returnUrl(): string {
             return `${window.location.origin}${window.location.pathname}#${this.$route.path}`;
         },
         onboardingUrlLive() {
@@ -90,10 +90,10 @@ export default Shopware.Mixin.register('swag-paypal-credentials-loader', Shopwar
     },
 
     methods: {
-        createRequestParameter(config = {}) {
+        createRequestParameter(config: Record<string, unknown> = {}) {
             const params = { ...this.requestParams, ...config };
             return Object.keys(params).reduce((accumulator, key) => {
-                let value = params[key];
+                let value = params[key as keyof typeof params];
 
                 if (Array.isArray(value)) {
                     value = value.join(',');
@@ -138,7 +138,7 @@ export default Shopware.Mixin.register('swag-paypal-credentials-loader', Shopwar
             window.PAYPAL.apps.Signup.render();
         },
 
-        getPayPalCredentials({ authCode, sharedId, sandbox }) {
+        getPayPalCredentials({ authCode, sharedId, sandbox }: { authCode: string; sharedId: string; sandbox: boolean }) {
             if (this.isLoading) {
                 return Promise.resolve(false);
             }
@@ -164,14 +164,7 @@ export default Shopware.Mixin.register('swag-paypal-credentials-loader', Shopwar
             });
         },
 
-        /**
-         *
-         * @param clientId string
-         * @param clientSecret string
-         * @param merchantPayerId string
-         * @param sandbox bool
-         */
-        onPayPalCredentialsLoadSuccess() {
+        onPayPalCredentialsLoadSuccess(_clientId: string, _clientSecret: string, _payerId: string, _sandbox: boolean) {
             // needs to be implemented by using component
             debug.warn(
                 'swag-paypal-credentials-loader Mixin',
@@ -180,11 +173,7 @@ export default Shopware.Mixin.register('swag-paypal-credentials-loader', Shopwar
             );
         },
 
-        /**
-         *
-         * @param sandbox bool
-         */
-        onPayPalCredentialsLoadFailed() {
+        onPayPalCredentialsLoadFailed(_sandbox: boolean) {
             // needs to be implemented by using component
             debug.warn(
                 'swag-paypal-credentials-loader Mixin',

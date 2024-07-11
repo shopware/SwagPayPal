@@ -1,15 +1,21 @@
+import type * as PayPal from 'src/types';
+import type { LoginService } from 'src/core/service/login.service';
+import type { AxiosInstance } from 'axios';
+
 const ApiService = Shopware.Classes.ApiService;
 
 class SwagPayPalPosApiService extends ApiService {
-    constructor(httpClient, loginService, apiEndpoint = 'paypal/pos') {
+    basicConfig: { timeout: number };
+
+    constructor(httpClient: AxiosInstance, loginService: LoginService, apiEndpoint = 'paypal/pos') {
         super(httpClient, loginService, apiEndpoint);
         this.basicConfig = {
             timeout: 300000,
         };
     }
 
-    startCompleteSync(salesChannelId) {
-        return this.httpClient.post(
+    startCompleteSync(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSync'>>(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}`,
             null,
             {
@@ -19,8 +25,8 @@ class SwagPayPalPosApiService extends ApiService {
         ).then(ApiService.handleResponse.bind(this));
     }
 
-    startProductSync(salesChannelId) {
-        return this.httpClient.post(
+    startProductSync(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSyncProducts'>>(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}/products`,
             null,
             {
@@ -30,8 +36,8 @@ class SwagPayPalPosApiService extends ApiService {
         ).then(ApiService.handleResponse.bind(this));
     }
 
-    startInventorySync(salesChannelId) {
-        return this.httpClient.post(
+    startInventorySync(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSyncInventory'>>(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}/inventory`,
             null,
             {
@@ -41,8 +47,8 @@ class SwagPayPalPosApiService extends ApiService {
         ).then(ApiService.handleResponse.bind(this));
     }
 
-    startImageSync(salesChannelId) {
-        return this.httpClient.post(
+    startImageSync(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSyncImages'>>(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}/images`,
             null,
             {
@@ -52,8 +58,8 @@ class SwagPayPalPosApiService extends ApiService {
         ).then(ApiService.handleResponse.bind(this));
     }
 
-    startLogCleanup(salesChannelId) {
-        return this.httpClient.post(
+    startLogCleanup(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posProductLog'>>(
             `_action/${this.getApiBasePath()}/log/cleanup/${salesChannelId}`,
             null,
             {
@@ -63,8 +69,8 @@ class SwagPayPalPosApiService extends ApiService {
         ).then(ApiService.handleResponse.bind(this));
     }
 
-    abortSync(runId) {
-        return this.httpClient.post(
+    abortSync(runId: string) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSyncAbort'>>(
             `_action/${this.getApiBasePath()}/sync/abort/${runId}`,
             null,
             {
@@ -74,8 +80,8 @@ class SwagPayPalPosApiService extends ApiService {
         ).then(ApiService.handleResponse.bind(this));
     }
 
-    resetSync(salesChannelId) {
-        return this.httpClient.post(
+    resetSync(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSyncReset'>>(
             `_action/${this.getApiBasePath()}/sync/reset/${salesChannelId}`,
             null,
             {
@@ -85,8 +91,8 @@ class SwagPayPalPosApiService extends ApiService {
         ).then(ApiService.handleResponse.bind(this));
     }
 
-    getProductLog(salesChannelId, page = 1, limit = 10) {
-        return this.httpClient.get(
+    getProductLog(salesChannelId: string | null, page = 1, limit = 10) {
+        return this.httpClient.get<PayPal.Api.Operations<'posProductLog'>>(
             `${this.getApiBasePath()}/product-log/${salesChannelId}`,
             {
                 ...this.basicConfig,

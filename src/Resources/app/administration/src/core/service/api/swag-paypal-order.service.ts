@@ -1,16 +1,16 @@
+import type { LoginService } from 'src/core/service/login.service';
+import type { AxiosInstance } from 'axios';
+import type * as PayPal from 'src/types';
+
 const ApiService = Shopware.Classes.ApiService;
 
 class SwagPayPalOrderService extends ApiService {
-    constructor(httpClient, loginService, apiEndpoint = 'paypal-v2') {
+    constructor(httpClient: AxiosInstance, loginService: LoginService, apiEndpoint = 'paypal-v2') {
         super(httpClient, loginService, apiEndpoint);
     }
 
-    /**
-     * @param {String} orderTransactionId
-     * @param {String} paypalOrderId
-     */
-    getOrderDetails(orderTransactionId, paypalOrderId) {
-        return this.httpClient.get(
+    getOrderDetails(orderTransactionId: string, paypalOrderId: string) {
+        return this.httpClient.get<PayPal.Api.Operations<'orderDetails'>>(
             `${this.getApiBasePath()}/order/${orderTransactionId}/${paypalOrderId}`,
             {
                 headers: this.getBasicHeaders(),
@@ -18,79 +18,49 @@ class SwagPayPalOrderService extends ApiService {
         ).then(ApiService.handleResponse.bind(this));
     }
 
-    /**
-     * @param {String} orderTransactionId
-     * @param {String} captureId
-     * @param {String} paypalOrderId
-     * @param {String} currency
-     * @param {String|Number} amount
-     * @param {String} invoiceNumber
-     * @param {String} noteToPayer
-     * @param {String} partnerAttributionId
-     */
     refundCapture(
-        orderTransactionId,
-        captureId,
-        paypalOrderId,
-        currency,
-        amount,
-        invoiceNumber,
-        noteToPayer,
-        partnerAttributionId,
+        orderTransactionId: string,
+        captureId: string,
+        paypalOrderId: string,
+        currency: string,
+        amount: string | number,
+        invoiceNumber: string,
+        noteToPayer: string,
+        partnerAttributionId: string,
     ) {
-        return this.doPostRequest(
+        return this.doPostRequest<PayPal.Api.Operations<'refundCapture'>>(
             `${this.getApiBasePath('', '_action')}/refund-capture/${orderTransactionId}/${captureId}/${paypalOrderId}`,
             partnerAttributionId,
             { currency, amount, invoiceNumber, noteToPayer },
         );
     }
 
-    /**
-     * @param {String} orderTransactionId
-     * @param {String} authorizationId
-     * @param {String} currency
-     * @param {String|Number} amount
-     * @param {String} invoiceNumber
-     * @param {String} noteToPayer
-     * @param {String} partnerAttributionId
-     * @param {Boolean} isFinal
-     */
     captureAuthorization(
-        orderTransactionId,
-        authorizationId,
-        currency,
-        amount,
-        invoiceNumber,
-        noteToPayer,
-        partnerAttributionId,
-        isFinal,
+        orderTransactionId: string,
+        authorizationId: string,
+        currency: string,
+        amount: string | number,
+        invoiceNumber: string,
+        noteToPayer: string,
+        partnerAttributionId: string,
+        isFinal: boolean,
     ) {
-        return this.doPostRequest(
+        return this.doPostRequest<PayPal.Api.Operations<'captureAuthorization'>>(
             `${this.getApiBasePath('', '_action')}/capture-authorization/${orderTransactionId}/${authorizationId}`,
             partnerAttributionId,
             { currency, amount, invoiceNumber, noteToPayer, isFinal },
         );
     }
 
-    /**
-     * @param {String} orderTransactionId
-     * @param {String} authorizationId
-     * @param {String} partnerAttributionId
-     */
-    voidAuthorization(orderTransactionId, authorizationId, partnerAttributionId) {
-        return this.doPostRequest(
+    voidAuthorization(orderTransactionId: string, authorizationId: string, partnerAttributionId: string) {
+        return this.doPostRequest<PayPal.Api.Operations<'voidAuthorization'>>(
             `${this.getApiBasePath('', '_action')}/void-authorization/${orderTransactionId}/${authorizationId}`,
             partnerAttributionId,
         );
     }
 
-    /**
-     * @param {String} apiRoute
-     * @param {String} partnerAttributionId
-     * @param {Object} requestParameters
-     */
-    doPostRequest(apiRoute, partnerAttributionId, requestParameters = {}) {
-        return this.httpClient.post(
+    doPostRequest<D>(apiRoute: string, partnerAttributionId: string, requestParameters: object = {}) {
+        return this.httpClient.post<D>(
             apiRoute,
             { partnerAttributionId, ...requestParameters },
             {

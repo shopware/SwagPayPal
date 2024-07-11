@@ -1,3 +1,4 @@
+import type * as PayPal from 'src/types';
 import template from './swag-paypal-checkout.html.twig';
 import './swag-paypal-checkout.scss';
 
@@ -20,12 +21,12 @@ export default Shopware.Component.wrapComponentConfig({
 
     props: {
         actualConfigData: {
-            type: Object,
+            type: Object as PropType<PayPal.SystemConfig>,
             required: true,
             default: () => { return {}; },
         },
         allConfigs: {
-            type: Object,
+            type: Object as PropType<Record<string, PayPal.SystemConfig>>,
             required: true,
         },
         selectedSalesChannelId: {
@@ -79,7 +80,13 @@ export default Shopware.Component.wrapComponentConfig({
         },
     },
 
-    data() {
+    data(): {
+        paymentMethods: TEntity<'payment_method'>[];
+        merchantInformation: PayPal.Setting<'merchant_information'>;
+        plusDeprecationModalOpen: boolean;
+        showHintMerchantIdMustBeEnteredManually: boolean;
+        isLoadingPaymentMethods: boolean;
+    } {
         return {
             paymentMethods: [],
             merchantInformation: {
@@ -100,11 +107,11 @@ export default Shopware.Component.wrapComponentConfig({
             return Shopware.Filter.getByName('asset');
         },
 
-        paymentMethodRepository() {
+        paymentMethodRepository(): TRepository<'payment_method'> {
             return this.repositoryFactory.create('payment_method');
         },
 
-        paymentMethodCriteria() {
+        paymentMethodCriteria(): TCriteria {
             const criteria = new Criteria(1, 500);
 
             criteria.addAssociation('media');
@@ -115,15 +122,15 @@ export default Shopware.Component.wrapComponentConfig({
             return criteria;
         },
 
-        isLive() {
+        isLive(): boolean {
             return !this.isSandbox;
         },
 
-        isSandbox() {
-            return this.actualConfigData['SwagPayPal.settings.sandbox'];
+        isSandbox(): boolean {
+            return this.actualConfigData['SwagPayPal.settings.sandbox'] ?? false;
         },
 
-        liveButtonTitle() {
+        liveButtonTitle(): string {
             if (!this.actualConfigData['SwagPayPal.settings.clientSecret']) {
                 return this.$tc('swag-paypal.settingForm.checkout.button.liveTitle');
             }
@@ -143,7 +150,7 @@ export default Shopware.Component.wrapComponentConfig({
             return this.$tc('swag-paypal.settingForm.checkout.button.changeLiveTitle');
         },
 
-        sandboxButtonTitle() {
+        sandboxButtonTitle(): string {
             if (!this.actualConfigData['SwagPayPal.settings.clientSecretSandbox']) {
                 return this.$tc('swag-paypal.settingForm.checkout.button.sandboxTitle');
             }
@@ -163,7 +170,7 @@ export default Shopware.Component.wrapComponentConfig({
             return this.$tc('swag-paypal.settingForm.checkout.button.changeSandboxTitle');
         },
 
-        sandboxToggleDisabled() {
+        sandboxToggleDisabled(): boolean {
             return ((!this.actualConfigData['SwagPayPal.settings.clientSecret']
                         && !!this.actualConfigData['SwagPayPal.settings.clientSecretSandbox']
                         && this.isSandbox)
@@ -173,7 +180,7 @@ export default Shopware.Component.wrapComponentConfig({
                 && !this.selectedSalesChannelId;
         },
 
-        isOnboardingPPCPFinished() {
+        isOnboardingPPCPFinished(): boolean {
             const sepaPaymentMethod = this.paymentMethods
                 .find((pm) => pm.formattedHandlerIdentifier === 'handler_swag_sepahandler');
 
@@ -258,11 +265,11 @@ export default Shopware.Component.wrapComponentConfig({
             this.merchantIntegrations = this.merchantInformation.capabilities;
         },
 
-        onboardingStatus(paymentMethod) {
+        onboardingStatus(paymentMethod: TEntity<'payment_method'>): string {
             return this.merchantInformation.capabilities[paymentMethod.id];
         },
 
-        async onChangePaymentMethodActive(paymentMethod) {
+        async onChangePaymentMethodActive(paymentMethod: TEntity<'payment_method'>) {
             paymentMethod.active = !paymentMethod.active;
 
             await this.paymentMethodRepository.save(paymentMethod, Context.api);
@@ -282,12 +289,12 @@ export default Shopware.Component.wrapComponentConfig({
             this.plusDeprecationModalOpen = false;
         },
 
-        onPayPalCredentialsLoadSuccess(clientId, clientSecret, merchantPayerId, sandbox) {
+        onPayPalCredentialsLoadSuccess(clientId?: string, clientSecret?: string, merchantPayerId?: string, sandbox?: boolean) {
             this.setConfig(clientId, clientSecret, merchantPayerId, sandbox);
             this.$emit('on-save-settings');
         },
 
-        onPayPalCredentialsLoadFailed(sandbox) {
+        onPayPalCredentialsLoadFailed(sandbox: boolean) {
             this.setConfig('', '', '', sandbox);
             this.createNotificationError({
                 message: this.$tc('swag-paypal.settingForm.credentials.button.messageFetchedError'),
@@ -295,14 +302,14 @@ export default Shopware.Component.wrapComponentConfig({
             });
         },
 
-        setConfig(clientId, clientSecret, merchantPayerId, sandbox) {
+        setConfig(clientId?: string, clientSecret?: string, merchantPayerId?: string, sandbox?: boolean) {
             const suffix = sandbox ? 'Sandbox' : '';
             this.$set(this.actualConfigData, `SwagPayPal.settings.clientId${suffix}`, clientId);
             this.$set(this.actualConfigData, `SwagPayPal.settings.clientSecret${suffix}`, clientSecret);
             this.$set(this.actualConfigData, `SwagPayPal.settings.merchantPayerId${suffix}`, merchantPayerId);
         },
 
-        checkBoolFieldInheritance(value) {
+        checkBoolFieldInheritance(value: unknown): boolean {
             return typeof value !== 'boolean';
         },
     },

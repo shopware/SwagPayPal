@@ -2,11 +2,8 @@ export default Shopware.Mixin.register('swag-paypal-pos-log-label', Shopware.Com
     methods: {
         /**
          * Returns the corresponding sw-label variant for a Zettle log
-         *
-         * @param {Number} level
-         * @returns {string}
          */
-        getLabelVariant(level) {
+        getLabelVariant(level: number): 'success' | 'info' | 'warning' | 'danger' {
             if (level >= 400) {
                 return 'danger';
             }
@@ -24,11 +21,8 @@ export default Shopware.Mixin.register('swag-paypal-pos-log-label', Shopware.Com
 
         /**
          * Returns the corresponding translation path for a Zettle log
-         *
-         * @param {Number} level
-         * @returns {string}
          */
-        getLabel(level) {
+        getLabel(level: number): string {
             if (level >= 300) {
                 return 'swag-paypal-pos.detail.logs.states.failed';
             }

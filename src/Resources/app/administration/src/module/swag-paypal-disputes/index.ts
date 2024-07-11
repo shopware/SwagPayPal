@@ -1,5 +1,6 @@
 import './acl';
 import './page/swag-paypal-disputes-list';
+import type { RouteLocationNormalized } from 'vue-router';
 
 Shopware.Component.register('swag-paypal-disputes-detail', () => import('./page/swag-paypal-disputes-detail'));
 Shopware.Component.register('swag-paypal-disputes-list', () => import('./page/swag-paypal-disputes-list'));
@@ -28,7 +29,7 @@ Shopware.Module.register('swag-paypal-disputes', {
             component: 'swag-paypal-disputes-detail',
             path: 'detail/:disputeId/:salesChannelId?',
             props: {
-                default(route) {
+                default(route: RouteLocationNormalized) {
                     return {
                         disputeId: route.params.disputeId,
                         salesChannelId: route.params.salesChannelId,

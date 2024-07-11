@@ -17,7 +17,7 @@ export default Shopware.Component.wrapComponentConfig({
 
     props: {
         paymentMethod: {
-            type: Object,
+            type: Object as PropType<TEntity<'payment_method'>>,
             required: true,
         },
         onboardingStatus: {
@@ -46,7 +46,7 @@ export default Shopware.Component.wrapComponentConfig({
             return this.paymentMethod.active && handlerElements[handlerElements.length - 1] === 'applepayhandler';
         },
 
-        paymentMethodRepository() {
+        paymentMethodRepository(): TRepository<'payment_method'> {
             return this.repositoryFactory.create('payment_method');
         },
 
