@@ -73,6 +73,7 @@ linting:
     - $CI_PROJECT_DIR/bin/console bundle:dump
     - '(cd $CI_PROJECT_DIR/src/Administration/Resources/app/administration/ && npm ci --no-audit --prefer-offline)'
     - '(cd $CI_PROJECT_DIR/src/Storefront/Resources/app/storefront/ && npm ci --no-audit --prefer-offline)'
+    - composer -d $CI_PROJECT_DIR admin:generate-entity-schema-types  # for all ts types
     - composer init:admin
     - composer init:storefront
     - composer lint:admin:ci
