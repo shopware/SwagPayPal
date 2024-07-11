@@ -9,11 +9,11 @@ import {
 } from './swag-paypal-disputes-consts';
 import './swag-paypal-disputes-list.scss';
 
-const { Component, Filter } = Shopware;
+const { Filter } = Shopware;
 const { debounce } = Shopware.Utils;
 const { capitalizeString } = Shopware.Utils.string;
 
-Component.register('swag-paypal-disputes-list', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [

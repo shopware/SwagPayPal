@@ -1,7 +1,7 @@
 import template from './swag-paypal-cross-border.html.twig';
 import './swag-paypal-cross-border.scss';
 
-Shopware.Component.register('swag-paypal-cross-border', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [

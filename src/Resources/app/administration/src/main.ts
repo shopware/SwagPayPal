@@ -2,21 +2,12 @@ import './mixin/swag-paypal-credentials-loader.mixin';
 import './mixin/swag-paypal-pos-catch-error.mixin';
 import './mixin/swag-paypal-pos-log-label.mixin';
 
-import './module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials';
-import './module/extension/sw-sales-channel-modal-detail';
-import './module/extension/sw-sales-channel-modal-grid';
-import './module/extension/sw-settings-payment/sw-settings-payment-list';
-import './module/extension/sw-settings-payment/sw-settings-payment-detail';
-import './module/extension/sw-settings-shipping/sw-settings-shipping-detail';
-import './module/extension/sw-settings-payment/components/swag-paypal-overview-card';
-
+import './module/extension';
 import './module/swag-paypal';
+import './module/swag-paypal-disputes';
 import './module/swag-paypal-payment';
+import './module/swag-paypal-pos';
 
 import './init/api-service.init';
 import './init/translation.init';
 import './init/svg-icons.init';
-
-import './module/swag-paypal-pos';
-
-import './module/swag-paypal-disputes';

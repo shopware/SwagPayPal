@@ -1,8 +1,6 @@
 import template from './swag-paypal-pui.html.twig';
 
-const { Component } = Shopware;
-
-Component.register('swag-paypal-pui', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [

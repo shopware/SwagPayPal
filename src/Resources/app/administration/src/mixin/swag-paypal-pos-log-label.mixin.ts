@@ -1,4 +1,4 @@
-export default Shopware.Mixin.register('swag-paypal-pos-log-label', {
+export default Shopware.Mixin.register('swag-paypal-pos-log-label', Shopware.Component.wrapComponentConfig({
     methods: {
         /**
          * Returns the corresponding sw-label variant for a Zettle log
@@ -36,4 +36,4 @@ export default Shopware.Mixin.register('swag-paypal-pos-log-label', {
             return 'swag-paypal-pos.detail.logs.states.success';
         },
     },
-});
+}));

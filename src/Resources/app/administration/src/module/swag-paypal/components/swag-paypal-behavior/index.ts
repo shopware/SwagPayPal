@@ -1,10 +1,9 @@
 import template from './swag-paypal-behavior.html.twig';
 import constants from '../../page/swag-paypal/swag-paypal-consts';
 
-const { Component } = Shopware;
 const { Criteria } = Shopware.Data;
 
-Component.register('swag-paypal-behavior', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [

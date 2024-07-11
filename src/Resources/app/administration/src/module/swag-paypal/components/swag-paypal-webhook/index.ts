@@ -5,7 +5,7 @@ const STATUS_WEBHOOK_MISSING = 'missing';
 const STATUS_WEBHOOK_INVALID = 'invalid';
 const STATUS_WEBHOOK_VALID = 'valid';
 
-Shopware.Component.register('swag-paypal-webhook', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [

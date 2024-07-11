@@ -1,10 +1,9 @@
 import template from './swag-paypal-locale-field.html.twig';
 import './swag-paypal-locale-field.scss';
 
-const { Component } = Shopware;
 const { debounce } = Shopware.Utils;
 
-Component.extend('swag-paypal-locale-field', 'sw-text-field', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: ['feature'],

@@ -1,10 +1,10 @@
 import './acl';
-import './page/swag-paypal-disputes-detail';
 import './page/swag-paypal-disputes-list';
 
-const { Module } = Shopware;
+Shopware.Component.register('swag-paypal-disputes-detail', () => import('./page/swag-paypal-disputes-detail'));
+Shopware.Component.register('swag-paypal-disputes-list', () => import('./page/swag-paypal-disputes-list'));
 
-Module.register('swag-paypal-disputes', {
+Shopware.Module.register('swag-paypal-disputes', {
     type: 'plugin',
     name: 'paypal-disputes',
     title: 'swag-paypal-disputes.general.mainMenuItemGeneral',

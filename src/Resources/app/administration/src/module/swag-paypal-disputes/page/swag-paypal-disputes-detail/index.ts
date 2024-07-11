@@ -1,11 +1,11 @@
 import template from './swag-paypal-disputes-detail.html.twig';
 import './swag-paypal-disputes-detail.scss';
 
-const { Context, Component, Filter, Utils } = Shopware;
+const { Filter, Utils } = Shopware;
 const { Criteria } = Shopware.Data;
 const { capitalizeString } = Shopware.Utils.string;
 
-Component.register('swag-paypal-disputes-detail', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [

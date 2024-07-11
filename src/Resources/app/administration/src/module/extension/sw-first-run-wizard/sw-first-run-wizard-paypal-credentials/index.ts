@@ -1,9 +1,7 @@
 import template from './sw-first-run-wizard-paypal-credentials.html.twig';
 import './sw-first-run-wizard-paypal-credentials.scss';
 
-const { Component } = Shopware;
-
-Component.override('sw-first-run-wizard-paypal-credentials', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [

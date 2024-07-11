@@ -1,9 +1,7 @@
 import './swag-paypal-settings-hint.scss';
 import template from './swag-paypal-settings-hint.html.twig';
 
-const { Component } = Shopware;
-
-Component.register('swag-paypal-settings-hint', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     props: {
