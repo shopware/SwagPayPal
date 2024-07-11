@@ -82,6 +82,7 @@ eslint (administration):
   script:
     - $CI_PROJECT_DIR/bin/console bundle:dump
     - npm ci --prefix $CI_PROJECT_DIR/src/Administration/Resources/app/administration --no-audit --prefer-offline
+    - composer -d $CI_PROJECT_DIR admin:generate-entity-schema-types  # for all ts types
     - composer init:admin
     - composer lint:admin:ci
 

@@ -5,8 +5,28 @@ process.env.ADMIN_PATH =
     process.env.ADMIN_PATH ??
     join(__dirname, '../../../../../../../src/Administration/Resources/app/administration/src');
 
+const baseRules = {
+    'max-len': 0,
+    'import/no-useless-path-segments': 0,
+    'import/extensions': ['error', 'always', {
+        js: 'never',
+        ts: 'never',
+        vue: 'never',
+    }],
+    'no-console': ['error', { allow: ['warn', 'error'] }],
+    'comma-dangle': ['error', 'always-multiline'],
+    'internal-rules/no-src-imports': 0,
+    // lets depend on shopware's deps (vue and @vue/test-utils)
+    'import/no-extraneous-dependencies': 'off',
+};
+
 module.exports = {
-    extends: '@shopware-ag/eslint-config-base',
+    extends: [
+        '@shopware-ag/eslint-config-base',
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
+    ],
+
     env: {
         browser: true,
         'jest/globals': true,
@@ -34,6 +54,7 @@ module.exports = {
                             SwagPayPal: join(__dirname, 'src'),
                             src: process.env.ADMIN_PATH,
                             '@vue\/test-utils': `${process.env.ADMIN_PATH}/node_modules/@vue/test-utils`,
+                            vue: `${process.env.ADMIN_PATH}/node_modules/@vue/compat/dist/vue.cjs.js`,
                         },
                     },
                 },
@@ -41,24 +62,58 @@ module.exports = {
         },
     },
 
-    rules: {
-        'import/no-useless-path-segments': 0,
-        'import/extensions': ['error', 'always', {
-            js: 'never',
-            ts: 'never',
-            vue: 'never',
-        }],
-        'no-console': ['error', { allow: ['warn', 'error'] }],
-        'comma-dangle': ['error', 'always-multiline'],
-        'internal-rules/no-src-imports': 'error',
-        'import/no-extraneous-dependencies': ['error', { optionalDependencies: ['src/**/*.spec.[t|j]s'] }],
-    },
+    rules: baseRules,
 
     overrides: [{
-        files: 'src/**/*.spec.[t|j]s',
+        files: ['**/*.ts', '**/*.tsx'],
+        extends: [
+            '@shopware-ag/eslint-config-base',
+            'plugin:@typescript-eslint/eslint-recommended',
+            'plugin:@typescript-eslint/recommended',
+            'plugin:@typescript-eslint/recommended-requiring-type-checking',
+        ],
+        parser: '@typescript-eslint/parser',
+        parserOptions: {
+            tsconfigRootDir: __dirname,
+            project: ['./tsconfig.json'],
+        },
+        plugins: ['@typescript-eslint'],
         rules: {
-            // lets depend on shopware's deps
-            'import/no-extraneous-dependencies': 'off',
+            ...baseRules,
+            indent: 'off',
+            'no-void': 'off',
+            'no-unused-vars': 'off',
+            'no-shadow': 'off',
+            'import/extensions': [
+                'error',
+                'ignorePackages',
+                {
+                    js: 'never',
+                    jsx: 'never',
+                    ts: 'never',
+                    tsx: 'never',
+                },
+            ],
+
+            '@typescript-eslint/indent': ['error', 4, { SwitchCase: 1 }],
+            '@typescript-eslint/ban-ts-comment': 0,
+            '@typescript-eslint/no-unsafe-member-access': 'error',
+            '@typescript-eslint/no-unsafe-call': 'error',
+            '@typescript-eslint/no-unsafe-assignment': 'error',
+            '@typescript-eslint/no-unsafe-return': 'error',
+            '@typescript-eslint/explicit-module-boundary-types': 0,
+            '@typescript-eslint/prefer-ts-expect-error': 'error',
+            '@typescript-eslint/no-floating-promises': 0,
+            '@typescript-eslint/no-shadow': 'error',
+            '@typescript-eslint/consistent-type-imports': 'error',
+            '@typescript-eslint/no-unused-vars': ['error', {
+                argsIgnorePattern: '^_',
+                varsIgnorePattern: '^_',
+                caughtErrorsIgnorePattern: '^_',
+            }],
+            '@typescript-eslint/no-namespace': 'off',
+            '@typescript-eslint/restrict-template-expressions': 'off',
+            '@typescript-eslint/member-delimiter-style': 'error',
         },
     }],
 };
