@@ -1,3 +1,4 @@
+import type * as PayPal from 'src/types';
 import template from './swag-paypal-pui.html.twig';
 
 export default Shopware.Component.wrapComponentConfig({
@@ -9,12 +10,12 @@ export default Shopware.Component.wrapComponentConfig({
 
     props: {
         actualConfigData: {
-            type: Object,
+            type: Object as PropType<PayPal.SystemConfig>,
             required: true,
             default: () => { return {}; },
         },
         allConfigs: {
-            type: Object,
+            type: Object as PropType<Record<string, PayPal.SystemConfig>>,
             required: true,
         },
         selectedSalesChannelId: {
@@ -25,7 +26,7 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     methods: {
-        checkTextFieldInheritance(value) {
+        checkTextFieldInheritance(value: unknown): boolean {
             if (typeof value !== 'string') {
                 return true;
             }

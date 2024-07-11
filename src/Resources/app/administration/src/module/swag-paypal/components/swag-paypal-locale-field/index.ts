@@ -1,30 +1,37 @@
+import type * as PayPal from 'src/types';
 import template from './swag-paypal-locale-field.html.twig';
 import './swag-paypal-locale-field.scss';
 
 const { debounce } = Shopware.Utils;
+
+type ValueEvent = { target: { value?: string } };
 
 export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: ['feature'],
 
-    data() {
+    data(): {
+        error: null | PayPal.ErrorState;
+    } {
         return {
             error: null,
         };
     },
 
     methods: {
-        onInput: debounce((event) => {
+        onInput: debounce((event: ValueEvent) => {
+            // @ts-expect-error - 'this' is not typed correctly
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             this.checkValue(event.target.value);
         }, 350),
 
-        onBlur(event, removeFocusClass) {
+        onBlur(event: ValueEvent, removeFocusClass: () => void) {
             removeFocusClass();
             this.checkValue(event.target.value);
         },
 
-        checkValue(value) {
+        checkValue(value?: string) {
             const localeCodeRegex = /^[a-z]{2}_[A-Z]{2}$/;
 
             if (this.feature.isActive('VUE3')) {
@@ -47,7 +54,7 @@ export default Shopware.Component.wrapComponentConfig({
             };
         },
 
-        preventSave(mode) {
+        preventSave(mode: boolean) {
             this.$emit('preventSave', mode);
         },
     },

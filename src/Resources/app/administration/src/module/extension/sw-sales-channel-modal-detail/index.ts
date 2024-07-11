@@ -6,7 +6,7 @@ export default Shopware.Component.wrapComponentConfig({
     template,
 
     methods: {
-        isPayPalPosSalesChannel(salesChannelTypeId) {
+        isPayPalPosSalesChannel(salesChannelTypeId: string): boolean {
             return salesChannelTypeId === PAYPAL_POS_SALES_CHANNEL_TYPE_ID;
         },
     },

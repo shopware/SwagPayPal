@@ -1,7 +1,14 @@
 import { ref } from 'vue';
+import type * as PayPal from 'src/types';
 import template from './swag-paypal.html.twig';
 import './swag-paypal.scss';
 import constants from './swag-paypal-consts';
+
+type ConfigComponent = {
+    allConfigs: Record<string, PayPal.SystemConfig>;
+    selectedSalesChannelId: string | null;
+    save:() => Promise<{ payPalWebhookErrors?: string[] }>;
+};
 
 const { Defaults } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -20,7 +27,25 @@ export default Shopware.Component.wrapComponentConfig({
         Shopware.Mixin.getByName('notification'),
     ],
 
-    data() {
+    data(): (typeof constants)&{
+        isLoading: boolean;
+        isSaveSuccessful: boolean;
+        isTestSuccessful: boolean;
+        isTestSandboxSuccessful: boolean;
+        clientIdFilled: boolean;
+        clientSecretFilled: boolean;
+        clientIdSandboxFilled: boolean;
+        clientSecretSandboxFilled: boolean;
+        sandboxChecked: boolean;
+        salesChannels: TEntityCollection<'sales_channel'>;
+        config: PayPal.SystemConfig;
+        isSetDefaultPaymentSuccessful: boolean;
+        isSettingDefaultPaymentMethods: boolean;
+        savingDisabled: boolean;
+        messageBlankErrorState: null | PayPal.ErrorState;
+        showCredentials: boolean;
+        allowShowCredentials: boolean;
+    } {
         return {
             isLoading: false,
             isSaveSuccessful: false,
@@ -31,7 +56,7 @@ export default Shopware.Component.wrapComponentConfig({
             clientIdSandboxFilled: false,
             clientSecretSandboxFilled: false,
             sandboxChecked: false,
-            salesChannels: [],
+            salesChannels: [] as unknown as TEntityCollection<'sales_channel'>,
             config: {},
             isSetDefaultPaymentSuccessful: false,
             isSettingDefaultPaymentMethods: false,
@@ -57,7 +82,7 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     setup() {
-        const configComponent = ref(null);
+        const configComponent = ref<ConfigComponent | null>(null);
         return { configComponent };
     },
 
@@ -127,7 +152,7 @@ export default Shopware.Component.wrapComponentConfig({
                 (this.sandboxChecked && !(this.clientIdSandboxFilled && this.clientSecretSandboxFilled));
         },
 
-        salesChannelCriteria() {
+        salesChannelCriteria(): TCriteria {
             const criteria = new Criteria(1, 500);
             criteria.addFilter(Criteria.equalsAny('typeId', [
                 Defaults.storefrontSalesChannelTypeId,
@@ -185,6 +210,7 @@ export default Shopware.Component.wrapComponentConfig({
 
             this.salesChannelRepository.search(this.salesChannelCriteria, Shopware.Context.api).then(res => {
                 res.add({
+                    // @ts-expect-error - null is not allowed
                     id: null,
                     translated: {
                         name: this.$tc('sw-sales-channel-switch.labelDefaultOption'),
@@ -205,7 +231,7 @@ export default Shopware.Component.wrapComponentConfig({
             this.save();
         },
 
-        onChangeLoading(state) {
+        onChangeLoading(state: boolean) {
             this.isLoading = state;
         },
 
@@ -239,11 +265,11 @@ export default Shopware.Component.wrapComponentConfig({
             });
         },
 
-        preventSave(mode) {
+        preventSave(mode: boolean) {
             this.savingDisabled = !!mode;
         },
 
-        onChangeCredentialsVisibility(visibility) {
+        onChangeCredentialsVisibility(visibility: boolean) {
             this.showCredentials = visibility;
         },
     },

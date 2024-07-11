@@ -1,3 +1,4 @@
+import type * as PayPal from 'src/types';
 import template from './swag-paypal-webhook.html.twig';
 import './swag-paypal-webhook.scss';
 
@@ -31,7 +32,11 @@ export default Shopware.Component.wrapComponentConfig({
         },
     },
 
-    data() {
+    data(): {
+        webhookStatus: string | null;
+        isFetchingStatus: boolean;
+        isRefreshing: boolean;
+    } {
         return {
             webhookStatus: null,
             isFetchingStatus: false,
@@ -44,7 +49,7 @@ export default Shopware.Component.wrapComponentConfig({
             return this.$tc(`swag-paypal.webhook.status.${this.webhookStatus || 'unknown'}`);
         },
 
-        webhookStatusVariant() {
+        webhookStatusVariant(): 'danger' | 'warning' | 'success' | 'neutral' {
             switch (this.webhookStatus) {
                 case STATUS_WEBHOOK_MISSING:
                     return 'danger';
@@ -60,7 +65,7 @@ export default Shopware.Component.wrapComponentConfig({
             }
         },
 
-        allowRefresh() {
+        allowRefresh(): boolean {
             return [STATUS_WEBHOOK_INVALID, STATUS_WEBHOOK_MISSING]
                 .includes(this.webhookStatus ?? '');
         },
@@ -86,7 +91,7 @@ export default Shopware.Component.wrapComponentConfig({
 
             await this.SwagPayPalWebhookService
                 .register(this.selectedSalesChannelId)
-                .catch((response) => {
+                .catch((response: PayPal.ServiceError) => {
                     this.createNotificationError({
                         title: this.$tc('swag-paypal.webhook.refreshFailed.title'),
                         message: response.response?.data?.errors?.[0]?.detail

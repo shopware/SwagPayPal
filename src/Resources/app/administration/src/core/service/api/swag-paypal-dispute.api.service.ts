@@ -1,7 +1,11 @@
+import type { LoginService } from 'src/core/service/login.service';
+import type { AxiosInstance } from 'axios';
+import type * as PayPal from 'src/types';
+
 const ApiService = Shopware.Classes.ApiService;
 
 class SwagPayPalDisputeApiService extends ApiService {
-    constructor(httpClient, loginService, apiEndpoint = 'paypal/dispute') {
+    constructor(httpClient: AxiosInstance, loginService: LoginService, apiEndpoint = 'paypal/dispute') {
         super(httpClient, loginService, apiEndpoint);
     }
 
@@ -9,38 +13,28 @@ class SwagPayPalDisputeApiService extends ApiService {
      * Get a list of all disputes.
      * Provide a sales channel ID if you have different merchant accounts for your sales channels.
      * Disputes could also be filtered by their state.
-     *
-     * @param {String|null} salesChannelId
-     * @param {String|null} disputeStateFilter
-     *
-     * @returns {Promise}
      */
-    list(salesChannelId = null, disputeStateFilter = null) {
-        return this.httpClient.get(
+    list(salesChannelId: string | null = null, disputeStateFilter: string | null = null) {
+        return this.httpClient.get<PayPal.Api.Operations<'disputeList'>>(
             this.getApiBasePath(),
             {
                 params: { salesChannelId, disputeStateFilter },
                 headers: this.getBasicHeaders(),
             },
-        ).then(ApiService.handleResponse.bind(this));
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
     /**
      * Get the details of a dispute
-     *
-     * @param {String} disputeId
-     * @param {String|null} salesChannelId
-     *
-     * @returns {Promise}
      */
-    detail(disputeId, salesChannelId) {
-        return this.httpClient.get(
+    detail(disputeId: string, salesChannelId: string | null) {
+        return this.httpClient.get<PayPal.Api.Operations<'disputeDetails'>>(
             `${this.getApiBasePath()}/${disputeId}`,
             {
                 params: { salesChannelId },
                 headers: this.getBasicHeaders(),
             },
-        ).then(ApiService.handleResponse.bind(this));
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 }
 

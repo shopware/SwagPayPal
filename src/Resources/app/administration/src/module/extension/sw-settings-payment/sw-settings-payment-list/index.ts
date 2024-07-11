@@ -1,3 +1,4 @@
+import type * as PayPal from 'src/types';
 import template from './sw-settings-payment-list.html.twig';
 import './sw-settings-payment-list.scss';
 
@@ -8,7 +9,10 @@ export default Shopware.Component.wrapComponentConfig({
         'SwagPayPalApiCredentialsService',
     ],
 
-    data() {
+    data(): {
+        merchantIntegrations: $TSFixMe;
+        capabilities: PayPal.Setting<'merchant_information'>['capabilities'];
+    } {
         return {
             /**
              * @deprecated tag:v10.0.0 - Will be removed, use this.capabilities instead
@@ -19,7 +23,7 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     methods: {
-        needsOnboarding(id) {
+        needsOnboarding(id: string) {
             const capabilityIds = Object.keys(this.capabilities);
 
             if (!capabilityIds.includes(id)) {

@@ -1,31 +1,33 @@
+import type { LoginService } from 'src/core/service/login.service';
+import type { AxiosInstance } from 'axios';
+import type * as PayPal from 'src/types';
+
 const ApiService = Shopware.Classes.ApiService;
 
 export default class SwagPayPalWebhookService extends ApiService {
-    constructor(httpClient, loginService, apiEndpoint = 'paypal') {
+    constructor(httpClient: AxiosInstance, loginService: LoginService, apiEndpoint = 'paypal') {
         super(httpClient, loginService, apiEndpoint);
     }
 
-    register(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .post(`_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`, {}, { headers })
-            .then((response) => ApiService.handleResponse(response));
+    register(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'registerWebhook'>>(
+            `_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`,
+            {},
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
-    unregister(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .delete(`_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`, {}, { headers })
-            .then((response) => ApiService.handleResponse(response));
+    unregister(salesChannelId: string | null) {
+        return this.httpClient.delete<PayPal.Api.Operations<'deregisterWebhook'>>(
+            `_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`,
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
-    status(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .get(`_action/${this.getApiBasePath()}/webhook/status/${salesChannelId}`, {}, { headers })
-            .then((response) => ApiService.handleResponse(response));
+    status(salesChannelId: string | null) {
+        return this.httpClient.get<PayPal.Api.Operations<'getWebhookStatus'>>(
+            `_action/${this.getApiBasePath()}/webhook/status/${salesChannelId}`,
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 }

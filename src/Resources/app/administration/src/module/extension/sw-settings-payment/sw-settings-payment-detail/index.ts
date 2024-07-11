@@ -1,3 +1,4 @@
+import type * as PayPal from 'src/types';
 import template from './sw-settings-payment-detail.html.twig';
 import './sw-settings-payment-detail.scss';
 
@@ -8,7 +9,10 @@ export default Shopware.Component.wrapComponentConfig({
         'SwagPayPalApiCredentialsService',
     ],
 
-    data() {
+    data(): {
+        merchantIntegrations: $TSFixMe;
+        capabilities: PayPal.Setting<'merchant_information'>['capabilities'];
+    } {
         return {
             /**
              * @deprecated tag:v10.0.0 - Will be removed, use this.capabilities instead
@@ -19,7 +23,9 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     computed: {
-        disableActiveSwitch() {
+        disableActiveSwitch(): boolean {
+            // @ts-expect-error - paymentMethod is from extended component
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access -- paymentMethod is from extended component
             return !this.acl.can('payment.editor') || this.needsOnboarding(this.paymentMethod.id);
         },
     },
@@ -32,7 +38,7 @@ export default Shopware.Component.wrapComponentConfig({
             this.fetchMerchantCapabilities();
         },
 
-        needsOnboarding(id) {
+        needsOnboarding(id: string): boolean {
             const capabilityIds = Object.keys(this.capabilities);
 
             if (!capabilityIds.includes(id)) {

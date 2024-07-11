@@ -1,41 +1,37 @@
+import type { LoginService } from 'src/core/service/login.service';
+import type { AxiosInstance } from 'axios';
+import type * as PayPal from 'src/types';
+
 const ApiService = Shopware.Classes.ApiService;
 
 const { EntityCollection } = Shopware.Data;
 
 class SwagPayPalPosSettingApiService extends ApiService {
-    constructor(httpClient, loginService, apiEndpoint = 'paypal/pos') {
+    constructor(httpClient: AxiosInstance, loginService: LoginService, apiEndpoint = 'paypal/pos') {
         super(httpClient, loginService, apiEndpoint);
     }
 
     /**
      * Checks, if an access token for this user data can be created
-     *
-     * @param {string} apiKey
-     * @param {string|null} salesChannelId
-     * @returns {Promise|Object}
      */
-    validateApiCredentials(apiKey, salesChannelId = null) {
-        return this.httpClient.post(
+    validateApiCredentials(apiKey: string, salesChannelId: string | null = null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posValidateApiCredentials'>>(
             `_action/${this.getApiBasePath()}/validate-api-credentials`,
             { apiKey, salesChannelId },
             { headers: this.getBasicHeaders() },
-        ).then(ApiService.handleResponse.bind(this));
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
     /**
      * Fetch necessary information for the sales channel from Zettle (e.g. currency)
      * and insert into salesChannel Object
-     *
-     * @param {Object} salesChannel
-     * @param {Boolean} forceLanguage
-     * @returns {Promise|Object}
      */
-    fetchInformation(salesChannel, forceLanguage = false) {
-        return this.httpClient.post(
+    fetchInformation(salesChannel: TEntity<'sales_channel'>, forceLanguage = false) {
+        return this.httpClient.post<PayPal.Api.Operations<'posFetchInformation'>>(
             `${this.getApiBasePath()}/fetch-information`,
             { apiKey: salesChannel.extensions?.paypalPosSalesChannel?.apiKey },
             { headers: this.getBasicHeaders() },
-        ).then(ApiService.handleResponse.bind(this)).then((data) => {
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler).then((data) => {
             data.extensions = {};
 
             salesChannel.languages ??= new EntityCollection('language', 'language', Shopware.Context.api);
@@ -46,7 +42,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
                 salesChannel.languages.length = 0;
                 salesChannel.languages.push({
                     id: data.languageId,
-                });
+                } as TEntity<'language'>);
             } else {
                 data.languageId = null;
             }
@@ -56,12 +52,12 @@ class SwagPayPalPosSettingApiService extends ApiService {
             salesChannel.currencies.length = 0;
             salesChannel.currencies.push({
                 id: data.currencyId,
-            });
+            } as TEntity<'currency'>);
 
             salesChannel.countries.length = 0;
             salesChannel.countries.push({
                 id: data.countryId,
-            });
+            } as TEntity<'country'>);
 
             return data;
         });
@@ -69,40 +65,29 @@ class SwagPayPalPosSettingApiService extends ApiService {
 
     /**
      * Clone product visibility from one sales channel to another
-     *
-     * @param {String} toSalesChannelId
-     * @param {String} fromSalesChannelId
-     * @returns {Promise|Object}
      */
-    cloneProductVisibility(fromSalesChannelId, toSalesChannelId) {
-        return this.httpClient.post(
+    cloneProductVisibility(fromSalesChannelId: string, toSalesChannelId: string) {
+        return this.httpClient.post<PayPal.Api.Operations<'posCloneProductVisibility'>>(
             `_action/${this.getApiBasePath()}/clone-product-visibility`,
             { fromSalesChannelId, toSalesChannelId },
             { headers: this.getBasicHeaders() },
-        ).then(ApiService.handleResponse.bind(this));
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
     /**
      * Get product count from Zettle and cloned Sales Channel
-     *
-     * @param {String} salesChannelId
-     * @param {String|null} cloneSalesChannelId
-     * @returns {Promise|Object}
      */
-    getProductCount(salesChannelId, cloneSalesChannelId) {
-        return this.httpClient.get(
+    getProductCount(salesChannelId: string, cloneSalesChannelId: string | null) {
+        return this.httpClient.get<PayPal.Api.Operations<'posGetProductCounts'>>(
             `${this.getApiBasePath()}/product-count`,
             {
                 params: { salesChannelId, cloneSalesChannelId },
                 headers: this.getBasicHeaders(),
             },
-        ).then(ApiService.handleResponse.bind(this));
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
-    /**
-     * @returns {string}
-     */
-    generateApiUrl() {
+    generateApiUrl(): string {
         const scopes = [
             'READ:PURCHASE',
             'READ:FINANCE',

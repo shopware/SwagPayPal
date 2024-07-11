@@ -1,3 +1,4 @@
+import type * as PayPal from 'src/types';
 import template from './swag-paypal-plus.html.twig';
 import './swag-paypal-plus.scss';
 
@@ -13,12 +14,12 @@ export default Shopware.Component.wrapComponentConfig({
 
     props: {
         actualConfigData: {
-            type: Object,
+            type: Object as PropType<PayPal.SystemConfig>,
             required: true,
             default: () => { return {}; },
         },
         allConfigs: {
-            type: Object,
+            type: Object as PropType<Record<string, PayPal.SystemConfig>>,
             required: true,
         },
         selectedSalesChannelId: {
@@ -29,17 +30,17 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     computed: {
-        isPayPalPLUSActive() {
+        isPayPalPLUSActive(): boolean {
             return this.actualConfigData['SwagPayPal.settings.plusCheckoutEnabled'];
         },
 
-        isPayPalPLUSInActive() {
+        isPayPalPLUSInActive(): boolean {
             return !this.isPayPalPLUSActive;
         },
     },
 
     methods: {
-        checkTextFieldInheritance(value) {
+        checkTextFieldInheritance(value: unknown): boolean {
             if (typeof value !== 'string') {
                 return true;
             }
@@ -47,11 +48,11 @@ export default Shopware.Component.wrapComponentConfig({
             return value.length <= 0;
         },
 
-        checkBoolFieldInheritance(value) {
+        checkBoolFieldInheritance(value: unknown): boolean {
             return typeof value !== 'boolean';
         },
 
-        ifItWasNotActive() {
+        ifItWasNotActive(): boolean {
             return !this.actualConfigData['SwagPayPal.settings.plusCheckoutEnabled'];
         },
     },

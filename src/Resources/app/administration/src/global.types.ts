@@ -2,6 +2,7 @@ import type Repository from 'src/core/data/repository.data';
 import type Criteria from 'src/core/data/criteria.data';
 import type { Entity } from 'src/types/entity';
 import type { PropType as TPropType } from 'vue';
+import type { AxiosResponse } from 'axios';
 import type SwagPaypalCredentialsLoaderMixin from './mixin/swag-paypal-credentials-loader.mixin';
 import type SwagPaypalPosCatchErrorMixin from './mixin/swag-paypal-pos-catch-error.mixin';
 import type SwagPaypalPosLogLabelMixin from './mixin/swag-paypal-pos-log-label.mixin';
@@ -21,6 +22,7 @@ declare global {
     type TRepository<T extends keyof EntitySchema.Entities> = Repository<T>;
     type TCriteria = Criteria;
     type PropType<T> = TPropType<T>;
+    type TResponseHandler = <T>(response: AxiosResponse<T>) => T;
 
     interface MixinContainer {
         'swag-paypal-credentials-loader': typeof SwagPaypalCredentialsLoaderMixin;
@@ -41,8 +43,8 @@ declare global {
     }
 }
 
-declare module '@vue/runtime-core' {
-    interface ComponentCustomProperties {
+declare module 'vue/types/vue' {
+    interface Vue {
         $super: (name: string) => $TSFixMe;
     }
 }

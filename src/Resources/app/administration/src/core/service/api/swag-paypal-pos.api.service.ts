@@ -1,131 +1,105 @@
+import type * as PayPal from 'src/types';
+import type { LoginService } from 'src/core/service/login.service';
+import type { AxiosInstance } from 'axios';
+
 const ApiService = Shopware.Classes.ApiService;
 
 class SwagPayPalPosApiService extends ApiService {
-    constructor(httpClient, loginService, apiEndpoint = 'paypal/pos') {
+    basicConfig: { timeout: number };
+
+    constructor(httpClient: AxiosInstance, loginService: LoginService, apiEndpoint = 'paypal/pos') {
         super(httpClient, loginService, apiEndpoint);
         this.basicConfig = {
             timeout: 300000,
         };
     }
 
-    startCompleteSync(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient.post(
+    startCompleteSync(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSync'>>(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
-    startProductSync(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient.post(
+    startProductSync(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSyncProducts'>>(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}/products`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
-    startInventorySync(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient.post(
+    startInventorySync(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSyncInventory'>>(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}/inventory`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
-    startImageSync(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient.post(
+    startImageSync(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSyncImages'>>(
             `_action/${this.getApiBasePath()}/sync/${salesChannelId}/images`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
-    startLogCleanup(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient.post(
+    startLogCleanup(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posProductLog'>>(
             `_action/${this.getApiBasePath()}/log/cleanup/${salesChannelId}`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
-    abortSync(runId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient.post(
+    abortSync(runId: string) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSyncAbort'>>(
             `_action/${this.getApiBasePath()}/sync/abort/${runId}`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
-    resetSync(salesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient.post(
+    resetSync(salesChannelId: string | null) {
+        return this.httpClient.post<PayPal.Api.Operations<'posSyncReset'>>(
             `_action/${this.getApiBasePath()}/sync/reset/${salesChannelId}`,
             null,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 
-    getProductLog(salesChannelId, page = 1, limit = 10) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient.get(
+    getProductLog(salesChannelId: string | null, page = 1, limit = 10) {
+        return this.httpClient.get<PayPal.Api.Operations<'posProductLog'>>(
             `${this.getApiBasePath()}/product-log/${salesChannelId}`,
             {
                 ...this.basicConfig,
-                headers,
+                headers: this.getBasicHeaders(),
                 params: { page, limit },
             },
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
 }
 

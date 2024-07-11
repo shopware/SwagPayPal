@@ -9,7 +9,10 @@ type EntityExtensions = {
     shipping_method: {
         translated: {
             [key: string]: unknown;
-            swag_paypal_carrier?: string;
+            customFields?: {
+                [key: string]: unknown;
+                swag_paypal_carrier?: string;
+            };
         };
         customFields?: {
             [key: string]: unknown;
