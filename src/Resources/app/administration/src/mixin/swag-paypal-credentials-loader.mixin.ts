@@ -1,6 +1,6 @@
 const { debug } = Shopware.Utils;
 
-export default Shopware.Mixin.register('swag-paypal-credentials-loader', {
+export default Shopware.Mixin.register('swag-paypal-credentials-loader', Shopware.Component.wrapComponentConfig({
 
     inject: ['SwagPayPalApiCredentialsService'],
 
@@ -193,4 +193,4 @@ export default Shopware.Mixin.register('swag-paypal-credentials-loader', {
             );
         },
     },
-});
+}));

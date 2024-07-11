@@ -1,9 +1,7 @@
 import template from './sw-settings-payment-list.html.twig';
 import './sw-settings-payment-list.scss';
 
-const { Component } = Shopware;
-
-Component.override('sw-settings-payment-list', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [

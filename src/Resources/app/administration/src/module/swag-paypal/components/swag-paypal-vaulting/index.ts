@@ -1,9 +1,7 @@
 import template from './swag-paypal-vaulting.html.twig';
 import './swag-paypal-vaulting.scss';
 
-const { Component } = Shopware;
-
-Component.register('swag-paypal-vaulting', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [

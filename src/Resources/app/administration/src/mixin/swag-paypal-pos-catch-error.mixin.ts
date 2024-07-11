@@ -1,4 +1,4 @@
-export default Shopware.Mixin.register('swag-paypal-pos-catch-error', {
+export default Shopware.Mixin.register('swag-paypal-pos-catch-error', Shopware.Component.wrapComponentConfig({
     mixins: [
         Shopware.Mixin.getByName('notification'),
     ],
@@ -50,4 +50,4 @@ export default Shopware.Mixin.register('swag-paypal-pos-catch-error', {
             }
         },
     },
-});
+}));

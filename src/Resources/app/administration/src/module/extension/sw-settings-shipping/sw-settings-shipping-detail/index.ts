@@ -1,9 +1,9 @@
 import template from './sw-settings-shipping-detail.html.twig';
 import './sw-settings-shipping-detail.scss';
 
-const { Component, Utils } = Shopware;
+const { Utils } = Shopware;
 
-Component.override('sw-settings-shipping-detail', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [

@@ -2,9 +2,7 @@ import template from './sw-sales-channel-modal-grid.html.twig';
 import './sw-sales-channel-modal-grid.scss';
 import { PAYPAL_POS_SALES_CHANNEL_TYPE_ID } from '../../../constant/swag-paypal.constant';
 
-const { Component } = Shopware;
-
-Component.override('sw-sales-channel-modal-grid', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     methods: {

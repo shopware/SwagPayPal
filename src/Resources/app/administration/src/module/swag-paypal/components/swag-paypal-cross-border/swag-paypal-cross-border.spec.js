@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
-import 'SwagPayPal/module/swag-paypal/components/swag-paypal-cross-border';
+
+Shopware.Component.register('swag-paypal-cross-border', () => import('.'));
 
 async function createWrapper(customOptions = {}) {
     const options = {

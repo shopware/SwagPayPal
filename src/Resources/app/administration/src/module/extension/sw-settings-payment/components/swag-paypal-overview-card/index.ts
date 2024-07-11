@@ -3,7 +3,7 @@ import template from './swag-paypal-overview-card.html.twig';
 
 const { Component } = Shopware;
 
-Component.register('swag-paypal-overview-card', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     props: {

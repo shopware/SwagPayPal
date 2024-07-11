@@ -1,9 +1,9 @@
 import template from './swag-paypal-checkout-method.html.twig';
 import './swag-paypal-checkout-method.scss';
 
-const { Component, Context } = Shopware;
+const { Context } = Shopware;
 
-Component.register('swag-paypal-checkout-method', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [
