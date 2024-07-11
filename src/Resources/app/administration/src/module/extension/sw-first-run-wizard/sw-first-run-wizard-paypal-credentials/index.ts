@@ -144,7 +144,7 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         async testApiCredentials() {
             this.isLoading = true;
 
-            const sandbox = this.config['SwagPayPal.settings.sandbox'];
+            const sandbox = this.config['SwagPayPal.settings.sandbox'] ?? false;
             const sandboxSetting = sandbox ? 'Sandbox' : '';
             const clientId = this.config[`SwagPayPal.settings.clientId${sandboxSetting}`];
             const clientSecret = this.config[`SwagPayPal.settings.clientSecret${sandboxSetting}`];

@@ -1,5 +1,7 @@
 const ApiService = Shopware.Classes.ApiService;
 
+const { EntityCollection } = Shopware.Data;
+
 class SwagPayPalPosSettingApiService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'paypal/pos') {
         super(httpClient, loginService, apiEndpoint);
@@ -13,13 +15,11 @@ class SwagPayPalPosSettingApiService extends ApiService {
      * @returns {Promise|Object}
      */
     validateApiCredentials(apiKey, salesChannelId = null) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .post(`_action/${this.getApiBasePath()}/validate-api-credentials`, { apiKey, salesChannelId }, { headers })
-            .then((response) => {
-                return ApiService.handleResponse(response);
-            });
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/validate-api-credentials`,
+            { apiKey, salesChannelId },
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     /**
@@ -31,58 +31,55 @@ class SwagPayPalPosSettingApiService extends ApiService {
      * @returns {Promise|Object}
      */
     fetchInformation(salesChannel, forceLanguage = false) {
-        const headers = this.getBasicHeaders();
-        const apiKey = salesChannel.extensions.paypalPosSalesChannel.apiKey;
+        return this.httpClient.post(
+            `${this.getApiBasePath()}/fetch-information`,
+            { apiKey: salesChannel.extensions?.paypalPosSalesChannel?.apiKey },
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this)).then((data) => {
+            data.extensions = {};
 
-        return this.httpClient
-            .post(`${this.getApiBasePath()}/fetch-information`, { apiKey }, { headers })
-            .then((response) => {
-                const data = ApiService.handleResponse(response);
-                delete data.extensions;
+            salesChannel.languages ??= new EntityCollection('language', 'language', Shopware.Context.api);
+            salesChannel.currencies ??= new EntityCollection('currency', 'currency', Shopware.Context.api);
+            salesChannel.countries ??= new EntityCollection('country', 'country', Shopware.Context.api);
 
-                if (data.languageId !== null && (salesChannel.id === null || forceLanguage)) {
-                    salesChannel.languages.length = 0;
-                    salesChannel.languages.push({
-                        id: data.languageId,
-                    });
-                } else {
-                    delete data.languageId;
-                }
-
-                Object.assign(salesChannel, data);
-
-                salesChannel.currencies.length = 0;
-                salesChannel.currencies.push({
-                    id: data.currencyId,
+            if (data.languageId !== null && (salesChannel.id === null || forceLanguage)) {
+                salesChannel.languages.length = 0;
+                salesChannel.languages.push({
+                    id: data.languageId,
                 });
+            } else {
+                data.languageId = null;
+            }
 
-                salesChannel.countries.length = 0;
-                salesChannel.countries.push({
-                    id: data.countryId,
-                });
+            Object.assign(salesChannel, data);
 
-                return data;
+            salesChannel.currencies.length = 0;
+            salesChannel.currencies.push({
+                id: data.currencyId,
             });
+
+            salesChannel.countries.length = 0;
+            salesChannel.countries.push({
+                id: data.countryId,
+            });
+
+            return data;
+        });
     }
 
     /**
-     * Clone product visibilility from one sales channel to another
+     * Clone product visibility from one sales channel to another
      *
      * @param {String} toSalesChannelId
      * @param {String} fromSalesChannelId
      * @returns {Promise|Object}
      */
     cloneProductVisibility(fromSalesChannelId, toSalesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .post(
-                `_action/${this.getApiBasePath()}/clone-product-visibility`,
-                { fromSalesChannelId, toSalesChannelId },
-                { headers },
-            ).then((response) => {
-                return ApiService.handleResponse(response);
-            });
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/clone-product-visibility`,
+            { fromSalesChannelId, toSalesChannelId },
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     /**
@@ -93,18 +90,13 @@ class SwagPayPalPosSettingApiService extends ApiService {
      * @returns {Promise|Object}
      */
     getProductCount(salesChannelId, cloneSalesChannelId) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .get(
-                `${this.getApiBasePath()}/product-count`,
-                {
-                    params: { salesChannelId, cloneSalesChannelId },
-                    headers,
-                },
-            ).then((response) => {
-                return ApiService.handleResponse(response);
-            });
+        return this.httpClient.get(
+            `${this.getApiBasePath()}/product-count`,
+            {
+                params: { salesChannelId, cloneSalesChannelId },
+                headers: this.getBasicHeaders(),
+            },
+        ).then(ApiService.handleResponse.bind(this));
     }
 
     /**

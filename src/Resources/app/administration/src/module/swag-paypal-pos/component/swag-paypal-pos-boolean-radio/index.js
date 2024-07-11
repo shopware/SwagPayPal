@@ -25,7 +25,7 @@ Component.register('swag-paypal-pos-boolean-radio', {
             type: Object,
             required: true,
             validator(value) {
-                return value.hasOwnProperty('name');
+                return Object.hasOwn(value, 'name');
             },
         },
 
@@ -33,7 +33,7 @@ Component.register('swag-paypal-pos-boolean-radio', {
             type: Object,
             required: true,
             validator(value) {
-                return value.hasOwnProperty('name');
+                return Object.hasOwn(value, 'name');
             },
         },
     },

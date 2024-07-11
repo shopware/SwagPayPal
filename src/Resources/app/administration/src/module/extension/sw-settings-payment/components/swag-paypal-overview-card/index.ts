@@ -1,3 +1,4 @@
+import { ref } from 'vue';
 import template from './swag-paypal-overview-card.html.twig';
 
 const { Component } = Shopware;
@@ -30,14 +31,20 @@ Component.register('swag-paypal-overview-card', {
         },
     },
 
+    setup() {
+        const swagPayPalConfigComponent = ref(null);
+        const swagPayPalCheckoutComponent = ref(null);
+        return { swagPayPalConfigComponent, swagPayPalCheckoutComponent };
+    },
+
     methods: {
         async save() {
             this.isLoading = true;
 
             try {
-                const response = await this.$refs.swagPayPalConfigComponent.save();
+                const response = await this.swagPayPalConfigComponent?.save();
 
-                if (response.payPalWebhookErrors) {
+                if (response?.payPalWebhookErrors) {
                     const errorMessage = this.$tc('swag-paypal.settingForm.messageWebhookError');
                     response.payPalWebhookErrors.forEach((error) => {
                         this.createNotificationError({
@@ -46,7 +53,7 @@ Component.register('swag-paypal-overview-card', {
                     });
                 }
 
-                await this.$refs.swagPayPalCheckoutComponent.getPaymentMethodsAndMerchantIntegrations();
+                await this.swagPayPalCheckoutComponent?.getPaymentMethodsAndMerchantIntegrations();
             } finally {
                 this.isLoading = false;
             }

@@ -111,8 +111,7 @@ Component.register('swag-paypal-disputes-detail', {
                 this.orderModuleLink = null;
             }
 
-            const orderTransactions = await this.orderTransactionRepository
-                .search(this.orderTransactionCriteria, Context.api, this.orderTransactionCriteria);
+            const orderTransactions = await this.orderTransactionRepository.search(this.orderTransactionCriteria);
             const orderTransaction = orderTransactions[0];
 
             if (orderTransaction === null) {

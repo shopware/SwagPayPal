@@ -66,7 +66,7 @@ export default Shopware.Mixin.register('swag-paypal-credentials-loader', {
     },
 
     created() {
-        this.$on('paypal-onboarding-finish', this.getPayPalCredentials);
+        this.$on('paypal-onboarding-finish', this.getPayPalCredentials.bind(this));
         window.onboardingCallbackLive = (authCode, sharedId) => {
             this.$emit(
                 'paypal-onboarding-finish',

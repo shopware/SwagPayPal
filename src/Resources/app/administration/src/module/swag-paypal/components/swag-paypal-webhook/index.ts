@@ -62,7 +62,7 @@ Shopware.Component.register('swag-paypal-webhook', {
 
         allowRefresh() {
             return [STATUS_WEBHOOK_INVALID, STATUS_WEBHOOK_MISSING]
-                .includes(this.webhookStatus);
+                .includes(this.webhookStatus ?? '');
         },
     },
 
@@ -76,7 +76,7 @@ Shopware.Component.register('swag-paypal-webhook', {
 
             const response = await this.SwagPayPalWebhookService.status(this.selectedSalesChannelId);
 
-            this.webhookStatus = response.result;
+            this.webhookStatus = response.result ?? null;
 
             this.isFetchingStatus = false;
         },

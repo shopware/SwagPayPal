@@ -16,7 +16,7 @@ Component.extend('swag-paypal-locale-field', 'sw-text-field', {
     },
 
     methods: {
-        onInput: debounce(function onInput(event) {
+        onInput: debounce((event) => {
             this.checkValue(event.target.value);
         }, 350),
 
