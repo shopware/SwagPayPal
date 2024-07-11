@@ -16,7 +16,7 @@ Component.override('sw-settings-payment-detail', {
              * @deprecated tag:v10.0.0 - Will be removed, use this.capabilities instead
              */
             merchantIntegrations: [],
-            capabilities: [],
+            capabilities: {},
         };
     },
 
@@ -58,7 +58,7 @@ Component.override('sw-settings-payment-detail', {
         async fetchMerchantCapabilities() {
             const merchantInformation = await this.SwagPayPalApiCredentialsService.getMerchantInformation();
 
-            this.capabilities = merchantInformation.capabilities ?? [];
+            this.capabilities = merchantInformation.capabilities ?? {};
         },
     },
 });

@@ -1,6 +1,8 @@
 import { location } from '@shopware-ag/meteor-admin-sdk';
 
-const bootPromise = window.Shopware ? Shopware.Plugin.addBootPromise() : undefined;
+const bootPromise = window.Shopware
+    ? Shopware.Plugin.addBootPromise()
+    : undefined;
 
 (async () => {
     if (!location.isIframe()) {

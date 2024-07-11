@@ -31,7 +31,7 @@ Component.override('sw-settings-shipping-detail', {
                     return '';
                 }
 
-                return this.shippingMethodCustomFields.swag_paypal_carrier || '';
+                return this.shippingMethodCustomFields?.swag_paypal_carrier || '';
             },
             set(value) {
                 Utils.object.set(this.shippingMethod, 'customFields.swag_paypal_carrier', value);
@@ -50,8 +50,8 @@ Component.override('sw-settings-shipping-detail', {
             this.systemConfigApiService
                 .getValues('SwagPayPal.settings', null)
                 .then((values) => {
-                    this.isPayPalEnabled = values['SwagPayPal.settings.merchantPayerId']
-                        || values['SwagPayPal.settings.merchantPayerIdSandbox'];
+                    this.isPayPalEnabled = !!values['SwagPayPal.settings.merchantPayerId']
+                        || !!values['SwagPayPal.settings.merchantPayerIdSandbox'];
                 });
         },
 

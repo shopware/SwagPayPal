@@ -21,7 +21,6 @@ class SwagPayPalDisputeApiService extends ApiService {
             {
                 params: { salesChannelId, disputeStateFilter },
                 headers: this.getBasicHeaders(),
-                version: Shopware.Context.api.apiVersion,
             },
         ).then(ApiService.handleResponse.bind(this));
     }
@@ -40,7 +39,6 @@ class SwagPayPalDisputeApiService extends ApiService {
             {
                 params: { salesChannelId },
                 headers: this.getBasicHeaders(),
-                version: Shopware.Context.api.apiVersion,
             },
         ).then(ApiService.handleResponse.bind(this));
     }

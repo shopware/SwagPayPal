@@ -12,7 +12,9 @@ class SwagPayPalOrderService extends ApiService {
     getOrderDetails(orderTransactionId, paypalOrderId) {
         return this.httpClient.get(
             `${this.getApiBasePath()}/order/${orderTransactionId}/${paypalOrderId}`,
-            this.getDefaultOptions(),
+            {
+                headers: this.getBasicHeaders(),
+            },
         ).then(ApiService.handleResponse.bind(this));
     }
 
@@ -37,7 +39,7 @@ class SwagPayPalOrderService extends ApiService {
         partnerAttributionId,
     ) {
         return this.doPostRequest(
-            `${this.getApiBasePath(null, '_action')}/refund-capture/${orderTransactionId}/${captureId}/${paypalOrderId}`,
+            `${this.getApiBasePath('', '_action')}/refund-capture/${orderTransactionId}/${captureId}/${paypalOrderId}`,
             partnerAttributionId,
             { currency, amount, invoiceNumber, noteToPayer },
         );
@@ -64,7 +66,7 @@ class SwagPayPalOrderService extends ApiService {
         isFinal,
     ) {
         return this.doPostRequest(
-            `${this.getApiBasePath(null, '_action')}/capture-authorization/${orderTransactionId}/${authorizationId}`,
+            `${this.getApiBasePath('', '_action')}/capture-authorization/${orderTransactionId}/${authorizationId}`,
             partnerAttributionId,
             { currency, amount, invoiceNumber, noteToPayer, isFinal },
         );
@@ -91,15 +93,10 @@ class SwagPayPalOrderService extends ApiService {
         return this.httpClient.post(
             apiRoute,
             { partnerAttributionId, ...requestParameters },
-            this.getDefaultOptions(),
+            {
+                headers: this.getBasicHeaders(),
+            },
         ).then(ApiService.handleResponse.bind(this));
-    }
-
-    getDefaultOptions() {
-        return {
-            headers: this.getBasicHeaders(),
-            version: Shopware.Context.api.apiVersion,
-        };
     }
 }
 

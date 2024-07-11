@@ -1,5 +1,7 @@
 const ApiService = Shopware.Classes.ApiService;
 
+const { EntityCollection } = Shopware.Data;
+
 class SwagPayPalPosSettingApiService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'paypal/pos') {
         super(httpClient, loginService, apiEndpoint);
@@ -31,11 +33,14 @@ class SwagPayPalPosSettingApiService extends ApiService {
     fetchInformation(salesChannel, forceLanguage = false) {
         return this.httpClient.post(
             `${this.getApiBasePath()}/fetch-information`,
-            { apiKey: salesChannel.extensions.paypalPosSalesChannel.apiKey },
+            { apiKey: salesChannel.extensions?.paypalPosSalesChannel?.apiKey },
             { headers: this.getBasicHeaders() },
-        ).then((response) => {
-            const data = ApiService.handleResponse(response);
-            delete data.extensions;
+        ).then(ApiService.handleResponse.bind(this)).then((data) => {
+            data.extensions = {};
+
+            salesChannel.languages ??= new EntityCollection('language', 'language', Shopware.Context.api);
+            salesChannel.currencies ??= new EntityCollection('currency', 'currency', Shopware.Context.api);
+            salesChannel.countries ??= new EntityCollection('country', 'country', Shopware.Context.api);
 
             if (data.languageId !== null && (salesChannel.id === null || forceLanguage)) {
                 salesChannel.languages.length = 0;
@@ -43,7 +48,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
                     id: data.languageId,
                 });
             } else {
-                delete data.languageId;
+                data.languageId = null;
             }
 
             Object.assign(salesChannel, data);
@@ -63,7 +68,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
     }
 
     /**
-     * Clone product visibilility from one sales channel to another
+     * Clone product visibility from one sales channel to another
      *
      * @param {String} toSalesChannelId
      * @param {String} fromSalesChannelId
