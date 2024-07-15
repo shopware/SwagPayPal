@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Tracker\Item;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Tracker\ItemCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\Tracker;
@@ -48,8 +49,9 @@ class ShippingInformationMessageHandler
         $orderTransaction = $orderDelivery?->getOrder()?->getTransactions()?->last();
         $orderLineItems = $orderDelivery?->getOrder()?->getLineItems() ?? new OrderLineItemCollection();
         $salesChannelId = $orderDelivery?->getOrder()?->getSalesChannelId();
+        $shippingMethodName = $orderDelivery?->getShippingMethod()?->getTranslation('name') ?? $orderDelivery?->getShippingMethod()?->getId() ?? '';
         $carrier = $orderDelivery?->getShippingMethod()?->getCustomFieldsValue(SwagPayPal::SHIPPING_METHOD_CUSTOM_FIELDS_CARRIER) ?: Tracker::CARRIER_OTHER;
-        $carrierOtherName = $orderDelivery?->getShippingMethod()?->getTranslation('name') ?? '';
+        $carrierOtherName = $orderDelivery?->getShippingMethod()?->getCustomFieldsValue(SwagPayPal::SHIPPING_METHOD_CUSTOM_FIELDS_CARRIER_OTHER_NAME) ?: $orderDelivery?->getShippingMethod()?->getTranslation('name') ?? '';
         $orderId = $orderTransaction?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
         $partnerAttributionId = $orderTransaction?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID);
 
@@ -74,12 +76,16 @@ class ShippingInformationMessageHandler
         foreach ($addedTrackingCodes as $trackingCode) {
             $tracker = $this->createTracker($trackingCode, $captureId, $carrier, $carrierOtherName, $itemCollection);
 
-            $this->orderResource->addTracker(
-                $tracker,
-                $orderId,
-                $salesChannelId,
-                $partnerAttributionId,
-            );
+            try {
+                $this->orderResource->addTracker($tracker, $orderId, $salesChannelId, $partnerAttributionId);
+            } catch (PayPalApiException $e) {
+                $this->handleInvalidCarrierException($e, $tracker, $shippingMethodName);
+
+                $carrierOtherName = $carrier;
+                $carrier = Tracker::CARRIER_OTHER;
+
+                $this->orderResource->addTracker($tracker, $orderId, $salesChannelId, $partnerAttributionId);
+            }
         }
 
         if (\count($addedTrackingCodes) > 0) {
@@ -92,12 +98,7 @@ class ShippingInformationMessageHandler
         foreach ($removedTrackingCodes as $trackingCode) {
             $tracker = $this->createTracker($trackingCode, $captureId, $carrier, $carrierOtherName, $itemCollection);
 
-            $this->orderResource->removeTracker(
-                $tracker,
-                $orderId,
-                $salesChannelId,
-                $partnerAttributionId,
-            );
+            $this->orderResource->removeTracker($tracker, $orderId, $salesChannelId, $partnerAttributionId);
         }
 
         if (\count($removedTrackingCodes) > 0) {
@@ -105,6 +106,21 @@ class ShippingInformationMessageHandler
                 'orderDeliveryId' => $orderDelivery->getId(),
                 'trackers' => \array_values($removedTrackingCodes),
             ]);
+        }
+    }
+
+    private function handleInvalidCarrierException(PayPalApiException $e, Tracker &$tracker, string $shippingMethodName): void
+    {
+        if ($e->getIssue() === PayPalApiException::ERROR_CODE_INVALID_PARAMETER_VALUE && \str_contains($e->getMessage(), '(/carrier)')) {
+            $this->logger->error('Carrier "{carrier}" of shipping method "{methodName}" is not supported by PayPal.', [
+                'carrier' => $tracker->getCarrier(),
+                'methodName' => $shippingMethodName,
+            ]);
+
+            $tracker->setCarrierNameOther($tracker->getCarrier());
+            $tracker->setCarrier(Tracker::CARRIER_OTHER);
+        } else {
+            throw $e;
         }
     }
 
