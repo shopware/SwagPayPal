@@ -5,6 +5,8 @@ import 'src/app/component/base/sw-button';
 import 'SwagPayPal/mixin/swag-paypal-credentials-loader.mixin';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-webhook';
 
+Shopware.Component.register('swag-paypal-webhook', () => import('.'));
+
 async function createWrapper(customOptions = {}) {
     const options = {
         mocks: { $tc: (key) => key },
