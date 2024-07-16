@@ -6,6 +6,9 @@ import SwagPaypalAbstractStandalone from './swag-paypal.abstract-standalone';
 import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
 export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     static scriptLoading = new SwagPayPalScriptLoading();
 
     static options = {

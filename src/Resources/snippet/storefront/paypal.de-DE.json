@@ -6,6 +6,8 @@
             "browserUnsupported": "Ihr aktueller Browser wird von der gewählten Zahlungsart nicht unterstützt. Bitte versuchen Sie es mit einem anderen Browser oder wählen Sie eine andere Zahlungsmethode aus."
         },
         "error": {
+            "SWAG_PAYPAL__EXPRESS_GENERIC_ERROR": "Während des Bestellvorgangs mit PayPal ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder verwenden Sie den normalen Bestellprozess.",
+            "SWAG_PAYPAL__EXPRESS_USER_CANCELLED": "Der Bestellvorgang mit PayPal wurde abgebrochen. Bitte versuchen Sie es noch einmal oder verwenden Sie den normalen Bestellprozess.",
             "SWAG_PAYPAL__GENERIC_ERROR": "Während des Zahlungsvorgangs ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder wählen Sie eine andere Zahlungsart.",
             "SWAG_PAYPAL__USER_CANCELLED": "Der Zahlungsvorgang wurde abgebrochen. Bitte versuchen Sie es noch einmal oder wählen Sie eine andere Zahlungsart.",
             "SWAG_PAYPAL__BROWSER_UNSUPPORTED": "Die gewählte Zahlungsart wird von Ihrem aktuellen Browser nicht unterstützt. Bitte versuchen Sie es mit einem anderen Browser oder wählen Sie eine andere Zahlungsart.",
