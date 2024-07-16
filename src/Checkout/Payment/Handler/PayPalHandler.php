@@ -76,10 +76,7 @@ class PayPalHandler
         } catch (PayPalApiException $e) {
             if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
                 || ($e->getIssue() !== PayPalApiException::ERROR_CODE_DUPLICATE_INVOICE_ID)) {
-                throw PaymentException::asyncProcessInterrupted(
-                    $transaction->getOrderTransaction()->getId(),
-                    \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
-                );
+                throw $e;
             }
 
             $this->logger->warning('Duplicate order number detected. Retrying payment without order number.');

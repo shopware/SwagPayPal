@@ -1,3 +1,6 @@
+# 9.4.0
+- PPI-951 - Behebt ein Problem, bei dem ohne Smart Payment Buttons nur generische Fehlermeldungen während des Bestellprozesses angezeigt wurden
+
 # 9.3.1
 - PPI-944 - Behebt ein Problem, bei dem die Abfrage des Zahlungsstatus bei invaliden Transaktionen weiter versucht wurde
 - PPI-945 - Behebt ein Problem, bei dem ausgeschlossene Produkte nicht korrekt in der Administration angezeigt wurden
