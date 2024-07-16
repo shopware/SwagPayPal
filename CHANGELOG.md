@@ -1,5 +1,6 @@
 # 8.4.0
 - PPI-951 -  Fixes an issue, where only generic error messages were displayed during checkout without Smart Payment Buttons
+- PPI-953 - Fixes an issue, where shipping tracking codes were not synced with an invalid carrier
 
 # 8.3.1
 - PPI-944 - Fixes an issue, where payment status polling kept retrying with invalid transactions

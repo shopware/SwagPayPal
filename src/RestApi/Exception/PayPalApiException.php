@@ -17,6 +17,7 @@ class PayPalApiException extends PaymentException
     public const ERROR_CODE_DUPLICATE_ORDER_NUMBER = 'DUPLICATE_TRANSACTION';
     public const ERROR_CODE_DUPLICATE_INVOICE_ID = 'DUPLICATE_INVOICE_ID';
     public const ERROR_CODE_RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND';
+    public const ERROR_CODE_INVALID_PARAMETER_VALUE = 'INVALID_PARAMETER_VALUE';
 
     private ?string $issue;
 
