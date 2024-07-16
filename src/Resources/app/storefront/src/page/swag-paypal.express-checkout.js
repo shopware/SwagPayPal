@@ -105,6 +105,8 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         /**
          * URL for adding flash error message
          *
+         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
+         *
          * @type string
          */
         addErrorUrl: '',
@@ -132,6 +134,9 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         scriptAwaitVisibility: true,
         partOfDomContentLoading: false,
     };
+
+    GENERIC_ERROR = 'SWAG_PAYPAL__EXPRESS_GENERIC_ERROR';
+    USER_CANCELLED = 'SWAG_PAYPAL__EXPRESS_USER_CANCELLED';
 
     init() {
         this._client = new HttpClient();
@@ -341,16 +346,17 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                     return actions.redirect(this.options.checkoutConfirmUrl);
                 }
 
-                return this.createError('error', response, this.options.cancelRedirectUrl);
+                return this.onError();
             },
         );
     }
 
-    onError(error) {
-        this.createError('error', error);
-    }
-
-    onCancel(error) {
-        this.createError('cancel', error, this.options.cancelRedirectUrl);
+    onErrorHandled(code, fatal, error) {
+        if (code === this.GENERIC_ERROR || code === this.USER_CANCELLED) {
+            window.scrollTo(0, 0);
+            window.location = this.options.cancelRedirectUrl;
+        } else {
+            super.onErrorHandled(code, fatal, error);
+        }
     }
 }

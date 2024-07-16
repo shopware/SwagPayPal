@@ -67,12 +67,16 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         /**
          * URL to the after order edit page, as the payment has failed
          *
+         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
+         *
          * @type string|null
          */
         accountOrderEditFailedUrl: '',
 
         /**
          * URL to the after order edit page, as the user has cancelled
+         *
+         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
          *
          * @type string|null
          */
@@ -94,6 +98,8 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
 
         /**
          * URL for adding flash error message
+         *
+         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
          *
          * @type string
          */

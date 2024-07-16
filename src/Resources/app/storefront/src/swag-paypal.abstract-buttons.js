@@ -53,9 +53,21 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
             error,
             fatal,
         }), () => {
-            window.onbeforeunload = () => { window.scrollTo(0, 0); };
-            window.location.reload();
+            this.onErrorHandled(code, fatal, error);
         });
+    }
+
+    /**
+     * Will be called after the handleErrorUrl was called. See {@link handleError}.
+     *
+     * @param {String} code - The error code. Will be replaced by an extracted error code from {@link error} if available
+     * @param {Boolean} [fatal=false] - A fatal error will not allow a rerender of the PayPal buttons
+     * @param {*} [error=undefined] - The error. Can be any type, but will be converted to a string
+     */
+    // eslint-disable-next-line no-unused-vars
+    onErrorHandled(code, fatal, error) {
+        window.scrollTo(0, 0);
+        window.location.reload();
     }
 
     /**

@@ -1,6 +1,7 @@
 # 8.4.0
 - PPI-807 - Improved script loading performance in the Storefront
-- PPI-951 -  Fixes an issue, where only generic error messages were displayed during checkout without Smart Payment Buttons
+- PPI-924 - Added more explicit error messages for errors happening during express checkout
+- PPI-951 - Fixes an issue, where only generic error messages were displayed during checkout without Smart Payment Buttons
 - PPI-953 - Fixes an issue, where shipping tracking codes were not synced with an invalid carrier
 
 # 8.3.1
