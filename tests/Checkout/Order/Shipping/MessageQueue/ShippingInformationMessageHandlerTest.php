@@ -29,6 +29,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessage;
 use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessageHandler;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\Tracker;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -238,6 +239,110 @@ class ShippingInformationMessageHandlerTest extends TestCase
             [],
             true,
         ];
+    }
+
+    public function testRetryOnInvalidParameterException(): void
+    {
+        $orderDelivery = self::createOrderDelivery(self::createOrder(), carrier: 'invalid-carrier', trackingCodes: ['code-a']);
+        $payPalOrder = self::createPayPalOrder(trackingCodes: ['code-b']);
+        $payPalException = new PayPalApiException('', '(/carrier)', issue: PayPalApiException::ERROR_CODE_INVALID_PARAMETER_VALUE);
+
+        $this->orderDeliveryRepository
+            ->expects(static::once())
+            ->method('search')
+            ->willReturn(self::createSearchResult($orderDelivery));
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('get')
+            ->willReturn($payPalOrder);
+
+        $matcher = static::exactly(2);
+        $this->orderResource
+            ->expects($matcher)
+            ->method('addTracker')
+            ->with(
+                static::callback(static function (Tracker $tracker) use (&$matcher): bool {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => static::assertSame('invalid-carrier', $tracker->getCarrier()),
+                        2 => static::assertEquals(['OTHER', 'invalid-carrier'], [$tracker->getCarrier(), $tracker->getCarrierNameOther()]),
+                        default => static::fail('Exceeded expected number of invocations'),
+                    };
+
+                    return true;
+                }),
+                'paypal-order-id',
+                'sales-channel-id',
+                'paypal-partner-id'
+            )
+            ->willReturnOnConsecutiveCalls(
+                static::throwException($payPalException),
+                $payPalOrder,
+            );
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('removeTracker')
+            ->with(
+                static::callback(static function (Tracker $tracker): bool {
+                    static::assertSame('OTHER', $tracker->getCarrier());
+
+                    return true;
+                }),
+                'paypal-order-id',
+                'sales-channel-id',
+                'paypal-partner-id'
+            );
+
+        $this->logger
+            ->expects(static::once())
+            ->method('error');
+
+        ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+    }
+
+    public function testNoRetryOnOtherExceptions(): void
+    {
+        $orderDelivery = self::createOrderDelivery(self::createOrder(), carrier: 'invalid-carrier', trackingCodes: ['code-a']);
+        $payPalOrder = self::createPayPalOrder();
+        $payPalException = new PayPalApiException('', '(/carrier)', issue: PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND);
+
+        $this->orderDeliveryRepository
+            ->expects(static::once())
+            ->method('search')
+            ->willReturn(self::createSearchResult($orderDelivery));
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('get')
+            ->willReturn($payPalOrder);
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('addTracker')
+            ->with(
+                static::callback(static function (Tracker $tracker): bool {
+                    static::assertSame('invalid-carrier', $tracker->getCarrier());
+
+                    return true;
+                }),
+                'paypal-order-id',
+                'sales-channel-id',
+                'paypal-partner-id'
+            )
+            ->willThrowException($payPalException);
+
+        $this->orderResource
+            ->expects(static::never())
+            ->method('removeTracker');
+
+        $this->logger
+            ->expects(static::never())
+            ->method('error');
+
+        static::expectExceptionObject($payPalException);
+
+        ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
     }
 
     private static function createPayPalOrder(
