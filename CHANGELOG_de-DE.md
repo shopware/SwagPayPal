@@ -1,4 +1,6 @@
 # 9.4.0
+- PPI-807 - Verbessert die Ladezeit der Scripte in der Storefront
+- PPI-924 - Fügt genauere Fehlermeldungen für Fehler während des Express Checkouts hinzu
 - PPI-951 - Behebt ein Problem, bei dem ohne Smart Payment Buttons nur generische Fehlermeldungen während des Bestellprozesses angezeigt wurden
 - PPI-953 - Behebt ein Problem, bei dem Sendungsverfolgungsdaten bei invaliden Versanddienstleister nicht an PayPal übermittelt wurden
 

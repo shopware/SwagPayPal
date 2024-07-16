@@ -10,47 +10,7 @@ export default class SwagPayPalFundingEligibility extends SwagPaypalAbstractButt
     ]
 
     static options = {
-        /**
-         * This option holds the client id specified in the settings
-         *
-         * @type string
-         */
-        clientId: '',
-
-        /**
-         * This option holds the merchant id specified in the settings
-         *
-         * @type string
-         */
-        merchantPayerId: '',
-
-        /**
-         * This option specifies the language of the PayPal button
-         *
-         * @type string
-         */
-        languageIso: 'en_GB',
-
-        /**
-         * This options specifies the currency of the PayPal button
-         *
-         * @type string
-         */
-        currency: 'EUR',
-
-        /**
-         * This options defines the payment intent
-         *
-         * @type string
-         */
-        intent: 'capture',
-
-        /**
-         * This option toggles the PayNow/Login text at PayPal
-         *
-         * @type boolean
-         */
-        commit: true,
+        ...super.options,
 
         /**
          * Previously filtered payment methods
@@ -65,6 +25,15 @@ export default class SwagPayPalFundingEligibility extends SwagPaypalAbstractButt
          * @type string
          */
         methodEligibilityUrl: '',
+
+        /*
+         * Streamline options for listing pages, overriding the ones
+         * from swag-paypal.script-loading.js
+         */
+        useAlternativePaymentMethods: false,
+        commit: false,
+        scriptAwaitVisibility: true,
+        partOfDomContentLoading: false,
     };
 
     init() {

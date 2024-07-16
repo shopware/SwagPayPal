@@ -2,26 +2,7 @@ import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButtons {
     static options = {
-        /**
-         * This option holds the client id specified in the settings
-         *
-         * @type string
-         */
-        clientId: '',
-
-        /**
-         * This option holds the merchant id specified in the settings
-         *
-         * @type string
-         */
-        merchantPayerId: '',
-
-        /**
-         * This option toggles the PayNow/Login text at PayPal
-         *
-         * @type boolean
-         */
-        commit: true,
+        ...super.options,
 
         /**
          * This option holds the buyer country for Pay Later localization
@@ -36,13 +17,6 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
          * @type number
          */
         amount: 0,
-
-        /**
-         * Currency used for the examples
-         *
-         * @type string
-         */
-        currency: 'EUR',
 
         /**
          * Layout of the installment banner
@@ -100,12 +74,14 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
          */
         textColor: 'black',
 
-        /**
-         * This option holds the partner attribution id
-         *
-         * @type string
+        /*
+         * Streamline options for listing pages, overriding the ones
+         * from swag-paypal.script-loading.js
          */
-        partnerAttributionId: '',
+        useAlternativePaymentMethods: false,
+        commit: false,
+        scriptAwaitVisibility: true,
+        partOfDomContentLoading: false,
     };
 
     init() {
