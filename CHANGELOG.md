@@ -1,3 +1,6 @@
+# 8.4.0
+- PPI-951 -  Fixes an issue, where only generic error messages were displayed during checkout without Smart Payment Buttons
+
 # 8.3.1
 - PPI-944 - Fixes an issue, where payment status polling kept retrying with invalid transactions
 - PPI-947 - Fixes an issue, where Smart Payment Buttons may have not been configurable
