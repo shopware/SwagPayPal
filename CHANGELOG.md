@@ -1,3 +1,6 @@
+# 9.4.0
+- PPI-951 -  Fixes an issue, where only generic error messages were displayed during checkout without Smart Payment Buttons
+
 # 9.3.1
 - PPI-944 - Fixes an issue, where payment status polling kept retrying with invalid transactions
 - PPI-945 - Fixes an issue, where excluded products were not correctly shown in the Administration
