@@ -2,6 +2,8 @@ import { mount } from '@vue/test-utils';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-checkout-method';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-checkout-domain-association';
 
+Shopware.Component.register('swag-paypal-checkout-method', () => import('.'));
+
 async function createWrapper(customOptions = {}) {
     const options = {
         global: {

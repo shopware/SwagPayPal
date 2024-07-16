@@ -2,6 +2,8 @@ import { mount } from '@vue/test-utils';
 import 'SwagPayPal/mixin/swag-paypal-credentials-loader.mixin';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-checkout';
 
+Shopware.Component.register('swag-paypal-checkout', () => import('.'));
+
 const onboardingCallbackLive = 'onboardingCallbackLive';
 const onboardingCallbackSandbox = 'onboardingUrlSandbox';
 
