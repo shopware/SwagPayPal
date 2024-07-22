@@ -8,3 +8,6 @@ shopware:
             SWAG_PAYPAL__API_CANNOT_BE_ZERO_OR_NEGATIVE: notice
             SWAG_PAYPAL__API_PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED: notice
             SWAG_PAYPAL__API_PAYMENT_SOURCE_DECLINED_BY_PROCESSOR: notice
+    paypal:
+        webhook_proxy_url: null
+

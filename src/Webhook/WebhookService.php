@@ -43,6 +43,8 @@ class WebhookService implements WebhookServiceInterface
 
     private SystemConfigService $systemConfigService;
 
+    private ?string $proxyWebhookUrl;
+
     /**
      * @internal
      */
@@ -50,12 +52,14 @@ class WebhookService implements WebhookServiceInterface
         WebhookResource $webhookResource,
         WebhookRegistry $webhookRegistry,
         SystemConfigService $systemConfigService,
-        RouterInterface $router
+        RouterInterface $router,
+        ?string $proxyWebhookUrl
     ) {
         $this->webhookResource = $webhookResource;
         $this->webhookRegistry = $webhookRegistry;
         $this->router = $router;
         $this->systemConfigService = $systemConfigService;
+        $this->proxyWebhookUrl = $proxyWebhookUrl;
     }
 
     public function getStatus(?string $salesChannelId): string
@@ -73,12 +77,18 @@ class WebhookService implements WebhookServiceInterface
 
         $webhookExecuteToken = $this->systemConfigService->getString(Settings::WEBHOOK_EXECUTE_TOKEN, $salesChannelId);
 
-        $this->router->getContext()->setScheme('https');
-        $webhookUrl = $this->router->generate(
-            'api.action.paypal.webhook.execute',
-            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        if ($this->proxyWebhookUrl !== null) {
+            $webhookUrl = $this->proxyWebhookUrl . '?' . http_build_query(
+                [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken]
+            );
+        } else {
+            $this->router->getContext()->setScheme('https');
+            $webhookUrl = $this->router->generate(
+                'api.action.paypal.webhook.execute',
+                [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+        }
 
         return $registeredWebhookUrl === $webhookUrl ? self::STATUS_WEBHOOK_VALID : self::STATUS_WEBHOOK_INVALID;
     }
@@ -96,12 +106,18 @@ class WebhookService implements WebhookServiceInterface
             $webhookExecuteToken = Random::getAlphanumericString(self::PAYPAL_WEBHOOK_TOKEN_LENGTH);
         }
 
-        $this->router->getContext()->setScheme('https');
-        $webhookUrl = $this->router->generate(
-            'api.action.paypal.webhook.execute',
-            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        if ($this->proxyWebhookUrl !== null) {
+            $webhookUrl = $this->proxyWebhookUrl . '?' . http_build_query(
+                [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken]
+            );
+        } else {
+            $this->router->getContext()->setScheme('https');
+            $webhookUrl = $this->router->generate(
+                'api.action.paypal.webhook.execute',
+                [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+        }
 
         $webhookId = $this->systemConfigService->getString(Settings::WEBHOOK_ID, $salesChannelId);
 
