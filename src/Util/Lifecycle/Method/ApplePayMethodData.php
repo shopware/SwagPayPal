@@ -92,7 +92,13 @@ class ApplePayMethodData extends AbstractMethodData implements CheckoutDataMetho
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        if ($merchantIntegrations->getSpecificCapability('APPLE_PAY')?->getStatus() === 'ACTIVE') {
+        $capability = $merchantIntegrations->getSpecificCapability('APPLE_PAY');
+
+        if ($capability === null) {
+            return self::CAPABILITY_INACTIVE;
+        }
+
+        if ($capability->getStatus() === 'ACTIVE') {
             return self::CAPABILITY_ACTIVE;
         }
 

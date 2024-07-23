@@ -93,7 +93,13 @@ class GooglePayMethodData extends AbstractMethodData implements CheckoutDataMeth
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        if ($merchantIntegrations->getSpecificCapability('GOOGLE_PAY')?->getStatus() === Capability::STATUS_ACTIVE) {
+        $capability = $merchantIntegrations->getSpecificCapability('GOOGLE_PAY');
+
+        if ($capability === null) {
+            return self::CAPABILITY_INACTIVE;
+        }
+
+        if ($capability->getStatus() === Capability::STATUS_ACTIVE) {
             return self::CAPABILITY_ACTIVE;
         }
 
