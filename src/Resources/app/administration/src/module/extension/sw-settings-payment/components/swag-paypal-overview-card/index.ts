@@ -9,6 +9,10 @@ type ConfigComponent = {
 export default Shopware.Component.wrapComponentConfig({
     template,
 
+    mixins: [
+        Shopware.Mixin.getByName('notification'),
+    ],
+
     props: {
         paymentMethods: {
             type: Array as PropType<Array<TEntity<'payment_method'>>>,
@@ -50,7 +54,6 @@ export default Shopware.Component.wrapComponentConfig({
                 if (response?.payPalWebhookErrors) {
                     const errorMessage = this.$tc('swag-paypal.settingForm.messageWebhookError');
                     response.payPalWebhookErrors.forEach((error) => {
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                         this.createNotificationError({
                             message: `${errorMessage}<br><br><ul><li>${error}</li></ul>`,
                         });
