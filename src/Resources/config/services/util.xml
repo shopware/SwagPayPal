@@ -31,12 +31,11 @@
             <tag name="kernel.reset" method="reset"/>
         </service>
 
-        <service id="monolog.processor.paypal.introspection" class="Monolog\Processor\IntrospectionProcessor">
+        <service id="monolog.processor.paypal.introspection" class="Swag\PayPal\Util\IntrospectionProcessor">
             <tag name="monolog.processor" channel="paypal" />
         </service>
 
-        <service id="monolog.processor.paypal.web" class="Monolog\Processor\WebProcessor">
-            <argument>null</argument>
+        <service id="monolog.processor.paypal.web" class="Symfony\Bridge\Monolog\Processor\WebProcessor">
             <argument type="collection">
                 <argument key="url">REQUEST_URI</argument>
                 <argument key="http_method">REQUEST_METHOD</argument>
