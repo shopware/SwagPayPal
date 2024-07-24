@@ -9,6 +9,7 @@ namespace Swag\PayPal\RestApi\Client;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -17,6 +18,12 @@ use Symfony\Component\HttpFoundation\Request;
 #[Package('checkout')]
 abstract class AbstractClient
 {
+    protected const HEADER_WHITELIST = [
+        'Paypal-Debug-Id',
+        'PayPal-Request-Id',
+        'Date',
+    ];
+
     protected ClientInterface $client;
 
     protected LoggerInterface $logger;
@@ -127,7 +134,7 @@ abstract class AbstractClient
         $exceptionResponse = $requestException->getResponse();
 
         if ($exceptionResponse === null) {
-            $this->logger->error($exceptionMessage, [$data]);
+            $this->logger->error($exceptionMessage, ['data' => $data]);
 
             return new PayPalApiException('General Error', $exceptionMessage);
         }
@@ -137,7 +144,7 @@ abstract class AbstractClient
         if (\array_key_exists('error', $error) && \array_key_exists('error_description', $error)) {
             $this->logger->error($exceptionMessage, [
                 'error' => $error,
-                'headers' => $exceptionResponse->getHeaders(),
+                'headers' => $this->extractHeaders($exceptionResponse),
                 'data' => $data,
             ]);
 
@@ -169,10 +176,18 @@ abstract class AbstractClient
 
         $this->logger->error(\sprintf('%s %s', $exceptionMessage, $message), [
             'error' => $error,
-            'headers' => $exceptionResponse->getHeaders(),
+            'headers' => $this->extractHeaders($exceptionResponse),
             'data' => $data,
         ]);
 
         return new PayPalApiException($error['name'] ?? 'UNCLASSIFIED_ERROR', $message, (int) $requestException->getCode(), $issue);
+    }
+
+    private function extractHeaders(ResponseInterface $response): array
+    {
+        return \array_combine(
+            self::HEADER_WHITELIST,
+            \array_map(static fn (string $name) => $response->getHeader($name), self::HEADER_WHITELIST),
+        );
     }
 }
