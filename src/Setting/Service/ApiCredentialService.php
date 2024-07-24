@@ -14,7 +14,6 @@ use Swag\PayPal\RestApi\PartnerId;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
-use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
 class ApiCredentialService implements ApiCredentialServiceInterface
@@ -42,7 +41,10 @@ class ApiCredentialService implements ApiCredentialServiceInterface
         try {
             return $this->credentialsResource->testApiCredentials($credentials);
         } catch (PayPalApiException $payPalApiException) {
-            if ($payPalApiException->getStatusCode() === Response::HTTP_UNAUTHORIZED) {
+            /**
+             * @deprecated tag:v10.0.0 - Will be removed, use the exception directly
+             */
+            if ($payPalApiException->is(PayPalApiException::ERROR_CODE_INVALID_CREDENTIALS)) {
                 throw new PayPalInvalidApiCredentialsException();
             }
 

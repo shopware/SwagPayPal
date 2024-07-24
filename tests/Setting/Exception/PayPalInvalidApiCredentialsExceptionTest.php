@@ -22,7 +22,7 @@ class PayPalInvalidApiCredentialsExceptionTest extends TestCase
     {
         $exception = new PayPalInvalidApiCredentialsException();
 
-        static::assertSame('Provided API credentials are invalid', $exception->getMessage());
+        static::assertSame('The error "invalid_client" occurred with the following message: Provided API credentials are invalid', $exception->getMessage());
         static::assertSame(Response::HTTP_UNAUTHORIZED, $exception->getStatusCode());
     }
 }

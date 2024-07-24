@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
 abstract class AbstractClient
@@ -141,6 +142,7 @@ abstract class AbstractClient
 
         $content = $exceptionResponse->getBody()->getContents();
         $error = \json_decode($content, true) ?: [];
+        $issue = null;
         if (\array_key_exists('error', $error) && \array_key_exists('error_description', $error)) {
             $this->logger->error($exceptionMessage, [
                 'error' => $error,
@@ -148,7 +150,11 @@ abstract class AbstractClient
                 'data' => $data,
             ]);
 
-            return new PayPalApiException($error['error'], $error['error_description'], (int) $requestException->getCode());
+            if ($exceptionResponse->getStatusCode() === Response::HTTP_UNAUTHORIZED) {
+                $issue = PayPalApiException::ERROR_CODE_INVALID_CREDENTIALS;
+            }
+
+            return new PayPalApiException($error['error'], $error['error_description'], $exceptionResponse->getStatusCode(), $issue);
         }
 
         if (\is_array($error['errors'] ?? null)) {
@@ -156,7 +162,6 @@ abstract class AbstractClient
         }
 
         $message = $error['message'] ?? $content;
-        $issue = null;
 
         if (isset($error['details'])) {
             $message .= ' ';
@@ -180,7 +185,7 @@ abstract class AbstractClient
             'data' => $data,
         ]);
 
-        return new PayPalApiException($error['name'] ?? 'UNCLASSIFIED_ERROR', $message, (int) $requestException->getCode(), $issue);
+        return new PayPalApiException($error['name'] ?? 'UNCLASSIFIED_ERROR', $message, $exceptionResponse->getStatusCode(), $issue);
     }
 
     private function extractHeaders(ResponseInterface $response): array
