@@ -2,7 +2,6 @@ import { shallowMount } from '@vue/test-utils';
 import 'src/app/component/base/sw-card';
 import 'src/app/component/base/sw-label';
 import 'src/app/component/base/sw-button';
-import 'SwagPayPal/mixin/swag-paypal-credentials-loader.mixin';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-webhook';
 
 Shopware.Component.register('swag-paypal-webhook', () => import('.'));

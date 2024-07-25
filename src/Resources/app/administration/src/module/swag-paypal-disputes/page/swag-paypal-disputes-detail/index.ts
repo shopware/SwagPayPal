@@ -17,7 +17,7 @@ export default Shopware.Component.wrapComponentConfig({
     ],
 
     mixins: [
-        Shopware.Mixin.getByName('notification'),
+        Shopware.Mixin.getByName('swag-paypal-notification'),
     ],
 
     props: {
@@ -106,11 +106,7 @@ export default Shopware.Component.wrapComponentConfig({
         },
 
         handleError(errorResponse: PayPal.ServiceError) {
-            const errorDetail = errorResponse.response?.data.errors?.[0].detail ?? '';
-            this.createNotificationError({
-                message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${errorDetail}`,
-                autoClose: false,
-            });
+            this.createNotificationFromError({ errorResponse, title: 'swag-paypal-disputes.list.errorTitle' });
             this.isLoading = false;
         },
 

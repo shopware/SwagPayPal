@@ -35,6 +35,7 @@ module.exports = {
     globals: {
         Shopware: true,
         wrapTestComponent: true,
+        flushPromises: true,
     },
 
     plugins: [
