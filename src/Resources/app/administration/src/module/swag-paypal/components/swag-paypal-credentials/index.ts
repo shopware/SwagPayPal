@@ -10,7 +10,7 @@ export default Shopware.Component.wrapComponentConfig({
     ],
 
     mixins: [
-        Shopware.Mixin.getByName('notification'),
+        Shopware.Mixin.getByName('swag-paypal-notification'),
     ],
 
     props: {
@@ -132,14 +132,7 @@ export default Shopware.Component.wrapComponentConfig({
                     this.isTestLiveSuccessful = true;
                 }
             }).catch((errorResponse: PayPal.ServiceError) => {
-                if (!errorResponse.response?.data?.errors) {
-                    return;
-                }
-
-                let message = `<b>${this.$tc('swag-paypal.settingForm.messageTestError')}</b> `;
-                message += errorResponse.response.data.errors.map((error) => error.detail).join(' / ');
-
-                this.createNotificationError({ message });
+                this.createNotificationFromError({ errorResponse, title: 'swag-paypal.settingForm.messageTestError' });
 
                 if (sandbox) {
                     this.isTestingSandbox = false;

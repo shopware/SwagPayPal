@@ -1,4 +1,9 @@
 {
+    "swag-paypal": {
+        "errors": {
+            "SWAG_PAYPAL_POS__EXISTING_POS_ACCOUNT": "Dieser Zettle-Account wurde bereits in einem anderen Verkaufskanal verwendet"
+        }
+    },
     "swag-paypal-pos": {
         "general": {
             "moduleTitle": "Zettle by PayPal",

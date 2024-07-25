@@ -15,7 +15,7 @@ export default Shopware.Component.wrapComponentConfig({
     ],
 
     mixins: [
-        Shopware.Mixin.getByName('notification'),
+        Shopware.Mixin.getByName('swag-paypal-notification'),
         Shopware.Mixin.getByName('swag-paypal-credentials-loader'),
     ],
 
@@ -259,10 +259,15 @@ export default Shopware.Component.wrapComponentConfig({
             ].includes(pm.formattedHandlerIdentifier ?? ''));
         },
 
-        async fetchMerchantIntegrations() {
-            this.merchantInformation = await this.SwagPayPalApiCredentialsService
-                .getMerchantInformation(this.selectedSalesChannelId);
-            this.merchantIntegrations = this.merchantInformation.capabilities;
+        fetchMerchantIntegrations() {
+            return this.SwagPayPalApiCredentialsService.getMerchantInformation(this.selectedSalesChannelId)
+                .then((merchantInformation) => {
+                    this.merchantInformation = merchantInformation;
+                    this.merchantIntegrations = merchantInformation.capabilities;
+                })
+                .catch((errorResponse: PayPal.ServiceError) => {
+                    this.createNotificationFromError({ errorResponse });
+                });
         },
 
         onboardingStatus(paymentMethod: TEntity<'payment_method'>): string {

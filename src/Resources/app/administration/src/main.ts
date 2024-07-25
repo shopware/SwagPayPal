@@ -7,6 +7,7 @@ const bootPromise = window.Shopware
 (async () => {
     if (!location.isIframe()) {
         await import('./mixin/swag-paypal-credentials-loader.mixin');
+        await import('./mixin/swag-paypal-notification.mixin');
         await import('./mixin/swag-paypal-pos-catch-error.mixin');
         await import('./mixin/swag-paypal-pos-log-label.mixin');
 

@@ -11,7 +11,7 @@ export default Shopware.Component.wrapComponentConfig({
     ],
 
     mixins: [
-        Shopware.Mixin.getByName('notification'),
+        Shopware.Mixin.getByName('swag-paypal-notification'),
         Shopware.Mixin.getByName('swag-paypal-credentials-loader'),
     ],
 
@@ -152,11 +152,7 @@ export default Shopware.Component.wrapComponentConfig({
             const response = await this.SwagPayPalApiCredentialsService
                 .validateApiCredentials(clientId, clientSecret, sandbox)
                 .catch((errorResponse: PayPal.ServiceError) => {
-                    if (errorResponse?.response?.data?.errors) {
-                        const message = errorResponse.response.data.errors.map((error) => error.detail).join(' / ');
-
-                        this.createNotificationError({ message });
-                    }
+                    this.createNotificationFromError({ errorResponse, title: 'swag-paypal.settingForm.messageTestError' });
 
                     return { credentialsValid: false };
                 });

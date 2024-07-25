@@ -22,6 +22,11 @@
         "tooltip": "Go to the <a class=\"swag-paypal-go-to-settings-link\" href=\"#/swag/paypal/index\">PayPal extension settings →</a> and activate PayPal Commerce Platform to activate this payment method."
     },
     "swag-paypal": {
+        "errors": {
+            "UNKOWN": "An unknown error occurred",
+            "SWAG_PAYPAL__API_INVALID_CREDENTIALS": "The API credentials are invalid",
+            "SWAG_PAYPAL__INVALID_API_CREDENTIALS": "The API credentials are invalid"
+        },
         "header": "PayPal",
         "saleschannelCard": {
             "button": {
@@ -42,7 +47,7 @@
           "cardTitle": "Webhook",
           "buttonRefresh": "Refresh webhook",
           "refreshFailed": {
-            "title": "Failed to refresh",
+            "title": "Failed to refresh webhook",
             "errorUnknown": "Unknown error"
           },
           "status": {
@@ -392,7 +397,7 @@
             },
             "messageSaveSuccess": "The PayPal settings have been saved.",
             "messageTestSuccess": "The API credentials have been validated.",
-            "messageTestError": "The API credentials could not be validated.",
+            "messageTestError": "The API credentials could not be validated",
             "messageWebhookCreated": "The webhook has been registered.",
             "messageWebhookUpdated": "The webhook has been updated.",
             "messageWebhookError": "The webhook could not be saved. The following errors occurred:"
