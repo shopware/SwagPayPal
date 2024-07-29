@@ -173,20 +173,12 @@ export default Shopware.Component.wrapComponentConfig({
         }, 850),
 
         handleError(errorResponse: PayPal.ServiceError) {
-<<<<<<< HEAD
-            const errorDetail = errorResponse.response?.data.errors?.[0]?.detail;
-            this.createNotificationError({
-                message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${errorDetail}`,
-                autoClose: false,
-            });
-=======
             if (errorResponse.response?.data.errors?.[0]?.code === DISPUTE_AUTH_ERROR) {
                 this.notAuthorized = true;
             } else {
                 this.createNotificationFromError({ errorResponse, title: 'swag-paypal-disputes.list.errorTitle' });
             }
 
->>>>>>> 1d4d6544 (PPI-956 - Improved admin errors)
             this.isLoading = false;
         },
 

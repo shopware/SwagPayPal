@@ -23,7 +23,7 @@
     },
     "swag-paypal": {
         "errors": {
-            "UNKOWN": "An unknown error occurred",
+            "UNKNOWN": "An unknown error occurred",
             "SWAG_PAYPAL__API_INVALID_CREDENTIALS": "The API credentials are invalid",
             "SWAG_PAYPAL__INVALID_API_CREDENTIALS": "The API credentials are invalid"
         },

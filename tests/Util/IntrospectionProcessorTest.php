@@ -10,8 +10,6 @@ namespace Swag\PayPal\Test\Util;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\LogRecord;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Kernel;
@@ -26,7 +24,6 @@ use Swag\PayPal\Util\IntrospectionProcessor;
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(IntrospectionProcessor::class)]
 class IntrospectionProcessorTest extends TestCase
 {
     private const TRACE_MONOLOG = [
@@ -78,7 +75,9 @@ class IntrospectionProcessorTest extends TestCase
         'type' => '->',
     ];
 
-    #[DataProvider('invokeDataProvider')]
+    /**
+     * @dataProvider invokeDataProvider
+     */
     public function testInvoke(array $backtrace, array $expected): void
     {
         $logRecord = new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Error, 'test');

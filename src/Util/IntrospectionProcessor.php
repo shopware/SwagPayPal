@@ -23,12 +23,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Package('checkout')]
 class IntrospectionProcessor implements ProcessorInterface
 {
-    private Level $level;
-
     private const SKIP_FUNCTIONS = [
         'call_user_func',
         'call_user_func_array',
     ];
+
+    private Level $level;
 
     /**
      * @param string|int|Level $level The minimum logging level at which this Processor will be triggered
