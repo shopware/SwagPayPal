@@ -24,7 +24,7 @@ export default Shopware.Component.wrapComponentConfig({
     ],
 
     mixins: [
-        Shopware.Mixin.getByName('notification'),
+        Shopware.Mixin.getByName('swag-paypal-notification'),
     ],
 
     data(): {
@@ -180,15 +180,10 @@ export default Shopware.Component.wrapComponentConfig({
         }, 850),
 
         handleError(errorResponse: PayPal.ServiceError) {
-            const error = errorResponse.response?.data.errors?.[0];
-
-            if (error?.code === DISPUTE_AUTH_ERROR) {
+            if (errorResponse.response?.data.errors?.[0]?.code === DISPUTE_AUTH_ERROR) {
                 this.notAuthorized = true;
             } else {
-                this.createNotificationError({
-                    message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${error?.detail ?? ''}`,
-                    autoClose: false,
-                });
+                this.createNotificationFromError({ errorResponse, title: 'swag-paypal-disputes.list.errorTitle' });
             }
 
             this.isLoading = false;

@@ -11,6 +11,7 @@ export default Shopware.Component.wrapComponentConfig({
     ],
 
     mixins: [
+        Shopware.Mixin.getByName('swag-paypal-notification'),
         Shopware.Mixin.getByName('swag-paypal-credentials-loader'),
     ],
 
@@ -79,7 +80,12 @@ export default Shopware.Component.wrapComponentConfig({
 
         async fetchMerchantInformation() {
             this.merchantInformation = await this.SwagPayPalApiCredentialsService
-                .getMerchantInformation(this.selectedSalesChannelId);
+                .getMerchantInformation(this.selectedSalesChannelId)
+                .catch((errorResponse: PayPal.ServiceError) => {
+                    this.createNotificationFromError({ errorResponse });
+
+                    return null;
+                });
         },
 
         checkBoolFieldInheritance(value: unknown): boolean {

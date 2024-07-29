@@ -5,6 +5,7 @@
 - PPI-950 - Ändert das Versanddienstleister-Feld in der Administration zu einem Dropdown
 - PPI-951 - Behebt ein Problem, bei dem ohne Smart Payment Buttons nur generische Fehlermeldungen während des Bestellprozesses angezeigt wurden
 - PPI-953 - Behebt ein Problem, bei dem Sendungsverfolgungsdaten bei invaliden Versanddienstleister nicht an PayPal übermittelt wurden
+- PPI-956 - Verbessert das Logging und die Fehlerbehandlung für Händlereinstellungen
 
 # 9.3.1
 - PPI-944 - Behebt ein Problem, bei dem die Abfrage des Zahlungsstatus bei invaliden Transaktionen weiter versucht wurde

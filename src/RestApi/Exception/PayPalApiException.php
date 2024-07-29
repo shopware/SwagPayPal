@@ -14,20 +14,18 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class PayPalApiException extends PaymentException
 {
+    public const ERROR_CODE_INVALID_CREDENTIALS = 'INVALID_CREDENTIALS';
     public const ERROR_CODE_DUPLICATE_ORDER_NUMBER = 'DUPLICATE_TRANSACTION';
     public const ERROR_CODE_DUPLICATE_INVOICE_ID = 'DUPLICATE_INVOICE_ID';
     public const ERROR_CODE_RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND';
     public const ERROR_CODE_INVALID_PARAMETER_VALUE = 'INVALID_PARAMETER_VALUE';
 
-    private ?string $issue;
-
     public function __construct(
         string $name,
         string $message,
         int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
-        ?string $issue = null
+        private ?string $issue = null
     ) {
-        $this->issue = $issue;
         parent::__construct(
             $payPalApiStatusCode,
             'SWAG_PAYPAL__API_' . ($issue ?? 'EXCEPTION'),
@@ -43,5 +41,16 @@ class PayPalApiException extends PaymentException
     public function getIssue(): ?string
     {
         return $this->issue;
+    }
+
+    /**
+     * Is error code or issue one of the given codes/issues?
+     *
+     * @param self::ERROR_CODE_*|string $codes
+     */
+    public function is(string ...$codes): bool
+    {
+        return \in_array($this->errorCode, $codes, true)
+            || \in_array($this->issue, $codes, true);
     }
 }

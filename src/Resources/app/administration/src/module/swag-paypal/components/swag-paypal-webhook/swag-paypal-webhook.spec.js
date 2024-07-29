@@ -1,5 +1,4 @@
 import { mount } from '@vue/test-utils';
-import 'SwagPayPal/mixin/swag-paypal-credentials-loader.mixin';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-webhook';
 
 Shopware.Component.register('swag-paypal-webhook', () => import('.'));

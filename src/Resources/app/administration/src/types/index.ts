@@ -33,4 +33,18 @@ export namespace Api {
 
 export type { SystemConfig } from './system-config';
 export type ErrorState = { code: number; detail: string };
-export type ServiceError = AxiosError<{ errors: ShopwareHttpError[] }>;
+
+export type HttpError = ShopwareHttpError&{
+    meta?: {
+        // parameters of a PayPalApiException
+        parameters?: {
+            message?: string;
+            name?: string;
+            issue?: string;
+            // part of PayPalPos
+            salesChannelIds?: string[];
+        };
+    };
+};
+
+export type ServiceError = AxiosError<{ errors: HttpError[] }>;

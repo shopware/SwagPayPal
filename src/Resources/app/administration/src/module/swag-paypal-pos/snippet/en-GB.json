@@ -1,4 +1,9 @@
 {
+    "swag-paypal": {
+        "errors": {
+            "SWAG_PAYPAL_POS__EXISTING_POS_ACCOUNT": "This Zettle account has already been configured in another Sales Channel"
+        }
+    },
     "swag-paypal-pos": {
         "general": {
             "moduleTitle": "Zettle by PayPal",
