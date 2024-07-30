@@ -76,7 +76,7 @@ class PayPalHandler
             );
         } catch (PayPalApiException $e) {
             if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
-                || ($e->getIssue() !== PayPalApiException::ERROR_CODE_DUPLICATE_INVOICE_ID)) {
+                || !$e->is(PayPalApiException::ERROR_CODE_DUPLICATE_INVOICE_ID)) {
                 throw $e;
             }
 

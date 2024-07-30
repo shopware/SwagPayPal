@@ -5,6 +5,7 @@
 - PPI-950 - Changed the shipment carrier field to a dropdown in the Administration
 - PPI-951 - Fixes an issue, where only generic error messages were displayed during checkout without Smart Payment Buttons
 - PPI-953 - Fixes an issue, where shipping tracking codes were not synced with an invalid carrier
+- PPI-956 - Improved logging and error handling for merchant configurations
 
 # 8.3.1
 - PPI-944 - Fixes an issue, where payment status polling kept retrying with invalid transactions

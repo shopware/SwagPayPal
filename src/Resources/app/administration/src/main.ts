@@ -1,4 +1,5 @@
 import './mixin/swag-paypal-credentials-loader.mixin';
+import './mixin/swag-paypal-notification.mixin';
 import './mixin/swag-paypal-pos-catch-error.mixin';
 import './mixin/swag-paypal-pos-log-label.mixin';
 

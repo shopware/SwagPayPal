@@ -181,7 +181,7 @@ class WebhookController extends AbstractController
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         } catch (PayPalApiException $exception) {
-            if ($exception->getIssue() === PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND) {
+            if ($exception->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
                 $this->logger->warning(\sprintf('[PayPal Webhook] %s', $exception->getMessage()), ['webhook', \json_encode($webhook)]);
 
                 return;

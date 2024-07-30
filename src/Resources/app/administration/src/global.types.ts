@@ -3,6 +3,7 @@ import type Criteria from 'src/core/data/criteria.data';
 import type { Entity } from 'src/types/entity';
 import type { PropType as TPropType } from 'vue';
 import type { AxiosResponse } from 'axios';
+import type SwagPaypalNotificationMixin from './mixin/swag-paypal-notification.mixin';
 import type SwagPaypalCredentialsLoaderMixin from './mixin/swag-paypal-credentials-loader.mixin';
 import type SwagPaypalPosCatchErrorMixin from './mixin/swag-paypal-pos-catch-error.mixin';
 import type SwagPaypalPosLogLabelMixin from './mixin/swag-paypal-pos-log-label.mixin';
@@ -26,6 +27,7 @@ declare global {
 
     interface MixinContainer {
         'swag-paypal-credentials-loader': typeof SwagPaypalCredentialsLoaderMixin;
+        'swag-paypal-notification': typeof SwagPaypalNotificationMixin;
         'swag-paypal-pos-catch-error': typeof SwagPaypalPosCatchErrorMixin;
         'swag-paypal-pos-log-label': typeof SwagPaypalPosLogLabelMixin;
     }

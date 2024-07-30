@@ -22,6 +22,11 @@
         "tooltip": "Gehen Sie zu den <a class=\"swag-paypal-go-to-settings-link\" href=\"#/swag/paypal/index\">Einstellungen der PayPal-Erweiterung →</a> und aktivieren Sie PayPal Commerce Platform, um diese Zahlungsmethode zu aktivieren."
     },
     "swag-paypal": {
+        "errors": {
+            "UNKNOWN": "Ein unbekannter Fehler ist aufgetreten",
+            "SWAG_PAYPAL__API_INVALID_CREDENTIALS": "Die API-Zugangsdaten sind ungültig",
+            "SWAG_PAYPAL__INVALID_API_CREDENTIALS": "Die API-Zugangsdaten sind ungültig"
+        },
         "header": "PayPal",
         "saleschannelCard": {
             "button": {
@@ -42,7 +47,7 @@
           "cardTitle": "Webhook",
           "buttonRefresh": "Webhook aktualisieren",
           "refreshFailed": {
-            "title": "Aktualisierung ist fehlgeschlagen",
+            "title": "Aktualisierung des Webhooks ist fehlgeschlagen",
             "errorUnknown": "Unbekannter Fehler"
           },
           "status": {
@@ -392,7 +397,7 @@
             },
             "messageSaveSuccess": "Die PayPal-Einstellungen wurden gespeichert.",
             "messageTestSuccess": "Die API-Zugangsdaten wurden validiert.",
-            "messageTestError": "Die API-Zugangsdaten konnten nicht validiert werden.",
+            "messageTestError": "Die API-Zugangsdaten konnten nicht validiert werden",
             "messageWebhookCreated": "Der Webhook wurde registriert.",
             "messageWebhookUpdated": "Der Webhook wurde aktualisiert.",
             "messageWebhookError": "Der Webhook konnte nicht gespeichert werden. Folgende Fehler sind aufgetreten:"

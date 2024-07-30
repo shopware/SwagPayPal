@@ -9,10 +9,12 @@ namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerId;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
 class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterface
@@ -27,6 +29,15 @@ class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterf
     public function get(string $merchantId, ?string $salesChannelId = null, bool $sandboxActive = true): MerchantIntegrations
     {
         if (!$merchantId) {
+            // throw new PayPalApiException(
+            //     'merchant_id_missing',
+            //     'The merchant id is missing',
+            //     Response::HTTP_UNAUTHORIZED,
+            //     PayPalApiException::ERROR_CODE_INVALID_CREDENTIALS,
+            // );
+            /**
+             * @deprecated tag:v10.0.0 - Will be replaced by a PayPalApiException
+             */
             throw new PayPalInvalidApiCredentialsException();
         }
 

@@ -16,6 +16,7 @@ module.exports = {
 
     setupFilesAfterEnv: [
         resolve(join(process.env.ADMIN_PATH, '/test/_setup/prepare_environment.js')),
+        '<rootDir>/jest.setup.js',
     ],
 
     collectCoverageFrom: [

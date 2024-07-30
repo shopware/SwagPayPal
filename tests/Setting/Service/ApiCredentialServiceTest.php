@@ -13,7 +13,6 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
-use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
@@ -57,8 +56,8 @@ class ApiCredentialServiceTest extends TestCase
         $clientSecret = ConstantsForTesting::VALID_CLIENT_SECRET;
         $sandboxActive = false;
 
-        $this->expectException(PayPalInvalidApiCredentialsException::class);
-        $this->expectExceptionMessage('Provided API credentials are invalid');
+        $this->expectException(PayPalApiException::class);
+        $this->expectExceptionMessage('The error "TEST" occurred with the following message: generalClientExceptionMessage');
         $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
     }
 

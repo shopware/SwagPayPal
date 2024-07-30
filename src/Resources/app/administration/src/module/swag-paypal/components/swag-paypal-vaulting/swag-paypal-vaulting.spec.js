@@ -4,8 +4,8 @@ import 'src/app/component/base/sw-card';
 import 'src/app/component/form/sw-switch-field';
 import 'src/app/component/form/sw-checkbox-field';
 import 'src/app/mixin/notification.mixin';
-import 'SwagPayPal/mixin/swag-paypal-credentials-loader.mixin';
 import 'SwagPayPal/module/swag-paypal/components/swag-paypal-vaulting';
+import flushPromises from 'flush-promises';
 
 Shopware.Component.register('swag-paypal-vaulting', () => import('.'));
 
@@ -89,6 +89,8 @@ describe('Paypal Vaulting Component', () => {
                 },
             },
         });
+
+        await flushPromises();
 
         expect(wrapper.vm.canHandleVaulting).toBe(true);
     });
