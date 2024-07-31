@@ -248,6 +248,7 @@
             "express": {
                 "cardTitle": "Express Checkout Shortcut",
                 "cardSubtitle": "Express Checkouts increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated. ",
+                "alertMessage": "Double opt-in for guests is activated in one of your Sales Channels. This feature is not compatible with PayPal Express Shortcut buttons. Customers who sign up via the Express Checkout Shortcut buttons won't receive double opt-in verification emails.",
                 "ecsDetailEnabled": {
                     "label": "'PayPal Checkout' on detail page",
                     "helpText": "If this option is active, the Express Checkout button will be shown on each product detail page."
