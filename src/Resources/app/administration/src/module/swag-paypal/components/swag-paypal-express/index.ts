@@ -1,10 +1,12 @@
 import type * as PayPal from 'src/types';
 import template from './swag-paypal-express.html.twig';
 
+const { Criteria } = Shopware.Data;
+
 export default Shopware.Component.wrapComponentConfig({
     template,
 
-    inject: ['acl'],
+    inject: ['acl', 'repositoryFactory'],
 
     props: {
         actualConfigData: {
@@ -21,6 +23,16 @@ export default Shopware.Component.wrapComponentConfig({
             required: false,
             default: null,
         },
+    },
+
+    data() {
+        return {
+            doubleOptInConfig: false,
+        };
+    },
+
+    created() {
+        this.fetchSystemConfig();
     },
 
     computed: {
@@ -70,6 +82,19 @@ export default Shopware.Component.wrapComponentConfig({
                 && !this.actualConfigData['SwagPayPal.settings.ecsListingEnabled']
             );
         },
+
+        systemConfigRepository() {
+            return this.repositoryFactory.create('system_config');
+        },
+
+        systemConfigCriteria() {
+            const criteria = new Criteria();
+
+            criteria.addFilter(Criteria.equals('configurationKey', 'core.loginRegistration.doubleOptInGuestOrder'));
+            criteria.addFilter(Criteria.equals('configurationValue', 'true'));
+
+            return criteria;
+        },
     },
 
     methods: {
@@ -83,6 +108,12 @@ export default Shopware.Component.wrapComponentConfig({
 
         checkBoolFieldInheritance(value: unknown): boolean {
             return typeof value !== 'boolean';
+        },
+
+        async fetchSystemConfig() {
+            const response = await this.systemConfigRepository.search(this.systemConfigCriteria);
+
+            this.doubleOptInConfig = (response?.total != null && response.total > 0);
         },
 
         preventSave(mode: boolean) {

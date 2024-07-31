@@ -5,6 +5,10 @@
     :subtitle="$tc('swag-paypal.settingForm.express.cardSubtitle')"
 >
 
+    {% block swag_paypal_content_card_channel_config_express_alert %}
+        <sw-alert v-if="doubleOptInConfig" variant="warning">{{ $tc('swag-paypal.settingForm.express.alertMessage') }}</sw-alert>
+    {% endblock %}
+
     {% block swag_paypal_content_card_channel_config_express_settings %}
     <div v-if="actualConfigData" class="swag-paypal-settings-express-fields">
 

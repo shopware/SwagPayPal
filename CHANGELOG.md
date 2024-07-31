@@ -1,3 +1,6 @@
+# 8.4.1
+- PPI-960 - Express checkout buttons are now available with enabled Double-Opt-In, a warning will be displayed in the settings
+
 # 8.4.0
 - PPI-807 - Improved script loading performance in the Storefront
 - PPI-924 - Added more explicit error messages for errors happening during express checkout

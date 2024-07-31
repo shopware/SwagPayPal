@@ -59,10 +59,6 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
             return null;
         }
 
-        if ($this->systemConfigService->getBool('core.loginRegistration.doubleOptInGuestOrder')) {
-            return null;
-        }
-
         $context = $salesChannelContext->getContext();
         $salesChannelId = $salesChannelContext->getSalesChannelId();
 

@@ -152,23 +152,6 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertNull($expressCheckoutButtonData);
     }
 
-    public function testGetExpressCheckoutButtonDataWithDoubleOptInGuestOrder(): void
-    {
-        $taxId = $this->createTaxId(Context::createDefaultContext());
-        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
-        $productId = $this->getProductId($salesChannelContext->getContext(), $taxId);
-        $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
-
-        $cart = $this->cartService->createNew($salesChannelContext->getToken());
-        $this->cartService->add($cart, $lineItem, $salesChannelContext);
-
-        $this->systemConfigService->set('core.loginRegistration.doubleOptInGuestOrder', true);
-
-        $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext);
-
-        static::assertNull($expressCheckoutButtonData);
-    }
-
     /**
      * @dataProvider dataProviderTestGetExpressCheckoutButtonDataWithCredentials
      */
