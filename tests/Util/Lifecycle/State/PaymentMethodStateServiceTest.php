@@ -35,13 +35,11 @@ class PaymentMethodStateServiceTest extends TestCase
         'Swag\PayPal\Checkout\Payment\Method\BancontactAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\BlikAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\EpsAPMHandler' => true,
-        'Swag\PayPal\Checkout\Payment\Method\GiropayAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\IdealAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\MultibancoAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\MyBankAPMHandler' => false,
         'Swag\PayPal\Checkout\Payment\Method\OxxoAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\P24APMHandler' => true,
-        'Swag\PayPal\Checkout\Payment\Method\SofortAPMHandler' => false,
         'Swag\PayPal\Checkout\Payment\Method\TrustlyAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\VenmoHandler' => false,
         'Swag\PayPal\Checkout\Payment\Method\PayLaterHandler' => true,
@@ -121,7 +119,6 @@ class PaymentMethodStateServiceTest extends TestCase
 
         $service->setAllPaymentMethodsState(false, Context::createDefaultContext());
     }
-
 
     private function createStateService(): PaymentMethodStateService
     {

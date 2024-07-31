@@ -14,7 +14,7 @@ class CreateOrderAPM
 {
     public const ID = '0RW08056D62072441';
 
-    public static function get(string $apmName = 'sofort'): array
+    public static function get(string $apmName = 'ideal'): array
     {
         return [
             'id' => self::ID,

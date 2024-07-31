@@ -99,7 +99,6 @@
                     "blikapmhandler": "BLIK ist für die folgenden Länder verfügbar: Polen",
                     "boletobancarioapmhandler": "Boleto Bancário ist für die folgenden Länder verfügbar: Brasilien",
                     "epsapmhandler": "eps ist für die folgenden Länder verfügbar: Österreich",
-                    "giropayapmhandler": "Giropay ist für die folgenden Länder verfügbar: Deutschland",
                     "idealapmhandler": "iDEAL ist für die folgenden Länder verfügbar: Niederlande",
                     "multibancoapmhandler": "Multibanco ist für die folgenden Länder verfügbar: Portugal",
                     "mybankapmhandler": "MyBank ist für die folgenden Länder verfügbar: Italien",
@@ -108,7 +107,6 @@
                     "paylaterhandler": "Später Bezahlen ist für die folgenden Länder verfügbar: Australien, Deutschland, Frankreich, Italien, Spanien, Vereinigte Staaten, Vereinigtes Königreich",
                     "puihandler": "Rechnungskauf ist für die folgenden Länder verfügbar: Deutschland",
                     "sepahandler": "SEPA Lastschrift ist für die folgenden Länder verfügbar: Deutschland",
-                    "sofortapmhandler": "Sofort ist für die folgenden Länder verfügbar: Belgien, Deutschland, Italien, Niederlande, Österreich, Spanien, Vereinigtes Königreich",
                     "venmohandler": "Venmo ist für die folgenden Länder verfügbar: USA",
                     "trustlyapmhandler": "Trustly ist für die folgenden Länder verfügbar: Estland, Finnland, Niederlande, Schweden"
                 },
@@ -118,14 +116,12 @@
                     "pending": "Authorisierung ausstehend",
                     "ineligible": "Gesperrt",
                     "inactive": "Onboarding benötigt",
-                    "mybank": "Limitiert",
-                    "sofort": "Limitiert"
+                    "mybank": "Limitiert"
                 },
                 "onboardingStatusTooltip": {
                   "ineligible": "PayPal hat uns informiert, dass diese Zahlungsmethode aktuell für Ihren Account nicht freigeschaltet ist.",
                   "limited": "PayPal hat uns informiert, dass Einschränkugen dieser Zahlungsart für Ihren Account bestehen.",
-                  "mybank": "Händler, die MyBank nach Februar 2023 aktivieren, benötigen eine manuelle Genehmigung von PayPal. Wenden Sie sich an den PayPal-Support, um weitere Informationen zu erhalten.",
-                  "sofort": "Die Aktivierung von SOFORT ist für Neukunden ab Oktober 2023 nicht mehr gestattet. Dies geschieht in Vorbereitung auf das Ende des Produkts zum September 2024 — wie von Klarna angekündigt."
+                  "mybank": "Händler, die MyBank nach Februar 2023 aktivieren, benötigen eine manuelle Genehmigung von PayPal. Wenden Sie sich an den PayPal-Support, um weitere Informationen zu erhalten."
                 },
                 "paymentMethodStatusChangedSuccess": {
                     "active": "Zahlungsart \"{name}\" ist jetzt aktiv.",

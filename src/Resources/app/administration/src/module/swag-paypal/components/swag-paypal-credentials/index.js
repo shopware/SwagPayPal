@@ -112,9 +112,9 @@ Component.register('swag-paypal-credentials', {
 
             const sandboxSetting = sandbox ? 'Sandbox' : '';
             const clientId = this.actualConfigData[`SwagPayPal.settings.clientId${sandboxSetting}`] ||
-                    this.allConfigs.null[`SwagPayPal.settings.clientId${sandboxSetting}`];
+                    this.allConfigs?.null[`SwagPayPal.settings.clientId${sandboxSetting}`];
             const clientSecret = this.actualConfigData[`SwagPayPal.settings.clientSecret${sandboxSetting}`] ||
-                    this.allConfigs.null[`SwagPayPal.settings.clientSecret${sandboxSetting}`];
+                    this.allConfigs?.null[`SwagPayPal.settings.clientSecret${sandboxSetting}`];
 
             this.SwagPayPalApiCredentialsService.validateApiCredentials(
                 clientId,

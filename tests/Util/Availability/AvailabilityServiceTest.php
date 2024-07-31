@@ -27,7 +27,6 @@ use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\BancontactMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\BlikMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\EpsMethodData;
-use Swag\PayPal\Util\Lifecycle\Method\GiropayMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\IdealMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\MultibancoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\MyBankMethodData;
@@ -38,7 +37,6 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData;
-use Swag\PayPal\Util\Lifecycle\Method\SofortMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 
@@ -121,7 +119,6 @@ class AvailabilityServiceTest extends TestCase
             [BancontactMethodData::class, false],
             [BlikMethodData::class, false],
             [EpsMethodData::class, false],
-            [GiropayMethodData::class, true],
             [IdealMethodData::class, false],
             [MultibancoMethodData::class, false],
             [MyBankMethodData::class, false],
@@ -131,7 +128,6 @@ class AvailabilityServiceTest extends TestCase
             [PayPalMethodData::class, true],
             [PUIMethodData::class, true],
             [SEPAMethodData::class, true],
-            [SofortMethodData::class, true],
             [TrustlyMethodData::class, false],
             [VenmoMethodData::class, false],
         ];

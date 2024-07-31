@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Pos\Mock\Repositories;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -41,7 +42,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\Tax\TaxEntity;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
 /**
@@ -208,7 +208,6 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
     }
 
     public function createMockEntity(
-        TaxEntity $tax,
         CategoryEntity $category,
         CurrencyEntity $currency,
         string $name,
@@ -224,7 +223,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
         $entity->setName($name);
         $entity->setDescription(ConstantsForTesting::PRODUCT_DESCRIPTION);
         $entity->setProductNumber(ConstantsForTesting::PRODUCT_NUMBER);
-        $shopwarePrice = new CalculatedPrice(ConstantsForTesting::PRODUCT_PRICE, ConstantsForTesting::PRODUCT_PRICE, new CalculatedTaxCollection(), new TaxRuleCollection());
+        $shopwarePrice = new CalculatedPrice(ConstantsForTesting::PRODUCT_PRICE, ConstantsForTesting::PRODUCT_PRICE, new CalculatedTaxCollection(), new TaxRuleCollection([new TaxRule(19.0)]));
         $entity->setCalculatedPrice($shopwarePrice);
         $entity->setPurchasePrices(new PriceCollection([
             $currency->getId() => new ShopwarePrice(
@@ -245,7 +244,6 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
         $entity->addTranslated('name', $name);
         $entity->addTranslated('description', ConstantsForTesting::PRODUCT_DESCRIPTION);
         $entity->setCategories(new CategoryCollection([$category]));
-        $entity->setTax($tax);
         $this->addMockEntity($entity);
 
         return $entity;

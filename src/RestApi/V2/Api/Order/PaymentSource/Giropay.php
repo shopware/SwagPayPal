@@ -11,6 +11,8 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_payment_source_giropay")
+ *
+ * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
  */
 class Giropay extends AbstractAPMPaymentSource
 {

@@ -16,7 +16,7 @@ Component.register('swag-paypal-behavior', {
         actualConfigData: {
             type: Object,
             required: true,
-            default: () => { return {}; },
+            default: () => { return { null: {} }; },
         },
         allConfigs: {
             type: Object,
@@ -63,6 +63,14 @@ Component.register('swag-paypal-behavior', {
                     name: this.$tc('swag-paypal.settingForm.behavior.merchantLocation.other'),
                 },
             ];
+        },
+
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed without replacement.
+         */
+        showMerchantLocation() {
+            return this.actualConfigData['SwagPayPal.settings.plusCheckoutEnabled'] ??
+                this.allConfigs?.null?.['SwagPayPal.settings.plusCheckoutEnabled'];
         },
 
         landingPageOptions() {

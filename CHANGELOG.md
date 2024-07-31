@@ -1,3 +1,10 @@
+# 6.5.0
+- PPI-896 - Changed the wording of the checkout Smart Payment Buttons from 'PayPal Checkout' to 'Pay with PayPal'.
+- PPI-932 - Removed the no longer supported Sofort payment method
+- PPI-936 - Fixes an issue, where Zettle may receive incorrect tax rates
+- PPI-947 - Fixes an issue, where Smart Payment Buttons may have not been configurable
+- PPI-948 - Removed the no longer supported Giropay payment method
+
 # 6.4.0
 - PPI-853 - Added option to add buyer country to "Pay Later" banners
 

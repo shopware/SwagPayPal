@@ -13,6 +13,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Giropay;
 
+/**
+ * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
+ */
 class GiropayOrderBuilder extends AbstractAPMOrderBuilder
 {
     protected function buildPaymentSource(

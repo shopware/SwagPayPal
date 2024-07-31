@@ -121,10 +121,6 @@
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
             <tag name="swag.paypal.payment.method.data"/>
         </service>
-        <service id="Swag\PayPal\Util\Lifecycle\Method\GiropayMethodData"
-                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
-            <tag name="swag.paypal.payment.method.data"/>
-        </service>
         <service id="Swag\PayPal\Util\Lifecycle\Method\IdealMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
             <tag name="swag.paypal.payment.method.data"/>
@@ -142,10 +138,6 @@
             <tag name="swag.paypal.payment.method.data"/>
         </service>
         <service id="Swag\PayPal\Util\Lifecycle\Method\P24MethodData"
-                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
-            <tag name="swag.paypal.payment.method.data"/>
-        </service>
-        <service id="Swag\PayPal\Util\Lifecycle\Method\SofortMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
             <tag name="swag.paypal.payment.method.data"/>
         </service>

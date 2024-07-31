@@ -18,13 +18,11 @@ use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\EpsOrderBuilder;
-use Swag\PayPal\OrdersApi\Builder\APM\GiropayOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\IdealOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\MultibancoOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\MyBankOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\OxxoOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\P24OrderBuilder;
-use Swag\PayPal\OrdersApi\Builder\APM\SofortOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\TrustlyOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -35,13 +33,11 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractAPMPaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Bancontact;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Blik;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Eps;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Giropay;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Ideal;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Multibanco;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\MyBank;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Oxxo;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\P24;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Sofort;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Trustly;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -208,13 +204,11 @@ class APMOrderBuilderTest extends TestCase
             [BlikOrderBuilder::class, [], Blik::class, ['email' => 'test@test.com']],
             //[Boletobancario::class, [], Boletobancario::class, ['email' => 'test@test.com']],
             [EpsOrderBuilder::class, [], Eps::class, []],
-            [GiropayOrderBuilder::class, [], Giropay::class, []],
             [IdealOrderBuilder::class, [], Ideal::class, []],
             [MultibancoOrderBuilder::class, [], Multibanco::class, []],
             [MyBankOrderBuilder::class, [], MyBank::class, []],
             [OxxoOrderBuilder::class, [], Oxxo::class, ['email' => 'test@test.com']],
             [P24OrderBuilder::class, [], P24::class, ['email' => 'test@test.com']],
-            [SofortOrderBuilder::class, [], Sofort::class, []],
             [TrustlyOrderBuilder::class, [], Trustly::class, []],
         ];
     }

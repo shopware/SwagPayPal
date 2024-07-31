@@ -33,14 +33,15 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\GiropayMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\SofortMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
-use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class Update
@@ -145,8 +146,12 @@ class Update
             $this->updateTo620();
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '7.3.0', '<')) {
-            $this->updateTo730();
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '6.3.0', '<')) {
+            $this->updateTo630();
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '6.5.0', '<')) {
+            $this->updateTo650($updateContext->getContext());
         }
     }
 
@@ -470,7 +475,7 @@ class Update
         $this->setSettingToDefaultValue(Settings::ECS_SHOW_PAY_LATER);
     }
 
-    private function updateTo730(): void
+    private function updateTo630(): void
     {
         // @phpstan-ignore-next-line
         $installmentBannerEnabled = $this->systemConfig->getBool(Settings::INSTALLMENT_BANNER_ENABLED);
@@ -480,5 +485,15 @@ class Update
         $this->systemConfig->set(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED, $installmentBannerEnabled);
         $this->systemConfig->set(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED, $installmentBannerEnabled);
         $this->systemConfig->set(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED, $installmentBannerEnabled);
+    }
+
+    private function updateTo650(Context $context): void
+    {
+        try {
+            $this->paymentMethodStateService->setPaymentMethodState(GiropayMethodData::class, false, $context);
+            $this->paymentMethodStateService->setPaymentMethodState(SofortMethodData::class, false, $context);
+        } catch (\Throwable $e) {
+            return;
+        }
     }
 }
