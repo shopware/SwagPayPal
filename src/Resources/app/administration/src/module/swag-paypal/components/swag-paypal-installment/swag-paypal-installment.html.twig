@@ -73,7 +73,7 @@
 
         {% block swag_paypal_content_card_channel_config_installment_settings_login_page_enabled %}
         <sw-inherit-wrapper
-            v-model:value="actualConfigData['SwagPayPal.settings.installmentBannerEnabled']"
+            v-model:value="actualConfigData['SwagPayPal.settings.installmentBannerLoginPageEnabled']"
             :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerLoginPageEnabled']"
             :customInheritationCheckFunction="checkBoolFieldInheritance"
         >
