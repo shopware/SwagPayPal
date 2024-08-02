@@ -82,7 +82,7 @@
         {% block swag_paypal_content_card_channel_config_installment_settings_login_page_enabled %}
         <sw-inherit-wrapper
             {% if VUE3 %}
-            v-model:value="actualConfigData['SwagPayPal.settings.installmentBannerEnabled']"
+            v-model:value="actualConfigData['SwagPayPal.settings.installmentBannerLoginPageEnabled']"
             {% else %}
             v-model="actualConfigData['SwagPayPal.settings.installmentBannerLoginPageEnabled']"
             {% endif %}
