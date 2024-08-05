@@ -45,7 +45,7 @@ class OpenAPISchemaTest extends TestCase
         '\\' . PlusPaymentHandleController::class . '::handlePlusPayment',
         '\\' . PlusPaymentFinalizeController::class . '::finalizeTransaction',
 
-        // platform routes - not part of the plugin
+        // we don't control the routes of the system config controller
         '\\' . WebhookSystemConfigController::class . '::checkConfiguration',
         '\\' . WebhookSystemConfigController::class . '::getConfiguration',
         '\\' . WebhookSystemConfigController::class . '::getConfigurationValues',

@@ -19,6 +19,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 
 /**
  * @internal
+ *
+ * @deprecated tag:v10.0.0 - the only method covered here will be removed
  */
 #[Package('checkout')]
 class CredentialsResourceTest extends TestCase

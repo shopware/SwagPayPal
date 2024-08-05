@@ -14,10 +14,12 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
+use Swag\PayPal\RestApi\V1\Service\CredentialProvider;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -76,6 +78,7 @@ class SettingsControllerTest extends TestCase
     private function createApiValidationController(): SettingsController
     {
         $logger = new NullLogger();
+        $systemConfigService = $this->createDefaultSystemConfig();
 
         return new SettingsController(
             new ApiCredentialService(
@@ -83,11 +86,19 @@ class SettingsControllerTest extends TestCase
                     new TokenClientFactoryMock($logger),
                     new CredentialsClientFactoryMock($logger),
                     new TokenValidator()
-                )
+                ),
+                new TokenClientFactoryMock($logger),
+                new TokenValidator(),
+                new CredentialProvider(
+                    new SettingsValidationService($systemConfigService, $logger),
+                    $systemConfigService,
+                    new CredentialsUtil($systemConfigService)
+                ),
+                $logger,
             ),
             new MerchantIntegrationsService(
                 new MerchantIntegrationsResource(new PayPalClientFactoryMock($logger)),
-                new CredentialsUtil($this->createDefaultSystemConfig()),
+                new CredentialsUtil($systemConfigService),
                 $this->getContainer()->get(PaymentMethodDataRegistry::class),
                 new PayPalClientFactoryMock($logger)
             )
