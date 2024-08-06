@@ -13,7 +13,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Package('checkout')]
 #[Route(defaults: ['_routeScope' => ['storefront']])]

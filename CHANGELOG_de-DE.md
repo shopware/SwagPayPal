@@ -1,4 +1,5 @@
 # 9.4.1
+- PPI-958 - Behebt ein Problem, bei dem die API-Zugangsdaten-Prüfung bei ungültiger Merchant-Payer-ID erfolgreich war
 - PPI-960 - Express-Checkout-Buttons sind nun auch bei aktiviertem Double-Opt-In verfügbar, eine Warnung wird in den Einstellungen angezeigt
 - PPI-961 - Behebt ein Problem, bei dem die Einstellung des 'Später Bezahlen'-Banner auf Loginseite nicht gespeichert wurde
 

@@ -20,7 +20,8 @@ use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
 use Swag\PayPal\Checkout\Plus\PlusPaymentHandleController;
 use Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute;
 use Swag\PayPal\Storefront\Controller\PayPalController;
-use Symfony\Component\Routing\Annotation\Route;
+use Swag\PayPal\Webhook\Registration\WebhookSystemConfigController;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * @internal
@@ -43,6 +44,11 @@ class OpenAPISchemaTest extends TestCase
         '\\' . FilteredPaymentMethodRoute::class . '::load',
         '\\' . PlusPaymentHandleController::class . '::handlePlusPayment',
         '\\' . PlusPaymentFinalizeController::class . '::finalizeTransaction',
+
+        // we don't control the routes of the system config controller
+        '\\' . WebhookSystemConfigController::class . '::checkConfiguration',
+        '\\' . WebhookSystemConfigController::class . '::getConfiguration',
+        '\\' . WebhookSystemConfigController::class . '::getConfigurationValues',
     ];
 
     public const IGNORED_LOG_MESSAGES = [

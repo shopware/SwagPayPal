@@ -9,12 +9,10 @@ namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
-use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerId;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
-use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
 class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterface
