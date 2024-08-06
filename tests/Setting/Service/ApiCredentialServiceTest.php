@@ -12,12 +12,16 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
+use Swag\PayPal\RestApi\V1\Service\CredentialProvider;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 
 /**
  * @internal
@@ -72,13 +76,22 @@ class ApiCredentialServiceTest extends TestCase
     private function createApiCredentialService(): ApiCredentialService
     {
         $logger = new NullLogger();
+        $systemConfigService = new SystemConfigServiceMock();
 
         return new ApiCredentialService(
             new CredentialsResource(
                 new TokenClientFactoryMock($logger),
                 new CredentialsClientFactoryMock($logger),
                 new TokenValidator()
-            )
+            ),
+            new TokenClientFactoryMock($logger),
+            new TokenValidator(),
+            new CredentialProvider(
+                new SettingsValidationService($systemConfigService, $logger),
+                $systemConfigService,
+                new CredentialsUtil($systemConfigService)
+            ),
+            $logger,
         );
     }
 }

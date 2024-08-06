@@ -9,11 +9,11 @@ class SwagPayPalApiCredentialsService extends ApiService {
         super(httpClient, loginService, apiEndpoint);
     }
 
-    validateApiCredentials(clientId: string | undefined, clientSecret: string | undefined, sandboxActive: boolean) {
+    validateApiCredentials(clientId: string | undefined, clientSecret: string | undefined, sandboxActive: boolean, merchantPayerId: string | null = null) {
         return this.httpClient.get<PayPal.Api.Operations<'validateApiCredentials'>>(
             `_action/${this.getApiBasePath()}/validate-api-credentials`,
             {
-                params: { clientId, clientSecret, sandboxActive },
+                params: { clientId, clientSecret, sandboxActive, merchantPayerId },
                 headers: this.getBasicHeaders(),
             },
         ).then(ApiService.handleResponse.bind(this) as TResponseHandler);

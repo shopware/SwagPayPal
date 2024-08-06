@@ -114,32 +114,33 @@ export default Shopware.Component.wrapComponentConfig({
                     this.allConfigs?.null[`SwagPayPal.settings.clientId${sandboxSetting}`];
             const clientSecret = this.actualConfigData[`SwagPayPal.settings.clientSecret${sandboxSetting}`] ||
                     this.allConfigs?.null[`SwagPayPal.settings.clientSecret${sandboxSetting}`];
+            const merchantPayerId = this.actualConfigData[`SwagPayPal.settings.merchantPayerId${sandboxSetting}`] ||
+                    this.allConfigs?.null[`SwagPayPal.settings.merchantPayerId${sandboxSetting}`] || null;
 
             this.SwagPayPalApiCredentialsService.validateApiCredentials(
                 clientId,
                 clientSecret,
                 sandbox,
+                merchantPayerId,
             ).then((response) => {
-                if (response.credentialsValid !== true) {
-                    return;
-                }
-
                 if (sandbox) {
-                    this.isTestingSandbox = false;
-                    this.isTestSandboxSuccessful = true;
+                    this.isTestSandboxSuccessful = !!response.credentialsValid;
                 } else {
-                    this.isTestingLive = false;
-                    this.isTestLiveSuccessful = true;
+                    this.isTestLiveSuccessful = !!response.credentialsValid;
                 }
             }).catch((errorResponse: PayPal.ServiceError) => {
                 this.createNotificationFromError({ errorResponse, title: 'swag-paypal.settingForm.messageTestError' });
 
                 if (sandbox) {
-                    this.isTestingSandbox = false;
                     this.isTestSandboxSuccessful = false;
                 } else {
-                    this.isTestingLive = false;
                     this.isTestLiveSuccessful = false;
+                }
+            }).finally(() => {
+                if (sandbox) {
+                    this.isTestingSandbox = false;
+                } else {
+                    this.isTestingLive = false;
                 }
             });
         },
