@@ -12,10 +12,10 @@
         {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
         {% set installmentBannerEnabled = installmentBanner.loginPageEnabled %}
 
-        {% set isBootstrap5 = feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
+        {% set fastlaneSettings = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\FastlaneSubscriber::FASTLANE_DATA_EXTENSION')] %}
 
-        {% if expressEnabled or installmentBannerEnabled %}
-            <div class="row mb-2 {{ isBootstrap5 ? 'g-3' : '' }}">
+        {% if expressEnabled or installmentBannerEnabled or fastlaneSettings is not null %}
+            <div class="row mb-2 g-3">
 
                 {% block page_checkout_address_login_toggle_paypal_express %}
                     {% if expressEnabled %}
@@ -25,13 +25,24 @@
 
                 {% block page_checkout_address_login_toggle_paypal_installment_banner %}
                     {% if installmentBannerEnabled %}
-                        <div class="col-12 col-sm-6 {{ isBootstrap5 ? '' : 'mt-2' }}"
+                        <div class="col-12 col-sm-6"
                              data-swag-paypal-installment-banner="true"
                              data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
                         </div>
                     {% endif %}
                 {% endblock %}
+
+                {% block page_checkout_address_login_toggle_paypal_fastlane %}
+                    {% if fastlaneSettings is not null %}
+                        <input type="email"
+                             data-swag-paypal-fastlane="true"
+                             data-swag-paypal-fastlane-options="{{ fastlaneSettings|json_encode }}" />
+
+                    {% endif %}
+                {% endblock %}
             </div>
         {% endif %}
+
+
     {% endblock %}
 {% endblock %}

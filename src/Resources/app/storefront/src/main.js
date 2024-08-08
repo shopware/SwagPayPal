@@ -6,6 +6,11 @@ PluginManager.register(
     '[data-swag-paypal-express-button]',
 );
 PluginManager.register(
+    'SwagPaypalFastlane',
+    () => import('./page/swag-paypal.fastlane'),
+    '[data-swag-paypal-fastlane]',
+);
+PluginManager.register(
     'SwagPayPalSmartPaymentButtons',
     () => import('./checkout/swag-paypal.smart-payment-buttons'),
     '[data-swag-paypal-smart-payment-buttons]',

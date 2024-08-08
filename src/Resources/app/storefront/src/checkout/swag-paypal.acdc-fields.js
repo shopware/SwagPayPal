@@ -97,9 +97,16 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
         },
     };
 
-    render(paypal) {
+    async render(paypal) {
         this.cardFieldForm = DomAccess.querySelector(document, this.options.cardFieldFormSelector);
 
+
+        this.fastlane = await paypal.Fastlane({});
+        this.fastlane.setLocale("en_us");
+        const component = await this.fastlane.FastlanePaymentComponent({});
+        component.render(this.options.cardFieldFormSelector);
+
+        return;
         const cardFields = paypal.CardFields(this.getFieldConfig());
 
         if (cardFields.isEligible()) {
