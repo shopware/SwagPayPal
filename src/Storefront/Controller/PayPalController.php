@@ -28,6 +28,7 @@ use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsResponse;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
+use Swag\PayPal\Checkout\SalesChannel\FastlanePrepareCheckoutRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,6 +56,7 @@ class PayPalController extends StorefrontController
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly AbstractCartDeleteRoute $cartDeleteRoute,
         private readonly AbstractClearVaultRoute $clearVaultRoute,
+        private readonly FastlanePrepareCheckoutRoute $fastlanePrepareCheckoutRoute,
         private readonly LoggerInterface $logger
     ) {
     }
@@ -210,5 +212,22 @@ class PayPalController extends StorefrontController
         ]);
 
         return new NoContentResponse();
+    }
+
+    #[Route(path: '/paypal/fastlane/prepare-checkout', name: 'frontend.paypal.fastlane.prepare_checkout', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
+    public function fastlanePrepareCheckout(Request $request, SalesChannelContext $context): ContextTokenResponse
+    {
+        $affiliateCode = $request->getSession()->get(AffiliateTrackingListener::AFFILIATE_CODE_KEY);
+        $campaignCode = $request->getSession()->get(AffiliateTrackingListener::CAMPAIGN_CODE_KEY);
+
+        if ($affiliateCode !== null) {
+            $request->request->set(AffiliateTrackingListener::AFFILIATE_CODE_KEY, $affiliateCode);
+        }
+
+        if ($campaignCode !== null) {
+            $request->request->set(AffiliateTrackingListener::CAMPAIGN_CODE_KEY, $campaignCode);
+        }
+
+        return $this->fastlanePrepareCheckoutRoute->prepareCheckout($context, $request);
     }
 }

@@ -153,7 +153,7 @@ export default class SwagPayPalScriptBase extends Plugin {
      */
     getScriptOptions() {
         const config = {
-            components: 'buttons,messages,card-fields,funding-eligibility,applepay,googlepay',
+            components: 'buttons,messages,card-fields,funding-eligibility,fastlane',
             'client-id': this.options.clientId,
             commit: !!this.options.commit,
             locale: this.options.languageIso,
@@ -178,6 +178,10 @@ export default class SwagPayPalScriptBase extends Plugin {
 
         if (this.options.clientToken) {
             config['data-client-token'] = this.options.clientToken;
+        }
+
+        if (this.options.sdkClientToken) {
+            config['data-sdk-client-token'] = this.options.sdkClientToken;
         }
 
         if (this.options.userIdToken) {

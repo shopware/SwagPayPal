@@ -80,7 +80,7 @@ class ExpressCategoryRouteTest extends TestCase
 
         $cmsPage = $response->getCategory()->getCmsPage();
         static::assertNotNull($cmsPage);
-        static::assertFalse($cmsPage->hasExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID));
+        static::assertFalse($cmsPage->hasExtension(ExpressCheckoutSubscriber::FASTLANE_DATA_EXTENSION));
     }
 
     public function testLoadCmsNavigationRoute(): void
@@ -88,7 +88,7 @@ class ExpressCategoryRouteTest extends TestCase
         $response = $this->loadCmsNavigationRoute(true, true, true);
         $cmsPage = $response->getCategory()->getCmsPage();
         static::assertNotNull($cmsPage);
-        $extension = $cmsPage->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        $extension = $cmsPage->getExtension(ExpressCheckoutSubscriber::FASTLANE_DATA_EXTENSION);
         static::assertInstanceOf(ExpressCheckoutButtonData::class, $extension);
         $this->assertExpressCheckoutButtonData($this->getExpectedExpressCheckoutButtonData(), $extension);
     }
@@ -99,7 +99,7 @@ class ExpressCategoryRouteTest extends TestCase
 
         $cmsPage = $response->getCategory()->getCmsPage();
         static::assertNotNull($cmsPage);
-        static::assertFalse($cmsPage->hasExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID));
+        static::assertFalse($cmsPage->hasExtension(ExpressCheckoutSubscriber::FASTLANE_DATA_EXTENSION));
     }
 
     public function testLoadCmsNavigationRouteInvalidCredentials(): void
@@ -108,7 +108,7 @@ class ExpressCategoryRouteTest extends TestCase
 
         $cmsPage = $response->getCategory()->getCmsPage();
         static::assertNotNull($cmsPage);
-        static::assertFalse($cmsPage->hasExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID));
+        static::assertFalse($cmsPage->hasExtension(ExpressCheckoutSubscriber::FASTLANE_DATA_EXTENSION));
     }
 
     public function testLoadCmsNavigationRouteWithoutPayPalInSalesChannel(): void
@@ -117,7 +117,7 @@ class ExpressCategoryRouteTest extends TestCase
 
         $cmsPage = $response->getCategory()->getCmsPage();
         static::assertNotNull($cmsPage);
-        static::assertFalse($cmsPage->hasExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID));
+        static::assertFalse($cmsPage->hasExtension(ExpressCheckoutSubscriber::FASTLANE_DATA_EXTENSION));
     }
 
     private function loadCmsNavigationRoute(bool $withCredentials, bool $listingEnabled, bool $inSalesChannel): CategoryRouteResponse

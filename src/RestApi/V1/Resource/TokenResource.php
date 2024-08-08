@@ -66,6 +66,26 @@ class TokenResource implements TokenResourceInterface
         return $token;
     }
 
+    /**
+     * @param array<string> $domains
+     */
+    public function getSdkClientToken(?string $salesChannelId, array $domains = []): Token
+    {
+        $credentials = $this->credentialProvider->createCredentialsObject($salesChannelId);
+        $tokenClient = $this->tokenClientFactory->createTokenClient($credentials);
+
+        $tokenData = [
+            'response_type' => 'client_token',
+            'intent' => 'sdk_init',
+            'domain[]' => $domains,
+        ];
+
+        $token = new Token();
+        $token->assign($tokenClient->getToken($tokenData));
+
+        return $token;
+    }
+
     private function getTokenFromCache(string $cacheId): ?Token
     {
         $token = $this->cache->getItem(\sprintf('%s%s', self::CACHE_ID, $cacheId))->get();

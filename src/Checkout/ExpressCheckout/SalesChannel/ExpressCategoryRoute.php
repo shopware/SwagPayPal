@@ -95,7 +95,7 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
         }
 
         $cmsPage->addExtension(
-            ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
+            ExpressCheckoutSubscriber::FASTLANE_DATA_EXTENSION,
             $expressCheckoutButtonData
         );
 

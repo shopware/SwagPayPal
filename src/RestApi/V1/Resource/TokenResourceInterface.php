@@ -16,4 +16,9 @@ interface TokenResourceInterface
     public function getToken(?string $salesChannelId): Token;
 
     public function getUserIdToken(?string $salesChannelId, ?string $targetCustomerId = null): Token;
+
+    /**
+     * @param array<string> $domains
+     */
+    public function getSdkClientToken(?string $salesChannelId, array $domains = []): Token;
 }
