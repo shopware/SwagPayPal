@@ -1,7 +1,8 @@
 # 9.4.1
 - PPI-958 - Fixes an issue, where the credentials validation erroneously succeeded with invalid Merchant Payer IDs
 - PPI-960 - Express checkout buttons are now available with enabled Double-Opt-In, a warning will be displayed in the settings
-- PPI-961 - Fixes an issue where the setting of the 'Pay Later' banner on the login page was not saved
+- PPI-961 - Fixes an issue, where the setting of the 'Pay Later' banner on the login page was not saved
+- PPI-965 - Fixes an issue, where an error in the checkout could lead to an infinite reload loop if SwagCommercial was installed
 
 # 9.4.0
 - PPI-807 - Improved script loading performance in the Storefront
