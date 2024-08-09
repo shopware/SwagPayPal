@@ -2,6 +2,7 @@
 - PPI-958 - Behebt ein Problem, bei dem die API-Zugangsdaten-Prüfung bei ungültiger Merchant-Payer-ID erfolgreich war
 - PPI-960 - Express-Checkout-Buttons sind nun auch bei aktiviertem Double-Opt-In verfügbar, eine Warnung wird in den Einstellungen angezeigt
 - PPI-961 - Behebt ein Problem, bei dem die Einstellung des 'Später Bezahlen'-Banner auf Loginseite nicht gespeichert wurde
+- PPI-965 - Behebt ein Problem, bei dem ein Fehler im Checkout zu einem dauerhaften Neuladen der Seite führen konnte, wenn SwagCommercial installiert ist
 
 # 8.4.0
 - PPI-807 - Verbessert die Ladezeit der Scripte in der Storefront

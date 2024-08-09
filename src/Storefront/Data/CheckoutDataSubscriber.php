@@ -118,6 +118,11 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
      */
     private function addExtension(CheckoutDataMethodInterface $methodData, PageLoadedEvent $event, ?Cart $cart = null, ?OrderEntity $order = null): void
     {
+        $page = $event->getPage();
+        if ($page->hasExtension($methodData->getCheckoutTemplateExtensionId())) {
+            return;
+        }
+
         $this->logger->debug('Adding data');
         $checkoutData = $methodData->getCheckoutDataService()->buildCheckoutData($event->getSalesChannelContext(), $cart, $order);
 
@@ -127,7 +132,6 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
 
         $checkoutData->setPreventErrorReload($this->isErrorReload($event->getSalesChannelContext()));
 
-        $page = $event->getPage();
         $page->addExtension($methodData->getCheckoutTemplateExtensionId(), $checkoutData);
         $this->eventDispatcher->dispatch(new PayPalPageExtensionAddedEvent($page, $methodData, $checkoutData));
 
