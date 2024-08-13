@@ -826,7 +826,7 @@ export interface components {
       total_cycles: number;
     };
     swag_paypal_v1_subscription_billing_info_last_payment: {
-      amount: components["schemas"]["swag_paypal_v1_common_amount"];
+      amount: components["schemas"]["swag_paypal_v1_common_money"];
       time: string;
     };
     swag_paypal_v1_subscription_billing_info_outstanding_balance: components["schemas"]["swag_paypal_v1_common_money"];
