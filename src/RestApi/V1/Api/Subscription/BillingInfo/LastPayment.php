@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo;
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Common\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\Money;
 
 /**
  * @codeCoverageIgnore
@@ -24,18 +24,18 @@ use Swag\PayPal\RestApi\V1\Api\Common\Amount;
 #[Package('checkout')]
 class LastPayment extends PayPalApiStruct
 {
-    #[OA\Property(ref: Amount::class)]
-    protected Amount $amount;
+    #[OA\Property(ref: Money::class)]
+    protected Money $amount;
 
     #[OA\Property(type: 'string')]
     protected string $time;
 
-    public function getAmount(): Amount
+    public function getAmount(): Money
     {
         return $this->amount;
     }
 
-    public function setAmount(Amount $amount): void
+    public function setAmount(Money $amount): void
     {
         $this->amount = $amount;
     }
