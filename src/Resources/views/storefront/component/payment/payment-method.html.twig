@@ -52,8 +52,7 @@
 
     {% if acdcFieldData and acdcFieldData.paymentMethodId is same as(payment.id) %}
         {% block swag_paypal_acdc_form %}
-            {{ dump(page.cart) }}
-            <div id="swag-paypal-acdc-form" class="d-none">
+            <div id="swag-paypal-acdc-form">
                 <div class="row">
                     <div class="col-sm-12">
                         <label class="d-none"

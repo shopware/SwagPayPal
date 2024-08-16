@@ -26,11 +26,14 @@ use Swag\PayPal\Storefront\Data\Service\AbstractScriptDataService;
 use Swag\PayPal\Storefront\Data\Struct\FastlaneData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
 #[Package('checkout')]
 class FastlaneDataService extends AbstractScriptDataService
 {
+    final public const FASTLANE_SESSION_TOKEN = 'paypalfastlanetoken';
+
     /**
      * @internal
      */
@@ -46,13 +49,18 @@ class FastlaneDataService extends AbstractScriptDataService
 
     public function buildFastlaneData(
         SalesChannelContext $salesChannelContext,
+        Request $request,
     ): ?FastlaneData {
+        $token = $this->tokenResource->getSdkClientToken(
+            $salesChannelContext->getSalesChannelId(),
+            $this->getDomains($salesChannelContext),
+        );
+
+        $request->getSession()->set(self::FASTLANE_SESSION_TOKEN, $token);
+
         return (new FastlaneData())->assign([
             ...parent::getBaseData($salesChannelContext),
-            'sdkClientToken' => $this->tokenResource->getSdkClientToken(
-                $salesChannelContext->getSalesChannelId(),
-                $this->getDomains($salesChannelContext),
-            )->getAccessToken(),
+            'sdkClientToken' => $token->getAccessToken(),
             'prepareCheckoutUrl' => $this->router->generate('frontend.paypal.fastlane.prepare_checkout'),
             'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page'),
         ]);

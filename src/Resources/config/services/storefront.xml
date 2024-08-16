@@ -71,7 +71,10 @@
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
         </service>
 
-        <service id="Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
+        <service id="Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService">
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\TokenResource"/>
+            <argument type="service" id="request_stack"/>
+        </service>
         <service id="Swag\PayPal\Storefront\Data\Service\ApplePayCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService"/>
         <service id="Swag\PayPal\Storefront\Data\Service\GooglePayCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
         <service id="Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService" public="true" parent="Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService" />
