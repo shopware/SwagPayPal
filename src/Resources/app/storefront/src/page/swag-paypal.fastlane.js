@@ -53,8 +53,9 @@ export default class SwagPaypalFastlane extends SwagPaypalAbstractButtons {
 
             return;
         }
+        console.log(`Customer ${email} found, customer context id: ${searchResult.customerContextId}.`)
 
-         const authenticationResult = await this.fastlane.identity.triggerAuthenticationFlow(searchResult.customerContextId);
+        const authenticationResult = await this.fastlane.identity.triggerAuthenticationFlow(searchResult.customerContextId);
         if (authenticationResult.authenticationState !== "succeeded") {
             console.log("Authentication failed.");
 

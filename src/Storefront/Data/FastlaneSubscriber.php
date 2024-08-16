@@ -65,7 +65,7 @@ class FastlaneSubscriber implements EventSubscriberInterface
     {
         $event->getPage()->addExtension(
             self::FASTLANE_DATA_EXTENSION,
-            $this->fastlaneDataService->buildFastlaneData($event->getSalesChannelContext())
+            $this->fastlaneDataService->buildFastlaneData($event->getSalesChannelContext(), $event->getRequest())
         );
     }
 }

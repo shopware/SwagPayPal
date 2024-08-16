@@ -80,7 +80,7 @@ class CartValidator implements CartValidatorInterface
         try {
             $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
             if (\is_array($ineligiblePaymentMethods) && \in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
-                $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
+                //$errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
 
                 return;
             }

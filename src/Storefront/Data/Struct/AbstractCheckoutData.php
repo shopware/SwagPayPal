@@ -18,6 +18,8 @@ class AbstractCheckoutData extends AbstractScriptData
 
     protected ?string $userIdToken = null;
 
+    protected ?string $sdkClientToken = null;
+
     protected string $paymentMethodId;
 
     protected string $createOrderUrl;
@@ -47,6 +49,16 @@ class AbstractCheckoutData extends AbstractScriptData
     public function setUserIdToken(?string $userIdToken): void
     {
         $this->userIdToken = $userIdToken;
+    }
+
+    public function getSdkClientToken(): string
+    {
+        return $this->sdkClientToken;
+    }
+
+    public function setSdkClientToken(string $sdkClientToken): void
+    {
+        $this->sdkClientToken = $sdkClientToken;
     }
 
     public function getPaymentMethodId(): string

@@ -3,7 +3,7 @@ import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalFundingEligibility extends SwagPaypalAbstractButtons {
     static fundingSources = [
-        'CARD',
+        //'CARD',
         'SEPA',
         'VENMO',
         'PAYLATER',
