@@ -22,6 +22,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceMerchantIntegrat
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
@@ -59,6 +60,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         $capabilities = $information->getCapabilities();
         static::assertSame(AbstractMethodData::CAPABILITY_INELIGIBLE, $capabilities['pui']);
         static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['paypal']);
+        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['paylater']);
         static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['acdc']);
     }
 
@@ -75,6 +77,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         $capabilities = $information->getCapabilities();
         static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['pui']);
         static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['paypal']);
+        static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['paylater']);
         static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['acdc']);
 
         $integrations = $information->getMerchantIntegrations();
@@ -91,6 +94,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         $capabilities = $information->getCapabilities();
         static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['pui']);
         static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['paypal']);
+        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['paylater']);
         static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $capabilities['acdc']);
 
         $integrations = $information->getMerchantIntegrations();
@@ -112,10 +116,11 @@ class MerchantIntegrationsServiceTest extends TestCase
                 new ACDCMethodData($container),
                 new PUIMethodData($container),
                 new PayPalMethodData($container),
+                new PayLaterMethodData($container),
             ]);
 
         $dataRegistry
-            ->expects(static::exactly(3))
+            ->expects(static::exactly(4))
             ->method('getEntityIdFromData')
             ->willReturnCallback(static function (AbstractMethodData $methodData) {
                 if ($methodData instanceof ACDCMethodData) {
@@ -123,6 +128,9 @@ class MerchantIntegrationsServiceTest extends TestCase
                 }
                 if ($methodData instanceof PUIMethodData) {
                     return 'pui';
+                }
+                if ($methodData instanceof PayLaterMethodData) {
+                    return 'paylater';
                 }
                 if ($methodData instanceof PayPalMethodData) {
                     return 'paypal';
