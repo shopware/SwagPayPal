@@ -34,9 +34,30 @@
 
                 {% block page_checkout_address_login_toggle_paypal_fastlane %}
                     {% if fastlaneSettings is not null %}
-                        <input type="email"
-                             data-swag-paypal-fastlane="true"
-                             data-swag-paypal-fastlane-options="{{ fastlaneSettings|json_encode }}" />
+                        <div
+                            data-swag-paypal-fastlane="true"
+                            data-swag-paypal-fastlane-options="{{ fastlaneSettings|json_encode }}">
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label"
+                                       for="fastlaneEmail">
+                                    {{ 'account.personalMailLabel'|trans|sw_sanitize }} for Fastlane
+                                </label>
+                                <input type="email"
+                                       class="form-control"
+                                       autocomplete="section-personal email"
+                                       id="fastlaneEmail"
+                                       placeholder="{{ 'account.personalMailPlaceholder'|trans|striptags }}"
+                                       name="fastlaneEmail"
+                                       data-form-validation-equal="personalMail">
+                            </div>
+                            <div class="col-12 col-sm-6 d-grid">
+                                <button type="button"
+                                        class="btn btn-primary"
+                                        id="fastlaneLookup">
+                                    Look up
+                                </button>
+                            </div>
+                        </div>
 
                     {% endif %}
                 {% endblock %}

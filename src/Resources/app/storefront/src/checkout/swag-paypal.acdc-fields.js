@@ -100,10 +100,24 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
     async render(paypal) {
         this.cardFieldForm = DomAccess.querySelector(document, this.options.cardFieldFormSelector);
 
-        this.fastlane = await paypal.Fastlane({});
-        this.fastlane.setLocale("en_us");
-        const component = await this.fastlane.FastlanePaymentComponent({});
+        const fastlane = await paypal.Fastlane({});
+        fastlane.setLocale("en_us");
+
+        const email = window.localStorage.getItem('swag-paypal-customer-email');
+        if (email) {
+            const { contextId } = await fastlane.identity.lookupCustomerByEmail(email);
+            const authenticationResult = await fastlane.identity.triggerAuthenticationFlow(contextId);
+            console.log(authenticationResult);
+            if (authenticationResult.authenticationState !== "succeeded") {
+                console.log("Authentication failed.");
+            }
+        }
+
+        const component = await fastlane.FastlanePaymentComponent({});
         component.render(this.options.cardFieldFormSelector);
+
+        DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.remove('d-none');
+        this.confirmOrderForm.addEventListener('submit', this.onFastlaneSubmit.bind(this, fastlane, component));
 
         return;
         const cardFields = paypal.CardFields(this.getFieldConfig());
@@ -178,6 +192,41 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
 
         // remove history listener, it messes up errors
         window.PluginManager.getPluginInstanceFromElement(this.confirmOrderForm, 'FormAddHistory').options.entries = [];
+    }
+
+    async onFastlaneSubmit(fastlane, component, event) {
+        const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
+        if (formData.has('fastlaneToken')) {
+            // card fields have been successfully submitted, do regular submit
+            return;
+        }
+        if (!this.confirmOrderForm.checkValidity()) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        PageLoadingIndicatorUtil.create();
+
+        try {
+            const token = await component.getPaymentToken();
+
+            const input = document.createElement('input');
+            input.setAttribute('type', 'hidden');
+            input.setAttribute('name', 'fastlaneToken');
+            input.setAttribute('value', token.id);
+
+            this.confirmOrderForm.appendChild(input);
+            this.confirmOrderForm.submit();
+        } catch (e) {
+            PageLoadingIndicatorUtil.remove();
+
+            const buttonLoadingIndicator = new ButtonLoadingIndicator(
+                DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector),
+            );
+            buttonLoadingIndicator.remove();
+        }
     }
 
     onFieldSubmit(cardFields, event) {
