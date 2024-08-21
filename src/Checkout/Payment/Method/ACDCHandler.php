@@ -63,8 +63,9 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
         $transactionId = $transaction->getOrderTransaction()->getId();
         $paypalOrderId = $dataBag->get(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
         $existingVault = $this->vaultTokenService->getAvailableToken($transaction, $salesChannelContext->getContext());
+        $fastlaneToken = $dataBag->get('fastlaneToken');
 
-        if (!$paypalOrderId && !$existingVault) {
+        if (!$paypalOrderId && !$existingVault && !$fastlaneToken) {
             throw PaymentException::asyncProcessInterrupted($transactionId, 'Missing PayPal order id');
         }
 

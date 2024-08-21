@@ -49,12 +49,17 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
     ): void {
         $card = new Card();
         $card->setExperienceContext($this->createExperienceContext($salesChannelContext, $paymentTransaction));
+        $paymentSource->setCard($card);
+
+        $fastlaneToken = $requestDataBag->get('fastlaneToken');
+        if ($fastlaneToken) {
+            $card->setSingleUseToken($fastlaneToken);
+            return;
+        }
 
         $attributes = new Attributes();
         $attributes->setVerification(new Verification());
         $card->setAttributes($attributes);
-
-        $paymentSource->setCard($card);
 
         if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $salesChannelContext->getContext())) {
             $card->setVaultId($token->getToken());

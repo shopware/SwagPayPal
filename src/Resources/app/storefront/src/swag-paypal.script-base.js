@@ -153,7 +153,7 @@ export default class SwagPayPalScriptBase extends Plugin {
      */
     getScriptOptions() {
         const config = {
-            components: 'buttons,messages,card-fields,funding-eligibility,fastlane',
+            components: 'buttons,messages,fastlane',
             'client-id': this.options.clientId,
             commit: !!this.options.commit,
             locale: this.options.languageIso,

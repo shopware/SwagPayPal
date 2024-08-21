@@ -42,18 +42,23 @@ export default class SwagPaypalFastlane extends SwagPaypalAbstractButtons {
         this.fastlane = await paypal.Fastlane({ });
         this.fastlane.setLocale("en_us");
 
-        this.el.addEventListener('change', this.lookupUser.bind(this));
+        const lookupButton = this.el.querySelector('#fastlaneLookup');
+        lookupButton.addEventListener('click', this.lookupUser.bind(this));
+
     }
 
     async lookupUser(event) {
-        const email = this.el.value;
-        const searchResult = await this.fastlane.identity.lookupCustomerByEmail(this.el.value);
+        const email = this.el.querySelector('#fastlaneEmail').value;
+        const searchResult = await this.fastlane.identity.lookupCustomerByEmail(email);
         if (!searchResult.customerContextId) {
             console.log(`Customer ${email} not found, continue with normal registration flow.`);
 
             return;
         }
         console.log(`Customer ${email} found, customer context id: ${searchResult.customerContextId}.`)
+
+        window.localStorage.setItem('swag-paypal-customer-context-id', searchResult.customerContextId);
+        window.localStorage.setItem('swag-paypal-customer-email', email);
 
         const authenticationResult = await this.fastlane.identity.triggerAuthenticationFlow(searchResult.customerContextId);
         if (authenticationResult.authenticationState !== "succeeded") {
@@ -68,7 +73,7 @@ export default class SwagPaypalFastlane extends SwagPaypalAbstractButtons {
         this._client.post(
             this.options.prepareCheckoutUrl,
             JSON.stringify({
-                email: this.el.value,
+                email,
                 profileData: authenticationResult.profileData,
             }),
             (response, request) => {

@@ -45,13 +45,14 @@ class ACDCCheckoutDataService extends AbstractCheckoutDataService
         ?Cart $cart = null,
         ?OrderEntity $order = null
     ): ?ACDCCheckoutData {
-        $token = $this->requestStack->getCurrentRequest()?->getSession()->get(FastlaneDataService::FASTLANE_SESSION_TOKEN);
-        if (!$token) {
+        //$token = $this->requestStack->getCurrentRequest()?->getSession()->get(FastlaneDataService::FASTLANE_SESSION_TOKEN);
+        // todo: invalidate token!
+        //if (!$token) {
             $token = $this->tokenResource->getSdkClientToken(
                 $context->getSalesChannelId(),
                 $this->getDomains($context),
             );
-        }
+        //}
 
         return (new ACDCCheckoutData())->assign(
             [

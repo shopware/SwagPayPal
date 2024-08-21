@@ -41,6 +41,9 @@ class Card extends AbstractAPMPaymentSource implements VaultablePaymentSourceInt
     #[OA\Property(ref: StoredCredential::class, nullable: true)]
     protected ?StoredCredential $storedCredential = null;
 
+    #[OA\Property(type: 'string')]
+    protected string $singleUseToken;
+
     public function getLastDigits(): string
     {
         return $this->lastDigits;
@@ -119,6 +122,16 @@ class Card extends AbstractAPMPaymentSource implements VaultablePaymentSourceInt
     public function setStoredCredential(?StoredCredential $storedCredential): void
     {
         $this->storedCredential = $storedCredential;
+    }
+
+    public function getSingleUseToken(): string
+    {
+        return $this->singleUseToken;
+    }
+
+    public function setSingleUseToken(string $singleUseToken): void
+    {
+        $this->singleUseToken = $singleUseToken;
     }
 
     public function getVaultIdentifier(): string

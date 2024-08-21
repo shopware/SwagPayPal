@@ -26,7 +26,8 @@ class ACDCValidator extends AbstractCardValidator implements CardValidatorInterf
         $authenticationResult = $order->getPaymentSource()?->getCard()?->getAuthenticationResult();
 
         if ($authenticationResult === null) {
-            throw new MissingPayloadException($order->getId(), 'payment_source.card.authentication_result');
+            return true;
+            //throw new MissingPayloadException($order->getId(), 'payment_source.card.authentication_result');
         }
 
         return $this->validateAuthenticationResult($authenticationResult, $salesChannelContext);
