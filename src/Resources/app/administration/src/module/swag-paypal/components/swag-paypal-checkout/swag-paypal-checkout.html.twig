@@ -8,7 +8,7 @@
     <template #avatar>
         {% block swag_paypal_content_card_channel_config_checkout_avatar %}
         <img
-            :src="'swagpaypal/static/img/paypal-logo-avatar.svg' | asset"
+            :src="assetFilter('swagpaypal/static/img/paypal-logo-avatar.svg')"
             :alt="$tc('swag-paypal.settingForm.checkout.appImageAlt')"
         >
         {% endblock %}
@@ -33,7 +33,11 @@
 
             {% block swag_paypal_content_card_channel_config_checkout_container_sandbox_switch %}
             <sw-inherit-wrapper v-if="showSandboxToggle"
+                                {% if VUE3 %}
+                                v-model:value="actualConfigData['SwagPayPal.settings.sandbox']"
+                                {% else %}
                                 v-model="actualConfigData['SwagPayPal.settings.sandbox']"
+                                {% endif %}
                                 class="swag-paypal-checkout__sandbox-toggle"
                                 :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['SwagPayPal.settings.sandbox']"
                                 :customInheritationCheckFunction="checkBoolFieldInheritance">
@@ -144,10 +148,18 @@
         {% block swag_paypal_content_card_channel_config_checkout_container_switch_show_credentials %}
         <sw-switch-field
             v-if="allowShowCredentials"
+            {% if VUE3 %}
+            v-model:value="showCredentials"
+            {% else %}
             v-model="showCredentials"
+            {% endif %}
             :label="$tc('swag-paypal.settingForm.checkout.showCredentials')"
             :disabled="!acl.can('swag_paypal.editor')"
+            {% if VUE3 %}
+            @update:value="updateShowCredentials"
+            {% else %}
             @change="updateShowCredentials"
+            {% endif %}
         />
         {% endblock %}
 

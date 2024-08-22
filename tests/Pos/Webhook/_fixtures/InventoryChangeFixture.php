@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\Test\Pos\Webhook\_fixtures;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class InventoryChangeFixture
 {
     public const TIMESTAMP = '2020-08-12T06:42:09.938Z';

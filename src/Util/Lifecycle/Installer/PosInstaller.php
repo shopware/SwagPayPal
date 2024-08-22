@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Util\Lifecycle\Installer;
 
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaDefinition;
@@ -15,6 +16,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogDefinition;
 
+#[Package('checkout')]
 class PosInstaller
 {
     private Connection $connection;

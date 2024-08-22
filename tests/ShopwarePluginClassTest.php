@@ -6,12 +6,14 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class ShopwarePluginClassTest extends TestCase
 {
     use IntegrationTestBehaviour;

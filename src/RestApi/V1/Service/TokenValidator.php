@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V1\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Token;
 
+#[Package('checkout')]
 class TokenValidator
 {
     public function isTokenValid(Token $token): bool

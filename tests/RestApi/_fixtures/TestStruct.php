@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\RestApi\_fixtures;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\Test\RestApi\_fixtures\TestStruct\Bar;
 use Swag\PayPal\Test\RestApi\_fixtures\TestStruct\Foo;
@@ -14,6 +15,7 @@ use Swag\PayPal\Test\RestApi\_fixtures\TestStruct\Foo;
 /**
  * @internal
  */
+#[Package('checkout')]
 class TestStruct extends PayPalApiStruct
 {
     protected string $id;

@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Checkout;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\StoreApiResponse;
 
+#[Package('checkout')]
 class TokenResponse extends StoreApiResponse
 {
     /**

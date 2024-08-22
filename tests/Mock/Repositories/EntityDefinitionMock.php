@@ -9,10 +9,12 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\Framework\Log\Package;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class EntityDefinitionMock extends EntityDefinition
 {
     public function getEntityName(): string

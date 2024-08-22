@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\PaymentsApi\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 
+#[Package('checkout')]
 class TransactionValidator
 {
     /**

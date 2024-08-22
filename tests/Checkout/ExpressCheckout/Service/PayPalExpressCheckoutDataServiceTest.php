@@ -16,6 +16,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -39,6 +40,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalExpressCheckoutDataServiceTest extends TestCase
 {
     use BasicTestDataBehaviour;
@@ -146,6 +148,23 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext);
 
         static::assertInstanceOf(CustomerEntity::class, $salesChannelContext->getCustomer());
+        static::assertNull($expressCheckoutButtonData);
+    }
+
+    public function testGetExpressCheckoutButtonDataWithDoubleOptInGuestOrder(): void
+    {
+        $taxId = $this->createTaxId(Context::createDefaultContext());
+        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
+        $productId = $this->getProductId($salesChannelContext->getContext(), $taxId);
+        $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
+
+        $cart = $this->cartService->createNew($salesChannelContext->getToken());
+        $this->cartService->add($cart, $lineItem, $salesChannelContext);
+
+        $this->systemConfigService->set('core.loginRegistration.doubleOptInGuestOrder', true);
+
+        $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext);
+
         static::assertNull($expressCheckoutButtonData);
     }
 

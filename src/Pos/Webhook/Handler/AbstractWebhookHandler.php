@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Pos\Webhook\Handler;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Webhook\Payload\AbstractPayload;
 use Swag\PayPal\Pos\Api\Webhook\Webhook;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
 use Swag\PayPal\Pos\Webhook\WebhookHandler;
 
+#[Package('checkout')]
 abstract class AbstractWebhookHandler implements WebhookHandler
 {
     use PosSalesChannelTrait;

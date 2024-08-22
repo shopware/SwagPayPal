@@ -19,8 +19,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\JsonField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
+#[Package('checkout')]
 class PosSalesChannelRunDefinition extends EntityDefinition
 {
     public const ENTITY_NAME = 'swag_paypal_pos_sales_channel_run';
@@ -65,7 +67,7 @@ class PosSalesChannelRunDefinition extends EntityDefinition
             (new IntField('message_count', 'messageCount'))->addFlags(new Required()),
             (new IntField('step_index', 'stepIndex'))->addFlags(new Required()),
             (new JsonField('steps', 'steps'))->addFlags(new Required()),
-            (new DateTimeField('finished_at', 'finishedAt')),
+            new DateTimeField('finished_at', 'finishedAt'),
 
             (new OneToManyAssociationField('logs', PosSalesChannelRunLogDefinition::class, 'run_id'))->addFlags(new CascadeDelete()),
         ]);

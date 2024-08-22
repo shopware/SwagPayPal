@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
@@ -19,6 +20,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CaptureResourceTest extends TestCase
 {
     use ServicesTrait;

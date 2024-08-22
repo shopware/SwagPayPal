@@ -9,9 +9,11 @@ namespace Swag\PayPal\Checkout\PUI\Service;
 
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
+#[Package('checkout')]
 class PUICustomerDataService
 {
     public const PUI_CUSTOMER_DATA_BIRTHDAY = 'payPalPuiCustomerBirthday';

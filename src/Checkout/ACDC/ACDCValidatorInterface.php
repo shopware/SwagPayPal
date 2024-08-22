@@ -8,9 +8,11 @@
 namespace Swag\PayPal\Checkout\ACDC;
 
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order;
 
+#[Package('checkout')]
 interface ACDCValidatorInterface
 {
     public const LIABILITY_SHIFT_POSSIBLE = 'POSSIBLE';
@@ -19,7 +21,7 @@ interface ACDCValidatorInterface
 
     public const ENROLLMENT_STATUS_READY = 'Y';
     public const ENROLLMENT_STATUS_NOT_READY = 'N';
-    public const ENROLLMENT_STATUS_UNAVAILABLE = 'O';
+    public const ENROLLMENT_STATUS_UNAVAILABLE = 'U';
     public const ENROLLMENT_STATUS_BYPASSED = 'B';
 
     public const AUTHENTICATION_STATUS_SUCCESSFUL = 'Y';

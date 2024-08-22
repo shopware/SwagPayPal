@@ -10,16 +10,17 @@ namespace Swag\PayPal\Test\Storefront;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Event\RouteRequest\PaymentMethodRouteRequestEvent;
 use Swag\PayPal\Storefront\RequestSubscriber;
-use Swag\PayPal\Test\RestApi\AssertArraySubsetTrait;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class RequestSubscriberTest extends TestCase
 {
     public function testGetSubscribedEvents(): void

@@ -10,10 +10,9 @@ namespace Swag\PayPal\Checkout\SalesChannel;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
-use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
@@ -28,6 +27,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
+#[Package('checkout')]
 class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
 {
     public const REMOVABLE_PAYMENT_HANDLERS = [
@@ -55,8 +55,6 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
     }
 
     /**
-     * @Since("5.1.0")
-     *
      * @OA\Post(
      *     path="/store-api/paypal/payment-method-eligibility",
      *     description="Sets ineligible payment methods to be removed from the session",

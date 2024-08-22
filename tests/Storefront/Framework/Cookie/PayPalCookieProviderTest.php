@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Test\Storefront\Framework\Cookie;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalCookieProviderTest extends TestCase
 {
     public function testGetCookieGroupsWithEmptyOriginalCookiesReturnsOriginalCookies(): void

@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_refund")
  */
+#[Package('checkout')]
 class Refund extends Payment
 {
     /**

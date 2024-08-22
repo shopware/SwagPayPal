@@ -9,7 +9,7 @@ namespace Swag\PayPal\Dispute\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
-use Shopware\Core\Framework\Routing\Annotation\Since;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Package('checkout')]
 class DisputeController extends AbstractController
 {
     private DisputeResource $disputeResource;
@@ -36,8 +37,6 @@ class DisputeController extends AbstractController
     }
 
     /**
-     * @Since("2.2.0")
-     *
      * @OA\Get(
      *     path="/paypal/dispute",
      *     description="Loads a list of PayPal disputes",
@@ -88,8 +87,6 @@ class DisputeController extends AbstractController
     }
 
     /**
-     * @Since("2.2.0")
-     *
      * @OA\Get(
      *     path="/paypal/dispute/{disputeId}",
      *     description="Loads the dispute details of the given PayPal dispute ID",
@@ -169,20 +166,18 @@ class DisputeController extends AbstractController
         if (!\is_string($disputeStateFilter)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::invalidRequestParameter('disputeStateFilter');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('disputeStateFilter');
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new InvalidRequestParameterException('disputeStateFilter');
         }
 
         foreach (\explode(',', $disputeStateFilter) as $disputeStateFilterItem) {
             if (!\in_array($disputeStateFilterItem, Item::DISPUTE_STATES, true)) {
                 if (\class_exists(RoutingException::class)) {
                     throw RoutingException::invalidRequestParameter('disputeStateFilter');
-                } else {
-                    /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                    throw new InvalidRequestParameterException('disputeStateFilter');
                 }
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new InvalidRequestParameterException('disputeStateFilter');
             }
         }
 

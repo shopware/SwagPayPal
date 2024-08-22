@@ -10,6 +10,7 @@ namespace SwagPayPalTestPosUtil;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -40,11 +41,12 @@ use Symfony\Component\Routing\Router;
 /**
  * @internal
  */
+#[Package('checkout')]
 class WebhookControllerTest extends TestCase
 {
-    use SalesChannelTrait;
-    use PosSalesChannelTrait;
     use KernelTestBehaviour;
+    use PosSalesChannelTrait;
+    use SalesChannelTrait;
 
     private const INVALID_EVENT_NAME = 'ThisIsNotAnEvent';
 
@@ -54,7 +56,7 @@ class WebhookControllerTest extends TestCase
 
     private WebhookController $webhookController;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->context = Context::createDefaultContext();
 

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\OrdersApi\Administration\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\OrdersApi\Administration\Exception\RequestParameterInvalidException;
 use Swag\PayPal\OrdersApi\Administration\PayPalOrdersController;
 use Swag\PayPal\RestApi\PayPalApiStruct;
@@ -18,6 +19,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\Amount as Refu
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 
+#[Package('checkout')]
 class CaptureRefundCreator
 {
     private PriceFormatter $priceFormatter;
@@ -70,15 +72,16 @@ class CaptureRefundCreator
      */
     private function getAmount(Money $amount, Request $request): ?Money
     {
+        $amount->setCurrencyCode($request->request->getAlpha(PayPalOrdersController::REQUEST_PARAMETER_CURRENCY));
         $amountString = $this->priceFormatter->formatPrice(
-            (float) $request->request->get(PayPalOrdersController::REQUEST_PARAMETER_AMOUNT)
+            (float) $request->request->get(PayPalOrdersController::REQUEST_PARAMETER_AMOUNT),
+            $amount->getCurrencyCode(),
         );
         if ($amountString === '0.00') {
             return null;
         }
 
         $amount->setValue($amountString);
-        $amount->setCurrencyCode($request->request->getAlpha(PayPalOrdersController::REQUEST_PARAMETER_CURRENCY));
 
         return $amount;
     }

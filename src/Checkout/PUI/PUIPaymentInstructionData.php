@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Checkout\PUI;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 
+#[Package('checkout')]
 class PUIPaymentInstructionData extends Struct
 {
     protected string $pollingUrl;

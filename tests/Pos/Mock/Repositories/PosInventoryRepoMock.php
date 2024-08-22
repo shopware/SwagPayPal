@@ -10,13 +10,14 @@ namespace Swag\PayPal\Test\Pos\Mock\Repositories;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
-use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class PosInventoryRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition
@@ -65,22 +66,11 @@ class PosInventoryRepoMock extends AbstractRepoMock
     /**
      * @return string[]
      */
-    protected function getPrimaryKeyWrite(Entity $entity): array
+    protected function getPrimaryKey(Entity $entity): array
     {
         return [
             'salesChannelId' => $entity->get('salesChannelId'),
             'productId' => $entity->get('productId'),
-        ];
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function getPrimaryKeyRead(Entity $entity): array
-    {
-        return [
-            'sales_channel_id' => $entity->get('salesChannelId'),
-            'product_id' => $entity->get('productId'),
         ];
     }
 }

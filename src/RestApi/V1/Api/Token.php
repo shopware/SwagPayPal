@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V1\Api;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_token")
  */
+#[Package('checkout')]
 final class Token extends PayPalApiStruct
 {
     /**
@@ -70,7 +72,7 @@ final class Token extends PayPalApiStruct
     {
         $newToken = parent::assign($arrayDataWithSnakeCaseKeys);
 
-        //Calculate the expiration date manually
+        // Calculate the expiration date manually
         $expirationDateTime = new \DateTime();
         $interval = \DateInterval::createFromDateString(\sprintf('%s seconds', $newToken->getExpiresIn()));
         $expirationDateTime = $expirationDateTime->add($interval ?: new \DateInterval('PT0S'));

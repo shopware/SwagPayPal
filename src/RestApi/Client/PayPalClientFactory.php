@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\Client;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
@@ -16,6 +17,7 @@ use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
 
+#[Package('checkout')]
 class PayPalClientFactory implements PayPalClientFactoryInterface
 {
     private TokenResourceInterface $tokenResource;

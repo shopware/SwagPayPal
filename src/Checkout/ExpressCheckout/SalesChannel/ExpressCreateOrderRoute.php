@@ -10,8 +10,8 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
+#[Package('checkout')]
 class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 {
     private CartService $cartService;
@@ -54,8 +55,6 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
     }
 
     /**
-     * @Since("2.0.0")
-     *
      * @OA\Post(
      *     path="/store-api/paypal/express/create-order",
      *     description="Creates a PayPal order from the existing cart",

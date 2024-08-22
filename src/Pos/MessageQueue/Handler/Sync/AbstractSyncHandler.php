@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler\Sync;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
@@ -19,6 +20,7 @@ use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 abstract class AbstractSyncHandler implements MessageSubscriberInterface
 {
     private RunService $runService;

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api\Disputes;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Adjudication;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\CommunicationDetails;
@@ -26,6 +27,7 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\SupportingInfo;
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_item")
  */
+#[Package('checkout')]
 class Item extends PayPalApiStruct
 {
     public const DISPUTE_STATE_REQUIRED_ACTION = 'REQUIRED_ACTION';

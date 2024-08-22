@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Refund\Amount;
 use Swag\PayPal\RestApi\V1\Api\Refund\Link;
@@ -18,6 +19,7 @@ use Swag\PayPal\RestApi\V1\Api\Refund\TotalRefundedAmount;
 /**
  * @OA\Schema(schema="swag_paypal_v1_refund")
  */
+#[Package('checkout')]
 class Refund extends PayPalApiStruct
 {
     /**

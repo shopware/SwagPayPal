@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V2\Api\Referral;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_referral_partner_config_override")
  */
+#[Package('checkout')]
 class PartnerConfigOverride extends PayPalApiStruct
 {
     /**

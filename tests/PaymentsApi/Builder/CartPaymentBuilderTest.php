@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
@@ -27,11 +28,12 @@ use Swag\PayPal\Util\PriceFormatter;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CartPaymentBuilderTest extends TestCase
 {
-    use ServicesTrait;
     use CartTrait;
     use SalesChannelContextTrait;
+    use ServicesTrait;
 
     public function testGetPaymentLineItemMissingPrice(): void
     {

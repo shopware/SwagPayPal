@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Webhook;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @url https://developer.paypal.com/docs/api-basics/notifications/webhooks/event-names/
  */
+#[Package('checkout')]
 final class WebhookEventTypes
 {
     public const ALL_EVENTS = '*';

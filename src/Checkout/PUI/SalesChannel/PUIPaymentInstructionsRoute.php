@@ -13,8 +13,8 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
@@ -31,6 +31,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
+#[Package('checkout')]
 class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
 {
     private EntityRepository $orderTransactionRepository;
@@ -62,8 +63,6 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
     }
 
     /**
-     * @Since("4.2.0")
-     *
      * @OA\Get(
      *     path="/store-api/paypal/pui/payment-instructions/{transactionId}",
      *     description="Tries to get payment instructions for PUI payments",

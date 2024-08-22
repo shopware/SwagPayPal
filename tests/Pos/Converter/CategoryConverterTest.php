@@ -12,6 +12,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Pos\Api\Service\Converter\CategoryConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
@@ -19,6 +20,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CategoryConverterTest extends TestCase
 {
     use KernelTestBehaviour;

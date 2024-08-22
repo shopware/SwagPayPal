@@ -11,6 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Error\PosApiError;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Inventory\BulkChanges;
@@ -26,6 +27,7 @@ use Swag\PayPal\Pos\Sync\Inventory\RemoteUpdater;
 /**
  * @internal
  */
+#[Package('checkout')]
 class RemoteUpdaterTest extends TestCase
 {
     use UpdaterTrait;
@@ -36,7 +38,7 @@ class RemoteUpdaterTest extends TestCase
 
     private RemoteUpdater $remoteUpdater;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->inventoryResource = $this->createMock(InventoryResource::class);
 

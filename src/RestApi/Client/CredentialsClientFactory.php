@@ -8,7 +8,9 @@
 namespace Swag\PayPal\RestApi\Client;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 
+#[Package('checkout')]
 class CredentialsClientFactory
 {
     private LoggerInterface $logger;

@@ -7,10 +7,12 @@
 
 namespace Swag\PayPal\Pos\Api\Authentication;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Authentication\ApiKey\Header;
 use Swag\PayPal\Pos\Api\Authentication\ApiKey\Payload;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[Package('checkout')]
 class ApiKey extends PosStruct
 {
     protected Header $header;

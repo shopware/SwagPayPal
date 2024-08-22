@@ -1,7 +1,7 @@
 {
     "name": "swag/paypal",
     "description": "PayPal integration for Shopware 6",
-    "version": "7.2.2",
+    "version": "7.3.1",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
@@ -11,6 +11,9 @@
     ],
     "require": {
         "shopware/core": "~6.5.0@dev"
+    },
+    "require-dev": {
+        "rector/rector": "^0.18.1"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
@@ -52,7 +55,9 @@
         "phpstan": [
             "php bin/phpstan-config-generator.php",
             "../../../vendor/bin/phpstan analyze"
-        ]
+        ],
+        "rector": "../../../vendor/bin/rector process",
+        "rector-dry": "../../../vendor/bin/rector process --dry-run"
     },
     "autoload": {
         "psr-4": {

@@ -4,17 +4,27 @@
               @modal-close="$emit('modal-close')">
 
         {% block swag_paypal_payment_action_capture_max_amount %}
-            <sw-text-field v-model="maxCaptureValue"
-                           :label="$tc('swag-paypal-payment.captureAction.maxAmount')"
-                           :disabled="true">
+            <sw-text-field
+                    {% if VUE3 %}
+                    v-model:value="maxCaptureValue"
+                    {% else %}
+                    v-model="maxCaptureValue"
+                    {% endif %}
+                    :label="$tc('swag-paypal-payment.captureAction.maxAmount')"
+                    :disabled="true">
             </sw-text-field>
         {% endblock %}
 
         {% block swag_paypal_payment_action_capture_value %}
-            <sw-number-field v-model="captureValue"
-                             :max="maxCaptureValue"
-                             :min="0"
-                             :label="$tc('swag-paypal-payment.captureAction.currentAmount')">
+            <sw-number-field
+                    {% if VUE3 %}
+                    v-model:value="captureValue"
+                    {% else %}
+                    v-model="captureValue"
+                    {% endif %}
+                    :max="maxCaptureValue"
+                    :min="0"
+                    :label="$tc('swag-paypal-payment.captureAction.currentAmount')">
                 <template #suffix>
                     {{ currency }}
                 </template>
@@ -22,8 +32,13 @@
         {% endblock %}
 
         {% block swag_paypal_payment_action_capture_is_final_capture %}
-            <sw-checkbox-field v-model="isFinalCapture"
-                               :label="$tc('swag-paypal-payment.captureAction.isFinal')">
+            <sw-checkbox-field
+                    {% if VUE3 %}
+                    v-model:value="isFinalCapture"
+                    {% else %}
+                    v-model="isFinalCapture"
+                    {% endif %}
+                    :label="$tc('swag-paypal-payment.captureAction.isFinal')">
             </sw-checkbox-field>
         {% endblock %}
 

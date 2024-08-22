@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
@@ -15,6 +16,7 @@ use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
+#[Package('checkout')]
 class VenmoMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
     public const PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID = 'payPalVenmoFieldData';

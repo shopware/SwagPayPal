@@ -7,10 +7,11 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
+#[Package('checkout')]
 class EpsMethodData extends AbstractMethodData
 {
     public function getTranslations(): array

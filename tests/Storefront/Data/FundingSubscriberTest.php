@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Storefront\Data;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
@@ -36,6 +37,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class FundingSubscriberTest extends TestCase
 {
     use CartTrait;

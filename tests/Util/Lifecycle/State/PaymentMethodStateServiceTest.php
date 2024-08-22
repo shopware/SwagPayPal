@@ -14,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -22,6 +23,7 @@ use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PaymentMethodStateServiceTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
@@ -118,7 +120,6 @@ class PaymentMethodStateServiceTest extends TestCase
 
         $service->setAllPaymentMethodsState(false, Context::createDefaultContext());
     }
-
 
     private function createStateService(): PaymentMethodStateService
     {

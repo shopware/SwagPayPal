@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
@@ -27,6 +28,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
+#[Package('checkout')]
 class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 {
     public const PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID = 'payPalEcsCartData';
@@ -64,8 +66,6 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
     }
 
     /**
-     * @Since("2.0.0")
-     *
      * @OA\Post(
      *     path="/store-api/paypal/express/prepare-checkout",
      *     description="Loggs in a guest customer, with the data of a paypal order",
@@ -101,10 +101,9 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
             if (!\is_string($paypalOrderId)) {
                 if (\class_exists(RoutingException::class)) {
                     throw RoutingException::missingRequestParameter(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
-                } else {
-                    /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                    throw new MissingRequestParameterException(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
                 }
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new MissingRequestParameterException(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
             }
 
             $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannel()->getId());

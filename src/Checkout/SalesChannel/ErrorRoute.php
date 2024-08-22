@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\SalesChannel;
 
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
@@ -22,6 +23,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
+#[Package('checkout')]
 class ErrorRoute extends AbstractErrorRoute
 {
     private RequestStack $requestStack;
@@ -49,8 +51,6 @@ class ErrorRoute extends AbstractErrorRoute
     }
 
     /**
-     * @Since("3.3.0")
-     *
      * @OA\Post(
      *     path="/store-api/paypal/error",
      *     description="Adds an error message to a flashbag and logs the error",

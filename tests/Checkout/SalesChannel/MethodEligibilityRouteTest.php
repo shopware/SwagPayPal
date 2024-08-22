@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Checkout\SalesChannel;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Cart\Error\PaymentMethodBlockedError;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
@@ -25,17 +26,18 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @internal
  */
+#[Package('checkout')]
 class MethodEligibilityRouteTest extends TestCase
 {
-    use KernelTestBehaviour;
     use BasicTestDataBehaviour;
+    use KernelTestBehaviour;
     use SalesChannelApiTestBehaviour;
 
     private KernelBrowser $browser;
 
     private string $salesChannelId;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $methodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
         $paymentMethodData = [];

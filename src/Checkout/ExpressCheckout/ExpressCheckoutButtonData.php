@@ -7,9 +7,10 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
-use Shopware\Core\Framework\Struct\Struct;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 
+#[Package('checkout')]
 class ExpressCheckoutButtonData extends AbstractCheckoutData
 {
     protected bool $productDetailEnabled;
@@ -36,8 +37,6 @@ class ExpressCheckoutButtonData extends AbstractCheckoutData
 
     /**
      * @deprecated tag:v8.0.0 - will be removed, use "showPayLater" instead
-     *
-     * @var bool
      */
     protected bool $disablePayLater;
 

@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
@@ -23,6 +24,7 @@ use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Swag\PayPal\Webhook\WebhookHandler;
 
+#[Package('checkout')]
 abstract class AbstractWebhookHandler implements WebhookHandler
 {
     protected EntityRepository $orderTransactionRepository;

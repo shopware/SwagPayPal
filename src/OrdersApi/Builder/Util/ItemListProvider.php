@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromOrderEvent;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
@@ -20,6 +21,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+#[Package('checkout')]
 class ItemListProvider
 {
     private PriceFormatter $priceFormatter;
@@ -101,7 +103,7 @@ class ItemListProvider
 
     private function buildPriceData(OrderLineItemEntity $lineItem, Item $item, string $currencyCode, bool $isNet): void
     {
-        $unitPrice = $this->priceFormatter->formatPrice($lineItem->getUnitPrice());
+        $unitPrice = $this->priceFormatter->formatPrice($lineItem->getUnitPrice(), $currencyCode);
 
         $unitAmount = new UnitAmount();
         $unitAmount->setCurrencyCode($currencyCode);
@@ -111,28 +113,28 @@ class ItemListProvider
 
         $tax = new Tax();
         $tax->setCurrencyCode($currencyCode);
-        $tax->setValue($this->getTax($lineItem, $isNet, true));
+        $tax->setValue($this->getTax($lineItem, $isNet, true, $currencyCode));
         $item->setTax($tax);
         $item->setTaxRate($this->getTaxRate($isNet, $lineItem->getPrice()));
 
-        if (!$this->hasMismatchingPrice($lineItem, $item, $isNet)) {
+        if (!$this->hasMismatchingPrice($lineItem, $item, $isNet, $currencyCode)) {
             return;
         }
 
-        $unitAmount->setValue($this->priceFormatter->formatPrice($lineItem->getTotalPrice()));
-        $tax->setValue($this->getTax($lineItem, $isNet, false));
+        $unitAmount->setValue($this->priceFormatter->formatPrice($lineItem->getTotalPrice(), $currencyCode));
+        $tax->setValue($this->getTax($lineItem, $isNet, false, $currencyCode));
         $item->setQuantity(1);
         $item->setName(\sprintf('%s x %s', $lineItem->getQuantity(), $item->getName()));
     }
 
-    private function getTax(OrderLineItemEntity $lineItem, bool $isNet, bool $perUnit): string
+    private function getTax(OrderLineItemEntity $lineItem, bool $isNet, bool $perUnit, string $currencyCode): string
     {
         $price = $lineItem->getPrice();
         if (!$isNet || $price === null) {
             return '0.00';
         }
 
-        return $this->priceFormatter->formatPrice($price->getCalculatedTaxes()->getAmount() / ($perUnit ? $lineItem->getQuantity() : 1.0));
+        return $this->priceFormatter->formatPrice($price->getCalculatedTaxes()->getAmount() / ($perUnit ? $lineItem->getQuantity() : 1.0), $currencyCode);
     }
 
     private function getTaxRate(bool $isNet, ?CalculatedPrice $price): float
@@ -149,15 +151,15 @@ class ItemListProvider
         return $calculatedTax->getTaxRate();
     }
 
-    private function hasMismatchingPrice(OrderLineItemEntity $lineItem, Item $item, bool $isNet): bool
+    private function hasMismatchingPrice(OrderLineItemEntity $lineItem, Item $item, bool $isNet, string $currencyCode): bool
     {
-        $totalTaxes = $this->getTax($lineItem, $isNet, false);
-        if ($totalTaxes !== $this->priceFormatter->formatPrice((float) $item->getTax()->getValue() * $lineItem->getQuantity())) {
+        $totalTaxes = $this->getTax($lineItem, $isNet, false, $currencyCode);
+        if ($totalTaxes !== $this->priceFormatter->formatPrice((float) $item->getTax()->getValue() * $lineItem->getQuantity(), $currencyCode)) {
             return true;
         }
 
-        $totalPrice = $this->priceFormatter->formatPrice($lineItem->getTotalPrice());
-        if ($totalPrice !== $this->priceFormatter->formatPrice((float) $item->getUnitAmount()->getValue() * $lineItem->getQuantity())) {
+        $totalPrice = $this->priceFormatter->formatPrice($lineItem->getTotalPrice(), $currencyCode);
+        if ($totalPrice !== $this->priceFormatter->formatPrice((float) $item->getUnitAmount()->getValue() * $lineItem->getQuantity(), $currencyCode)) {
             return true;
         }
 

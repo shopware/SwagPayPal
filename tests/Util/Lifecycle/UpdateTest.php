@@ -20,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\RestrictDeleteViolationException;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Migration\MigrationCollectionLoader;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
@@ -67,12 +68,13 @@ use Symfony\Component\Routing\Router;
 /**
  * @internal
  */
+#[Package('checkout')]
 class UpdateTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
-    use ServicesTrait;
-    use SalesChannelTrait;
     use PosSalesChannelTrait;
+    use SalesChannelTrait;
+    use ServicesTrait;
 
     private const CLIENT_ID = 'testClientId';
     private const CLIENT_SECRET = 'testClientSecret';
@@ -353,6 +355,23 @@ class UpdateTest extends TestCase
 
         $acdcPaymentMethodId = $this->paymentMethodRepository->searchIds($criteria, $context)->firstId();
         static::assertNotNull($acdcPaymentMethodId);
+    }
+
+    public function testUpdateTo730(): void
+    {
+        $updateContext = $this->createUpdateContext('6.2.0', '7.3.0');
+
+        $systemConfigServiceMock = $this->createSystemConfigServiceMock();
+        $systemConfigServiceMock->set(Settings::INSTALLMENT_BANNER_ENABLED, true);
+
+        $updater = $this->createUpdateService($systemConfigServiceMock);
+        $updater->update($updateContext);
+
+        static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED));
+        static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_CART_ENABLED));
+        static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED));
+        static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED));
+        static::assertTrue($systemConfigServiceMock->get(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED));
     }
 
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext

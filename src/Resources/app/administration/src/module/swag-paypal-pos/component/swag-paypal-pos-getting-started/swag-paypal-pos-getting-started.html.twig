@@ -11,7 +11,7 @@
 
                 {% block swag_paypal_pos_getting_started_reader_image %}
                     <img class="swag-paypal-pos-getting-started__image"
-                         :src="'swagpaypal/static/img/paypal-pos-reader.png' | asset"
+                         :src="assetFilter('swagpaypal/static/img/paypal-pos-reader.png')"
                          :alt="$tc('swag-paypal-pos.gettingStarted.readerImageAlt')"/>
                 {% endblock %}
 
@@ -50,7 +50,7 @@
 
                 {% block swag_paypal_pos_getting_started_app_image %}
                     <img class="swag-paypal-pos-getting-started__image"
-                         :src="'swagpaypal/static/img/paypal-pos-app.png' | asset"
+                         :src="assetFilter('swagpaypal/static/img/paypal-pos-app.png')"
                          :alt="$tc('swag-paypal-pos.gettingStarted.appImageAlt')"/>
                 {% endblock %}
 

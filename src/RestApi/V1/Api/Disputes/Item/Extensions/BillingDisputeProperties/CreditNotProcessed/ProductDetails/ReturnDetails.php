@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CreditNotProcessed\ProductDetails;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Common\ReturnDetails as CommonReturnDetails;
 
+#[Package('checkout')]
 class ReturnDetails extends CommonReturnDetails
 {
 }

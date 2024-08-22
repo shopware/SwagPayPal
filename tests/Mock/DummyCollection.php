@@ -7,12 +7,16 @@
 
 namespace Swag\PayPal\Test\Mock;
 
+use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Webhook\WebhookHandler;
+
 /**
  * @implements \IteratorAggregate<\Swag\PayPal\Webhook\WebhookHandler>
  */
 /**
  * @internal
  */
+#[Package('checkout')]
 class DummyCollection implements \IteratorAggregate
 {
     private array $data;
@@ -23,7 +27,7 @@ class DummyCollection implements \IteratorAggregate
     }
 
     /**
-     * @return \ArrayIterator<array-key, \Swag\PayPal\Webhook\WebhookHandler>
+     * @return \ArrayIterator<array-key, WebhookHandler>
      */
     public function getIterator(): \ArrayIterator
     {

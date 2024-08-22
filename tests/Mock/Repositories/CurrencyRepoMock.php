@@ -8,9 +8,9 @@
 namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -19,6 +19,7 @@ use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CurrencyRepoMock extends AbstractRepoMock
 {
     public const INVALID_CURRENCY_ID = 'invalid-currency-id';

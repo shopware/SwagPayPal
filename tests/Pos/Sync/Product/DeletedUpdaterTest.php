@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Pos\Sync\Product;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Api\Error\PosApiError;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
@@ -22,6 +23,7 @@ use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class DeletedUpdaterTest extends AbstractProductSyncTest
 {
     private ProductContextMock $productContext;
@@ -38,7 +40,7 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
      */
     private LoggerInterface $logger;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $context = Context::createDefaultContext();
         $salesChannel = $this->getSalesChannel($context);

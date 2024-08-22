@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Pos\Api\Exception;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Error\PosApiError;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Package('checkout')]
 class PosApiException extends PosException
 {
     private PosApiError $apiError;

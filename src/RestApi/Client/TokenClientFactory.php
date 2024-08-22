@@ -8,8 +8,10 @@
 namespace Swag\PayPal\RestApi\Client;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 
+#[Package('checkout')]
 class TokenClientFactory
 {
     private LoggerInterface $logger;

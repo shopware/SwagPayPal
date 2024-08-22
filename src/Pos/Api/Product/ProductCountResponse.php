@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Api\Product;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[Package('checkout')]
 class ProductCountResponse extends PosStruct
 {
     protected int $productCount;

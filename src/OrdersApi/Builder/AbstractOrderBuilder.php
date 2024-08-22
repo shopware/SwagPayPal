@@ -9,6 +9,7 @@ namespace Swag\PayPal\OrdersApi\Builder;
 
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
@@ -21,6 +22,7 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 
+#[Package('checkout')]
 abstract class AbstractOrderBuilder
 {
     protected SystemConfigService $systemConfigService;

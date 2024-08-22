@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Pos\Api\PosRequestUri;
 use Swag\PayPal\Pos\Client\PosClient;
@@ -26,6 +27,7 @@ use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
 /**
  * @internal
  */
+#[Package('checkout')]
 class InformationFetchServiceTest extends TestCase
 {
     use KernelTestBehaviour;

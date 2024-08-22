@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V1\Api;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_patch")
  */
+#[Package('checkout')]
 class Patch extends PayPalApiStruct
 {
     public const OPERATION_ADD = 'add';

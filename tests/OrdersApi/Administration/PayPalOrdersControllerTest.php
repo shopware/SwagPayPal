@@ -10,7 +10,9 @@ namespace Swag\PayPal\Test\OrdersApi\Administration;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
+use Swag\PayPal\OrdersApi\Administration\Exception\OrderNotFoundException;
 use Swag\PayPal\OrdersApi\Administration\Exception\RequestParameterInvalidException;
 use Swag\PayPal\OrdersApi\Administration\PayPalOrdersController;
 use Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator;
@@ -37,6 +39,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalOrdersControllerTest extends TestCase
 {
     use ServicesTrait;
@@ -80,8 +83,8 @@ class PayPalOrdersControllerTest extends TestCase
         $context = Context::createDefaultContext();
         $context->addExtension(ConstantsForTesting::WITHOUT_ORDER, new ArrayStruct());
 
-        $this->expectException(InvalidTransactionException::class);
-        $this->expectExceptionMessage('The transaction with id orderTransactionId is invalid or could not be found.');
+        $this->expectException(OrderNotFoundException::class);
+        $this->expectExceptionMessage('Order "orderTransactionId" could not be found.');
         $this->createController()->orderDetails(
             'orderTransactionId',
             GetOrderCapture::ID,

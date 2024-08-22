@@ -9,10 +9,12 @@ namespace Swag\PayPal\RestApi\Client;
 
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 
+#[Package('checkout')]
 class TokenClient extends AbstractClient
 {
     public function __construct(

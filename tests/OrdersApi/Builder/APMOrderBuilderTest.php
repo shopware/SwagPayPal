@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -56,6 +57,7 @@ use Swag\PayPal\Util\PriceFormatter;
 /**
  * @internal
  */
+#[Package('checkout')]
 class APMOrderBuilderTest extends TestCase
 {
     use PaymentTransactionTrait;
@@ -206,7 +208,7 @@ class APMOrderBuilderTest extends TestCase
         return [
             [BancontactOrderBuilder::class, [], Bancontact::class, []],
             [BlikOrderBuilder::class, [], Blik::class, ['email' => 'test@test.com']],
-            //[Boletobancario::class, [], Boletobancario::class, ['email' => 'test@test.com']],
+            // [Boletobancario::class, [], Boletobancario::class, ['email' => 'test@test.com']],
             [EpsOrderBuilder::class, [], Eps::class, []],
             [GiropayOrderBuilder::class, [], Giropay::class, []],
             [IdealOrderBuilder::class, [], Ideal::class, []],

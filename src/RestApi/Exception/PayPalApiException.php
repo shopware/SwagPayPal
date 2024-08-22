@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\RestApi\Exception;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Package('checkout')]
 class PayPalApiException extends ShopwareHttpException
 {
     public const ERROR_CODE_DUPLICATE_ORDER_NUMBER = 'DUPLICATE_TRANSACTION';

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Setting\Service;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
@@ -22,6 +23,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ApiCredentialServiceTest extends TestCase
 {
     public function testValidApiCredentials(): void

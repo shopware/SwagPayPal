@@ -91,11 +91,13 @@
                     "limited": "Limited",
                     "pending": "Authorization pending",
                     "ineligible": "Ineligible",
-                    "inactive": "Onboarding needed"
+                    "inactive": "Onboarding needed",
+                    "mybank": "Limited"
                 },
                 "onboardingStatusTooltip": {
                     "ineligible": "PayPal informed us, that this payment method is currently ineligible for your account.",
-                    "limited": "PayPal informed us, that this payment method has some limitations for your account."
+                    "limited": "PayPal informed us, that this payment method has some limitations for your account.",
+                    "mybank": "Merchants enabling MyBank after February 2023 will need manual approval by PayPal. Reach out to PayPal support for further information on this."
                 },
                 "paymentMethodStatusChangedSuccess": {
                     "active": "Payment method \"{name}\" is now active.",
@@ -211,6 +213,7 @@
             },
             "express": {
                 "cardTitle": "Express Checkout Shortcut",
+                "cardSubtitle": "Express Checkouts increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated. ",
                 "ecsDetailEnabled": {
                     "label": "'PayPal Checkout' on detail page",
                     "helpText": "If this option is active, the Express Checkout button will be shown on each product detail page."
@@ -263,8 +266,28 @@
             },
             "installment": {
                 "cardTitle": "'Pay Later' banner",
+                "cardSubtitle": "Banners increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated.",
                 "installmentBannerEnabled": {
-                    "label": "Enable 'Pay Later' banner"
+                    "detailPage": {
+                      "label": "'Pay Later' banner on detail page",
+                      "helpText": "If this option is active, the 'Pay Later' banner will be shown on each product detail page."
+                    },
+                    "cart": {
+                      "label": "'Pay Later' banner on cart",
+                      "helpText": "If this option is active, the 'Pay Later' banner will be shown on the cart."
+                    },
+                    "offCanvasCart": {
+                      "label": "'Pay Later' banner on off-canvas cart",
+                      "helpText": "If this option is active, the 'Pay Later' banner will be shown on the off-canvas cart."
+                    },
+                    "loginPage": {
+                      "label": "'Pay Later' banner on login page",
+                      "helpText": "If this option is active, the 'Pay Later' banner will be shown on the login and register page."
+                    },
+                    "footer": {
+                      "label": "'Pay Later' banner on footer",
+                      "helpText": "If this option is active, the 'Pay Later' banner will be shown on the footer."
+                    }
                 }
             },
             "acdc": {

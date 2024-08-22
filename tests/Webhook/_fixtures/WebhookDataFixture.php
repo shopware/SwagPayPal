@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Webhook\_fixtures;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @internal
  */
+#[Package('checkout')]
 class WebhookDataFixture
 {
     public static function get(): array

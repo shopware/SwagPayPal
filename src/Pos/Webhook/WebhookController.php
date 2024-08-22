@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Routing\Annotation\Since;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Webhook\Webhook;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
@@ -30,6 +30,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Package('checkout')]
 class WebhookController extends AbstractController
 {
     use PosSalesChannelTrait;
@@ -54,8 +55,6 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @Since("1.9.0")
-     *
      * @Route(
      *     "/api/_action/paypal/pos/webhook/registration/{salesChannelId}",
      *     name="api.action.paypal.pos.webhook.registration.register",
@@ -71,8 +70,6 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @Since("1.9.0")
-     *
      * @Route(
      *     "/api/_action/paypal/pos/webhook/registration/{salesChannelId}",
      *     name="api.action.paypal.pos.webhook.registration.unregister",
@@ -88,8 +85,6 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @Since("1.9.0")
-     *
      * @Route(
      *     "/api/_action/paypal/pos/webhook/execute/{salesChannelId}",
      *     name="api.action.paypal.pos.webhook.execute",

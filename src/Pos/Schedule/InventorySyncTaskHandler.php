@@ -9,12 +9,16 @@ namespace Swag\PayPal\Pos\Schedule;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * @internal
  */
+#[Package('checkout')]
+#[AsMessageHandler(handles: InventorySyncTask::class)]
 class InventorySyncTaskHandler extends AbstractSyncTaskHandler
 {
     private InventoryTask $inventoryTask;
@@ -26,11 +30,6 @@ class InventorySyncTaskHandler extends AbstractSyncTaskHandler
     ) {
         parent::__construct($scheduledTaskRepository, $salesChannelRepository);
         $this->inventoryTask = $inventoryTask;
-    }
-
-    public static function getHandledMessages(): iterable
-    {
-        return [InventorySyncTask::class];
     }
 
     protected function executeTask(SalesChannelEntity $salesChannel, Context $context): void

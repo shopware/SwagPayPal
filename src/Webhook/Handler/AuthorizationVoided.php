@@ -9,6 +9,7 @@ namespace Swag\PayPal\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
@@ -16,6 +17,7 @@ use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
+#[Package('checkout')]
 class AuthorizationVoided extends AbstractWebhookHandler
 {
     public function getEventType(): string

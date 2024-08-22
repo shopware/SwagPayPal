@@ -1,3 +1,22 @@
+# 7.3.1
+- PPI-844 - Fixes an issue, where the installment banner was not toggleable on CMS product detail pages
+
+# 7.3.0
+- PPI-765 - "Pay later" banners can now be turned on and off more granular
+- PPI-828 - Fixes an issue, where caching could interfere with the correct list of available payment methods
+
+# 7.2.4
+- PPI-818 - Added warning for possible unavailability of MyBank payment method
+- PPI-820 - Fixes an issue, where the paid status was not possible to be set over webhooks
+- PPI-826 - Express buttons are not displayed anymore, if the guest customer's double-opt-in feature is enabled.
+
+# 7.2.3
+- PPI-808 - Fixes an issue, where some currencies (HUF, JPY, TWD) were not transmitted correctly
+- PPI-809 - Fixes an issue, where payment buttons have not the right color
+- PPI-810 - More intuitive behavior of Administration settings
+- PPI-811 - Fixes an issue, where credit cards with unavailable 3D Secure could not be processed
+- PPI-812 - Fixes an issue, where Zettle sync could not be reset
+
 # 7.2.2
 - PPI-802 - Improved wording and default values in the Administration
 

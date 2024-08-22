@@ -18,7 +18,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\Framework\Log\Package;
 
+#[Package('checkout')]
 class PosSalesChannelRunLogDefinition extends EntityDefinition
 {
     public const ENTITY_NAME = 'swag_paypal_pos_sales_channel_run_log';
@@ -44,12 +46,12 @@ class PosSalesChannelRunLogDefinition extends EntityDefinition
             (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
             (new FkField('run_id', 'runId', PosSalesChannelRunDefinition::class))->addFlags(new Required()),
 
-            (new ManyToOneAssociationField('posSalesChannelRun', 'run_id', PosSalesChannelRunDefinition::class)),
+            new ManyToOneAssociationField('posSalesChannelRun', 'run_id', PosSalesChannelRunDefinition::class),
 
             (new IntField('level', 'level'))->addFlags(new Required()),
             (new LongTextField('message', 'message'))->addFlags(new Required()),
-            (new FkField('product_id', 'productId', ProductDefinition::class)),
-            (new ReferenceVersionField(ProductDefinition::class)),
+            new FkField('product_id', 'productId', ProductDefinition::class),
+            new ReferenceVersionField(ProductDefinition::class),
         ]);
     }
 }

@@ -63,6 +63,10 @@ Component.register('swag-paypal-pos-detail-runs', {
                 sortable: true,
             }];
         },
+
+        dateFilter() {
+            return Shopware.Filter.getByName('date');
+        },
     },
 
     created() {

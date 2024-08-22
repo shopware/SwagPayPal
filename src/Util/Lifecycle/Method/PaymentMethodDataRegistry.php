@@ -13,8 +13,10 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+#[Package('checkout')]
 class PaymentMethodDataRegistry
 {
     /**
@@ -29,7 +31,7 @@ class PaymentMethodDataRegistry
         SEPAMethodData::class,
         BancontactMethodData::class,
         BlikMethodData::class,
-        //BoletoBancarioMethodData::class,
+        // BoletoBancarioMethodData::class,
         EpsMethodData::class,
         GiropayMethodData::class,
         IdealMethodData::class,

@@ -8,7 +8,9 @@
 namespace Swag\PayPal\Pos\Client;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 
+#[Package('checkout')]
 class TokenClientFactory
 {
     private LoggerInterface $logger;

@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\RestApi\V1;
 
+use Shopware\Core\Framework\Log\Package;
+
+#[Package('checkout')]
 final class PaymentIntentV1
 {
     public const SALE = 'sale';

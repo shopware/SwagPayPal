@@ -10,7 +10,7 @@ namespace Swag\PayPal\Storefront\Controller;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Routing\Annotation\Since;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
@@ -34,6 +34,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @internal
  */
+#[Package('checkout')]
 class PayPalController extends StorefrontController
 {
     private AbstractCreateOrderRoute $createOrderRoute;
@@ -76,8 +77,6 @@ class PayPalController extends StorefrontController
     }
 
     /**
-     * @Since("6.0.0")
-     *
      * @Route(
      *     "/paypal/create-order",
      *     name="frontend.paypal.create_order",
@@ -91,8 +90,6 @@ class PayPalController extends StorefrontController
     }
 
     /**
-     * @Since("6.0.0")
-     *
      * @Route(
      *     "/paypal/payment-method-eligibility",
      *     name="frontend.paypal.payment-method-eligibility",
@@ -106,8 +103,6 @@ class PayPalController extends StorefrontController
     }
 
     /**
-     * @Since("6.0.0")
-     *
      * @Route(
      *     "/paypal/pui/payment-instructions/{transactionId}",
      *     name="frontend.paypal.pui.payment_instructions",
@@ -121,8 +116,6 @@ class PayPalController extends StorefrontController
     }
 
     /**
-     * @Since("6.0.0")
-     *
      * @Route(
      *     "/paypal/express/prepare-checkout",
      *     name="frontend.paypal.express.prepare_checkout",
@@ -136,8 +129,6 @@ class PayPalController extends StorefrontController
     }
 
     /**
-     * @Since("6.0.0")
-     *
      * @Route(
      *     "/paypal/express/create-order",
      *     name="frontend.paypal.express.create_order",
@@ -151,8 +142,6 @@ class PayPalController extends StorefrontController
     }
 
     /**
-     * @Since("6.0.0")
-     *
      * @Route(
      *     "/paypal/express/prepare-cart",
      *     name="frontend.paypal.express.prepare_cart",
@@ -174,8 +163,6 @@ class PayPalController extends StorefrontController
     }
 
     /**
-     * @Since("6.0.0")
-     *
      * @Route(
      *     "/paypal/error",
      *     name="frontend.paypal.error",

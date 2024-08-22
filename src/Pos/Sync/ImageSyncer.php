@@ -16,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Image\BulkImageUpload;
 use Swag\PayPal\Pos\Api\Image\BulkImageUploadResponse\Uploaded;
@@ -27,6 +28,7 @@ use Swag\PayPal\Pos\Exception\MediaDomainNotSetException;
 use Swag\PayPal\Pos\Resource\ImageResource;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
 
+#[Package('checkout')]
 class ImageSyncer
 {
     use PosSalesChannelTrait;
@@ -147,7 +149,7 @@ class ImageSyncer
 
         $ids = $this->posMediaRepository->searchIds($criteria, $context)->getIds();
         if (!empty($ids)) {
-            $ids = \array_filter($ids, static fn($id) => \is_array($id));
+            $ids = \array_filter($ids, static fn ($id) => \is_array($id));
             $this->posMediaRepository->delete(\array_filter($ids), $context);
         }
     }

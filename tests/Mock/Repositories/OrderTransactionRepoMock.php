@@ -17,12 +17,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEve
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class OrderTransactionRepoMock extends AbstractRepoMock
 {
     public const ORDER_TRANSACTION_ID = 'orderTransactionTestId';

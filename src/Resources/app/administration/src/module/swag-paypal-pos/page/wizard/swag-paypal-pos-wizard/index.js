@@ -105,9 +105,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
     watch: {
         '$route'(to) {
-            const toName = to.name.replace('swag.paypal.pos.wizard.', '');
-
-            this.currentStep = this.stepper[toName];
+            this.handleRouteUpdate(to);
         },
     },
 
@@ -116,6 +114,12 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
     },
 
     methods: {
+        handleRouteUpdate(to) {
+            const toName = to.name.replace('swag.paypal.pos.wizard.', '');
+
+            this.currentStep = this.stepper[toName];
+        },
+
         createdComponent() {
             this.generateStepper();
 

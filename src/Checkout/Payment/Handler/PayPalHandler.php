@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
@@ -26,6 +27,7 @@ use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+#[Package('checkout')]
 class PayPalHandler
 {
     private OrderFromOrderBuilder $orderBuilder;

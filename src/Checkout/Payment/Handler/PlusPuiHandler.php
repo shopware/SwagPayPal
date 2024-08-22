@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
@@ -34,6 +35,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 /**
  * @deprecated tag:v8.0.0 - Will be removed without replacement.
  */
+#[Package('checkout')]
 class PlusPuiHandler
 {
     public const PAYPAL_PAYMENT_ID_INPUT_NAME = 'paypalPaymentId';

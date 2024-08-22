@@ -9,6 +9,7 @@ namespace Swag\PayPal\Pos\Sync\Product\Util;
 
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Collection;
 
 /**
@@ -19,6 +20,7 @@ use Shopware\Core\Framework\Struct\Collection;
  * @method ProductGrouping|null        first()
  * @method ProductGrouping|null        last()
  */
+#[Package('checkout')]
 class ProductGroupingCollection extends Collection
 {
     public function addProducts(ProductCollection $products): void

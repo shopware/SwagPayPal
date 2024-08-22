@@ -14,12 +14,14 @@ use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Storefront\Data\Struct\ACDC\BillingAddress;
 use Swag\PayPal\Storefront\Data\Struct\ACDC\CardholderData;
 use Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutData;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 
+#[Package('checkout')]
 class ACDCCheckoutDataService extends AbstractCheckoutDataService
 {
     public function buildCheckoutData(

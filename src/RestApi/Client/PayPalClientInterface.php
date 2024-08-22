@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\Client;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+#[Package('checkout')]
 interface PayPalClientInterface
 {
     public function sendPostRequest(string $resourceUri, ?PayPalApiStruct $data, array $headers = []): array;

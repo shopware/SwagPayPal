@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Pos\Webhook;
 
+use Shopware\Core\Framework\Log\Package;
+
 /**
  * @url https://github.com/iZettle/api-documentation/blob/master/pusher.adoc
  */
+#[Package('checkout')]
 final class WebhookEventNames
 {
     public const INVENTORY_BALANCE_CHANGED = 'InventoryBalanceChanged';

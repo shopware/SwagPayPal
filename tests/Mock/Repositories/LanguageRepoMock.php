@@ -13,6 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Language\LanguageDefinition;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Locale\LocaleEntity;
@@ -20,6 +21,7 @@ use Shopware\Core\System\Locale\LocaleEntity;
 /**
  * @internal
  */
+#[Package('checkout')]
 class LanguageRepoMock extends AbstractRepoMock
 {
     public const LOCALE_CODE = 'en-GB';

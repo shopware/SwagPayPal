@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
@@ -25,10 +26,11 @@ use Swag\PayPal\Util\PriceFormatter;
 /**
  * @internal
  */
+#[Package('checkout')]
 class AmountProviderTest extends TestCase
 {
-    use IntegrationTestBehaviour;
     use CheckoutRouteTrait;
+    use IntegrationTestBehaviour;
 
     private PriceFormatter $priceFormatter;
 
@@ -140,12 +142,12 @@ class AmountProviderTest extends TestCase
         $item = new Item();
 
         $unit = new UnitAmount();
-        $unit->setValue($this->priceFormatter->formatPrice($unitAmount));
+        $unit->setValue($this->priceFormatter->formatPrice($unitAmount, 'EUR'));
         $unit->setCurrencyCode('EUR');
         $item->setUnitAmount($unit);
 
         $tax = new Tax();
-        $tax->setValue($this->priceFormatter->formatPrice($taxAmount));
+        $tax->setValue($this->priceFormatter->formatPrice($taxAmount, 'EUR'));
         $tax->setCurrencyCode('EUR');
         $item->setTax($tax);
 

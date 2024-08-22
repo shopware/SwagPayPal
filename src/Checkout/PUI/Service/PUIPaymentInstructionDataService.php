@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout\PUI\Service;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\PUI\Exception\PaymentInstructionsNotReadyException;
 use Swag\PayPal\Checkout\PUI\PUIPaymentInstructionData;
@@ -16,6 +17,7 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 use Symfony\Component\Routing\RouterInterface;
 
+#[Package('checkout')]
 class PUIPaymentInstructionDataService
 {
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api\Subscription;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
@@ -20,6 +21,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * This class is experimental and not officially supported.
  * It is currently not used within the plugin itself. Use with caution.
  */
+#[Package('checkout')]
 class ApplicationContext extends PayPalApiStruct
 {
     public const USER_ACTION_TYPE_SUBSCRIBE_NOW = 'SUBSCRIBE_NOW';

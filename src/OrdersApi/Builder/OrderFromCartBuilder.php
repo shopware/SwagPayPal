@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -28,6 +29,7 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+#[Package('checkout')]
 class OrderFromCartBuilder extends AbstractOrderBuilder
 {
     private EventDispatcherInterface $eventDispatcher;
@@ -120,12 +122,12 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
 
             $tax = new Tax();
             $tax->setCurrencyCode($currencyCode);
-            $tax->setValue($this->priceFormatter->formatPrice($price->getCalculatedTaxes()->getAmount()));
+            $tax->setValue($this->priceFormatter->formatPrice($price->getCalculatedTaxes()->getAmount(), $currencyCode));
             $item->setTax($tax);
 
             $unitAmount = new UnitAmount();
             $unitAmount->setCurrencyCode($currencyCode);
-            $unitAmount->setValue($this->priceFormatter->formatPrice($price->getUnitPrice()));
+            $unitAmount->setValue($this->priceFormatter->formatPrice($price->getUnitPrice(), $currencyCode));
 
             $item->setUnitAmount($unitAmount);
             $item->setQuantity($lineItem->getQuantity());

@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputedTransaction;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Common\Seller as CommonSeller;
 
+#[Package('checkout')]
 class Seller extends CommonSeller
 {
 }

@@ -7,7 +7,7 @@
         {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
         {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_CART_PAGE_EXTENSION_ID')] %}
 
-        {% if installmentBanner is not null %}
+        {% if installmentBanner.cartEnabled %}
             <div class="form-row">
                 <div class="col"
                      data-swag-paypal-installment-banner="true"
@@ -34,7 +34,7 @@
         {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
         {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
 
-        {% if installmentBanner is not null %}
+        {% if installmentBanner.cartEnabled %}
             <div class="checkout-aside-action"
                  data-swag-paypal-installment-banner="true"
                  data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">

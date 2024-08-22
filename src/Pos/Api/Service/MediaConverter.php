@@ -9,9 +9,11 @@ namespace Swag\PayPal\Pos\Api\Service;
 
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Image\BulkImageUpload\ImageUpload;
 use Swag\PayPal\Pos\Exception\InvalidMediaTypeException;
 
+#[Package('checkout')]
 class MediaConverter
 {
     private UrlGeneratorInterface $urlGenerator;

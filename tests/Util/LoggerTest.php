@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Util;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Settings;
@@ -20,6 +21,7 @@ use Swag\PayPal\Util\Log\LoggerFactory;
  *
  * @deprecated tag:v8.0.0 - Will be removed.
  */
+#[Package('checkout')]
 class LoggerTest extends TestCase
 {
     use IntegrationTestBehaviour;
@@ -28,7 +30,7 @@ class LoggerTest extends TestCase
 
     private string $logsDir;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         /** @var string $logsDir */
         $logsDir = $this->getContainer()->getParameter('kernel.logs_dir');
@@ -39,7 +41,7 @@ class LoggerTest extends TestCase
         }
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->getContainer()->get(SystemConfigService::class)->delete(Settings::LOGGING_LEVEL);
     }
@@ -133,7 +135,7 @@ class LoggerTest extends TestCase
         $systemConfigService->set(Settings::LOGGING_LEVEL, $level);
 
         $logsDir = $this->getContainer()->getParameter('kernel.logs_dir');
-        $loggerFactory = new LoggerFactory($logsDir . DIRECTORY_SEPARATOR . '%s_test.log');
+        $loggerFactory = new LoggerFactory($logsDir . \DIRECTORY_SEPARATOR . '%s_test.log');
         $loggerFactory->setLogLevel($systemConfigService);
 
         return $loggerFactory->createRotating(self::LOGGER_PREFIX);

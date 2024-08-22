@@ -8,12 +8,14 @@
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Common;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Common\Money;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_common_transaction")
  */
+#[Package('checkout')]
 abstract class Transaction extends PayPalApiStruct
 {
     /**

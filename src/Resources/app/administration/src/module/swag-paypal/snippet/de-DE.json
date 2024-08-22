@@ -91,11 +91,13 @@
                     "limited": "Limitiert",
                     "pending": "Authorisierung ausstehend",
                     "ineligible": "Gesperrt",
-                    "inactive": "Onboarding benötigt"
+                    "inactive": "Onboarding benötigt",
+                    "mybank": "Limitiert"
                 },
                 "onboardingStatusTooltip": {
                   "ineligible": "PayPal hat uns informiert, dass diese Zahlungsmethode aktuell für Ihren Account nicht freigeschaltet ist.",
-                  "limited": "PayPal hat uns informiert, dass Einschränkugen dieser Zahlungsart für Ihrem Account bestehen."
+                  "limited": "PayPal hat uns informiert, dass Einschränkugen dieser Zahlungsart für Ihren Account bestehen.",
+                  "mybank": "Händler, die MyBank nach Februar 2023 aktivieren, benötigen eine manuelle Genehmigung von PayPal. Wenden Sie sich an den PayPal-Support, um weitere Informationen zu erhalten."
                 },
                 "paymentMethodStatusChangedSuccess": {
                     "active": "Zahlungsart \"{name}\" ist jetzt aktiv.",
@@ -211,6 +213,7 @@
             },
             "express": {
                 "cardTitle": "Express Checkout Shortcut",
+                "cardSubtitle": "Express Checkouts erhöhen die Konversionsrate in Deinem Shop und stellen für Dich als Händler kein finanzielles Risiko dar, daher sollten sie immer aktiv sein.",
                 "ecsDetailEnabled": {
                     "label": "'Direkt zu PayPal' auf Detailseite",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf jeder Produktdetailseite angezeigt."
@@ -263,8 +266,28 @@
             },
             "installment": {
                 "cardTitle": "'Später Bezahlen'-Banner",
+                "cardSubtitle": "Banner erhöhen die Konversionsrate in Deinem Shop und stellen für Dich als Händler kein finanzielles Risiko dar, daher sollten sie immer aktiv sein.",
                 "installmentBannerEnabled": {
-                    "label": "'Später Bezahlen'-Banner aktivieren"
+                    "detailPage": {
+                      "label": "'Später Bezahlen'-Banner auf Detailseite",
+                      "helpText": "Wenn diese Option aktiv ist, wird der 'Später Bezahlen'-Banner auf jeder Produktdetailseite angezeigt."
+                    },
+                    "cart": {
+                      "label": "'Später Bezahlen'-Banner im Warenkorb",
+                      "helpText": "Wenn diese Option aktiv ist, wird der 'Später Bezahlen'-Banner im Warenkorb angezeigt."
+                    },
+                    "offCanvasCart": {
+                      "label": "'Später Bezahlen'-Banner im Off-Canvas-Warenkorb",
+                      "helpText": "Wenn diese Option aktiv ist, wird der 'Später Bezahlen'-Banner im Off-Canvas-Warenkorb angezeigt."
+                    },
+                    "loginPage": {
+                      "label": "'Später Bezahlen'-Banner auf Loginseite",
+                      "helpText": "Wenn diese Option aktiv ist, wird der 'Später Bezahlen'-Banner auf der Login- und Registrierungsseite angezeigt."
+                    },
+                    "footer": {
+                      "label": "'Später Bezahlen'-Banner im Footer",
+                      "helpText": "Wenn diese Option aktiv ist, wird der 'Später Bezahlen'-Banner im Footer angezeigt."
+                    }
                 }
             },
             "acdc": {

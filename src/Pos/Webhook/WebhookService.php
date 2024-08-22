@@ -10,6 +10,7 @@ namespace Swag\PayPal\Pos\Webhook;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Pos\Api\Error\PosApiError;
@@ -27,6 +28,7 @@ use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
+#[Package('checkout')]
 class WebhookService
 {
     use PosSalesChannelTrait;

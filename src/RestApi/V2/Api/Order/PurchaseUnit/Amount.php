@@ -8,12 +8,14 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_amount")
  */
+#[Package('checkout')]
 class Amount extends Money
 {
     /**

@@ -13,7 +13,7 @@ use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Routing\Annotation\Since;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\OrdersApi\Administration\Exception\OrderNotFoundException;
 use Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -32,6 +32,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Package('checkout')]
 class PayPalOrdersController extends AbstractController
 {
     public const REQUEST_PARAMETER_CURRENCY = 'currency';
@@ -77,8 +78,6 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
-     * @Since("2.0.0")
-     *
      * @OA\Get(
      *     path="/paypal-v2/order/{orderTransactionId}/{paypalOrderId}",
      *     description="Loads the order details of the given PayPal order ID",
@@ -128,7 +127,7 @@ class PayPalOrdersController extends AbstractController
                 $this->getSalesChannelId($orderTransactionId, $context)
             );
         } catch (PayPalApiException $e) {
-            if ($e->getCode() === Response::HTTP_NOT_FOUND) {
+            if ($e->getStatusCode() === Response::HTTP_NOT_FOUND) {
                 throw new OrderNotFoundException($paypalOrderId);
             }
 
@@ -139,8 +138,6 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
-     * @Since("2.0.0")
-     *
      * @OA\Get(
      *     path="/paypal-v2/authorization/{orderTransactionId}/{authorizationId}",
      *     description="Loads the authorization details of the given PayPal authorization ID",
@@ -193,8 +190,6 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
-     * @Since("2.0.0")
-     *
      * @OA\Get(
      *     path="/paypal-v2/capture/{orderTransactionId}/{captureId}",
      *     description="Loads the capture details of the given PayPal capture ID",
@@ -247,8 +242,6 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
-     * @Since("2.0.0")
-     *
      * @OA\Get(
      *     path="/paypal-v2/refund/{orderTransactionId}/{refundId}",
      *     description="Loads the refund details of the given PayPal refund ID",
@@ -301,8 +294,6 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
-     * @Since("2.0.0")
-     *
      * @OA\Post(
      *     path="/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}",
      *     description="Refunds the PayPal capture and sets the state of the Shopware order transaction accordingly",
@@ -392,8 +383,6 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
-     * @Since("2.0.0")
-     *
      * @OA\Post(
      *     path="/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}",
      *     description="Captures the PayPal authorization and sets the state of the Shopware order transaction accordingly",
@@ -470,8 +459,6 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
-     * @Since("2.0.0")
-     *
      * @OA\Post(
      *     path="/_action/paypal-v2/void-authorization/{orderTransactionId}/{authorizationId}",
      *     description="Voids the PayPal authorization and sets the state of the Shopware order transaction accordingly",
@@ -550,7 +537,7 @@ class PayPalOrdersController extends AbstractController
         $order = $orderTransaction->getOrder();
 
         if ($order === null) {
-            throw new InvalidTransactionException($orderTransactionId);
+            throw new OrderNotFoundException($orderTransactionId);
         }
 
         return $order->getSalesChannelId();

@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\Pos\Api\Authentication\ApiKey;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Authentication\ApiKey\Payload\User;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 /**
  * JWT Payload
  */
+#[Package('checkout')]
 class Payload extends PosStruct
 {
     /**

@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Routing\Annotation\Since;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -22,6 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Package('checkout')]
 class SettingsController extends AbstractController
 {
     private ApiCredentialServiceInterface $apiCredentialService;
@@ -40,8 +41,6 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Since("0.9.0")
-     *
      * @Route("/api/_action/paypal/validate-api-credentials", name="api.action.paypal.validate.api.credentials", methods={"GET"}, defaults={"_acl": {"swag_paypal.viewer"}})
      */
     public function validateApiCredentials(Request $request): JsonResponse
@@ -50,20 +49,18 @@ class SettingsController extends AbstractController
         if (!\is_string($clientId)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::invalidRequestParameter('clientId');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('clientId');
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new InvalidRequestParameterException('clientId');
         }
 
         $clientSecret = $request->query->get('clientSecret');
         if (!\is_string($clientSecret)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::invalidRequestParameter('clientSecret');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('clientSecret');
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new InvalidRequestParameterException('clientSecret');
         }
 
         $sandboxActive = $request->query->getBoolean('sandboxActive');
@@ -74,8 +71,6 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Since("0.10.0")
-     *
      * @Route("/api/_action/paypal/get-api-credentials", name="api.action.paypal.get.api.credentials", methods={"POST"}, defaults={"_acl": {"swag_paypal.editor"}})
      */
     public function getApiCredentials(RequestDataBag $requestDataBag): JsonResponse
@@ -91,8 +86,6 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Since("5.2.0")
-     *
      * @Route("/api/_action/paypal/merchant-information", name="api.action.paypal.merchant-information", methods={"GET"}, defaults={"_acl": {"swag_paypal.editor"}})
      */
     public function getMerchantInformation(Request $request, Context $context): JsonResponse

@@ -18,7 +18,8 @@
                                 <sw-step-display :initialItemVariants="stepInitialItemVariants"
                                                  :itemIndex="stepIndex"
                                                  :itemVariant="stepVariant">
-                                    <sw-step-item v-for="pageName in displayStepperPages" :key="pageName">
+                                    <sw-step-item v-for="pageName in displayStepperPages"
+                                                  :key="pageName">
                                         {{ $tc(`swag-paypal-pos.wizard.stepItemTitle.${pageName}`) }}
                                     </sw-step-item>
                                 </sw-step-display>
@@ -27,17 +28,37 @@
 
                         {% block swag_paypal_pos_wizard_modal_content_page %}
                             <div class="swag-paypal-pos-wizard__page">
-                                <router-view :salesChannel="salesChannel"
-                                             :cloneSalesChannelId="cloneSalesChannelId"
-                                             :saveSalesChannel="save"
-                                             :isLoading="isLoading"
-                                             @buttons-update="updateButtons"
-                                             @frw-set-title="setTitle"
-                                             @frw-finish="onFinishWizard"
-                                             @toggle-loading="toggleLoading"
-                                             @recreate-sales-channel="createNewSalesChannel"
-                                             @update-clone-sales-channel="updateCloneSalesChannel">
-                                </router-view>
+                                {% if VUE3 %}
+                                    <router-view
+                                        v-slot="{ Component }"
+                                    >
+                                        <component
+                                            :is="Component"
+                                            :salesChannel="salesChannel"
+                                            :cloneSalesChannelId="cloneSalesChannelId"
+                                            :saveSalesChannel="save"
+                                            :isLoading="isLoading"
+                                            @buttons-update="updateButtons"
+                                            @frw-set-title="setTitle"
+                                            @frw-finish="onFinishWizard"
+                                            @toggle-loading="toggleLoading"
+                                            @recreate-sales-channel="createNewSalesChannel"
+                                            @update-clone-sales-channel="updateCloneSalesChannel"
+                                        />
+                                    </router-view>
+                                {% else %}
+                                    <router-view :salesChannel="salesChannel"
+                                                 :cloneSalesChannelId="cloneSalesChannelId"
+                                                 :saveSalesChannel="save"
+                                                 :isLoading="isLoading"
+                                                 @buttons-update="updateButtons"
+                                                 @frw-set-title="setTitle"
+                                                 @frw-finish="onFinishWizard"
+                                                 @toggle-loading="toggleLoading"
+                                                 @recreate-sales-channel="createNewSalesChannel"
+                                                 @update-clone-sales-channel="updateCloneSalesChannel">
+                                    </router-view>
+                                {% endif %}
                             </div>
                         {% endblock %}
                     </sw-container>

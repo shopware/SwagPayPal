@@ -20,8 +20,8 @@ use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
@@ -35,6 +35,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
+#[Package('checkout')]
 class CreateOrderRoute extends AbstractCreateOrderRoute
 {
     private const FAKE_URL = 'https://www.example.com/';
@@ -76,8 +77,6 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
     }
 
     /**
-     * @Since("5.0.0")
-     *
      * @OA\Post(
      *     path="/store-api/paypal/create-order",
      *     description="Creates a PayPal order from the existing cart or an order",

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Link;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Link;
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes")
  */
+#[Package('checkout')]
 class Disputes extends PayPalApiStruct
 {
     /**

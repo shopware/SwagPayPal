@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\MerchandizeDisputeProperties;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Common\ProductDetails as CommonProductDetails;
 
+#[Package('checkout')]
 class ProductDetails extends CommonProductDetails
 {
 }

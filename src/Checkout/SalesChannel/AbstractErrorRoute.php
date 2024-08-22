@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Checkout\SalesChannel;
 
+use Shopware\Core\Framework\Log\Package;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Package('checkout')]
 abstract class AbstractErrorRoute
 {
     abstract public function getDecorated(): AbstractErrorRoute;

@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 
+#[Package('checkout')]
 interface ExpressCheckoutDataServiceInterface
 {
     public function buildExpressCheckoutButtonData(SalesChannelContext $salesChannelContext, bool $addProductToCart = false): ?ExpressCheckoutButtonData;

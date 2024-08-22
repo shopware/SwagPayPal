@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\Test\Pos\Webhook\_fixtures;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Webhook\WebhookEventNames;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class TestMessageFixture
 {
     public static function getWebhookFixture(): array

@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Common\Address as CommonAddress;
 
+#[Package('checkout')]
 class Address extends CommonAddress
 {
 }

@@ -8,12 +8,14 @@
 namespace Swag\PayPal\OrdersApi\Builder\Event;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Use this event to adjust the items of the order which will be submitted to PayPal
  */
+#[Package('checkout')]
 class PayPalV2ItemFromOrderEvent extends Event
 {
     private Item $payPalLineItem;

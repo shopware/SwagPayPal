@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Api\Webhook;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Resource\Amount;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Resource\Link;
@@ -16,6 +17,7 @@ use Swag\PayPal\RestApi\V1\Api\Webhook\Resource\TransactionFee;
 /**
  * @OA\Schema(schema="swag_paypal_v1_webhook_resource")
  */
+#[Package('checkout')]
 class Resource extends PayPalApiStruct
 {
     /**

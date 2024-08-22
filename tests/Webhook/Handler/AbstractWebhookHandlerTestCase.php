@@ -9,9 +9,9 @@ namespace Swag\PayPal\Test\Webhook\Handler;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
@@ -31,13 +31,13 @@ use Swag\PayPal\Webhook\Handler\AbstractWebhookHandler;
 /**
  * @internal
  */
+#[Package('checkout')]
 abstract class AbstractWebhookHandlerTestCase extends TestCase
 {
-    use KernelTestBehaviour;
-    use StateMachineStateTrait;
     use DatabaseTransactionBehaviour;
-    use OrderFixture;
+    use KernelTestBehaviour;
     use OrderTransactionTrait;
+    use StateMachineStateTrait;
 
     protected EntityRepository $orderTransactionRepository;
 

@@ -8,9 +8,11 @@
 namespace Swag\PayPal\Pos\Api\Service\Converter;
 
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Product\Presentation;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 
+#[Package('checkout')]
 class PresentationConverter
 {
     public function convert(?ProductMediaEntity $cover, ProductContext $productContext): ?Presentation

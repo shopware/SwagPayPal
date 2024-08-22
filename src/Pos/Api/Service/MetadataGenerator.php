@@ -7,10 +7,12 @@
 
 namespace Swag\PayPal\Pos\Api\Service;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Product\Metadata;
 use Swag\PayPal\Pos\Api\Product\Metadata\Source;
 use Swag\PayPal\SwagPayPal;
 
+#[Package('checkout')]
 class MetadataGenerator
 {
     public function generate(): Metadata

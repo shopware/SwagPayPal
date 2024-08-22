@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Api\Authentication;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[Package('checkout')]
 final class Token extends PosStruct
 {
     /**
@@ -38,7 +40,7 @@ final class Token extends PosStruct
     {
         $newToken = parent::assign($arrayData);
 
-        //Calculate the expiration date manually
+        // Calculate the expiration date manually
         $expirationDateTime = new \DateTime();
         $interval = \DateInterval::createFromDateString($newToken->getExpiresIn() . ' seconds');
         $expirationDateTime = $expirationDateTime->add($interval ?: new \DateInterval('PT0S'));

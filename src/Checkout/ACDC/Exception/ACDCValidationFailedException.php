@@ -8,7 +8,9 @@
 namespace Swag\PayPal\Checkout\ACDC\Exception;
 
 use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
+use Shopware\Core\Framework\Log\Package;
 
+#[Package('checkout')]
 class ACDCValidationFailedException extends SyncPaymentProcessException
 {
     public function __construct(

@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\PaymentsApi\Patch;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Patch;
 
+#[Package('checkout')]
 class OrderNumberPatchBuilder
 {
     public function createOrderNumberPatch(?string $orderNumber): Patch

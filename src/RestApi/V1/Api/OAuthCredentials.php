@@ -8,10 +8,12 @@
 namespace Swag\PayPal\RestApi\V1\Api;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_oauth_credentials")
  */
+#[Package('checkout')]
 class OAuthCredentials
 {
     /**

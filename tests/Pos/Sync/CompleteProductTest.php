@@ -21,6 +21,7 @@ use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -79,6 +80,7 @@ use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CompleteProductTest extends TestCase
 {
     use KernelTestBehaviour;
@@ -271,7 +273,7 @@ class CompleteProductTest extends TestCase
         ]);
 
         static::assertCount(5, $posProductRepository->getCollection());
-        static::assertNotContains($productStateF, $posProductRepository->getCollection());
+        static::assertFalse($posProductRepository->getCollection()->has($productStateF->getUniqueIdentifier()));
         static::assertSame($convertedGroupingA->getProduct()->generateChecksum(), $productStateA->getChecksum());
         static::assertNotEquals((new Product())->generateChecksum(), $productStateD->getChecksum());
         static::assertNotEquals((new Product())->generateChecksum(), $productStateE->getChecksum());
@@ -290,8 +292,8 @@ class CompleteProductTest extends TestCase
         static::assertCount(2, UpdateProductFixture::$lastUpdatedProducts);
 
         static::assertCount(2, $posMediaRepository->getCollection());
-        static::assertContains($existingMedia, $posMediaRepository->getCollection());
-        static::assertNotContains($removableMedia, $posMediaRepository->getCollection());
+        static::assertTrue($posMediaRepository->getCollection()->has($existingMedia->getUniqueIdentifier()));
+        static::assertFalse($posMediaRepository->getCollection()->has($removableMedia->getUniqueIdentifier()));
     }
 
     private function getTax(): TaxEntity

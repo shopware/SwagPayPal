@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Pos\Run;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Command\AbstractPosCommand;
 use Swag\PayPal\Pos\Command\PosImageSyncCommand;
 use Swag\PayPal\Pos\Command\PosInventorySyncCommand;
@@ -35,6 +36,7 @@ use Symfony\Component\Console\Output\NullOutput;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PosCommandTest extends TestCase
 {
     private const INVALID_CHANNEL_ID = 'notASalesChannelId';

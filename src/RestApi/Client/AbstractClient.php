@@ -10,9 +10,11 @@ namespace Swag\PayPal\RestApi\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Symfony\Component\HttpFoundation\Request;
 
+#[Package('checkout')]
 abstract class AbstractClient
 {
     protected ClientInterface $client;

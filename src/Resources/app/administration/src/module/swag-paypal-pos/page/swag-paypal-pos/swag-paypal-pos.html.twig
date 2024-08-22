@@ -13,7 +13,9 @@
             <template #smart-bar-actions>
                 <sw-button v-for="button in buttonConfig"
                            size="small"
+                           {% if VUE2 %}
                            :key="button.key"
+                           {% endif %}
                            :disabled="button.disabled"
                            :isLoading="button.isLoading || isLoading"
                            :variant="button.variant"
@@ -76,17 +78,37 @@
                     {% endblock %}
 
                     {% block swag_paypal_pos_content_card %}
-                        <router-view v-if="!isLoading"
-                                     :key="$route.params.id"
-                                     :salesChannel="salesChannel"
-                                     :cloneSalesChannelId="cloneSalesChannelId"
-                                     :lastRun="lastRun"
-                                     :lastCompleteRun="lastCompleteRun"
-                                     @buttons-update="updateButtons"
-                                     @load-sales-channel="loadSalesChannel"
-                                     @run-update="loadLastRun"
-                                     @update-clone-sales-channel="updateCloneSalesChannel">
-                        </router-view>
+                        {% if VUE3 %}
+                            <router-view
+                              v-if="!isLoading"
+                              :key="$route.params.id"
+                              v-slot="{ Component }">
+                               <component
+                                   :is="Component"
+                                   :salesChannel="salesChannel"
+                                   :cloneSalesChannelId="cloneSalesChannelId"
+                                   :lastRun="lastRun"
+                                   :lastCompleteRun="lastCompleteRun"
+                                   @buttons-update="updateButtons"
+                                   @load-sales-channel="loadSalesChannel"
+                                   @run-update="loadLastRun"
+                                   @update-clone-sales-channel="updateCloneSalesChannel"
+                               />
+                            </router-view>
+                        {% else %}
+                            <router-view v-if="!isLoading"
+                                         :key="$route.params.id"
+                                         :salesChannel="salesChannel"
+                                         :cloneSalesChannelId="cloneSalesChannelId"
+                                         :lastRun="lastRun"
+                                         :lastCompleteRun="lastCompleteRun"
+                                         @buttons-update="updateButtons"
+                                         @load-sales-channel="loadSalesChannel"
+                                         @run-update="loadLastRun"
+                                         @update-clone-sales-channel="updateCloneSalesChannel">
+                            </router-view>
+                        {% endif %}
+
                         <sw-loader v-if="isLoading"></sw-loader>
                     {% endblock %}
 

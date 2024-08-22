@@ -18,10 +18,10 @@ use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
@@ -34,6 +34,7 @@ use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+#[Package('checkout')]
 class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 {
     public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
@@ -179,10 +180,9 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             if (!\is_string($payerId)) {
                 if (\class_exists(RoutingException::class)) {
                     throw RoutingException::missingRequestParameter(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
-                } else {
-                    /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                    throw new MissingRequestParameterException(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
                 }
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new MissingRequestParameterException(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
             }
 
             $this->plusPuiHandler->handleFinalizePayment(
@@ -201,10 +201,9 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         if (!\is_string($token)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::missingRequestParameter(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new MissingRequestParameterException(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new MissingRequestParameterException(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
         }
 
         $this->payPalHandler->handleFinalizeOrder(

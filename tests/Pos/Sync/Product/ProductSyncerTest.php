@@ -11,6 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Service\Converter\CategoryConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\OptionGroupConverter;
@@ -32,6 +33,7 @@ use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ProductSyncerTest extends AbstractProductSyncTest
 {
     private MockObject $productContextFactory;
@@ -52,7 +54,7 @@ class ProductSyncerTest extends AbstractProductSyncTest
 
     private MockObject $unsyncedChecker;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $context = Context::createDefaultContext();
 

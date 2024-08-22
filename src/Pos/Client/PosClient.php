@@ -10,6 +10,7 @@ namespace Swag\PayPal\Pos\Client;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Error\PosApiError;
@@ -18,6 +19,7 @@ use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Resource\TokenResource;
 use Swag\PayPal\SwagPayPal;
 
+#[Package('checkout')]
 class PosClient extends AbstractClient
 {
     private TokenResource $tokenResource;

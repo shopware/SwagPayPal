@@ -16,12 +16,12 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderStates;
-use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
@@ -50,12 +50,12 @@ use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PUIPaymentInstructionsRouteTest extends TestCase
 {
-    use ServicesTrait;
-    use OrderFixture;
-    use StateMachineStateTrait;
     use OrderTransactionTrait;
+    use ServicesTrait;
+    use StateMachineStateTrait;
 
     public function testGetPaymentInstructionsPending(): void
     {

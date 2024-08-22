@@ -8,11 +8,13 @@
 namespace Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_merchant_integrations_capability")
  */
+#[Package('checkout')]
 class Capability extends PayPalApiStruct
 {
     public const STATUS_ACTIVE = 'ACTIVE';

@@ -15,6 +15,7 @@ parameters:
         -   tests
     excludePaths:
         -   src/Resources
+        -   src/DevOps/Rector
 
     symfony:
         constant_hassers: false
@@ -66,6 +67,18 @@ parameters:
         -   # ignore deprecated CartService (we don't extend it)
             message: '#deprecated class Shopware\\Core\\Checkout\\Cart\\SalesChannel\\CartService#'
 
+        -   # ignore deprecated StockUpdater (PPI-805)
+            message : '#deprecated class Shopware\\Core\\Content\\Product\\DataAbstractionLayer\\StockUpdater#'
+
+        -   # ignore deprecated Generator Shopware 6.6
+            message : '#Call to method .* of deprecated class Shopware\\Core\\Test\\Generator#'
+
+        -   # ignore deprecated UrlGenerator
+            message : '#Use AbstractMediaUrlGenerator instead#'
+
+        -   # ignore nullable Zip Code (6.6)
+            message : '#Call to deprecated method [sg]etZipcode\(\) of class .*OrderAddressEntity#'
+
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
 
@@ -76,5 +89,9 @@ services:
             - phpstan.rules.rule
     -
         class: Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalMethodRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\PackageAnnotationRule
         tags:
             - phpstan.rules.rule

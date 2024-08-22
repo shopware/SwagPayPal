@@ -8,12 +8,14 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario\BillingAddress;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario\TaxInfo;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_payment_source_boletobancario")
  */
+#[Package('checkout')]
 class Boletobancario extends AbstractAPMPaymentSource
 {
     /**

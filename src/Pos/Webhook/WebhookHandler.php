@@ -8,9 +8,11 @@
 namespace Swag\PayPal\Pos\Webhook;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Webhook\Webhook;
 
+#[Package('checkout')]
 interface WebhookHandler
 {
     /**

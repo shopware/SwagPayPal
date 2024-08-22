@@ -16,17 +16,25 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Event\NestedEventCollection;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
+ * @template T of EntityCollection
+ *
  * @internal
  */
+#[Package('checkout')]
 trait RepoTrait
 {
+    /**
+     * @var T
+     */
     protected EntityCollection $entityCollection;
 
     public function __construct()
     {
+        /** @var class-string<T> $collectionClass */
         $collectionClass = $this->getDefinition()->getCollectionClass();
         // @phpstan-ignore-next-line
         $this->entityCollection = new $collectionClass([]);
@@ -39,6 +47,9 @@ trait RepoTrait
         $this->entityCollection->add($entity);
     }
 
+    /**
+     * @return T
+     */
     public function getCollection(): EntityCollection
     {
         return $this->entityCollection;
@@ -77,7 +88,7 @@ trait RepoTrait
     {
         foreach ($data as $primaryKey) {
             foreach ($this->getCollection() as $collectionKey => $element) {
-                if (\array_diff($this->getPrimaryKeyWrite($element), $primaryKey) === []) {
+                if (\array_diff($this->getPrimaryKey($element), $primaryKey) === []) {
                     $this->entityCollection->remove($collectionKey);
                 }
             }
@@ -93,7 +104,7 @@ trait RepoTrait
         return new IdSearchResult(
             \count($entityCollection),
             \array_map(static function (Entity $entity) use ($repository) {
-                $key = $repository->getPrimaryKeyRead($entity);
+                $key = $repository->getPrimaryKey($entity);
                 if (\count($key) === 1) {
                     $key = \array_pop($key);
                 }
@@ -123,17 +134,7 @@ trait RepoTrait
     /**
      * @return string[]
      */
-    protected function getPrimaryKeyWrite(Entity $entity): array
-    {
-        return [
-            'id' => $entity->get('id'),
-        ];
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function getPrimaryKeyRead(Entity $entity): array
+    protected function getPrimaryKey(Entity $entity): array
     {
         return [
             'id' => $entity->get('id'),

@@ -8,7 +8,9 @@
 namespace Swag\PayPal\Test\PaymentsApi\Administration;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
@@ -36,6 +38,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalPaymentControllerTest extends TestCase
 {
     use ServicesTrait;
@@ -66,7 +69,13 @@ class PayPalPaymentControllerTest extends TestCase
         $context->addExtension(OrderRepositoryMock::NO_ORDER, new ArrayStruct());
 
         $this->expectException(ShopwareHttpException::class);
-        $this->expectExceptionMessageMatches('/Order with id \"?testOrderId\"? not found./');
+        // @phpstan-ignore-next-line
+        if (\class_exists(PaymentException::class) && \method_exists(PaymentException::class, 'unknownPaymentMethodByHandlerIdentifier')) {
+            // Shopware >= 6.5.7.0
+            $this->expectExceptionMessageMatches('/Could not find order with id \"testOrderId\"/');
+        } else {
+            $this->expectExceptionMessageMatches('/Order with id \"?testOrderId\"? not found./');
+        }
         $this->createPaymentController()->paymentDetails('testOrderId', 'testPaymentId', $context)->getContent();
     }
 

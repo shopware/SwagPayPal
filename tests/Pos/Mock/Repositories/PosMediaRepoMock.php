@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
@@ -24,6 +25,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PosMediaRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition
@@ -78,22 +80,11 @@ class PosMediaRepoMock extends AbstractRepoMock
     /**
      * @return string[]
      */
-    protected function getPrimaryKeyWrite(Entity $entity): array
+    protected function getPrimaryKey(Entity $entity): array
     {
         return [
             'salesChannelId' => $entity->get('salesChannelId'),
             'mediaId' => $entity->get('mediaId'),
-        ];
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function getPrimaryKeyRead(Entity $entity): array
-    {
-        return [
-            'sales_channel_id' => $entity->get('salesChannelId'),
-            'media_id' => $entity->get('mediaId'),
         ];
     }
 

@@ -63,6 +63,10 @@ Component.register('swag-paypal-spb', {
                 },
             ];
         },
+
+        renderSettingsDisabled() {
+            return !this.acl.can('swag_paypal.editor') || !this.actualConfigData['SwagPayPal.settings.spbCheckoutEnabled'];
+        },
     },
 
     methods: {

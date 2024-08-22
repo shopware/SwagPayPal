@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Test\RestApi;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Test\RestApi\_fixtures\TestStruct;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalApiStructTest extends TestCase
 {
     use AssertArraySubsetTrait;

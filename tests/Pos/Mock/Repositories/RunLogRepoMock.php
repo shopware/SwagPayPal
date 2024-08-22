@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Test\Pos\Mock\Repositories;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogDefinition;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 class RunLogRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition

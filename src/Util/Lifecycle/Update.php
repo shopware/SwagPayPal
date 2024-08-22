@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -43,6 +44,7 @@ use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
+#[Package('checkout')]
 class Update
 {
     use PosSalesChannelTrait;
@@ -97,10 +99,6 @@ class Update
 
     public function update(UpdateContext $updateContext): void
     {
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.1.0', '<')) {
-            $this->updateTo110();
-        }
-
         if (\version_compare($updateContext->getCurrentPluginVersion(), '1.3.0', '<')) {
             $this->updateTo130();
         }
@@ -148,11 +146,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '6.2.0', '<')) {
             $this->updateTo620();
         }
-    }
 
-    private function updateTo110(): void
-    {
-        $this->setSettingToDefaultValue(Settings::INSTALLMENT_BANNER_ENABLED);
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '7.3.0', '<')) {
+            $this->updateTo730();
+        }
     }
 
     private function updateTo130(): void
@@ -303,7 +300,7 @@ class Update
                 $this->webhookService->deregisterWebhook($salesChannelId);
                 $this->webhookService->registerWebhook($salesChannelId);
             }
-        } catch (PayPalSettingsInvalidException | WebhookIdInvalidException $exception) {
+        } catch (PayPalSettingsInvalidException|WebhookIdInvalidException $exception) {
             // do nothing, if the plugin is not correctly configured
         }
 
@@ -322,7 +319,7 @@ class Update
 
                 $this->posWebhookService->registerWebhook($salesChannel->getId(), $context);
             }
-        } catch (PosApiException | WebhookNotRegisteredException $exception) {
+        } catch (PosApiException|WebhookNotRegisteredException $exception) {
             // do nothing, if the Sales Channel is not correctly configured
         }
     }
@@ -473,5 +470,17 @@ class Update
     private function updateTo620(): void
     {
         $this->setSettingToDefaultValue(Settings::ECS_SHOW_PAY_LATER);
+    }
+
+    private function updateTo730(): void
+    {
+        // @phpstan-ignore-next-line
+        $installmentBannerEnabled = $this->systemConfig->getBool(Settings::INSTALLMENT_BANNER_ENABLED);
+
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED, $installmentBannerEnabled);
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_CART_ENABLED, $installmentBannerEnabled);
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED, $installmentBannerEnabled);
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED, $installmentBannerEnabled);
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED, $installmentBannerEnabled);
     }
 }

@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -31,10 +32,11 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CartValidatorTest extends TestCase
 {
-    use ServicesTrait;
     use PaymentMethodTrait;
+    use ServicesTrait;
 
     private CartValidator $validator;
 
@@ -44,7 +46,7 @@ class CartValidatorTest extends TestCase
 
     private SystemConfigService $systemConfig;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = $this->getContainer()->get(CartValidator::class);
         $this->paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
@@ -62,7 +64,7 @@ class CartValidatorTest extends TestCase
         }
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
 

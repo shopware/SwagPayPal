@@ -12,6 +12,7 @@ use Shopware\Core\Content\Category\SalesChannel\CachedCategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRouteResponse;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -29,12 +30,13 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ExpressCategoryRouteTest extends TestCase
 {
     use IntegrationTestBehaviour;
     use PaymentMethodTrait;
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $paymentMethodId = $this->getContainer()->get(PaymentMethodUtil::class)->getPayPalPaymentMethodId(Context::createDefaultContext());
 

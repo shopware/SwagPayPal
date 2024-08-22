@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\TestDefaults;
@@ -29,6 +30,7 @@ use Swag\PayPal\Pos\Run\RunService;
 /**
  * @internal
  */
+#[Package('checkout')]
 class RunServiceTest extends TestCase
 {
     use IntegrationTestBehaviour;
@@ -45,7 +47,7 @@ class RunServiceTest extends TestCase
 
     private Context $context;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         /** @var EntityRepository $runRepository */
         $runRepository = $this->getContainer()->get('swag_paypal_pos_sales_channel_run.repository');

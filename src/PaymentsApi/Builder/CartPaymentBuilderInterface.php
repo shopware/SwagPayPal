@@ -8,9 +8,11 @@
 namespace Swag\PayPal\PaymentsApi\Builder;
 
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 
+#[Package('checkout')]
 interface CartPaymentBuilderInterface
 {
     /**

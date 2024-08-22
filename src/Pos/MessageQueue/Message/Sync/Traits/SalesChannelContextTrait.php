@@ -8,8 +8,10 @@
 namespace Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
+#[Package('checkout')]
 trait SalesChannelContextTrait
 {
     protected SalesChannelContext $salesChannelContext;

@@ -16,6 +16,7 @@ use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -48,6 +49,7 @@ use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class CompleteInventoryTest extends TestCase
 {
     use KernelTestBehaviour;

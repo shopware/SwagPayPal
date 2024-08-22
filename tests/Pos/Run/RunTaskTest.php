@@ -11,6 +11,7 @@ use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
@@ -27,6 +28,7 @@ use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class RunTaskTest extends TestCase
 {
     use KernelTestBehaviour;
@@ -41,7 +43,7 @@ class RunTaskTest extends TestCase
      */
     private array $tasks;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->messageBus = new MessageBusMock();
         $this->runService = $this->createMock(RunService::class);

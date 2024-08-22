@@ -29,14 +29,13 @@
 
                     {% block swag_paypal_pos_detail_logs_grid_column_date_formatted %}
                         <template v-if="item.createdAt">
-                            {{ item.createdAt | date({
+                            {{ dateFilter(item.createdAt, {
                                 hour: '2-digit',
                                 minute: '2-digit',
                                 day: '2-digit',
                                 month: '2-digit',
                                 year: '2-digit'
-                            })
-                            }}
+                            }) }}
                         </template>
                     {% endblock %}
 

@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -31,6 +32,7 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+#[Package('checkout')]
 class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPaymentBuilderInterface
 {
     private EntityRepository $currencyRepository;
@@ -159,17 +161,17 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         return $items;
     }
 
-    private function createItemFromLineItem(OrderLineItemEntity $lineItem, string $currency): Item
+    private function createItemFromLineItem(OrderLineItemEntity $lineItem, string $currencyCode): Item
     {
         $item = new Item();
 
         $this->setName($lineItem, $item);
         $this->setSku($lineItem, $item);
 
-        $item->setCurrency($currency);
+        $item->setCurrency($currencyCode);
         $item->setQuantity($lineItem->getQuantity());
-        $item->setTax($this->priceFormatter->formatPrice(0));
-        $item->setPrice($this->priceFormatter->formatPrice($lineItem->getUnitPrice()));
+        $item->setTax($this->priceFormatter->formatPrice(0, $currencyCode));
+        $item->setPrice($this->priceFormatter->formatPrice($lineItem->getUnitPrice(), $currencyCode));
 
         $event = new PayPalV1ItemFromOrderEvent($item, $lineItem);
         $this->eventDispatcher->dispatch($event);

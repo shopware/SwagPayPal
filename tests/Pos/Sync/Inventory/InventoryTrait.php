@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 
 /**
  * @internal
  */
+#[Package('checkout')]
 trait InventoryTrait
 {
     use KernelTestBehaviour;

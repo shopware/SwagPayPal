@@ -15,11 +15,11 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
-use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\Method\APMHandler;
@@ -52,12 +52,12 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @internal
  */
+#[Package('checkout')]
 class APMHandlerTest extends TestCase
 {
     use FullCheckoutTrait;
-    use ServicesTrait;
-    use OrderFixture;
     use OrderTransactionTrait;
+    use ServicesTrait;
     use StateMachineStateTrait;
 
     /**
@@ -106,7 +106,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         return [
             [$this->getContainer()->get(BancontactOrderBuilder::class)],
             [$this->getContainer()->get(BlikOrderBuilder::class)],
-            //[$this->getContainer()->get(BoletoBancarioOrderBuilder::class)],
+            // [$this->getContainer()->get(BoletoBancarioOrderBuilder::class)],
             [$this->getContainer()->get(EpsOrderBuilder::class)],
             [$this->getContainer()->get(GiropayOrderBuilder::class)],
             [$this->getContainer()->get(IdealOrderBuilder::class)],

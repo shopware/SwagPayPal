@@ -1,3 +1,22 @@
+# 7.3.1
+- PPI-844 - Behebt ein Problem, bei dem der Ratenzahlungs-Banner nicht auf CMS-Produktdetailseiten deaktivierbar war
+
+# 7.3.0
+- PPI-765 - "Später bezahlen" Banner lassen sich nun feiner ein- und ausschalten
+- PPI-828 - Behebt ein Problem, bei dem aufgrund des Caches eine inkorrekte Liste an Zahlungsarten im Checkout angezeigt wurde
+
+# 7.2.4
+- PPI-818 - Warnung für potentielle Nicht-Verfügbarkeit der MyBank-Zahlungsmethode hinzugefügt
+- PPI-820 - Behebt ein Problem, bei dem ein Übergang in den Zahlungsstatus 'Bezahlt' nicht über Webhooks möglich war
+- PPI-826 - Die Express Buttons werden nicht mehr angezeigt, wenn die Double-Opt-In-Funktion des Gastkunden aktiviert ist.
+
+# 7.2.3
+- PPI-808 - Behebt ein Problem, bei dem manche Währungen (HUF, JPY, TWD) nicht korrekt an PayPal übermittelt wurden
+- PPI-809 - Behebt ein Problem, bei dem die Buttons nicht die richtige Farbe hatten
+- PPI-810 - Intuitiveres Verhalten der Einstellungen in der Administration
+- PPI-811 - Behebt ein Problem, bei dem Kreditkarten mit nicht verfügbarem 3D Secure nicht akzeptiert wurden
+- PPI-812 - Behebt ein Problem, bei dem der Zettle-Sync sich nicht zurücksetzbar ist
+
 # 7.2.2
 - PPI-802 - Verbesserte Formulierung und Standardwerte in der Administration
 

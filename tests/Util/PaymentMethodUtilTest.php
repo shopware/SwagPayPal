@@ -12,6 +12,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -22,6 +23,7 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PaymentMethodUtilTest extends TestCase
 {
     public const SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD = '4ce46b49d1904a5db0b41573e9355b51';

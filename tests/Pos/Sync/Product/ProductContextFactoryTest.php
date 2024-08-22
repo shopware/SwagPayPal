@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Pos\Sync\Product;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Product;
@@ -25,6 +26,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\PosProductRepoMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ProductContextFactoryTest extends AbstractProductSyncTest
 {
     private const IMAGE_MEDIA_ID_EXISTING = 'existingMediaId';

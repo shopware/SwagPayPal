@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\TokenResponse;
 
+#[Package('checkout')]
 abstract class AbstractExpressCreateOrderRoute
 {
     abstract public function getDecorated(): AbstractExpressCreateOrderRoute;

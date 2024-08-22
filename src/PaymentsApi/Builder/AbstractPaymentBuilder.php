@@ -8,6 +8,7 @@
 namespace Swag\PayPal\PaymentsApi\Builder;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
@@ -18,6 +19,7 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+#[Package('checkout')]
 abstract class AbstractPaymentBuilder
 {
     protected LocaleCodeProvider $localeCodeProvider;

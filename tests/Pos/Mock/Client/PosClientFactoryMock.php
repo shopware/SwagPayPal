@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Pos\Mock\Client;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Client\PosClient;
 use Swag\PayPal\Pos\Client\PosClientFactory;
@@ -18,6 +19,7 @@ use Swag\PayPal\Test\Mock\CacheMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PosClientFactoryMock extends PosClientFactory
 {
     private LoggerInterface $logger;

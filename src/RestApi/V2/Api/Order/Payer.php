@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer\Name;
@@ -16,6 +17,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\Payer\Phone;
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_payer")
  */
+#[Package('checkout')]
 class Payer extends PayPalApiStruct
 {
     /**

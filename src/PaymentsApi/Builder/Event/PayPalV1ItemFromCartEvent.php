@@ -8,12 +8,14 @@
 namespace Swag\PayPal\PaymentsApi\Builder\Event;
 
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Use this event to adjust the items of the cart which will be submitted to PayPal
  */
+#[Package('checkout')]
 class PayPalV1ItemFromCartEvent extends Event
 {
     private Item $payPalLineItem;

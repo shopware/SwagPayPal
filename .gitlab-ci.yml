@@ -1,5 +1,7 @@
 variables:
-  PLATFORM_MIN_VERSION: '6.5.0.0'
+  PLATFORM_MIN_VERSION: 'v6.5.4.1'
+  PLATFORM_DEFAULT_VERSION: '6.5.x'
+  PLATFORM_BRANCH: $PLATFORM_DEFAULT_VERSION
   CMS_EXTENSION_BRANCH: 'master'
   PLUGIN_DEPENDENCIES:
     value: >
@@ -28,12 +30,12 @@ phpunit:
             - mysql:8.0
           DEV_IMAGE: [ 'shopware/development:8.1-composer-2', 'shopware/development:8.2-composer-2' ]
           MYSQL_CMD: $MYSQL8_CMD
-          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, 'trunk' ]
+          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
       -   MYSQL_IMAGE:
             - mariadb:10.3
             - mariadb:10.5
           DEV_IMAGE: [ 'shopware/development:8.1-composer-2', 'shopware/development:8.2-composer-2' ]
-          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, 'trunk' ]
+          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
           RUN_IN_MR: 'false'
 
 phpstan:
@@ -43,7 +45,7 @@ phpstan:
   parallel:
     matrix:
       -   DEV_IMAGE: ['shopware/development:8.1-composer-2', 'shopware/development:8.2-composer-2' ]
-          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, 'trunk' ]
+          PLATFORM_BRANCH: [ $PLATFORM_MIN_VERSION, $PLATFORM_DEFAULT_VERSION ]
 
 linting:
   stage: test

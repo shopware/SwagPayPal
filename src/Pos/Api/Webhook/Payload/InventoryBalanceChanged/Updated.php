@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\Api\Webhook\Payload\InventoryBalanceChanged;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+#[Package('checkout')]
 class Updated extends PosStruct
 {
     protected string $uuid;

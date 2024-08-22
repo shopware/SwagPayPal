@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
@@ -24,6 +25,7 @@ use Swag\PayPal\Test\Mock\CacheMock;
 /**
  * @internal
  */
+#[Package('checkout')]
 class PayPalClientFactoryMock implements PayPalClientFactoryInterface
 {
     private ?PayPalClientMock $client = null;

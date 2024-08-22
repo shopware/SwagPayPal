@@ -9,7 +9,7 @@ namespace Swag\PayPal\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Routing\Annotation\Since;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Package('checkout')]
 class PayPalPaymentMethodController extends AbstractController
 {
     private PaymentMethodUtil $paymentMethodUtil;
@@ -34,8 +35,6 @@ class PayPalPaymentMethodController extends AbstractController
     }
 
     /**
-     * @Since("1.5.0")
-     *
      * @OA\Post(
      *     path="/_action/paypal/saleschannel-default",
      *     description="Sets PayPal as the default payment method for a given Saleschannel, or all.",
@@ -68,10 +67,9 @@ class PayPalPaymentMethodController extends AbstractController
         if ($salesChannelId !== null && !\is_string($salesChannelId)) {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::invalidRequestParameter('salesChannelId');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('salesChannelId');
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new InvalidRequestParameterException('salesChannelId');
         }
 
         $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, $salesChannelId);

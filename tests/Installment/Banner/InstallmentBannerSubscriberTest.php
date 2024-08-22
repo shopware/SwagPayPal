@@ -22,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -30,7 +31,9 @@ use Shopware\Core\Test\TestDefaults;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPage;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
@@ -53,10 +56,11 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @internal
  */
+#[Package('checkout')]
 class InstallmentBannerSubscriberTest extends TestCase
 {
-    use ServicesTrait;
     use PaymentMethodTrait;
+    use ServicesTrait;
 
     private const CART_TOTAL_PRICE = 123.45;
     private const PRODUCT_PRICE = 678.9;
@@ -124,15 +128,18 @@ class InstallmentBannerSubscriberTest extends TestCase
         static::assertEmpty($event->getPage()->getExtensions());
     }
 
-    public function testAddInstallmentBannerDisabled(): void
+    public function testAddInstallmentBannerCheckoutCartDisabled(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent();
 
         $this->createInstallmentBannerSubscriber([
-            Settings::INSTALLMENT_BANNER_ENABLED => false,
+            Settings::INSTALLMENT_BANNER_CART_ENABLED => false,
         ])->addInstallmentBanner($event);
 
-        static::assertEmpty($event->getPage()->getExtensions());
+        /** @var BannerData $bannerData */
+        $bannerData = $event->getPage()->getExtension(InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID);
+
+        static::assertFalse($bannerData->getCartEnabled());
     }
 
     public function testAddInstallmentBannerCheckoutCart(): void
@@ -167,6 +174,20 @@ class InstallmentBannerSubscriberTest extends TestCase
         static::assertEmpty($event->getPage()->getExtensions());
     }
 
+    public function testAddInstallmentBannerOffCanvasCartDisabled(): void
+    {
+        $event = $this->createOffCanvasCartPageLoadedEvent();
+
+        $this->createInstallmentBannerSubscriber([
+            Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED => false,
+        ])->addInstallmentBanner($event);
+
+        /** @var BannerData $bannerData */
+        $bannerData = $event->getPage()->getExtension(InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID);
+
+        static::assertFalse($bannerData->getOffCanvasCartEnabled());
+    }
+
     public function testAddInstallmentBannerProductPage(): void
     {
         $event = $this->createProductPageLoadedEvent();
@@ -178,6 +199,20 @@ class InstallmentBannerSubscriberTest extends TestCase
         static::assertCount(1, $extensions);
 
         $this->assertBannerData($page, self::PRODUCT_PRICE);
+    }
+
+    public function testAddInstallmentBannerProductPageDisabled(): void
+    {
+        $event = $this->createProductPageLoadedEvent();
+
+        $this->createInstallmentBannerSubscriber([
+            Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED => false,
+        ])->addInstallmentBanner($event);
+
+        /** @var BannerData $bannerData */
+        $bannerData = $event->getPage()->getExtension(InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID);
+
+        static::assertFalse($bannerData->getDetailPageEnabled());
     }
 
     public function testAddInstallmentBannerProductPageExcludedProduct(): void
@@ -229,10 +264,13 @@ class InstallmentBannerSubscriberTest extends TestCase
         $event = $this->createFooterPageletLoadedEvent();
 
         $this->createInstallmentBannerSubscriber([
-            Settings::INSTALLMENT_BANNER_ENABLED => false,
+            Settings::INSTALLMENT_BANNER_FOOTER_ENABLED => false,
         ])->addInstallmentBannerPagelet($event);
 
-        static::assertEmpty($event->getPagelet()->getExtensions());
+        /** @var BannerData $bannerData */
+        $bannerData = $event->getPagelet()->getExtension(InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID);
+
+        static::assertFalse($bannerData->getFooterEnabled());
     }
 
     public function testAddInstallmentBannerFooterPagelet(): void
@@ -248,6 +286,20 @@ class InstallmentBannerSubscriberTest extends TestCase
         $this->assertBannerData($pagelet, 0);
     }
 
+    public function testAddInstallmentBannerAccountLoginPageDisabled(): void
+    {
+        $event = $this->createCheckoutRegisterPageLoadedEvent();
+
+        $this->createInstallmentBannerSubscriber([
+            Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED => false,
+        ])->addInstallmentBanner($event);
+
+        /** @var BannerData $bannerData */
+        $bannerData = $event->getPage()->getExtension(InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID);
+
+        static::assertFalse($bannerData->getLoginPageEnabled());
+    }
+
     private function assertBannerData(Struct $page, float $price): void
     {
         /** @var BannerData|null $bannerData */
@@ -259,6 +311,11 @@ class InstallmentBannerSubscriberTest extends TestCase
         static::assertSame('8x1', $bannerData->getRatio());
         static::assertSame('primary', $bannerData->getLogoType());
         static::assertSame('black', $bannerData->getTextColor());
+        static::assertTrue($bannerData->getFooterEnabled());
+        static::assertTrue($bannerData->getCartEnabled());
+        static::assertTrue($bannerData->getOffCanvasCartEnabled());
+        static::assertTrue($bannerData->getLoginPageEnabled());
+        static::assertTrue($bannerData->getDetailPageEnabled());
     }
 
     private function createInstallmentBannerSubscriber(array $settings = []): InstallmentBannerSubscriber
@@ -273,9 +330,8 @@ class InstallmentBannerSubscriberTest extends TestCase
 
         return new InstallmentBannerSubscriber(
             new SettingsValidationService($settings, new NullLogger()),
-            $settings,
             $this->paymentMethodUtil,
-            new BannerDataService($this->paymentMethodUtil, new CredentialsUtil($settings)),
+            new BannerDataService($this->paymentMethodUtil, new CredentialsUtil($settings), $settings),
             $this->excludedProductValidator,
             new NullLogger(),
         );
@@ -293,6 +349,62 @@ class InstallmentBannerSubscriberTest extends TestCase
     private function createCheckoutCartPage(): CheckoutCartPage
     {
         $page = new CheckoutCartPage();
+        $cart = new Cart('testToken');
+        $cart->setPrice(
+            new CartPrice(
+                0,
+                self::CART_TOTAL_PRICE,
+                0,
+                new CalculatedTaxCollection(),
+                new TaxRuleCollection(),
+                CartPrice::TAX_STATE_GROSS
+            )
+        );
+        $page->setCart($cart);
+
+        return $page;
+    }
+
+    private function createOffCanvasCartPageLoadedEvent(bool $withPayPalInContext = true): OffcanvasCartPageLoadedEvent
+    {
+        return new OffcanvasCartPageLoadedEvent(
+            $this->createOffCanvasCartPage(),
+            $this->createSalesChannelContext($withPayPalInContext),
+            $this->createRequest()
+        );
+    }
+
+    private function createOffCanvasCartPage(): OffcanvasCartPage
+    {
+        $page = new OffcanvasCartPage();
+        $cart = new Cart('testToken');
+        $cart->setPrice(
+            new CartPrice(
+                0,
+                self::CART_TOTAL_PRICE,
+                0,
+                new CalculatedTaxCollection(),
+                new TaxRuleCollection(),
+                CartPrice::TAX_STATE_GROSS
+            )
+        );
+        $page->setCart($cart);
+
+        return $page;
+    }
+
+    private function createCheckoutRegisterPageLoadedEvent(bool $withPayPalInContext = true): CheckoutRegisterPageLoadedEvent
+    {
+        return new CheckoutRegisterPageLoadedEvent(
+            $this->createCheckoutRegisterPage(),
+            $this->createSalesChannelContext($withPayPalInContext),
+            $this->createRequest()
+        );
+    }
+
+    private function createCheckoutRegisterPage(): CheckoutRegisterPage
+    {
+        $page = new CheckoutRegisterPage();
         $cart = new Cart('testToken');
         $cart->setPrice(
             new CartPrice(

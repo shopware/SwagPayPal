@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\Pos\MessageQueue\Message\Sync;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 
+#[Package('checkout')]
 class InventorySyncMessage extends AbstractSyncMessage
 {
     protected InventoryContext $inventoryContext;

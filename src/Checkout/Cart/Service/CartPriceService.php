@@ -8,7 +8,9 @@
 namespace Swag\PayPal\Checkout\Cart\Service;
 
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Framework\Log\Package;
 
+#[Package('checkout')]
 class CartPriceService
 {
     public function isZeroValueCart(Cart $cart): bool

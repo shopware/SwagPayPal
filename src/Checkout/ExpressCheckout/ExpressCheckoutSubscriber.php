@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Event\DataMappingEvent;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Validation\BuildValidationEvent;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntitySearchResultLoadedEvent;
@@ -42,6 +43,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ExpressCheckoutSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID = 'payPalEcsButtonData';
@@ -109,7 +111,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             || $event instanceof NavigationPageLoadedEvent
             || $event instanceof SearchPageLoadedEvent;
 
-        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), \get_class($event), $addProductToCart);
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), $event::class, $addProductToCart);
 
         if ($expressCheckoutButtonData === null) {
             return;
@@ -129,12 +131,12 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
             $expressCheckoutButtonData
         );
-        $this->logger->debug('Added data to page {page}', ['page' => \get_class($event)]);
+        $this->logger->debug('Added data to page {page}', ['page' => $event::class]);
     }
 
     public function addExpressCheckoutDataToPagelet(PageletLoadedEvent $event): void
     {
-        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), \get_class($event), true);
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), $event::class, true);
 
         if ($expressCheckoutButtonData === null) {
             return;
@@ -154,7 +156,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     public function addExpressCheckoutDataToBuyBoxSwitch(SwitchBuyBoxVariantEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
-        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, \get_class($event), true);
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, $event::class, true);
 
         if ($expressCheckoutButtonData === null) {
             return;
@@ -168,7 +170,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     public function addExcludedProductsToSearchResult(SalesChannelEntitySearchResultLoadedEvent $event): void
     {
-        if (!$this->checkSettings($event->getSalesChannelContext(), \get_class($event))) {
+        if (!$this->checkSettings($event->getSalesChannelContext(), $event::class)) {
             return;
         }
 

@@ -21,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Order\Shipping\Service\ShippingService;
@@ -32,6 +33,7 @@ use Swag\PayPal\SwagPayPal;
 /**
  * @internal
  */
+#[Package('checkout')]
 class ShippingServiceTest extends TestCase
 {
     private const TEST_CODE_A = 'test_code_a';

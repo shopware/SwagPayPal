@@ -9,10 +9,12 @@ namespace Swag\PayPal\Pos\Command;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\ImageTask;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[Package('checkout')]
 class PosImageSyncCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:sync:images';

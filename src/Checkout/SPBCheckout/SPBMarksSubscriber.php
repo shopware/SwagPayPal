@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
@@ -21,6 +22,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *
  * @internal
  */
+#[Package('checkout')]
 class SPBMarksSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID = 'payPalSpbMarksData';
@@ -40,10 +42,10 @@ class SPBMarksSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            //AccountEditOrderPageLoadedEvent::class => 'addMarksExtension',
-            //AccountPaymentMethodPageLoadedEvent::class => 'addMarksExtension',
-            //FooterPageletLoadedEvent::class => 'addMarksExtension',
-            //CheckoutConfirmPageLoadedEvent::class => 'addMarksExtension',
+            // AccountEditOrderPageLoadedEvent::class => 'addMarksExtension',
+            // AccountPaymentMethodPageLoadedEvent::class => 'addMarksExtension',
+            // FooterPageletLoadedEvent::class => 'addMarksExtension',
+            // CheckoutConfirmPageLoadedEvent::class => 'addMarksExtension',
         ];
     }
 
@@ -57,7 +59,7 @@ class SPBMarksSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->logger->debug('Adding SPB marks to {page}', ['page' => \get_class($event)]);
+        $this->logger->debug('Adding SPB marks to {page}', ['page' => $event::class]);
         if ($event instanceof CheckoutConfirmPageLoadedEvent) {
             $confirmPage = $event->getPage();
             if ($confirmPage->getCart()->getExtension(ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {

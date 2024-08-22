@@ -8,10 +8,12 @@
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 
 use OpenApi\Annotations as OA;
+use Shopware\Core\Framework\Log\Package;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_transaction_refund")
  */
+#[Package('checkout')]
 class Refund extends RelatedResource
 {
     /**

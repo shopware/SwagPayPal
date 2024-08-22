@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Webhook\Registration;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -19,6 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Package('checkout')]
 class WebhookSystemConfigController extends SystemConfigController
 {
     public const WEBHOOK_ERRORS_KEY = 'payPalWebhookErrors';

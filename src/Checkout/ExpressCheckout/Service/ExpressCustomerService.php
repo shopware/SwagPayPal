@@ -18,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -28,6 +29,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\V2\Api\Order;
 
+#[Package('checkout')]
 class ExpressCustomerService
 {
     public const EXPRESS_CHECKOUT_ACTIVE = 'payPalExpressCheckoutActive';
@@ -137,10 +139,9 @@ class ExpressCustomerService
         if ($newToken === null || $newToken === '') {
             if (\class_exists(RoutingException::class)) {
                 throw RoutingException::missingRequestParameter(PlatformRequest::HEADER_CONTEXT_TOKEN);
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new MissingRequestParameterException(PlatformRequest::HEADER_CONTEXT_TOKEN);
             }
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            throw new MissingRequestParameterException(PlatformRequest::HEADER_CONTEXT_TOKEN);
         }
 
         return $newToken;
