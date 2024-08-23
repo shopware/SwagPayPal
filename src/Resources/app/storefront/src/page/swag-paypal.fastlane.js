@@ -1,6 +1,7 @@
 import SwagPaypalAbstractButtons from "../swag-paypal.abstract-buttons";
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import HttpClient from "src/service/http-client.service";
+import ElementLoadingIndicatorUtil from "src/utility/loading-indicator/element-loading-indicator.util";
 
 export default class SwagPaypalFastlane extends SwagPaypalAbstractButtons {
     static options = {
@@ -31,6 +32,8 @@ export default class SwagPaypalFastlane extends SwagPaypalAbstractButtons {
             return;
         }
 
+        document.querySelector('.register-card').classList.add('d-none');
+
         this.createScript((paypal) => {
             this.render(paypal);
         });
@@ -40,29 +43,31 @@ export default class SwagPaypalFastlane extends SwagPaypalAbstractButtons {
 
         // instantiates the Fastlane module
         this.fastlane = await paypal.Fastlane({ });
+
         this.fastlane.setLocale("en_us");
+        const lookupButton = this.el.addEventListener('submit', this.lookupUser.bind(this));
+        const component = await this.fastlane.FastlaneWatermarkComponent();
 
-        const lookupButton = this.el.querySelector('#fastlaneLookup');
-        lookupButton.addEventListener('click', this.lookupUser.bind(this));
-
+        component.render('.swag-paypal-fastlane-watermark');
     }
 
     async lookupUser(event) {
+        event.preventDefault();
+        ElementLoadingIndicatorUtil.create(this.el.querySelector('#fastlaneLookup'));
         const email = this.el.querySelector('#fastlaneEmail').value;
         const searchResult = await this.fastlane.identity.lookupCustomerByEmail(email);
         if (!searchResult.customerContextId) {
             console.log(`Customer ${email} not found, continue with normal registration flow.`);
+            this.continueWithRegistration(email);
 
             return;
         }
         console.log(`Customer ${email} found, customer context id: ${searchResult.customerContextId}.`)
 
-        window.localStorage.setItem('swag-paypal-customer-context-id', searchResult.customerContextId);
-        window.localStorage.setItem('swag-paypal-customer-email', email);
-
         const authenticationResult = await this.fastlane.identity.triggerAuthenticationFlow(searchResult.customerContextId);
         if (authenticationResult.authenticationState !== "succeeded") {
             console.log("Authentication failed.");
+            this.continueWithRegistration(email);
 
             return;
         }
@@ -84,5 +89,16 @@ export default class SwagPaypalFastlane extends SwagPaypalAbstractButtons {
                 return this.onError();
             }
         );
+    }
+
+    continueWithRegistration(email) {
+        const registrationForm = document.querySelector('.register-card');
+        registrationForm.classList.remove('d-none');
+        this.el.classList.add('d-none');
+
+        ElementLoadingIndicatorUtil.remove(this.el.querySelector('#fastlaneLookup'));
+
+        registrationForm.querySelector('#personalMail').value = email;
+
     }
 }

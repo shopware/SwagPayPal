@@ -16,6 +16,10 @@ abstract class SDKStruct extends Struct
     public function assign(array $options): static
     {
         foreach ($options as $key => $value) {
+            if (!\property_exists($this, $key)) {
+                continue;
+            }
+
             if (!is_array($value)) {
                 continue;
             }

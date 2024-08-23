@@ -1,0 +1,20 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/confirm-address.html.twig' %}
+
+{# @var \Swag\PayPal\Checkout\ACDC\ACDCCheckoutFieldData acdcFieldData #}
+{% set acdcFieldData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
+
+{% block page_checkout_confirm_address_billing_actions_link %}
+    {% if not acdcFieldData %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block page_checkout_confirm_address_shipping_actions_link %}
+    {% if not acdcFieldData %}
+        {{ parent() }}
+    {% else %}
+        <a class="btn btn-light" id="swag-paypal-acdc-fastlane-shipping">
+            {{ 'account.overviewChangeShipping'|trans|sw_sanitize }}
+        </a>
+    {% endif %}
+{% endblock %}

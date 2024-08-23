@@ -31,7 +31,7 @@ class ACDCCheckoutDataService extends AbstractCheckoutDataService
     public function __construct(
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
         LocaleCodeProvider $localeCodeProvider,
-        RouterInterface $router,
+        private readonly RouterInterface $router,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
         private readonly TokenResourceInterface $tokenResource,
@@ -58,6 +58,11 @@ class ACDCCheckoutDataService extends AbstractCheckoutDataService
             [
                 ...$this->getBaseData($context, $order),
                 'sdkClientToken' => $token->getAccessToken(),
+                'billingAddress' => $this->getBillingAddress($order, $context),
+                'billingAddressId' => $context->getCustomer()?->getActiveBillingAddress()?->getId(),
+                'shippingAddressId' => $context->getCustomer()?->getActiveShippingAddress()?->getId(),
+                'modifyAddressUrl' => $this->router->generate('frontend.paypal.fastlane.modify_address'),
+                'customerEmail' => $context->getCustomer()?->getEmail(),
             ]
         );
     }
@@ -75,6 +80,21 @@ class ACDCCheckoutDataService extends AbstractCheckoutDataService
         }
 
         return array_unique($hosts);
+    }
+
+    private function getBillingAddress(?OrderEntity $order, SalesChannelContext $context): array
+    {
+        $address = $order?->getBillingAddress() ?? $context->getCustomer()?->getActiveBillingAddress();
+
+        return [
+            'addressLine1' => $address?->getStreet(),
+            //'addressLine2' => $address->getAdditionalAddressLine1(),
+            'adminArea1' => 'CA',//$address->getCountryState()?->getShortCode(),
+            'adminArea2' => $address->getCity(),
+            'postalCode' => $address->getZipcode(),
+            'countryCode' => $address->getCountry()?->getIso(),
+            //'phone' => ['nationalNumber' => $address->getPhoneNumber()],
+        ];
     }
 
     public function getMethodDataClass(): string

@@ -34,13 +34,13 @@
 
                 {% block page_checkout_address_login_toggle_paypal_fastlane %}
                     {% if fastlaneSettings is not null %}
-                        <div
+                        <form
                             data-swag-paypal-fastlane="true"
                             data-swag-paypal-fastlane-options="{{ fastlaneSettings|json_encode }}">
                             <div class="col-12 col-sm-6">
                                 <label class="form-label"
                                        for="fastlaneEmail">
-                                    {{ 'account.personalMailLabel'|trans|sw_sanitize }} for Fastlane
+                                    {{ 'account.personalMailLabel'|trans|sw_sanitize }}
                                 </label>
                                 <input type="email"
                                        class="form-control"
@@ -51,13 +51,14 @@
                                        data-form-validation-equal="personalMail">
                             </div>
                             <div class="col-12 col-sm-6 d-grid">
-                                <button type="button"
+                                <button type="submit"
                                         class="btn btn-primary"
                                         id="fastlaneLookup">
-                                    Look up
+                                    Continue
                                 </button>
                             </div>
-                        </div>
+                            <div class="swag-paypal-fastlane-watermark mt-2 mb-4"></div>
+                        </form>
 
                     {% endif %}
                 {% endblock %}

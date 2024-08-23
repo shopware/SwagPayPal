@@ -15,6 +15,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute"/>
             <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute"/>
             <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\FastlanePrepareCheckoutRoute"/>
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\FastlaneModifyAddressRoute"/>
             <argument type="service" id="monolog.logger.paypal"/>
 
             <call method="setContainer">

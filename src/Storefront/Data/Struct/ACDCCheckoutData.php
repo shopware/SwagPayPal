@@ -18,6 +18,16 @@ class ACDCCheckoutData extends AbstractCheckoutData
      */
     protected CardholderData $cardholderData;
 
+    protected array $billingAddress;
+
+    protected string $billingAddressId;
+
+    protected string $shippingAddressId;
+
+    protected string $modifyAddressUrl;
+
+    protected string $customerEmail;
+
     /**
      * @deprecated tag:v10.0.0 - will be removed without replacement
      */
@@ -32,5 +42,55 @@ class ACDCCheckoutData extends AbstractCheckoutData
     public function setCardholderData(CardholderData $cardholderData): void
     {
         $this->cardholderData = $cardholderData;
+    }
+
+    public function getBillingAddress(): array
+    {
+        return $this->billingAddress;
+    }
+
+    public function setBillingAddress(array $billingAddress): void
+    {
+        $this->billingAddress = $billingAddress;
+    }
+
+    public function getBillingAddressId(): string
+    {
+        return $this->billingAddressId;
+    }
+
+    public function setBillingAddressId(string $billingAddressId): void
+    {
+        $this->billingAddressId = $billingAddressId;
+    }
+
+    public function getShippingAddressId(): string
+    {
+        return $this->shippingAddressId;
+    }
+
+    public function setShippingAddressId(string $shippingAddressId): void
+    {
+        $this->shippingAddressId = $shippingAddressId;
+    }
+
+    public function getModifyAddressUrl(): string
+    {
+        return $this->modifyAddressUrl;
+    }
+
+    public function setModifyAddressUrl(string $modifyAddressUrl): void
+    {
+        $this->modifyAddressUrl = $modifyAddressUrl;
+    }
+
+    public function getCustomerEmail(): string
+    {
+        return $this->customerEmail;
+    }
+
+    public function setCustomerEmail(string $customerEmail): void
+    {
+        $this->customerEmail = $customerEmail;
     }
 }
