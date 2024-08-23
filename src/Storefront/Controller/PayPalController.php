@@ -28,6 +28,7 @@ use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsResponse;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
+use Swag\PayPal\Checkout\SalesChannel\FastlaneModifyAddressRoute;
 use Swag\PayPal\Checkout\SalesChannel\FastlanePrepareCheckoutRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -57,6 +58,7 @@ class PayPalController extends StorefrontController
         private readonly AbstractCartDeleteRoute $cartDeleteRoute,
         private readonly AbstractClearVaultRoute $clearVaultRoute,
         private readonly FastlanePrepareCheckoutRoute $fastlanePrepareCheckoutRoute,
+        private readonly FastlaneModifyAddressRoute $fastlaneModifyAddressRoute,
         private readonly LoggerInterface $logger
     ) {
     }
@@ -229,5 +231,11 @@ class PayPalController extends StorefrontController
         }
 
         return $this->fastlanePrepareCheckoutRoute->prepareCheckout($context, $request);
+    }
+
+    #[Route(path: '/paypal/fastlane/modify-address', name: 'frontend.paypal.fastlane.modify_address', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
+    public function fastlaneModifyAddress(Request $request, SalesChannelContext $context): Response
+    {
+        return $this->fastlaneModifyAddressRoute->modifyAddress($context, $request);
     }
 }

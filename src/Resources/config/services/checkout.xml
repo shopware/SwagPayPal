@@ -207,6 +207,12 @@
             <tag name="messenger.message_handler" />
         </service>
 
+        <service id="Swag\PayPal\Checkout\Fastlane\AddressConverter">
+            <argument type="service" id="country.repository"/>
+            <argument type="service" id="country_state.repository"/>
+            <argument type="service" id="salutation.repository"/>
+        </service>
+
         <service id="Swag\PayPal\Checkout\SalesChannel\FastlanePrepareCheckoutRoute">
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
@@ -214,10 +220,14 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="salutation.repository"/>
-            <argument type="service" id="country.repository"/>
-            <argument type="service" id="country_state.repository"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Fastlane\AddressConverter"/>
             <argument type="service" id="monolog.logger.paypal"/>
         </service>
+
+        <service id="Swag\PayPal\Checkout\SalesChannel\FastlaneModifyAddressRoute">
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\UpsertAddressRoute"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Fastlane\AddressConverter"/>
+        </service>
+
     </services>
 </container>

@@ -53,6 +53,11 @@
     {% if acdcFieldData and acdcFieldData.paymentMethodId is same as(payment.id) %}
         {% block swag_paypal_acdc_form %}
             <div id="swag-paypal-acdc-form">
+                <div id="swag-paypal-acdc-fastlane">
+                    <span id="swag-paypal-acdc-fastlane-data"></span>
+                    <button id="swag-paypal-acdc-fastlane-change" class="btn btn-sm btn-light d-none" type="button">Change card</button>
+                    <div class="swag-paypal-acdc-fastlane-watermark"></div>
+                </div>
                 <div class="row">
                     <div class="col-sm-12">
                         <label class="d-none"

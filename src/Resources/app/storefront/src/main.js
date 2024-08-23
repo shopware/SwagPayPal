@@ -60,3 +60,8 @@ PluginManager.register(
     () => import('./page/swag-paypal.funding-eligibility'),
     '[data-swag-paypal-funding-eligibility]',
 );
+PluginManager.register(
+    'SwagPaypalFastlaneWatermark',
+    () => import('./page/swag-paypal.fastlane-watermark'),
+    '[data-swag-paypal-fastlane-watermark]',
+);

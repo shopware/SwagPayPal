@@ -4,6 +4,7 @@ import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading
 import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
 import SwagPaypalAbstractStandalone from './swag-paypal.abstract-standalone';
 import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
+import ElementLoadingIndicatorUtil from "src/utility/loading-indicator/element-loading-indicator.util";
 
 export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
     /**
@@ -95,29 +96,77 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
                 'padding-left': 'calc(2rem + 40px) !important',
             },
         },
+
+        billingAddress: undefined,
+
+        shippingAddressId: undefined,
+
+        billingAddressId: undefined,
+
+        modifyAddressUrl: '',
+
+        customerEmail: '',
     };
 
     async render(paypal) {
         this.cardFieldForm = DomAccess.querySelector(document, this.options.cardFieldFormSelector);
 
+        this.cardFieldForm.classList.add('py-4', 'ml-4');
+        ElementLoadingIndicatorUtil.create(this.cardFieldForm.querySelector('#swag-paypal-acdc-fastlane-data'));
         const fastlane = await paypal.Fastlane({});
         fastlane.setLocale("en_us");
 
-        const email = window.localStorage.getItem('swag-paypal-customer-email');
-        if (email) {
-            const { contextId } = await fastlane.identity.lookupCustomerByEmail(email);
-            const authenticationResult = await fastlane.identity.triggerAuthenticationFlow(contextId);
-            console.log(authenticationResult);
-            if (authenticationResult.authenticationState !== "succeeded") {
-                console.log("Authentication failed.");
-            }
+        const cardComponent = await fastlane.FastlaneCardComponent({});
+        console.log(this.options);
+        const { customerContextId } = await fastlane.identity.lookupCustomerByEmail(this.options.customerEmail);
+        if (!customerContextId) {
+            this.renderGuestFields(cardComponent);
+            return;
+        }
+        const authenticationResult = await fastlane.identity.triggerAuthenticationFlow(customerContextId);
+        console.log(authenticationResult);
+        if (authenticationResult.authenticationState !== "succeeded") {
+            this.renderGuestFields(cardComponent);
+            return;
         }
 
-        const component = await fastlane.FastlanePaymentComponent({});
-        component.render(this.options.cardFieldFormSelector);
+        console.log("Authentication succeeded.");
+
+        const watermarkComponent = await fastlane.FastlaneWatermarkComponent();
+        watermarkComponent.render('.swag-paypal-acdc-fastlane-watermark');
+
+        this.cardFieldForm.classList.remove('py-4', 'ml-4');
+        const brand = authenticationResult.profileData.card.paymentSource.card.brand;
+        const lastDigits = authenticationResult.profileData.card.paymentSource.card.lastDigits;
+        this.cardFieldForm.querySelector('#swag-paypal-acdc-fastlane-data').innerHTML = `${brand} ****${lastDigits}`;
+
+        this.cardFieldForm.querySelector('#swag-paypal-acdc-fastlane-change').classList.remove('d-none');
+        this.cardFieldForm.querySelector('#swag-paypal-acdc-fastlane-change').addEventListener('click', async () => {
+            const { selectedCard, selectionChanged } = await fastlane.profile.showCardSelector();
+            if (!selectionChanged) {
+                return;
+            }
+
+            const brand = selectedCard.paymentSource.card.brand;
+            const lastDigits = selectedCard.paymentSource.card.lastDigits;
+            this.cardFieldForm.querySelector('#swag-paypal-acdc-fastlane-data').innerHTML = `${brand} ****${lastDigits}`;
+
+            console.log(selectedCard);
+            this.updateAddress(this.options.billingAddressId, selectedCard.paymentSource.card.billingAddress, selectedCard.paymentSource.card.name);
+        });
+
+        document.querySelector('#swag-paypal-acdc-fastlane-shipping').addEventListener('click', async () => {
+            const { selectedAddress, selectionChanged } = await fastlane.profile.showShippingAddressSelector();
+            if (!selectionChanged) {
+                return;
+            }
+
+            console.log(selectedAddress);
+            this.updateAddress(this.options.shippingAddressId, selectedAddress.address, selectedAddress.name, selectedAddress.phoneNumber);
+        });
 
         DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.remove('d-none');
-        this.confirmOrderForm.addEventListener('submit', this.onFastlaneSubmit.bind(this, fastlane, component));
+        this.confirmOrderForm.addEventListener('submit', this.onFastlaneSubmit.bind(this, fastlane, cardComponent));
 
         return;
         const cardFields = paypal.CardFields(this.getFieldConfig());
@@ -135,6 +184,31 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
 
             button.render(this.el);
         }
+    }
+
+    renderGuestFields(component) {
+        this.cardFieldForm.classList.remove('py-4', 'ml-4');
+        component.render(this.options.cardFieldFormSelector);
+        DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.remove('d-none');
+    }
+
+    updateAddress(id, address, name, phoneNumber = null) {
+        this._client.post(
+            this.options.modifyAddressUrl,
+            JSON.stringify({
+                address,
+                name,
+                phoneNumber,
+                id,
+            }),
+            (response, request) => {
+                if (request.status < 400) {
+                    window.location.reload();
+                }
+
+                return this.onError();
+            }
+        );
     }
 
     getFieldConfig() {
@@ -210,7 +284,8 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
         PageLoadingIndicatorUtil.create();
 
         try {
-            const token = await component.getPaymentToken();
+            console.log(this.options.billingAddress);
+            const token = await component.getPaymentToken({ billingAddress: this.options.billingAddress });
 
             const input = document.createElement('input');
             input.setAttribute('type', 'hidden');
@@ -221,6 +296,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
             this.confirmOrderForm.submit();
         } catch (e) {
             PageLoadingIndicatorUtil.remove();
+            console.error(e);
 
             const buttonLoadingIndicator = new ButtonLoadingIndicator(
                 DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector),

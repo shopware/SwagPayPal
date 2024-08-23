@@ -32,6 +32,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
+use Swag\PayPal\Checkout\Fastlane\AddressConverter;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\SalesChannel\Struct\Common\Address;
 use Swag\PayPal\Checkout\SalesChannel\Struct\Common\Name;
@@ -62,9 +63,7 @@ class FastlanePrepareCheckoutRoute
         private readonly SystemConfigService $systemConfigService,
         private readonly PaymentMethodDataRegistry $methodDataRegistry,
         private readonly CartService $cartService,
-        private readonly EntityRepository $salutationRepository,
-        private readonly EntityRepository $countryRepository,
-        private readonly EntityRepository $countryStateRepository,
+        private readonly AddressConverter $addressConverter,
         private readonly LoggerInterface $logger
     ) {
     }
@@ -129,7 +128,7 @@ class FastlanePrepareCheckoutRoute
 
     private function getRegisterCustomerDataBag(string $email, ProfileData $profileData, SalesChannelContext $salesChannelContext): RequestDataBag
     {
-        $salutationId = $this->getSalutationId($salesChannelContext->getContext());
+        $salutationId = $this->addressConverter->getSalutationId($salesChannelContext->getContext());
 
         $card = $profileData->getCard()->getPaymentSource()->getCard();
 
@@ -140,33 +139,12 @@ class FastlanePrepareCheckoutRoute
             'email' => $email,
             'firstName' => $profileData->getName()->getFirstName(),
             'lastName' => $profileData->getName()->getLastName(),
-            'billingAddress' => $this->getAddressData($card->getBillingAddress(), $profileData->getName(), null, $salesChannelContext->getContext(), $salutationId),
-            'shippingAddress' => $this->getAddressData($profileData->getShippingAddress()->getAddress(), $profileData->getShippingAddress()->getName(), $profileData->getShippingAddress()->getPhoneNumber(), $salesChannelContext->getContext(), $salutationId),
+            'billingAddress' => $this->addressConverter->convertAddressData($card->getBillingAddress(), $profileData->getName(), null, $salesChannelContext->getContext(), $salutationId),
+            'shippingAddress' => $this->addressConverter->convertAddressData($profileData->getShippingAddress()->getAddress(), $profileData->getShippingAddress()->getName(), $profileData->getShippingAddress()->getPhoneNumber(), $salesChannelContext->getContext(), $salutationId),
             'acceptedDataProtection' => true,
         ]);
 
         return $data;
-    }
-
-    private function getSalutationId(Context $context): string
-    {
-        $criteria = new Criteria();
-        $criteria->setLimit(1);
-        $criteria->addFilter(new EqualsFilter('salutationKey', 'not_specified'));
-
-        $salutationId = $this->salutationRepository->searchIds($criteria, $context)->firstId();
-
-        if ($salutationId !== null) {
-            return $salutationId;
-        }
-
-        $salutationId = $this->salutationRepository->searchIds($criteria->resetFilters(), $context)->firstId();
-
-        if ($salutationId === null) {
-            throw new \RuntimeException('No salutation found in Shopware');
-        }
-
-        return $salutationId;
     }
 
     private function getStorefrontUrl(SalesChannelContext $salesChannelContext): string
@@ -189,53 +167,5 @@ class FastlanePrepareCheckoutRoute
         }
 
         return $domain->getUrl();
-    }
-
-    /**
-     * @return array<string, string|null>
-     */
-    private function getAddressData(Address $address, Name $name, ?PhoneNumber $phoneNumber, Context $context, ?string $salutationId = null): array
-    {
-        $countryCode = $address->getCountryCode();
-        $countryId = $this->getCountryId($countryCode, $context);
-        $countryStateId = $this->getCountryStateId($countryId, $countryCode, $address->getAdminArea1(), $context);
-
-        return [
-            'firstName' => $name->getFirstName(),
-            'lastName' => $name->getLastName(),
-            'salutationId' => $salutationId,
-            'street' => $address->getAddressLine1(),
-            'zipcode' => $address->getPostalCode(),
-            'countryId' => $countryId,
-            'countryStateId' => $countryStateId,
-            'phoneNumber' => $phoneNumber?->getNationalNumber(),
-            'city' => $address->getAdminArea2(),
-            'additionalAddressLine1' => $address->getAddressLine2(),
-        ];
-    }
-
-    private function getCountryId(string $code, Context $context): ?string
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('iso', $code));
-
-        return $this->countryRepository->searchIds($criteria, $context)->firstId();
-    }
-
-    private function getCountryStateId(?string $countryId, string $countryCode, ?string $stateCode, Context $context): ?string
-    {
-        if ($countryId === null) {
-            return null;
-        }
-
-        if ($stateCode === null || $stateCode === '') {
-            return null;
-        }
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('countryId', $countryId));
-        $criteria->addFilter(new EqualsFilter('shortCode', \sprintf('%s-%s', $countryCode, $stateCode)));
-
-        return $this->countryStateRepository->searchIds($criteria, $context)->firstId();
     }
 }
