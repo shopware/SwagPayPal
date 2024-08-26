@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
+use Swag\PayPal\Checkout\Payment\Method\ApplePayHandler;
 use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
@@ -31,6 +32,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
         'SEPA' => SEPAHandler::class,
         'VENMO' => VenmoHandler::class,
         'PAYLATER' => PayLaterHandler::class,
+        'APPLEPAY' => ApplePayHandler::class,
     ];
 
     public const SESSION_KEY = 'payPalIneligiblePaymentMethods';

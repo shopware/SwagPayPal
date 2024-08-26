@@ -1,3 +1,6 @@
+# 9.6.0
+- PPI-922 - Improved visibility of Apple Pay on browsers and devices that are not supported
+
 # 9.5.0
 - PPI-958 - Fixes an issue, where the credentials validation erroneously succeeded with invalid Merchant Payer IDs
 - PPI-960 - Express checkout buttons are now available with enabled Double-Opt-In, a warning will be displayed in the settings
