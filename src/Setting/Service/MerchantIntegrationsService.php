@@ -16,6 +16,7 @@ use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResourceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Struct\MerchantInformationStruct;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 
@@ -84,7 +85,7 @@ class MerchantIntegrationsService
                 continue;
             }
 
-            if ($methodData instanceof PayPalMethodData) {
+            if ($methodData instanceof PayPalMethodData || $methodData instanceof PayLaterMethodData) {
                 try {
                     // if the PayPal client can be created, at least PayPal Wallet is active
                     $this->payPalClientFactory->getPayPalClient($salesChannelId);
