@@ -6,7 +6,7 @@
     <h1 align="center">PayPal plugin for Shopware 6</h1>
 </p>
 
-SwagPayPal is an integration for [Shopware 6]([https://github.com/shopware/platform](https://github.com/shopware/platform)) for many PayPal products. 
+SwagPayPal is an integration for [Shopware 6]([https://github.com/shopware/shopware](https://github.com/shopware/shopware)) for many PayPal products. 
 
 ## Listing and Installation
 
