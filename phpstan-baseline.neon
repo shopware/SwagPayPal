@@ -6,6 +6,11 @@ parameters:
 			path: src/Checkout/Card/Exception/CardValidationFailedException.php
 
 		-
+			message: "#^Call to deprecated method get\\(\\) of class Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Entity:\ntag:v6.7.0 - reason:exception\\-change Thrown exception will change from InternalFieldAccessNotAllowedException to DataAbstractionLayerException$#"
+			count: 1
+			path: src/Checkout/ExpressCheckout/Service/ExpressCustomerService.php
+
+		-
 			message: "#^Mixed variable in a `\\$session\\-\\>getFlashBag\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
 			count: 1
 			path: src/Checkout/Payment/Method/PUIHandler.php
