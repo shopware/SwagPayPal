@@ -1,5 +1,6 @@
 # 9.6.0
 - PPI-922 - Verbessert die Sichtbarkeit von Apple Pay für nicht unterstützte Browser und Geräte
+- PPI-978 - Trustly für weitere kompatible Länder & Währungen freigeschaltet
 
 # 9.5.0
 - PPI-958 - Behebt ein Problem, bei dem die API-Zugangsdaten-Prüfung bei ungültiger Merchant-Payer-ID erfolgreich war

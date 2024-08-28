@@ -19,6 +19,10 @@ class TrustlyMethodData extends AbstractMethodData
 {
     public const TECHNICAL_NAME = 'swag_paypal_trustly';
 
+    public const AVAILABLE_COUNTRIES = ['AT', 'DE', 'DK', 'EE', 'ES', 'FI', 'GB', 'LT', 'LV', 'NL', 'NO', 'SE'];
+
+    public const AVAILABLE_CURRENCIES = ['EUR', 'DKK', 'SEK', 'GBP', 'NOK'];
+
     /**
      * @return array<string, array<string, string>>
      */
@@ -53,10 +57,8 @@ class TrustlyMethodData extends AbstractMethodData
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return ($availabilityContext->getCurrencyCode() === 'EUR'
-                && \in_array($availabilityContext->getBillingCountryCode(), ['EE', 'FI', 'NL'], true))
-            || (\in_array($availabilityContext->getCurrencyCode(), ['EUR', 'SEK'], true)
-                && $availabilityContext->getBillingCountryCode() === 'SE');
+        return \in_array($availabilityContext->getCurrencyCode(), self::AVAILABLE_CURRENCIES, true)
+            && \in_array($availabilityContext->getBillingCountryCode(), self::AVAILABLE_COUNTRIES, true);
     }
 
     public function getInitialState(): bool
