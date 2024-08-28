@@ -345,6 +345,36 @@ class ShippingInformationMessageHandlerTest extends TestCase
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
     }
 
+    public function testInvalidPayPalOrderIdException(): void
+    {
+        $orderDelivery = self::createOrderDelivery(self::createOrder(), trackingCodes: ['code-a']);
+        $payPalException = new PayPalApiException('', 'NOT FOUND', issue: PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND);
+
+        $this->orderDeliveryRepository
+            ->expects(static::once())
+            ->method('search')
+            ->willReturn(self::createSearchResult($orderDelivery));
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('get')
+            ->willThrowException($payPalException);
+
+        $this->orderResource
+            ->expects(static::never())
+            ->method('removeTracker');
+
+        $this->orderResource
+            ->expects(static::never())
+            ->method('addTracker');
+
+        $this->logger
+            ->expects(static::once())
+            ->method('warning');
+
+        ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+    }
+
     private static function createPayPalOrder(
         bool $hasCapture = true,
         array $trackingCodes = []
