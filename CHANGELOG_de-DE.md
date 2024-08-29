@@ -1,6 +1,7 @@
 # 8.6.0
 - PPI-922 - Verbessert die Sichtbarkeit von Apple Pay für nicht unterstützte Browser und Geräte
 - PPI-978 - Trustly für weitere kompatible Länder & Währungen freigeschaltet
+- PPI-979 - Behebt ein Problem, bei dem PUI für Kunden ohne Geburtsdatum in der Nachbestellung nicht funktioniert hat
 
 # 8.5.0
 - PPI-958 - Behebt ein Problem, bei dem die API-Zugangsdaten-Prüfung bei ungültiger Merchant-Payer-ID erfolgreich war

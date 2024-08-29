@@ -17,6 +17,7 @@ use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\InputBag;
 
 /**
  * @internal
@@ -60,13 +61,18 @@ class RequestSubscriber implements EventSubscriberInterface
             return;
         }
 
+        // An input databag can only handle scalar values, but symfony deserialised the birthdate into an array.
+        // We need to work around the input databag's scalar checks.
+        $data = [];
+        $oldData = $storefrontRequest->request->all();
         foreach (self::PAYMENT_PARAMETERS as $paymentParameter) {
             if (!$storefrontRequest->request->has($paymentParameter)) {
                 continue;
             }
 
-            $storeApiRequest->request->set($paymentParameter, $storefrontRequest->request->get($paymentParameter));
+            $data[$paymentParameter] = $oldData[$paymentParameter];
         }
+        $storeApiRequest->request = new InputBag(\array_merge($storeApiRequest->request->all(), $data));
 
         $this->logger->debug('Added request parameter');
     }
