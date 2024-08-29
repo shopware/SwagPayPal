@@ -1,6 +1,7 @@
 # 9.6.0
 - PPI-922 - Improved visibility of Apple Pay on browsers and devices that are not supported
 - PPI-978 - Enabled Trustly for more compatible countries and currencies
+- PPI-979 - Fixes an issue where PUI wouldn't work for customers without a birthdate in after order process
 
 # 9.5.0
 - PPI-958 - Fixes an issue, where the credentials validation erroneously succeeded with invalid Merchant Payer IDs
