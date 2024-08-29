@@ -127,7 +127,7 @@ class AvailabilityServiceTest extends TestCase
             [PayPalMethodData::class, true],
             [PUIMethodData::class, true],
             [SEPAMethodData::class, true],
-            [TrustlyMethodData::class, false],
+            [TrustlyMethodData::class, true],
             [VenmoMethodData::class, false],
         ];
     }
