@@ -59,7 +59,25 @@ class ShippingInformationMessageHandler
             return;
         }
 
-        $order = $this->orderResource->get($orderId, $salesChannelId);
+        try {
+            $order = $this->orderResource->get($orderId, $salesChannelId);
+        } catch (PayPalApiException $e) {
+            if ($e->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
+                $this->logger->warning(
+                    \sprintf(
+                        'Failed to synchronise shipping carriers for delivery "%s": %s',
+                        $message->getOrderDeliveryId(),
+                        $e->getMessage()
+                    ),
+                    ['error' => $e]
+                );
+
+                return;
+            }
+
+            throw $e;
+        }
+
         $captureId = $order->getPurchaseUnits()->first()?->getPayments()?->getCaptures()?->last()?->getId();
 
         if (!$captureId) {
