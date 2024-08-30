@@ -10,3 +10,4 @@ var/
 composer.lock
 node_modules
 .phpunit.cache
+/paypal.cache
