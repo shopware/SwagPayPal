@@ -143,7 +143,7 @@ class PlusPaymentFinalizeController extends AbstractController
         Context $context,
         string $orderId
     ): string {
-        $transactionId = $paymentException->getOrderTransactionId();
+        $transactionId = $paymentException->getParameter('orderTransactionId');
 
         if (!$transactionId) {
             throw PaymentException::invalidTransaction('');

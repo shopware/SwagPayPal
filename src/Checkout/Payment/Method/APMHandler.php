@@ -100,6 +100,9 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
 
             $this->logger->debug('Created order');
         } catch (PaymentException $e) {
+            if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
+                $e->setOrderTransactionId($transactionId);
+            }
             throw $e;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
@@ -145,6 +148,11 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         try {
             $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannelId());
             $this->tryToSetTransactionState($paypalOrder, $transaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
+        } catch (PaymentException $e) {
+            if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
+                $e->setOrderTransactionId($transactionId);
+            }
+            throw $e;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 

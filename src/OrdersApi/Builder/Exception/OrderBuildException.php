@@ -25,4 +25,12 @@ class OrderBuildException extends PaymentException
             ['orderBuilderName' => $orderBuilderName]
         );
     }
+
+    /**
+     * @deprecated tag:v10.0.0 - will be removed with Shopware 6.7 compatible version
+     */
+    public function setOrderTransactionId(string $orderTransactionId): void
+    {
+        $this->parameters['orderTransactionId'] = $orderTransactionId;
+    }
 }

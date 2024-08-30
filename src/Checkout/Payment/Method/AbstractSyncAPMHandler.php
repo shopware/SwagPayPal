@@ -88,6 +88,9 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
                 $this->vaultTokenService->saveToken($transaction, $vaultable, $customerId, $salesChannelContext->getContext());
             }
         } catch (PaymentException $e) {
+            if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
+                $e->setOrderTransactionId($transactionId);
+            }
             throw $e;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
