@@ -50,7 +50,7 @@
             "@phpunit"
         ],
         "ecs": "../../../vendor/bin/php-cs-fixer fix --dry-run",
-        "ecs-fix": "../../../vendor/bin/php-cs-fixer fix --dry-run",
+        "ecs-fix": "../../../vendor/bin/php-cs-fixer fix",
         "init:admin": "npm ci --no-audit --prefer-offline --prefix src/Resources/app/administration",
         "lint:admin": "npm run lint-fix --prefix src/Resources/app/administration",
         "lint:admin:ci": "npm run lint --prefix src/Resources/app/administration",
