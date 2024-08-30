@@ -53,4 +53,9 @@ class PayPalApiException extends PaymentException
         return \in_array($this->errorCode, $codes, true)
             || \in_array($this->issue, $codes, true);
     }
+
+    public function setOrderTransactionId(string $orderTransactionId): void
+    {
+        $this->parameters['orderTransactionId'] = $orderTransactionId;
+    }
 }

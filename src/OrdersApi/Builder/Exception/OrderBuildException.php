@@ -25,4 +25,9 @@ class OrderBuildException extends PaymentException
             ['orderBuilderName' => $orderBuilderName]
         );
     }
+
+    public function setOrderTransactionId(string $orderTransactionId): void
+    {
+        $this->parameters['orderTransactionId'] = $orderTransactionId;
+    }
 }

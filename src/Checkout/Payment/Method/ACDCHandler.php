@@ -108,6 +108,10 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
 
             return new RedirectResponse($action ?? $transaction->getReturnUrl());
         } catch (PaymentException $e) {
+            if ($e->getOrderTransactionId() === null && \method_exists($e, 'setOrderTransactionId')) {
+                $e->setOrderTransactionId($transactionId);
+            }
+
             throw $e;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
