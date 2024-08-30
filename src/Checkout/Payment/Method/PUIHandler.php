@@ -128,6 +128,9 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
                 $salesChannelContext
             );
         } catch (PaymentException $e) {
+            if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
+                $e->setOrderTransactionId($transactionId);
+            }
             throw $e;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
