@@ -201,7 +201,7 @@ class PayPalController extends StorefrontController
             $request->getSession()->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
         }
 
-        $this->logger->notice('Storefront checkout error', [
+        $this->logger->warning('Storefront checkout error', [
             'error' => $request->request->get('error'),
             'code' => $code,
             'fatal' => $fatal,
