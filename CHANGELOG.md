@@ -3,6 +3,7 @@
 - PPI-978 - Enabled Trustly for more compatible countries and currencies
 - PPI-979 - Fixes an issue, where PUI wouldn't work for customers without a birthdate in after order process
 - PPI-981 - Fixes an issue, where the payment status was sometimes not correctly set to failed if communication with PayPal failed
+- PPI-987 - Fixes an issue, where creating Zettle Sales Channels or changing Zettle credentials failed
 
 # 8.5.0
 - PPI-958 - Fixes an issue, where the credentials validation erroneously succeeded with invalid Merchant Payer IDs
