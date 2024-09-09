@@ -18,6 +18,10 @@ phpunit:
     -   name: $MYSQL_IMAGE
         alias: database
         entrypoint: [ 'sh', '-c', "docker-entrypoint.sh $MYSQL_CMD" ]
+    -   name: redis
+        alias: redis
+  variables:
+    REDIS_URL: redis://redis:6379
   script:
     -   composer dump-autoload --dev -d "${PROJECT_ROOT}/custom/plugins/${PLUGIN_NAME}"
     -   php
