@@ -3,6 +3,7 @@
 - PPI-978 - Trustly für weitere kompatible Länder & Währungen freigeschaltet
 - PPI-979 - Behebt ein Problem, bei dem PUI für Kunden ohne Geburtsdatum im Zahlartwechsel nach Bestellabschluss nicht funktioniert hat
 - PPI-981 - Behebt ein Problem, bei dem der Zahlungsstatus manchmal nicht korrekt auf Fehlgeschlagen gesetzt wurde, wenn die Kommunikation mit PayPal fehlschlug
+- PPI-987 - Behebt ein Problem, bei dem Zettle Verkaufskanäle nicht erstellt oder deren Zugangsdaten geändert werden konnten
 
 # 9.5.0
 - PPI-958 - Behebt ein Problem, bei dem die API-Zugangsdaten-Prüfung bei ungültiger Merchant-Payer-ID erfolgreich war
