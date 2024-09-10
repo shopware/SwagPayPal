@@ -32,7 +32,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
             { apiKey: salesChannel.extensions?.paypalPosSalesChannel?.apiKey },
             { headers: this.getBasicHeaders() },
         ).then(ApiService.handleResponse.bind(this) as TResponseHandler).then((data) => {
-            data.extensions = {};
+            delete data.extensions;
 
             salesChannel.languages ??= new EntityCollection('language', 'language', Shopware.Context.api);
             salesChannel.currencies ??= new EntityCollection('currency', 'currency', Shopware.Context.api);
@@ -44,7 +44,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
                     id: data.languageId,
                 } as TEntity<'language'>);
             } else {
-                data.languageId = null;
+                delete data.languageId;
             }
 
             Object.assign(salesChannel, data);
