@@ -127,7 +127,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
             onApprove: this.onApprove.bind(this),
 
             style: this.options.cardFieldStyleConfig,
-        }
+        };
     }
 
     renderIndividualFields(cardFields) {

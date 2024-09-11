@@ -62,6 +62,10 @@ export default Shopware.Component.wrapComponentConfig({
         buttonShapeOptions() {
             return [
                 {
+                    id: 'sharp',
+                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonShape.options.sharp'),
+                },
+                {
                     id: 'pill',
                     name: this.$tc('swag-paypal.settingForm.express.ecsButtonShape.options.pill'),
                 },
