@@ -1,6 +1,6 @@
 export const LANDING_PAGES = ['LOGIN', 'BILLING', 'NO_PREFERENCE'] as const;
 export const BUTTON_COLORS = ['gold', 'blue', 'black', 'silver', 'white'] as const;
-export const BUTTON_SHAPES = ['rect', 'pill'] as const;
+export const BUTTON_SHAPES = ['rect', 'pill', 'sharp'] as const;
 export const INTENTS = ['CAPTURE', 'AUTHORIZE'] as const;
 
 export declare type SystemConfig = {

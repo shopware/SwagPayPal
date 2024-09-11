@@ -282,8 +282,9 @@
                 "ecsButtonShape": {
                     "label": "Buttonform",
                     "options": {
+                        "sharp": "Rechteckig mit spitzen Ecken",
                         "pill": "Rund",
-                        "rect": "Eckig"
+                        "rect": "Rechteckig mit abgerundeten Ecken"
                     }
                 },
                 "ecsSubmitCart": {

@@ -19,7 +19,7 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
          * @type string
          */
         handleErrorUrl: '',
-    }
+    };
 
     GENERIC_ERROR = 'SWAG_PAYPAL__GENERIC_ERROR';
     NOT_ELIGIBLE = 'SWAG_PAYPAL__NOT_ELIGIBLE';

@@ -18,7 +18,7 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
          * @type array
          */
         billingAddress: undefined,
-    }
+    };
 
     async render(paypal) {
         if (!window.ApplePaySession?.supportsVersion(4) || !window.ApplePaySession?.canMakePayments()) {
@@ -32,16 +32,16 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
     async renderButton(paypal) {
         const config = await paypal.Applepay().config();
 
-        const button = document.createElement('apple-pay-button')
-        button.setAttribute('buttonStyle', 'black')
-        button.setAttribute('type', 'buy')
+        const button = document.createElement('apple-pay-button');
+        button.setAttribute('buttonStyle', 'black');
+        button.setAttribute('type', 'buy');
         button.style.width = '100%';
         button.addEventListener('click',() => {
             if (this.confirmOrderForm.checkValidity()){
                 this.handleApplePayButtonSubmit(config, paypal)
                     .catch(this.onError.bind(this));
             }
-        })
+        });
 
         if (!config.isEligible) {
             return void this.handleError(this.NOT_ELIGIBLE, true, 'Funding for Apple Pay is not eligible');
@@ -96,7 +96,7 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
 
     async handlePaymentAuthorized(session, paypal, event) {
         try {
-            const orderId = await this.createOrder('applepay')
+            const orderId = await this.createOrder('applepay');
 
             await paypal.Applepay().confirmOrder({
                 orderId,
