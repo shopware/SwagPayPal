@@ -50,6 +50,11 @@ class ExpressCheckoutButtonData extends AbstractScriptData
 
     protected bool $showPayLater;
 
+    /**
+     * @var string[]
+     */
+    protected array $fundingSources;
+
     public function getProductDetailEnabled(): bool
     {
         return $this->productDetailEnabled;
@@ -224,5 +229,15 @@ class ExpressCheckoutButtonData extends AbstractScriptData
     public function setShowPayLater(bool $showPayLater): void
     {
         $this->showPayLater = $showPayLater;
+    }
+
+    public function getFundingSources(): array
+    {
+        return $this->fundingSources;
+    }
+
+    public function setFundingSources(array $fundingSources): void
+    {
+        $this->fundingSources = $fundingSources;
     }
 }

@@ -78,7 +78,7 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
          * Streamline options for listing pages, overriding the ones
          * from swag-paypal.script-loading.js
          */
-        useAlternativePaymentMethods: false,
+        useAlternativePaymentMethods: true,
         commit: false,
         scriptAwaitVisibility: true,
         partOfDomContentLoading: false,

@@ -4,6 +4,7 @@
 - PPI-979 - Fixes an issue, where PUI wouldn't work for customers without a birthdate in after order process
 - PPI-981 - Fixes an issue, where the payment status was sometimes not correctly set to failed if communication with PayPal failed
 - PPI-987 - Fixes an issue, where creating Zettle Sales Channels or changing Zettle credentials failed
+- PPI-988 - Fixes an issue, where SEPA, cards and Venmo may have been missing in the Checkout
 
 # 8.5.0
 - PPI-958 - Fixes an issue, where the credentials validation erroneously succeeded with invalid Merchant Payer IDs

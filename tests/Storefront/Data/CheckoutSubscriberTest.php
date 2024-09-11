@@ -253,7 +253,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame('en_GB', $extension->getLanguageIso());
         static::assertSame($paymentMethodId, $extension->getPaymentMethodId());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $extension->getIntent());
-        static::assertSame('rect', $extension->getButtonShape());
+        static::assertSame('sharp', $extension->getButtonShape());
     }
 
     public function dataProviderPaymentMethods(): iterable

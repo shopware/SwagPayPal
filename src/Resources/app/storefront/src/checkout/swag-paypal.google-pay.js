@@ -19,7 +19,7 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
          * @type object
          */
         displayItems: {},
-    }
+    };
 
     init() {
         super.init();
