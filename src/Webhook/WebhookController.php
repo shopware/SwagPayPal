@@ -167,29 +167,32 @@ class WebhookController extends AbstractController
 
     /**
      * @throws BadRequestHttpException
+     * @throws PayPalApiException
      */
     protected function tryToExecuteWebhook(Context $context, Webhook $webhook): void
     {
+        $logContext = ['type' => $webhook->getEventType(), 'webhook' => \json_encode($webhook)];
+
         try {
             $this->webhookService->executeWebhook($webhook, $context);
+            $this->logger->info('[PayPal Webhook] Webhook successfully executed', $logContext);
         } catch (WebhookHandlerNotFoundException $exception) {
-            $this->logger->info(\sprintf('[PayPal Webhook] %s', $exception->getMessage()), ['webhook', \json_encode($webhook)]);
+            $this->logger->info(\sprintf('[PayPal Webhook] %s', $exception->getMessage()), $logContext);
         } catch (WebhookException $webhookException) {
-            $logMessage = \sprintf('[PayPal Webhook] %s', $webhookException->getMessage());
-            $logContext = ['type' => $webhookException->getEventType(), 'webhook' => \json_encode($webhook)];
-            $this->logger->error($logMessage, $logContext);
+            $this->logger->error(\sprintf('[PayPal Webhook] %s', $webhookException->getMessage()), $logContext);
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
-        } catch (PayPalApiException $exception) {
-            if ($exception->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
-                $this->logger->warning(\sprintf('[PayPal Webhook] %s', $exception->getMessage()), ['webhook', \json_encode($webhook)]);
+        } catch (\Exception $e) {
+            if ($e instanceof PayPalApiException && $e->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
+                $this->logger->warning(\sprintf('[PayPal Webhook] %s', $e->getMessage()), $logContext);
 
                 return;
             }
 
-            throw $exception;
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+            $this->logger->error(
+                \sprintf('[PayPal Webhook] %s', $e->getMessage()),
+                [...$logContext, 'error' => $e],
+            );
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         }

@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Test\Pos\Webhook;
 
+use Monolog\Handler\TestHandler;
+use Monolog\Level;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -34,7 +36,6 @@ use Swag\PayPal\Test\Pos\Webhook\_fixtures\InventoryChangeFixture;
 use Swag\PayPal\Test\Pos\Webhook\_fixtures\TestMessageFixture;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Router;
 
@@ -55,6 +56,8 @@ class WebhookControllerTest extends TestCase
     private SalesChannelEntity $salesChannel;
 
     private WebhookController $webhookController;
+
+    private TestHandler $logger;
 
     protected function setUp(): void
     {
@@ -78,8 +81,10 @@ class WebhookControllerTest extends TestCase
             $router
         );
 
+        $this->logger = new TestHandler();
+
         $this->webhookController = new WebhookController(
-            new NullLogger(),
+            new Logger('testlogger', [$this->logger]),
             $webhookService,
             $salesChannelRepository
         );
@@ -107,8 +112,13 @@ class WebhookControllerTest extends TestCase
         $request = new Request([], InventoryChangeFixture::getWebhookFixture(self::INVALID_EVENT_NAME));
         $request->headers->add(['x-izettle-signature' => InventoryChangeFixture::getSignature()]);
 
-        $this->expectException(BadRequestHttpException::class);
-        $this->webhookController->executeWebhook(TestDefaults::SALES_CHANNEL, $request, $this->context);
+        $response = $this->webhookController->executeWebhook(TestDefaults::SALES_CHANNEL, $request, $this->context);
+        static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+
+        static::assertTrue(
+            $this->logger->hasRecordThatContains('No webhook handler found', Level::Info),
+            'Expected "No webhook handler found" log entry not found',
+        );
     }
 
     public function testExecuteTestMessage(): void

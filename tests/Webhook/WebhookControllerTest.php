@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Test\Webhook;
 
+use Monolog\Handler\TestHandler;
+use Monolog\Level;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -34,13 +36,35 @@ class WebhookControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;
 
+    public const THROW_PAYPAL_API_EXCEPTION = 'executeWebhookThrowsPayPalApiException';
     public const THROW_WEBHOOK_EXCEPTION = 'executeWebhookThrowsWebhookException';
     public const THROW_GENERAL_EXCEPTION = 'executeWebhookThrowsGeneralException';
+    public const THROW_NOT_FOUND_EXCEPTION = 'executeWebhookThrowsNotFoundException';
     public const EMPTY_TOKEN = 'emptyExecuteToken';
+
+    private WebhookController $controller;
+
+    private TestHandler $logger;
+
+    protected function setUp(): void
+    {
+        $definitionRegistry = new DefinitionInstanceRegistryMock([], $this->createMock(ContainerInterface::class));
+        $systemConfigRepo = $definitionRegistry->getRepository(
+            (new SystemConfigDefinition())->getEntityName()
+        );
+
+        $this->logger = new TestHandler();
+
+        $this->controller = new WebhookController(
+            new Logger('testlogger', [$this->logger]),
+            new WebhookServiceMock(SystemConfigServiceMock::createWithoutCredentials()),
+            $systemConfigRepo
+        );
+    }
 
     public function testStatusWebhook(): void
     {
-        $jsonResponse = $this->createWebhookController()->statusWebhook(TestDefaults::SALES_CHANNEL);
+        $jsonResponse = $this->controller->statusWebhook(TestDefaults::SALES_CHANNEL);
         $content = $jsonResponse->getContent();
         static::assertNotFalse($content);
 
@@ -51,7 +75,7 @@ class WebhookControllerTest extends TestCase
 
     public function testRegisterWebhook(): void
     {
-        $jsonResponse = $this->createWebhookController()->registerWebhook(TestDefaults::SALES_CHANNEL);
+        $jsonResponse = $this->controller->registerWebhook(TestDefaults::SALES_CHANNEL);
         $content = $jsonResponse->getContent();
         static::assertNotFalse($content);
 
@@ -62,7 +86,7 @@ class WebhookControllerTest extends TestCase
 
     public function testDeregisterWebhook(): void
     {
-        $jsonResponse = $this->createWebhookController()->deregisterWebhook(TestDefaults::SALES_CHANNEL);
+        $jsonResponse = $this->controller->deregisterWebhook(TestDefaults::SALES_CHANNEL);
         $content = $jsonResponse->getContent();
         static::assertNotFalse($content);
 
@@ -77,8 +101,29 @@ class WebhookControllerTest extends TestCase
         $context = Context::createDefaultContext();
         $request = $this->createRequestWithWebhookData();
 
-        $response = $this->createWebhookController()->executeWebhook($request, $context);
+        $response = $this->controller->executeWebhook($request, $context);
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+
+        static::assertTrue(
+            $this->logger->hasRecordThatContains('Webhook successfully executed', Level::Info),
+            'Expected "Webhook successfully executed" log entry not found',
+        );
+    }
+
+    public function testExecuteWebhookThrowsPayPalApiException(): void
+    {
+        $context = Context::createDefaultContext();
+        $context->addExtension(self::THROW_PAYPAL_API_EXCEPTION, new ArrayStruct());
+        $request = $this->createRequestWithWebhookData();
+
+        $this->expectException(BadRequestHttpException::class);
+        $this->expectExceptionMessage('An error occurred during execution of webhook');
+        $this->controller->executeWebhook($request, $context);
+
+        static::assertTrue(
+            $this->logger->hasRecordThatContains('testPayPalApiExceptionMessage', Level::Error),
+            'Expected "testPayPalApiExceptionMessage" log entry not found',
+        );
     }
 
     public function testExecuteWebhookThrowsWebhookException(): void
@@ -89,7 +134,12 @@ class WebhookControllerTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('An error occurred during execution of webhook');
-        $this->createWebhookController()->executeWebhook($request, $context);
+        $this->controller->executeWebhook($request, $context);
+
+        static::assertTrue(
+            $this->logger->hasRecordThatContains('testWebhookExceptionMessage', Level::Error),
+            'Expected "testWebhookExceptionMessage" log entry not found',
+        );
     }
 
     public function testExecuteWebhookThrowsGeneralException(): void
@@ -100,7 +150,12 @@ class WebhookControllerTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('An error occurred during execution of webhook');
-        $this->createWebhookController()->executeWebhook($request, $context);
+        $this->controller->executeWebhook($request, $context);
+
+        static::assertTrue(
+            $this->logger->hasRecordThatContains('testGeneralExceptionMessage', Level::Error),
+            'Expected "testGeneralExceptionMessage" log entry not found',
+        );
     }
 
     public function testExecuteWebhookEmptyToken(): void
@@ -111,7 +166,7 @@ class WebhookControllerTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('Shopware token is invalid');
-        $this->createWebhookController()->executeWebhook($request, $context);
+        $this->controller->executeWebhook($request, $context);
     }
 
     public function testExecuteWebhookEmptyTokenSent(): void
@@ -121,7 +176,7 @@ class WebhookControllerTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('Shopware token is invalid');
-        $this->createWebhookController()->executeWebhook($request, $context);
+        $this->controller->executeWebhook($request, $context);
     }
 
     public function testExecuteWebhookInvalidToken(): void
@@ -133,7 +188,7 @@ class WebhookControllerTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('Shopware token is invalid');
-        $this->createWebhookController()->executeWebhook($request, $context);
+        $this->controller->executeWebhook($request, $context);
     }
 
     public function testExecuteWebhookNoData(): void
@@ -145,20 +200,21 @@ class WebhookControllerTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('No webhook data sent');
-        $this->createWebhookController()->executeWebhook($request, $context);
+        $this->controller->executeWebhook($request, $context);
     }
 
-    private function createWebhookController(): WebhookController
+    public function testExecuteWebhookHandlerNotFound(): void
     {
-        $definitionRegistry = new DefinitionInstanceRegistryMock([], $this->createMock(ContainerInterface::class));
-        $systemConfigRepo = $definitionRegistry->getRepository(
-            (new SystemConfigDefinition())->getEntityName()
-        );
+        $context = Context::createDefaultContext();
+        $context->addExtension(self::THROW_NOT_FOUND_EXCEPTION, new ArrayStruct());
+        $request = $this->createRequestWithWebhookData();
 
-        return new WebhookController(
-            new NullLogger(),
-            new WebhookServiceMock(SystemConfigServiceMock::createWithoutCredentials()),
-            $systemConfigRepo
+        $response = $this->controller->executeWebhook($request, $context);
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+
+        static::assertTrue(
+            $this->logger->hasRecordThatContains('No webhook handler found', Level::Info),
+            'Expected "No webhook handler found" log entry not found',
         );
     }
 
