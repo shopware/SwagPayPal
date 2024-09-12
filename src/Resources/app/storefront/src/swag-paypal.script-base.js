@@ -88,7 +88,7 @@ export default class SwagPayPalScriptBase extends Plugin {
          * @type boolean
          */
         partOfDomContentLoading: true,
-    }
+    };
 
     static scriptPromises = {};
 
@@ -141,7 +141,6 @@ export default class SwagPayPalScriptBase extends Plugin {
         await loadScript(this.getScriptOptions());
 
         SwagPayPalScriptBase.paypal[this.scriptOptionsHash] = window.paypal;
-        delete window.paypal;
 
         return SwagPayPalScriptBase.paypal[this.scriptOptionsHash];
     }

@@ -62,6 +62,11 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         $context = $salesChannelContext->getContext();
         $salesChannelId = $salesChannelContext->getSalesChannelId();
 
+        $fundingSources = ['paypal', 'venmo'];
+        if ($this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)) {
+            \array_splice($fundingSources, 1, 0, ['paylater']);
+        }
+
         return (new ExpressCheckoutButtonData())->assign([
             ...parent::getBaseData($salesChannelContext),
             'productDetailEnabled' => $this->systemConfigService->getBool(Settings::ECS_DETAIL_ENABLED, $salesChannelId),
@@ -86,6 +91,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
             'handleErrorUrl' => $this->router->generate('frontend.paypal.handle-error'),
             'cancelRedirectUrl' => $this->router->generate($addProductToCart ? 'frontend.checkout.cart.page' : 'frontend.checkout.register.page'),
             'showPayLater' => $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId),
+            'fundingSources' => $fundingSources,
         ]);
     }
 

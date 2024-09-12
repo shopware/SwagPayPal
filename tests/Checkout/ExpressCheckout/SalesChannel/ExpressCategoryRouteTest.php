@@ -179,7 +179,7 @@ class ExpressCategoryRouteTest extends TestCase
             'loginEnabled' => true,
             'listingEnabled' => true,
             'buttonColor' => 'gold',
-            'buttonShape' => 'rect',
+            'buttonShape' => 'sharp',
             'languageIso' => 'en_GB',
             'cartEnabled' => true,
             'clientId' => 'someClientId',
