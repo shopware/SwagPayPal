@@ -10,11 +10,13 @@ namespace Swag\PayPal\Test\Mock\Webhook;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Webhook\WebhookControllerTest;
 use Swag\PayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
@@ -66,8 +68,16 @@ class WebhookServiceMock implements WebhookServiceInterface
 
     public function executeWebhook(Webhook $webhook, Context $context): void
     {
+        if ($context->hasExtension(WebhookControllerTest::THROW_PAYPAL_API_EXCEPTION)) {
+            throw new PayPalApiException('testPayPalApiExceptionMessage', 'testPayPalApiExceptionMessage');
+        }
+
         if ($context->hasExtension(WebhookControllerTest::THROW_WEBHOOK_EXCEPTION)) {
             throw new WebhookException(DummyWebhook::EVENT_TYPE, 'testWebhookExceptionMessage');
+        }
+
+        if ($context->hasExtension(WebhookControllerTest::THROW_NOT_FOUND_EXCEPTION)) {
+            throw new WebhookHandlerNotFoundException(DummyWebhook::EVENT_TYPE);
         }
 
         if ($context->hasExtension(WebhookControllerTest::THROW_GENERAL_EXCEPTION)) {
