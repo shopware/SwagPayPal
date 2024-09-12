@@ -282,8 +282,9 @@
                 "ecsButtonShape": {
                     "label": "Button shape",
                     "options": {
+                        "sharp": "Rectangular with sharp corners",
                         "pill": "Round",
-                        "rect": "Rectangular"
+                        "rect": "Rectangular with rounded corners"
                     }
                 },
                 "ecsSubmitCart": {

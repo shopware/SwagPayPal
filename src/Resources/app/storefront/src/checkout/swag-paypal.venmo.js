@@ -5,7 +5,7 @@ export default class SwagPaypalVenmo extends SwagPaypalAbstractStandalone {
     static options = {
         ...super.options,
         buttonColor: 'blue',
-    }
+    };
 
     getFundingSource(paypal) {
         return paypal.FUNDING.VENMO;

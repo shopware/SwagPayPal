@@ -20,5 +20,11 @@
     }
 }
 
+
+[data-swag-paypal-express-button] {
+    display: grid;
+    gap: 0.5rem;
+}
+
 @import 'page/checkout/confirm';
 @import 'page/checkout/finish';

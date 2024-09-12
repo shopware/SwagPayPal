@@ -7,7 +7,7 @@ export default class SwagPayPalFundingEligibility extends SwagPaypalAbstractButt
         'SEPA',
         'VENMO',
         'PAYLATER',
-    ]
+    ];
 
     static options = {
         ...super.options,
@@ -30,7 +30,7 @@ export default class SwagPayPalFundingEligibility extends SwagPaypalAbstractButt
          * Streamline options for listing pages, overriding the ones
          * from swag-paypal.script-loading.js
          */
-        useAlternativePaymentMethods: false,
+        useAlternativePaymentMethods: true,
         commit: false,
         scriptAwaitVisibility: true,
         partOfDomContentLoading: false,

@@ -180,7 +180,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertFalse($expressCheckoutButtonData->getListingEnabled());
         static::assertTrue($expressCheckoutButtonData->getCartEnabled());
         static::assertSame('gold', $expressCheckoutButtonData->getButtonColor());
-        static::assertSame('rect', $expressCheckoutButtonData->getButtonShape());
+        static::assertSame('sharp', $expressCheckoutButtonData->getButtonShape());
         if ($withSettingsLocale) {
             static::assertSame('zz_ZZ', $expressCheckoutButtonData->getLanguageIso());
         } else {
@@ -197,6 +197,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame('/paypal/error', $expressCheckoutButtonData->getAddErrorUrl());
         static::assertSame($addToCart ? '/checkout/cart' : '/checkout/register', $expressCheckoutButtonData->getCancelRedirectUrl());
         static::assertTrue($expressCheckoutButtonData->isShowPayLater());
+        static::assertSame(['paypal', 'paylater', 'venmo'], $expressCheckoutButtonData->getFundingSources());
         static::assertNotNull($expressCheckoutButtonData->getPayPalPaymentMethodId());
         static::assertSame(
             $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),

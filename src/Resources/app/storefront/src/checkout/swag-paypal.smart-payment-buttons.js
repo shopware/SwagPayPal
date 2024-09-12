@@ -20,7 +20,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          *
          * @type string
          */
-        buttonShape: 'rect',
+        buttonShape: 'sharp',
 
         /**
          * This option specifies the PayPal button size

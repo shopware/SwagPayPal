@@ -39,7 +39,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          *
          * @type string
          */
-        buttonShape: 'rect',
+        buttonShape: 'sharp',
 
         /**
          * This option specifies the PayPal button size
@@ -125,11 +125,18 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          */
         showPayLater: true,
 
+        /**
+         * List of payment sources to be rendered
+         *
+         * @type string[]
+         */
+        fundingSources: [],
+
         /*
          * Streamline options for listing pages, overriding the ones
          * from swag-paypal.script-loading.js
          */
-        useAlternativePaymentMethods: false,
+        useAlternativePaymentMethods: true,
         commit: false,
         scriptAwaitVisibility: true,
         partOfDomContentLoading: false,
@@ -150,7 +157,14 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     }
 
     renderButton(paypal) {
-        return paypal.Buttons(this.getButtonConfig()).render(this.el);
+        this.options.fundingSources.forEach((fundingSource) => {
+            const button = paypal.Buttons(this.getButtonConfig(fundingSource));
+
+            if (button.isEligible()) {
+                button.render(this.el);
+            }
+        });
+
     }
 
     getBuyButtonState() {
@@ -190,11 +204,13 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         return observer;
     }
 
-    getButtonConfig() {
+    getButtonConfig(fundingSource = 'paypal') {
         const renderElement = this.el;
         const { element: buyButton, disabled: isBuyButtonDisabled } = this.getBuyButtonState();
 
         return {
+            fundingSource,
+
             onInit: (data, actions) => {
                 if (!this.options.addProductToCart) {
                     return;
