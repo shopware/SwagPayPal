@@ -102,6 +102,7 @@
                 "paymentMethodText": "Zahlungsmöglichkeiten",
                 "showCredentials": "Zeige API-Zugangsdaten",
                 "appImageAlt": "PayPal",
+                "ratePayLabel": "von Ratepay",
                 "editDetail": "Details bearbeiten",
                 "startOnboardingButtonLabel": "Onboarding starten",
                 "availabilityToolTip": {
