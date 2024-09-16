@@ -12,7 +12,7 @@
 
     {% block swag_paypal_checkout_method_name %}
     <div class="swag-paypal-checkout-method__name">
-        {{ paymentMethod.translated.name }}
+        {{ paymentMethod.translated.name }} <span v-if="isPayPalPui">({{ $tc('swag-paypal.settingForm.checkout.ratePayLabel') }})</span>
     </div>
     {% endblock %}
 

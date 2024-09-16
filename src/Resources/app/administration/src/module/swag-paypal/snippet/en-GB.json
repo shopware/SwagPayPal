@@ -102,6 +102,7 @@
                 "paymentMethodText": "Payment methods",
                 "showCredentials": "Show credentials",
                 "appImageAlt": "PayPal",
+                "ratePayLabel": "by Ratepay",
                 "editDetail": "Edit details",
                 "startOnboardingButtonLabel": "Start onboarding",
                 "availabilityToolTip": {
