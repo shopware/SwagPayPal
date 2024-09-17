@@ -46,6 +46,10 @@ export default Shopware.Component.wrapComponentConfig({
             return this.paymentMethod.active && handlerElements[handlerElements.length - 1] === 'applepayhandler';
         },
 
+        isPayPalPui() {
+            return this.paymentMethod.formattedHandlerIdentifier?.split('_').pop() === 'puihandler';
+        },
+
         paymentMethodRepository(): TRepository<'payment_method'> {
             return this.repositoryFactory.create('payment_method');
         },
