@@ -1,3 +1,6 @@
+# 8.6.1
+- PPI-942 - Behebt ein Problem, bei dem Cookies trotz deaktiviertem Google Pay im Cookie-Banner angezeigt wurden
+
 # 8.6.0
 - PPI-922 - Verbessert die Sichtbarkeit von Apple Pay für nicht unterstützte Browser und Geräte
 - PPI-978 - Trustly für weitere kompatible Länder & Währungen freigeschaltet
