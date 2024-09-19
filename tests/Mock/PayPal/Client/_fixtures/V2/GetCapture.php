@@ -49,6 +49,11 @@ class GetCapture
                     'value' => '55.35',
                 ],
             ],
+            'processor_response' => [
+                'response_code' => '1000',
+                'avs_code' => 'N',
+                'cvv_code' => 'M',
+            ],
             'invoice_id' => 'testCaptureInvoiceId',
             'links' => [
                 0 => [

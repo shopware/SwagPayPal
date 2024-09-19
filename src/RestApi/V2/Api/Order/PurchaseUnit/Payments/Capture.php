@@ -9,6 +9,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\ProcessorResponse;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerReceivableBreakdown;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Common\SellerProtection;
 
@@ -29,6 +30,9 @@ class Capture extends Payment
 
     #[OA\Property(ref: SellerReceivableBreakdown::class)]
     protected SellerReceivableBreakdown $sellerReceivableBreakdown;
+
+    #[OA\Property(ref: ProcessorResponse::class)]
+    protected ProcessorResponse $processorResponse;
 
     #[OA\Property(type: 'string')]
     protected string $disbursementMode;
@@ -109,5 +113,15 @@ class Capture extends Payment
     public function setDisbursementMode(string $disbursementMode): void
     {
         $this->disbursementMode = $disbursementMode;
+    }
+
+    public function getProcessorResponse(): ProcessorResponse
+    {
+        return $this->processorResponse;
+    }
+
+    public function setProcessorResponse(ProcessorResponse $processorResponse): void
+    {
+        $this->processorResponse = $processorResponse;
     }
 }
