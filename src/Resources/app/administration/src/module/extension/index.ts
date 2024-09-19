@@ -10,4 +10,6 @@ Shopware.Component.override('sw-settings-payment-list', () => import('./sw-setti
 
 Shopware.Component.override('sw-settings-shipping-detail', () => import('./sw-settings-shipping/sw-settings-shipping-detail'));
 
+Shopware.Component.override('sw-extension-card-base', () => import('./sw-extension-card-base'));
+
 export {};
