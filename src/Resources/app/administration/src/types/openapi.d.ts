@@ -1304,15 +1304,15 @@ export interface components {
       processor_response: components["schemas"]["swag_paypal_v2_order_purchase_unit_payments_capture_processor_response"];
       disbursement_mode: string;
     };
-    swag_paypal_v2_order_purchase_unit_payments_capture_seller_receivable_breakdown: {
-      gross_amount: components["schemas"]["swag_paypal_v2_common_money"];
-      paypal_fee: components["schemas"]["swag_paypal_v2_common_money"];
-      net_amount: components["schemas"]["swag_paypal_v2_common_money"];
-    };
     swag_paypal_v2_order_purchase_unit_payments_capture_processor_response: {
       avs_code: string | null;
       cvv_code: string | null;
       response_code: string | null;
+    };
+    swag_paypal_v2_order_purchase_unit_payments_capture_seller_receivable_breakdown: {
+      gross_amount: components["schemas"]["swag_paypal_v2_common_money"];
+      paypal_fee: components["schemas"]["swag_paypal_v2_common_money"];
+      net_amount: components["schemas"]["swag_paypal_v2_common_money"];
     };
     swag_paypal_v2_order_purchase_unit_payments_common_seller_protection: {
       status: string;
