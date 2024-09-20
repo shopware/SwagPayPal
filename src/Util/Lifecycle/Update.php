@@ -172,6 +172,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '9.3.1', '<')) {
             $this->updateTo931($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.6.1', '<')) {
+            $this->updateTo961($updateContext->getContext());
+        }
     }
 
     private function updateTo130(): void
@@ -536,6 +540,14 @@ class Update
     {
         try {
             $this->paymentMethodStateService->setPaymentMethodStateByHandler('Swag\PayPal\Checkout\Payment\Method\GiropayAPMHandler', false, $context);
+        } catch (PaymentException) {
+        }
+    }
+
+    private function updateTo961(Context $context): void
+    {
+        try {
+            $this->paymentMethodStateService->setPaymentMethodState(TrustlyMethodData::class, false, $context);
         } catch (PaymentException) {
         }
     }
