@@ -29,6 +29,7 @@
         <service id="Swag\PayPal\Storefront\Framework\Cookie\GooglePayCookieProvider"
                  decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
             <argument type="service" id="Swag\PayPal\Storefront\Framework\Cookie\GooglePayCookieProvider.inner"/>
+            <argument type="service" id="payment_method.repository"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\RequestSubscriber">
