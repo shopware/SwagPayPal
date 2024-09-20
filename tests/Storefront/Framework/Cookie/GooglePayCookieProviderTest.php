@@ -8,7 +8,12 @@
 namespace Swag\PayPal\Test\Storefront\Framework\Cookie;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Swag\PayPal\Storefront\Framework\Cookie\GooglePayCookieProvider;
@@ -19,6 +24,13 @@ use Swag\PayPal\Storefront\Framework\Cookie\GooglePayCookieProvider;
 #[Package('checkout')]
 class GooglePayCookieProviderTest extends TestCase
 {
+    private EntityRepository&MockObject $paymentMethodRepository;
+
+    protected function setUp(): void
+    {
+        $this->paymentMethodRepository = $this->createMock(EntityRepository::class);
+    }
+
     public function testGetCookieGroupsWithEmptyOriginalCookiesReturnsOriginalCookies(): void
     {
         $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
@@ -27,7 +39,7 @@ class GooglePayCookieProviderTest extends TestCase
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $result = (new GooglePayCookieProvider($cookieProviderMock))->getCookieGroups();
+        $result = (new GooglePayCookieProvider($cookieProviderMock, $this->paymentMethodRepository))->getCookieGroups();
         static::assertSame($cookies, $result);
     }
 
@@ -42,7 +54,7 @@ class GooglePayCookieProviderTest extends TestCase
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $result = (new GooglePayCookieProvider($cookieProviderMock))->getCookieGroups();
+        $result = (new GooglePayCookieProvider($cookieProviderMock, $this->paymentMethodRepository))->getCookieGroups();
         static::assertSame($cookies, $result);
     }
 
@@ -54,7 +66,14 @@ class GooglePayCookieProviderTest extends TestCase
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $result = (new GooglePayCookieProvider($cookieProviderMock))->getCookieGroups();
+        $searchResult = new IdSearchResult(0, [['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext());
+
+        $this->paymentMethodRepository->expects($cookieAdded ? static::once() : static::never())
+                ->method('searchIds')
+                ->willReturn($searchResult);
+
+        $result = (new GooglePayCookieProvider($cookieProviderMock, $this->paymentMethodRepository))->getCookieGroups();
+
         if (!$cookieAdded) {
             static::assertSame($cookies, $result);
 
