@@ -251,12 +251,17 @@ export default Shopware.Component.wrapComponentConfig({
         async getPaymentMethods() {
             const response = await this.paymentMethodRepository.search(this.paymentMethodCriteria, Context.api);
 
-            this.paymentMethods = response.filter((pm) => ![
-                'handler_swag_pospayment',
-                'handler_swag_trustlyapmhandler',
-                'handler_swag_giropayapmhandler',
-                'handler_swag_sofortapmhandler',
-            ].includes(pm.formattedHandlerIdentifier ?? ''));
+            this.paymentMethods = response.filter((pm) => {
+                if (pm.formattedHandlerIdentifier === 'handler_swag_pospayment') {
+                    return false;
+                }
+
+                return !([
+                    'handler_swag_trustlyapmhandler',
+                    'handler_swag_giropayapmhandler',
+                    'handler_swag_sofortapmhandler',
+                ].includes(pm.formattedHandlerIdentifier ?? '') && !pm.active);
+            });
         },
 
         fetchMerchantIntegrations() {

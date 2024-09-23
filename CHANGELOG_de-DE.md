@@ -1,6 +1,7 @@
 # 8.6.1
 - PPI-942 - Behebt ein Problem, bei dem Cookies trotz deaktiviertem Google Pay im Cookie-Banner angezeigt wurden
 - PPI-957 - Fügt Schnell-Links zum Kontext-Menü der Erweiterung und der PayPal Einstellungen hinzu
+- PPI-991 - Behebt ein Problem, bei dem Trustly fälschlicherweise zur Auswahl stand
 
 # 8.6.0
 - PPI-922 - Verbessert die Sichtbarkeit von Apple Pay für nicht unterstützte Browser und Geräte

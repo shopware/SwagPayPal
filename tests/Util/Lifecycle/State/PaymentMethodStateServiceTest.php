@@ -42,7 +42,7 @@ class PaymentMethodStateServiceTest extends TestCase
         'Swag\PayPal\Checkout\Payment\Method\MyBankAPMHandler' => false,
         'Swag\PayPal\Checkout\Payment\Method\OxxoAPMHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\P24APMHandler' => true,
-        'Swag\PayPal\Checkout\Payment\Method\TrustlyAPMHandler' => true,
+        'Swag\PayPal\Checkout\Payment\Method\TrustlyAPMHandler' => false,
         'Swag\PayPal\Checkout\Payment\Method\VenmoHandler' => false,
         'Swag\PayPal\Checkout\Payment\Method\PayLaterHandler' => true,
         'Swag\PayPal\Checkout\Payment\Method\ApplePayHandler' => false,
