@@ -22,6 +22,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
+use Swag\PayPal\Pos\Payment\PosPayment;
 use Swag\PayPal\Pos\Setting\Exception\CustomerGroupNotFoundException;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
@@ -551,6 +552,24 @@ class Update
         try {
             $this->paymentMethodStateService->setPaymentMethodState(TrustlyMethodData::class, false, $context);
         } catch (PaymentException) {
+        }
+
+        $criteria = (new Criteria([InformationDefaultService::POS_PAYMENT_METHOD_ID]));
+        $paymentMethodId = $this->paymentRepository->searchIds($criteria, $context)->firstId();
+        if ($paymentMethodId !== null) {
+            $this->paymentRepository->upsert([[
+                'id' => $paymentMethodId,
+                'technicalName' => 'swag_paypal_pos',
+            ]], $context);
+        }
+
+        $criteria = (new Criteria([InformationDefaultService::POS_SHIPPING_METHOD_ID]));
+        $shippingMethodId = $this->shippingRepository->searchIds($criteria, $context)->firstId();
+        if ($shippingMethodId !== null) {
+            $this->shippingRepository->upsert([[
+                'id' => $shippingMethodId,
+                'technicalName' => 'swag_paypal_pos',
+            ]], $context);
         }
     }
 }

@@ -115,6 +115,7 @@ class InformationDefaultService
         $this->paymentMethodRepository->upsert([[
             'id' => self::POS_PAYMENT_METHOD_ID,
             'handlerIdentifier' => PosPayment::class,
+            'technicalName' => 'swag_paypal_pos',
             'active' => false,
             'position' => 999,
             'name' => 'Zettle by PayPal',
@@ -144,6 +145,7 @@ class InformationDefaultService
 
         $this->shippingMethodRepository->upsert([[
             'id' => self::POS_SHIPPING_METHOD_ID,
+            'technicalName' => 'swag_paypal_pos',
             'active' => false,
             'availabilityRuleId' => $this->getAvailabilityRuleId($context),
             'deliveryTimeId' => $this->getDeliveryTimeId($context),
