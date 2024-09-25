@@ -2,9 +2,14 @@ import template from './swag-paypal-pos-wizard-customization.html.twig';
 import './swag-paypal-pos-wizard-customization.scss';
 
 const { Component } = Shopware;
+const { EntityCollection } = Shopware.Data;
 
 Component.register('swag-paypal-pos-wizard-customization', {
     template,
+
+    inject: [
+        'repositoryFactory',
+    ],
 
     props: {
         salesChannel: {
@@ -24,6 +29,12 @@ Component.register('swag-paypal-pos-wizard-customization', {
             type: Boolean,
             required: false,
             default: false,
+        },
+    },
+
+    computed: {
+        languageRepository() {
+            return this.repositoryFactory.create('language');
         },
     },
 
@@ -103,7 +114,7 @@ Component.register('swag-paypal-pos-wizard-customization', {
         },
 
         changeLanguage() {
-            this.salesChannel.languages.length = 0;
+            this.salesChannel.languages = new EntityCollection('language', 'language', Shopware.Context.api);
             this.salesChannel.languages.push({
                 id: this.salesChannel.languageId,
             });

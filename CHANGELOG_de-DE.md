@@ -2,6 +2,7 @@
 - PPI-942 - Behebt ein Problem, bei dem Cookies trotz deaktiviertem Google Pay im Cookie-Banner angezeigt wurden
 - PPI-957 - Fügt Schnell-Links zum Kontext-Menü der Erweiterung und der PayPal Einstellungen hinzu
 - PPI-991 - Behebt ein Problem, bei dem Trustly fälschlicherweise zur Auswahl stand
+- PPI-995 - Behebt ein Problem, bei dem der Zettle-Einrichtungsassistent nicht korrekt beendet werden konnte
 
 # 9.6.0
 - PPI-922 - Verbessert die Sichtbarkeit von Apple Pay für nicht unterstützte Browser und Geräte
