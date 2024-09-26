@@ -19,6 +19,7 @@
             <argument type="service" id="Swag\PayPal\Webhook\WebhookRegistry"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="router"/>
+            <argument>%shopware.paypal.webhook_proxy_url%</argument>
         </service>
 
         <!-- handler registry -->
