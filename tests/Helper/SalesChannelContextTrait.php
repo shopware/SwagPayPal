@@ -40,7 +40,7 @@ trait SalesChannelContextTrait
         ?string $paymentMethodId = null,
         bool $withCustomer = true,
         bool $withOtherDefaultPayment = false,
-        bool $withCartLineItems = false
+        bool $withCartLineItems = false,
     ): SalesChannelContext {
         /** @var EntityRepository $languageRepo */
         $languageRepo = $container->get('language.repository');

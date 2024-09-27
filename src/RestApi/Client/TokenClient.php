@@ -19,7 +19,7 @@ class TokenClient extends AbstractClient implements TokenClientInterface
 {
     public function __construct(
         OAuthCredentials $credentials,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $client = new Client([
             'base_uri' => $credentials->getUrl(),

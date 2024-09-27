@@ -47,7 +47,7 @@ trait PaymentTransactionTrait
         ?string $transactionId = null,
         ?string $orderNumber = null,
         ?ContainerInterface $container = null,
-        ?Context $context = null
+        ?Context $context = null,
     ): AsyncPaymentTransactionStruct {
         $orderTransaction = $this->createOrderTransaction($transactionId);
 

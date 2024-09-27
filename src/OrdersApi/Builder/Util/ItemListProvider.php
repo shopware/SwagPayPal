@@ -35,7 +35,7 @@ class ItemListProvider
     public function __construct(
         private readonly PriceFormatter $priceFormatter,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 

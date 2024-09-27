@@ -50,7 +50,7 @@ class ProductSyncManager extends AbstractSyncManager
         MessageDispatcher $messageBus,
         ProductSelection $productSelection,
         SalesChannelRepository $productRepository,
-        ImageSyncer $imageSyncer
+        ImageSyncer $imageSyncer,
     ) {
         parent::__construct($messageBus);
         $this->productSelection = $productSelection;
@@ -87,7 +87,7 @@ class ProductSyncManager extends AbstractSyncManager
         Criteria $criteria,
         SalesChannelContext $salesChannelContext,
         SalesChannelEntity $salesChannel,
-        string $runId
+        string $runId,
     ): array {
         $criteria->addAggregation(new CountAggregation('count', 'id'));
         $criteria->addFilter(new EqualsFilter('parentId', null));
@@ -124,7 +124,7 @@ class ProductSyncManager extends AbstractSyncManager
         Criteria $criteria,
         SalesChannelContext $salesChannelContext,
         SalesChannelEntity $salesChannel,
-        string $runId
+        string $runId,
     ): array {
         $criteria->addAggregation(new TermsAggregation('ids', 'id', null, null, new SumAggregation('count', 'childCount')));
         $criteria->addFilter(new RangeFilter('childCount', [RangeFilter::GT => 0]));
@@ -166,7 +166,7 @@ class ProductSyncManager extends AbstractSyncManager
     private function buildCleanupMessage(
         SalesChannelContext $salesChannelContext,
         SalesChannelEntity $salesChannel,
-        string $runId
+        string $runId,
     ): array {
         $message = new ProductCleanupSyncMessage();
         $message->setSalesChannelContext($salesChannelContext);

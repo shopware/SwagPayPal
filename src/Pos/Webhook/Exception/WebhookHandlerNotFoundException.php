@@ -15,7 +15,7 @@ class WebhookHandlerNotFoundException extends WebhookException
 {
     public function __construct(
         string $eventType,
-        array $parameters = []
+        array $parameters = [],
     ) {
         $message = \sprintf('No webhook handler found for event "%s". Shopware does not need to handle this event.', $eventType);
         parent::__construct($eventType, $message, $parameters);

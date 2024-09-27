@@ -34,7 +34,7 @@ class CaptureRefunded extends AbstractWebhookHandler
         EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         PaymentStatusUtilV2 $paymentStatusUtil,
-        OrderResource $orderResource
+        OrderResource $orderResource,
     ) {
         parent::__construct($orderTransactionRepository, $orderTransactionStateHandler);
         $this->paymentStatusUtil = $paymentStatusUtil;

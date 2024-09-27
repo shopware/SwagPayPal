@@ -35,7 +35,7 @@ class InventorySyncer
         InventoryContextFactory $inventoryContextFactory,
         LocalUpdater $localUpdater,
         RemoteUpdater $remoteUpdater,
-        EntityRepository $inventoryRepository
+        EntityRepository $inventoryRepository,
     ) {
         $this->inventoryContextFactory = $inventoryContextFactory;
         $this->localUpdater = $localUpdater;
@@ -48,7 +48,7 @@ class InventorySyncer
      */
     public function sync(
         EntityCollection $entityCollection,
-        InventoryContext $inventoryContext
+        InventoryContext $inventoryContext,
     ): void {
         $changes = $this->remoteUpdater->updateRemote($entityCollection, $inventoryContext);
         $this->updateLocalChanges($changes, $inventoryContext);

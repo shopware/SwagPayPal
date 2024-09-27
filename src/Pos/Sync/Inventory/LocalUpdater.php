@@ -23,7 +23,7 @@ class LocalUpdater
     public function __construct(
         private readonly EntityRepository $productRepository,
         private readonly LocalCalculatorInterface $localCalculator,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 

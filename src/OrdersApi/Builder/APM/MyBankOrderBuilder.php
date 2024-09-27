@@ -21,7 +21,7 @@ class MyBankOrderBuilder extends AbstractAPMOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $sourceElement = new MyBank();
         $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);

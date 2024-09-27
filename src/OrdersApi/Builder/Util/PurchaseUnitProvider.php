@@ -41,7 +41,7 @@ class PurchaseUnitProvider
         AmountProvider $amountProvider,
         AddressProvider $addressProvider,
         CustomIdProvider $customIdProvider,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
     ) {
         $this->amountProvider = $amountProvider;
         $this->addressProvider = $addressProvider;
@@ -57,7 +57,7 @@ class PurchaseUnitProvider
         SalesChannelContext $salesChannelContext,
         bool $isNet,
         ?OrderEntity $order = null,
-        ?OrderTransactionEntity $orderTransaction = null
+        ?OrderTransactionEntity $orderTransaction = null,
     ): PurchaseUnit {
         $purchaseUnit = new PurchaseUnit();
 

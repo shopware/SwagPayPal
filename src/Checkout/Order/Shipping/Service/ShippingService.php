@@ -47,7 +47,7 @@ class ShippingService
         EntityRepository $salesChannelRepository,
         EntityRepository $orderTransactionRepository,
         EntityRepository $shippingMethodRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->shippingResource = $shippingResource;
         $this->salesChannelRepository = $salesChannelRepository;
@@ -92,7 +92,7 @@ class ShippingService
         string $transactionId,
         string $orderDeliveryId,
         string $carrier,
-        string $salesChannelId
+        string $salesChannelId,
     ): void {
         if (!$addedTrackingCodes) {
             return;
@@ -121,7 +121,7 @@ class ShippingService
         string $transactionId,
         string $orderDeliveryId,
         string $carrier,
-        string $salesChannelId
+        string $salesChannelId,
     ): void {
         if (!$removedTrackingCodes) {
             return;

@@ -42,7 +42,7 @@ class PaymentResource
         string $payerId,
         string $paymentId,
         string $salesChannelId,
-        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
+        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC,
     ): Payment {
         $payerInfo = new ExecutePayerInfo();
         $payerInfo->setPayerId($payerId);

@@ -33,7 +33,7 @@ class TransactionValidatorTest extends TestCase
         string $itemPerPiecePrice,
         string $itemPerPieceTax,
         int $itemQuantity,
-        bool $expectedResult
+        bool $expectedResult,
     ): void {
         $transaction = new Transaction();
 

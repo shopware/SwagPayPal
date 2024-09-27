@@ -21,7 +21,7 @@ class BoletoBancarioOrderBuilder extends AbstractAPMOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $sourceElement = new Boletobancario();
         $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);

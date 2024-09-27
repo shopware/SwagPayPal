@@ -26,7 +26,7 @@ class InventorySyncTaskHandler extends AbstractSyncTaskHandler
     public function __construct(
         EntityRepository $scheduledTaskRepository,
         EntityRepository $salesChannelRepository,
-        InventoryTask $inventoryTask
+        InventoryTask $inventoryTask,
     ) {
         parent::__construct($scheduledTaskRepository, $salesChannelRepository);
         $this->inventoryTask = $inventoryTask;

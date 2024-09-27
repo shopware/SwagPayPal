@@ -28,7 +28,7 @@ class InstallUninstall
     public function __construct(
         PaymentMethodInstaller $paymentMethodInstaller,
         SettingsInstaller $settingsInstaller,
-        PosInstaller $posInstaller
+        PosInstaller $posInstaller,
     ) {
         $this->paymentMethodInstaller = $paymentMethodInstaller;
         $this->settingsInstaller = $settingsInstaller;

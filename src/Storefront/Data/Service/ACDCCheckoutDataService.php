@@ -20,7 +20,7 @@ class ACDCCheckoutDataService extends AbstractCheckoutDataService
     public function buildCheckoutData(
         SalesChannelContext $context,
         ?Cart $cart = null,
-        ?OrderEntity $order = null
+        ?OrderEntity $order = null,
     ): ?ACDCCheckoutData {
         return (new ACDCCheckoutData())->assign($this->getBaseData($context, $order));
     }

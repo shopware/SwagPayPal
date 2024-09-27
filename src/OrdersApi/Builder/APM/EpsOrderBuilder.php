@@ -21,7 +21,7 @@ class EpsOrderBuilder extends AbstractAPMOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $sourceElement = new Eps();
         $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);

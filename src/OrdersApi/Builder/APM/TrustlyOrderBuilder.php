@@ -21,7 +21,7 @@ class TrustlyOrderBuilder extends AbstractAPMOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $sourceElement = new Trustly();
         $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);

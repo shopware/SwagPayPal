@@ -42,7 +42,7 @@ class WebhookController extends AbstractController
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly WebhookService $webhookService,
-        private readonly EntityRepository $salesChannelRepository
+        private readonly EntityRepository $salesChannelRepository,
     ) {
     }
 

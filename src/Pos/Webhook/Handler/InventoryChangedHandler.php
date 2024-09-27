@@ -41,7 +41,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
         private readonly InventoryContextFactory $inventoryContextFactory,
         private readonly EntityRepository $productRepository,
         private readonly UuidConverter $uuidConverter,
-        private readonly bool $stockManagementEnabled
+        private readonly bool $stockManagementEnabled,
     ) {
     }
 

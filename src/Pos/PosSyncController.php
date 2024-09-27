@@ -46,7 +46,7 @@ class PosSyncController extends AbstractController
         private readonly LogCleaner $logCleaner,
         private readonly RunService $runService,
         private readonly SyncResetter $syncResetter,
-        private readonly ProductSelection $productSelection
+        private readonly ProductSelection $productSelection,
     ) {
     }
 

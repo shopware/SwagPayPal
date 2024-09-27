@@ -48,7 +48,7 @@ class ImageSyncer
         EntityRepository $posMediaRepository,
         MediaConverter $mediaConverter,
         ImageResource $imageResource,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->posMediaRepository = $posMediaRepository;
         $this->mediaConverter = $mediaConverter;
@@ -62,7 +62,7 @@ class ImageSyncer
     public function sync(
         EntityCollection $entityCollection,
         SalesChannelEntity $salesChannel,
-        Context $context
+        Context $context,
     ): void {
         $posSalesChannel = $this->getPosSalesChannel($salesChannel);
 
@@ -157,7 +157,7 @@ class ImageSyncer
     private function prepareMediaUpdate(
         PosSalesChannelMediaCollection $posMediaCollection,
         Uploaded $uploaded,
-        string $salesChannelId
+        string $salesChannelId,
     ): ?array {
         $urlPath = \parse_url($uploaded->getSource(), \PHP_URL_PATH);
 

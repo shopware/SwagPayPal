@@ -40,7 +40,7 @@ class AuthorizationResource
         Capture $capture,
         string $salesChannelId,
         string $partnerAttributionId,
-        bool $minimalResponse = true
+        bool $minimalResponse = true,
     ): Capture {
         $headers = [];
         if ($minimalResponse === false) {

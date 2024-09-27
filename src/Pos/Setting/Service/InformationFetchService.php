@@ -41,7 +41,7 @@ class InformationFetchService
         UserResource $userResource,
         EntityRepository $countryRepository,
         EntityRepository $currencyRepository,
-        EntityRepository $languageRepository
+        EntityRepository $languageRepository,
     ) {
         $this->userResource = $userResource;
         $this->countryRepository = $countryRepository;
@@ -52,7 +52,7 @@ class InformationFetchService
     public function addInformation(
         AdditionalInformation $information,
         string $apiKey,
-        Context $context
+        Context $context,
     ): void {
         $merchantInformation = $this->userResource->getMerchantInformation($apiKey);
 

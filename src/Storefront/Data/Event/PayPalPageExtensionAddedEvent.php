@@ -24,7 +24,7 @@ class PayPalPageExtensionAddedEvent
     public function __construct(
         Page $page,
         CheckoutDataMethodInterface $checkoutMethod,
-        AbstractCheckoutData $checkoutData
+        AbstractCheckoutData $checkoutData,
     ) {
         $this->page = $page;
         $this->checkoutMethod = $checkoutMethod;

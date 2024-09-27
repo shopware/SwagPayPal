@@ -26,7 +26,7 @@ class CompleteSyncTaskHandler extends AbstractSyncTaskHandler
     public function __construct(
         EntityRepository $scheduledTaskRepository,
         EntityRepository $salesChannelRepository,
-        CompleteTask $completeTask
+        CompleteTask $completeTask,
     ) {
         parent::__construct($scheduledTaskRepository, $salesChannelRepository);
         $this->completeTask = $completeTask;

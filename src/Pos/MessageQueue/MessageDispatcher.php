@@ -26,7 +26,7 @@ class MessageDispatcher
      */
     public function __construct(
         MessageBusInterface $messageBus,
-        Connection $connection
+        Connection $connection,
     ) {
         $this->messageBus = $messageBus;
         $this->connection = $connection;

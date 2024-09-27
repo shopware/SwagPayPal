@@ -25,7 +25,7 @@ class GooglePayCookieProvider implements CookieProviderInterface
      */
     public function __construct(
         CookieProviderInterface $cookieProvider,
-        private readonly EntityRepository $paymentMethodRepository
+        private readonly EntityRepository $paymentMethodRepository,
     ) {
         $this->original = $cookieProvider;
     }

@@ -42,7 +42,7 @@ class MediaInstaller
         EntityRepository $mediaRepository,
         EntityRepository $mediaFolderRepository,
         EntityRepository $paymentMethodRepository,
-        FileSaver $fileSaver
+        FileSaver $fileSaver,
     ) {
         $this->mediaRepository = $mediaRepository;
         $this->mediaFolderRepository = $mediaFolderRepository;

@@ -35,14 +35,14 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         private readonly PaymentMethodUtil $paymentMethodUtil,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
-        private readonly CartPriceService $cartPriceService
+        private readonly CartPriceService $cartPriceService,
     ) {
         parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
     }
 
     public function buildExpressCheckoutButtonData(
         SalesChannelContext $salesChannelContext,
-        bool $addProductToCart = false
+        bool $addProductToCart = false,
     ): ?ExpressCheckoutButtonData {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 

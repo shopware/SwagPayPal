@@ -28,7 +28,7 @@ class ProductContextMock extends ProductContext
     public function __construct(
         SalesChannelEntity $salesChannelEntity,
         Context $context,
-        ?PosSalesChannelProductEntity $posProductEntity = null
+        ?PosSalesChannelProductEntity $posProductEntity = null,
     ) {
         $posProductCollection = new PosSalesChannelProductCollection();
         if ($posProductEntity !== null) {

@@ -66,7 +66,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         SystemConfigService $systemConfigService,
         PaymentMethodUtil $paymentMethodUtil,
         ExcludedProductValidator $excludedProductValidator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->expressCheckoutDataService = $service;
         $this->settingsValidationService = $settingsValidationService;
@@ -252,7 +252,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     private function getExpressCheckoutButtonData(
         SalesChannelContext $salesChannelContext,
         string $eventName,
-        bool $addProductToCart = false
+        bool $addProductToCart = false,
     ): ?ExpressCheckoutButtonData {
         if (!$this->checkSettings($salesChannelContext, $eventName)) {
             return null;

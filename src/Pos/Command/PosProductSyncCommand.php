@@ -29,7 +29,7 @@ class PosProductSyncCommand extends AbstractPosCommand
      */
     public function __construct(
         EntityRepository $salesChannelRepository,
-        ProductTask $productTask
+        ProductTask $productTask,
     ) {
         parent::__construct($salesChannelRepository);
         $this->productTask = $productTask;

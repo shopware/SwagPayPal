@@ -32,7 +32,7 @@ class SyncResetter
         EntityRepository $posProductRepository,
         EntityRepository $posInventoryRepository,
         EntityRepository $posMediaRepository,
-        EntityRepository $posRunRepository
+        EntityRepository $posRunRepository,
     ) {
         $this->posProductRepository = $posProductRepository;
         $this->posInventoryRepository = $posInventoryRepository;

@@ -72,7 +72,7 @@ class ExpressCustomerService
         EntityRepository $customerRepository,
         AccountService $accountService,
         SystemConfigService $systemConfigService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->registerRoute = $registerRoute;
         $this->countryRepository = $countryRepository;

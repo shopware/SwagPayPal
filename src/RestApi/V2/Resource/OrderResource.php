@@ -42,7 +42,7 @@ class OrderResource
         string $partnerAttributionId,
         bool $minimalResponse = true,
         ?string $requestId = null,
-        ?string $metaDataId = null
+        ?string $metaDataId = null,
     ): Order {
         $headers = [];
         if ($minimalResponse === false) {
@@ -79,7 +79,7 @@ class OrderResource
         string $orderId,
         string $salesChannelId,
         string $partnerAttributionId,
-        bool $minimalResponse = false
+        bool $minimalResponse = false,
     ): Order {
         $headers = [];
         if ($minimalResponse === false) {
@@ -99,7 +99,7 @@ class OrderResource
         string $orderId,
         string $salesChannelId,
         string $partnerAttributionId,
-        bool $minimalResponse = false
+        bool $minimalResponse = false,
     ): Order {
         $headers = [];
         if ($minimalResponse === false) {

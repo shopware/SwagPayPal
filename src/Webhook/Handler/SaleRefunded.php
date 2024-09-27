@@ -30,7 +30,7 @@ class SaleRefunded extends AbstractWebhookHandler
     public function __construct(
         EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,
-        SaleResource $saleResource
+        SaleResource $saleResource,
     ) {
         parent::__construct($orderTransactionRepository, $orderTransactionStateHandler);
         $this->saleResource = $saleResource;

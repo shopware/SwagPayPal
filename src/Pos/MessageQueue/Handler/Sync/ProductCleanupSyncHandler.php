@@ -50,7 +50,7 @@ class ProductCleanupSyncHandler extends AbstractSyncHandler
         ProductSelection $productSelection,
         SalesChannelRepository $productRepository,
         ProductSyncer $productSyncer,
-        EntityRepository $posSalesChannelRepository
+        EntityRepository $posSalesChannelRepository,
     ) {
         parent::__construct($runService, $logger, $messageBus, $messageHydrator);
         $this->productSelection = $productSelection;

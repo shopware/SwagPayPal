@@ -67,7 +67,7 @@ class PlusPuiHandler
         TransactionPatchBuilder $transactionPatchBuilder,
         ShippingAddressPatchBuilder $shippingAddressPatchBuilder,
         OrderTransactionStateHandler $orderTransactionStateHandler,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->paymentResource = $paymentResource;
         $this->orderTransactionRepo = $orderTransactionRepo;
@@ -83,7 +83,7 @@ class PlusPuiHandler
         AsyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext,
-        CustomerEntity $customer
+        CustomerEntity $customer,
     ): RedirectResponse {
         $this->logger->debug('Started');
         $paypalPaymentId = $dataBag->get(self::PAYPAL_PAYMENT_ID_INPUT_NAME);
@@ -117,7 +117,7 @@ class PlusPuiHandler
         Context $context,
         string $paymentId,
         string $payerId,
-        string $partnerAttributionId
+        string $partnerAttributionId,
     ): void {
         $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
@@ -192,7 +192,7 @@ class PlusPuiHandler
         array $patches,
         string $paypalPaymentId,
         string $salesChannelId,
-        string $orderTransactionId
+        string $orderTransactionId,
     ): void {
         try {
             $this->paymentResource->patch($patches, $paypalPaymentId, $salesChannelId);
@@ -208,7 +208,7 @@ class PlusPuiHandler
         AsyncPaymentTransactionStruct $transaction,
         string $paypalPaymentId,
         Context $context,
-        ?string $paypalToken = null
+        ?string $paypalToken = null,
     ): void {
         $customFields = [
             SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID => $paypalPaymentId,

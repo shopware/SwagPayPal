@@ -60,7 +60,7 @@ class PlusDataService
         RouterInterface $router,
         PaymentMethodUtil $paymentMethodUtil,
         LocaleCodeProvider $localeCodeProvider,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
     ) {
         $this->cartPaymentBuilder = $cartPaymentBuilder;
         $this->orderPaymentBuilder = $orderPaymentBuilder;
@@ -73,7 +73,7 @@ class PlusDataService
 
     public function getPlusData(
         Cart $cart,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): ?PlusData {
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
@@ -88,7 +88,7 @@ class PlusDataService
 
     public function getPlusDataFromOrder(
         OrderEntity $order,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): ?PlusData {
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
@@ -134,7 +134,7 @@ class PlusDataService
     private function getPlusDataFromPayment(
         Payment $payment,
         SalesChannelContext $salesChannelContext,
-        CustomerEntity $customer
+        CustomerEntity $customer,
     ): ?PlusData {
         try {
             $response = $this->paymentResource->create(

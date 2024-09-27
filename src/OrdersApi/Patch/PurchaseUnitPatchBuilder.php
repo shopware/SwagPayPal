@@ -29,7 +29,7 @@ class PurchaseUnitPatchBuilder
      */
     public function __construct(
         PurchaseUnitProvider $purchaseUnitProvider,
-        ItemListProvider $itemListProvider
+        ItemListProvider $itemListProvider,
     ) {
         $this->purchaseUnitProvider = $purchaseUnitProvider;
         $this->itemListProvider = $itemListProvider;
@@ -39,7 +39,7 @@ class PurchaseUnitPatchBuilder
         OrderEntity $order,
         OrderTransactionEntity $orderTransaction,
         SalesChannelContext $salesChannelContext,
-        bool $submitCart = true
+        bool $submitCart = true,
     ): Patch {
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {

@@ -29,7 +29,7 @@ class PosInventorySyncCommand extends AbstractPosCommand
      */
     public function __construct(
         EntityRepository $salesChannelRepository,
-        InventoryTask $inventoryTask
+        InventoryTask $inventoryTask,
     ) {
         parent::__construct($salesChannelRepository);
         $this->inventoryTask = $inventoryTask;

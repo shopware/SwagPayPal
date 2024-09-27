@@ -29,7 +29,7 @@ class PosSyncCommand extends AbstractPosCommand
      */
     public function __construct(
         EntityRepository $salesChannelRepository,
-        CompleteTask $completeTask
+        CompleteTask $completeTask,
     ) {
         parent::__construct($salesChannelRepository);
         $this->completeTask = $completeTask;

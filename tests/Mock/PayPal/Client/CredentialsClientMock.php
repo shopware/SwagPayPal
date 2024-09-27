@@ -19,7 +19,7 @@ class CredentialsClientMock extends CredentialsClient
 {
     public function __construct(
         string $url,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         parent::__construct($url, $logger);
         $this->client = new GuzzleClientMock(['base_uri' => $url]);

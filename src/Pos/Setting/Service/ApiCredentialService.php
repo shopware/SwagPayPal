@@ -36,7 +36,7 @@ class ApiCredentialService
     public function __construct(
         TokenResource $tokenResource,
         EntityRepository $salesChannelRepository,
-        ApiKeyDecoder $apiKeyDecoder
+        ApiKeyDecoder $apiKeyDecoder,
     ) {
         $this->tokenResource = $tokenResource;
         $this->salesChannelRepository = $salesChannelRepository;

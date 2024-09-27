@@ -65,7 +65,7 @@ class PayPalPaymentMethodControllerTest extends TestCase
 
     private function createPayPalPaymentMethodController(
         ?SalesChannelRepoMock $salesChannelRepoMock = null,
-        ?PaymentMethodUtil $paymentMethodUtil = null
+        ?PaymentMethodUtil $paymentMethodUtil = null,
     ): PayPalPaymentMethodController {
         if ($salesChannelRepoMock === null) {
             $salesChannelRepoMock = new SalesChannelRepoMock();

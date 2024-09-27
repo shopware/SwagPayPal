@@ -42,7 +42,7 @@ class PayPalHandler
         private readonly OrderPatchService $orderPatchService,
         private readonly TransactionDataService $transactionDataService,
         private readonly VaultTokenService $vaultTokenService,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -52,7 +52,7 @@ class PayPalHandler
     public function handlePayPalOrder(
         SyncPaymentTransactionStruct $transaction,
         RequestDataBag $requestDataBag,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): RedirectResponse {
         $this->logger->debug('Started');
 
@@ -123,7 +123,7 @@ class PayPalHandler
     public function handlePreparedOrder(
         AsyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): RedirectResponse {
         $this->logger->debug('Started');
         $paypalOrderId = $dataBag->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
@@ -160,7 +160,7 @@ class PayPalHandler
         string $paypalOrderId,
         string $salesChannelId,
         SalesChannelContext $context,
-        string $partnerAttributionId
+        string $partnerAttributionId,
     ): void {
         $this->logger->debug('Started');
 

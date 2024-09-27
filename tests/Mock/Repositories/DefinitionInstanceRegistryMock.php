@@ -28,7 +28,7 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
 
     public function __construct(
         array $elements,
-        ContainerInterface $container
+        ContainerInterface $container,
     ) {
         parent::__construct($container, $elements, []);
         $this->languageRepo = new LanguageRepoMock();

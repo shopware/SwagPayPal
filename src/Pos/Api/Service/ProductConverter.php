@@ -44,7 +44,7 @@ class ProductConverter
         VariantConverter $variantConverter,
         OptionGroupConverter $optionGroupConverter,
         PresentationConverter $presentationConverter,
-        MetadataGenerator $metadataGenerator
+        MetadataGenerator $metadataGenerator,
     ) {
         $this->uuidConverter = $uuidConverter;
         $this->categoryConverter = $categoryConverter;

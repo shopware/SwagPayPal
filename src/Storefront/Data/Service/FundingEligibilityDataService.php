@@ -28,7 +28,7 @@ class FundingEligibilityDataService extends AbstractScriptDataService
         SystemConfigService $systemConfigService,
         LocaleCodeProvider $localeCodeProvider,
         private readonly RouterInterface $router,
-        private readonly RequestStack $requestStack
+        private readonly RequestStack $requestStack,
     ) {
         parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
     }

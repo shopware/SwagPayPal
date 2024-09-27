@@ -38,7 +38,7 @@ class BannerDataService implements BannerDataServiceInterface
         private readonly PaymentMethodUtil $paymentMethodUtil,
         private readonly CredentialsUtilInterface $credentialsUtil,
         private readonly SystemConfigService $systemConfigService,
-        private readonly EntityRepository $languageRepository
+        private readonly EntityRepository $languageRepository,
     ) {
     }
 
@@ -47,7 +47,7 @@ class BannerDataService implements BannerDataServiceInterface
      */
     public function getInstallmentBannerData(
         $page,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): BannerData {
         $amount = 0.0;
 

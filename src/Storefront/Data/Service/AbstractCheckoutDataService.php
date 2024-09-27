@@ -35,7 +35,7 @@ abstract class AbstractCheckoutDataService extends AbstractScriptDataService
         LocaleCodeProvider $localeCodeProvider,
         private readonly RouterInterface $router,
         SystemConfigService $systemConfigService,
-        CredentialsUtilInterface $credentialsUtil
+        CredentialsUtilInterface $credentialsUtil,
     ) {
         parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
     }

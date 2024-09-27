@@ -427,7 +427,7 @@ class UpdateTest extends TestCase
     private function createUpdateService(
         SystemConfigService $systemConfigService,
         ?WebhookService $webhookService = null,
-        ?PosWebhookService $posWebhookService = null
+        ?PosWebhookService $posWebhookService = null,
     ): Update {
         /** @var InformationDefaultService|null $informationDefaultService */
         $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);

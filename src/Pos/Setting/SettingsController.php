@@ -37,7 +37,7 @@ class SettingsController extends AbstractController
         private readonly InformationFetchService $informationFetchService,
         private readonly InformationDefaultService $informationDefaultService,
         private readonly ProductVisibilityCloneService $productVisibilityCloneService,
-        private readonly ProductCountService $productCountService
+        private readonly ProductCountService $productCountService,
     ) {
     }
 

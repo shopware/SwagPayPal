@@ -41,7 +41,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         PriceFormatter $priceFormatter,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
     ) {
         parent::__construct($localeCodeProvider, $priceFormatter, $eventDispatcher, $logger, $systemConfigService);
     }
@@ -50,7 +50,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         Cart $cart,
         SalesChannelContext $salesChannelContext,
         string $finishUrl,
-        bool $isExpressCheckoutProcess = false
+        bool $isExpressCheckoutProcess = false,
     ): Payment {
         $payer = $this->createPayer();
         $redirectUrls = $this->createRedirectUrls($finishUrl);
@@ -76,7 +76,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
     private function createTransactionFromCart(
         Cart $cart,
         SalesChannelContext $salesChannelContext,
-        bool $isExpressCheckoutProcess
+        bool $isExpressCheckoutProcess,
     ): Transaction {
         $cartTransaction = $cart->getTransactions()->first();
         if ($cartTransaction === null) {
@@ -106,7 +106,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
     private function setItemList(
         Transaction $transaction,
         LineItemCollection $lineItemCollection,
-        string $currency
+        string $currency,
     ): void {
         $items = $this->getItemList($lineItemCollection, $currency);
 
@@ -119,7 +119,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
 
     private function getItemList(
         LineItemCollection $lineItemCollection,
-        string $currency
+        string $currency,
     ): ItemCollection {
         $items = new ItemCollection();
 
@@ -139,7 +139,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
     private function createItemFromLineItem(
         LineItem $lineItem,
         string $currencyCode,
-        CalculatedPrice $price
+        CalculatedPrice $price,
     ): Item {
         $item = new Item();
         $this->setName($lineItem, $item);

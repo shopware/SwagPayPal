@@ -36,7 +36,7 @@ class ApplePayHandler extends AbstractSyncAPMHandler
         LoggerInterface $logger,
         OrderResource $orderResource,
         VaultTokenService $vaultTokenService,
-        private readonly CardValidatorInterface $applePayValidator
+        private readonly CardValidatorInterface $applePayValidator,
     ) {
         parent::__construct($settingsValidationService, $orderTransactionStateHandler, $orderExecuteService, $orderPatchService, $transactionDataService, $logger, $orderResource, $vaultTokenService);
     }

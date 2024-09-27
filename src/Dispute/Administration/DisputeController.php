@@ -31,7 +31,7 @@ class DisputeController extends AbstractController
      * @internal
      */
     public function __construct(
-        private readonly DisputeResource $disputeResource
+        private readonly DisputeResource $disputeResource,
     ) {
     }
 

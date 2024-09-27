@@ -22,14 +22,14 @@ class PayPalClientFactoryMock implements PayPalClientFactoryInterface
     private ?PayPalClientMock $client = null;
 
     public function __construct(
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 
     public function getPayPalClient(
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC,
-        bool $isFirstParty = false
+        bool $isFirstParty = false,
     ): PayPalClientInterface {
         if ($this->client === null) {
             $this->client = new PayPalClientMock($this->logger);

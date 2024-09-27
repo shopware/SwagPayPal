@@ -42,7 +42,7 @@ class ProductCountService
         ProductResource $productResource,
         ProductSelection $productSelection,
         SalesChannelRepository $productRepository,
-        EntityRepository $salesChannelRepository
+        EntityRepository $salesChannelRepository,
     ) {
         $this->productResource = $productResource;
         $this->productSelection = $productSelection;

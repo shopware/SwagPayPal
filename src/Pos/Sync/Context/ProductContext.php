@@ -45,7 +45,7 @@ class ProductContext
         SalesChannelEntity $salesChannel,
         PosSalesChannelProductCollection $posProductCollection,
         PosSalesChannelMediaCollection $posMediaCollection,
-        Context $context
+        Context $context,
     ) {
         $this->salesChannel = $salesChannel;
         $this->posProductCollection = $posProductCollection;

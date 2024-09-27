@@ -60,7 +60,7 @@ class PaymentMethodDataRegistry
     public function __construct(
         EntityRepository $paymentMethodRepository,
         ContainerInterface $container,
-        ?iterable $paymentMethods = null
+        ?iterable $paymentMethods = null,
     ) {
         $this->paymentMethodRepository = $paymentMethodRepository;
         $this->container = $container;

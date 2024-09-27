@@ -28,7 +28,7 @@ class PUICustomerDataService
      */
     public function __construct(
         EntityRepository $orderAddressRepository,
-        EntityRepository $customerRepository
+        EntityRepository $customerRepository,
     ) {
         $this->orderAddressRepository = $orderAddressRepository;
         $this->customerRepository = $customerRepository;

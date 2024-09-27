@@ -35,7 +35,7 @@ class AmountProvider
         CalculatedPrice $shippingCosts,
         CurrencyEntity $currency,
         PurchaseUnit $purchaseUnit,
-        bool $isNet
+        bool $isNet,
     ): Amount {
         $currencyCode = $currency->getIsoCode();
 
@@ -67,7 +67,7 @@ class AmountProvider
         string $currencyCode,
         CalculatedPrice $shippingCosts,
         bool $isNet,
-        float $amountValue
+        float $amountValue,
     ): Breakdown {
         $accumulatedAmountValue = 0.0;
         $accumulatedTaxValue = 0.0;
