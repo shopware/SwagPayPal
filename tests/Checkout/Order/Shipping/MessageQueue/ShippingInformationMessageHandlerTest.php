@@ -148,6 +148,14 @@ class ShippingInformationMessageHandlerTest extends TestCase
             true,
         ];
 
+        yield 'complete, with empty string tracking code' => [
+            self::createOrderDelivery(self::createOrder(hasLineItems: false), trackingCodes: ['']),
+            self::createPayPalOrder(),
+            [],
+            [],
+            true,
+        ];
+
         yield 'complete, missing shipping method' => [
             self::createOrderDelivery(self::createOrder(), hasShippingMethod: false),
             self::createPayPalOrder(),
