@@ -149,10 +149,10 @@ class ShippingInformationMessageHandler
      */
     private function trimTrackers(array $trackers): array
     {
-        return \array_map(
+        return \array_filter(\array_map(
             fn (string $tracker) => \mb_substr($tracker, 0, Tracker::MAX_LENGTH_TRACKING_NUMBER),
             $trackers
-        );
+        ));
     }
 
     private function createTracker(string $trackingCode, string $captureId, string $carrier, string $carrierOtherName, ItemCollection $items): Tracker
