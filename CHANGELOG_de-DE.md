@@ -3,6 +3,7 @@
 - PPI-957 - Fügt Schnell-Links zum Kontext-Menü der Erweiterung und der PayPal Einstellungen hinzu
 - PPI-991 - Behebt ein Problem, bei dem Trustly fälschlicherweise zur Auswahl stand
 - PPI-995 - Behebt ein Problem, bei dem der Zettle-Einrichtungsassistent nicht korrekt beendet werden konnte
+- PPI-996 - Behebt ein Problem, bei dem PayPal-Buttons mit bestimmten Themes während des Checkouts verschwinden konnten
 
 # 9.6.0
 - PPI-922 - Verbessert die Sichtbarkeit von Apple Pay für nicht unterstützte Browser und Geräte
