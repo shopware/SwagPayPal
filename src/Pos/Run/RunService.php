@@ -39,7 +39,7 @@ class RunService
         EntityRepository $runRepository,
         EntityRepository $logRepository,
         Connection $connection,
-        Logger $logger
+        Logger $logger,
     ) {
         $this->runRepository = $runRepository;
         $this->logRepository = $logRepository;

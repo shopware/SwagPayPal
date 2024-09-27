@@ -21,7 +21,7 @@ class MultibancoOrderBuilder extends AbstractAPMOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $sourceElement = new Multibanco();
         $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);

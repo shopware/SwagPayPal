@@ -19,7 +19,7 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 class PayPalClientMock extends PayPalClient
 {
     public function __construct(
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         parent::__construct([], 'baseUrl', $logger, PartnerAttributionId::PAYPAL_CLASSIC);
         $this->client = new GuzzleClientMock([]);

@@ -40,7 +40,7 @@ class ImageSyncHandler extends AbstractSyncHandler
         MessageDispatcher $messageBus,
         MessageHydrator $messageHydrator,
         EntityRepository $posMediaRepository,
-        ImageSyncer $imageSyncer
+        ImageSyncer $imageSyncer,
     ) {
         parent::__construct($runService, $logger, $messageBus, $messageHydrator);
         $this->posMediaRepository = $posMediaRepository;

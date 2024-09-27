@@ -18,7 +18,7 @@ class PosApiException extends PosException
 
     public function __construct(
         PosApiError $apiError,
-        int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR
+        int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
     ) {
         $this->apiError = $apiError;
         parent::__construct($apiError->getDeveloperMessage(), $apiError->getViolationsAsString(), $statusCode);

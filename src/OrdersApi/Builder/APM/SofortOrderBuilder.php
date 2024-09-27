@@ -24,7 +24,7 @@ class SofortOrderBuilder extends AbstractAPMOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $sourceElement = new Sofort();
         $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);

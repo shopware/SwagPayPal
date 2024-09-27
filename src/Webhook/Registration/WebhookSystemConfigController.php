@@ -32,7 +32,7 @@ class WebhookSystemConfigController extends SystemConfigController
         ConfigurationService $configurationService,
         SystemConfigService $systemConfig,
         WebhookSystemConfigHelper $webhookSystemConfigHelper,
-        SystemConfigValidator $systemConfigValidator
+        SystemConfigValidator $systemConfigValidator,
     ) {
         parent::__construct($configurationService, $systemConfig, $systemConfigValidator);
         $this->webhookSystemConfigHelper = $webhookSystemConfigHelper;

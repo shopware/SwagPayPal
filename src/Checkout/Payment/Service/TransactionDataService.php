@@ -32,7 +32,7 @@ class TransactionDataService
         string $orderTransactionId,
         string $paypalOrderId,
         string $partnerAttributionId,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): void {
         $data = [
             'id' => $orderTransactionId,

@@ -29,7 +29,7 @@ class PosLogCleanupCommand extends AbstractPosCommand
      */
     public function __construct(
         EntityRepository $salesChannelRepository,
-        LogCleaner $logCleaner
+        LogCleaner $logCleaner,
     ) {
         parent::__construct($salesChannelRepository);
         $this->logCleaner = $logCleaner;

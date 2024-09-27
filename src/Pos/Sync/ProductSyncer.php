@@ -43,7 +43,7 @@ class ProductSyncer
         NewUpdater $newUpdater,
         OutdatedUpdater $outdatedUpdater,
         DeletedUpdater $deletedUpdater,
-        UnsyncedChecker $unsyncedChecker
+        UnsyncedChecker $unsyncedChecker,
     ) {
         $this->productConverter = $productConverter;
         $this->productContextFactory = $productContextFactory;
@@ -59,7 +59,7 @@ class ProductSyncer
     public function sync(
         EntityCollection $entityCollection,
         SalesChannelEntity $salesChannel,
-        Context $context
+        Context $context,
     ): void {
         $productContext = $this->productContextFactory->getContext($salesChannel, $context, $entityCollection);
         $currency = $productContext->getPosSalesChannel()->isSyncPrices() ? $salesChannel->getCurrency() : null;
@@ -79,7 +79,7 @@ class ProductSyncer
     public function cleanUp(
         array $productIds,
         SalesChannelEntity $salesChannel,
-        Context $context
+        Context $context,
     ): void {
         $productContext = $this->productContextFactory->getContext($salesChannel, $context);
 

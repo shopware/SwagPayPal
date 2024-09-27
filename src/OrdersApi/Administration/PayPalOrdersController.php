@@ -51,7 +51,7 @@ class PayPalOrdersController extends AbstractController
         private readonly RefundResource $refundResource,
         private readonly EntityRepository $orderTransactionRepository,
         private readonly PaymentStatusUtilV2 $paymentStatusUtil,
-        private readonly CaptureRefundCreator $captureRefundCreator
+        private readonly CaptureRefundCreator $captureRefundCreator,
     ) {
     }
 
@@ -273,7 +273,7 @@ class PayPalOrdersController extends AbstractController
         string $captureId,
         string $paypalOrderId,
         Context $context,
-        Request $request
+        Request $request,
     ): JsonResponse {
         $refund = $this->captureRefundCreator->createRefund($request);
         $salesChannelId = $this->getSalesChannelId($orderTransactionId, $context);
@@ -335,7 +335,7 @@ class PayPalOrdersController extends AbstractController
         string $orderTransactionId,
         string $authorizationId,
         Context $context,
-        Request $request
+        Request $request,
     ): JsonResponse {
         $capture = $this->captureRefundCreator->createCapture($request);
 
@@ -388,7 +388,7 @@ class PayPalOrdersController extends AbstractController
         string $orderTransactionId,
         string $authorizationId,
         Context $context,
-        Request $request
+        Request $request,
     ): Response {
         $this->authorizationResource->void(
             $authorizationId,

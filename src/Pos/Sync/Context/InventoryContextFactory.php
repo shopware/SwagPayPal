@@ -36,7 +36,7 @@ class InventoryContextFactory
     public function __construct(
         InventoryResource $inventoryResource,
         UuidConverter $uuidConverter,
-        EntityRepository $inventoryRepository
+        EntityRepository $inventoryRepository,
     ) {
         $this->inventoryResource = $inventoryResource;
         $this->uuidConverter = $uuidConverter;

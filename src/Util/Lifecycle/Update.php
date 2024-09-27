@@ -22,7 +22,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
-use Swag\PayPal\Pos\Payment\PosPayment;
 use Swag\PayPal\Pos\Setting\Exception\CustomerGroupNotFoundException;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;

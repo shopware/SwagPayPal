@@ -27,7 +27,7 @@ class CheckoutSubscriber implements EventSubscriberInterface
 
     public function __construct(
         PaymentMethodDataRegistry $methodDataRegistry,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->methodDataRegistry = $methodDataRegistry;
         $this->logger = $logger;

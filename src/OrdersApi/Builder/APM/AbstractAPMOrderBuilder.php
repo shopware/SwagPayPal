@@ -40,7 +40,7 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
     protected function fillPaymentSource(
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
-        AbstractAPMPaymentSource $paymentSource
+        AbstractAPMPaymentSource $paymentSource,
     ): void {
         $address = $paymentTransaction->getOrder()->getBillingAddress();
         if ($address === null) {

@@ -43,7 +43,7 @@ class VenmoOrderBuilder extends AbstractOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $venmo = new Venmo();
         $paymentSource->setVenmo($venmo);

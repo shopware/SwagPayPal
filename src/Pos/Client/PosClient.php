@@ -28,7 +28,7 @@ class PosClient extends AbstractClient
         string $baseUri,
         TokenResource $tokenResource,
         OAuthCredentials $credentials,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->tokenResource = $tokenResource;
 

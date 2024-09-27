@@ -56,7 +56,7 @@ class SyncManagerHandler
         LoggerInterface $logger,
         ImageSyncManager $imageSyncManager,
         InventorySyncManager $inventorySyncManager,
-        ProductSyncManager $productSyncManager
+        ProductSyncManager $productSyncManager,
     ) {
         $this->messageBus = $messageBus;
         $this->runService = $runService;

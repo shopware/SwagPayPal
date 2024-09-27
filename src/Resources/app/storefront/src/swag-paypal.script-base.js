@@ -142,6 +142,10 @@ export default class SwagPayPalScriptBase extends Plugin {
 
         SwagPayPalScriptBase.paypal[this.scriptOptionsHash] = window.paypal;
 
+        // overwriting an existing `window.paypal` object would remove previously rendered elements
+        // therefore we remove it so other scripts can load it on their own
+        delete window.paypal;
+
         return SwagPayPalScriptBase.paypal[this.scriptOptionsHash];
     }
 

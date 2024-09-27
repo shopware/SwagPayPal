@@ -31,7 +31,7 @@ abstract class AbstractClient
 
     public function __construct(
         ClientInterface $client,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->client = $client;
         $this->logger = $logger;

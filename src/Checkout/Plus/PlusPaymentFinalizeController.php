@@ -53,7 +53,7 @@ class PlusPaymentFinalizeController extends AbstractController
         AsynchronousPaymentHandlerInterface $paymentHandler,
         OrderTransactionStateHandler $transactionStateHandler,
         RouterInterface $router,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->orderTransactionRepo = $orderTransactionRepo;
         $this->paymentHandler = $paymentHandler;
@@ -141,7 +141,7 @@ class PlusPaymentFinalizeController extends AbstractController
     private function redirectToConfirmPageWorkflow(
         PaymentException $paymentException,
         Context $context,
-        string $orderId
+        string $orderId,
     ): string {
         $transactionId = $paymentException->getParameter('orderTransactionId');
 

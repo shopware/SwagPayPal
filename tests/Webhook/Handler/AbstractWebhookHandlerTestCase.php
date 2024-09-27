@@ -61,7 +61,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
     protected function assertInvoke(
         string $expectedStateName,
         Webhook $webhook,
-        string $initialStateName = OrderTransactionStates::STATE_OPEN
+        string $initialStateName = OrderTransactionStates::STATE_OPEN,
     ): void {
         $context = Context::createDefaultContext();
         $container = $this->getContainer();

@@ -40,7 +40,7 @@ abstract class AbstractPaymentBuilder
         PriceFormatter $priceFormatter,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
     ) {
         $this->localeCodeProvider = $localeCodeProvider;
         $this->priceFormatter = $priceFormatter;

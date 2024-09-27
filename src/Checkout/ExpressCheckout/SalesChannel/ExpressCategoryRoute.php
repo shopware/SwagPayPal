@@ -35,7 +35,7 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
         private readonly ExpressCheckoutDataServiceInterface $expressCheckoutDataService,
         private readonly SettingsValidationServiceInterface $settingsValidationService,
         private readonly SystemConfigService $systemConfigService,
-        private readonly PaymentMethodUtil $paymentMethodUtil
+        private readonly PaymentMethodUtil $paymentMethodUtil,
     ) {
     }
 

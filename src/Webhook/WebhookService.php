@@ -50,7 +50,7 @@ class WebhookService implements WebhookServiceInterface
         WebhookResource $webhookResource,
         WebhookRegistry $webhookRegistry,
         SystemConfigService $systemConfigService,
-        RouterInterface $router
+        RouterInterface $router,
     ) {
         $this->webhookResource = $webhookResource;
         $this->webhookRegistry = $webhookRegistry;
@@ -166,7 +166,7 @@ class WebhookService implements WebhookServiceInterface
     private function createWebhook(
         ?string $salesChannelId,
         string $webhookUrl,
-        string $webhookExecuteToken
+        string $webhookExecuteToken,
     ): string {
         $requestData = [
             'url' => $webhookUrl,

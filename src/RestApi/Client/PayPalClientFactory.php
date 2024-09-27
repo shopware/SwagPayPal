@@ -29,7 +29,7 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
         private readonly TokenResourceInterface $tokenResource,
         private readonly CredentialsUtilInterface $credentialsUtil,
         private readonly CredentialProviderInterface $credentialProvider,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 

@@ -17,7 +17,7 @@ class CredentialsClient extends AbstractClient
 {
     public function __construct(
         string $url,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $client = new Client(['base_uri' => $url]);
 

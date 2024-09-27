@@ -35,7 +35,7 @@ class CloneVisibilityHandler extends AbstractSyncHandler
         LoggerInterface $logger,
         MessageDispatcher $messageBus,
         MessageHydrator $messageHydrator,
-        EntityRepository $productVisibilityRepository
+        EntityRepository $productVisibilityRepository,
     ) {
         parent::__construct($runService, $logger, $messageBus, $messageHydrator);
         $this->productVisibilityRepository = $productVisibilityRepository;

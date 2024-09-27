@@ -22,7 +22,7 @@ class WebhookException extends ShopwareHttpException
     public function __construct(
         string $eventName,
         string $message,
-        array $parameters = []
+        array $parameters = [],
     ) {
         $this->eventName = $eventName;
         parent::__construct($message, $parameters);

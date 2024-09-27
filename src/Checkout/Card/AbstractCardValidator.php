@@ -20,7 +20,7 @@ abstract class AbstractCardValidator implements CardValidatorInterface
      * @internal
      */
     public function __construct(
-        private readonly SystemConfigService $systemConfigService
+        private readonly SystemConfigService $systemConfigService,
     ) {
     }
 

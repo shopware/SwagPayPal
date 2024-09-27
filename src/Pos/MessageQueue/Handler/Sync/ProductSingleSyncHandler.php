@@ -47,7 +47,7 @@ class ProductSingleSyncHandler extends AbstractSyncHandler
         MessageHydrator $messageHydrator,
         ProductSelection $productSelection,
         SalesChannelRepository $productRepository,
-        ProductSyncer $productSyncer
+        ProductSyncer $productSyncer,
     ) {
         parent::__construct($runService, $logger, $messageBus, $messageHydrator);
         $this->productSelection = $productSelection;

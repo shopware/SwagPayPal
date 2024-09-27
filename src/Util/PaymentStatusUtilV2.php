@@ -35,7 +35,7 @@ class PaymentStatusUtilV2
     public function __construct(
         EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,
-        PriceFormatter $priceFormatter
+        PriceFormatter $priceFormatter,
     ) {
         $this->orderTransactionRepository = $orderTransactionRepository;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
@@ -138,7 +138,7 @@ class PaymentStatusUtilV2
     private function setPartiallyRefundedState(
         ?StateMachineStateEntity $stateMachineState,
         string $transactionId,
-        Context $context
+        Context $context,
     ): void {
         if ($stateMachineState === null) {
             throw PaymentException::invalidTransaction($transactionId);
@@ -153,7 +153,7 @@ class PaymentStatusUtilV2
     private function reopenTransaction(
         StateMachineStateEntity $stateMachineState,
         string $transactionId,
-        Context $context
+        Context $context,
     ): void {
         $refundStates = [OrderTransactionStates::STATE_PARTIALLY_REFUNDED, OrderTransactionStates::STATE_REFUNDED];
         if (\in_array($stateMachineState->getTechnicalName(), $refundStates, true)) {

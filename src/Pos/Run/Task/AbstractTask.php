@@ -26,7 +26,7 @@ abstract class AbstractTask
      */
     public function __construct(
         MessageDispatcher $messageBus,
-        RunService $runService
+        RunService $runService,
     ) {
         $this->messageBus = $messageBus;
         $this->runService = $runService;

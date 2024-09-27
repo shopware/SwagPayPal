@@ -26,7 +26,7 @@ class TokenResource implements TokenResourceInterface
         private readonly CacheItemPoolInterface $cache,
         private readonly TokenClientFactoryInterface $tokenClientFactory,
         private readonly CredentialProviderInterface $credentialProvider,
-        private readonly TokenValidator $tokenValidator
+        private readonly TokenValidator $tokenValidator,
     ) {
     }
 

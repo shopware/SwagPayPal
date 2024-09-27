@@ -34,7 +34,7 @@ class PUIInstructionsFetchService
         private readonly EntityRepository $orderTransactionRepository,
         private readonly OrderResource $orderResource,
         private readonly OrderTransactionStateHandler $orderTransactionStateHandler,
-        private readonly TransactionDataService $transactionDataService
+        private readonly TransactionDataService $transactionDataService,
     ) {
     }
 

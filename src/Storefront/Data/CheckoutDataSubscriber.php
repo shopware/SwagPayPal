@@ -37,7 +37,7 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
         private readonly SettingsValidationServiceInterface $settingsValidationService,
         private readonly RequestStack $requestStack,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private ?iterable $apmCheckoutMethods = null
+        private ?iterable $apmCheckoutMethods = null,
     ) {
         if ($this->apmCheckoutMethods !== null) {
             if (!\is_array($this->apmCheckoutMethods)) {

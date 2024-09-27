@@ -30,7 +30,7 @@ class UnsyncedChecker
     public function __construct(
         ProductResource $productResource,
         LoggerInterface $logger,
-        UuidConverter $uuidConverter
+        UuidConverter $uuidConverter,
     ) {
         $this->productResource = $productResource;
         $this->logger = $logger;

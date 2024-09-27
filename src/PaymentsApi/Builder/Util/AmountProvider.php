@@ -29,7 +29,7 @@ class AmountProvider
     public function createAmount(
         CalculatedPrice $transactionAmount,
         float $shippingCostsTotal,
-        string $currencyCode
+        string $currencyCode,
     ): Amount {
         $amount = new Amount();
         $amount->setTotal($this->priceFormatter->formatPrice($transactionAmount->getTotalPrice(), $currencyCode));

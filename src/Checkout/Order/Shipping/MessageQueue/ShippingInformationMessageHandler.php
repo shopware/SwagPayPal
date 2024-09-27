@@ -33,7 +33,7 @@ class ShippingInformationMessageHandler
     public function __construct(
         private readonly EntityRepository $orderDeliveryRepository,
         private readonly OrderResource $orderResource,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 

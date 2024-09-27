@@ -22,7 +22,7 @@ class BlikOrderBuilder extends AbstractAPMOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $sourceElement = new Blik();
         $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);

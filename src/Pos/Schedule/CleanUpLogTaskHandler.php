@@ -26,7 +26,7 @@ class CleanUpLogTaskHandler extends AbstractSyncTaskHandler
     public function __construct(
         EntityRepository $scheduledTaskRepository,
         EntityRepository $salesChannelRepository,
-        LogCleaner $logCleaner
+        LogCleaner $logCleaner,
     ) {
         parent::__construct($scheduledTaskRepository, $salesChannelRepository);
         $this->logCleaner = $logCleaner;

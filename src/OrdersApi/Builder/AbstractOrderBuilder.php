@@ -56,7 +56,7 @@ abstract class AbstractOrderBuilder
     public function getOrder(
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag
+        RequestDataBag $requestDataBag,
     ): Order {
         $purchaseUnit = $this->createPurchaseUnitFromOrder(
             $salesChannelContext,
@@ -77,7 +77,7 @@ abstract class AbstractOrderBuilder
     public function getOrderFromCart(
         Cart $cart,
         SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag
+        RequestDataBag $requestDataBag,
     ): Order {
         $purchaseUnit = $this->createPurchaseUnitFromCart($salesChannelContext, $cart);
 
@@ -108,7 +108,7 @@ abstract class AbstractOrderBuilder
     protected function createPurchaseUnitFromOrder(
         SalesChannelContext $salesChannelContext,
         OrderEntity $order,
-        OrderTransactionEntity $orderTransaction
+        OrderTransactionEntity $orderTransaction,
     ): PurchaseUnit {
         $items = $this->submitCart($salesChannelContext) ? $this->itemListProvider->getItemList($salesChannelContext->getCurrency(), $order) : null;
 
@@ -188,7 +188,7 @@ abstract class AbstractOrderBuilder
      * @deprecated tag:v10.0.0 - will be removed, use experience context instead
      */
     protected function createApplicationContext(
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): ApplicationContext {
         $applicationContext = new ApplicationContext();
         $applicationContext->setBrandName($this->getBrandName($salesChannelContext));

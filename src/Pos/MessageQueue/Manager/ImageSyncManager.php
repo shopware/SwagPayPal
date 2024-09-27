@@ -38,7 +38,7 @@ class ImageSyncManager extends AbstractSyncManager
     public function __construct(
         MessageDispatcher $messageBus,
         EntityRepository $posMediaRepository,
-        ImageSyncer $imageSyncer
+        ImageSyncer $imageSyncer,
     ) {
         parent::__construct($messageBus);
         $this->posMediaRepository = $posMediaRepository;

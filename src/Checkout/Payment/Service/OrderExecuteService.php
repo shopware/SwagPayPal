@@ -39,7 +39,7 @@ class OrderExecuteService
         OrderResource $orderResource,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         OrderNumberPatchBuilder $orderNumberPatchBuilder,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->orderResource = $orderResource;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
@@ -55,7 +55,7 @@ class OrderExecuteService
         PayPalOrder $paypalOrder,
         string $salesChannelId,
         Context $context,
-        string $partnerAttributionId
+        string $partnerAttributionId,
     ): PayPalOrder {
         $this->logger->debug('Started');
 

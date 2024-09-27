@@ -59,7 +59,7 @@ trait CartTrait
 
     protected function createLineItem(
         ?CalculatedPrice $lineItemPrice,
-        string $lineItemType = LineItem::PRODUCT_LINE_ITEM_TYPE
+        string $lineItemType = LineItem::PRODUCT_LINE_ITEM_TYPE,
     ): LineItem {
         $lineItem = new LineItem(Uuid::randomHex(), $lineItemType);
         $lineItem->setLabel('Test product');

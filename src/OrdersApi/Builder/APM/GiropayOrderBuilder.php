@@ -24,7 +24,7 @@ class GiropayOrderBuilder extends AbstractAPMOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $sourceElement = new Giropay();
         $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);

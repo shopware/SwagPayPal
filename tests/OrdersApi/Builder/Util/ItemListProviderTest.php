@@ -236,7 +236,7 @@ class ItemListProviderTest extends TestCase
         float $productPrice,
         ?string $productNumber = null,
         ?bool $withTaxes = false,
-        int $quantity = 1
+        int $quantity = 1,
     ): OrderLineItemEntity {
         $lineItem = new OrderLineItemEntity();
         $lineItem->setId(Uuid::randomHex());
@@ -263,7 +263,7 @@ class ItemListProviderTest extends TestCase
         float $productPrice,
         ?string $productNumber = null,
         ?bool $withTaxes = false,
-        int $quantity = 1
+        int $quantity = 1,
     ): LineItem {
         $id = Uuid::randomHex();
         $lineItem = new LineItem($id, LineItem::PRODUCT_LINE_ITEM_TYPE, $id, $quantity);

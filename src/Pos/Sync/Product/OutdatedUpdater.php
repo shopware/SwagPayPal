@@ -27,7 +27,7 @@ class OutdatedUpdater
      */
     public function __construct(
         ProductResource $productResource,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->productResource = $productResource;
         $this->logger = $logger;

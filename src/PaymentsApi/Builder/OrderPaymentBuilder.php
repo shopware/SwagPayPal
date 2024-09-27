@@ -48,7 +48,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        EntityRepository $currencyRepository
+        EntityRepository $currencyRepository,
     ) {
         parent::__construct($localeCodeProvider, $priceFormatter, $eventDispatcher, $logger, $systemConfigService);
         $this->currencyRepository = $currencyRepository;
@@ -59,7 +59,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
      */
     public function getPayment(
         AsyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): Payment {
         $payer = $this->createPayer();
         $redirectUrls = $this->createRedirectUrls($paymentTransaction->getReturnUrl());
@@ -77,7 +77,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
     private function createTransaction(
         AsyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): Transaction {
         $orderTransaction = $paymentTransaction->getOrderTransaction();
         $order = $paymentTransaction->getOrder();

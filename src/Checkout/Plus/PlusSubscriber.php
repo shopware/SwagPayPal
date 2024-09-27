@@ -56,7 +56,7 @@ class PlusSubscriber implements EventSubscriberInterface
         PlusDataService $plusDataService,
         PaymentMethodUtil $paymentMethodUtil,
         TranslatorInterface $translator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->systemConfigService = $systemConfigService;
@@ -185,7 +185,7 @@ class PlusSubscriber implements EventSubscriberInterface
     private function addPlusExtension(
         ?PlusData $plusData,
         Page $page,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): void {
         if ($plusData === null) {
             return;

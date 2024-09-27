@@ -36,7 +36,7 @@ abstract class AbstractSyncHandler
         RunService $runService,
         LoggerInterface $logger,
         MessageDispatcher $messageBus,
-        MessageHydrator $messageHydrator
+        MessageHydrator $messageHydrator,
     ) {
         $this->runService = $runService;
         $this->logger = $logger;

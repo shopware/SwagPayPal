@@ -56,7 +56,7 @@ class WebhookService
         EntityRepository $salesChannelRepository,
         SystemConfigService $systemConfig,
         UuidConverter $uuidConverter,
-        RouterInterface $router
+        RouterInterface $router,
     ) {
         $this->subscriptionResource = $subscriptionResource;
         $this->webhookRegistry = $webhookRegistry;

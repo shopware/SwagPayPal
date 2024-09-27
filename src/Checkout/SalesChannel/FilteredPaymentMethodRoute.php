@@ -62,7 +62,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         ExcludedProductValidator $excludedProductValidator,
         RequestStack $requestStack,
         AvailabilityService $availabilityService,
-        EntityRepository $orderRepository
+        EntityRepository $orderRepository,
     ) {
         $this->decorated = $decorated;
         $this->methodDataRegistry = $methodDataRegistry;

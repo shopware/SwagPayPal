@@ -255,7 +255,7 @@ Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must n
     private function createCaptureRefundRequest(
         float $amount = self::AMOUNT,
         string $invoiceNumber = self::INVOICE_NUMBER,
-        string $noteToPayer = self::NOTE_TO_PAYER
+        string $noteToPayer = self::NOTE_TO_PAYER,
     ): Request {
         return new Request([], [
             PayPalOrdersController::REQUEST_PARAMETER_AMOUNT => $amount,

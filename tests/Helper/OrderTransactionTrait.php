@@ -49,7 +49,7 @@ trait OrderTransactionTrait
     public function getTransactionId(
         Context $context,
         ContainerInterface $container,
-        string $transactionStateTechnicalName = OrderTransactionStates::STATE_OPEN
+        string $transactionStateTechnicalName = OrderTransactionStates::STATE_OPEN,
     ): string {
         $stateId = $this->getOrderTransactionStateIdByTechnicalName($transactionStateTechnicalName, $container, $context);
         if (!$stateId) {
@@ -72,7 +72,7 @@ trait OrderTransactionTrait
     public function getTransaction(
         string $transactionId,
         ContainerInterface $container,
-        Context $context
+        Context $context,
     ): ?OrderTransactionEntity {
         /** @var EntityRepository $orderTransactionRepo */
         $orderTransactionRepo = $container->get(OrderTransactionDefinition::ENTITY_NAME . '.repository');
@@ -104,7 +104,7 @@ trait OrderTransactionTrait
         string $stateId,
         ContainerInterface $container,
         Context $context,
-        bool $withCustomField = false
+        bool $withCustomField = false,
     ): string {
         /** @var EntityRepository $orderRepo */
         $orderRepo = $container->get('order.repository');

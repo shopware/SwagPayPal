@@ -497,7 +497,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     private function assertExpressCheckoutButtonData(
         ExpressCheckoutButtonData $expectedExpressCheckoutButtonData,
-        ?ExpressCheckoutButtonData $actualExpressCheckoutButtonData
+        ?ExpressCheckoutButtonData $actualExpressCheckoutButtonData,
     ): void {
         static::assertNotNull($actualExpressCheckoutButtonData);
         static::assertSame($expectedExpressCheckoutButtonData->getProductDetailEnabled(), $actualExpressCheckoutButtonData->getProductDetailEnabled());
@@ -703,7 +703,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     private function createCheckoutConfirmPageLoadedEvent(
         bool $isExpressCheckout = true,
-        bool $paymentMethodActive = true
+        bool $paymentMethodActive = true,
     ): CheckoutConfirmPageLoadedEvent {
         $salesChannelContext = $this->createSalesChannelContext(null, $paymentMethodActive);
 

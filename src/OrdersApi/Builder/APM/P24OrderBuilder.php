@@ -22,7 +22,7 @@ class P24OrderBuilder extends AbstractAPMOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $sourceElement = new P24();
         $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);

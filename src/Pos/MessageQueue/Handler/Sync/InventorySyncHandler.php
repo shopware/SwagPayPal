@@ -44,7 +44,7 @@ class InventorySyncHandler extends AbstractSyncHandler
         MessageHydrator $messageHydrator,
         EntityRepository $productRepository,
         InventoryContextFactory $inventoryContextFactory,
-        InventorySyncer $inventorySyncer
+        InventorySyncer $inventorySyncer,
     ) {
         parent::__construct($runService, $logger, $messageBus, $messageHydrator);
         $this->productRepository = $productRepository;

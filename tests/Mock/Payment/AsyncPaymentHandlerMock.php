@@ -28,7 +28,7 @@ class AsyncPaymentHandlerMock implements AsynchronousPaymentHandlerInterface
     public function pay(
         AsyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): RedirectResponse {
         return new RedirectResponse('');
     }
@@ -36,7 +36,7 @@ class AsyncPaymentHandlerMock implements AsynchronousPaymentHandlerInterface
     public function finalize(
         AsyncPaymentTransactionStruct $transaction,
         Request $request,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): void {
         $transactionId = $transaction->getOrderTransaction()->getId();
         if ($request->query->getBoolean(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL)) {

@@ -31,7 +31,7 @@ class PUIOrderBuilder extends AbstractAPMOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $orderCustomer = $paymentTransaction->getOrder()->getOrderCustomer();
         if ($orderCustomer === null) {

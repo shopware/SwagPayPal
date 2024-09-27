@@ -37,7 +37,7 @@ class WebhookController extends AbstractController
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly WebhookServiceInterface $webhookService,
-        private readonly EntityRepository $systemConfigRepository
+        private readonly EntityRepository $systemConfigRepository,
     ) {
     }
 

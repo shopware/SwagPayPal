@@ -41,7 +41,7 @@ class PUISubscriber implements EventSubscriberInterface
         SettingsValidationServiceInterface $settingsValidationService,
         PUIFraudNetDataService $puiFraudNetDataService,
         PUIPaymentInstructionDataService $puiPaymentInstructionDataService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->puiFraudNetDataService = $puiFraudNetDataService;

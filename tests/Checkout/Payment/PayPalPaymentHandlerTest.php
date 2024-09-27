@@ -639,7 +639,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
 
     private function createPayPalPaymentHandler(
         array $settings = [],
-        ?EntityRepository $orderTransactionRepository = null
+        ?EntityRepository $orderTransactionRepository = null,
     ): PayPalPaymentHandler {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
@@ -713,7 +713,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
 
     private function assertFinalizeRequest(
         Request $request,
-        string $state = OrderTransactionStates::STATE_PAID
+        string $state = OrderTransactionStates::STATE_PAID,
     ): string {
         $settings = $this->getDefaultConfigData();
         $handler = $this->createPayPalPaymentHandler($settings);

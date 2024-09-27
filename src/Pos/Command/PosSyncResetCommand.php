@@ -29,7 +29,7 @@ class PosSyncResetCommand extends AbstractPosCommand
      */
     public function __construct(
         EntityRepository $salesChannelRepository,
-        SyncResetter $resetSyncService
+        SyncResetter $resetSyncService,
     ) {
         parent::__construct($salesChannelRepository);
         $this->resetSyncService = $resetSyncService;
