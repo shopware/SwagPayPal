@@ -33,7 +33,7 @@ class ExcludedProductValidator
      */
     public function __construct(
         SystemConfigService $systemConfigService,
-        SalesChannelRepository $productRepository
+        SalesChannelRepository $productRepository,
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->productRepository = $productRepository;

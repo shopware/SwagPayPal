@@ -37,7 +37,7 @@ class GooglePayHandler extends AbstractSyncAPMHandler
         LoggerInterface $logger,
         OrderResource $orderResource,
         VaultTokenService $vaultTokenService,
-        private readonly CardValidatorInterface $googlePayValidator
+        private readonly CardValidatorInterface $googlePayValidator,
     ) {
         parent::__construct($settingsValidationService, $orderTransactionStateHandler, $orderExecuteService, $orderPatchService, $transactionDataService, $logger, $orderResource, $vaultTokenService);
     }

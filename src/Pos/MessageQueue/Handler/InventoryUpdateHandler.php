@@ -40,7 +40,7 @@ class InventoryUpdateHandler
         RunService $runService,
         EntityRepository $salesChannelRepository,
         InventorySyncManager $inventorySyncManager,
-        MessageDispatcher $messageBus
+        MessageDispatcher $messageBus,
     ) {
         $this->runService = $runService;
         $this->salesChannelRepository = $salesChannelRepository;

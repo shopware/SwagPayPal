@@ -27,7 +27,7 @@ class PUIFraudNetDataService
      */
     public function __construct(
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
-        CredentialsUtilInterface $credentialsUtil
+        CredentialsUtilInterface $credentialsUtil,
     ) {
         $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
         $this->credentialsUtil = $credentialsUtil;

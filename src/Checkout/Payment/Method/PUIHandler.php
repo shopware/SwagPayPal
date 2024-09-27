@@ -72,7 +72,7 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
         PUICustomerDataService $puiCustomerDataService,
         RequestStack $requestStack,
         TranslatorInterface $translator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;

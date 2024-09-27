@@ -154,7 +154,7 @@ class ExpressCategoryRouteTest extends TestCase
 
     private function assertExpressCheckoutButtonData(
         ExpressCheckoutButtonData $expectedExpressCheckoutButtonData,
-        ?ExpressCheckoutButtonData $actualExpressCheckoutButtonData
+        ?ExpressCheckoutButtonData $actualExpressCheckoutButtonData,
     ): void {
         static::assertNotNull($actualExpressCheckoutButtonData);
         static::assertSame($expectedExpressCheckoutButtonData->getProductDetailEnabled(), $actualExpressCheckoutButtonData->getProductDetailEnabled());

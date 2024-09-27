@@ -214,7 +214,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
         string $name,
         string $id,
         ?string $parentId = null,
-        ?MediaEntity $mediaEntity = null
+        ?MediaEntity $mediaEntity = null,
     ): SalesChannelProductEntity {
         $entity = new SalesChannelProductEntity();
         $entity->setId($id);

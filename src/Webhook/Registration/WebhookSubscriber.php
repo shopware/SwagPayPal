@@ -31,7 +31,7 @@ class WebhookSubscriber implements EventSubscriberInterface
     public function __construct(
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        WebhookServiceInterface $webhookService
+        WebhookServiceInterface $webhookService,
     ) {
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;

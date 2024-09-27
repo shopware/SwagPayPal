@@ -41,7 +41,7 @@ class WebhookSystemConfigHelper
         LoggerInterface $logger,
         WebhookServiceInterface $webhookService,
         SystemConfigService $systemConfigService,
-        SettingsValidationServiceInterface $settingsValidationService
+        SettingsValidationServiceInterface $settingsValidationService,
     ) {
         $this->logger = $logger;
         $this->webhookService = $webhookService;

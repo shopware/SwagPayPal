@@ -30,7 +30,7 @@ class ImageResource
 
     public function bulkUploadPictures(
         PosSalesChannelEntity $salesChannelEntity,
-        BulkImageUpload $bulkProductImageUpload
+        BulkImageUpload $bulkProductImageUpload,
     ): ?BulkImageUploadResponse {
         $apiKey = $salesChannelEntity->getApiKey();
         $client = $this->posClientFactory->getPosClient(PosBaseURL::IMAGE, $apiKey);

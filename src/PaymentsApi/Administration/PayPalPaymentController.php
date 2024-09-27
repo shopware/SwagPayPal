@@ -59,7 +59,7 @@ class PayPalPaymentController extends AbstractController
         private readonly CaptureResource $captureResource,
         private readonly PaymentStatusUtil $paymentStatusUtil,
         private readonly EntityRepository $orderRepository,
-        private readonly PriceFormatter $priceFormatter
+        private readonly PriceFormatter $priceFormatter,
     ) {
     }
 
@@ -215,7 +215,7 @@ class PayPalPaymentController extends AbstractController
         Context $context,
         string $resourceType,
         string $resourceId,
-        string $orderId
+        string $orderId,
     ): JsonResponse {
         $refund = $this->createRefund($request);
         $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);
@@ -289,7 +289,7 @@ class PayPalPaymentController extends AbstractController
         Context $context,
         string $resourceType,
         string $resourceId,
-        string $orderId
+        string $orderId,
     ): JsonResponse {
         $capture = $this->createCapture($request);
 
@@ -357,7 +357,7 @@ class PayPalPaymentController extends AbstractController
         Context $context,
         string $resourceType,
         string $resourceId,
-        string $orderId
+        string $orderId,
     ): JsonResponse {
         switch ($resourceType) {
             case RelatedResource::AUTHORIZE:

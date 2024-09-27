@@ -45,7 +45,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
     public function buildCheckoutData(
         SalesChannelContext $context,
         ?Cart $cart = null,
-        ?OrderEntity $order = null
+        ?OrderEntity $order = null,
     ): ?SPBCheckoutButtonData {
         $salesChannelId = $context->getSalesChannelId();
         $currency = $order?->getCurrency() ?? $context->getCurrency();

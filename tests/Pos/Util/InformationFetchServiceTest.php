@@ -111,7 +111,7 @@ class InformationFetchServiceTest extends TestCase
     private function createUserResource(
         string $countryCode = self::COUNTRY_CODE,
         string $currencyCode = self::CURRENCY_CODE,
-        string $languageCode = self::LANGUAGE_CODE
+        string $languageCode = self::LANGUAGE_CODE,
     ): UserResource {
         $client = $this->createMock(PosClient::class);
         $client->expects(static::once())->method('sendGetRequest')

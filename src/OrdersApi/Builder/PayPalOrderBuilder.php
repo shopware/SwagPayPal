@@ -46,7 +46,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $paypal = new Paypal();
         $paymentSource->setPaypal($paypal);

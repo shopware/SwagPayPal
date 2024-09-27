@@ -34,7 +34,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
      */
     public function __construct(
         protected readonly EntityRepository $orderTransactionRepository,
-        protected readonly OrderTransactionStateHandler $orderTransactionStateHandler
+        protected readonly OrderTransactionStateHandler $orderTransactionStateHandler,
     ) {
     }
 

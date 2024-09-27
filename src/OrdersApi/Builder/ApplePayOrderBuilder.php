@@ -24,7 +24,7 @@ class ApplePayOrderBuilder extends AbstractOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $applePay = new ApplePay();
         $applePay->setExperienceContext($this->createExperienceContext($salesChannelContext, $paymentTransaction));

@@ -44,7 +44,7 @@ class PlusPaymentHandleController extends StorefrontController
         AbstractContextSwitchRoute $contextSwitchRoute,
         AccountOrderController $accountOrderController,
         CheckoutController $checkoutController,
-        RequestStack $requestStack
+        RequestStack $requestStack,
     ) {
         $this->contextSwitchRoute = $contextSwitchRoute;
         $this->accountOrderController = $accountOrderController;

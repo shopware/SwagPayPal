@@ -23,7 +23,7 @@ class PosClientMock extends PosClient
         string $baseUri,
         TokenResource $tokenResource,
         OAuthCredentials $credentials,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         parent::__construct($baseUri, $tokenResource, $credentials, $logger);
         $this->client = new GuzzleClientMock([

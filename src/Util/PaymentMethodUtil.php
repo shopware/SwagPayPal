@@ -44,7 +44,7 @@ class PaymentMethodUtil implements ResetInterface
      */
     public function __construct(
         Connection $connection,
-        EntityRepository $salesChannelRepository
+        EntityRepository $salesChannelRepository,
     ) {
         $this->connection = $connection;
         $this->salesChannelRepository = $salesChannelRepository;
@@ -57,7 +57,7 @@ class PaymentMethodUtil implements ResetInterface
 
     public function isPaypalPaymentMethodInSalesChannel(
         SalesChannelContext $salesChannelContext,
-        ?PaymentMethodCollection $paymentMethods = null
+        ?PaymentMethodCollection $paymentMethods = null,
     ): bool {
         $context = $salesChannelContext->getContext();
         $paypalPaymentMethodId = $this->getPayPalPaymentMethodId($context);

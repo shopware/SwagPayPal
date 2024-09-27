@@ -385,7 +385,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
 
     private static function createPayPalOrder(
         bool $hasCapture = true,
-        array $trackingCodes = []
+        array $trackingCodes = [],
     ): Order {
         $trackers = \array_map(
             static fn (string $code) => (new Order\PurchaseUnit\Shipping\Tracker())->assign([

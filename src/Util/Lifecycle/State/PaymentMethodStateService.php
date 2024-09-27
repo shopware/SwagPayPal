@@ -31,7 +31,7 @@ class PaymentMethodStateService
      */
     public function __construct(
         PaymentMethodDataRegistry $methodDataRegistry,
-        EntityRepository $paymentMethodRepository
+        EntityRepository $paymentMethodRepository,
     ) {
         $this->methodDataRegistry = $methodDataRegistry;
         $this->paymentMethodRepository = $paymentMethodRepository;

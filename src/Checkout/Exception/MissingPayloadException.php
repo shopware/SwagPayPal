@@ -16,7 +16,7 @@ class MissingPayloadException extends ShopwareHttpException
 {
     public function __construct(
         string $orderId,
-        string $path
+        string $path,
     ) {
         parent::__construct(
             'Missing request payload {{ path }} to order "{{ orderId }}" not found',

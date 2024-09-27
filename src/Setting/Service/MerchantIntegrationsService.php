@@ -30,7 +30,7 @@ class MerchantIntegrationsService
         private readonly MerchantIntegrationsResourceInterface $merchantIntegrationsResource,
         private readonly CredentialsUtilInterface $credentialsUtil,
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
-        private readonly PayPalClientFactoryInterface $payPalClientFactory
+        private readonly PayPalClientFactoryInterface $payPalClientFactory,
     ) {
     }
 

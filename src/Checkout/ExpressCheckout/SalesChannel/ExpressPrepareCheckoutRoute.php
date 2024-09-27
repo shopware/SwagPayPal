@@ -39,7 +39,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
         private readonly OrderResource $orderResource,
         private readonly CartService $cartService,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 

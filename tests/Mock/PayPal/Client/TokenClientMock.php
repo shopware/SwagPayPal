@@ -20,7 +20,7 @@ class TokenClientMock extends TokenClient
 {
     public function __construct(
         OAuthCredentials $credentials,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         parent::__construct($credentials, $logger);
         $this->client = new GuzzleClientMock([

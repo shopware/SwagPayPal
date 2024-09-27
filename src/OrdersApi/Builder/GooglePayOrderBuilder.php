@@ -24,7 +24,7 @@ class GooglePayOrderBuilder extends AbstractOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $googlePay = new GooglePay();
         $googlePay->setExperienceContext($this->createExperienceContext($salesChannelContext, $paymentTransaction));

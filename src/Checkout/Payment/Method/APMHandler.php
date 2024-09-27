@@ -55,7 +55,7 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         SettingsValidationServiceInterface $settingsValidationService,
         OrderResource $orderResource,
         LoggerInterface $logger,
-        AbstractAPMOrderBuilder $orderBuilder
+        AbstractAPMOrderBuilder $orderBuilder,
     ) {
         $this->transactionDataService = $transactionDataService;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;

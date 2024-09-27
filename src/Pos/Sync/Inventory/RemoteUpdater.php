@@ -31,7 +31,7 @@ class RemoteUpdater
     public function __construct(
         InventoryResource $inventoryResource,
         RemoteCalculator $remoteCalculator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->inventoryResource = $inventoryResource;
         $this->remoteCalculator = $remoteCalculator;

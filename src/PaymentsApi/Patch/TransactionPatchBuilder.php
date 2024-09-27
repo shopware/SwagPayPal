@@ -31,7 +31,7 @@ class TransactionPatchBuilder
      */
     public function createTransactionPatch(
         AsyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): array {
         $patches = [];
         $transaction = $this->orderPaymentBuilder->getPayment($paymentTransaction, $salesChannelContext)->getTransactions()->first();

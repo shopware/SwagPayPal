@@ -43,7 +43,7 @@ class ProductVisibilityCloneService
         MessageDispatcher $messageBus,
         EntityRepository $productVisibilityRepository,
         RunService $runService,
-        EntityRepository $salesChannelRepository
+        EntityRepository $salesChannelRepository,
     ) {
         $this->messageBus = $messageBus;
         $this->productVisibilityRepository = $productVisibilityRepository;
@@ -54,7 +54,7 @@ class ProductVisibilityCloneService
     public function cloneProductVisibility(
         string $fromSalesChannelId,
         string $toSalesChannelId,
-        Context $context
+        Context $context,
     ): void {
         $deletionCriteria = new Criteria();
         $deletionCriteria->addFilter(new EqualsFilter('salesChannelId', $toSalesChannelId));

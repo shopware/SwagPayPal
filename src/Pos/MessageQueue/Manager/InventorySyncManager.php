@@ -36,7 +36,7 @@ class InventorySyncManager extends AbstractSyncManager
         private readonly ProductSelection $productSelection,
         private readonly SalesChannelRepository $productRepository,
         private readonly InventoryContextFactory $inventoryContextFactory,
-        private readonly bool $stockManagementEnabled
+        private readonly bool $stockManagementEnabled,
     ) {
         parent::__construct($messageBus);
     }
@@ -94,7 +94,7 @@ class InventorySyncManager extends AbstractSyncManager
         SalesChannelEntity $salesChannel,
         string $runId,
         array $accumulatedIds,
-        array $parentIds
+        array $parentIds,
     ): InventorySyncMessage {
         $message = new InventorySyncMessage();
         $message->setInventoryContext($this->inventoryContextFactory->filterContext($inventoryContext, $accumulatedIds, $parentIds));

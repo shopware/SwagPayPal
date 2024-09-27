@@ -27,7 +27,7 @@ class TokenResource
      */
     public function __construct(
         CacheItemPoolInterface $cache,
-        TokenClientFactory $tokenClientFactory
+        TokenClientFactory $tokenClientFactory,
     ) {
         $this->cache = $cache;
         $this->tokenClientFactory = $tokenClientFactory;

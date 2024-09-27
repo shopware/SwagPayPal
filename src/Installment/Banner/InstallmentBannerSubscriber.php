@@ -56,7 +56,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         PaymentMethodUtil $paymentMethodUtil,
         BannerDataServiceInterface $bannerDataService,
         ExcludedProductValidator $excludedProductValidator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->paymentMethodUtil = $paymentMethodUtil;

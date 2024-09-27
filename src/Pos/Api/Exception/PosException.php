@@ -19,7 +19,7 @@ class PosException extends ShopwareHttpException
     public function __construct(
         string $name,
         string $message,
-        int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR
+        int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
     ) {
         parent::__construct(
             'The error "{{ name }}" occurred with the following message: {{ message }}',

@@ -27,7 +27,7 @@ class ActivateDeactivate
      */
     public function __construct(
         PaymentMethodStateService $paymentMethodStateService,
-        PosStateService $posStateService
+        PosStateService $posStateService,
     ) {
         $this->paymentMethodStateService = $paymentMethodStateService;
         $this->posStateService = $posStateService;

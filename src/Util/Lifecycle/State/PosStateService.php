@@ -38,7 +38,7 @@ class PosStateService
         EntityRepository $salesChannelRepository,
         EntityRepository $salesChannelTypeRepository,
         EntityRepository $shippingRepository,
-        EntityRepository $paymentMethodRepository
+        EntityRepository $paymentMethodRepository,
     ) {
         $this->salesChannelRepository = $salesChannelRepository;
         $this->salesChannelTypeRepository = $salesChannelTypeRepository;

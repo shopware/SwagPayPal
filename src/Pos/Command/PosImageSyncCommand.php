@@ -29,7 +29,7 @@ class PosImageSyncCommand extends AbstractPosCommand
      */
     public function __construct(
         EntityRepository $salesChannelRepository,
-        ImageTask $imageTask
+        ImageTask $imageTask,
     ) {
         parent::__construct($salesChannelRepository);
         $this->imageTask = $imageTask;

@@ -86,7 +86,7 @@ class OrderTransactionRepoMock extends AbstractRepoMock
     private function createEntitySearchResult(
         Criteria $criteria,
         Context $context,
-        bool $withOrder = true
+        bool $withOrder = true,
     ): EntitySearchResult {
         return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
@@ -121,7 +121,7 @@ class OrderTransactionRepoMock extends AbstractRepoMock
      */
     private function createEntitySearchResultWithoutTransaction(
         Criteria $criteria,
-        Context $context
+        Context $context,
     ): EntitySearchResult {
         return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),

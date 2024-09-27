@@ -37,7 +37,7 @@ class ProductSelection
     public function __construct(
         SalesChannelRepository $productRepository,
         ProductStreamBuilderInterface $productStreamBuilder,
-        AbstractSalesChannelContextFactory $salesChannelContextFactory
+        AbstractSalesChannelContextFactory $salesChannelContextFactory,
     ) {
         $this->productRepository = $productRepository;
         $this->productStreamBuilder = $productStreamBuilder;
@@ -46,7 +46,7 @@ class ProductSelection
 
     public function getProductIds(
         SalesChannelEntity $salesChannel,
-        Context $context
+        Context $context,
     ): array {
         $salesChannelContext = $this->getSalesChannelContext($salesChannel);
 
@@ -63,7 +63,7 @@ class ProductSelection
         SalesChannelEntity $salesChannel,
         int $offset,
         int $limit,
-        Context $context
+        Context $context,
     ): EntitySearchResult {
         $salesChannelContext = $this->getSalesChannelContext($salesChannel);
 

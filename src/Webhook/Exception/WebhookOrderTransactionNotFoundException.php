@@ -15,7 +15,7 @@ class WebhookOrderTransactionNotFoundException extends WebhookException
 {
     public function __construct(
         string $reason,
-        string $eventType
+        string $eventType,
     ) {
         parent::__construct(
             $eventType,

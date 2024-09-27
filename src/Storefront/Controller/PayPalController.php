@@ -55,7 +55,7 @@ class PayPalController extends StorefrontController
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly AbstractCartDeleteRoute $cartDeleteRoute,
         private readonly AbstractClearVaultRoute $clearVaultRoute,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 

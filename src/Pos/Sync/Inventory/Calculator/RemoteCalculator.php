@@ -29,7 +29,7 @@ class RemoteCalculator
 
     public function calculateRemoteChange(
         ProductEntity $productEntity,
-        InventoryContext $inventoryContext
+        InventoryContext $inventoryContext,
     ): ?ProductChange {
         $currentStock = $productEntity->getAvailableStock();
         $previousStock = $inventoryContext->getLocalInventory($productEntity);

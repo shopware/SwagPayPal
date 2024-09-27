@@ -31,7 +31,7 @@ class ProductContextFactory
      */
     public function __construct(
         EntityRepository $posProductRepository,
-        EntityRepository $posMediaRepository
+        EntityRepository $posMediaRepository,
     ) {
         $this->posProductRepository = $posProductRepository;
         $this->posMediaRepository = $posMediaRepository;

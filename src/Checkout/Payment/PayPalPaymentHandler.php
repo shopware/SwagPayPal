@@ -80,7 +80,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
     public function pay(
         AsyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): RedirectResponse {
         $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
@@ -121,7 +121,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
     public function finalize(
         AsyncPaymentTransactionStruct $transaction,
         Request $request,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): void {
         $this->logger->debug('Started');
 
@@ -235,7 +235,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
 
     private function transactionAlreadyFinalized(
         AsyncPaymentTransactionStruct $transaction,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): bool {
         $transactionStateMachineStateId = $transaction->getOrderTransaction()->getStateId();
         $criteria = new Criteria([$transactionStateMachineStateId]);

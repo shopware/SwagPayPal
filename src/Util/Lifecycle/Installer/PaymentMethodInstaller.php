@@ -41,7 +41,7 @@ class PaymentMethodInstaller
         EntityRepository $ruleRepository,
         PluginIdProvider $pluginIdProvider,
         PaymentMethodDataRegistry $methodDataRegistry,
-        MediaInstaller $mediaInstaller
+        MediaInstaller $mediaInstaller,
     ) {
         $this->paymentMethodRepository = $paymentMethodRepository;
         $this->ruleRepository = $ruleRepository;

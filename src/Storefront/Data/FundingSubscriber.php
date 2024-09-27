@@ -28,7 +28,7 @@ class FundingSubscriber implements EventSubscriberInterface
 
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
-        FundingEligibilityDataService $fundingEligibilityDataService
+        FundingEligibilityDataService $fundingEligibilityDataService,
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->fundingEligibilityDataService = $fundingEligibilityDataService;

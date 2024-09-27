@@ -45,7 +45,7 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
         SyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
-        PaymentSource $paymentSource
+        PaymentSource $paymentSource,
     ): void {
         $card = new Card();
         $card->setExperienceContext($this->createExperienceContext($salesChannelContext, $paymentTransaction));

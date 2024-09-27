@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class WebhookValidationError extends ShopwareHttpException
 {
     public function __construct(
-        protected readonly string $webhookUrl
+        protected readonly string $webhookUrl,
     ) {
         $message = 'Provided webhook URL "{{ webhookUrl }}" is invalid';
 

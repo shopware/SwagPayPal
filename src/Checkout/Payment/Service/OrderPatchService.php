@@ -32,7 +32,7 @@ class OrderPatchService
     public function __construct(
         SystemConfigService $systemConfigService,
         PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder,
-        OrderResource $orderResource
+        OrderResource $orderResource,
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->purchaseUnitPatchBuilder = $purchaseUnitPatchBuilder;
@@ -47,7 +47,7 @@ class OrderPatchService
         OrderTransactionEntity $orderTransaction,
         SalesChannelContext $salesChannelContext,
         string $paypalOrderId,
-        string $partnerAttributionId
+        string $partnerAttributionId,
     ): void {
         $patches = [
             $this->purchaseUnitPatchBuilder->createFinalPurchaseUnitPatch(

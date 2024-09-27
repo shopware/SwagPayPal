@@ -18,7 +18,7 @@ class PosTokenException extends PosException
 
     public function __construct(
         PosTokenError $tokenError,
-        int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR
+        int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
     ) {
         $this->tokenError = $tokenError;
         parent::__construct($tokenError->getError(), $tokenError->getErrorDescription(), $statusCode);

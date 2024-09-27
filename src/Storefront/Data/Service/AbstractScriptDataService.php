@@ -25,7 +25,7 @@ abstract class AbstractScriptDataService
     public function __construct(
         protected readonly LocaleCodeProvider $localeCodeProvider,
         protected readonly SystemConfigService $systemConfigService,
-        protected readonly CredentialsUtilInterface $credentialsUtil
+        protected readonly CredentialsUtilInterface $credentialsUtil,
     ) {
     }
 

@@ -34,7 +34,7 @@ class VariantConverter
         UuidConverter $uuidConverter,
         PriceConverter $priceConverter,
         PresentationConverter $presentationConverter,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->uuidConverter = $uuidConverter;
         $this->priceConverter = $priceConverter;

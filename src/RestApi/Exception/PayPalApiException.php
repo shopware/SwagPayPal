@@ -24,7 +24,7 @@ class PayPalApiException extends PaymentException
         string $name,
         string $message,
         int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
-        private ?string $issue = null
+        private ?string $issue = null,
     ) {
         parent::__construct(
             $payPalApiStatusCode,

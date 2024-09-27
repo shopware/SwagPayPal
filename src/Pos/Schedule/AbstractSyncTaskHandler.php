@@ -27,7 +27,7 @@ abstract class AbstractSyncTaskHandler extends ScheduledTaskHandler
 
     public function __construct(
         EntityRepository $scheduledTaskRepository,
-        EntityRepository $salesChannelRepository
+        EntityRepository $salesChannelRepository,
     ) {
         parent::__construct($scheduledTaskRepository);
         $this->salesChannelRepository = $salesChannelRepository;

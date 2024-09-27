@@ -34,7 +34,7 @@ class MessageHydrator
      */
     public function __construct(
         SalesChannelContextServiceInterface $salesChannelContextService,
-        EntityRepository $salesChannelRepository
+        EntityRepository $salesChannelRepository,
     ) {
         $this->salesChannelContextService = $salesChannelContextService;
         $this->salesChannelRepository = $salesChannelRepository;

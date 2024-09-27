@@ -40,7 +40,7 @@ class CaptureResource
         Refund $refund,
         string $salesChannelId,
         string $partnerAttributionId,
-        bool $minimalResponse = true
+        bool $minimalResponse = true,
     ): Refund {
         $headers = [];
         if ($minimalResponse === false) {

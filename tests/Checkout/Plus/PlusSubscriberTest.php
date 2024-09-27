@@ -391,7 +391,7 @@ class PlusSubscriberTest extends TestCase
     private function createConfirmEvent(
         bool $withCustomer = true,
         bool $withOtherDefaultPayment = false,
-        bool $withPayPalPaymentMethod = true
+        bool $withPayPalPaymentMethod = true,
     ): CheckoutConfirmPageLoadedEvent {
         $paymentCollection = new PaymentMethodCollection();
         if ($withPayPalPaymentMethod) {
@@ -419,7 +419,7 @@ class PlusSubscriberTest extends TestCase
 
     private function createSubscriber(
         bool $withSettings = true,
-        bool $plusEnabled = true
+        bool $plusEnabled = true,
     ): PlusSubscriber {
         $settings = $this->createSystemConfigServiceMock($withSettings ? [
             Settings::CLIENT_ID => 'testClientId',
@@ -486,7 +486,7 @@ class PlusSubscriberTest extends TestCase
         bool $withTransactions = true,
         bool $withTransaction = true,
         bool $withPaymentMethod = true,
-        bool $withDefaultPaymentMethod = false
+        bool $withDefaultPaymentMethod = false,
     ): CheckoutFinishPageLoadedEvent {
         $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),

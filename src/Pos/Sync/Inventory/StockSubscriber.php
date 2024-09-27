@@ -50,7 +50,7 @@ class StockSubscriber implements EventSubscriberInterface
     public function __construct(
         EntityRepository $orderLineItemRepository,
         MessageBusInterface $messageBus,
-        EntityRepository $salesChannelRepository
+        EntityRepository $salesChannelRepository,
     ) {
         $this->orderLineItemRepository = $orderLineItemRepository;
         $this->messageBus = $messageBus;

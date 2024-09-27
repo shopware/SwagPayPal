@@ -33,7 +33,7 @@ class SettingsInstaller
      */
     public function __construct(
         EntityRepository $systemConfigRepository,
-        SystemConfigService $systemConfig
+        SystemConfigService $systemConfig,
     ) {
         $this->systemConfigRepository = $systemConfigRepository;
         $this->systemConfig = $systemConfig;
