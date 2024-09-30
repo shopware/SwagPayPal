@@ -1,0 +1,65 @@
+name: Storefront
+on:
+  push:
+    branches:
+      - trunk
+  pull_request:
+  # TODO: paths: src/Resources/app/storefront
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: octo-sts/action@main
+        id: octo-sts
+        with:
+          scope: shopware
+          identity: ${{ github.event.repository.name }}
+      - uses: shopware/github-actions/setup-extension@main
+        with:
+          extensionName: ${{ github.event.repository.name }}
+          install: true
+          installStorefront: true
+          dependencies: |
+            [
+              {
+                "name":"SwagCommercial",
+                "repo": "https://github.com/shopware/SwagCommercial.git",
+                "token": "${{ steps.octo-sts.outputs.token }}"
+              },
+              {
+                "name":"SwagCmsExtensions",
+                "repo": "https://github.com/shopware/SwagCmsExtensions.git",
+                "token": "${{ steps.octo-sts.outputs.token }}"
+              }
+            ]
+          extraRepositories: |
+            {
+              "${{ github.event.repository.name }}": {
+                "type": "path",
+                "url": "custom/plugins/${{ github.event.repository.name }}",
+                "symlink": true
+              },
+              "SwagCommercial": {
+                "type": "path",
+                "url": "custom/plugins/SwagCommercial",
+                "symlink": true
+              },
+              "SwagCmsExtensions": {
+                "type": "path",
+                "url": "custom/plugins/SwagCmsExtensions",
+                "symlink": true
+              }
+            }
+      - name: Run ESLint
+        env:
+          STOREFRONT_PATH: ${{ github.workspace }}/src/Storefront/Resources/app/storefront
+        working-directory: custom/plugins/${{ github.event.repository.name }}
+        run: |
+          composer init:storefront
+          composer lint:storefront:ci
