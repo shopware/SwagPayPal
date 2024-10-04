@@ -1,3 +1,6 @@
+# 9.6.3
+- PPI-971 - Fixes an issue, where umlauts in the brand name were causing Apple Pay payments to be cancelled
+
 # 9.6.2
 - PPI-999 - Fixes an issue, where admin component overrides would block settings from being saved
 
