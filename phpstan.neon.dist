@@ -37,6 +37,9 @@ parameters:
         null_over_false: true
 
     ignoreErrors:
+        # Will be fixed in v6.7
+        - '#Do not use md5 function, use class Shopware\\Core\\Framework\\Util\\Hasher instead.#'
+
         # We won't type all arrays/iterables for now
         - '#no value type specified in iterable type#'
 
