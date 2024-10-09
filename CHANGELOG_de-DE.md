@@ -1,3 +1,6 @@
+# 8.6.2
+- PPI-999 - Behebt ein Problem, bei dem Überschreibungen von Administratorkomponenten das Speichern von Einstellungen blockieren konnten
+
 # 8.6.1
 - PPI-942 - Behebt ein Problem, bei dem Cookies trotz deaktiviertem Google Pay im Cookie-Banner angezeigt wurden
 - PPI-957 - Fügt Schnell-Links zum Kontext-Menü der Erweiterung und der PayPal Einstellungen hinzu
