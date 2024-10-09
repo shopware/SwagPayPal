@@ -1,3 +1,6 @@
+# 9.6.2
+- PPI-999 - Fixes an issue, where admin component overrides would block settings from being saved
+
 # 9.6.1
 - PPI-942 - Fixes an issue, where cookies from Google Pay were displayed in the cookie banner despite being deactivated
 - PPI-957 - Added quick links to the extension context menu and PayPal settings
