@@ -1,4 +1,3 @@
-import { ref } from 'vue';
 import type * as PayPal from 'src/types';
 import template from './swag-paypal.html.twig';
 import './swag-paypal.scss';
@@ -7,7 +6,7 @@ import constants from './swag-paypal-consts';
 type ConfigComponent = {
     allConfigs: Record<string, PayPal.SystemConfig>;
     selectedSalesChannelId: string | null;
-    save:() => Promise<{ payPalWebhookErrors?: string[] }>;
+    save: () => Promise<{ payPalWebhookErrors?: string[] }>;
 };
 
 const { Defaults } = Shopware;
@@ -81,12 +80,11 @@ export default Shopware.Component.wrapComponentConfig({
         };
     },
 
-    setup() {
-        const configComponent = ref<ConfigComponent | null>(null);
-        return { configComponent };
-    },
-
     computed: {
+        configComponent(): ConfigComponent | null {
+            return this.$refs.configComponent || null;
+        },
+
         /**
          * @deprecated tag:v10.0.0 - Will be removed without replacement.
          */
