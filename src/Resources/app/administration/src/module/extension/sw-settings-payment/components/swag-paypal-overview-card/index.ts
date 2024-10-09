@@ -1,4 +1,3 @@
-import { ref } from 'vue';
 import type SwagPayPalCheckout from 'src/module/swag-paypal/components/swag-paypal-checkout';
 import template from './swag-paypal-overview-card.html.twig';
 
@@ -29,6 +28,14 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     computed: {
+        swagPayPalConfigComponent(): ConfigComponent | null {
+            return this.$refs.swagPayPalConfigComponent || null;
+        },
+
+        swagPayPalCheckoutComponent(): InstanceType<typeof SwagPayPalCheckout> | null {
+            return this.$refs.swagPayPalCheckoutComponent || null;
+        },
+
         pluginId() {
             if (this.paymentMethods.length === 0) {
                 return '';
@@ -36,12 +43,6 @@ export default Shopware.Component.wrapComponentConfig({
 
             return this.paymentMethods[0].pluginId;
         },
-    },
-
-    setup() {
-        const swagPayPalConfigComponent = ref<ConfigComponent | null>(null);
-        const swagPayPalCheckoutComponent = ref<InstanceType<typeof SwagPayPalCheckout> | null>(null);
-        return { swagPayPalConfigComponent, swagPayPalCheckoutComponent };
     },
 
     methods: {

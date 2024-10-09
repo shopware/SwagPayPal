@@ -1,5 +1,4 @@
 import type * as PayPal from 'src/types';
-import { ref } from 'vue';
 import template from './sw-settings-shipping-detail.html.twig';
 import './sw-settings-shipping-detail.scss';
 import carriers, { commonCarriers } from '../../../../constant/swag-paypal-carrier.constant';
@@ -32,13 +31,11 @@ export default Shopware.Component.wrapComponentConfig({
         };
     },
 
-    setup() {
-        return {
-            carrierSelect: ref<SwSingleSelect>({ results: [] }),
-        };
-    },
-
     computed: {
+        carrierSelect(): SwSingleSelect {
+            return this.carrierSelect || { results: [] };
+        },
+
         shippingMethodCustomFields(): CustomFields {
             const shippingMethod = this.shippingMethod as TEntity<'shipping_method'>;
 
