@@ -84,7 +84,6 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
         try {
             const { merchantSession } = await paypal.Applepay().validateMerchant({
                 validationUrl: event.validationURL,
-                displayName: this.options.brandName,
             });
 
             session.completeMerchantValidation(merchantSession);
