@@ -1,5 +1,6 @@
 # 8.6.3
 - PPI-971 - Fixes an issue, where umlauts in the brand name were causing Apple Pay payments to be cancelled
+- PPI-1002 - Fixes an issue, where the Apple Pay domain hint was not shown
 
 # 8.6.2
 - PPI-999 - Fixes an issue, where admin component overrides would block settings from being saved
