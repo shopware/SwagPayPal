@@ -1,9 +1,7 @@
 import template from './swag-paypal-checkout-domain-association.html.twig';
 import './swag-paypal-checkout-domain-association.scss';
 
-const { Component } = Shopware;
-
-Component.register('swag-paypal-checkout-domain-association', {
+export default Shopware.Component.wrapComponentConfig({
     template,
 
     props: {
