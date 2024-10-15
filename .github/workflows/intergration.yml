@@ -1,0 +1,104 @@
+name: Integration
+on:
+  push:
+    branches:
+      - trunk
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build_zip:
+    name: Build and validate zip
+    uses: shopware/github-actions/.github/workflows/build-zip.yml@main
+    with:
+      extensionName: ${{ github.event.repository.name }}
+
+  phpunit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        MYSQL_IMAGE: ["mysql:8.0", "mariadb:10.11"]
+        PLATFORM_BRANCH: ["v6.6.0.0", "trunk"]
+        PHP_VERSION: ["8.2", "8.3"]
+        WITH_COMMERCIAL: [true, false]
+    env:
+      REDIS_URL: redis://localhost:6379
+    services:
+      redis:
+        image: redis:alpine
+        ports:
+          - "6379:6379"
+    steps:
+      - uses: octo-sts/action@main
+        id: octo-sts
+        with:
+          scope: shopware
+          identity: ${{ github.event.repository.name }}
+      - name: Prepare dependency list
+        id: dependency-list
+        shell: bash
+        run: |
+          DEPS='[
+              {
+                "name":"SwagCmsExtensions",
+                "repo": "https://github.com/shopware/SwagCmsExtensions.git",
+                "token": "${{ steps.octo-sts.outputs.token }}"
+              }
+            ]'
+
+          REPOS='{
+              "${{ github.event.repository.name }}": {
+                "type": "path",
+                "url": "custom/plugins/${{ github.event.repository.name }}",
+                "symlink": true
+              },
+              "SwagCmsExtensions": {
+                "type": "path",
+                "url": "custom/plugins/SwagCmsExtensions",
+                "symlink": true
+              }
+            }'
+
+          if [[ "${{ matrix.WITH_COMMERCIAL }}" == "true" ]]; then
+            DEPS=$(jq -s 'add' <(echo $DEPS) <(echo '[
+              {
+                "name":"SwagCommercial",
+                "repo": "https://github.com/shopware/SwagCommercial.git",
+                "branch": "${{ matrix.PLATFORM_BRANCH }}",
+                "token": "${{ steps.octo-sts.outputs.token }}"
+              }]'))
+            REPOS=$(jq -s 'add' <(echo $REPOS) <(echo '{
+              "SwagCommercial": {
+                "type": "path",
+                "url": "custom/plugins/SwagCommercial",
+                "symlink": true
+              }
+            }'))
+          fi
+          echo "deps=$(echo $DEPS | jq -c .)" >> "$GITHUB_OUTPUT"
+          echo "repos=$(echo $REPOS | jq -c .)" >> "$GITHUB_OUTPUT"
+      - uses: shopware/github-actions/setup-extension@main
+        with:
+          extensionName: ${{ github.event.repository.name }}
+          mysqlVersion: ${{ matrix.MYSQL_IMAGE }}
+          shopwareVersion: ${{ matrix.PLATFORM_BRANCH }}
+          phpVersion: ${{ matrix.PHP_VERSION }}
+          install: true
+          installAdmin: true
+          installStorefront: true
+          dependencies: ${{steps.dependency-list.outputs.deps}}
+          extraRepositories: ${{steps.dependency-list.outputs.repos}}
+      - name: Run PHPUnit
+        working-directory: custom/plugins/${{ github.event.repository.name }}
+        run: |
+          composer dump-autoload --dev
+          php -d pcov.enabled=1 -d pcov.directory=$PWD/src -d pcov.exclude='~(vendor|tests|node_modules)~' \
+            ${GITHUB_WORKSPACE}/vendor/bin/phpunit \
+            --configuration phpunit.xml.dist \
+            --log-junit ${GITHUB_WORKSPACE}/phpunit.junit.xml \
+            --coverage-cobertura ${GITHUB_WORKSPACE}/cobertura.xml \
+            --coverage-text

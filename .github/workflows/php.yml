@@ -1,0 +1,108 @@
+name: PHP checks
+
+on:
+  push:
+    branches:
+      - trunk
+  pull_request:
+  # TODO: paths: src/**/*.php & composer.json ...
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PLATFORM_BRANCH: ["6.6.0.0", "trunk"]
+      fail-fast: false
+    steps:
+      - uses: octo-sts/action@main
+        id: octo-sts
+        with:
+          scope: shopware
+          identity: ${{ github.event.repository.name }}
+      - uses: shopware/github-actions/setup-extension@main
+        with:
+          extensionName: ${{ github.event.repository.name }}
+          install: true
+          installAdmin: true
+          installStorefront: true
+          dependencies: |
+            [
+              {
+                "name":"SwagCommercial",
+                "repo": "https://github.com/shopware/SwagCommercial.git",
+                "token": "${{ steps.octo-sts.outputs.token }}"
+              },
+              {
+                "name":"SwagCmsExtensions",
+                "repo": "https://github.com/shopware/SwagCmsExtensions.git",
+                "token": "${{ steps.octo-sts.outputs.token }}"
+              }
+            ]
+          extraRepositories: |
+            {
+              "${{ github.event.repository.name }}": {
+                "type": "path",
+                "url": "custom/plugins/${{ github.event.repository.name }}",
+                "symlink": true
+              },
+              "SwagCommercial": {
+                "type": "path",
+                "url": "custom/plugins/SwagCommercial",
+                "symlink": true
+              },
+              "SwagCmsExtensions": {
+                "type": "path",
+                "url": "custom/plugins/SwagCmsExtensions",
+                "symlink": true
+              }
+            }
+
+      - name: Prepare phpstan
+        working-directory: custom/plugins/${{ github.event.repository.name }}
+        run: |
+          composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCmsExtensions"
+          composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCommercial"
+          sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist
+          if [[ "${{ matrix.PLATFORM_BRANCH }}" == "6.6.0.0" ]]; then
+            sed -i '/type_perfect/d' ./phpstan.neon.dist
+            sed -i '/narrow_return: true/d' ./phpstan.neon.dist
+            sed -i '/no_mixed: true/d' ./phpstan.neon.dist
+            sed -i '/null_over_false: true/d' ./phpstan.neon.dist
+          fi
+      - run: |
+          symfony composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
+
+  validate-openapi-typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Extension
+        uses: shopware/github-actions/setup-extension@main
+        env:
+          runner: ${{ runner.environment }}
+        with:
+          extensionName: ${{ github.event.repository.name }}
+          install: true
+          installAdmin: true
+          installStorefront: true
+          extraRepositories: |
+            {
+              "${{ github.event.repository.name }}": {
+                "type": "path",
+                "url": "custom/plugins/${{ github.event.repository.name }}",
+                "symlink": true
+              }
+            }
+      - working-directory: custom/plugins/${{ github.event.repository.name }}
+        run: |
+          ${GITHUB_WORKSPACE}/bin/console bundle:dump
+          composer init:admin
+          composer openapi:generate
+          git update-index --refresh || printf ''
+          git diff-index "${{ github.sha }}" --quiet -- src/Resources/app/administration/src/types/openapi.d.ts || (echo "Please run 'composer openapi:generate' to update openapi.d.ts" && exit 1)
