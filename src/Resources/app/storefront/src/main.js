@@ -16,6 +16,11 @@ PluginManager.register(
     '[data-swag-paypal-acdc-fields]',
 );
 PluginManager.register(
+    'SwagPayPalPlusPaymentWall',
+    () => import('./checkout/swag-paypal.plus-payment-wall'),
+    '[data-swag-paypal-payment-wall]',
+);
+PluginManager.register(
     'SwagPayPalInstallmentBanner',
     () => import('./page/swag-paypal.installment-banner'),
     '[data-swag-paypal-installment-banner]',
