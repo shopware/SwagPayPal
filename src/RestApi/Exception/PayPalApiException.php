@@ -16,8 +16,16 @@ class PayPalApiException extends PaymentException
 {
     public const ERROR_CODE_INVALID_CREDENTIALS = 'INVALID_CREDENTIALS';
     public const ERROR_CODE_DUPLICATE_ORDER_NUMBER = 'DUPLICATE_TRANSACTION';
-    public const ERROR_CODE_DUPLICATE_INVOICE_ID = 'DUPLICATE_INVOICE_ID';
-    public const ERROR_CODE_INVALID_PARAMETER_VALUE = 'INVALID_PARAMETER_VALUE';
+    /**
+     * @deprecated tag:v10.0.0 - will be replaced with {@see ISSUE_DUPLICATE_INVOICE_ID}
+     */
+    public const ERROR_CODE_DUPLICATE_INVOICE_ID = self::ISSUE_DUPLICATE_INVOICE_ID;
+    public const ISSUE_DUPLICATE_INVOICE_ID = 'DUPLICATE_INVOICE_ID';
+    /**
+     * @deprecated tag:v10.0.0 - will be replaced with {@see ISSUE_INVALID_PARAMETER_VALUE}
+     */
+    public const ERROR_CODE_INVALID_PARAMETER_VALUE = self::ISSUE_INVALID_PARAMETER_VALUE;
+    public const ISSUE_INVALID_PARAMETER_VALUE = 'INVALID_PARAMETER_VALUE';
     public const ERROR_CODE_RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND';
     public const ISSUE_INVALID_RESOURCE_ID = 'INVALID_RESOURCE_ID';
 

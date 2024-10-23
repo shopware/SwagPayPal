@@ -253,7 +253,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
     {
         $orderDelivery = self::createOrderDelivery(self::createOrder(), carrier: 'invalid-carrier', trackingCodes: ['code-a']);
         $payPalOrder = self::createPayPalOrder(trackingCodes: ['code-b']);
-        $payPalException = new PayPalApiException('', '(/carrier)', issue: PayPalApiException::ERROR_CODE_INVALID_PARAMETER_VALUE);
+        $payPalException = new PayPalApiException('', '(/carrier)', issue: PayPalApiException::ISSUE_INVALID_PARAMETER_VALUE);
 
         $this->orderDeliveryRepository
             ->expects(static::once())
