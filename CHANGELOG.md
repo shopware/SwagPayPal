@@ -1,6 +1,7 @@
 # 9.6.3
 - PPI-971 - Fixes an issue, where umlauts in the brand name were causing Apple Pay payments to be cancelled
 - PPI-1002 - Fixes an issue, where the Apple Pay domain hint was not shown
+- PPI-1008 - Fixes an issue, where payment status polling kept retrying with non-existent transactions
 - PPI-1009 - Fixes an issue, where PayPal Plus was not shown in the Checkout
 - PPI-1010 - Fixes an issue, where the compiled CSS could be broken in combination with other extensions
 

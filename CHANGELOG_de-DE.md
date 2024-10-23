@@ -1,6 +1,7 @@
 # 9.6.3
 - PPI-971 - Behebt ein Problem, bei dem Umlaute im Markennamen dazu führten, dass Apple Pay-Zahlungen abgebrochen wurden
 - PPI-1002 - Behebt ein Problem, bei dem der Apple Pay Domain Hinweis nicht korrekt angezeigt wurde
+- PPI-1008 - Behebt ein Problem, bei dem die Zahlungsstatusabfrage mit nicht existierenden Transaktionen weiterhin wiederholt wurde
 - PPI-1009 - Behebt ein Problem, bei dem PayPal Plus im Checkout nicht angezeigt werden konnte
 - PPI-1010 - Behebt ein Problem, bei dem das kompilierte CSS in Kombination mit anderen Erweiterungen Syntaxfehler enthalten konnte
 
