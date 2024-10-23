@@ -1,0 +1,21 @@
+[data-swag-paypal-express-button].is-disabled {
+    position: relative;
+    opacity: 0.3;
+
+    &::after {
+        content: '';
+        z-index: $zindex-tooltip + 10;
+        position: absolute;
+        height: 40px;
+        top: 0;
+        left: 5px;
+        right: 5px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 3px;
+    }
+}
+
+[data-swag-paypal-express-button] {
+    display: grid;
+    gap: 0.5rem;
+}

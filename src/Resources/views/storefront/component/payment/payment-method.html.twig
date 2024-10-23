@@ -52,8 +52,8 @@
 
     {% if acdcFieldData and acdcFieldData.paymentMethodId is same as(payment.id) %}
         {% block swag_paypal_acdc_form %}
-            <div id="swag-paypal-acdc-form" class="d-none">
-                <div class="row">
+            <div id="swag-paypal-acdc-form" class="mt-2 d-none">
+                <div class="row mb-1">
                     <div class="col-sm-12">
                         <label class="d-none"
                                for="swag-paypal-acdc-form-cardholder">{{ "paypal.acdc.cardholderName"|trans }}</label>
@@ -62,8 +62,8 @@
                         ></div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-12">
+                <div class="row mb-1">
+                    <div class="col-sm-12 swag-paypal-acdc-form-field-lg">
                         <label class="d-none"
                                for="swag-paypal-acdc-form-cardnumber">{{ "paypal.acdc.cardNumber"|trans }}</label>
                         <div id="swag-paypal-acdc-form-cardnumber"
@@ -71,15 +71,15 @@
                         ></div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-6">
+                <div class="row mb-1">
+                    <div class="col-sm-6 pe-1">
                         <label class="d-none"
                                for="swag-paypal-acdc-form-expiration">{{ "paypal.acdc.expiration"|trans }}</label>
                         <div id="swag-paypal-acdc-form-expiration"
                              data-placeholder="{{ "paypal.acdc.expiration"|trans }}"
                         ></div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 ps-1">
                         <label class="d-none" for="swag-paypal-acdc-form-cvv">{{ "paypal.acdc.cvv"|trans }}</label>
                         <div id="swag-paypal-acdc-form-cvv"
                              data-placeholder="{{ "paypal.acdc.cvv"|trans }}"
