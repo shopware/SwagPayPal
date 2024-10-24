@@ -129,7 +129,7 @@ class ShippingInformationMessageHandler
 
     private function handleInvalidCarrierException(PayPalApiException $e, Tracker &$tracker, string $shippingMethodName): void
     {
-        if ($e->is(PayPalApiException::ERROR_CODE_INVALID_PARAMETER_VALUE) && \str_contains($e->getMessage(), '(/carrier)')) {
+        if ($e->is(PayPalApiException::ISSUE_INVALID_PARAMETER_VALUE) && \str_contains($e->getMessage(), '(/carrier)')) {
             $this->logger->error('Carrier "{carrier}" of shipping method "{methodName}" is not supported by PayPal.', [
                 'carrier' => $tracker->getCarrier(),
                 'methodName' => $shippingMethodName,

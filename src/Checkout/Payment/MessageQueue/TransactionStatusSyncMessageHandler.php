@@ -92,7 +92,7 @@ class TransactionStatusSyncMessageHandler
                 };
             }
         } catch (StateMachineException|PayPalApiException $e) {
-            if ($e instanceof PayPalApiException && $e->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
+            if ($e instanceof PayPalApiException && $e->is(PayPalApiException::ISSUE_INVALID_RESOURCE_ID)) {
                 $this->orderTransactionStateHandler->fail($message->getTransactionId(), $context);
 
                 return;

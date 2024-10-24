@@ -245,7 +245,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 }
             );
 
-        $exception = new PayPalApiException('General error', '404 Not found', issue: PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND);
+        $exception = new PayPalApiException(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND, '404 Not found', issue: PayPalApiException::ISSUE_INVALID_RESOURCE_ID);
 
         $this->orderResource
             ->expects(static::once())
