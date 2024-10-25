@@ -1,11 +1,9 @@
-# 8.6.3
+# 8.6.2
 - PPI-971 - Behebt ein Problem, bei dem Umlaute im Markennamen dazu führten, dass Apple Pay-Zahlungen abgebrochen wurden
+- PPI-999 - Behebt ein Problem, bei dem Überschreibungen von Administratorkomponenten das Speichern von Einstellungen blockieren konnten
 - PPI-1002 - Behebt ein Problem, bei dem der Apple Pay Domain Hinweis nicht korrekt angezeigt wurde
 - PPI-1008 - Behebt ein Problem, bei dem die Zahlungsstatusabfrage mit nicht existierenden Transaktionen weiterhin wiederholt wurde
 - PPI-1010 - Behebt ein Problem, bei dem das kompilierte CSS in Kombination mit anderen Erweiterungen Syntaxfehler enthalten konnte
-
-# 8.6.2
-- PPI-999 - Behebt ein Problem, bei dem Überschreibungen von Administratorkomponenten das Speichern von Einstellungen blockieren konnten
 
 # 8.6.1
 - PPI-942 - Behebt ein Problem, bei dem Cookies trotz deaktiviertem Google Pay im Cookie-Banner angezeigt wurden
