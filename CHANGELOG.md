@@ -1,11 +1,9 @@
-# 8.6.3
+# 8.6.2
 - PPI-971 - Fixes an issue, where umlauts in the brand name were causing Apple Pay payments to be cancelled
+- PPI-999 - Fixes an issue, where admin component overrides would block settings from being saved
 - PPI-1002 - Fixes an issue, where the Apple Pay domain hint was not shown
 - PPI-1008 - Fixes an issue, where payment status polling kept retrying with non-existent transactions
 - PPI-1010 - Fixes an issue, where the compiled CSS could be broken in combination with other extensions
-
-# 8.6.2
-- PPI-999 - Fixes an issue, where admin component overrides would block settings from being saved
 
 # 8.6.1
 - PPI-942 - Fixes an issue, where cookies from Google Pay were displayed in the cookie banner despite being deactivated
