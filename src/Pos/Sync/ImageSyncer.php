@@ -103,6 +103,7 @@ class ImageSyncer
         }
 
         $updates = [];
+
         foreach ($response->getUploaded() as $uploaded) {
             $update = $this->prepareMediaUpdate($entityCollection, $uploaded, $posSalesChannel->getSalesChannelId());
             if ($update !== null) {
@@ -162,6 +163,7 @@ class ImageSyncer
         $urlPath = \parse_url($uploaded->getSource(), \PHP_URL_PATH);
 
         if (\is_string($urlPath)) {
+            $urlPath = \rawurldecode($urlPath);
             $posMedia = $posMediaCollection->filter(
                 static function (PosSalesChannelMediaEntity $entity) use ($urlPath) {
                     $media = $entity->getMedia();
@@ -170,8 +172,8 @@ class ImageSyncer
                         throw new MediaNotFoundException($entity->getMediaId());
                     }
 
-                    return \mb_strpos($urlPath, $media->getUrl()) !== false
-                        || \mb_strpos($media->getUrl(), $urlPath) !== false;
+                    return \str_contains($urlPath, $media->getUrl())
+                        || \str_contains($media->getUrl(), $urlPath);
                 }
             )->first();
         } else {

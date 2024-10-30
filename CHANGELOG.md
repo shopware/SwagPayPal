@@ -1,4 +1,5 @@
 # 8.6.4
+- PPI-1014 - Fixes an issue, where images with special characters could not be synced to Zettle
 - PPI-1016 - Fixes an issue, where shipping tracking codes were not synced with to long product names
 
 # 8.6.3
