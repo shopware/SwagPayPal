@@ -33,7 +33,7 @@ export default Shopware.Component.wrapComponentConfig({
 
     computed: {
         carrierSelect(): SwSingleSelect {
-            return this.carrierSelect || { results: [] };
+            return this.$refs.carrierSelect || { results: [] };
         },
 
         shippingMethodCustomFields(): CustomFields {
@@ -117,14 +117,14 @@ export default Shopware.Component.wrapComponentConfig({
         paginateCarriers() {
             this.limit += 50;
 
-            this.carrierSelect.results = this.carrierOptions;
+            (this.$refs.carrierSelect as SwSingleSelect).results = this.carrierOptions;
         },
 
         searchCarriers(searchTerm: string | null) {
             this.limit = 50;
             this.searchTerm = searchTerm;
 
-            this.carrierSelect.results = this.carrierOptions;
+            (this.$refs.carrierSelect as SwSingleSelect).results = this.carrierOptions;
         },
 
         onCarrierSelectOpen() {

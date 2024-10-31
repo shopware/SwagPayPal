@@ -50,7 +50,7 @@ export default Shopware.Component.wrapComponentConfig({
             this.isLoading = true;
 
             try {
-                const response = await this.swagPayPalConfigComponent?.save();
+                const response = await (this.$refs.swagPayPalConfigComponent as ConfigComponent|null)?.save();
 
                 if (response?.payPalWebhookErrors) {
                     const errorMessage = this.$tc('swag-paypal.settingForm.messageWebhookError');
@@ -61,7 +61,7 @@ export default Shopware.Component.wrapComponentConfig({
                     });
                 }
 
-                await this.swagPayPalCheckoutComponent?.getPaymentMethodsAndMerchantIntegrations();
+                await (this.$refs.swagPayPalCheckoutComponent as InstanceType<typeof SwagPayPalCheckout>|null)?.getPaymentMethodsAndMerchantIntegrations();
             } finally {
                 this.isLoading = false;
             }

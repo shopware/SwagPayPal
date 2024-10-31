@@ -44,6 +44,7 @@ export default Shopware.Component.wrapComponentConfig({
         messageBlankErrorState: null | PayPal.ErrorState;
         showCredentials: boolean;
         allowShowCredentials: boolean;
+        configComponent: ConfigComponent | null;
     } {
         return {
             isLoading: false,
@@ -66,6 +67,7 @@ export default Shopware.Component.wrapComponentConfig({
             },
             showCredentials: false,
             allowShowCredentials: true,
+            configComponent: null,
 
             /**
              * @deprecated tag:v10.0.0 - Will be removed, use constants directly
@@ -89,15 +91,16 @@ export default Shopware.Component.wrapComponentConfig({
          * @deprecated tag:v10.0.0 - Will be removed without replacement.
          */
         showSPBCard() {
-            if (!this.configComponent?.allConfigs?.null) {
+            const allConfigs = (this.$refs.configComponent as ConfigComponent | null)?.allConfigs;
+            if (allConfigs?.null) {
                 return true;
             }
 
             const merchantLocation = this.config['SwagPayPal.settings.merchantLocation'] ??
-                this.configComponent?.allConfigs?.null['SwagPayPal.settings.merchantLocation'];
+                allConfigs?.null['SwagPayPal.settings.merchantLocation'];
 
             const plusEnabled = this.config['SwagPayPal.settings.plusCheckoutEnabled'] ??
-                this.configComponent?.allConfigs?.null['SwagPayPal.settings.plusCheckoutEnabled'];
+                allConfigs?.null['SwagPayPal.settings.plusCheckoutEnabled'];
 
             return merchantLocation !== this.MERCHANT_LOCATION_GERMANY || !plusEnabled;
         },
@@ -169,8 +172,8 @@ export default Shopware.Component.wrapComponentConfig({
         config: {
             deep: true,
             handler() {
-                const defaultConfig = this.configComponent?.allConfigs?.null;
-                const salesChannelId = this.configComponent?.selectedSalesChannelId;
+                const defaultConfig = (this.$refs.configComponent as ConfigComponent | null)?.allConfigs?.null;
+                const salesChannelId = (this.$refs.configComponent as ConfigComponent | null)?.selectedSalesChannelId;
 
                 if (salesChannelId === null) {
                     this.clientIdFilled = !!this.config['SwagPayPal.settings.clientId'];
@@ -236,7 +239,7 @@ export default Shopware.Component.wrapComponentConfig({
         save() {
             this.isLoading = true;
 
-            this.configComponent?.save().then((response) => {
+            (this.$refs.configComponent as ConfigComponent | null)?.save().then((response) => {
                 this.isSaveSuccessful = true;
 
                 if (response.payPalWebhookErrors) {
@@ -256,7 +259,7 @@ export default Shopware.Component.wrapComponentConfig({
             this.isSettingDefaultPaymentMethods = true;
 
             this.SwagPaypalPaymentMethodService.setDefaultPaymentForSalesChannel(
-                this.configComponent?.selectedSalesChannelId,
+                (this.$refs.configComponent as ConfigComponent | null)?.selectedSalesChannelId,
             ).then(() => {
                 this.isSettingDefaultPaymentMethods = false;
                 this.isSetDefaultPaymentSuccessful = true;
