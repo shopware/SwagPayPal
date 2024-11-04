@@ -35,7 +35,7 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
      */
     handleError(code, fatal = false, error = undefined) {
         if (error && typeof error !== 'string') {
-            error = String(error);
+            error = JSON.stringify(error);
         }
 
         const errorCode = this._extractErrorCode(error);
