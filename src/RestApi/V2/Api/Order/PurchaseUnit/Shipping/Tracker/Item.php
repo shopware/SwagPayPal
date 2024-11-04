@@ -15,7 +15,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 #[Package('checkout')]
 class Item extends PayPalApiStruct
 {
-    public const MAX_LENGTH_NAME = 127;
+    public const MAX_LENGTH_NAME = 120;
     public const MAX_LENGTH_SKU = 127;
     public const MAX_LENGTH_URL = 2048;
 
