@@ -1,3 +1,6 @@
+# 8.6.4
+- PPI-1016 - Fixes an issue, where shipping tracking codes were not synced with to long product names
+
 # 8.6.3
 - PPI-1015 - Fixes an issue, where PayPal settings could not be saved in the Administration
 
