@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Converter;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
@@ -32,6 +33,7 @@ use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\Api\Product\Category;
 use Swag\PayPal\Pos\Api\Product\Variant;
 use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions;
+use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions\Definition\Property;
 use Swag\PayPal\Pos\Api\Service\Converter\CategoryConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\OptionGroupConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\PresentationConverter;
@@ -98,39 +100,9 @@ class ProductConverterTest extends TestCase
         static::assertEquals($product, $convertedGrouping->getProduct());
     }
 
-    public function testConvertWithConfiguratorSettings(): void
-    {
-        $productEntity = $this->createProductEntity();
-        $productConfiguratorSettingEntity = new ProductConfiguratorSettingEntity();
-        $productConfiguratorSettingEntity->setId(Uuid::randomHex());
-        $propertyGroupOptionEntity = new PropertyGroupOptionEntity();
-        $propertyGroupOptionEntity->setId(Uuid::randomHex());
-        $propertyGroupOptionEntity->setGroupId(Uuid::randomHex());
-        $propertyGroupEntity = new PropertyGroupEntity();
-        $propertyGroupEntity->setId(Uuid::randomHex());
-        $propertyGroupOptionEntity->setGroup($propertyGroupEntity);
-        $productConfiguratorSettingEntity->setOption($propertyGroupOptionEntity);
-        $productConfiguratorSettingCollection = new ProductConfiguratorSettingCollection([$productConfiguratorSettingEntity]);
-        $productEntity->setConfiguratorSettings($productConfiguratorSettingCollection);
-
-        $converted = $this->createProductConverter()->convertShopwareProducts(
-            new ProductCollection([$productEntity]),
-            $this->getCurrency(),
-            $this->createMock(ProductContext::class)
-        );
-        $convertedGrouping = $converted->first();
-
-        $product = $this->createProduct();
-        $product->setUuid($this->createUuidConverter()->convertUuidToV1($productEntity->getId()));
-        $product->setVariantOptionDefinitions(new VariantOptionDefinitions());
-
-        static::assertNotNull($convertedGrouping);
-        static::assertEquals($product, $convertedGrouping->getProduct());
-    }
-
     public function testConvertWithVariantOptionDefinitions(): void
     {
-        $productEntityParent = $this->createProductEntity();
+        $productEntityParent = $this->createProductEntity(2);
         $productEntityChild1 = $this->createProductEntity();
         $productEntityChild1->setParentId($productEntityParent->getId());
         $productEntityChild2 = $this->createProductEntity();
@@ -146,10 +118,37 @@ class ProductConverterTest extends TestCase
         $product = $this->createProduct();
         $product->setUuid($this->createUuidConverter()->convertUuidToV1($productEntityParent->getId()));
         $product->setVariantOptionDefinitions(new VariantOptionDefinitions());
+        $product->getVariantOptionDefinitions()?->assign([
+            'definitions' => [[
+                'name' => '',
+                'properties' => [
+                    (new Property())->assign(['value' => '']),
+                    (new Property())->assign(['value' => '']),
+                ],
+            ]],
+        ]);
         $product->addVariant(new Variant());
 
         static::assertNotNull($convertedGrouping);
         static::assertEquals($product, $convertedGrouping->getProduct());
+    }
+
+    public function testConvertWithInvalidNumberOfVariantOptionDefinitions(): void
+    {
+        $productEntityParent = $this->createProductEntity(1);
+        $productEntityChild1 = $this->createProductEntity();
+        $productEntityChild1->setParentId($productEntityParent->getId());
+        $productEntityChild2 = $this->createProductEntity();
+        $productEntityChild2->setParentId($productEntityParent->getId());
+
+        $converted = $this->createProductConverter()->convertShopwareProducts(
+            new ProductCollection([$productEntityParent, $productEntityChild1, $productEntityChild2]),
+            $this->getCurrency(),
+            $this->createMock(ProductContext::class)
+        );
+        $convertedGrouping = $converted->first();
+
+        static::assertNull($convertedGrouping);
     }
 
     public function testConvertWithNoCurrency(): void
@@ -191,7 +190,7 @@ class ProductConverterTest extends TestCase
         static::assertEquals($product, $convertedGrouping->getProduct());
     }
 
-    private function createProductEntity(): SalesChannelProductEntity
+    private function createProductEntity(int $optionCount = 0): SalesChannelProductEntity
     {
         $productEntity = new SalesChannelProductEntity();
         $productEntity->setId(Uuid::randomHex());
@@ -200,6 +199,23 @@ class ProductConverterTest extends TestCase
         $productEntity->setProductNumber(self::PRODUCT_NUMBER);
         $shopwarePrice = new CalculatedPrice(self::PRODUCT_PRICE, self::PRODUCT_PRICE, new CalculatedTaxCollection(), new TaxRuleCollection([new TaxRule(19.0)]));
         $productEntity->setCalculatedPrice($shopwarePrice);
+
+        if ($optionCount > 0) {
+            $propertyGroupEntity = new PropertyGroupEntity();
+            $propertyGroupEntity->setId(Uuid::randomHex());
+            $productConfiguratorSettingCollection = new ProductConfiguratorSettingCollection();
+            for ($i = 0; $i < $optionCount; ++$i) {
+                $productConfiguratorSettingEntity = new ProductConfiguratorSettingEntity();
+                $productConfiguratorSettingEntity->setId(Uuid::randomHex());
+                $propertyGroupOptionEntity = new PropertyGroupOptionEntity();
+                $propertyGroupOptionEntity->setId(Uuid::randomHex());
+                $propertyGroupOptionEntity->setGroupId($propertyGroupEntity->getId());
+                $propertyGroupOptionEntity->setGroup($propertyGroupEntity);
+                $productConfiguratorSettingEntity->setOption($propertyGroupOptionEntity);
+                $productConfiguratorSettingCollection->add($productConfiguratorSettingEntity);
+            }
+            $productEntity->setConfiguratorSettings($productConfiguratorSettingCollection);
+        }
 
         return $productEntity;
     }
@@ -232,17 +248,14 @@ class ProductConverterTest extends TestCase
         $categoryConverter = $this->createStub(CategoryConverter::class);
         $categoryConverter->method('convert')->willReturn(new Category());
 
-        $optionGroupConverter = $this->createStub(OptionGroupConverter::class);
-        $optionGroupConverter->method('convert')->willReturn(new VariantOptionDefinitions());
-        $optionGroupConverter->method('convertFromVariants')->willReturn(new VariantOptionDefinitions());
-
         return new ProductConverter(
             $this->createUuidConverter(),
             $categoryConverter,
             $variantConverter,
-            $optionGroupConverter,
+            new OptionGroupConverter(),
             new PresentationConverter(),
-            new MetadataGenerator()
+            new MetadataGenerator(),
+            new NullLogger(),
         );
     }
 
