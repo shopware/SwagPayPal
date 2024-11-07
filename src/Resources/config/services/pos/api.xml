@@ -30,6 +30,7 @@
             <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\OptionGroupConverter"/>
             <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\PresentationConverter"/>
             <argument type="service" id="Swag\PayPal\Pos\Api\Service\MetadataGenerator"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
         </service>
 
         <service id="Swag\PayPal\Pos\Api\Service\MediaConverter">

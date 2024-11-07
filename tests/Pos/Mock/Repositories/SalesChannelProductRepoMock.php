@@ -14,11 +14,15 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Media\MediaEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductConfiguratorSetting\ProductConfiguratorSettingCollection;
+use Shopware\Core\Content\Product\Aggregate\ProductConfiguratorSetting\ProductConfiguratorSettingEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
+use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price as ShopwarePrice;
@@ -215,7 +219,8 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
         string $name,
         string $id,
         ?string $parentId = null,
-        ?MediaEntity $mediaEntity = null
+        ?MediaEntity $mediaEntity = null,
+        int $optionCount = 0,
     ): SalesChannelProductEntity {
         $entity = new SalesChannelProductEntity();
         $entity->setId($id);
@@ -241,6 +246,23 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
             $productMedia->setMedia($mediaEntity);
             $productMedia->setMediaId($mediaEntity->getId());
             $entity->setCover($productMedia);
+        }
+
+        if ($optionCount > 0) {
+            $propertyGroupEntity = new PropertyGroupEntity();
+            $propertyGroupEntity->setId(Uuid::randomHex());
+            $productConfiguratorSettingCollection = new ProductConfiguratorSettingCollection();
+            for ($i = 0; $i < $optionCount; ++$i) {
+                $productConfiguratorSettingEntity = new ProductConfiguratorSettingEntity();
+                $productConfiguratorSettingEntity->setId(Uuid::randomHex());
+                $propertyGroupOptionEntity = new PropertyGroupOptionEntity();
+                $propertyGroupOptionEntity->setId(Uuid::randomHex());
+                $propertyGroupOptionEntity->setGroupId($propertyGroupEntity->getId());
+                $propertyGroupOptionEntity->setGroup($propertyGroupEntity);
+                $productConfiguratorSettingEntity->setOption($propertyGroupOptionEntity);
+                $productConfiguratorSettingCollection->add($productConfiguratorSettingEntity);
+            }
+            $entity->setConfiguratorSettings($productConfiguratorSettingCollection);
         }
 
         $entity->addTranslated('name', $name);

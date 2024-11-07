@@ -81,7 +81,8 @@ class ProductSyncerTest extends AbstractProductSyncTest
                 new VariantConverter(new UuidConverter(), new PriceConverter(), new PresentationConverter(), new NullLogger()),
                 new OptionGroupConverter(),
                 new PresentationConverter(),
-                new MetadataGenerator()
+                new MetadataGenerator(),
+                new NullLogger(),
             ),
             $this->productContextFactory,
             $this->newUpdater,
