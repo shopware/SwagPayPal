@@ -64,9 +64,8 @@ class ImageSyncerTest extends TestCase
     private const MEDIA_ID_2 = 'mediaId2';
     private const MEDIA_ID_3 = 'mediaId3';
     private const MEDIA_ID_4 = 'mediaId4';
-    private const MEDIA_URL_VALID = 'validUrl.jpg';
-    private const MEDIA_URL_INVALID = 'test/invalid Url.jpg';
-    private const MEDIA_URL_INVALID_ENCODED = 'test/invalid%20Url.jpg';
+    private const MEDIA_URL_VALID = 'valid,Url.jpg';
+    private const MEDIA_URL_INVALID = 'test/invalidUrl.jpg';
     private const MEDIA_URL_EXISTING = 'existingUrl.jpg';
     private const POS_IMAGE_URL = 'https://image.izettle.com/product/BJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ.jpeg';
     private const POS_IMAGE_URL_EXISTING = 'https://image.izettle.com/product/CJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ.jpeg';
@@ -274,7 +273,7 @@ class ImageSyncerTest extends TestCase
                     break;
                 case 3:
                     static::assertSame('Upload was not accepted by Zettle (is the URL publicly available?): {invalid}', $message);
-                    static::assertSame(self::DOMAIN_URL . self::MEDIA_URL_INVALID_ENCODED, $context['invalid']);
+                    static::assertSame(self::DOMAIN_URL . self::MEDIA_URL_INVALID, $context['invalid']);
 
                     break;
                 default:
@@ -293,11 +292,11 @@ class ImageSyncerTest extends TestCase
             (new BulkImageUpload())->assign(['imageUploads' => [
                 [
                     'imageFormat' => 'JPEG',
-                    'imageUrl' => self::DOMAIN_URL . '/' . self::MEDIA_URL_VALID,
+                    'imageUrl' => self::DOMAIN_URL . '/' . \rawurlencode(self::MEDIA_URL_VALID),
                 ],
                 [
                     'imageFormat' => 'JPEG',
-                    'imageUrl' => self::DOMAIN_URL . '/' . self::MEDIA_URL_INVALID_ENCODED,
+                    'imageUrl' => self::DOMAIN_URL . '/' . self::MEDIA_URL_INVALID,
                 ],
                 [
                     'imageFormat' => 'JPEG',
@@ -306,7 +305,7 @@ class ImageSyncerTest extends TestCase
                 ],
             ]])
         )->willReturn([
-            'invalid' => [self::DOMAIN_URL . self::MEDIA_URL_INVALID_ENCODED],
+            'invalid' => [self::DOMAIN_URL . self::MEDIA_URL_INVALID],
             'uploaded' => [
                 [
                     'imageLookupKey' => self::POS_IMAGE_LOOKUP_KEY,
