@@ -26,6 +26,7 @@ class Webhook extends PayPalApiStruct
     public const RESOURCE_TYPE_CAPTURE = 'capture';
     public const RESOURCE_TYPE_REFUND = 'refund';
     public const RESOURCE_TYPE_PAYMENT_TOKEN = 'payment_token';
+    public const RESOURCE_TYPE_SUBSCRIPTION = 'subscription';
 
     #[OA\Property(type: 'string')]
     protected string $id;
@@ -45,6 +46,7 @@ class Webhook extends PayPalApiStruct
         new OA\Schema(ref: Capture::class),
         new OA\Schema(ref: Refund::class),
         new OA\Schema(ref: Resource::class),
+        new OA\Schema(ref: Subscription::class),
     ])]
     protected ?PayPalApiStruct $resource = null;
 
@@ -188,6 +190,7 @@ class Webhook extends PayPalApiStruct
                 self::RESOURCE_TYPE_AUTHORIZATION => Authorization::class,
                 self::RESOURCE_TYPE_CAPTURE => Capture::class,
                 self::RESOURCE_TYPE_REFUND => Refund::class,
+                self::RESOURCE_TYPE_SUBSCRIPTION => Subscription::class,
                 default => null,
             },
             default => Resource::class,
