@@ -127,6 +127,11 @@ parameters:
                 - tests/Checkout/CheckoutSubscriberTest.php
                 - tests/Pos/Util/InformationDefaultServiceTest.php
 
+        - # ignore shopware v6.7 native type deprecations
+            message: '#.*tag:v6.7.0 - Will be natively typed|Native type for property ".*" is missing#'
+            paths:
+                - src/Checkout/TokenResponse.php
+
 services:
     -   # register the class, so we can decorate it, but don't tag it as a rule, so only our decorator is used by PHPStan
         class: Symplify\PHPStanRules\Rules\NoReturnSetterMethodRule
