@@ -887,7 +887,7 @@ export interface components {
       resource_type: string;
       event_type: string;
       summary: string;
-      resource: components["schemas"]["swag_paypal_v3_payment_token"] | components["schemas"]["swag_paypal_v2_order_purchase_unit_payments_authorization"] | components["schemas"]["swag_paypal_v2_order_purchase_unit_payments_capture"] | components["schemas"]["swag_paypal_v2_order_purchase_unit_payments_refund"] | components["schemas"]["swag_paypal_v1_webhook_resource"] | null;
+      resource: components["schemas"]["swag_paypal_v3_payment_token"] | components["schemas"]["swag_paypal_v2_order_purchase_unit_payments_authorization"] | components["schemas"]["swag_paypal_v2_order_purchase_unit_payments_capture"] | components["schemas"]["swag_paypal_v2_order_purchase_unit_payments_refund"] | components["schemas"]["swag_paypal_v1_webhook_resource"] | components["schemas"]["swag_paypal_v1_subscription"] | null;
       create_time: string;
       links: components["schemas"]["swag_paypal_v1_common_link"][];
       event_version: string;
