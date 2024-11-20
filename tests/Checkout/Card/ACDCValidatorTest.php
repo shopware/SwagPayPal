@@ -27,7 +27,23 @@ class ACDCValidatorTest extends AbstractCardValidatorTestCase
         $this->validator = new ACDCValidator($this->systemConfigService);
     }
 
-    public function testValidationWithMissingAuthenticationResultWillThrowException(): void
+    public function testValidationWithMissingCardWillThrowException(): void
+    {
+        $order = (new Order())->assign([
+            'id' => 'paypalOrderId',
+            'payment_source' => ['card' => null],
+        ]);
+
+        $transaction = $this->createMock(SyncPaymentTransactionStruct::class);
+        $salesChannelContext = $this->createMock(SalesChannelContext::class);
+
+        static::expectException(MissingPayloadException::class);
+        static::expectExceptionMessage('Missing request payload payment_source.card to order "paypalOrderId" not found');
+
+        $this->validator->validate($order, $transaction, $salesChannelContext);
+    }
+
+    public function testValidationWithMissingAuthenticationResultWillReturnTrue(): void
     {
         $order = (new Order())->assign([
             'id' => 'paypalOrderId',
@@ -37,9 +53,6 @@ class ACDCValidatorTest extends AbstractCardValidatorTestCase
         $transaction = $this->createMock(SyncPaymentTransactionStruct::class);
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
 
-        static::expectException(MissingPayloadException::class);
-        static::expectExceptionMessage('Missing request payload payment_source.card.authentication_result to order "paypalOrderId" not found');
-
-        $this->validator->validate($order, $transaction, $salesChannelContext);
+        static::assertTrue($this->validator->validate($order, $transaction, $salesChannelContext));
     }
 }
