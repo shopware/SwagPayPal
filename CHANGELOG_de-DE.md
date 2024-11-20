@@ -3,6 +3,7 @@
 - PPI-1016 - Behebt ein Problem, bei dem Sendungsverfolgungsdaten aufgrund zu langer Produktnamen nicht an PayPal übermittelt wurden
 - PPI-1014 - Behebt ein Problem, bei dem Bilder mit Sonderzeichen nicht zu Zettle synchronisiert werden konnten
 - PPI-1021 - Behebt ein Problem, bei dem die Administration nicht geladen wurde, wenn Shopware sich in einem Unterordner befindet
+- PPI-1024 - Behebt ein Problem, bei dem Kartenzahlungen aufgrund von inaktivem 3DS einer Karte fehlschlagen konnten
 
 # 8.6.3
 - PPI-1015 - Behebt ein Problem, bei dem PayPal-Einstellungen in der Administration nicht gespeichert werden konnten
