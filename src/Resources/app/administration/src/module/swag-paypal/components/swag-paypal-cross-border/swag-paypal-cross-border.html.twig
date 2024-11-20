@@ -19,18 +19,14 @@
     {% endblock %}
 
     {% block swag_paypal_cross_border_messaging_enabled %}
-    <sw-inherit-wrapper
-        {% if VUE3 %}
-            v-model:value="actualConfigData['SwagPayPal.settings.crossBorderMessagingEnabled']"
-        {% else %}
-            v-model="actualConfigData['SwagPayPal.settings.crossBorderMessagingEnabled']"
-        {% endif %}
-        :inherited-value="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.crossBorderMessagingEnabled']"
+    <swag-paypal-inherit-wrapper
+        v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+        path="SwagPayPal.settings.crossBorderMessagingEnabled"
     >
         <template #content="props">
             <sw-switch-field
                 name="SwagPayPal.settings.crossBorderMessagingEnabled"
-                :map-inheritance="props"
+                :mapInheritance="props"
                 :label="$tc('swag-paypal.cross-border.crossBorderMessagingEnable')"
                 :disabled="isLoading || props.isInherited || !acl.can('swag_paypal.editor')"
                 :value="props.currentValue"
@@ -42,23 +38,19 @@
                 {% endif %}
             />
         </template>
-    </sw-inherit-wrapper>
+    </swag-paypal-inherit-wrapper>
     {% endblock %}
 
     {% block swag_paypal_cross_border_buyer_country_override %}
-    <sw-inherit-wrapper
-        {% if VUE3 %}
-            v-model:value="actualConfigData['SwagPayPal.settings.crossBorderBuyerCountry']"
-        {% else %}
-            v-model="actualConfigData['SwagPayPal.settings.crossBorderBuyerCountry']"
-        {% endif %}
-        :inherited-value="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.crossBorderBuyerCountry']"
+    <swag-paypal-inherit-wrapper
+        v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+        path="SwagPayPal.settings.crossBorderBuyerCountry"
+        :label="$tc('swag-paypal.cross-border.crossBorderBuyerCountryOverride')"
     >
         <template #content="props">
             <sw-single-select
                 name="SwagPayPal.settings.crossBorderBuyerCountry"
-                :map-inheritance="props"
-                :label="$tc('swag-paypal.cross-border.crossBorderBuyerCountryOverride')"
+                :isInherited="props.isInherited"
                 :disabled="isLoading || props.isInherited || !acl.can('swag_paypal.editor')"
                 :value="props.currentValue ?? null"
                 :options="countryOverrideOptions"
@@ -69,7 +61,7 @@
                 {% endif %}
             />
         </template>
-    </sw-inherit-wrapper>
+    </swag-paypal-inherit-wrapper>
     {% endblock %}
 </sw-card>
 {% endblock %}

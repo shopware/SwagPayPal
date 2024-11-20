@@ -79,10 +79,11 @@ export default Shopware.Component.wrapComponentConfig({
 
         renderSettingsDisabled() {
             return !this.acl.can('swag_paypal.editor') || (
-                !this.actualConfigData['SwagPayPal.settings.ecsDetailEnabled']
+                !this.selectedSalesChannelId
+                && !this.actualConfigData['SwagPayPal.settings.ecsDetailEnabled']
                 && !this.actualConfigData['SwagPayPal.settings.ecsCartEnabled']
                 && !this.actualConfigData['SwagPayPal.settings.ecsOffCanvasEnabled']
-                && !this.actualConfigData['SwagPayPal.settings.ecsProductDetailEnabled']
+                && !this.actualConfigData['SwagPayPal.settings.ecsLoginEnabled']
                 && !this.actualConfigData['SwagPayPal.settings.ecsListingEnabled']
             );
         },
@@ -102,6 +103,9 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     methods: {
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed and is replaced by swag-paypal-inherit-wrapper
+         */
         checkTextFieldInheritance(value: unknown): boolean {
             if (typeof value !== 'string') {
                 return true;
@@ -110,6 +114,9 @@ export default Shopware.Component.wrapComponentConfig({
             return value.length <= 0;
         },
 
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed and is replaced by swag-paypal-inherit-wrapper
+         */
         checkBoolFieldInheritance(value: unknown): boolean {
             return typeof value !== 'boolean';
         },

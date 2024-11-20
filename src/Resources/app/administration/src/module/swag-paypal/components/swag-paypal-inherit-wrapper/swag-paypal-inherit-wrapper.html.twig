@@ -1,0 +1,16 @@
+<sw-inherit-wrapper
+    :value="value"
+    :inheritedValue="inheritedValue"
+    :customInheritationCheckFunction="customInheritationCheckFunction"
+    :hasParent="hasParent"
+    v-bind="attrs"
+    {% if VUE3 %}
+    @update:value="setValue"
+    {% else %}
+    @input="setValue"
+    {% endif %}
+>
+    <template #content="props">
+        <slot name="content" v-bind="props"></slot>
+    </template>
+</sw-inherit-wrapper>

@@ -11,6 +11,7 @@ Shopware.Component.register('swag-paypal-created-component-helper', () => import
 Shopware.Component.register('swag-paypal-credentials', () => import('./components/swag-paypal-credentials'));
 Shopware.Component.register('swag-paypal-cross-border', () => import('./components/swag-paypal-cross-border'));
 Shopware.Component.register('swag-paypal-express', () => import('./components/swag-paypal-express'));
+Shopware.Component.register('swag-paypal-inherit-wrapper', () => import('./components/swag-paypal-inherit-wrapper'));
 Shopware.Component.register('swag-paypal-installment', () => import('./components/swag-paypal-installment'));
 Shopware.Component.register('swag-paypal-plus', () => import('./components/swag-paypal-plus'));
 Shopware.Component.register('swag-paypal-pui', () => import('./components/swag-paypal-pui'));

@@ -26,7 +26,7 @@ async function createWrapper(customOptions = {}) {
             },
         },
         components: {
-            'sw-inherit-wrapper': {
+            'swag-paypal-inherit-wrapper': {
                 template: '<div class="sw-inherit-wrapper"><slot name="content"></slot></div>',
             },
             'sw-card': await Shopware.Component.build('sw-card'),

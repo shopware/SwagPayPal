@@ -1,4 +1,5 @@
 # 8.6.4
+- PPI-930 - Behebt ein Problem, bei dem bei einem ausgewähltem Verkaufskanal die vererbte Konfiguration nicht korrekt funktionierte
 - PPI-1013 - Verbessert die Zuverlässigkeit der Produktsynchronisation mit Zettle
 - PPI-1016 - Behebt ein Problem, bei dem Sendungsverfolgungsdaten aufgrund zu langer Produktnamen nicht an PayPal übermittelt wurden
 - PPI-1014 - Behebt ein Problem, bei dem Bilder mit Sonderzeichen nicht zu Zettle synchronisiert werden konnten

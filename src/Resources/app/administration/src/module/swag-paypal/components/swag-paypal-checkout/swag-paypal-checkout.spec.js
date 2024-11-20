@@ -27,7 +27,7 @@ async function createWrapper(customOptions = {}) {
                 getMerchantInformation: () => Promise.resolve({ capabilities: [] }),
             },
         },
-        stubs: ['sw-icon', 'sw-inherit-wrapper', 'sw-button-process'],
+        stubs: ['sw-icon', 'swag-paypal-inherit-wrapper', 'sw-button-process'],
         components: {
             'sw-container': await Shopware.Component.build('sw-container'),
             'sw-card': await Shopware.Component.build('sw-card'),

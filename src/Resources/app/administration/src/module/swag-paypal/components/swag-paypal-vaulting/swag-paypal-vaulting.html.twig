@@ -22,15 +22,10 @@
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_vaulting_settings_wallet %}
-        <sw-inherit-wrapper
+        <swag-paypal-inherit-wrapper
             v-if="canHandleVaulting && !isLoadingMerchantInformation"
-            {% if VUE3 %}
-                v-model:value="actualConfigData['SwagPayPal.settings.vaultingEnabledWallet']"
-            {% else %}
-                v-model="actualConfigData['SwagPayPal.settings.vaultingEnabledWallet']"
-            {% endif %}
-            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['SwagPayPal.settings.vaultingEnabledWallet']"
-            :customInheritationCheckFunction="checkBoolFieldInheritance"
+            v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+            path="SwagPayPal.settings.vaultingEnabledWallet"
         >
             <template #content="props">
                 <sw-switch-field
@@ -47,19 +42,14 @@
                     {% endif %}
                 />
             </template>
-        </sw-inherit-wrapper>
+        </swag-paypal-inherit-wrapper>
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_vaulting_settings_acdc %}
-        <sw-inherit-wrapper
+        <swag-paypal-inherit-wrapper
             v-if="canHandleVaulting && !isLoadingMerchantInformation"
-            {% if VUE3 %}
-                v-model:value="actualConfigData['SwagPayPal.settings.vaultingEnabledACDC']"
-            {% else %}
-                v-model="actualConfigData['SwagPayPal.settings.vaultingEnabledACDC']"
-            {% endif %}
-            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['SwagPayPal.settings.vaultingEnabledACDC']"
-            :customInheritationCheckFunction="checkBoolFieldInheritance"
+            v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+            path="SwagPayPal.settings.vaultingEnabledACDC"
         >
             <template #content="props">
                 <sw-switch-field
@@ -76,19 +66,14 @@
                     {% endif %}
                 />
             </template>
-        </sw-inherit-wrapper>
+        </swag-paypal-inherit-wrapper>
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_vaulting_settings_venmo %}
-        <sw-inherit-wrapper
+        <swag-paypal-inherit-wrapper
             v-if="canHandleVaulting && !isLoadingMerchantInformation"
-            {% if VUE3 %}
-                v-model:value="actualConfigData['SwagPayPal.settings.vaultingEnabledVenmo']"
-            {% else %}
-                v-model="actualConfigData['SwagPayPal.settings.vaultingEnabledVenmo']"
-            {% endif %}
-            :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['SwagPayPal.settings.vaultingEnabledVenmo']"
-            :customInheritationCheckFunction="checkBoolFieldInheritance"
+            v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+            path="SwagPayPal.settings.vaultingEnabledVenmo"
         >
             <template #content="props">
                 <sw-switch-field
@@ -105,7 +90,7 @@
                     {% endif %}
                 />
             </template>
-        </sw-inherit-wrapper>
+        </swag-paypal-inherit-wrapper>
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_vaulting_settings_onboarding %}
