@@ -21,7 +21,7 @@ async function createWrapper(customOptions = {}) {
                 },
             },
             stubs: {
-                'sw-inherit-wrapper': {
+                'swag-paypal-inherit-wrapper': {
                     template: '<div class="sw-inherit-wrapper"><slot name="content"></slot></div>',
                 },
                 'sw-card': await wrapTestComponent('sw-card', { sync: true }),

@@ -88,6 +88,9 @@ export default Shopware.Component.wrapComponentConfig({
                 });
         },
 
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed and is replaced by swag-paypal-inherit-wrapper
+         */
         checkBoolFieldInheritance(value: unknown): boolean {
             return typeof value !== 'boolean';
         },

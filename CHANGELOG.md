@@ -1,4 +1,5 @@
 # 9.6.4
+- PPI-930 - Fixes a issue, where with a selected sales channel the inherited configuration was not working correctly
 - PPI-1013 - Improves the reliability of syncing products to Zettle
 - PPI-1014 - Fixes an issue, where images with special characters could not be synced to Zettle
 - PPI-1016 - Fixes an issue, where shipping tracking codes were not synced with to long product names
