@@ -2,6 +2,7 @@
 - PPI-1013 - Improves the reliability of syncing products to Zettle
 - PPI-1014 - Fixes an issue, where images with special characters could not be synced to Zettle
 - PPI-1016 - Fixes an issue, where shipping tracking codes were not synced with to long product names
+- PPI-1021 - Fixes an issue, where the PayPal Administration was not loaded with Shopware in a subdirectory
 
 # 8.6.3
 - PPI-1015 - Fixes an issue, where PayPal settings could not be saved in the Administration
