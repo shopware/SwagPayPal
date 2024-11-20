@@ -2,6 +2,7 @@
 - PPI-1013 - Verbessert die Zuverlässigkeit der Produktsynchronisation mit Zettle
 - PPI-1016 - Behebt ein Problem, bei dem Sendungsverfolgungsdaten aufgrund zu langer Produktnamen nicht an PayPal übermittelt wurden
 - PPI-1014 - Behebt ein Problem, bei dem Bilder mit Sonderzeichen nicht zu Zettle synchronisiert werden konnten
+- PPI-1024 - Behebt ein Problem, bei dem Kartenzahlungen aufgrund von inaktivem 3DS einer Karte fehlschlagen konnten
 
 # 9.6.3
 - PPI-1015 - Behebt ein Problem, bei dem PayPal-Einstellungen in der Administration nicht gespeichert werden konnten
