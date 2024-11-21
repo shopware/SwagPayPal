@@ -117,6 +117,9 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     methods: {
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed and is replaced by swag-paypal-inherit-wrapper
+         */
         checkTextFieldInheritance(value: unknown): boolean {
             if (typeof value !== 'string') {
                 return true;
@@ -125,6 +128,9 @@ export default Shopware.Component.wrapComponentConfig({
             return value.length <= 0;
         },
 
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed and is replaced by swag-paypal-inherit-wrapper
+         */
         checkArrayFieldInheritance(value: unknown): boolean {
             if (!Array.isArray(value)) {
                 return true;
@@ -133,6 +139,9 @@ export default Shopware.Component.wrapComponentConfig({
             return value.length <= 0;
         },
 
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed and is replaced by swag-paypal-inherit-wrapper
+         */
         checkBoolFieldInheritance(value: unknown): boolean {
             return typeof value !== 'boolean';
         },

@@ -9,10 +9,9 @@
     <div v-if="actualConfigData" class="swag-paypal-settings-installment-fields">
 
         {% block swag_paypal_content_card_channel_config_installment_settings_detail_page_enabled %}
-        <sw-inherit-wrapper
-            v-model="actualConfigData['SwagPayPal.settings.installmentBannerDetailPageEnabled']"
-            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerDetailPageEnabled']"
-            :customInheritationCheckFunction="checkBoolFieldInheritance"
+        <swag-paypal-inherit-wrapper
+            v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+            path="SwagPayPal.settings.installmentBannerDetailPageEnabled"
         >
             <template #content="props">
                 <sw-switch-field
@@ -30,14 +29,13 @@
                     {% endif %}
                 />
             </template>
-        </sw-inherit-wrapper>
+        </swag-paypal-inherit-wrapper>
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_installment_settings_cart_enabled %}
-        <sw-inherit-wrapper
-            v-model="actualConfigData['SwagPayPal.settings.installmentBannerCartEnabled']"
-            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerCartEnabled']"
-            :customInheritationCheckFunction="checkBoolFieldInheritance"
+        <swag-paypal-inherit-wrapper
+            v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+            path="SwagPayPal.settings.installmentBannerCartEnabled"
         >
             <template #content="props">
                 <sw-switch-field
@@ -55,14 +53,13 @@
                     {% endif %}
                 />
             </template>
-        </sw-inherit-wrapper>
+        </swag-paypal-inherit-wrapper>
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_installment_settings_off_canvas_cart_enabled %}
-        <sw-inherit-wrapper
-            v-model="actualConfigData['SwagPayPal.settings.installmentBannerOffCanvasCartEnabled']"
-            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerOffCanvasCartEnabled']"
-            :customInheritationCheckFunction="checkBoolFieldInheritance"
+        <swag-paypal-inherit-wrapper
+            v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+            path="SwagPayPal.settings.installmentBannerOffCanvasCartEnabled"
         >
             <template #content="props">
                 <sw-switch-field
@@ -76,18 +73,13 @@
                     @change="props.updateCurrentValue"
                 />
             </template>
-        </sw-inherit-wrapper>
+        </swag-paypal-inherit-wrapper>
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_installment_settings_login_page_enabled %}
-        <sw-inherit-wrapper
-            {% if VUE3 %}
-            v-model:value="actualConfigData['SwagPayPal.settings.installmentBannerLoginPageEnabled']"
-            {% else %}
-            v-model="actualConfigData['SwagPayPal.settings.installmentBannerLoginPageEnabled']"
-            {% endif %}
-            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerLoginPageEnabled']"
-            :customInheritationCheckFunction="checkBoolFieldInheritance"
+        <swag-paypal-inherit-wrapper
+            v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+            path="SwagPayPal.settings.installmentBannerLoginPageEnabled"
         >
             <template #content="props">
                 <sw-switch-field
@@ -101,14 +93,13 @@
                     @change="props.updateCurrentValue"
                 />
             </template>
-        </sw-inherit-wrapper>
+        </swag-paypal-inherit-wrapper>
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_installment_settings_footer_enabled %}
-        <sw-inherit-wrapper
-            v-model="actualConfigData['SwagPayPal.settings.installmentBannerFooterEnabled']"
-            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerFooterEnabled']"
-            :customInheritationCheckFunction="checkBoolFieldInheritance"
+        <swag-paypal-inherit-wrapper
+            v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+            path="SwagPayPal.settings.installmentBannerFooterEnabled"
         >
             <template #content="props">
                 <sw-switch-field
@@ -122,7 +113,7 @@
                     @change="props.updateCurrentValue"
                 />
             </template>
-        </sw-inherit-wrapper>
+        </swag-paypal-inherit-wrapper>
         {% endblock %}
 
     </div>

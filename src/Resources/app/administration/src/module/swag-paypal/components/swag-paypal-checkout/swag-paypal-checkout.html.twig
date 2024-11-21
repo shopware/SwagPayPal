@@ -29,16 +29,11 @@
         <div :class="{'swag-paypal-checkout__box': showMerchantInformation }">
 
             {% block swag_paypal_content_card_channel_config_checkout_container_sandbox_switch %}
-            <sw-inherit-wrapper
+            <swag-paypal-inherit-wrapper
                 v-if="showSandboxToggle"
-                {% if VUE3 %}
-                v-model:value="actualConfigData['SwagPayPal.settings.sandbox']"
-                {% else %}
-                v-model="actualConfigData['SwagPayPal.settings.sandbox']"
-                {% endif %}
+                v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+                path="SwagPayPal.settings.sandbox"
                 class="swag-paypal-checkout__sandbox-toggle"
-                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['SwagPayPal.settings.sandbox']"
-                :customInheritationCheckFunction="checkBoolFieldInheritance"
             >
                 <template #content="props">
                     <sw-switch-field
@@ -55,7 +50,7 @@
                         @change="props.updateCurrentValue"
                     />
                 </template>
-            </sw-inherit-wrapper>
+            </swag-paypal-inherit-wrapper>
             {% endblock %}
 
             {% block swag_paypal_content_card_channel_config_checkout_container_header %}
