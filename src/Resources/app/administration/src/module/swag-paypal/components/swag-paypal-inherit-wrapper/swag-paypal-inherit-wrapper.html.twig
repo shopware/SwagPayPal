@@ -1,0 +1,11 @@
+<sw-inherit-wrapper
+    v-model:value="value"
+    :inherited-value="inheritedValue"
+    :custom-inheritation-check-function="customInheritationCheckFunction"
+    :has-parent="hasParent"
+    v-bind="attrs"
+>
+    <template #content="props">
+        <slot name="content" v-bind="props"></slot>
+    </template>
+</sw-inherit-wrapper>

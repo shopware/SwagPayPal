@@ -68,11 +68,14 @@ export default Shopware.Component.wrapComponentConfig({
         },
 
         renderSettingsDisabled(): boolean {
-            return !this.acl.can('swag_paypal.editor') || !this.actualConfigData['SwagPayPal.settings.spbCheckoutEnabled'];
+            return !this.acl.can('swag_paypal.editor') || (!this.selectedSalesChannelId && !this.actualConfigData['SwagPayPal.settings.spbCheckoutEnabled']);
         },
     },
 
     methods: {
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed and is replaced by swag-paypal-inherit-wrapper
+         */
         checkTextFieldInheritance(value: unknown): boolean {
             if (typeof value !== 'string') {
                 return true;
@@ -81,6 +84,9 @@ export default Shopware.Component.wrapComponentConfig({
             return value.length <= 0;
         },
 
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed and is replaced by swag-paypal-inherit-wrapper
+         */
         checkBoolFieldInheritance(value: unknown): boolean {
             return typeof value !== 'boolean';
         },
