@@ -272,7 +272,7 @@
                     "helpText": "If this option is active, the Express Checkout button will be shown on listing pages."
                 },
                 "ecsButtonColor": {
-                    "label": "Button color",
+                    "label": "Button colour",
                     "options": {
                         "blue": "Blue",
                         "black": "Black",
