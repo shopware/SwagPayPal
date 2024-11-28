@@ -4,8 +4,8 @@ on:
     branches:
       - trunk
   pull_request:
-    paths:
-      - src/Resources/app/administration/**/*
+    # paths:
+    #   - src/Resources/app/administration/**/*
   workflow_dispatch:
 
 permissions:

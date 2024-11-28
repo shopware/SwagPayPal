@@ -5,12 +5,12 @@ on:
     branches:
       - trunk
   pull_request:
-    paths:
-      - bin/*.php
-      - src/**/*.php
-      - tests/**/*.php
-      - rector.php
-      - composer.json
+    #    paths:
+    #      - bin/*.php
+    #      - src/**/*.php
+    #      - tests/**/*.php
+    #      - rector.php
+    #      - composer.json
   workflow_dispatch:
   workflow_call:
 
