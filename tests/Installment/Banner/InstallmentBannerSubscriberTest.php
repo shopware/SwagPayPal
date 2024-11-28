@@ -46,6 +46,7 @@ use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -69,6 +70,8 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     private MockObject&EntityRepository $languageRepository;
 
+    private MockObject&LocaleCodeProvider $localeCodeProvider;
+
     protected function setUp(): void
     {
         $this->payPalPaymentMethodId = Uuid::randomHex();
@@ -76,6 +79,7 @@ class InstallmentBannerSubscriberTest extends TestCase
         $this->paymentMethodUtil->method('getPayPalPaymentMethodId')->willReturn($this->payPalPaymentMethodId);
         $this->excludedProductValidator = $this->createMock(ExcludedProductValidator::class);
         $this->languageRepository = $this->createMock(EntityRepository::class);
+        $this->localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
     }
 
     public function testGetSubscribedEvents(): void
@@ -328,9 +332,10 @@ class InstallmentBannerSubscriberTest extends TestCase
             new SettingsValidationService($settings, new NullLogger()),
             $this->paymentMethodUtil,
             new BannerDataService(
-                $this->paymentMethodUtil,
-                new CredentialsUtil($settings),
+                $this->localeCodeProvider,
                 $settings,
+                new CredentialsUtil($settings),
+                $this->paymentMethodUtil,
                 $this->languageRepository
             ),
             $this->excludedProductValidator,
