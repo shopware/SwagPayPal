@@ -1,3 +1,6 @@
+# 9.6.5
+- PPI-1025 - Improves the performance of the installment banner in the Storefront
+
 # 9.6.4
 - PPI-930 - Fixes a issue, where with a selected sales channel the inherited configuration was not working correctly
 - PPI-1013 - Improves the reliability of syncing products to Zettle
@@ -220,12 +223,12 @@
 - PPI-670 - Improved display of onboarding status in Administration
 
 # 5.1.1
-- PPI-657 - Cleaned up template `buy-widget-form` 
+- PPI-657 - Cleaned up template `buy-widget-form`
 
 # 5.1.0
 - PPI-611 - Added possibility to exclude products and dynamic product groups from PayPal & Express Checkout
 - PPI-617 - Fix issue where payment method authorizations were not correctly shown for Sales Channel specific settings
-- PPI-620 - Fix issue showing an incorrect webhook error message on saving settings without credentials 
+- PPI-620 - Fix issue showing an incorrect webhook error message on saving settings without credentials
 - PPI-634 - Fix issue with shipping tax calculation for net customer groups
 - PPI-635 - Fix issue with incorrect Pay Upon Invoice data display in invoices
 - PPI-639 - The Sales Channel selection in the PayPal settings can now display more than 25 Sales Channels

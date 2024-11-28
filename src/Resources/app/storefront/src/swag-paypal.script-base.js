@@ -138,9 +138,7 @@ export default class SwagPayPalScriptBase extends Plugin {
     }
 
     async _loadScript() {
-        await loadScript(this.getScriptOptions());
-
-        SwagPayPalScriptBase.paypal[this.scriptOptionsHash] = window.paypal;
+        SwagPayPalScriptBase.paypal[this.scriptOptionsHash] = await loadScript(this.getScriptOptions());
 
         // overwriting an existing `window.paypal` object would remove previously rendered elements
         // therefore we remove it so other scripts can load it on their own

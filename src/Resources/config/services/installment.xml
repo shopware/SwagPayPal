@@ -15,9 +15,10 @@
         </service>
 
         <service id="Swag\PayPal\Installment\Banner\Service\BannerDataService">
-            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
-            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="language.repository"/>
         </service>
     </services>
