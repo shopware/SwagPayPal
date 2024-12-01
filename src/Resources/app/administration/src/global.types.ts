@@ -15,6 +15,7 @@ import type SwagPayPalPosSettingApiService from './core/service/api/swag-paypal-
 import type SwagPayPalPosWebhookRegisterService from './core/service/api/swag-paypal-pos-webhook-register.service';
 import type SwagPayPalPosApiService from './core/service/api/swag-paypal-pos.api.service';
 import type SwagPayPalWebhookService from './core/service/api/swag-paypal-webhook.service';
+import type SwagPayPalSettingsService from './core/service/api/swag-paypal-settings.service';
 
 declare global {
     type TEntity<T extends keyof EntitySchema.Entities> = Entity<T>;
@@ -40,6 +41,8 @@ declare global {
         SwagPayPalOrderService: SwagPayPalOrderService;
         SwagPaypalPaymentMethodService: SwagPaypalPaymentMethodService;
         SwagPayPalDisputeApiService: SwagPayPalDisputeApiService;
+        SwagPayPalSettingsService: SwagPayPalSettingsService;
+    }
     }
 }
 
