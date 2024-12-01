@@ -1,3 +1,4 @@
+import './acl';
 import './store/swag-paypal-merchant-information.store';
 import './store/swag-paypal-settings.store';
 
