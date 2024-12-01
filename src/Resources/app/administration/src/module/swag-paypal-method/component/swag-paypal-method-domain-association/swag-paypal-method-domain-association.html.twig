@@ -1,0 +1,15 @@
+<sw-alert
+    v-show="show"
+    class="swag-paypal-method-domain-association"
+    variant="warning"
+    :closable="true"
+    @close="onCloseAlert"
+>
+    {{ $t('swag-paypal-method.domainAssociation.title') }}
+
+    <br>
+
+    <sw-external-link :href="domainAssociationLink">
+        {{ $t('swag-paypal-method.domainAssociation.link') }}
+    </sw-external-link>
+</sw-alert>
