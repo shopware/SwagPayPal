@@ -1,0 +1,25 @@
+{% block swag_paypal_settings_webhook %}
+<swag-paypal-settings-webhook />
+{% endblock %}
+
+<sw-card
+    class="swag-paypal-settings-cross-border"
+    position-identifier="swag-paypal-settings-cross-border"
+    :title="$t('swag-paypal-settings.crossBorder.title')"
+    :is-loading="settingsStore.isLoading"
+>
+    <sw-alert class="swag-paypal-settings-cross-border__warning-text" variant="warning">
+        {{ $t('swag-paypal-settings.crossBorder.warning') }}
+    </sw-alert>
+
+    <span class="swag-paypal-settings-cross-border__info-text">
+        {{ $t('swag-paypal-settings.crossBorder.info') }}
+    </span>
+
+    <swag-paypal-setting path="SwagPayPal.settings.crossBorderMessagingEnabled" />
+
+    <swag-paypal-setting
+        path="SwagPayPal.settings.crossBorderBuyerCountry"
+        :options="countryOverrideOptions"
+    />
+</sw-card>

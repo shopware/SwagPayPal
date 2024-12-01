@@ -2,6 +2,9 @@ import type * as PayPal from 'src/types';
 import template from './swag-paypal-vaulting.html.twig';
 import './swag-paypal-vaulting.scss';
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-settings-general`
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 

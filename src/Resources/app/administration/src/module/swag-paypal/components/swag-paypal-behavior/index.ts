@@ -4,6 +4,9 @@ import constants from '../../page/swag-paypal/swag-paypal-consts';
 
 const { Criteria } = Shopware.Data;
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-settings-general`
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 
