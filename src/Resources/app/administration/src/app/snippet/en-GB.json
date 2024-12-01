@@ -14,6 +14,19 @@
       }
     }
   },
+  "swag-paypal-onboarding-button": {
+    "sandbox": {
+      "title": "Connect sandbox account",
+      "changeTitle": "Connect different sandbox account",
+      "onboardingTitle": "Start PayPal sandbox onboarding"
+    },
+    "live": {
+      "title": "Connect PayPal account",
+      "changeTitle": "Connect different account",
+      "onboardingTitle": "Start PayPal onboarding",
+      "restartOnboardingTitle": "Restart PayPal onboarding"
+    }
+  },
   "swag-paypal-setting": {
     "label": {
       "clientId": "Client ID",
