@@ -1,4 +1,8 @@
-Shopware.Component.override('sw-first-run-wizard-paypal-credentials', () => import('./sw-first-run-wizard/sw-first-run-wizard-paypal-credentials'));
+if (Shopware.Feature.isActive('PAYPAL_SETTINGS_TWEAKS')) {
+    Shopware.Component.override('sw-first-run-wizard-paypal-credentials', () => import('./sw-first-run-wizard/sw-first-run-wizard-paypal-credentials'));
+} else {
+    Shopware.Component.override('sw-first-run-wizard-paypal-credentials', () => import('./sw-first-run-wizard/sw-first-run-wizard-paypal-credentials-deprecated'));
+}
 
 Shopware.Component.override('sw-sales-channel-modal-detail', () => import('./sw-sales-channel-modal-detail'));
 
