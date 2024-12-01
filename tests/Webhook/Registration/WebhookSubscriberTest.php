@@ -16,6 +16,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Write\EntityExistence;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
+use Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigMultipleChangedEvent;
+use Shopware\Core\System\SystemConfig\Event\SystemConfigMultipleChangedEvent;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
@@ -24,8 +26,10 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
+use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -73,6 +77,8 @@ class WebhookSubscriberTest extends TestCase
     {
         static::assertEqualsCanonicalizing([
             SalesChannelEvents::SALES_CHANNEL_DELETED => 'removeSalesChannelWebhookConfiguration',
+            BeforeSystemConfigMultipleChangedEvent::class => 'checkWebhookBefore',
+            SystemConfigMultipleChangedEvent::class => 'checkWebhookAfter',
         ], WebhookSubscriber::getSubscribedEvents());
     }
 
@@ -98,7 +104,9 @@ class WebhookSubscriberTest extends TestCase
         return new WebhookSubscriber(
             new NullLogger(),
             $this->systemConfigService,
-            $webhookService
+            $webhookService,
+            $this->createMock(WebhookSystemConfigHelper::class),
+            new RequestStack(),
         );
     }
 
