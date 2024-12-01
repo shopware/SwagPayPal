@@ -1,4 +1,5 @@
 import type * as PayPal from 'src/types';
+import type { HttpError } from "src/types";
 
 /**
  * Options to handle a service error.
@@ -26,6 +27,8 @@ export default Shopware.Mixin.register('swag-paypal-notification', Shopware.Comp
 
     methods: {
         /**
+         * @deprecated tag:v10.0.0 - Will be removed, use `createMessageFromError` instead
+         *
          * Handles a service error and creates a notification for each error.
          * If the errorResponse is undefined, a generic error notification will be created.
          * If the errorResponse is not a ShopwareHttpError, the errorResponse will be used as message.
@@ -67,6 +70,27 @@ export default Shopware.Mixin.register('swag-paypal-notification', Shopware.Comp
             for (let i = 0; i < messages.length; i += 1) {
                 this.createNotificationError({ message: messages[i], title });
             }
+        },
+
+        /**
+         * Creates a message from a http error.
+         * Can handle axios responses, plain object containing errors or an array of errors.
+         */
+        createMessageFromError(httpError: PayPal.ServiceError&{ errors?: HttpError[] }): string {
+            const errors = httpError.errors ?? httpError?.response?.data?.errors ?? [];
+
+            const messages = errors.map((error) => {
+                const message = typeof error.meta?.parameters?.message === 'string'
+                    ? error.meta.parameters.message
+                    : error.detail;
+
+                const snippet = `swag-paypal.errors.${error.code}`;
+                const translation = this.$t(snippet, { message });
+
+                return snippet !== translation ? translation : message;
+            });
+
+            return messages.join('<br>');
         },
     },
 }));
