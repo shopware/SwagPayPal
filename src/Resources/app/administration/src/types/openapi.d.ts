@@ -99,11 +99,17 @@ export interface paths {
   "/api/_action/paypal/validate-api-credentials": {
     get: operations["validateApiCredentials"];
   };
+  "/api/_action/paypal/test-api-credentials": {
+    post: operations["testApiCredentials"];
+  };
   "/api/_action/paypal/get-api-credentials": {
     post: operations["getApiCredentials"];
   };
   "/api/_action/paypal/merchant-information": {
     get: operations["getMerchantInformation"];
+  };
+  "/api/_action/paypal/save-settings": {
+    post: operations["saveSettings"];
   };
   "/api/_action/paypal/webhook/status/{salesChannelId}": {
     get: operations["getWebhookStatus"];
@@ -1382,11 +1388,18 @@ export interface components {
       remoteCount: number;
     };
     swag_paypal_setting_merchant_information: {
-      merchantIntegrations: components["schemas"]["swag_paypal_v1_merchant_integrations"];
+      merchantIntegrations: components["schemas"]["swag_paypal_v1_merchant_integrations"] | null;
       /** @description string> key: paymentMethodId, value: capability (see AbstractMethodData) */
       capabilities: {
         [key: string]: string;
       };
+    };
+    swag_paypal_setting_settings_information: {
+      sandboxCredentialsChanged: boolean;
+      sandboxCredentialsValid: boolean | null;
+      liveCredentialsChanged: boolean;
+      liveCredentialsValid: boolean | null;
+      webhookErrors: string[];
     };
   };
   responses: never;
@@ -1933,6 +1946,19 @@ export interface operations {
       };
     };
   };
+  testApiCredentials: {
+    responses: {
+      /** @description Returns if the provided API credentials are valid */
+      200: {
+        content: {
+          "application/json": {
+            valid: boolean;
+            errors: components["schemas"]["error"][];
+          };
+        };
+      };
+    };
+  };
   getApiCredentials: {
     requestBody?: {
       content: {
@@ -1967,6 +1993,18 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["swag_paypal_setting_merchant_information"];
+        };
+      };
+    };
+  };
+  saveSettings: {
+    responses: {
+      /** @description Returns information about the saved settings */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: components["schemas"]["swag_paypal_setting_settings_information"];
+          };
         };
       };
     };

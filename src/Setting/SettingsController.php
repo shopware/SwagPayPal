@@ -218,7 +218,7 @@ class SettingsController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[OA\Get(
+    #[OA\Post(
         path: '/api/_action/paypal/save-settings',
         operationId: 'saveSettings',
         tags: ['Admin Api', 'PayPal'],
