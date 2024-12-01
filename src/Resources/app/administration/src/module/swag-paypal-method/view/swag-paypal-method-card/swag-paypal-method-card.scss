@@ -1,0 +1,56 @@
+@import "~scss/variables";
+
+.swag-paypal-method-card {
+    .sw-card__titles {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+    }
+
+    &__status  {
+        margin: 0;
+
+        .sw-color-badge {
+            margin: 0;
+        }
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 30px;
+    }
+
+    &__header {
+        font-weight: $font-weight-bold;
+        font-size: $font-size-m;
+        line-height: 42px;
+    }
+
+    &__description {
+        line-height: 25px;
+    }
+
+    &__onboarding_buttons {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    &__payment-method-headline {
+        font-size: $font-size-m;
+        margin: 16px 0 8px;
+    }
+
+    &__listing {
+        display: flex;
+        gap: 16px;
+        flex-direction: column;
+    }
+
+    & .sw-skeleton-bar {
+        height: 24px;
+        margin: 0;
+    }
+}

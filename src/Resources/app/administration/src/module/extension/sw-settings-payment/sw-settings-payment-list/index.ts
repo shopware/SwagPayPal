@@ -2,6 +2,9 @@ import type * as PayPal from 'src/types';
 import template from './sw-settings-payment-list.html.twig';
 import './sw-settings-payment-list.scss';
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced without replacement
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 

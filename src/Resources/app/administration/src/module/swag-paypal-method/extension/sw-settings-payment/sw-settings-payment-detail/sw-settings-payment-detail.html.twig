@@ -1,0 +1,30 @@
+{% block sw_settings_payment_detail_content_field_plugin %}
+<sw-button
+    v-if="needsOnboarding && !!paymentMethod?.pluginId"
+    variant="ghost"
+    size="small"
+    class="sw-plugin-box__button"
+    :router-link="{ name: 'swag.paypal.settings.index' }"
+>
+    {{ $t('sw-plugin-box.buttonPluginSettings') }}
+</sw-button>
+
+<template v-else>
+    {% parent %}
+</template>
+{% endblock %}
+
+{% block sw_settings_payment_detail_content_field_active %}
+<sw-switch-field
+    v-if="!acl.can('payment.editor') || paymentMethod && needsOnboarding"
+    v-model:value="paymentMethod.active"
+    v-tooltip.left="{ message: $t('sw-settings-payment-detail.tooltip') }"
+    class="sw-settings-payment-detail__field-active"
+    :disabled="!acl.can('payment.editor') || paymentMethod && needsOnboarding"
+    :label="$t('sw-settings-payment.detail.labelActive')"
+/>
+
+<template v-else>
+    {% parent %}
+</template>
+{% endblock %}
