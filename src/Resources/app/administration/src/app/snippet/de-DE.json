@@ -1,0 +1,10 @@
+{
+  "swag-paypal": {
+    "errors": {
+      "UNKNOWN": "Ein unbekannter Fehler ist aufgetreten",
+      "SWAG_PAYPAL__API_INVALID_CREDENTIALS": "Die API-Zugangsdaten sind ungültig",
+      "SWAG_PAYPAL__API_NOT_AVAILABLE": "Die PayPal-Services sind derzeit nicht verfügbar. Bitte versuchen Sie es später errneut.",
+      "SWAG_PAYPAL__INVALID_API_CREDENTIALS": "Die API-Zugangsdaten sind ungültig"
+    }
+  }
+}
