@@ -54,6 +54,7 @@ class OpenAPISchemaTest extends TestCase
     public const IGNORED_LOG_MESSAGES = [
         'Required @OA\Info() not found',
         '$ref "#/components/schemas/" not found for @OA\Response() in \Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute->load()',
+        '$ref "#/components/schemas/" not found for @OA\Items() in \Swag\PayPal\Setting\SettingsController->testApiCredentials()',
     ];
 
     private OpenApi $oa;

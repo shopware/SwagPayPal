@@ -16,7 +16,7 @@ use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 #[Package('checkout')]
 class MerchantInformationStruct extends Struct
 {
-    #[OA\Property(ref: MerchantIntegrations::class)]
+    #[OA\Property(ref: MerchantIntegrations::class, nullable: true)]
     protected ?MerchantIntegrations $merchantIntegrations;
 
     /**
