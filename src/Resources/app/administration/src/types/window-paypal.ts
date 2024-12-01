@@ -10,6 +10,7 @@ export declare type AppSignup = {
     };
 
     render: () => void;
+    setup: () => void;
     timeout?: NodeJS.Timeout;
 };
 
@@ -28,8 +29,17 @@ declare global {
     interface Window {
         PAYPAL?: PAYPAL;
 
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed.
+         */
         onboardingCallbackLive?: (authCode: string, sharedId: string) => void;
+
+        /**
+         * @deprecated tag:v10.0.0 - Will be removed.
+         */
         onboardingCallbackSandbox?: (authCode: string, sharedId: string) => void;
+
+        [key: `onboardingCallback${string}`]: undefined | ((authCode: string, sharedId: string) => void);
     }
 }
 

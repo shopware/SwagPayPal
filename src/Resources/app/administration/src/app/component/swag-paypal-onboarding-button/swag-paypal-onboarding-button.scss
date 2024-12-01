@@ -1,0 +1,34 @@
+@import "~scss/variables";
+
+.swag-paypal-onboarding-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    &.sw-button {
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    &.is--link {
+        font-weight: $font-weight-semi-bold;
+        font-size: $font-size-xs;
+        align-self: center;
+        text-wrap: balance;
+    }
+
+    // :not will prioritize this rule higher
+    &.is--disabled:not(.mt-button) {
+        cursor: not-allowed;
+        color: $color-shopware-brand-200;
+        border-color: $color-shopware-brand-200;
+
+        &::after {
+            background-color: $color-shopware-brand-200;
+        }
+    }
+}
+
+.isu-minibrowser-component {
+    z-index: 2000; // above all shopware components (like modals)
+}

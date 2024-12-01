@@ -1,5 +1,8 @@
 const { debug } = Shopware.Utils;
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-onboarding-button`
+ */
 export default Shopware.Mixin.register('swag-paypal-credentials-loader', Shopware.Component.wrapComponentConfig({
 
     inject: ['SwagPayPalApiCredentialsService'],
