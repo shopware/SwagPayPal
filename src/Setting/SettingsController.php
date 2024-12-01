@@ -8,11 +8,13 @@
 namespace Swag\PayPal\Setting;
 
 use OpenApi\Attributes as OA;
+use Shopware\Core\Framework\Api\EventListener\ErrorResponseFactory;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SystemConfig\Validation\SystemConfigValidator;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Setting\Service\SettingsSaverInterface;
@@ -99,6 +101,63 @@ class SettingsController extends AbstractController
         $credentialsValid = $this->apiCredentialService->testApiCredentials($clientId, $clientSecret, $sandboxActive, $merchantPayerId);
 
         return new JsonResponse(['credentialsValid' => $credentialsValid]);
+    }
+
+    #[OA\Post(
+        path: '/api/_action/paypal/test-api-credentials',
+        operationId: 'testApiCredentials',
+        tags: ['Admin Api', 'PayPal'],
+        responses: [new OA\Response(
+            response: Response::HTTP_OK,
+            description: 'Returns if the provided API credentials are valid',
+            content: new OA\JsonContent(
+                required: ['valid', 'errors'],
+                properties: [
+                    new OA\Property(
+                        property: 'valid',
+                        type: 'boolean',
+                    ),
+                    new OA\Property(
+                        property: 'errors',
+                        type: 'array',
+                        items: new OA\Items(ref: '#/components/schemas/error'),
+                    ),
+                ]
+            )
+        )]
+    )]
+    #[Route(path: '/api/_action/paypal/test-api-credentials', name: 'api.action.paypal.test-api-credentials', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.viewer']])]
+    public function testApiCredentials(RequestDataBag $data): JsonResponse
+    {
+        $clientId = $data->getString('clientId');
+        if (!$clientId) {
+            throw RoutingException::invalidRequestParameter('clientId');
+        }
+
+        $clientSecret = $data->getString('clientSecret');
+        if (!$clientSecret) {
+            throw RoutingException::invalidRequestParameter('clientSecret');
+        }
+
+        $merchantPayerId = $data->get('merchantPayerId');
+        if ($merchantPayerId !== null && !\is_string($merchantPayerId)) {
+            throw RoutingException::invalidRequestParameter('merchantPayerId');
+        }
+
+        $sandboxActive = $data->getBoolean('sandboxActive');
+
+        try {
+            /* @phpstan-ignore-next-line method will have additional method */
+            $valid = $this->apiCredentialService->testApiCredentials($clientId, $clientSecret, $sandboxActive, $merchantPayerId);
+        } catch (PayPalApiException $error) {
+            $valid = false;
+            $errors = (new ErrorResponseFactory())->getErrorsFromException($error);
+        }
+
+        return new JsonResponse([
+            'valid' => $valid,
+            'errors' => $errors ?? [],
+        ]);
     }
 
     #[OA\Post(
