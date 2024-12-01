@@ -23,6 +23,9 @@ Shopware.Component.register('swag-paypal', () => import('./page/swag-paypal'));
 
 const { Module } = Shopware;
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-settings`
+ */
 Module.register('swag-paypal', {
     type: 'plugin',
     name: 'SwagPayPal',

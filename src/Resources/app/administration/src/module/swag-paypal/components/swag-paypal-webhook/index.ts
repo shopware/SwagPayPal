@@ -6,6 +6,9 @@ const STATUS_WEBHOOK_MISSING = 'missing';
 const STATUS_WEBHOOK_INVALID = 'invalid';
 const STATUS_WEBHOOK_VALID = 'valid';
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-settings-webhook`
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 

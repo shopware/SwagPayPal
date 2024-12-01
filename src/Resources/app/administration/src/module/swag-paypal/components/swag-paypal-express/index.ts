@@ -2,6 +2,10 @@ import type * as PayPal from 'src/types';
 import template from './swag-paypal-express.html.twig';
 
 const { Criteria } = Shopware.Data;
+
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-settings-storefront`
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 

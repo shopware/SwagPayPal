@@ -21,6 +21,8 @@ const bootPromise = window.Shopware ? Shopware.Plugin.addBootPromise() : () => {
 (async () => {
     if (Shopware.Feature.isActive('PAYPAL_SETTINGS_TWEAKS')) {
         await import('./app');
+        // @ts-expect-error - yes it's not a module
+        await import('./module/swag-paypal-settings');
     } else {
         await import('./module/swag-paypal');
     }

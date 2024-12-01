@@ -4,6 +4,8 @@ import template from './swag-paypal-inherit-wrapper.html.twig';
 
 /**
  * @private
+ *
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-setting`
  */
 export default Shopware.Component.wrapComponentConfig({
     template,
