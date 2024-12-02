@@ -44,7 +44,6 @@ class GenerateOpenApi extends Command
         ]);
 
         if ($openApi === null) {
-            // @phpstan-ignore-next-line
             throw new \RuntimeException('Failed to generate OpenAPI schema');
         }
 
