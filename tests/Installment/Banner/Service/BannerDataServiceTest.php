@@ -27,6 +27,7 @@ use Swag\PayPal\Installment\Banner\Service\BannerDataService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 /**
@@ -35,6 +36,8 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 #[Package('checkout'), CoversClass(BannerDataService::class)]
 class BannerDataServiceTest extends TestCase
 {
+    private MockObject&LocaleCodeProvider $localeCodeProvider;
+
     private MockObject&PaymentMethodUtil $paymentMethodUtil;
 
     private SystemConfigServiceMock $systemConfigService;
@@ -45,6 +48,7 @@ class BannerDataServiceTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
         $this->systemConfigService = SystemConfigServiceMock::createWithCredentials([
             Settings::CROSS_BORDER_MESSAGING_ENABLED => true,
         ]);
@@ -52,9 +56,10 @@ class BannerDataServiceTest extends TestCase
         $this->languageRepository = $this->createMock(EntityRepository::class);
 
         $this->bannerDataService = new BannerDataService(
-            $this->paymentMethodUtil,
-            new CredentialsUtil($this->systemConfigService),
+            $this->localeCodeProvider,
             $this->systemConfigService,
+            new CredentialsUtil($this->systemConfigService),
+            $this->paymentMethodUtil,
             $this->languageRepository
         );
     }

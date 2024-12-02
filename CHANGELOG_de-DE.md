@@ -1,3 +1,6 @@
+# 9.6.5
+- PPI-1025 - Verbessert die Performance des Ratenzahlungsbanners in der Storefront
+
 # 9.6.4
 - PPI-930 - Behebt ein Problem, bei dem bei einem ausgewähltem Verkaufskanal die vererbte Konfiguration nicht korrekt funktionierte
 - PPI-1013 - Verbessert die Zuverlässigkeit der Produktsynchronisation mit Zettle
@@ -87,7 +90,7 @@
 
 # 9.0.0
 - PPI-830 - Kompatibilität mit Shopware 6.6 und Symfony 7 hinzugefügt
-- PPI-857 - Technische Namen für PayPal-Zahlungsarten hinzugefügt 
+- PPI-857 - Technische Namen für PayPal-Zahlungsarten hinzugefügt
 
 # 8.0.0
 - PPI-763 - "Später bezahlen" Banner wird unterhalb des Preises auf der Produktdetailseite angezeigt
@@ -185,7 +188,7 @@
 # 5.4.1
 - PPI-716 - Behebt einen Fehler beim Update, falls Verfügbarkeits-Regel noch in Benutzung sind
 
-# 5.4.0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+# 5.4.0
 - PPI-707 - Behebt ein Problem, bei dem während des Bestellvorgangs mit "Später bezahlen", "SEPA" and "Venmo" ein Fehler auftrat
 - PPI-712 - Handhabung von Zahlungsmethodenverfügbarkeit verbessert, existierende Verfügbarkeitsregeln entfernt
 - PPI-713 - Verwendung von 3D Secure für Kreditkartenzahlungen verbessert
@@ -411,7 +414,7 @@
 - PPI-68, PPI-118, PPI-136 - API-Objekt-Nutzung für Dritt-Erweiterungen verbessert
 - PPI-69 - Der Express-Button wird nun ausgeblendet, wenn die PayPal-Zahlungsmethode deaktiviert ist
 - PPI-97 - Korrigiert Fehler beim Express Checkout, wenn erforderliche Felder nicht von PayPal gesendet werden
-- PPI-124 - Korrigiert Weitergabe von Fehlern während der Kommunikation mit PayPal 
+- PPI-124 - Korrigiert Weitergabe von Fehlern während der Kommunikation mit PayPal
 - PPI-128 - Korrigiert Problem beim Express Checkout bei Änderungen auf der Bestellbestätigungsseite
 - PPI-130 - Neues Event hinzugefügt, welches geworfen wird, wenn der Plus-iFrame geladen ist
 - PT-11048 - iZettle-Integration (Point of Sales) hinzugefügt
