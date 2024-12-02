@@ -23,23 +23,26 @@ use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\PayPal\Installment\Banner\BannerData;
-use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Storefront\Data\Service\AbstractScriptDataService;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 #[Package('checkout')]
-class BannerDataService implements BannerDataServiceInterface
+class BannerDataService extends AbstractScriptDataService implements BannerDataServiceInterface
 {
     /**
      * @internal
      */
     public function __construct(
+        LocaleCodeProvider $localeCodeProvider,
+        SystemConfigService $systemConfigService,
+        CredentialsUtilInterface $credentialsUtil,
         private readonly PaymentMethodUtil $paymentMethodUtil,
-        private readonly CredentialsUtilInterface $credentialsUtil,
-        private readonly SystemConfigService $systemConfigService,
-        private readonly EntityRepository $languageRepository
+        private readonly EntityRepository $languageRepository,
     ) {
+        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
     }
 
     /**
@@ -47,7 +50,7 @@ class BannerDataService implements BannerDataServiceInterface
      */
     public function getInstallmentBannerData(
         $page,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
     ): BannerData {
         $amount = 0.0;
 
@@ -72,20 +75,15 @@ class BannerDataService implements BannerDataServiceInterface
 
         $bannerData = new BannerData();
 
-        $merchantPayerId = $this->credentialsUtil->getMerchantPayerId($salesChannelContext->getSalesChannelId());
-
         if ($this->systemConfigService->getBool(Settings::CROSS_BORDER_MESSAGING_ENABLED)) {
             $crossBorderBuyerCountry = $this->matchBuyerCountry($this->systemConfigService->getString(Settings::CROSS_BORDER_BUYER_COUNTRY), $salesChannelContext);
             $crossBorderBuyerCountry ??= $this->determineBuyerCountry($salesChannelContext);
         }
 
         $bannerData->assign([
+            ...$this->getBaseData($salesChannelContext),
             'paymentMethodId' => (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
-            'clientId' => $this->credentialsUtil->getClientId($salesChannelContext->getSalesChannelId()),
             'amount' => $amount,
-            'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
-            'merchantPayerId' => $merchantPayerId,
-            'partnerAttributionId' => $merchantPayerId ? PartnerAttributionId::PAYPAL_PPCP : PartnerAttributionId::PAYPAL_CLASSIC,
             'footerEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED),
             'cartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_CART_ENABLED),
             'offCanvasCartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED),
