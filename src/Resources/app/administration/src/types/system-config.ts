@@ -2,6 +2,7 @@ export const LANDING_PAGES = ['LOGIN', 'BILLING', 'NO_PREFERENCE'] as const;
 export const BUTTON_COLORS = ['gold', 'blue', 'black', 'silver', 'white'] as const;
 export const BUTTON_SHAPES = ['rect', 'pill', 'sharp'] as const;
 export const INTENTS = ['CAPTURE', 'AUTHORIZE'] as const;
+export const COUNTRY_OVERRIDES = ['en-AU', 'de-DE', 'es-ES', 'fr-FR', 'en-GB', 'it-IT', 'en-US'] as const;
 
 export declare type SystemConfig = {
     'SwagPayPal.settings.clientId'?: string;
@@ -27,12 +28,12 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.ecsListingEnabled'?: boolean;
     'SwagPayPal.settings.ecsButtonColor'?: typeof BUTTON_COLORS[number];
     'SwagPayPal.settings.ecsButtonShape'?: typeof BUTTON_SHAPES[number];
-    'SwagPayPal.settings.ecsButtonLanguageIso'?: string;
+    'SwagPayPal.settings.ecsButtonLanguageIso'?: string | null;
 
     'SwagPayPal.settings.ecsShowPayLater'?: boolean;
     'SwagPayPal.settings.spbButtonColor'?: typeof BUTTON_COLORS[number];
     'SwagPayPal.settings.spbButtonShape'?: typeof BUTTON_SHAPES[number];
-    'SwagPayPal.settings.spbButtonLanguageIso'?: string;
+    'SwagPayPal.settings.spbButtonLanguageIso'?: string | null;
     'SwagPayPal.settings.acdcForce3DS'?: boolean;
     'SwagPayPal.settings.puiCustomerServiceInstructions'?: string;
     'SwagPayPal.settings.installmentBannerDetailPageEnabled'?: boolean;
@@ -49,7 +50,7 @@ export declare type SystemConfig = {
     /**
      * @deprecated tag:v10.0.0 - Will be removed without replacement.
      */
-    'SwagPayPal.settings.merchantLocation'?: string;
+    'SwagPayPal.settings.merchantLocation'?: 'other' | 'germany';
 
     /**
      * @deprecated tag:v10.0.0 - Will be removed without replacement.
@@ -63,7 +64,7 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.vaultingEnabledVenmo'?: boolean;
 
     'SwagPayPal.settings.crossBorderMessagingEnabled'?: boolean;
-    'SwagPayPal.settings.crossBorderBuyerCountry'?: string;
+    'SwagPayPal.settings.crossBorderBuyerCountry'?: typeof COUNTRY_OVERRIDES[number] | null;
 };
 
 /**
