@@ -11,7 +11,10 @@ use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-#[OA\Schema(schema: 'swag_paypal_v1_merchant_integrations_oauth_integration_oauth_third_party')]
+#[OA\Schema(
+    schema: 'swag_paypal_v1_merchant_integrations_oauth_integration_oauth_third_party',
+    required: ['merchantClientId', 'partnerClientId', 'scopes']
+)]
 #[Package('checkout')]
 class OauthThirdParty extends PayPalApiStruct
 {
