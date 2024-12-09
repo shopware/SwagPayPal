@@ -4,6 +4,8 @@ import './mixin/swag-paypal-credentials-loader.mixin';
 import './mixin/swag-paypal-notification.mixin';
 import './mixin/swag-paypal-pos-catch-error.mixin';
 import './mixin/swag-paypal-pos-log-label.mixin';
+import './mixin/swag-paypal-settings.mixin';
+import './mixin/swag-paypal-merchant-information.mixin';
 
 import './module/extension';
 import './module/swag-paypal-disputes';
@@ -18,6 +20,7 @@ const bootPromise = window.Shopware ? Shopware.Plugin.addBootPromise() : () => {
 
 (async () => {
     if (Shopware.Feature.isActive('PAYPAL_SETTINGS_TWEAKS')) {
+        await import('./app');
     } else {
         await import('./module/swag-paypal');
     }
