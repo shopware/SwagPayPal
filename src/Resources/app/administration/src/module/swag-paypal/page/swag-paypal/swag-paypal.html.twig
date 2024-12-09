@@ -5,7 +5,7 @@
     <template #smart-bar-header>
         <h2>
             {{ $tc('sw-settings.index.title') }}
-            <sw-icon name="regular-chevron-right-xs" small></sw-icon>
+            <sw-icon name="regular-chevron-right-xs" small />
             {{ $tc('swag-paypal.header') }}
         </h2>
     </template>
@@ -69,8 +69,8 @@
 
             {% block swag_paypal_content_card_channel_config %}
             <sw-sales-channel-config
-                v-model:value="config"
                 ref="configComponent"
+                v-model:value="config"
                 domain="SwagPayPal.settings"
             >
 
@@ -257,7 +257,7 @@
             {% endblock %}
 
             {% block swag_paypal_content_card_loading %}
-            <sw-loader v-if="isLoading"/>
+            <sw-loader v-if="isLoading" />
             {% endblock %}
 
         </sw-card-view>

@@ -10,7 +10,7 @@ export type HandleOptions = {
     errorResponse: PayPal.ServiceError;
     formatMessage?: (translatedMessage: string, error: PayPal.HttpError) => string;
     title?: string;
-}
+};
 
 const UnknownError: PayPal.HttpError = {
     code: 'UNKNOWN',

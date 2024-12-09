@@ -13,19 +13,19 @@
 
         {% block swag_paypal_pos_status_view_actions %}
             <template #actions>
-                <slot name="actions"></slot>
+                <slot name="actions" />
             </template>
         {% endblock %}
 
         {% block swag_paypal_pos_status_view_detail %}
-            <template #detail v-if="isSyncing">
+            <template v-if="isSyncing" #detail>
 
                 {% block swag_paypal_pos_status_view_detail_syncing %}
                     {{ $tc('swag-paypal-pos.detail.overview.status.syncingDetail') }}
                 {% endblock %}
             </template>
 
-            <template #detail v-if="!isSyncing && lastFinishedRun">
+            <template v-if="!isSyncing && lastFinishedRun" #detail>
                 <div>
                     {% block swag_paypal_pos_status_view_detail_static %}
                         {{ $tc('swag-paypal-pos.detail.overview.status.lastSynced') }}:
@@ -46,7 +46,9 @@
                               :closable="true"
                               :title="$tc('swag-paypal-pos.detail.overview.syncErrorTitle')">
                         <ul>
-                            <li v-for="error in syncErrors">{{ error.detail }} ({{ error.code }})</li>
+                            <li v-for="error in syncErrors">
+{{ error.detail }} ({{ error.code }})
+</li>
                         </ul>
                     </sw-alert>
                 {% endblock %}
@@ -54,7 +56,7 @@
         {% endblock %}
 
         {% block swag_paypal_pos_status_view_substatus %}
-            <template #substatus v-if="incompleteLastRun">
+            <template v-if="incompleteLastRun" #substatus>
                 {{ $tc('swag-paypal-pos.detail.overview.status.lastSyncedComplete') }}:
                 {{ dateFilter(lastCompleteRun.updatedAt, {
                     hour: '2-digit',

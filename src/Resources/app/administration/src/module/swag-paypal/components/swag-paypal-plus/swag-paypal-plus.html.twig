@@ -13,13 +13,13 @@
         {% block swag_paypal_content_card_channel_config_plus_settings_warning %}
         <template v-if="isPayPalPLUSActive">
             <sw-alert variant="warning">
-                <span v-html="$tc('swag-paypal.settingForm.plus.warning.active')"/>
+                <span v-html="$tc('swag-paypal.settingForm.plus.warning.active')" />
             </sw-alert>
         </template>
 
         <template v-if="isPayPalPLUSInActive">
             <sw-alert variant="info">
-                <span v-html="$tc('swag-paypal.settingForm.plus.warning.inactive')"/>
+                <span v-html="$tc('swag-paypal.settingForm.plus.warning.inactive')" />
             </sw-alert>
         </template>
         {% endblock %}
@@ -27,7 +27,7 @@
         {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
         {% block swag_paypal_content_card_channel_config_plus_settings_onboarding %}
         <p
-            v-bind:class="{ 'swag-paypal-payal-plus-disabled': isPayPalPLUSInActive}"
+            :class="{ 'swag-paypal-payal-plus-disabled': isPayPalPLUSInActive}"
             v-html="$tc('swag-paypal.settingForm.plus.introduction')"
         />
         {% endblock %}
@@ -51,7 +51,7 @@
 
                 {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_intent_hint %}
-                <swag-paypal-settings-hint :hintText="$tc('swag-paypal.settingForm.plus.hint')"/>
+                <swag-paypal-settings-hint :hintText="$tc('swag-paypal.settingForm.plus.hint')" />
                 {% endblock %}
             </template>
         </swag-paypal-inherit-wrapper>

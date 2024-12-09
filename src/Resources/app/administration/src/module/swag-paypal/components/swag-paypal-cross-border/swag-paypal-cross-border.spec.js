@@ -49,10 +49,10 @@ describe('swag-paypal-webhook', () => {
 
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.countryOverrideOptions.length).toBe(8);
+        expect(wrapper.vm.countryOverrideOptions).toHaveLength(8);
 
         // Auto determination is always first
-        expect(wrapper.vm.countryOverrideOptions[0].value).toBe(null);
+        expect(wrapper.vm.countryOverrideOptions[0].value).toBeNull();
         expect(wrapper.vm.countryOverrideOptions[0].label).toBe('swag-paypal.cross-border.crossBorderBuyerCountryAuto');
     });
 });

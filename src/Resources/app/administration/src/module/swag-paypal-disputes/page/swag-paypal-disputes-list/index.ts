@@ -46,32 +46,32 @@ export default Shopware.Component.wrapComponentConfig({
             disputeStates: [
                 {
                     value: DISPUTE_STATE_REQUIRED_ACTION,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_REQUIRED_ACTION),
                 },
                 {
                     value: DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION),
                 },
                 {
                     value: DISPUTE_STATE_UNDER_PAYPAL_REVIEW,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_UNDER_PAYPAL_REVIEW),
                 },
                 {
                     value: DISPUTE_STATE_RESOLVED,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_RESOLVED),
                 },
                 {
                     value: DISPUTE_STATE_OPEN_INQUIRIES,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_OPEN_INQUIRIES),
                 },
                 {
                     value: DISPUTE_STATE_APPEALABLE,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_APPEALABLE),
                 },
             ],

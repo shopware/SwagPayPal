@@ -77,7 +77,7 @@
                 variant="info"
                 class="swag-paypal-checkout__banner"
             >
-                <span v-html="$tc('swag-paypal.settingForm.checkout.banner')"></span>
+                <span v-html="$tc('swag-paypal.settingForm.checkout.banner')" />
             </sw-alert>
             {% endblock %}
 
@@ -142,7 +142,7 @@
         {% endblock %}
 
         {% block swag_paypal_content_card_channel_config_checkout_container_credentials_slot %}
-        <slot name="credentials"></slot>
+        <slot name="credentials" />
         {% endblock %}
 
     </div>

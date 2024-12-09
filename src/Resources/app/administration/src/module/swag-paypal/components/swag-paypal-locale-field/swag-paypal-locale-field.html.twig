@@ -14,9 +14,9 @@
 
             <template #sw-field-input="{ identification, error, disabled, size, setFocusClass, removeFocusClass, hasSuffix, hasPrefix }">
                 <input
+                    :id="identification"
                     type="text"
                     :name="identification"
-                    :id="identification"
                     :disabled="disabled"
                     :value="currentValue"
                     :placeHolder="placeholder"

@@ -61,57 +61,57 @@ describe('swag-paypal-webhook', () => {
         const wrapper = await createWrapper();
 
         wrapper.vm.webhookStatus = 'valid';
-        expect(wrapper.vm.webhookStatusVariant).toEqual('success');
+        expect(wrapper.vm.webhookStatusVariant).toBe('success');
 
         wrapper.vm.webhookStatus = 'missing';
-        expect(wrapper.vm.webhookStatusVariant).toEqual('danger');
+        expect(wrapper.vm.webhookStatusVariant).toBe('danger');
 
         wrapper.vm.webhookStatus = 'invalid';
-        expect(wrapper.vm.webhookStatusVariant).toEqual('warning');
+        expect(wrapper.vm.webhookStatusVariant).toBe('warning');
 
         wrapper.vm.webhookStatus = '';
-        expect(wrapper.vm.webhookStatusVariant).toEqual('neutral');
+        expect(wrapper.vm.webhookStatusVariant).toBe('neutral');
 
         wrapper.vm.webhookStatus = null;
-        expect(wrapper.vm.webhookStatusVariant).toEqual('neutral');
+        expect(wrapper.vm.webhookStatusVariant).toBe('neutral');
     });
 
     it('should allow refresh', async () => {
         const wrapper = await createWrapper();
 
         wrapper.vm.webhookStatus = 'valid';
-        expect(wrapper.vm.allowRefresh).toEqual(false);
+        expect(wrapper.vm.allowRefresh).toBe(false);
 
         wrapper.vm.webhookStatus = 'missing';
-        expect(wrapper.vm.allowRefresh).toEqual(true);
+        expect(wrapper.vm.allowRefresh).toBe(true);
 
         wrapper.vm.webhookStatus = 'invalid';
-        expect(wrapper.vm.allowRefresh).toEqual(true);
+        expect(wrapper.vm.allowRefresh).toBe(true);
 
         wrapper.vm.webhookStatus = '';
-        expect(wrapper.vm.allowRefresh).toEqual(false);
+        expect(wrapper.vm.allowRefresh).toBe(false);
 
         wrapper.vm.webhookStatus = null;
-        expect(wrapper.vm.allowRefresh).toEqual(false);
+        expect(wrapper.vm.allowRefresh).toBe(false);
     });
 
     it('should have correct status label', async () => {
         const wrapper = await createWrapper();
 
         wrapper.vm.webhookStatus = 'valid';
-        expect(wrapper.vm.webhookStatusLabel).toEqual('swag-paypal.webhook.status.valid');
+        expect(wrapper.vm.webhookStatusLabel).toBe('swag-paypal.webhook.status.valid');
 
         wrapper.vm.webhookStatus = 'missing';
-        expect(wrapper.vm.webhookStatusLabel).toEqual('swag-paypal.webhook.status.missing');
+        expect(wrapper.vm.webhookStatusLabel).toBe('swag-paypal.webhook.status.missing');
 
         wrapper.vm.webhookStatus = 'invalid';
-        expect(wrapper.vm.webhookStatusLabel).toEqual('swag-paypal.webhook.status.invalid');
+        expect(wrapper.vm.webhookStatusLabel).toBe('swag-paypal.webhook.status.invalid');
 
         wrapper.vm.webhookStatus = '';
-        expect(wrapper.vm.webhookStatusLabel).toEqual('swag-paypal.webhook.status.unknown');
+        expect(wrapper.vm.webhookStatusLabel).toBe('swag-paypal.webhook.status.unknown');
 
         wrapper.vm.webhookStatus = null;
-        expect(wrapper.vm.webhookStatusLabel).toEqual('swag-paypal.webhook.status.unknown');
+        expect(wrapper.vm.webhookStatusLabel).toBe('swag-paypal.webhook.status.unknown');
     });
 
     it('should fetch webhook status', async () => {

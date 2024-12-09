@@ -7,20 +7,21 @@
         {% block swag_paypal_pos_status_icon %}
             <div class="swag-paypal-pos-status__icon-base">
                 <sw-icon :class="iconClasses"
-                         :name="icon">
-                </sw-icon>
+                         :name="icon" />
             </div>
         {% endblock %}
 
         {% block swag_paypal_pos_status_status %}
             <div class="swag-paypal-pos-status__status">
-                <slot name="status">{{ status }}</slot>
+                <slot name="status">
+{{ status }}
+</slot>
             </div>
         {% endblock %}
 
         {% block swag_paypal_pos_status_detail %}
             <div class="swag-paypal-pos-status__detail">
-                <slot name="detail"></slot>
+                <slot name="detail" />
             </div>
         {% endblock %}
 
@@ -30,13 +31,12 @@
                 {% block swag_paypal_pos_status_substatus_icon %}
                     <sw-icon v-if="showSubIcon"
                              :class="subIconClasses"
-                             :name="subIcon">
-                    </sw-icon>
+                             :name="subIcon" />
                 {% endblock %}
 
                 {% block swag_paypal_pos_status_substatus_content %}
                     <span>
-                        <slot name="substatus"></slot>
+                        <slot name="substatus" />
                     </span>
                 {% endblock %}
             </div>
@@ -44,13 +44,15 @@
 
         {% block swag_paypal_pos_status_actions %}
             <div class="swag-paypal-pos-status__actions">
-                <slot name="actions"></slot>
+                <slot name="actions" />
             </div>
         {% endblock %}
 
         {% block swag_paypal_pos_status_disabled %}
             <div v-if="disabled" class="swag-paypal-pos-status__disabled">
-                <slot name="disabledText">{{ disabledText }}</slot>
+                <slot name="disabledText">
+{{ disabledText }}
+</slot>
             </div>
         {% endblock %}
     </sw-card>

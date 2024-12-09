@@ -28,8 +28,7 @@
                                                    :page="page"
                                                    :total="total"
                                                    :total-visible="7"
-                                                   @page-change="onPageChange">
-                                    </sw-pagination>
+                                                   @page-change="onPageChange" />
                                 </template>
                             {% endblock %}
 
@@ -90,8 +89,7 @@
                     <sw-empty-state v-if="total < 1"
                                     class="swag-paypal-pos-detail-synced-products__empty-state"
                                     :title="$tc('swag-paypal-pos.detail.syncedProducts.emptyState.title')"
-                                    :subline="$tc('swag-paypal-pos.detail.syncedProducts.emptyState.message')">
-                    </sw-empty-state>
+                                    :subline="$tc('swag-paypal-pos.detail.syncedProducts.emptyState.message')" />
                 {% endblock %}
 
             </sw-card>
