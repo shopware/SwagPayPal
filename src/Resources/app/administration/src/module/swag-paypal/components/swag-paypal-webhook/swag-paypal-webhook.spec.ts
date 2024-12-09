@@ -1,12 +1,12 @@
 import { mount } from '@vue/test-utils';
-import 'SwagPayPal/module/swag-paypal/components/swag-paypal-webhook';
+import SwagPayPalWebhook from '.';
 
-Shopware.Component.register('swag-paypal-webhook', () => import('.'));
+Shopware.Component.register('swag-paypal-webhook', Promise.resolve(SwagPayPalWebhook));
 
 async function createWrapper(customOptions = {}) {
     const options = {
         global: {
-            mocks: { $tc: (key) => key },
+            mocks: { $tc: (key: string) => key },
             provide: {
                 acl: {
                     can: () => true,
@@ -27,8 +27,8 @@ async function createWrapper(customOptions = {}) {
     };
 
     return mount(
-        await Shopware.Component.build('swag-paypal-webhook'),
-        Shopware.Utils.object.mergeWith(options, customOptions),
+        await Shopware.Component.build('swag-paypal-webhook') as typeof SwagPayPalWebhook,
+        Shopware.Utils.object.merge(options, customOptions),
     );
 }
 
@@ -153,7 +153,6 @@ describe('swag-paypal-webhook', () => {
         const wrapper = await createWrapper();
 
         wrapper.vm.createNotificationError = jest.fn();
-        // eslint-disable-next-line prefer-promise-reject-errors
         wrapper.vm.SwagPayPalWebhookService.register = jest.fn(() => Promise.reject({ response: {} }));
 
         wrapper.vm.onRefreshWebhook();
