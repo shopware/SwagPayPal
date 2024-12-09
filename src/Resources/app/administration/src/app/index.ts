@@ -1,5 +1,6 @@
 import './store/swag-paypal-merchant-information.store';
 import './store/swag-paypal-settings.store';
+Shopware.Component.register('swag-paypal-setting', () => import('./component/swag-paypal-setting'));
 
 // synchronise salesChannel of stores
 Shopware.Vue.watch(
