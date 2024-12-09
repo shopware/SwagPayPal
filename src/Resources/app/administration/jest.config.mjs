@@ -1,9 +1,9 @@
-const { resolve, join } = require('path');
+import { resolve } from 'path';
 
 process.env.ADMIN_PATH =
     process.env.ADMIN_PATH || resolve('../../../../../../../src/Administration/Resources/app/administration');
 
-module.exports = {
+export default {
     preset: '@shopware-ag/jest-preset-sw6-admin',
     globals: {
         // required, e.g. /www/sw6/platform/src/Administration/Resources/app/administration
@@ -12,10 +12,11 @@ module.exports = {
 
     testMatch: [
         '<rootDir>/**/*.spec.js',
+        '<rootDir>/**/*.spec.ts',
     ],
 
     setupFilesAfterEnv: [
-        resolve(join(process.env.ADMIN_PATH, '/test/_setup/prepare_environment.js')),
+        `${process.env.ADMIN_PATH}/test/_setup/prepare_environment.js`,
         '<rootDir>/jest.setup.js',
     ],
 
@@ -38,9 +39,8 @@ module.exports = {
     moduleNameMapper: {
         '^SwagPayPal(.*)$': '<rootDir>/src$1',
         '^src(.*)$': `${process.env.ADMIN_PATH}/src$1`,
-        '^\@shopware-ag\/meteor-admin-sdk\/es\/(.*)':
-            `${process.env.ADMIN_PATH}/node_modules/@shopware-ag/meteor-admin-sdk/umd/$1`,
-        'vue$': `${process.env.ADMIN_PATH}/node_modules/@vue/compat/dist/vue.cjs.js`,
+        '^\@shopware-ag\/meteor-admin-sdk\/es\/(.*)': `${process.env.ADMIN_PATH}/node_modules/@shopware-ag/meteor-admin-sdk/umd/$1`,
+        vue$: `${process.env.ADMIN_PATH}/node_modules/@vue/compat/dist/vue.cjs.js`,
         '^@vue\/test-utils$': `${process.env.ADMIN_PATH}/node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js`,
     },
 

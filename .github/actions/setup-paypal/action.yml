@@ -95,3 +95,9 @@ runs:
         install-storefront: ${{ inputs.install-storefront }}
         dependencies: ${{ steps.dependency-list.outputs.deps }}
         extraRepositories: ${{ steps.dependency-list.outputs.repos }}
+    - name: Prepare Administration
+      shell: bash
+      if: ${{ inputs.install-admin == 'true' }}
+      run: |
+        bin/console bundle:dump
+        composer admin:generate-entity-schema-types
