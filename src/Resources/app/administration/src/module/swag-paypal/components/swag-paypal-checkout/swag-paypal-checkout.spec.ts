@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
-import 'SwagPayPal/module/swag-paypal/components/swag-paypal-checkout';
+import SwagPayPalCheckout from '.';
 
-Shopware.Component.register('swag-paypal-checkout', () => import('.'));
+Shopware.Component.register('swag-paypal-checkout', Promise.resolve(SwagPayPalCheckout));
 
 const onboardingCallbackLive = 'onboardingCallbackLive';
 const onboardingCallbackSandbox = 'onboardingUrlSandbox';
@@ -10,7 +10,7 @@ async function createWrapper(customOptions = {}) {
     const options = {
         global: {
             mocks: {
-                $tc: (key) => key,
+                $tc: (key: string) => key,
             },
             provide: {
                 acl: {
@@ -50,10 +50,11 @@ async function createWrapper(customOptions = {}) {
         },
     };
 
-    return mount(await Shopware.Component.build('swag-paypal-checkout'), {
-        ...options,
-        ...customOptions,
-    });
+    return mount(
+        await Shopware.Component.build('swag-paypal-checkout') as typeof SwagPayPalCheckout,
+        // @ts-expect-error - data() is incomplete
+        Shopware.Utils.object.merge(options, customOptions),
+    );
 }
 
 /**

@@ -13,8 +13,7 @@
                     class="swag-paypal-pos-wizard-product-selection__clone-switch"
                     bordered
                     :label="$tc('swag-paypal-pos.wizard.productSelection.labelToggle')"
-                    @update:value="updateClone">
-            </sw-switch-field>
+                    @update:value="updateClone" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_product_selection_sales_channel_select %}
@@ -25,8 +24,7 @@
                     :criteria="salesChannelCriteria"
                     :disabled="!hasClone"
                     :label="$tc('swag-paypal-pos.wizard.productSelection.labelSelect')"
-                    @update:value="forceUpdate">
-            </sw-entity-single-select>
+                    @update:value="forceUpdate" />
         {% endblock %}
     </div>
 {% endblock %}

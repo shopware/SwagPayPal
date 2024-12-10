@@ -58,8 +58,8 @@
                         {% block swag_paypal_pos_wizard_modal_footer_left %}
                             <div class="footer-left">
                                 <sw-button v-for="button in buttons.left"
-                                           size="small"
                                            :key="button.action"
+                                           size="small"
                                            :disabled="button.disabled"
                                            :isLoading="isLoading"
                                            :variant="button.variant"
@@ -72,8 +72,8 @@
                         {% block swag_paypal_pos_wizard_modal_footer_right %}
                             <div class="footer-right">
                                 <sw-button v-for="button in buttons.right"
-                                           size="small"
                                            :key="button.action"
+                                           size="small"
                                            :disabled="button.disabled"
                                            :isLoading="isLoading"
                                            :variant="button.variant"

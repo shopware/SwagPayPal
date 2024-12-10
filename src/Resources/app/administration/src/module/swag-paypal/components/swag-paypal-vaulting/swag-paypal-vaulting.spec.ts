@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
-import 'SwagPayPal/module/swag-paypal/components/swag-paypal-vaulting';
+import SwagPayPalVaulting from '.';
 
-Shopware.Component.register('swag-paypal-vaulting', () => import('.'));
+Shopware.Component.register('swag-paypal-vaulting', Promise.resolve(SwagPayPalVaulting));
 
 const onboardingCallbackLive = 'onboardingCallbackLive';
 const onboardingCallbackSandbox = 'onboardingUrlSandbox';
@@ -10,7 +10,7 @@ async function createWrapper(customOptions = {}) {
     const options = {
         global: {
             mocks: {
-                $tc: (key) => key,
+                $tc: (key: string) => key,
             },
             provide: {
                 acl: {
@@ -54,7 +54,7 @@ async function createWrapper(customOptions = {}) {
     };
 
     return mount(
-        await Shopware.Component.build('swag-paypal-vaulting'),
+        await Shopware.Component.build('swag-paypal-vaulting') as typeof SwagPayPalVaulting,
         Shopware.Utils.object.mergeWith(options, customOptions),
     );
 }
@@ -63,7 +63,7 @@ describe('Paypal Vaulting Component', () => {
     it('should be a Vue.js component', async () => {
         const wrapper = await createWrapper();
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
         expect(wrapper.vm).toBeTruthy();
     });
@@ -94,10 +94,10 @@ describe('Paypal Vaulting Component', () => {
     it('should render onboarding buttons', async () => {
         const wrapper = await createWrapper();
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
-        const liveButton = await wrapper.find("a[data-paypal-onboard-complete='onboardingCallbackLive']");
-        const sandboxButton = await wrapper.find("a[data-paypal-onboard-complete='onboardingCallbackSandbox']");
+        const liveButton = wrapper.find("a[data-paypal-onboard-complete='onboardingCallbackLive']");
+        const sandboxButton = wrapper.find("a[data-paypal-onboard-complete='onboardingCallbackSandbox']");
 
         expect(liveButton.exists()).toBe(true);
         expect(sandboxButton.exists()).toBe(true);
@@ -106,9 +106,9 @@ describe('Paypal Vaulting Component', () => {
     it('should link to the live onboarding guide', async () => {
         const wrapper = await createWrapper();
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
-        const liveButton = await wrapper.find("a[data-paypal-onboard-complete='onboardingCallbackLive']");
+        const liveButton = wrapper.find("a[data-paypal-onboard-complete='onboardingCallbackLive']");
 
         expect(liveButton.attributes('href')).toBe(onboardingCallbackLive);
     });
@@ -116,9 +116,9 @@ describe('Paypal Vaulting Component', () => {
     it('should link to the sandbox onboarding guide', async () => {
         const wrapper = await createWrapper();
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
-        const sandboxButton = await wrapper.find("a[data-paypal-onboard-complete='onboardingCallbackSandbox']");
+        const sandboxButton = wrapper.find("a[data-paypal-onboard-complete='onboardingCallbackSandbox']");
 
         expect(sandboxButton.attributes('href')).toBe(onboardingCallbackSandbox);
     });

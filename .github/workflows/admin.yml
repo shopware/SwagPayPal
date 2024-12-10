@@ -23,17 +23,13 @@ jobs:
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
         with:
-          install-commercial: true
           install-admin: true
-      - name: Prepare ESLint
-        run: |
-          bin/console bundle:dump
-          composer admin:generate-entity-schema-types
       - name: Run ESLint
         env:
           ADMIN_PATH: ${{ github.workspace }}/src/Administration/Resources/app/administration
         working-directory: custom/plugins/${{ github.event.repository.name }}
         run: composer run lint:admin:ci
+
   jest:
     uses: shopware/github-actions/.github/workflows/admin-jest.yml@main
     with:

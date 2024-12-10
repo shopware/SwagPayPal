@@ -33,7 +33,7 @@
                                                        variant="primary"
                                                        square
                                                        :disabled="isSyncing">
-                                                <sw-icon name="regular-chevron-down-xs" size="16"></sw-icon>
+                                                <sw-icon name="regular-chevron-down-xs" size="16" />
                                             </sw-button>
                                         </template>
                                     {% endblock %}
@@ -71,13 +71,11 @@
         {% endblock %}
 
         {% block swag_paypal_pos_detail_overview_setup %}
-            <swag-paypal-pos-continue-setup v-else>
-            </swag-paypal-pos-continue-setup>
+            <swag-paypal-pos-continue-setup v-else />
         {% endblock %}
 
         {% block swag_paypal_pos_detail_overview_getting_started %}
-            <swag-paypal-pos-getting-started>
-            </swag-paypal-pos-getting-started>
+            <swag-paypal-pos-getting-started />
         {% endblock %}
     </div>
 {% endblock %}

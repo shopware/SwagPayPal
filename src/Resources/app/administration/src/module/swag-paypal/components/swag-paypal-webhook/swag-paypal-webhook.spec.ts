@@ -1,12 +1,12 @@
 import { mount } from '@vue/test-utils';
-import 'SwagPayPal/module/swag-paypal/components/swag-paypal-webhook';
+import SwagPayPalWebhook from '.';
 
-Shopware.Component.register('swag-paypal-webhook', () => import('.'));
+Shopware.Component.register('swag-paypal-webhook', Promise.resolve(SwagPayPalWebhook));
 
 async function createWrapper(customOptions = {}) {
     const options = {
         global: {
-            mocks: { $tc: (key) => key },
+            mocks: { $tc: (key: string) => key },
             provide: {
                 acl: {
                     can: () => true,
@@ -27,8 +27,8 @@ async function createWrapper(customOptions = {}) {
     };
 
     return mount(
-        await Shopware.Component.build('swag-paypal-webhook'),
-        Shopware.Utils.object.mergeWith(options, customOptions),
+        await Shopware.Component.build('swag-paypal-webhook') as typeof SwagPayPalWebhook,
+        Shopware.Utils.object.merge(options, customOptions),
     );
 }
 
@@ -61,57 +61,57 @@ describe('swag-paypal-webhook', () => {
         const wrapper = await createWrapper();
 
         wrapper.vm.webhookStatus = 'valid';
-        expect(wrapper.vm.webhookStatusVariant).toEqual('success');
+        expect(wrapper.vm.webhookStatusVariant).toBe('success');
 
         wrapper.vm.webhookStatus = 'missing';
-        expect(wrapper.vm.webhookStatusVariant).toEqual('danger');
+        expect(wrapper.vm.webhookStatusVariant).toBe('danger');
 
         wrapper.vm.webhookStatus = 'invalid';
-        expect(wrapper.vm.webhookStatusVariant).toEqual('warning');
+        expect(wrapper.vm.webhookStatusVariant).toBe('warning');
 
         wrapper.vm.webhookStatus = '';
-        expect(wrapper.vm.webhookStatusVariant).toEqual('neutral');
+        expect(wrapper.vm.webhookStatusVariant).toBe('neutral');
 
         wrapper.vm.webhookStatus = null;
-        expect(wrapper.vm.webhookStatusVariant).toEqual('neutral');
+        expect(wrapper.vm.webhookStatusVariant).toBe('neutral');
     });
 
     it('should allow refresh', async () => {
         const wrapper = await createWrapper();
 
         wrapper.vm.webhookStatus = 'valid';
-        expect(wrapper.vm.allowRefresh).toEqual(false);
+        expect(wrapper.vm.allowRefresh).toBe(false);
 
         wrapper.vm.webhookStatus = 'missing';
-        expect(wrapper.vm.allowRefresh).toEqual(true);
+        expect(wrapper.vm.allowRefresh).toBe(true);
 
         wrapper.vm.webhookStatus = 'invalid';
-        expect(wrapper.vm.allowRefresh).toEqual(true);
+        expect(wrapper.vm.allowRefresh).toBe(true);
 
         wrapper.vm.webhookStatus = '';
-        expect(wrapper.vm.allowRefresh).toEqual(false);
+        expect(wrapper.vm.allowRefresh).toBe(false);
 
         wrapper.vm.webhookStatus = null;
-        expect(wrapper.vm.allowRefresh).toEqual(false);
+        expect(wrapper.vm.allowRefresh).toBe(false);
     });
 
     it('should have correct status label', async () => {
         const wrapper = await createWrapper();
 
         wrapper.vm.webhookStatus = 'valid';
-        expect(wrapper.vm.webhookStatusLabel).toEqual('swag-paypal.webhook.status.valid');
+        expect(wrapper.vm.webhookStatusLabel).toBe('swag-paypal.webhook.status.valid');
 
         wrapper.vm.webhookStatus = 'missing';
-        expect(wrapper.vm.webhookStatusLabel).toEqual('swag-paypal.webhook.status.missing');
+        expect(wrapper.vm.webhookStatusLabel).toBe('swag-paypal.webhook.status.missing');
 
         wrapper.vm.webhookStatus = 'invalid';
-        expect(wrapper.vm.webhookStatusLabel).toEqual('swag-paypal.webhook.status.invalid');
+        expect(wrapper.vm.webhookStatusLabel).toBe('swag-paypal.webhook.status.invalid');
 
         wrapper.vm.webhookStatus = '';
-        expect(wrapper.vm.webhookStatusLabel).toEqual('swag-paypal.webhook.status.unknown');
+        expect(wrapper.vm.webhookStatusLabel).toBe('swag-paypal.webhook.status.unknown');
 
         wrapper.vm.webhookStatus = null;
-        expect(wrapper.vm.webhookStatusLabel).toEqual('swag-paypal.webhook.status.unknown');
+        expect(wrapper.vm.webhookStatusLabel).toBe('swag-paypal.webhook.status.unknown');
     });
 
     it('should fetch webhook status', async () => {
@@ -153,7 +153,6 @@ describe('swag-paypal-webhook', () => {
         const wrapper = await createWrapper();
 
         wrapper.vm.createNotificationError = jest.fn();
-        // eslint-disable-next-line prefer-promise-reject-errors
         wrapper.vm.SwagPayPalWebhookService.register = jest.fn(() => Promise.reject({ response: {} }));
 
         wrapper.vm.onRefreshWebhook();

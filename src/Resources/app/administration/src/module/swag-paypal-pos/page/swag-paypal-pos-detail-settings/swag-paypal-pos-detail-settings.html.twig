@@ -22,8 +22,7 @@
                                 :error="salesChannelNameError"
                                 :disabled="!acl.can('sales_channel.editor')"
                                 :label="$tc('sw-sales-channel.detail.labelInputName')"
-                                :placeholder="placeholder(salesChannel, 'name', $tc('sw-sales-channel.detail.placeholderName'))">
-                        </sw-text-field>
+                                :placeholder="placeholder(salesChannel, 'name', $tc('sw-sales-channel.detail.placeholderName'))" />
                     {% endblock %}
 
                     {% block swag_paypal_pos_detail_settings_input_active %}
@@ -32,8 +31,7 @@
                                 bordered
                                 :disabled="!acl.can('sales_channel.editor')"
                                 :label="$tc('sw-sales-channel.detail.labelInputActive')"
-                                :helpText="$tc('swag-paypal-pos.detail.settings.activeHelpText')">
-                        </sw-switch-field>
+                                :helpText="$tc('swag-paypal-pos.detail.settings.activeHelpText')" />
                     {% endblock %}
 
                 </sw-container>
@@ -47,8 +45,7 @@
                             :disabled="!acl.can('sales_channel.editor')"
                             :label="$tc('swag-paypal-pos.detail.settings.domain')"
                             :helpText="$tc('swag-paypal-pos.detail.settings.domainHelpText')"
-                            @update:value="forceUpdate">
-                    </swag-paypal-pos-url-field>
+                            @update:value="forceUpdate" />
                 {% endblock %}
 
                 {% block swag_paypal_pos_detail_settings_input_language %}
@@ -58,8 +55,7 @@
                             required
                             :disabled="!acl.can('sales_channel.editor')"
                             :label="$tc('global.entities.language')"
-                            @update:value="changeLanguage">
-                    </sw-entity-single-select>
+                            @update:value="changeLanguage" />
                 {% endblock %}
 
                 {% block swag_paypal_pos_detail_settings_input_product_stream %}
@@ -70,8 +66,7 @@
                             entity="product_stream"
                             :disabled="!acl.can('sales_channel.editor')"
                             :label="$tc('swag-paypal-pos.detail.settings.productStream')"
-                            @update:value="forceUpdate">
-                    </sw-entity-single-select>
+                            @update:value="forceUpdate" />
                 {% endblock %}
 
             </sw-card>
@@ -90,8 +85,7 @@
                             class="swag-paypal-pos-boolean-radio"
                             :options="optionsReplace"
                             :disabled="!acl.can('sales_channel.editor')"
-                            @update:value="forceUpdate">
-                        </sw-radio-field>
+                            @update:value="forceUpdate" />
                     {% endblock %}
 
                 </sw-card>
@@ -112,8 +106,7 @@
                             :optionTrue="optionSyncPrices"
                             :optionFalse="optionNotSyncPrices"
                             :disabled="!acl.can('sales_channel.editor')"
-                            @update:value="forceUpdate">
-                        </swag-paypal-pos-boolean-radio>
+                            @update:value="forceUpdate" />
                     {% endblock %}
 
                 </sw-card>
@@ -140,8 +133,7 @@
                                 {% block swag_paypal_pos_detail_settings_credentials_apikey_suffix %}
                                     <sw-icon name="regular-low-vision"
                                              class="swag-paypal-pos-detail-settings__apikey-suffix"
-                                             size="22px">
-                                    </sw-icon>
+                                             size="22px" />
                                 {% endblock %}
                             </template>
                         </sw-password-field>
@@ -236,8 +228,8 @@
 
                 {% block swag_paypal_pos_detail_settings_options_reset_modal %}
                     <sw-modal v-if="showResetModal"
-                              class="swag-paypal-pos-detail-settings__reset-sync-modal"
                               ref="modal"
+                              class="swag-paypal-pos-detail-settings__reset-sync-modal"
                               variant="small"
                               :title="$tc('swag-paypal-pos.detail.settings.reset.modalTitle')"
                               @modal-close="showResetModal = false">
@@ -277,8 +269,8 @@
 
                 {% block swag_paypal_pos_detail_settings_options_delete_modal %}
                     <sw-modal v-if="showDeleteModal"
-                              class="sw-sales-channel-detail-settings__delete-modal"
                               ref="modal"
+                              class="sw-sales-channel-detail-settings__delete-modal"
                               variant="small"
                               :title="$tc('sw-sales-channel.detail.deleteModalTitle')"
                               @modal-close="showDeleteModal = false">

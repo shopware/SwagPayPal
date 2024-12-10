@@ -10,8 +10,7 @@
                 required
                 :label="$tc('swag-paypal-pos.wizard.customization.salesChannelLabel')"
                 :placeholder="$tc('sw-sales-channel.detail.placeholderName')"
-                @update:value="forceUpdate">
-            </sw-text-field>
+                @update:value="forceUpdate" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_customization_language %}
@@ -20,8 +19,7 @@
                 entity="language"
                 required
                 :label="$tc('global.entities.language')"
-                @update:value="changeLanguage">
-            </sw-entity-single-select>
+                @update:value="changeLanguage" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_customization_media_domain %}
@@ -32,8 +30,7 @@
                 :label="$tc('swag-paypal-pos.wizard.customization.labelDomain')"
                 :placeholder="$tc('swag-paypal-pos.wizard.customization.placeholderDomain')"
                 :value="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
-                @update:value="forceUpdate">
-            </sw-url-field>
+                @update:value="forceUpdate" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_connection_success_disclaimer %}

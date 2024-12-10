@@ -29,8 +29,7 @@
                                                    :page="page"
                                                    :total="total"
                                                    :total-visible="7"
-                                                   @page-change="onPageChange">
-                                    </sw-pagination>
+                                                   @page-change="onPageChange" />
                                 </template>
                             {% endblock %}
 
@@ -91,13 +90,12 @@
                         <sw-empty-state v-if="total < 1"
                                         class="swag-paypal-pos-detail-runs__empty-state"
                                         :title="$tc('swag-paypal-pos.detail.runs.emptyState.title')"
-                                        :subline="$tc('swag-paypal-pos.detail.runs.emptyState.message')">
-                        </sw-empty-state>
+                                        :subline="$tc('swag-paypal-pos.detail.runs.emptyState.message')" />
                     </template>
                 {% endblock %}
 
                 {% block swag_paypal_pos_detail_runs_card_toolbar %}
-                    <template #toolbar v-if="total > 0">
+                    <template v-if="total > 0" #toolbar>
 
                         {% block swag_paypal_pos_detail_runs_card_toolbar_container %}
                             <sw-container columns="1fr min-content"
@@ -133,7 +131,7 @@
                       @modal-close="onCloseModal">
 
                 {% block swag_paypal_pos_detail_runs_log_modal_logs %}
-                    <swag-paypal-pos-detail-logs :runId="currentRunId"></swag-paypal-pos-detail-logs>
+                    <swag-paypal-pos-detail-logs :runId="currentRunId" />
                 {% endblock %}
 
                 {% block swag_paypal_pos_detail_runs_log_modal_footer %}

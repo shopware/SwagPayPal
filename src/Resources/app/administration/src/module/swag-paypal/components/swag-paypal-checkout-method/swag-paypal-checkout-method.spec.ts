@@ -1,15 +1,15 @@
 import { mount } from '@vue/test-utils';
-import 'SwagPayPal/module/swag-paypal/components/swag-paypal-checkout-method';
+import SwagPayPalCheckoutMethod from '.';
 
-Shopware.Component.register('swag-paypal-checkout-method', () => import('.'));
+Shopware.Component.register('swag-paypal-checkout-method', Promise.resolve(SwagPayPalCheckoutMethod));
 Shopware.Component.register('swag-paypal-checkout-domain-association', () => import('../swag-paypal-checkout-domain-association'));
 
 async function createWrapper(customOptions = {}) {
     const options = {
         global: {
             mocks: {
-                $tc: (key) => key,
-                $te: (key) => key,
+                $tc: (key: string) => key,
+                $te: (key: string) => key,
             },
             provide: {
                 acl: {
@@ -37,7 +37,7 @@ async function createWrapper(customOptions = {}) {
         },
     };
     return mount(
-        await Shopware.Component.build('swag-paypal-checkout-method'),
+        await Shopware.Component.build('swag-paypal-checkout-method') as typeof SwagPayPalCheckoutMethod,
         Shopware.Utils.object.mergeWith(options, customOptions),
     );
 }
@@ -45,7 +45,7 @@ describe('Paypal Domain Association Component', () => {
     it('should be a Vue.js component', async () => {
         const wrapper = await createWrapper();
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
         expect(wrapper.vm).toBeTruthy();
     });
@@ -59,7 +59,7 @@ describe('Paypal Domain Association Component', () => {
             },
         });
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
         let alert = wrapper.find('.swag-plugin-apple-pay-warning');
 
@@ -73,10 +73,10 @@ describe('Paypal Domain Association Component', () => {
                 translated: {
                     name: 'Apple Pay',
                 },
-            },
+            } as TEntity<'payment_method'>,
         });
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
         alert = wrapper.find('.swag-plugin-apple-pay-warning');
 
@@ -92,7 +92,7 @@ describe('Paypal Domain Association Component', () => {
             },
         });
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
         let alert = wrapper.find('.swag-plugin-apple-pay-warning');
 
@@ -106,10 +106,10 @@ describe('Paypal Domain Association Component', () => {
                 translated: {
                     name: 'Apple Pay',
                 },
-            },
+            } as TEntity<'payment_method'>,
         });
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
         alert = wrapper.find('.swag-plugin-apple-pay-warning');
 
@@ -125,14 +125,14 @@ describe('Paypal Domain Association Component', () => {
             },
         });
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
         expect(wrapper.find('.swag-plugin-apple-pay-warning').exists()).toBeTruthy();
 
         const button = wrapper.find('.sw-alert__close');
         await button.trigger('click');
 
-        await new Promise(process.nextTick);
+        await flushPromises();
 
         expect(wrapper.find('.swag-plugin-apple-pay-warning').exists()).toBeFalsy();
     });

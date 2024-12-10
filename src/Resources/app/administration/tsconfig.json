@@ -23,6 +23,7 @@
     "strictNullChecks": true,
 
     "paths": {
+      "SwagPayPal/*": ["./src/*"],
       "src/*": [
         "./src/*",
         "./../../../../../../../src/Administration/Resources/app/administration/src/*"
@@ -39,7 +40,6 @@
     "./../../../../../../../src/Administration/Resources/app/administration/src/html-shim.d.ts"
   ],
   "include": [
-    "./src/**/*",
-    "./.eslintrc.js",
+    "./src/**/*"
   ]
 }

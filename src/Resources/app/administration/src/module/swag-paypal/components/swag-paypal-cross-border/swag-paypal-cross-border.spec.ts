@@ -1,11 +1,12 @@
 import { mount } from '@vue/test-utils';
+import SwagPayPalCrossBorder from '.';
 
-Shopware.Component.register('swag-paypal-cross-border', () => import('.'));
+Shopware.Component.register('swag-paypal-cross-border', Promise.resolve(SwagPayPalCrossBorder));
 
 async function createWrapper(customOptions = {}) {
     const options = {
         global: {
-            mocks: { $tc: (key) => key, $t: (key) => key },
+            mocks: { $tc: (key: string) => key, $t: (key: string) => key },
             provide: {
                 acl: { can: () => true },
             },
@@ -30,7 +31,7 @@ async function createWrapper(customOptions = {}) {
     };
 
     return mount(
-        await Shopware.Component.build('swag-paypal-cross-border'),
+        await Shopware.Component.build('swag-paypal-cross-border') as typeof SwagPayPalCrossBorder,
         Shopware.Utils.object.mergeWith(options, customOptions),
     );
 }
@@ -49,10 +50,10 @@ describe('swag-paypal-webhook', () => {
 
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.countryOverrideOptions.length).toBe(8);
+        expect(wrapper.vm.countryOverrideOptions).toHaveLength(8);
 
         // Auto determination is always first
-        expect(wrapper.vm.countryOverrideOptions[0].value).toBe(null);
+        expect(wrapper.vm.countryOverrideOptions[0].value).toBeNull();
         expect(wrapper.vm.countryOverrideOptions[0].label).toBe('swag-paypal.cross-border.crossBorderBuyerCountryAuto');
     });
 });

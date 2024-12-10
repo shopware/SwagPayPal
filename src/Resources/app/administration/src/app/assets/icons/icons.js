@@ -1,4 +1,5 @@
 export default (() => {
+    // eslint-disable-next-line no-undef
     const context = require.context('./svg', false, /svg$/);
 
     return context.keys().map((item) => ({
