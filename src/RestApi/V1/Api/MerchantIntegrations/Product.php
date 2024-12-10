@@ -11,7 +11,10 @@ use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-#[OA\Schema(schema: 'swag_paypal_v1_merchant_integrations_product')]
+#[OA\Schema(
+    schema: 'swag_paypal_v1_merchant_integrations_product',
+    required: ['name'],
+)]
 #[Package('checkout')]
 class Product extends PayPalApiStruct
 {
