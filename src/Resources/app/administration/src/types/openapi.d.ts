@@ -516,22 +516,22 @@ export interface components {
       status: string;
     };
     swag_paypal_v1_merchant_integrations_oauth_integration: {
-      integration_method: string;
-      integration_type: string;
-      status: string;
-      oauth_third_party: components["schemas"]["swag_paypal_v1_merchant_integrations_oauth_integration_oauth_third_party"][];
+      integration_method?: string;
+      integration_type?: string;
+      status?: string;
+      oauth_third_party?: components["schemas"]["swag_paypal_v1_merchant_integrations_oauth_integration_oauth_third_party"][];
     };
     swag_paypal_v1_merchant_integrations_oauth_integration_oauth_third_party: {
-      access_token: string;
-      merchant_client_id: string;
-      partner_client_id: string;
-      refresh_token: string;
+      access_token?: string;
+      merchant_client_id?: string;
+      partner_client_id?: string;
+      refresh_token?: string;
       scopes: string[];
     };
     swag_paypal_v1_merchant_integrations_product: {
       name: string;
-      vetting_status: string;
-      capabilities: string[];
+      vetting_status?: string;
+      capabilities?: string[];
     };
     swag_paypal_v1_oauth_credentials: {
       restId: string;
