@@ -1,0 +1,7 @@
+shopware:
+  feature:
+    flags:
+      - name: PAYPAL_SETTINGS_TWEAKS
+        default: false
+        major: false
+        description: 'PayPal Admin rewrite. Contains a lot of small improvements, but could cause problem with plugins extending PayPal.'
