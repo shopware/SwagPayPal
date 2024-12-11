@@ -6,7 +6,6 @@ import './mixin/swag-paypal-pos-catch-error.mixin';
 import './mixin/swag-paypal-pos-log-label.mixin';
 
 import './module/extension';
-import './module/swag-paypal';
 import './module/swag-paypal-disputes';
 import './module/swag-paypal-payment';
 import './module/swag-paypal-pos';
@@ -14,6 +13,18 @@ import './module/swag-paypal-pos';
 import './init/api-service.init';
 import './init/translation.init';
 import './init/svg-icons.init';
+
+const bootPromise = window.Shopware ? Shopware.Plugin.addBootPromise() : () => {};
+
+(async () => {
+    if (Shopware.Feature.isActive('PAYPAL_SETTINGS_TWEAKS')) {
+    } else {
+        await import('./module/swag-paypal');
+    }
+
+    // @ts-expect-error - bootPromise has a wrong doc type
+    bootPromise();
+})();
 
 ui.module.payment.overviewCard.add({
     positionId: 'swag-paypal-overview-card-before',
