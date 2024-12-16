@@ -142,13 +142,17 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     methods: {
-        onChangePaymentMethodActive() {
+        onChangePaymentMethodActive(active: boolean) {
+            if (this.paymentMethod.active === active) {
+                return;
+            }
+
             if (this.isApplePayAndActive) {
                 localStorage.removeItem('domain-association-hidden');
                 this.isAlertActive = true;
             }
 
-            this.paymentMethod.active = !this.paymentMethod.active;
+            this.paymentMethod.active = active;
 
             this.paymentMethodRepository.save(this.paymentMethod, Context.api)
                 .then(() => {
