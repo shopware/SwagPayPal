@@ -1,6 +1,7 @@
 # 9.6.5
 - PPI-1025 - Improves the performance of the installment banner in the Storefront
 - PPI-1043 - Fixes an issue, where a payment method is toggled twice in the Administration 
+- PPI-1045 - Fixes an issue, where a payment was not refundable in some cases
 
 # 9.6.4
 - PPI-930 - Fixes a issue, where with a selected sales channel the inherited configuration was not working correctly

@@ -103,7 +103,7 @@ Component.register('swag-paypal-payment-details-v2', {
 
         setPayments() {
             const payments = this.paypalOrder.purchase_units[0].payments;
-            if (payments === null) {
+            if (!payments) {
                 return;
             }
 
@@ -111,7 +111,7 @@ Component.register('swag-paypal-payment-details-v2', {
             const rawCaptures = payments.captures;
             const rawRefunds = payments.refunds;
 
-            if (rawAuthorizations !== null) {
+            if (rawAuthorizations) {
                 rawAuthorizations.forEach((authorization) => {
                     this.pushPayment('authorization', authorization);
                     const authStatus = authorization.status;
@@ -127,7 +127,7 @@ Component.register('swag-paypal-payment-details-v2', {
                 });
             }
 
-            if (rawCaptures !== null) {
+            if (rawCaptures) {
                 rawCaptures.forEach((capture) => {
                     this.pushPayment('capture', capture);
                     const captureAmount = Number(capture.amount.value);
@@ -136,7 +136,7 @@ Component.register('swag-paypal-payment-details-v2', {
                 });
             }
 
-            if (rawRefunds !== null) {
+            if (rawRefunds) {
                 rawRefunds.forEach((refund) => {
                     this.pushPayment('refund', refund);
                     this.refundableAmount -= Number(refund.amount.value);
@@ -169,31 +169,17 @@ Component.register('swag-paypal-payment-details-v2', {
 
         getTransactionFee(type, payment) {
             if (type === 'capture') {
-                const sellerReceivableBreakdown = payment.seller_receivable_breakdown;
-                if (sellerReceivableBreakdown === null) {
-                    return null;
+                const paypalFee = payment.seller_receivable_breakdown?.paypal_fee;
+                if (paypalFee) {
+                    return `${paypalFee.value} ${paypalFee.currency_code}`;
                 }
-
-                const paypalFee = sellerReceivableBreakdown.paypal_fee;
-                if (paypalFee == null) {
-                    return null;
-                }
-
-                return `${paypalFee.value} ${paypalFee.currency_code}`;
             }
 
             if (type === 'refund') {
-                const sellerPayableBreakdown = payment.seller_payable_breakdown;
-                if (sellerPayableBreakdown === null) {
-                    return null;
+                const paypalFee = payment.seller_payable_breakdown?.paypal_fee;
+                if (paypalFee) {
+                    return `${paypalFee.value} ${paypalFee.currency_code}`;
                 }
-
-                const paypalFee = sellerPayableBreakdown.paypal_fee;
-                if (paypalFee === null) {
-                    return null;
-                }
-
-                return `${paypalFee.value} ${paypalFee.currency_code}`;
             }
 
             return null;
