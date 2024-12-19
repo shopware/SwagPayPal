@@ -64,7 +64,7 @@ Component.register('swag-paypal-payment-actions', {
         },
 
         setPaymentActionAmounts() {
-            if (this.relatedResources === null) {
+            if (!this.relatedResources) {
                 return;
             }
 
@@ -106,7 +106,7 @@ Component.register('swag-paypal-payment-actions', {
         },
 
         setShowVoidButton() {
-            if (this.relatedResources === null) {
+            if (!this.relatedResources) {
                 return;
             }
 

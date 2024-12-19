@@ -1,5 +1,6 @@
 # 8.6.5
 - PPI-1025 - Verbessert die Performance des Ratenzahlungsbanners in der Storefront
+- PPI-1045 - Behebt ein Problem, bei dem in manchen Fällen die Zahlung nicht erstattbar war
 
 # 8.6.4
 - PPI-930 - Behebt ein Problem, bei dem bei einem ausgewähltem Verkaufskanal die vererbte Konfiguration nicht korrekt funktionierte
