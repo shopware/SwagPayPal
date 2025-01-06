@@ -3,7 +3,12 @@ const { join } = require('path');
 // use ADMIN_PATH environment variable to change from default installation
 process.env.ADMIN_PATH =
     process.env.ADMIN_PATH ??
-    join(__dirname, '../../../../../../../src/Administration/Resources/app/administration/src');
+    join(__dirname, '../../../../../../../src/Administration/Resources/app/administration');
+
+// to be compatible with the old behavior
+if (process.env.ADMIN_PATH.endsWith('src')) {
+    process.env.ADMIN_PATH = join(process.env.ADMIN_PATH, '..');
+}
 
 const baseRules = {
     'max-len': 0,
@@ -53,9 +58,9 @@ module.exports = {
                         extensions: ['.js', '.ts', '.vue', '.json', '.less', '.twig'],
                         alias: {
                             SwagPayPal: join(__dirname, 'src'),
-                            src: process.env.ADMIN_PATH,
-                            '@vue\/test-utils': `${process.env.ADMIN_PATH}/node_modules/@vue/test-utils`,
-                            vue: `${process.env.ADMIN_PATH}/node_modules/@vue/compat/dist/vue.cjs.js`,
+                            src: join(process.env.ADMIN_PATH, 'src'),
+                            '@vue\/test-utils': `${process.env.ADMIN_PATH}/src/node_modules/@vue/test-utils`,
+                            vue: `${process.env.ADMIN_PATH}/src/node_modules/@vue/compat/dist/vue.cjs.js`,
                         },
                     },
                 },
