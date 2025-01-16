@@ -23,7 +23,6 @@ return static function (ContainerBuilder $container): void {
     $loader->load('installment.xml');
     $loader->load('orders_api.xml');
     $loader->load('payments_api.xml');
-    $loader->load('plus.xml');
     $loader->load('pui.xml');
     $loader->load('reporting.xml');
     $loader->load('resource_v1.xml');

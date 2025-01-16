@@ -291,7 +291,6 @@ class CheckoutSubscriberTest extends TestCase
             Settings::CLIENT_ID => self::TEST_CLIENT_ID,
             Settings::CLIENT_SECRET => 'testClientSecret',
             Settings::SPB_CHECKOUT_ENABLED => true,
-            Settings::MERCHANT_LOCATION => Settings::MERCHANT_LOCATION_OTHER,
             Settings::SPB_SHOW_PAY_LATER => true,
         ], $settingsOverride));
         $credentialsUtil = new CredentialsUtil($settings);

@@ -7,29 +7,6 @@
     {% block swag_paypal_content_card_channel_config_behavior_settings %}
     <div v-if="actualConfigData" class="swag-paypal-settings-behavior-field">
 
-        {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
-        {% block swag_paypal_content_card_channel_config_behavior_settings_merchant_location %}
-        <swag-paypal-inherit-wrapper
-            v-if="showMerchantLocation"
-            v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
-            path="SwagPayPal.settings.merchantLocation"
-            :label="$tc('swag-paypal.settingForm.behavior.merchantLocation.label')"
-        >
-            <template #content="props">
-                <sw-single-select
-                    name="SwagPayPal.settings.merchantLocation"
-                    labelProperty="name"
-                    valueProperty="id"
-                    :options="merchantLocationOptions"
-                    :isInherited="props.isInherited"
-                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                    :value="props.currentValue"
-                    @update:value="props.updateCurrentValue"
-                />
-            </template>
-        </swag-paypal-inherit-wrapper>
-        {% endblock %}
-
         {% block swag_paypal_content_card_channel_config_behavior_settings_intent %}
         <swag-paypal-inherit-wrapper
             v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"

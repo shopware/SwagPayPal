@@ -147,56 +147,5 @@
 
     </div>
     {% endblock %}
-
-    {# @deprecated tag:v10.0.0 - will be removed without replacement #}
-    {% block sw_deactivate_paypal_plus_modal %}
-    <sw-modal
-        v-if="plusDeprecationModalOpen"
-        class="swag-paypal-checkout-modal"
-        :title="$tc('swag-paypal.settingForm.checkout.deactivatePayPalPlusModal.title')"
-        variant="default"
-        @modal-close="closeModal"
-    >
-        {# @deprecated tag:v10.0.0 - will be removed without replacement #}
-        {% block sw_deactivate_paypal_plus_modal_text %}
-        <p class="swag-paypal-checkout-modal__text">
-            {{ $tc('swag-paypal.settingForm.checkout.deactivatePayPalPlusModal.text') }}
-        </p>
-        {% endblock %}
-
-        {# @deprecated tag:v10.0.0 - will be removed without replacement #}
-        {% block sw_deactivate_paypal_plus_modal_warning %}
-        <sw-alert
-            class="swag-paypal-checkout-modal__warning"
-            variant="warning"
-        >
-            {{ $tc('swag-paypal.settingForm.checkout.deactivatePayPalPlusModal.warning') }}
-        </sw-alert>
-        {% endblock %}
-
-        {# @deprecated tag:v10.0.0 - will be removed without replacement #}
-        {% block sw_deactivate_paypal_plus_modal_footer %}
-        <template #modal-footer>
-            {# @deprecated tag:v10.0.0 - will be removed without replacement #}
-            {% block sw_deactivate_paypal_plus_modal_cancel_button %}
-            <sw-button @click="closeModal">
-                {{ $tc('swag-paypal.settingForm.checkout.deactivatePayPalPlusModal.button.cancel') }}
-            </sw-button>
-            {% endblock %}
-
-            {# @deprecated tag:v10.0.0 - will be removed without replacement #}
-            {% block ssw_deactivate_paypal_plus_modal_confirm_button %}
-            <sw-button
-                variant="primary"
-                @click="deactivatePayPalPlus"
-            >
-                {{ $tc('swag-paypal.settingForm.checkout.deactivatePayPalPlusModal.button.deactivate') }}
-            </sw-button>
-            {% endblock %}
-
-        </template>
-        {% endblock %}
-    </sw-modal>
-    {% endblock %}
 </sw-card>
 {% endblock %}
