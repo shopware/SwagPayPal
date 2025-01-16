@@ -9,14 +9,16 @@ namespace Swag\PayPal\Test\Checkout\Payment\Service;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
+use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\Recurring\RecurringDataStruct;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -64,6 +66,7 @@ class VaultTokenServiceTest extends TestCase
         $orderCustomer->setCustomerId('customer-id');
         $order->setOrderCustomer($orderCustomer);
 
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
         $vaultTokenRepository = new StaticEntityRepository([static function (Criteria $criteria) use ($token) {
             static::assertSame([$token->getId()], $criteria->getIds());
             static::assertCount(2, $criteria->getFilters());
@@ -77,14 +80,21 @@ class VaultTokenServiceTest extends TestCase
             return new VaultTokenCollection([$token]);
         }], new VaultTokenDefinition());
 
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+        /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
+        $subscriptionRepository = new StaticEntityRepository([], new SubscriptionDefinition());
+
         $vaultTokenService = new VaultTokenService(
             $vaultTokenRepository,
-            new StaticEntityRepository([], new CustomerDefinition()),
-            new StaticEntityRepository([], new CustomerDefinition())
+            $customerRepository,
+            $subscriptionRepository,
         );
 
         static::assertSame($token, $vaultTokenService->getAvailableToken(
-            new SyncPaymentTransactionStruct($transaction, $order, new SubscriptionRecurringDataStruct($subscription)),
+            new PaymentTransactionStruct($transaction->getId(), recurring: new SubscriptionRecurringDataStruct($subscription)),
+            $transaction,
+            $order,
             Context::createDefaultContext()
         ));
     }
@@ -94,9 +104,6 @@ class VaultTokenServiceTest extends TestCase
         if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
-
-        $token = new VaultTokenEntity();
-        $token->setId(Uuid::randomHex());
 
         $subscription = new SubscriptionEntity();
         $subscription->setId(Uuid::randomHex());
@@ -112,14 +119,37 @@ class VaultTokenServiceTest extends TestCase
         $orderCustomer->setCustomerId('customer-id');
         $order->setOrderCustomer($orderCustomer);
 
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
+        $vaultTokenRepository = new StaticEntityRepository([static function (Criteria $criteria) {
+            static::assertCount(3, $criteria->getFilters());
+            static::assertInstanceOf(EqualsFilter::class, $criteria->getFilters()[0]);
+            static::assertSame('customerId', $criteria->getFilters()[0]->getField());
+            static::assertSame('customer-id', $criteria->getFilters()[0]->getValue());
+            static::assertInstanceOf(EqualsFilter::class, $criteria->getFilters()[1]);
+            static::assertSame('paymentMethodId', $criteria->getFilters()[1]->getField());
+            static::assertSame('payment-method-id', $criteria->getFilters()[1]->getValue());
+            static::assertInstanceOf(EqualsFilter::class, $criteria->getFilters()[2]);
+            static::assertSame('mainMapping.customerId', $criteria->getFilters()[2]->getField());
+            static::assertSame('customer-id', $criteria->getFilters()[2]->getValue());
+
+            return new VaultTokenCollection([]);
+        }], new VaultTokenDefinition());
+
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+        /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
+        $subscriptionRepository = new StaticEntityRepository([], new SubscriptionDefinition());
+
         $vaultTokenService = new VaultTokenService(
-            new StaticEntityRepository([], new CustomerDefinition()),
-            new StaticEntityRepository([], new CustomerDefinition()),
-            new StaticEntityRepository([], new CustomerDefinition()),
+            $vaultTokenRepository,
+            $customerRepository,
+            $subscriptionRepository,
         );
 
         static::assertNull($vaultTokenService->getAvailableToken(
-            new SyncPaymentTransactionStruct($transaction, $order, new SubscriptionRecurringDataStruct($subscription)),
+            new PaymentTransactionStruct($transaction->getId(), recurring: new SubscriptionRecurringDataStruct($subscription)),
+            $transaction,
+            $order,
             Context::createDefaultContext()
         ));
     }
@@ -139,6 +169,7 @@ class VaultTokenServiceTest extends TestCase
         $orderCustomer->setCustomerId('customer-id');
         $order->setOrderCustomer($orderCustomer);
 
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
         $vaultTokenRepository = new StaticEntityRepository([static function (Criteria $criteria) use ($token) {
             static::assertCount(3, $criteria->getFilters());
             static::assertInstanceOf(EqualsFilter::class, $criteria->getFilters()[0]);
@@ -154,14 +185,19 @@ class VaultTokenServiceTest extends TestCase
             return new VaultTokenCollection([$token]);
         }], new VaultTokenDefinition());
 
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+
         $vaultTokenService = new VaultTokenService(
             $vaultTokenRepository,
-            new StaticEntityRepository([], new CustomerDefinition()),
+            $customerRepository,
             null,
         );
 
         static::assertSame($token, $vaultTokenService->getAvailableToken(
-            new SyncPaymentTransactionStruct($transaction, $order),
+            new PaymentTransactionStruct($transaction->getId()),
+            $transaction,
+            $order,
             Context::createDefaultContext()
         ));
     }
@@ -172,14 +208,23 @@ class VaultTokenServiceTest extends TestCase
             static::markTestSkipped('Commercial is not available');
         }
 
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
+        $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+        /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
+        $subscriptionRepository = new StaticEntityRepository([], new SubscriptionDefinition());
+
         $vaultTokenService = new VaultTokenService(
-            new StaticEntityRepository([], new VaultTokenDefinition()),
-            new StaticEntityRepository([], new VaultTokenDefinition()),
-            new StaticEntityRepository([], new VaultTokenDefinition())
+            $vaultTokenRepository,
+            $customerRepository,
+            $subscriptionRepository,
         );
 
         static::assertNull($vaultTokenService->getAvailableToken(
-            new SyncPaymentTransactionStruct(new OrderTransactionEntity(), new OrderEntity()),
+            new PaymentTransactionStruct(Uuid::randomHex()),
+            new OrderTransactionEntity(),
+            new OrderEntity(),
             Context::createDefaultContext()
         ));
     }
@@ -187,10 +232,18 @@ class VaultTokenServiceTest extends TestCase
     public function testRequestVaulting(): void
     {
         $paymentSource = new Paypal();
+
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
+        $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+        /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
+        $subscriptionRepository = new StaticEntityRepository([]);
+
         $vaultTokenService = new VaultTokenService(
-            new StaticEntityRepository([], new VaultTokenDefinition()),
-            new StaticEntityRepository([], new VaultTokenDefinition()),
-            new StaticEntityRepository([], new VaultTokenDefinition())
+            $vaultTokenRepository,
+            $customerRepository,
+            $subscriptionRepository,
         );
 
         $vaultTokenService->requestVaulting($paymentSource);
@@ -208,51 +261,76 @@ class VaultTokenServiceTest extends TestCase
         $subscription->setId(Uuid::randomHex());
         $subscription->setNextSchedule(new \DateTime());
 
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
+        $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+        /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
+        $subscriptionRepository = new StaticEntityRepository([], new SubscriptionDefinition());
+
         $vaultTokenService = new VaultTokenService(
-            new StaticEntityRepository([], new CustomerDefinition()),
-            new StaticEntityRepository([], new CustomerDefinition()),
-            new StaticEntityRepository([], new CustomerDefinition()),
+            $vaultTokenRepository,
+            $customerRepository,
+            $subscriptionRepository,
         );
 
         static::assertSame($subscription, $vaultTokenService->getSubscription(
-            new SyncPaymentTransactionStruct(new OrderTransactionEntity(), new OrderEntity(), new SubscriptionRecurringDataStruct($subscription)),
+            new PaymentTransactionStruct(Uuid::randomHex(), recurring: new SubscriptionRecurringDataStruct($subscription)),
         ));
     }
 
     public function testGetSubscriptionNonRecurring(): void
     {
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
+        $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+        /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
+        $subscriptionRepository = new StaticEntityRepository([]);
+
         $vaultTokenService = new VaultTokenService(
-            new StaticEntityRepository([], new CustomerDefinition()),
-            new StaticEntityRepository([], new CustomerDefinition()),
-            new StaticEntityRepository([], new CustomerDefinition()),
+            $vaultTokenRepository,
+            $customerRepository,
+            $subscriptionRepository,
         );
 
         static::assertNull($vaultTokenService->getSubscription(
-            new SyncPaymentTransactionStruct(new OrderTransactionEntity(), new OrderEntity()),
+            new PaymentTransactionStruct(Uuid::randomHex()),
         ));
     }
 
     public function testGetSubscriptionOfUnknownType(): void
     {
-        $vaultTokenService = new VaultTokenService(
-            new StaticEntityRepository([], new CustomerDefinition()),
-            new StaticEntityRepository([], new CustomerDefinition()),
-            new StaticEntityRepository([], new CustomerDefinition()),
-        );
-
-        $this->expectException(SubscriptionTypeNotSupportedException::class);
-        $vaultTokenService->getSubscription(new SyncPaymentTransactionStruct(new OrderTransactionEntity(), new OrderEntity(), new RecurringDataStruct(Uuid::randomHex(), new \DateTime())));
-    }
-
-    public function testSaveTokenToCustomer(): void
-    {
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
+        $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
         $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
-        $vaultTokenRepository = new StaticEntityRepository([[]], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
+        $subscriptionRepository = new StaticEntityRepository([]);
 
         $vaultTokenService = new VaultTokenService(
             $vaultTokenRepository,
             $customerRepository,
-            new StaticEntityRepository([], new CustomerDefinition()),
+            $subscriptionRepository,
+        );
+
+        $this->expectException(SubscriptionTypeNotSupportedException::class);
+        $vaultTokenService->getSubscription(new PaymentTransactionStruct(Uuid::randomHex(), recurring: new RecurringDataStruct(Uuid::randomHex(), new \DateTime())));
+    }
+
+    public function testSaveTokenToCustomer(): void
+    {
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
+        $vaultTokenRepository = new StaticEntityRepository([[]], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+        /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
+        $subscriptionRepository = new StaticEntityRepository([]);
+
+        $vaultTokenService = new VaultTokenService(
+            $vaultTokenRepository,
+            $customerRepository,
+            $subscriptionRepository,
         );
 
         $transaction = new OrderTransactionEntity();
@@ -273,7 +351,7 @@ class VaultTokenServiceTest extends TestCase
         $paymentSource = new Paypal();
         $paymentSource->setEmailAddress('test@hatoken.de');
         $paymentSource->setAttributes($attributes);
-        $vaultTokenService->saveToken(new SyncPaymentTransactionStruct($transaction, $order), $paymentSource, $customerId, $context);
+        $vaultTokenService->saveToken(new PaymentTransactionStruct($transaction->getId()), $transaction, $paymentSource, $customerId, $context);
 
         static::assertArrayHasKey('id', $vaultTokenRepository->upserts[0][0]);
         static::assertSame($vaultTokenRepository->upserts[0][0]['token'], 'vault-id');
@@ -298,12 +376,16 @@ class VaultTokenServiceTest extends TestCase
             static::markTestSkipped('Commercial is not available');
         }
 
-        $subscriptionRepository = new StaticEntityRepository([], new SubscriptionDefinition());
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
         $vaultTokenRepository = new StaticEntityRepository([[]], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+        /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
+        $subscriptionRepository = new StaticEntityRepository([], new SubscriptionDefinition());
 
         $vaultTokenService = new VaultTokenService(
             $vaultTokenRepository,
-            new StaticEntityRepository([], new CustomerDefinition()),
+            $customerRepository,
             $subscriptionRepository,
         );
 
@@ -323,7 +405,7 @@ class VaultTokenServiceTest extends TestCase
         $paymentSource = new Paypal();
         $paymentSource->setEmailAddress('test@hatoken.de');
         $paymentSource->setAttributes($attributes);
-        $vaultTokenService->saveToken(new SyncPaymentTransactionStruct($transaction, new OrderEntity(), new SubscriptionRecurringDataStruct($subscription)), $paymentSource, $customerId, $context);
+        $vaultTokenService->saveToken(new PaymentTransactionStruct($transaction->getId(), recurring: new SubscriptionRecurringDataStruct($subscription)), $transaction, $paymentSource, $customerId, $context);
 
         static::assertSame($vaultTokenRepository->upserts[0][0]['token'], 'vault-id');
         static::assertSame($vaultTokenRepository->upserts[0][0]['tokenCustomer'], 'customer-id');
@@ -345,11 +427,14 @@ class VaultTokenServiceTest extends TestCase
             static::markTestSkipped('Commercial is not available');
         }
 
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
         $vaultTokenRepository = new StaticEntityRepository([[]], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
 
         $vaultTokenService = new VaultTokenService(
             $vaultTokenRepository,
-            new StaticEntityRepository([], new CustomerDefinition()),
+            $customerRepository,
             null,
         );
 
@@ -372,6 +457,6 @@ class VaultTokenServiceTest extends TestCase
         $paymentSource->setAttributes($attributes);
 
         $this->expectException(ServiceNotFoundException::class);
-        $vaultTokenService->saveToken(new SyncPaymentTransactionStruct($transaction, new OrderEntity(), new SubscriptionRecurringDataStruct($subscription)), $paymentSource, $customerId, $context);
+        $vaultTokenService->saveToken(new PaymentTransactionStruct($transaction->getId(), recurring: new SubscriptionRecurringDataStruct($subscription)), $transaction, $paymentSource, $customerId, $context);
     }
 }

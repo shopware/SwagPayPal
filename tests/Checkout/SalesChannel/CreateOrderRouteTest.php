@@ -12,14 +12,18 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
-use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\Generator;
+use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
@@ -32,13 +36,12 @@ use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\OrdersApi\Builder\VenmoOrderBuilder;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
-use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -52,93 +55,20 @@ use Symfony\Component\HttpFoundation\Response;
 class CreateOrderRouteTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use PaymentTransactionTrait;
     use SalesChannelContextTrait;
     use ServicesTrait;
 
-    #[DataProvider('dataProviderTestCreatePayment')]
-    public function testCreatePayment(bool $withCartLineItems): void
+    /**
+     * @var StaticEntityRepository<OrderCollection>
+     */
+    private StaticEntityRepository $orderRepository;
+
+    private CreateOrderRoute $route;
+
+    protected function setUp(): void
     {
-        $salesChannelContext = $this->createSalesChannelContext(
-            $this->getContainer(),
-            new PaymentMethodCollection(),
-            null,
-            true,
-            false,
-            $withCartLineItems
-        );
-
-        $response = $this->createRoute()->createPayPalOrder($salesChannelContext, new Request());
-
-        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        static::assertSame(CreateOrderCapture::ID, $response->getToken());
-    }
-
-    public function testCreatePaymentWithoutCustomer(): void
-    {
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->assign(['customer' => null]);
-
-        $this->expectException(CustomerNotLoggedInException::class);
-        $this->createRoute()->createPayPalOrder($salesChannelContext, new Request());
-    }
-
-    public function testCreatePaymentWithOrder(): void
-    {
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $request = new Request([], ['orderId' => ConstantsForTesting::VALID_ORDER_ID]);
-
-        $response = $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
-
-        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        static::assertSame(CreateOrderCapture::ID, $response->getToken());
-    }
-
-    public function testCreatePaymentWithoutOrder(): void
-    {
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $salesChannelContext->getContext()->addExtension(OrderRepositoryMock::NO_ORDER, new ArrayStruct());
-        $request = new Request([], ['orderId' => 'no-order-id']);
-
-        $this->expectException(ShopwareHttpException::class);
-        // @phpstan-ignore-next-line
-        if (\class_exists(PaymentException::class) && \method_exists(PaymentException::class, 'unknownPaymentMethodByHandlerIdentifier')) {
-            // Shopware >= 6.5.7.0
-            $this->expectExceptionMessageMatches('/Could not find order with id \"noorderid\"/');
-        } else {
-            $this->expectExceptionMessageMatches('/Order with id noorderid not found./');
-        }
-        $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
-    }
-
-    public function testCreatePaymentWithOrderWithoutTransactions(): void
-    {
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $salesChannelContext->getContext()->addExtension(OrderRepositoryMock::NO_ORDER_TRANSACTIONS, new ArrayStruct());
-        $request = new Request([], ['orderId' => 'no-order-transactions-id']);
-
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The order with id noordertransactionsid is invalid or could not be found.');
-        $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
-    }
-
-    public function testCreatePaymentWithOrderWithoutTransaction(): void
-    {
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $salesChannelContext->getContext()->addExtension(OrderRepositoryMock::NO_ORDER_TRANSACTION, new ArrayStruct());
-        $request = new Request([], ['orderId' => 'no-order-transaction-id']);
-
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The order with id noordertransactionid is invalid or could not be found.');
-        $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
-    }
-
-    public static function dataProviderTestCreatePayment(): array
-    {
-        return [[true], [false]];
-    }
-
-    private function createRoute(): CreateOrderRoute
-    {
+        $this->orderRepository = new StaticEntityRepository([]);
         $systemConfig = $this->createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
@@ -184,9 +114,9 @@ class CreateOrderRouteTest extends TestCase
             $itemListProvider,
         );
 
-        return new CreateOrderRoute(
+        $this->route = new CreateOrderRoute(
             $this->getContainer()->get(CartService::class),
-            new OrderRepositoryMock(),
+            $this->orderRepository,
             $this->createOrderBuilder($systemConfig),
             $acdcOrderBuilder,
             $applePayOrderBuilder,
@@ -196,5 +126,101 @@ class CreateOrderRouteTest extends TestCase
             new NullLogger(),
             new PaymentTransactionStructFactory(),
         );
+    }
+
+    #[DataProvider('dataProviderTestCreatePayment')]
+    public function testCreatePayment(bool $withCartLineItems): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext(
+            $this->getContainer(),
+            new PaymentMethodCollection(),
+            null,
+            true,
+            false,
+            $withCartLineItems
+        );
+
+        $response = $this->route->createPayPalOrder($salesChannelContext, new Request());
+
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        static::assertSame(CreateOrderCapture::ID, $response->getToken());
+    }
+
+    public function testCreatePaymentWithoutCustomer(): void
+    {
+        $salesChannelContext = Generator::generateSalesChannelContext();
+        $salesChannelContext->assign(['customer' => null]);
+
+        $this->expectException(CustomerNotLoggedInException::class);
+        $this->route->createPayPalOrder($salesChannelContext, new Request());
+    }
+
+    public function testCreatePaymentWithOrder(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $orderId = Uuid::randomHex();
+        $request = new Request([], ['orderId' => $orderId]);
+
+        $orderEntity = $this->createOrderEntity($orderId);
+        $orderTransaction = $this->createOrderTransaction();
+        $orderTransaction->setOrderId($orderEntity->getId());
+        $orderTransaction->setPaymentMethodId(Uuid::randomHex());
+        $orderEntity->setTransactions(new OrderTransactionCollection([$orderTransaction]));
+        $salesChannel = new SalesChannelEntity();
+        $salesChannel->setId(Uuid::randomHex());
+        $orderEntity->setSalesChannel($salesChannel);
+
+        $this->orderRepository->addSearch(new OrderCollection([$orderEntity]));
+
+        $response = $this->route->createPayPalOrder($salesChannelContext, $request);
+
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        static::assertSame(CreateOrderCapture::ID, $response->getToken());
+    }
+
+    public function testCreatePaymentWithoutOrder(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $this->orderRepository->addSearch(new OrderCollection());
+
+        $request = new Request([], ['orderId' => 'no-order-id']);
+
+        $this->expectException(ShopwareHttpException::class);
+        $this->expectExceptionMessageMatches('/Could not find order with id \"noorderid\"/');
+        $this->route->createPayPalOrder($salesChannelContext, $request);
+    }
+
+    public function testCreatePaymentWithOrderWithoutTransactions(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+
+        $orderEntity = $this->createOrderEntity('no-order-transactions-id');
+        $this->orderRepository->addSearch(new OrderCollection([$orderEntity]));
+
+        $request = new Request([], ['orderId' => 'no-order-transactions-id']);
+
+        $this->expectException(PaymentException::class);
+        $this->expectExceptionMessage('The order with id noordertransactionsid is invalid or could not be found.');
+        $this->route->createPayPalOrder($salesChannelContext, $request);
+    }
+
+    public function testCreatePaymentWithOrderWithoutTransaction(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+
+        $orderEntity = $this->createOrderEntity('no-order-transaction-id');
+        $orderEntity->setTransactions(new OrderTransactionCollection());
+        $this->orderRepository->addSearch(new OrderCollection([$orderEntity]));
+
+        $request = new Request([], ['orderId' => 'no-order-transaction-id']);
+
+        $this->expectException(PaymentException::class);
+        $this->expectExceptionMessage('The order with id noordertransactionid is invalid or could not be found.');
+        $this->route->createPayPalOrder($salesChannelContext, $request);
+    }
+
+    public static function dataProviderTestCreatePayment(): array
+    {
+        return [[true], [false]];
     }
 }

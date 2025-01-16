@@ -16,12 +16,9 @@ use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
-use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
-use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -41,8 +38,6 @@ trait ServicesTrait
             Settings::CLIENT_ID => 'TestClientId',
             Settings::CLIENT_SECRET => 'TestClientSecret',
             Settings::MERCHANT_PAYER_ID => 'TestMerchantPayerId',
-            Settings::ORDER_NUMBER_PREFIX => OrderPaymentBuilderTest::TEST_ORDER_NUMBER_PREFIX,
-            Settings::ORDER_NUMBER_SUFFIX => OrderPaymentBuilderTest::TEST_ORDER_NUMBER_SUFFIX,
             Settings::BRAND_NAME => 'Test Brand',
         ]);
     }
@@ -53,20 +48,6 @@ trait ServicesTrait
     protected static function createDefaultSystemConfig(array $settings = []): SystemConfigServiceMock
     {
         return static::createSystemConfigServiceMock(\array_merge(static::getDefaultConfigData(), $settings));
-    }
-
-    protected function createPaymentBuilder(?SystemConfigService $systemConfig = null): OrderPaymentBuilder
-    {
-        $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
-
-        return new OrderPaymentBuilder(
-            $this->createMock(LocaleCodeProvider::class),
-            new PriceFormatter(),
-            $this->createMock(EventDispatcherInterface::class),
-            new NullLogger(),
-            $systemConfig,
-            new CurrencyRepoMock()
-        );
     }
 
     protected function createOrderBuilder(?SystemConfigService $systemConfig = null): PayPalOrderBuilder

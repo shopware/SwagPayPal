@@ -10,10 +10,9 @@ namespace Swag\PayPal\Test\Checkout\Method;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -22,14 +21,19 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
+use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
+use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\Checkout\PUI\Exception\MissingBirthdayException;
 use Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService;
 use Swag\PayPal\OrdersApi\Builder\PUIOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\FullCheckoutTrait;
@@ -39,10 +43,8 @@ use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @internal
@@ -69,11 +71,11 @@ class PUIHandlerTest extends TestCase
         $order = $this->placeOrder($cart, $context);
         $this->processPayment(
             $order,
-            new RequestDataBag([
+            [
                 PUIHandler::PUI_FRAUD_NET_SESSION_ID => Uuid::randomHex(),
                 PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
                 PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
-            ]),
+            ],
             $context,
             $this->getDefaultConfigData()
         );
@@ -89,14 +91,13 @@ class PUIHandlerTest extends TestCase
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessageMatches('/The synchronous payment process was interrupted due to the following error:
-Birthday is required for PUI for customer/');
+        $this->expectException(MissingBirthdayException::class);
+        $this->expectExceptionMessageMatches('/Birthday is required for PUI for customer /');
         $this->processPayment(
             $order,
-            new RequestDataBag([
+            [
                 PUIHandler::PUI_FRAUD_NET_SESSION_ID => Uuid::randomHex(),
-            ]),
+            ],
             $context,
             $this->getDefaultConfigData()
         );
@@ -110,14 +111,13 @@ Birthday is required for PUI for customer/');
         $order = $this->placeOrder($cart, $context);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
-Missing Fraudnet session id');
+        $this->expectExceptionMessage('Missing Fraudnet session id');
         $this->processPayment(
             $order,
-            new RequestDataBag([
+            [
                 PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
                 PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
-            ]),
+            ],
             $context,
             $this->getDefaultConfigData()
         );
@@ -130,16 +130,14 @@ Missing Fraudnet session id');
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
-Required setting "SwagPayPal.settings.clientId" is missing or invalid');
+        $this->expectException(PayPalSettingsInvalidException::class);
         $this->processPayment(
             $order,
-            new RequestDataBag([
+            [
                 PUIHandler::PUI_FRAUD_NET_SESSION_ID => Uuid::randomHex(),
                 PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
                 PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
-            ]),
+            ],
             $context,
             []
         );
@@ -156,11 +154,11 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
 
         $this->processPayment(
             $order,
-            new RequestDataBag([
+            [
                 PUIHandler::PUI_FRAUD_NET_SESSION_ID => Uuid::randomHex(),
                 PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
                 PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
-            ]),
+            ],
             $context,
             $this->getDefaultConfigData()
         );
@@ -177,34 +175,23 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
 
         $this->processPayment(
             $order,
-            new RequestDataBag([
+            [
                 PUIHandler::PUI_FRAUD_NET_SESSION_ID => Uuid::randomHex(),
                 PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER => '+491234956789',
                 PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY => ['year' => 1980, 'month' => 1, 'day' => 1],
-            ]),
+            ],
             $context,
             $this->getDefaultConfigData()
         );
     }
 
-    private function processPayment(OrderEntity $order, RequestDataBag $requestData, SalesChannelContext $context, array $settings): void
+    private function processPayment(OrderEntity $order, array $requestData, SalesChannelContext $context, array $settings): void
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $clientFactory = new PayPalClientFactoryMock(new NullLogger());
         $orderResource = new OrderResource($clientFactory);
-        $logger = new NullLogger();
 
         $criteria = new Criteria([$order->getId()]);
-        $criteria->addAssociation('transactions.stateMachineState');
-        $criteria->addAssociation('transactions.paymentMethod');
-        $criteria->addAssociation('orderCustomer.customer');
-        $criteria->addAssociation('orderCustomer.salutation');
-        $criteria->addAssociation('transactions.paymentMethod.appPaymentMethod.app');
-        $criteria->addAssociation('language');
-        $criteria->addAssociation('currency');
-        $criteria->addAssociation('deliveries.shippingOrderAddress.country');
-        $criteria->addAssociation('billingAddress.country');
-        $criteria->addAssociation('lineItems');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
 
         /** @var EntityRepository $orderRepository */
@@ -214,31 +201,27 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         static::assertNotNull($order);
 
         $this->session = new Session(new MockArraySessionStorage());
-        $request = new Request();
+        $request = new Request([], $requestData);
         $request->setSession($this->session);
-        $requestStack = new RequestStack();
-        $requestStack->push($request);
-
-        /** @var TranslatorInterface $translator */
-        $translator = $this->getContainer()->get('translator');
 
         $handler = new PUIHandler(
             new SettingsValidationService($systemConfig, new NullLogger()),
-            $this->getContainer()->get(OrderTransactionStateHandler::class),
-            $this->getContainer()->get(PUIOrderBuilder::class),
-            $orderResource,
+            $this->getContainer()->get(StateMachineRegistry::class),
+            $this->getContainer()->get(OrderExecuteService::class),
+            $this->getContainer()->get(OrderPatchService::class),
             $this->getContainer()->get(TransactionDataService::class),
+            $orderResource,
+            $this->getContainer()->get(VaultTokenService::class),
+            $this->getContainer()->get('order_transaction.repository'),
+            $this->getContainer()->get(PUIOrderBuilder::class),
             $this->getContainer()->get(PUICustomerDataService::class),
-            $requestStack,
-            $translator,
-            $logger,
         );
 
         $transactions = $order->getTransactions();
         $transaction = $transactions ? $transactions->last() : null;
         static::assertNotNull($transaction);
-        $struct = new AsyncPaymentTransactionStruct($transaction, $order, 'http://return.url');
-        $handler->pay($struct, $requestData, $context);
+        $struct = new PaymentTransactionStruct($transaction->getId(), 'http://return.url');
+        $handler->pay($request, $struct, $context->getContext(), null);
     }
 
     private function assertCustomFields(string $orderTransactionId, string $orderId, string $attributionId): void
@@ -249,8 +232,8 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $orderTransaction = $orderTransactionRepo->search(new Criteria([$orderTransactionId]), Context::createDefaultContext())->first();
         static::assertNotNull($orderTransaction);
 
-        static::assertSame($orderId, ($orderTransaction->getCustomFields() ?? [])[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID]);
-        static::assertSame($attributionId, ($orderTransaction->getCustomFields() ?? [])[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID]);
+        static::assertSame($orderId, $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID));
+        static::assertSame($attributionId, $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID));
     }
 
     private function getTransactionFromOrder(OrderEntity $order): OrderTransactionEntity

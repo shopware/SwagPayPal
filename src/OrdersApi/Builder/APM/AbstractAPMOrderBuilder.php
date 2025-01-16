@@ -9,7 +9,10 @@ namespace Swag\PayPal\OrdersApi\Builder\APM;
 
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -19,13 +22,19 @@ use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractAPMPaymentSource;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
 abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
 {
-    public function getOrder(SyncPaymentTransactionStruct $paymentTransaction, SalesChannelContext $salesChannelContext, RequestDataBag $requestDataBag): Order
-    {
-        $order = parent::getOrder($paymentTransaction, $salesChannelContext, $requestDataBag);
+    public function getOrder(
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+        Request $request,
+    ): Order {
+        $order = parent::getOrder($paymentTransaction, $orderTransaction, $order, $context, $request);
         $order->setIntent(PaymentIntentV2::CAPTURE);
         $order->setProcessingInstruction(Order::PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL);
 
@@ -38,24 +47,27 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
     }
 
     protected function fillPaymentSource(
-        SyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext,
+        PaymentTransactionStruct $paymentTransaction,
+        OrderEntity $order,
+        Context $context,
         AbstractAPMPaymentSource $paymentSource,
     ): void {
-        $address = $paymentTransaction->getOrder()->getBillingAddress();
+        $address = $order->getBillingAddress();
         if ($address === null) {
-            throw new AddressNotFoundException($paymentTransaction->getOrder()->getBillingAddressId());
+            throw new AddressNotFoundException($order->getBillingAddressId());
         }
 
         $paymentSource->setName(\sprintf('%s %s', $address->getFirstName(), $address->getLastName()));
 
         $country = $address->getCountry();
         if ($country === null || ($iso = $country->getIso()) === null) {
-            throw new AddressNotFoundException($paymentTransaction->getOrder()->getBillingAddressId());
+            throw new AddressNotFoundException($order->getBillingAddressId());
         }
 
         $paymentSource->setCountryCode($iso);
 
-        $paymentSource->setExperienceContext($this->createExperienceContext($salesChannelContext, $paymentTransaction));
+        $salesChannel = $order->getSalesChannel();
+        \assert($salesChannel !== null);
+        $paymentSource->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction));
     }
 }

@@ -108,7 +108,7 @@ class PayPalControllerTest extends TestCase
             'formattedHandlerIdentifier' => 'test_handler',
         ]);
 
-        $this->controller->onHandleError($request, Generator::createSalesChannelContext(paymentMethod: $paymentMethod));
+        $this->controller->onHandleError($request, Generator::generateSalesChannelContext(paymentMethod: $paymentMethod));
     }
 
     public function testOnHandleErrorWithNonTranslatableErrorCode(): void
@@ -178,6 +178,6 @@ class PayPalControllerTest extends TestCase
             'formattedHandlerIdentifier' => 'test_handler',
         ]);
 
-        return Generator::createSalesChannelContext(paymentMethod: $paymentMethod);
+        return Generator::generateSalesChannelContext(paymentMethod: $paymentMethod);
     }
 }

@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -37,7 +38,17 @@ class AbstractRepoMock extends EntityRepository
 
     public function getDefinition(): EntityDefinition
     {
-        return new EntityDefinitionMock();
+        return new class extends EntityDefinition {
+            public function getEntityName(): string
+            {
+                return 'entity';
+            }
+
+            protected function defineFields(): FieldCollection
+            {
+                return new FieldCollection([]);
+            }
+        };
     }
 
     public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection

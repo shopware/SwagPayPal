@@ -22,7 +22,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Reporting\Subscriber\OrderTransactionSubscriber;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -54,7 +54,7 @@ class OrderTransactionSubscriberTest extends TestCase
     {
         $transaction = (new OrderTransactionEntity())->assign([
             'id' => 'transaction-id',
-            'paymentMethod' => (new PaymentMethodEntity())->assign(['handlerIdentifier' => PayPalHandler::class]),
+            'paymentMethod' => (new PaymentMethodEntity())->assign(['handlerIdentifier' => PayPalPaymentHandler::class]),
             'amount' => new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()),
         ]);
 
@@ -68,7 +68,7 @@ class OrderTransactionSubscriberTest extends TestCase
         $this->methodDataRegistry
             ->expects(static::once())
             ->method('getPaymentHandlers')
-            ->willReturn([PayPalHandler::class]);
+            ->willReturn([PayPalPaymentHandler::class]);
 
         $this->transactionReportRepository
             ->expects(static::once())
@@ -86,7 +86,7 @@ class OrderTransactionSubscriberTest extends TestCase
     {
         $transaction = (new OrderTransactionEntity())->assign([
             'id' => 'transaction-id',
-            'paymentMethod' => (new PaymentMethodEntity())->assign(['handlerIdentifier' => PayPalHandler::class]),
+            'paymentMethod' => (new PaymentMethodEntity())->assign(['handlerIdentifier' => PayPalPaymentHandler::class]),
             'amount' => new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()),
         ]);
 
@@ -128,7 +128,7 @@ class OrderTransactionSubscriberTest extends TestCase
         $this->methodDataRegistry
             ->expects(static::once())
             ->method('getPaymentHandlers')
-            ->willReturn([PayPalHandler::class]);
+            ->willReturn([PayPalPaymentHandler::class]);
 
         $this->subscriber->onPaidStateTransition($event);
     }
@@ -137,7 +137,7 @@ class OrderTransactionSubscriberTest extends TestCase
     {
         $transaction = (new OrderTransactionEntity())->assign([
             'id' => 'transaction-id',
-            'paymentMethod' => (new PaymentMethodEntity())->assign(['handlerIdentifier' => PayPalHandler::class]),
+            'paymentMethod' => (new PaymentMethodEntity())->assign(['handlerIdentifier' => PayPalPaymentHandler::class]),
             'amount' => new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()),
             'customFields' => [SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_IS_SANDBOX => true],
         ]);

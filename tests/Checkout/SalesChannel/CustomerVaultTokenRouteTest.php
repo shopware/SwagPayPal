@@ -42,7 +42,7 @@ class CustomerVaultTokenRouteTest extends TestCase
 
     public function testGetVaultTokenWithoutCustomer(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->assign(['customer' => null]);
 
         $this->expectException(CustomerException::class);
@@ -52,7 +52,7 @@ class CustomerVaultTokenRouteTest extends TestCase
 
     public function testGetVaultTokenWithGuestCustomer(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(true);
 
         $this->expectException(CustomerException::class);
@@ -62,7 +62,7 @@ class CustomerVaultTokenRouteTest extends TestCase
 
     public function testGetVaultToken(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(false);
 
         $entitySearchResult = $this->createMock(EntitySearchResult::class);
@@ -84,7 +84,7 @@ class CustomerVaultTokenRouteTest extends TestCase
 
     public function testVaultTokenIsNull(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(false);
 
         $entitySearchResult = $this->createMock(EntitySearchResult::class);

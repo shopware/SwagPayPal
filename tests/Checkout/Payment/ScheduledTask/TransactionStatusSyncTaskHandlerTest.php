@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Checkout\Payment\ScheduledTask;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -53,6 +54,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
 
         $this->handler = new TransactionStatusSyncTaskHandler(
             $this->createMock(EntityRepository::class),
+            new NullLogger(),
             $this->orderTransactionRepository,
             $this->paymentMethodDataRegistry,
             $this->bus,

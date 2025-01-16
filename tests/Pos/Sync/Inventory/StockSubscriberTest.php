@@ -36,9 +36,11 @@ use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\Event\StateMachineTransitionEvent;
 use Shopware\Core\System\StateMachine\Loader\InitialStateIdLoader;
+use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\MessageQueue\Handler\InventoryUpdateHandler;
@@ -75,8 +77,8 @@ class StockSubscriberTest extends TestCase
 
     public function testStateChanged(): void
     {
-        $this->process(function (StockSubscriber $stockSubscriber, OrderEntity $order, Context $context): void {
-            $event = $this->createStateMachineTransitionEvent($order->getId(), $context);
+        $this->process(function (StockSubscriber $stockSubscriber, OrderEntity $order, SalesChannelContext $context): void {
+            $event = $this->createStateMachineTransitionEvent($order->getId(), $context->getContext());
 
             $stockSubscriber->stateChanged($event);
         });
@@ -101,8 +103,8 @@ class StockSubscriberTest extends TestCase
 
     public function testLineItemWritten(): void
     {
-        $this->process(function (StockSubscriber $stockSubscriber, OrderEntity $order, Context $context): void {
-            $event = $this->createEntityWrittenEvent($order, $context);
+        $this->process(function (StockSubscriber $stockSubscriber, OrderEntity $order, SalesChannelContext $context): void {
+            $event = $this->createEntityWrittenEvent($order, $context->getContext());
 
             $stockSubscriber->lineItemWritten($event);
         });
@@ -119,7 +121,7 @@ class StockSubscriberTest extends TestCase
 
     public function testOrderPlaced(): void
     {
-        $this->process(function (StockSubscriber $stockSubscriber, OrderEntity $order, Context $context): void {
+        $this->process(function (StockSubscriber $stockSubscriber, OrderEntity $order, SalesChannelContext $context): void {
             $event = $this->createCheckoutOrderPlacedEvent($context, $order);
 
             $stockSubscriber->orderPlaced($event);
@@ -128,22 +130,22 @@ class StockSubscriberTest extends TestCase
 
     public function testOrderPlacedWithoutPosSalesChannel(): void
     {
-        $context = Context::createDefaultContext();
-        $order = $this->createOrder($context);
-        $event = $this->createCheckoutOrderPlacedEvent($context, $order);
+        $salesChannelContext = Generator::generateSalesChannelContext();
+        $order = $this->createOrder($salesChannelContext->getContext());
+        $event = $this->createCheckoutOrderPlacedEvent($salesChannelContext, $order);
 
         $this->createStockSubscriber()->orderPlaced($event);
     }
 
     private function process(callable $callback, bool $shouldWork = true): void
     {
-        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
 
         $inventoryResource = new InventoryResource(new PosClientFactoryMock());
         $inventoryRepository = new PosInventoryRepoMock();
         $productRepository = new ProductRepoMock();
         $salesChannelProductRepository = new SalesChannelProductRepoMock();
-        $salesChannel = $this->getSalesChannel($context);
+        $salesChannel = $this->getSalesChannel($salesChannelContext->getContext());
         $salesChannelRepository = new SalesChannelRepoMock();
         $salesChannelRepository->getCollection()->clear();
         $salesChannelRepository->addMockEntity($salesChannel);
@@ -210,14 +212,14 @@ class StockSubscriberTest extends TestCase
         $inventoryRepository->createMockEntity($productB, TestDefaults::SALES_CHANNEL, 1);
         $inventoryRepository->createMockEntity($productC, TestDefaults::SALES_CHANNEL, 1);
 
-        $order = $this->createOrder($context);
+        $order = $this->createOrder($salesChannelContext->getContext());
         $lineItems = $order->getLineItems();
         static::assertNotNull($lineItems);
 
         $repoCollection = $orderLineItemRepository->getCollection();
         $repoCollection->merge($lineItems);
 
-        $callback($stockSubscriber, $order, $context);
+        $callback($stockSubscriber, $order, $salesChannelContext);
         $messageBus->execute([$inventoryUpdateHandler]);
 
         $inventoryMessageCreated = false;
@@ -366,12 +368,11 @@ class StockSubscriberTest extends TestCase
         return new StateMachineTransitionEvent(OrderDefinition::ENTITY_NAME, $orderId, $from, $to, $context);
     }
 
-    private function createCheckoutOrderPlacedEvent(Context $context, OrderEntity $order): CheckoutOrderPlacedEvent
+    private function createCheckoutOrderPlacedEvent(SalesChannelContext $context, OrderEntity $order): CheckoutOrderPlacedEvent
     {
         return new CheckoutOrderPlacedEvent(
             $context,
             $order,
-            TestDefaults::SALES_CHANNEL
         );
     }
 }

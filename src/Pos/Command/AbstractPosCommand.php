@@ -68,7 +68,7 @@ abstract class AbstractPosCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $context = Context::createDefaultContext();
+        $context = Context::createCLIContext();
         $salesChannels = $this->getSalesChannels($input, $context);
 
         if ($salesChannels->count() === 0) {

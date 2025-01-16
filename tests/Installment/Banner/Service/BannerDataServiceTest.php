@@ -11,6 +11,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
+use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -69,7 +72,7 @@ class BannerDataServiceTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContextWithLanguage($isoLang, $isoCurrency);
 
-        $bannerData = $this->bannerDataService->getInstallmentBannerData(new FooterPagelet(null), $salesChannelContext);
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()), $salesChannelContext);
 
         static::assertSame($expectedCountry, $bannerData->getCrossBorderBuyerCountry());
     }
@@ -93,7 +96,7 @@ class BannerDataServiceTest extends TestCase
 
         $this->systemConfigService->set(Settings::CROSS_BORDER_BUYER_COUNTRY, 'de-DE');
 
-        $bannerData = $this->bannerDataService->getInstallmentBannerData(new FooterPagelet(null), $salesChannelContext);
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()), $salesChannelContext);
 
         static::assertSame('DE', $bannerData->getCrossBorderBuyerCountry());
     }
@@ -104,7 +107,7 @@ class BannerDataServiceTest extends TestCase
 
         $this->systemConfigService->set(Settings::CROSS_BORDER_MESSAGING_ENABLED, false);
 
-        $bannerData = $this->bannerDataService->getInstallmentBannerData(new FooterPagelet(null), $salesChannelContext);
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()), $salesChannelContext);
 
         static::assertNull($bannerData->getCrossBorderBuyerCountry());
     }
@@ -116,7 +119,7 @@ class BannerDataServiceTest extends TestCase
             languageIdChain: [$isoLang, 'en-GB'],
         );
 
-        $salesChannelContext = Generator::createSalesChannelContext($context);
+        $salesChannelContext = Generator::generateSalesChannelContext($context);
         $salesChannelContext->getCurrency()->setIsoCode($isoCurrency);
 
         $this->languageRepository

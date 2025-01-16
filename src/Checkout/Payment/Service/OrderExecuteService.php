@@ -82,7 +82,7 @@ class OrderExecuteService
 
     private function doPayPalRequest(PayPalOrder $paypalOrder, string $salesChannelId, string $partnerAttributionId, string $transactionId, Context $context): PayPalOrder
     {
-        if ($this->isFinalized($paypalOrder, $salesChannelId, $transactionId, $context, false)) {
+        if ($this->checkFinalizedStatus($paypalOrder, $salesChannelId, $transactionId, $context, false)) {
             return $paypalOrder;
         }
 
@@ -92,12 +92,12 @@ class OrderExecuteService
             $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
         }
 
-        $this->isFinalized($response, $salesChannelId, $transactionId, $context);
+        $this->checkFinalizedStatus($response, $salesChannelId, $transactionId, $context);
 
         return $response;
     }
 
-    private function isFinalized(PayPalOrder $order, string $salesChannelId, string $transactionId, Context $context, bool $refetch = true): bool
+    public function checkFinalizedStatus(PayPalOrder $order, string $salesChannelId, string $transactionId, Context $context, bool $refetch = true): bool
     {
         if ($order->getIntent() === PaymentIntentV2::CAPTURE) {
             $capture = $this->getPayments($order, $salesChannelId, $refetch)?->getCaptures()?->first();

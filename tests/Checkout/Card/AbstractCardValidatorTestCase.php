@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\Checkout\Card;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Card\CardValidatorInterface;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult\ThreeDSecure;
@@ -33,11 +33,9 @@ abstract class AbstractCardValidatorTestCase extends TestCase
         $this->systemConfigService->set(Settings::ACDC_FORCE_3DS, $force);
         $authenticationResult = $this->createAuthenticationResult($liabilityShift, $enrollmentStatus, $authenticationStatus);
 
-        $salesChannelContext = $this->createMock(SalesChannelContext::class);
-
         $method = (new \ReflectionClass($this->validator))->getMethod('validateAuthenticationResult');
 
-        static::assertSame($result, $method->invokeArgs($this->validator, [$authenticationResult, $salesChannelContext]));
+        static::assertSame($result, $method->invokeArgs($this->validator, [$authenticationResult, Uuid::randomHex()]));
     }
 
     public static function dataProvider3DSecureResults(): iterable

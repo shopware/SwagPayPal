@@ -9,6 +9,7 @@ namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Psr\Cache\CacheItemPoolInterface;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Util\Hasher;
 use Swag\PayPal\RestApi\Client\TokenClientFactoryInterface;
 use Swag\PayPal\RestApi\V1\Api\Token;
 use Swag\PayPal\RestApi\V1\Service\CredentialProviderInterface;
@@ -34,7 +35,7 @@ class TokenResource implements TokenResourceInterface
     {
         $credentials = $this->credentialProvider->createCredentialsObject($salesChannelId);
 
-        $cacheId = \md5((string) $credentials);
+        $cacheId = Hasher::hash((string) $credentials);
 
         $token = $this->getTokenFromCache($cacheId);
         if ($token !== null && $this->tokenValidator->isTokenValid($token)) {

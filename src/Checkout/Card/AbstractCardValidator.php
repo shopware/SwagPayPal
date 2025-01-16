@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Checkout\Card;
 
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult;
 use Swag\PayPal\Setting\Settings;
@@ -24,14 +23,14 @@ abstract class AbstractCardValidator implements CardValidatorInterface
     ) {
     }
 
-    protected function validateAuthenticationResult(AuthenticationResult $authenticationResult, SalesChannelContext $salesChannelContext): bool
+    protected function validateAuthenticationResult(AuthenticationResult $authenticationResult, ?string $salesChannelId): bool
     {
         if ($authenticationResult->getLiabilityShift() === self::LIABILITY_SHIFT_POSSIBLE
             || $authenticationResult->getLiabilityShift() === self::LIABILITY_SHIFT_YES) {
             return true;
         }
 
-        if ($this->systemConfigService->getBool(Settings::ACDC_FORCE_3DS, $salesChannelContext->getSalesChannelId())) {
+        if ($this->systemConfigService->getBool(Settings::ACDC_FORCE_3DS, $salesChannelId)) {
             return false;
         }
 

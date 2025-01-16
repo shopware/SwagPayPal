@@ -26,7 +26,6 @@ use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
-use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
@@ -58,7 +57,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         );
 
         $request = new Request([], [
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => GetOrderCapture::ID,
+            ExpressPrepareCheckoutRoute::PAYPAL_REQUEST_PARAMETER_TOKEN => GetOrderCapture::ID,
         ]);
 
         $response = $this->createRoute($this->getContainer()->get(CartService::class))->prepareCheckout($salesChannelContext, $request);
@@ -169,7 +168,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         $salesChannelContext = $this->getSalesChannelContext();
 
         $request = new Request([], [
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => $testPaypalOrderId,
+            ExpressPrepareCheckoutRoute::PAYPAL_REQUEST_PARAMETER_TOKEN => $testPaypalOrderId,
         ]);
 
         $response = $this->createRoute()->prepareCheckout($salesChannelContext, $request);

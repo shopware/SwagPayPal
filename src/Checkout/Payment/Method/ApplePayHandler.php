@@ -7,44 +7,61 @@
 
 namespace Swag\PayPal\Checkout\Payment\Method;
 
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Checkout\Card\CardValidatorInterface;
+use Swag\PayPal\Checkout\Card\Exception\CardValidationFailedException;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 
 #[Package('checkout')]
-class ApplePayHandler extends AbstractSyncAPMHandler
+class ApplePayHandler extends AbstractPaymentMethodHandler
 {
     /**
      * @internal
      */
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
-        OrderTransactionStateHandler $orderTransactionStateHandler,
+        StateMachineRegistry $stateMachineRegistry,
         OrderExecuteService $orderExecuteService,
         OrderPatchService $orderPatchService,
         TransactionDataService $transactionDataService,
-        LoggerInterface $logger,
         OrderResource $orderResource,
         VaultTokenService $vaultTokenService,
+        EntityRepository $orderTransactionRepository,
+        AbstractOrderBuilder $orderBuilder,
         private readonly CardValidatorInterface $applePayValidator,
     ) {
-        parent::__construct($settingsValidationService, $orderTransactionStateHandler, $orderExecuteService, $orderPatchService, $transactionDataService, $logger, $orderResource, $vaultTokenService);
+        parent::__construct($settingsValidationService, $stateMachineRegistry, $orderExecuteService, $orderPatchService, $transactionDataService, $orderResource, $vaultTokenService, $orderTransactionRepository, $orderBuilder);
     }
 
-    protected function executeOrder(SyncPaymentTransactionStruct $transaction, Order $paypalOrder, SalesChannelContext $salesChannelContext): Order
+    protected function executeOrder(PaymentTransactionStruct $transaction, Order $paypalOrder, OrderEntity $order, OrderTransactionEntity $orderTransaction, Context $context, bool $isUserPresent = true): Order
     {
-        $this->applePayValidator->validate($paypalOrder, $transaction, $salesChannelContext);
+        if (!$this->applePayValidator->validate($paypalOrder, $orderTransaction, $context)) {
+            throw CardValidationFailedException::cardValidationFailed($transaction->getOrderTransactionId());
+        }
 
-        return parent::executeOrder($transaction, $paypalOrder, $salesChannelContext);
+        return parent::executeOrder($transaction, $paypalOrder, $order, $orderTransaction, $context, $isUserPresent);
+    }
+
+    protected function isVaultable(): bool
+    {
+        return false;
+    }
+
+    protected function requirePreparedOrder(): bool
+    {
+        return true;
     }
 }

@@ -79,7 +79,7 @@ class VaultPaymentTokenCreated extends AbstractWebhookHandler
             return;
         }
 
-        $struct = $this->paymentTransactionStructFactory->sync($orderTransaction, $order);
+        $struct = $this->paymentTransactionStructFactory->build($orderTransaction->getId(), $context);
 
         $paymentSource = $this->orderResource->get($orderId, $order->getSalesChannelId())->getPaymentSource()?->first(VaultablePaymentSourceInterface::class);
         if ($paymentSource === null) {
@@ -98,6 +98,6 @@ class VaultPaymentTokenCreated extends AbstractWebhookHandler
         $attributes->setVault($vault);
         $paymentSource->setAttributes($attributes);
 
-        $this->vaultTokenService->saveToken($struct, $paymentSource, $customerId, $context);
+        $this->vaultTokenService->saveToken($struct, $orderTransaction, $paymentSource, $customerId, $context);
     }
 }

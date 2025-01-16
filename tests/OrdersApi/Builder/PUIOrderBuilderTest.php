@@ -10,10 +10,10 @@ namespace Swag\PayPal\Test\OrdersApi\Builder;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
-use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\PUI\Exception\MissingBirthdayException;
@@ -26,12 +26,12 @@ use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
-use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @internal
@@ -41,7 +41,6 @@ class PUIOrderBuilderTest extends TestCase
 {
     use IntegrationTestBehaviour;
     use PaymentTransactionTrait;
-    use SalesChannelContextTrait;
 
     private const TEST_FIRST_NAME = 'FirstName';
     private const TEST_LAST_NAME = 'LastName';
@@ -51,18 +50,19 @@ class PUIOrderBuilderTest extends TestCase
     public function testGetOrder(): void
     {
         $orderBuilder = $this->createPUIOrderBuilder();
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
         $countryState = new CountryStateEntity();
         $countryState->setShortCode(self::STATE_SHORT_CODE);
 
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
         );
 
         $shipping = $order->getPurchaseUnits()->first()?->getShipping();
@@ -84,50 +84,51 @@ class PUIOrderBuilderTest extends TestCase
     public function testGetOrderNoBillingAddress(): void
     {
         $orderBuilder = $this->createPUIOrderBuilder();
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
-        $paymentTransaction->getOrder()->assign(['billingAddress' => null]);
+        $order->assign(['billingAddress' => null]);
 
         $this->expectException(AddressNotFoundException::class);
         $this->expectExceptionMessageMatches('/Customer address with id "[a-z0-9]*" not found/');
         $orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
         );
     }
 
     public function testGetOrderNoBirthday(): void
     {
         $orderBuilder = $this->createPUIOrderBuilder();
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
-        $customer->assign(['birthday' => null]);
+        $order->getOrderCustomer()?->getCustomer()?->assign(['birthday' => null]);
 
         $this->expectException(MissingBirthdayException::class);
         $this->expectExceptionMessageMatches('/Birthday is required for PUI for customer "[a-z0-9]*"/');
         $orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
         );
     }
 
     public function testGetOrderNoPhoneNumber(): void
     {
         $orderBuilder = $this->createPUIOrderBuilder();
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
-        $billingAddress = $paymentTransaction->getOrder()->getBillingAddress();
+        $billingAddress = $order->getBillingAddress();
         static::assertNotNull($billingAddress);
         $billingAddress->assign(['phoneNumber' => null]);
 
@@ -135,25 +136,28 @@ class PUIOrderBuilderTest extends TestCase
         $this->expectExceptionMessageMatches('/Phone Number is required for PUI for order address "[a-z0-9]*"/');
         $orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
         );
     }
 
     public function testGetOrderPrefix(): void
     {
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
         $settings = SystemConfigServiceMock::createWithoutCredentials();
         $settings->set(Settings::ORDER_NUMBER_PREFIX, 'foo');
         $settings->set(Settings::ORDER_NUMBER_SUFFIX, 'bar');
         $order = $this->createPUIOrderBuilder($settings)->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
         );
 
         $invoiceId = $order->getPurchaseUnits()->first()?->getInvoiceId();

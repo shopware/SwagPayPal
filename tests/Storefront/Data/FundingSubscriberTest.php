@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\Storefront\Data;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
+use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Generator;
@@ -110,11 +113,11 @@ class FundingSubscriberTest extends TestCase
 
     private function createFooterPageletLoadedEvent(): FooterPageletLoadedEvent
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCurrency()->setIsoCode('EUR');
 
         return new FooterPageletLoadedEvent(
-            new FooterPagelet(null),
+            new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()),
             $salesChannelContext,
             new Request()
         );

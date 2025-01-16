@@ -76,16 +76,9 @@ class CheckoutSubscriberTest extends TestCase
 
         $paymentMethods = $this->getPaymentMethods($context);
 
-        $salesChannelContext = Generator::createSalesChannelContext(
+        $salesChannelContext = Generator::generateSalesChannelContext(
             $context,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            $paymentMethods->filterByProperty('handlerIdentifier', PayPalPaymentHandler::class)->first()
+            paymentMethod: $paymentMethods->filterByProperty('handlerIdentifier', PayPalPaymentHandler::class)->first()
         );
 
         $page = new AccountEditOrderPage();

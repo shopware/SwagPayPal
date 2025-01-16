@@ -11,10 +11,10 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
-use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder;
@@ -52,6 +52,7 @@ use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @internal
@@ -77,13 +78,16 @@ class APMOrderBuilderTest extends TestCase
     public function testGetOrder(string $orderBuilderClass, array $requestData, string $structClass, array $expectedStructData): void
     {
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag($requestData)
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], $requestData),
         );
 
         static::assertSame(Order::PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL, $order->getProcessingInstruction());
@@ -114,17 +118,20 @@ class APMOrderBuilderTest extends TestCase
     public function testGetOrderNoBillingAddress(string $orderBuilderClass, array $requestData): void
     {
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
-        $paymentTransaction->getOrder()->assign(['billingAddress' => null]);
+        $order->assign(['billingAddress' => null]);
 
         $this->expectException(AddressNotFoundException::class);
         $this->expectExceptionMessageMatches('/Customer address with id "[a-z0-9]*" not found/');
         $orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag($requestData)
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], $requestData),
         );
     }
 
@@ -135,14 +142,17 @@ class APMOrderBuilderTest extends TestCase
     public function testGetOrderNoShippingAddress(string $orderBuilderClass, array $requestData, string $structClass): void
     {
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $paymentTransaction->getOrder()->getDeliveries()?->clear();
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
+        $order->getDeliveries()?->clear();
 
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag($requestData)
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], $requestData),
         );
 
         $paymentSource = $order->getPaymentSource();
@@ -159,16 +169,19 @@ class APMOrderBuilderTest extends TestCase
     #[DataProvider('dataProviderAPM')]
     public function testGetOrderPrefix(string $orderBuilderClass, array $requestData): void
     {
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
         $settings = SystemConfigServiceMock::createWithoutCredentials();
         $settings->set(Settings::ORDER_NUMBER_PREFIX, 'foo');
         $settings->set(Settings::ORDER_NUMBER_SUFFIX, 'bar');
         $order = $this->createOrderBuilder($orderBuilderClass, $settings)->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag($requestData)
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], $requestData),
         );
 
         $invoiceId = $order->getPurchaseUnits()->first()?->getInvoiceId();
