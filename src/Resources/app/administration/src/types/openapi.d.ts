@@ -81,15 +81,6 @@ export interface paths {
     /** @description Loads the PayPal resource details of the given resource ID */
     get: operations["resourceDetails"];
   };
-  "/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}": {
-    post: operations["paypalRefundPayment"];
-  };
-  "/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}": {
-    post: operations["paypalCapturePayment"];
-  };
-  "/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}": {
-    post: operations["paypalVoidPayment"];
-  };
   "/api/_action/paypal/pos/sync/{salesChannelId}/products": {
     post: operations["posSyncProducts"];
   };
@@ -1836,57 +1827,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["swag_paypal_v1_payment_transaction_related_resource_sale"] | components["schemas"]["swag_paypal_v1_payment_transaction_related_resource_authorization"] | components["schemas"]["swag_paypal_v1_payment_transaction_related_resource_order"] | components["schemas"]["swag_paypal_v1_capture"];
-        };
-      };
-    };
-  };
-  paypalRefundPayment: {
-    parameters: {
-      path: {
-        resourceType: "authorize" | "order";
-        resourceId: string;
-        orderId: string;
-      };
-    };
-    responses: {
-      /** @description Capture for the given resource */
-      200: {
-        content: {
-          "application/json": components["schemas"]["swag_paypal_v1_do_void"];
-        };
-      };
-    };
-  };
-  paypalCapturePayment: {
-    parameters: {
-      path: {
-        resourceType: "authorize" | "order";
-        resourceId: string;
-        orderId: string;
-      };
-    };
-    responses: {
-      /** @description Capture for the given resource */
-      200: {
-        content: {
-          "application/json": components["schemas"]["swag_paypal_v1_do_void"];
-        };
-      };
-    };
-  };
-  paypalVoidPayment: {
-    parameters: {
-      path: {
-        resourceType: "authorize" | "order";
-        resourceId: string;
-        orderId: string;
-      };
-    };
-    responses: {
-      /** @description Voidance for the given resource */
-      200: {
-        content: {
-          "application/json": components["schemas"]["swag_paypal_v1_do_void"];
         };
       };
     };

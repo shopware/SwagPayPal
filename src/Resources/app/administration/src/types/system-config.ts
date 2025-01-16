@@ -46,17 +46,6 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.spbShowPayLater'?: boolean;
     'SwagPayPal.settings.spbCheckoutEnabled'?: boolean;
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled'?: boolean;
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.merchantLocation'?: 'other' | 'germany';
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.plusCheckoutEnabled'?: boolean;
-
     'SwagPayPal.settings.vaultingEnabled'?: boolean;
     'SwagPayPal.settings.vaultingEnableAlways'?: boolean;
     'SwagPayPal.settings.vaultingEnabledWallet'?: boolean;
@@ -112,17 +101,6 @@ export const SystemConfigDefinition: Record<keyof SystemConfig, 'string' | 'bool
     'SwagPayPal.settings.spbShowPayLater': 'boolean',
     'SwagPayPal.settings.spbCheckoutEnabled': 'boolean',
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled': 'boolean',
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.merchantLocation': 'string',
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.plusCheckoutEnabled': 'boolean',
-
     'SwagPayPal.settings.vaultingEnabled': 'boolean',
     'SwagPayPal.settings.vaultingEnableAlways': 'boolean',
     'SwagPayPal.settings.vaultingEnabledWallet': 'boolean',

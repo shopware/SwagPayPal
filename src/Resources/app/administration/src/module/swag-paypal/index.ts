@@ -13,7 +13,6 @@ Shopware.Component.register('swag-paypal-cross-border', () => import('./componen
 Shopware.Component.register('swag-paypal-express', () => import('./components/swag-paypal-express'));
 Shopware.Component.register('swag-paypal-inherit-wrapper', () => import('./components/swag-paypal-inherit-wrapper'));
 Shopware.Component.register('swag-paypal-installment', () => import('./components/swag-paypal-installment'));
-Shopware.Component.register('swag-paypal-plus', () => import('./components/swag-paypal-plus'));
 Shopware.Component.register('swag-paypal-pui', () => import('./components/swag-paypal-pui'));
 Shopware.Component.register('swag-paypal-settings-hint', () => import('./components/swag-paypal-settings-hint'));
 Shopware.Component.register('swag-paypal-settings-icon', () => import('./components/swag-paypal-settings-icon'));

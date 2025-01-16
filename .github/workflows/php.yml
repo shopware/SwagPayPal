@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        PLATFORM_BRANCH: ["v6.6.0.0", "trunk"]
+        PLATFORM_BRANCH: ["trunk"]
       fail-fast: false
     steps:
       - name: Checkout SwagPayPal
@@ -43,12 +43,6 @@ jobs:
           composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCmsExtensions"
           composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCommercial"
           sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist
-          if [[ "${{ matrix.PLATFORM_BRANCH }}" == "v6.6.0.0" ]]; then
-            sed -i '/type_perfect/d' ./phpstan.neon.dist
-            sed -i '/narrow_return: true/d' ./phpstan.neon.dist
-            sed -i '/no_mixed: true/d' ./phpstan.neon.dist
-            sed -i '/null_over_false: true/d' ./phpstan.neon.dist
-          fi
       - run: |
           composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
 
