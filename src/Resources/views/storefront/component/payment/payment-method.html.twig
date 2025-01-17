@@ -15,6 +15,7 @@
     {% set payPalVaultData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\VaultSubscriber::VAULT_EXTENSION')] %}
 
     {% if payPalPlusData and payPalPlusData.approvalUrl and payPalPlusData.paymentMethodId is same as(context.paymentMethod.id) and payPalPlusData.paymentMethodId is same as(payment.id) %}
+        {# @deprecated tag:v10.0.0 - will be removed without replacement #}
         {% block component_payment_method_description_paypal_plus %}
         <div class="d-none"
              data-swag-paypal-payment-wall="true"

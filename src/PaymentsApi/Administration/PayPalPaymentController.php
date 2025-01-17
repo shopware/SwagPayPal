@@ -40,12 +40,33 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(defaults: ['_routeScope' => ['api']])]
 class PayPalPaymentController extends AbstractController
 {
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public const REQUEST_PARAMETER_CURRENCY = 'currency';
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public const REQUEST_PARAMETER_REFUND_AMOUNT = 'refundAmount';
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public const REQUEST_PARAMETER_REFUND_INVOICE_NUMBER = 'refundInvoiceNumber';
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public const REQUEST_PARAMETER_CAPTURE_AMOUNT = 'captureAmount';
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public const REQUEST_PARAMETER_CAPTURE_IS_FINAL = 'captureIsFinal';
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public const REQUEST_PARAMETER_DESCRIPTION = 'description';
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public const REQUEST_PARAMETER_REASON = 'reason';
 
     /**
@@ -175,6 +196,8 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @throws RequiredParameterInvalidException
+     *
+     * @deprecated tag:v10.0.0 - will be removed without replacement
      */
     #[OA\Post(
         path: '/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}',
@@ -249,6 +272,8 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @throws RequiredParameterInvalidException
+     *
+     * @deprecated tag:v10.0.0 - will be removed without replacement
      */
     #[OA\Post(
         path: '/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}',
@@ -318,6 +343,8 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @throws RequiredParameterInvalidException
+     *
+     * @deprecated tag:v10.0.0 - will be removed without replacement
      */
     #[OA\Post(
         path: '/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}',

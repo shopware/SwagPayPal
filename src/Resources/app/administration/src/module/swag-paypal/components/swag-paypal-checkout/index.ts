@@ -83,6 +83,9 @@ export default Shopware.Component.wrapComponentConfig({
     data(): {
         paymentMethods: TEntity<'payment_method'>[];
         merchantInformation: PayPal.Setting<'merchant_information'>;
+        /**
+         * @deprecated tag:v10.0.0 - plusDeprecationModalOpen will be removed without replacement
+         */
         plusDeprecationModalOpen: boolean;
         showHintMerchantIdMustBeEnteredManually: boolean;
         isLoadingPaymentMethods: boolean;
@@ -96,6 +99,9 @@ export default Shopware.Component.wrapComponentConfig({
                 },
                 capabilities: {},
             },
+            /**
+             * @deprecated tag:v10.0.0 - plusDeprecationModalOpen will be removed without replacement
+             */
             plusDeprecationModalOpen: false,
             showHintMerchantIdMustBeEnteredManually: false,
             isLoadingPaymentMethods: false,
@@ -233,6 +239,9 @@ export default Shopware.Component.wrapComponentConfig({
             this.getPaymentMethodsAndMerchantIntegrations();
         },
 
+        /**
+         * @deprecated tag:v10.0.0 - will be removed without replacement
+         */
         deactivatePayPalPlus() {
             this.$set(this.actualConfigData, 'SwagPayPal.settings.plusCheckoutEnabled', false);
             this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantLocation', 'other');
@@ -295,6 +304,9 @@ export default Shopware.Component.wrapComponentConfig({
             });
         },
 
+        /**
+         * @deprecated tag:v10.0.0 - will be removed without replacement
+         */
         closeModal() {
             this.plusDeprecationModalOpen = false;
         },

@@ -35,6 +35,9 @@ class SaleResource
         return (new Sale())->assign($response);
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public function refund(string $saleId, Refund $refund, string $salesChannelId): Refund
     {
         $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(

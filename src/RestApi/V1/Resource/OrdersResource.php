@@ -36,6 +36,9 @@ class OrdersResource
         return (new Order())->assign($response);
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public function capture(string $orderId, Capture $capture, string $salesChannelId): Capture
     {
         $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
@@ -48,6 +51,9 @@ class OrdersResource
         return $capture;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public function void(string $orderId, string $salesChannelId): DoVoid
     {
         $doVoid = new DoVoid();
