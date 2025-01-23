@@ -9,34 +9,6 @@ export interface paths {
     /** @description Sets PayPal as the default payment method for a given Saleschannel, or all. */
     post: operations["setPayPalAsDefault"];
   };
-  "/store-api/category/{navigationId}": {
-    /** @description This endpoint returns information about the category, as well as a fully resolved (hydrated with mapping values) CMS page, if one is assigned to the category. You can pass slots which should be resolved exclusively. */
-    post: operations["readCategory"];
-  };
-  "/store-api/paypal/express/create-order": {
-    /** @description Creates a PayPal order from the existing cart */
-    post: operations["createPayPalExpressOrder"];
-  };
-  "/store-api/paypal/express/prepare-checkout": {
-    /** @description Logs in a guest customer, with the data of a paypal order */
-    post: operations["preparePayPalExpressCheckout"];
-  };
-  "/store-api/paypal/pui/payment-instructions/{transactionId}": {
-    /** @description Tries to get payment instructions for PUI payments */
-    get: operations["getPUIPaymentInstructions"];
-  };
-  "/store-api/paypal/vault/clear": {
-    /** @description Clears the vault for the current customer */
-    post: operations["paypalVaultClear"];
-  };
-  "/store-api/paypal/create-order": {
-    /** @description Creates a PayPal order from the existing cart or an order */
-    post: operations["createPayPalOrder"];
-  };
-  "/store-api/paypal/payment-method-eligibility": {
-    /** @description Sets ineligible payment methods to be removed from the session */
-    post: operations["setPaymentMethodEligibility"];
-  };
   "/api/paypal/dispute": {
     /** @description Loads a list of PayPal disputes */
     get: operations["disputeList"];
@@ -142,18 +114,6 @@ export interface paths {
   "/api/_action/paypal/merchant-information": {
     get: operations["getMerchantInformation"];
   };
-  "/.well-known/apple-developer-merchantid-domain-association": {
-    /** @description Return the Apple Pay developer association */
-    get: operations["applePayDomainAssociation"];
-  };
-  "/paypal/error": {
-    /** @description Adds an error message to the flash bag */
-    post: operations["paypalError"];
-  };
-  "/paypal/handle-error": {
-    /** @description Adds an error message to the flash bag */
-    post: operations["paypalHandleError"];
-  };
   "/api/_action/paypal/webhook/status/{salesChannelId}": {
     get: operations["getWebhookStatus"];
   };
@@ -172,30 +132,6 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    swag_paypal_pos_webhook: {
-      organizationUuid: string;
-      messageUuid: string;
-      eventName: string;
-      payload: string;
-      timestamp: string;
-    };
-    swag_paypal_pos_setting_additional_information: {
-      extensions: {
-        [key: string]: unknown;
-      };
-      countryId: string;
-      currencyId: string;
-      languageId: string | null;
-      customerGroupId: string;
-      navigationCategoryId: string;
-      shippingMethodId: string;
-      paymentMethodId: string;
-      merchantInformation: Record<string, unknown>[];
-    };
-    swag_paypal_pos_setting_product_count: {
-      localCount: number;
-      remoteCount: number;
-    };
     swag_paypal_v1_capture: {
       amount: components["schemas"]["swag_paypal_v1_common_amount"];
       is_final_capture: boolean;
@@ -1424,6 +1360,30 @@ export interface components {
     swag_paypal_v3_payment_token_metadata: {
       order_id: string;
     };
+    swag_paypal_pos_webhook: {
+      organizationUuid: string;
+      messageUuid: string;
+      eventName: string;
+      payload: string;
+      timestamp: string;
+    };
+    swag_paypal_pos_setting_additional_information: {
+      extensions: {
+        [key: string]: unknown;
+      };
+      countryId: string;
+      currencyId: string;
+      languageId: string | null;
+      customerGroupId: string;
+      navigationCategoryId: string;
+      shippingMethodId: string;
+      paymentMethodId: string;
+      merchantInformation: Record<string, unknown>[];
+    };
+    swag_paypal_pos_setting_product_count: {
+      localCount: number;
+      remoteCount: number;
+    };
     swag_paypal_setting_merchant_information: {
       merchantIntegrations: components["schemas"]["swag_paypal_v1_merchant_integrations"];
       /** @description string> key: paymentMethodId, value: capability (see AbstractMethodData) */
@@ -1457,123 +1417,6 @@ export interface operations {
     };
     responses: {
       /** @description Setting PayPal as default was successful */
-      204: {
-        content: never;
-      };
-    };
-  };
-  /** @description This endpoint returns information about the category, as well as a fully resolved (hydrated with mapping values) CMS page, if one is assigned to the category. You can pass slots which should be resolved exclusively. */
-  readCategory: {
-    parameters: {
-      path: {
-        /** @description Identifier of the navigation to be fetched */
-        navigationId: string;
-      };
-    };
-    responses: {
-      200: components["schemas"]["category_flat"];
-    };
-  };
-  /** @description Creates a PayPal order from the existing cart */
-  createPayPalExpressOrder: {
-    responses: {
-      /** @description The new token of the order */
-      200: {
-        content: never;
-      };
-    };
-  };
-  /** @description Logs in a guest customer, with the data of a paypal order */
-  preparePayPalExpressCheckout: {
-    requestBody?: {
-      content: {
-        "application/json": {
-          /** @description ID of the paypal order */
-          token?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description The url to redirect to */
-      200: {
-        content: {
-          "application/json": {
-            redirectUrl?: string;
-          };
-        };
-      };
-    };
-  };
-  /** @description Tries to get payment instructions for PUI payments */
-  getPUIPaymentInstructions: {
-    parameters: {
-      path: {
-        /** @description Identifier of the order transaction to be fetched */
-        transactionId: string;
-      };
-    };
-    responses: {
-      /** @description The payment instructions of the order */
-      200: {
-        content: never;
-      };
-    };
-  };
-  /** @description Clears the vault for the current customer */
-  paypalVaultClear: {
-    requestBody?: {
-      content: {
-        "application/json": {
-          /** @enum {string} */
-          type?: "cancel" | "browser" | "error";
-        };
-      };
-    };
-    responses: {
-      /** @description Vault has been cleared successfully */
-      204: {
-        content: never;
-      };
-    };
-  };
-  /** @description Creates a PayPal order from the existing cart or an order */
-  createPayPalOrder: {
-    requestBody?: {
-      content: {
-        "application/json": {
-          /**
-           * @description Use an existing order id to create PayPal order
-           * @default ppcp
-           */
-          product: string;
-          /** @description Use an existing order id to create PayPal order */
-          orderId?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Returns the created PayPal order id */
-      200: {
-        content: {
-          "application/json": {
-            token?: string;
-          };
-        };
-      };
-    };
-  };
-  /** @description Sets ineligible payment methods to be removed from the session */
-  setPaymentMethodEligibility: {
-    requestBody?: {
-      content: {
-        "application/json": {
-          /** @description List of PayPal payment method identifiers according to constant REMOVABLE_PAYMENT_HANDLERS */
-          paymentMethods?: string[];
-        };
-      };
-    };
-    responses: {
-      /** @description Success */
       204: {
         content: never;
       };
@@ -2179,58 +2022,6 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["swag_paypal_setting_merchant_information"];
         };
-      };
-    };
-  };
-  /** @description Return the Apple Pay developer association */
-  applePayDomainAssociation: {
-    responses: {
-      /** @description Apple developer token */
-      200: {
-        content: never;
-      };
-    };
-  };
-  /** @description Adds an error message to the flash bag */
-  paypalError: {
-    requestBody?: {
-      content: {
-        "application/json": {
-          /**
-           * @deprecated
-           * @enum {string}
-           */
-          type?: "cancel" | "browser" | "error";
-        };
-      };
-    };
-    responses: {
-      /** @description Error was added to the flash bag */
-      204: {
-        content: never;
-      };
-    };
-  };
-  /** @description Adds an error message to the flash bag */
-  paypalHandleError: {
-    requestBody?: {
-      content: {
-        "application/json": {
-          code?: string;
-          /**
-           * @description Will prevent reinitiate the corresponding payment method.
-           * @default false
-           */
-          fatal: boolean;
-          /** @default null */
-          error: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Error was added to the flash bag */
-      204: {
-        content: never;
       };
     };
   };
