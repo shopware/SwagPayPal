@@ -10,7 +10,7 @@
         "unit-watch": "jest --config --watch",
         "lint": "eslint src",
         "lint-fix": "eslint src --fix",
-        "openapi-types": "openapi-typescript ../../../../var/cache/openapi.yaml --empty-objects-unknown --default-non-nullable --output src/types/openapi.d.ts"
+        "openapi-types": "openapi-typescript ../../Schema/AdminApi/openapi.json --empty-objects-unknown --default-non-nullable --output src/types/openapi.d.ts"
     },
     "devDependencies": {
         "@babel/plugin-proposal-class-properties": "^7.18.6",

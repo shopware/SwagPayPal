@@ -55,6 +55,7 @@ async function createWrapper(customOptions = {}) {
 
     return mount(
         await Shopware.Component.build('swag-paypal-vaulting') as typeof SwagPayPalVaulting,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- mergeWith is not typed
         Shopware.Utils.object.mergeWith(options, customOptions),
     );
 }
