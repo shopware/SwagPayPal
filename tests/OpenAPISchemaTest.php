@@ -16,6 +16,7 @@ use OpenApi\Annotations\Operation;
 use OpenApi\Generator;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute;
 use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
 use Swag\PayPal\Checkout\Plus\PlusPaymentHandleController;
 use Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute;
@@ -40,6 +41,9 @@ class OpenAPISchemaTest extends TestCase
         '\\' . PayPalController::class . '::expressCreateOrder',
         '\\' . PayPalController::class . '::expressPrepareCart',
         '\\' . PayPalController::class . '::clearVault',
+
+        // Decoration, covered by platform
+        '\\' . ExpressCategoryRoute::class . '::load',
 
         '\\' . FilteredPaymentMethodRoute::class . '::load',
         '\\' . PlusPaymentHandleController::class . '::handlePlusPayment',

@@ -13,7 +13,7 @@
         "lint": "eslint --ext .js,.ts,.vue src",
         "lint-fix": "eslint --ext .js,.ts,.vue src --fix",
         "lint-ci": "npm run lint -- --format junit --output-file eslint.junit.xml",
-        "openapi-types": "openapi-typescript ../../../../var/cache/openapi.yaml --empty-objects-unknown --default-non-nullable --output src/types/openapi.d.ts"
+        "openapi-types": "openapi-typescript ../../Schema/AdminApi/openapi.json --empty-objects-unknown --default-non-nullable --output src/types/openapi.d.ts"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.19.1",
