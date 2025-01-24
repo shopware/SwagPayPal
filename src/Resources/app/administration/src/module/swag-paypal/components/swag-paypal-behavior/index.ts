@@ -52,30 +52,6 @@ export default Shopware.Component.wrapComponentConfig({
             ];
         },
 
-        /**
-         * @deprecated tag:v10.0.0 Will be removed without replacement.
-         */
-        merchantLocationOptions() {
-            return [
-                {
-                    id: this.MERCHANT_LOCATION_GERMANY,
-                    name: this.$tc('swag-paypal.settingForm.behavior.merchantLocation.germany'),
-                },
-                {
-                    id: this.MERCHANT_LOCATION_OTHER,
-                    name: this.$tc('swag-paypal.settingForm.behavior.merchantLocation.other'),
-                },
-            ];
-        },
-
-        /**
-         * @deprecated tag:v10.0.0 - Will be removed without replacement.
-         */
-        showMerchantLocation() {
-            return this.actualConfigData['SwagPayPal.settings.plusCheckoutEnabled'] ??
-                this.allConfigs?.null?.['SwagPayPal.settings.plusCheckoutEnabled'];
-        },
-
         landingPageOptions() {
             return [
                 {

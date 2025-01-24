@@ -20,7 +20,6 @@ use Psr\Http\Message\UriInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
-use Swag\PayPal\RestApi\V1\Api\Payment\Payer\ExecutePayerInfo;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
@@ -30,14 +29,8 @@ use Swag\PayPal\Test\Checkout\Method\PUIHandlerTest;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CaptureAuthorizationResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CaptureOrdersResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ClientTokenResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateTokenResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentAuthorizeResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePuiResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDispute;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDisputesList;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentAuthorizeResponseFixture;
@@ -49,10 +42,6 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceAuthorizeRespons
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceMerchantIntegrations;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\RefundCaptureResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\RefundSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidAuthorizationResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderDenied;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureAuthorization;
@@ -420,57 +409,12 @@ class GuzzleClientMock implements ClientInterface
             return CreateTokenResponseFixture::get();
         }
 
-        if (\mb_strpos($resourceUri, RequestUriV1::PAYMENT_RESOURCE) !== false) {
-            $dataJson = $this->ensureValidJson($data);
-            $dataArray = \json_decode($dataJson, true);
-            if (isset($dataArray['transactions'][0]['invoice_number']) && $dataArray['transactions'][0]['invoice_number'] === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION_WITH_PREFIX) {
-                throw new \RuntimeException('A PayPal test error occurred.');
-            }
-
-            if (\mb_substr($resourceUri, -8) === '/execute') {
-                if (($data instanceof ExecutePayerInfo) && $data->getPayerId() === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) {
-                    throw new \RuntimeException('A PayPal test error occurred.');
-                }
-                if ($data === null) {
-                    throw new \RuntimeException('Execute requests needs valid ExecutePayerInfo struct');
-                }
-
-                return $this->handlePaymentExecuteRequests($data);
-            }
-
-            return CreateResponseFixture::get();
-        }
-
         if (\mb_strpos($resourceUri, RequestUriV1::WEBHOOK_RESOURCE) !== false) {
             if ($data === null) {
                 throw new \RuntimeException('Create webhook request needs valid Webhook struct');
             }
 
             return $this->handleWebhookCreateRequests($data);
-        }
-
-        if (\mb_strpos($resourceUri, RequestUriV1::SALE_RESOURCE) !== false && \mb_substr($resourceUri, -7) === '/refund') {
-            return RefundSaleResponseFixture::get();
-        }
-
-        if (\mb_strpos($resourceUri, RequestUriV1::CAPTURE_RESOURCE) !== false && \mb_substr($resourceUri, -7) === '/refund') {
-            return RefundCaptureResponseFixture::get();
-        }
-
-        if (\mb_strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/capture') {
-            return CaptureAuthorizationResponseFixture::get();
-        }
-
-        if (\mb_strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false && \mb_substr($resourceUri, -5) === '/void') {
-            return VoidAuthorizationResponseFixture::get();
-        }
-
-        if (\mb_strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/capture') {
-            return CaptureOrdersResponseFixture::get();
-        }
-
-        if (\mb_strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/do-void') {
-            return VoidOrderResponseFixture::get();
         }
 
         if (\mb_strpos($resourceUri, RequestUriV1::CLIENT_TOKEN_RESOURCE) !== false) {
@@ -586,38 +530,6 @@ class GuzzleClientMock implements ClientInterface
         throw new \RuntimeException('No fixture defined for POST ' . $resourceUri);
     }
 
-    private function handlePaymentExecuteRequests(PayPalApiStruct $data): array
-    {
-        /** @var ExecutePayerInfo $payerInfo */
-        $payerInfo = $data;
-        if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE) {
-            return ExecutePaymentAuthorizeResponseFixture::get();
-        }
-
-        if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_ORDER) {
-            return ExecutePaymentOrderResponseFixture::get();
-        }
-
-        if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_PUI) {
-            return ExecutePuiResponseFixture::get();
-        }
-
-        if (ExecutePaymentSaleResponseFixture::isDuplicateTransaction()) {
-            ExecutePaymentSaleResponseFixture::setDuplicateTransaction(false);
-
-            throw $this->createClientExceptionDuplicateTransaction();
-        }
-
-        $response = ExecutePaymentSaleResponseFixture::get();
-        if ($payerInfo->getPayerId() !== PayPalPaymentHandlerTest::PAYER_ID_PAYMENT_INCOMPLETE) {
-            return $response;
-        }
-
-        $response['transactions'][0]['related_resources'][0]['sale']['state'] = 'denied';
-
-        return $response;
-    }
-
     /**
      * @throws ClientException
      */
@@ -692,16 +604,6 @@ class GuzzleClientMock implements ClientInterface
         ]);
 
         return $this->createClientExceptionFromResponseString($jsonString, $errorCode);
-    }
-
-    private function createClientExceptionDuplicateTransaction(): ClientException
-    {
-        $jsonString = $this->ensureValidJson([
-            'name' => 'DUPLICATE_TRANSACTION',
-            'message' => 'Duplicate invoice Id detected.',
-        ]);
-
-        return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_BAD_REQUEST);
     }
 
     private function createClientExceptionDuplicateOrderNumber(): ClientException

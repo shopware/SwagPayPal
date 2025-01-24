@@ -17,23 +17,12 @@
     {% set applePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ApplePayMethodData::PAYPAL_APPLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Storefront\Data\Struct\GooglePayCheckoutData googlePayData #}
     {% set googlePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\GooglePayMethodData::PAYPAL_GOOGLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
-    {# @var \Swag\PayPal\Checkout\Plus\PlusData plusData #}
-    {% set plusData = page.extensions[constant('Swag\\PayPal\\Checkout\\Plus\\PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID')] %}
 
     {% if expressCheckoutData %}
 
         {% block swag_paypal_ecs_spb_data_express_checkout_input %}
             <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}" value="1">
             <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Method\\AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.paypalOrderId }}">
-        {% endblock %}
-
-    {% elseif plusData %}
-
-        {# @deprecated tag:v10.0.0 - will be removed without replacement #}
-        {% block swag_paypal_ecs_spb_data_plus_checkout_input %}
-            <input type="hidden" name="paypalPaymentId" value="{{ plusData.paypalPaymentId }}">
-            <input type="hidden" name="paypalToken" value="{{ plusData.paypalToken }}">
-            <input type="hidden" name="{{ plusData.isEnabledParameterName }}" value="1">
         {% endblock %}
 
     {% elseif spbCheckoutButtonData and spbCheckoutButtonData.paymentMethodId is same as(context.paymentMethod.id) %}

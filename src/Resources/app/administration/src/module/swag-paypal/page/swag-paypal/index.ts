@@ -87,31 +87,6 @@ export default Shopware.Component.wrapComponentConfig({
             return this.$refs.configComponent || null;
         },
 
-        /**
-         * @deprecated tag:v10.0.0 - Will be removed without replacement.
-         */
-        showSPBCard() {
-            const allConfigs = (this.$refs.configComponent as ConfigComponent | null)?.allConfigs;
-            if (allConfigs?.null) {
-                return true;
-            }
-
-            const merchantLocation = this.config['SwagPayPal.settings.merchantLocation'] ??
-                allConfigs?.null['SwagPayPal.settings.merchantLocation'];
-
-            const plusEnabled = this.config['SwagPayPal.settings.plusCheckoutEnabled'] ??
-                allConfigs?.null['SwagPayPal.settings.plusCheckoutEnabled'];
-
-            return merchantLocation !== this.MERCHANT_LOCATION_GERMANY || !plusEnabled;
-        },
-
-        /**
-         * @deprecated tag:v10.0.0 - Will be removed without replacement.
-         */
-        showPlusCard() {
-            return !this.showSPBCard;
-        },
-
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
         },

@@ -32,14 +32,7 @@ final class ConstantsForTesting
 
     public const ORDER_ID_MISSING_LINE_ITEMS = 'order-id-missing-line-items';
 
-    public const PAYER_ID_PAYMENT_AUTHORIZE = 'testPayerIdAuthorize';
-
-    public const PAYER_ID_PAYMENT_ORDER = 'testPayerIdOrder';
-
-    public const PAYER_ID_PAYMENT_PUI = 'testPayerIdPui';
-
     public const PAYPAL_RESOURCE_THROWS_EXCEPTION = 'createRequestThrowsException';
-    public const PAYPAL_RESOURCE_THROWS_EXCEPTION_WITH_PREFIX = 'TEST_createRequestThrowsException';
     public const PAYPAL_RESPONSE_HAS_NO_APPROVAL_URL = 'noApprovalUrl';
 
     public const WITHOUT_TRANSACTION = 'noTransactionFound';

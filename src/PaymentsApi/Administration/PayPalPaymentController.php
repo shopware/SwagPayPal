@@ -18,21 +18,15 @@ use Swag\PayPal\PaymentsApi\Administration\Exception\PaymentNotFoundException;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\Capture;
-use Swag\PayPal\RestApi\V1\Api\Common\Amount;
-use Swag\PayPal\RestApi\V1\Api\DoVoid;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
-use Swag\PayPal\RestApi\V1\Api\Refund;
 use Swag\PayPal\RestApi\V1\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V1\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
-use Swag\PayPal\Util\PaymentStatusUtil;
-use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -40,35 +34,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(defaults: ['_routeScope' => ['api']])]
 class PayPalPaymentController extends AbstractController
 {
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    public const REQUEST_PARAMETER_CURRENCY = 'currency';
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    public const REQUEST_PARAMETER_REFUND_AMOUNT = 'refundAmount';
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    public const REQUEST_PARAMETER_REFUND_INVOICE_NUMBER = 'refundInvoiceNumber';
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    public const REQUEST_PARAMETER_CAPTURE_AMOUNT = 'captureAmount';
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    public const REQUEST_PARAMETER_CAPTURE_IS_FINAL = 'captureIsFinal';
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    public const REQUEST_PARAMETER_DESCRIPTION = 'description';
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    public const REQUEST_PARAMETER_REASON = 'reason';
-
     /**
      * @internal
      */
@@ -78,9 +43,7 @@ class PayPalPaymentController extends AbstractController
         private readonly AuthorizationResource $authorizationResource,
         private readonly OrdersResource $ordersResource,
         private readonly CaptureResource $captureResource,
-        private readonly PaymentStatusUtil $paymentStatusUtil,
         private readonly EntityRepository $orderRepository,
-        private readonly PriceFormatter $priceFormatter,
     ) {
     }
 
@@ -194,222 +157,6 @@ class PayPalPaymentController extends AbstractController
         return new JsonResponse($resource);
     }
 
-    /**
-     * @throws RequiredParameterInvalidException
-     *
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    #[OA\Post(
-        path: '/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}',
-        operationId: 'paypalRefundPayment',
-        tags: ['Admin Api', 'PayPal'],
-        parameters: [
-            new OA\Parameter(
-                parameter: 'resourceType',
-                name: 'resourceType',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string', enum: [RelatedResource::AUTHORIZE, RelatedResource::ORDER])
-            ),
-            new OA\Parameter(
-                parameter: 'resourceId',
-                name: 'resourceId',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                parameter: 'orderId',
-                name: 'orderId',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
-            ),
-        ],
-        responses: [new OA\Response(
-            response: Response::HTTP_OK,
-            description: 'Capture for the given resource',
-            content: new OA\JsonContent(ref: DoVoid::class)
-        )]
-    )]
-    #[Route(path: '/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.refund_payment', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
-    public function refundPayment(
-        Request $request,
-        Context $context,
-        string $resourceType,
-        string $resourceId,
-        string $orderId,
-    ): JsonResponse {
-        $refund = $this->createRefund($request);
-        $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);
-
-        switch ($resourceType) {
-            case RelatedResource::SALE:
-                $refundResponse = $this->saleResource->refund(
-                    $resourceId,
-                    $refund,
-                    $salesChannelId
-                );
-                $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $refundResponse, $context);
-
-                break;
-            case RelatedResource::CAPTURE:
-                $refundResponse = $this->captureResource->refund(
-                    $resourceId,
-                    $refund,
-                    $salesChannelId
-                );
-                $paymentResponse = $this->paymentResource->get($refundResponse->getParentPayment(), $salesChannelId);
-                $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $refundResponse, $paymentResponse, $context);
-
-                break;
-            default:
-                throw new RequiredParameterInvalidException('resourceType');
-        }
-
-        return new JsonResponse($refundResponse);
-    }
-
-    /**
-     * @throws RequiredParameterInvalidException
-     *
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    #[OA\Post(
-        path: '/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}',
-        operationId: 'paypalCapturePayment',
-        tags: ['Admin Api', 'PayPal'],
-        parameters: [
-            new OA\Parameter(
-                parameter: 'resourceType',
-                name: 'resourceType',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string', enum: [RelatedResource::AUTHORIZE, RelatedResource::ORDER])
-            ),
-            new OA\Parameter(
-                parameter: 'resourceId',
-                name: 'resourceId',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                parameter: 'orderId',
-                name: 'orderId',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
-            ),
-        ],
-        responses: [new OA\Response(
-            response: Response::HTTP_OK,
-            description: 'Capture for the given resource',
-            content: new OA\JsonContent(ref: DoVoid::class)
-        )]
-    )]
-    #[Route(path: '/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.catpure_payment', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
-    public function capturePayment(
-        Request $request,
-        Context $context,
-        string $resourceType,
-        string $resourceId,
-        string $orderId,
-    ): JsonResponse {
-        $capture = $this->createCapture($request);
-
-        switch ($resourceType) {
-            case RelatedResource::AUTHORIZE:
-                $captureResponse = $this->authorizationResource->capture(
-                    $resourceId,
-                    $capture,
-                    $this->getSalesChannelIdByOrderId($orderId, $context)
-                );
-
-                break;
-            case RelatedResource::ORDER:
-                $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);
-                $captureResponse = $this->ordersResource->capture($resourceId, $capture, $salesChannelId);
-
-                break;
-            default:
-                throw new RequiredParameterInvalidException('resourceType');
-        }
-
-        $this->paymentStatusUtil->applyCaptureState($orderId, $captureResponse, $context);
-
-        return new JsonResponse($captureResponse);
-    }
-
-    /**
-     * @throws RequiredParameterInvalidException
-     *
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    #[OA\Post(
-        path: '/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}',
-        operationId: 'paypalVoidPayment',
-        tags: ['Admin Api', 'PayPal'],
-        parameters: [
-            new OA\Parameter(
-                parameter: 'resourceType',
-                name: 'resourceType',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string', enum: [RelatedResource::AUTHORIZE, RelatedResource::ORDER])
-            ),
-            new OA\Parameter(
-                parameter: 'resourceId',
-                name: 'resourceId',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                parameter: 'orderId',
-                name: 'orderId',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
-            ),
-        ],
-        responses: [new OA\Response(
-            response: Response::HTTP_OK,
-            description: 'Voidance for the given resource',
-            content: new OA\JsonContent(ref: DoVoid::class)
-        )]
-    )]
-    #[Route(path: '/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.void_payment', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
-    public function voidPayment(
-        Context $context,
-        string $resourceType,
-        string $resourceId,
-        string $orderId,
-    ): JsonResponse {
-        switch ($resourceType) {
-            case RelatedResource::AUTHORIZE:
-                $voidResponse = $this->authorizationResource->void(
-                    $resourceId,
-                    $this->getSalesChannelIdByOrderId($orderId, $context)
-                );
-
-                break;
-            case RelatedResource::ORDER:
-                $voidResponse = $this->ordersResource->void(
-                    $resourceId,
-                    $this->getSalesChannelIdByOrderId($orderId, $context)
-                );
-
-                break;
-            default:
-                throw new RequiredParameterInvalidException('resourceType');
-        }
-
-        $this->paymentStatusUtil->applyVoidStateToOrder($orderId, $context);
-
-        return new JsonResponse($voidResponse);
-    }
-
     private function getSalesChannelIdByOrderId(string $orderId, Context $context): string
     {
         /** @var OrderEntity|null $order */
@@ -420,54 +167,5 @@ class PayPalPaymentController extends AbstractController
         }
 
         return $order->getSalesChannelId();
-    }
-
-    private function createRefund(Request $request): Refund
-    {
-        $currency = $request->request->getAlpha(self::REQUEST_PARAMETER_CURRENCY);
-        $refundAmount = $this->priceFormatter->formatPrice((float) $request->request->get(self::REQUEST_PARAMETER_REFUND_AMOUNT), $currency);
-        $invoiceNumber = (string) $request->request->get(self::REQUEST_PARAMETER_REFUND_INVOICE_NUMBER, '');
-        $description = (string) $request->request->get(self::REQUEST_PARAMETER_DESCRIPTION, '');
-        $reason = (string) $request->request->get(self::REQUEST_PARAMETER_REASON, '');
-
-        $refund = new Refund();
-
-        if ($invoiceNumber !== '') {
-            $refund->setInvoiceNumber($invoiceNumber);
-        }
-
-        if ($refundAmount !== '0.00') {
-            $amount = new Amount();
-            $amount->setTotal($refundAmount);
-            $amount->setCurrency($currency);
-
-            $refund->setAmount($amount);
-        }
-
-        if ($description !== '') {
-            $refund->setDescription($description);
-        }
-        if ($reason !== '') {
-            $refund->setReason($reason);
-        }
-
-        return $refund;
-    }
-
-    private function createCapture(Request $request): Capture
-    {
-        $currency = $request->request->getAlpha(self::REQUEST_PARAMETER_CURRENCY);
-        $amountToCapture = $this->priceFormatter->formatPrice((float) $request->request->get(self::REQUEST_PARAMETER_CAPTURE_AMOUNT), $currency);
-        $isFinalCapture = $request->request->getBoolean(self::REQUEST_PARAMETER_CAPTURE_IS_FINAL, true);
-
-        $capture = new Capture();
-        $capture->setIsFinalCapture($isFinalCapture);
-        $amount = new Amount();
-        $amount->setTotal($amountToCapture);
-        $amount->setCurrency($currency);
-
-        $capture->setAmount($amount);
-
-        return $capture;
     }
 }

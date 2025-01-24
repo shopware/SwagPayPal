@@ -83,10 +83,6 @@ export default Shopware.Component.wrapComponentConfig({
     data(): {
         paymentMethods: TEntity<'payment_method'>[];
         merchantInformation: PayPal.Setting<'merchant_information'>;
-        /**
-         * @deprecated tag:v10.0.0 - plusDeprecationModalOpen will be removed without replacement
-         */
-        plusDeprecationModalOpen: boolean;
         showHintMerchantIdMustBeEnteredManually: boolean;
         isLoadingPaymentMethods: boolean;
     } {
@@ -99,10 +95,6 @@ export default Shopware.Component.wrapComponentConfig({
                 },
                 capabilities: {},
             },
-            /**
-             * @deprecated tag:v10.0.0 - plusDeprecationModalOpen will be removed without replacement
-             */
-            plusDeprecationModalOpen: false,
             showHintMerchantIdMustBeEnteredManually: false,
             isLoadingPaymentMethods: false,
         };
@@ -217,17 +209,6 @@ export default Shopware.Component.wrapComponentConfig({
         isSandbox() {
             this.$emit('on-save-settings');
         },
-
-        isOnboardingPPCPFinished() {
-            // open the deactivate PayPalPLUS modal if ppcp onboarding was successful and PayPalPlus is still active
-            const plusCheckoutEnabled = this.actualConfigData['SwagPayPal.settings.plusCheckoutEnabled'];
-
-            if (!plusCheckoutEnabled) {
-                return;
-            }
-
-            this.plusDeprecationModalOpen = plusCheckoutEnabled && this.isOnboardingPPCPFinished;
-        },
     },
 
     created() {
@@ -237,18 +218,6 @@ export default Shopware.Component.wrapComponentConfig({
     methods: {
         createdComponent() {
             this.getPaymentMethodsAndMerchantIntegrations();
-        },
-
-        /**
-         * @deprecated tag:v10.0.0 - will be removed without replacement
-         */
-        deactivatePayPalPlus() {
-            this.$set(this.actualConfigData, 'SwagPayPal.settings.plusCheckoutEnabled', false);
-            this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantLocation', 'other');
-            this.$set(this.actualConfigData, 'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled', false);
-            this.$emit('on-deactivate-paypal-plus');
-
-            this.plusDeprecationModalOpen = false;
         },
 
         async getPaymentMethodsAndMerchantIntegrations() {
@@ -302,13 +271,6 @@ export default Shopware.Component.wrapComponentConfig({
                     { name: paymentMethod.name },
                 ),
             });
-        },
-
-        /**
-         * @deprecated tag:v10.0.0 - will be removed without replacement
-         */
-        closeModal() {
-            this.plusDeprecationModalOpen = false;
         },
 
         onPayPalCredentialsLoadSuccess(clientId?: string, clientSecret?: string, merchantPayerId?: string, sandbox?: boolean) {

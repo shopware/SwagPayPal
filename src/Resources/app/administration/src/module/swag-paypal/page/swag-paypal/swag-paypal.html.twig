@@ -175,16 +175,6 @@
                         />
                     {% endblock %}
 
-                    {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
-                    {% block swag_paypal_content_card_channel_config_plus %}
-                    <swag-paypal-plus
-                        v-if="showPlusCard && tab === 'storefront'"
-                        :actualConfigData="actualConfigData"
-                        :allConfigs="allConfigs"
-                        :selectedSalesChannelId="selectedSalesChannelId"
-                    />
-                    {% endblock %}
-
                     {% block swag_paypal_content_card_channel_config_behavior %}
                     <swag-paypal-behavior
                         v-if="tab === 'general'"
@@ -243,7 +233,7 @@
 
                     {% block swag_paypal_content_card_channel_config_spb %}
                     <swag-paypal-spb
-                        v-if="showSPBCard && tab === 'storefront'"
+                        v-if="tab === 'storefront'"
                         :actualConfigData="actualConfigData"
                         :allConfigs="allConfigs"
                         :selectedSalesChannelId="selectedSalesChannelId"
