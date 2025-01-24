@@ -9,6 +9,14 @@ export interface paths {
     /** @description Sets PayPal as the default payment method for a given Saleschannel, or all. */
     post: operations["setPayPalAsDefault"];
   };
+  "/api/paypal/dispute": {
+    /** @description Loads a list of PayPal disputes */
+    get: operations["disputeList"];
+  };
+  "/api/paypal/dispute/{disputeId}": {
+    /** @description Loads the dispute details of the given PayPal dispute ID */
+    get: operations["disputeDetails"];
+  };
   "/api/paypal-v2/order/{orderTransactionId}/{paypalOrderId}": {
     /** @description Loads the order details of the given PayPal order ID */
     get: operations["orderDetails"];
@@ -1417,6 +1425,46 @@ export interface operations {
       /** @description Setting PayPal as default was successful */
       204: {
         content: never;
+      };
+    };
+  };
+  /** @description Loads a list of PayPal disputes */
+  disputeList: {
+    parameters: {
+      query?: {
+        /** @description ID of the sales channel to which the disputes belong */
+        salesChannelId?: string;
+        /** @description Filter for dispute state. Separate multiple states with a comma. Must one of these values: Swag\PayPal\RestApi\V1\Api\Disputes\Item::DISPUTE_STATES */
+        disputeStateFilter?: string;
+      };
+    };
+    responses: {
+      /** @description List of PayPal disputes */
+      200: {
+        content: {
+          "application/json": components["schemas"]["swag_paypal_v1_disputes"];
+        };
+      };
+    };
+  };
+  /** @description Loads the dispute details of the given PayPal dispute ID */
+  disputeDetails: {
+    parameters: {
+      query?: {
+        /** @description ID of the sales channel to which the disputes belong */
+        salesChannelId?: string;
+      };
+      path: {
+        /** @description ID of the dispute */
+        disputeId: string;
+      };
+    };
+    responses: {
+      /** @description Details of the PayPal dispute */
+      200: {
+        content: {
+          "application/json": components["schemas"]["swag_paypal_v1_disputes_item"];
+        };
       };
     };
   };

@@ -100,6 +100,7 @@ class GenerateOpenApi extends Command
         $openApi = $generator->generate([
             Util::finder(self::ROOT_DIR . '/src/RestApi'),
             Util::finder(self::ROOT_DIR . '/src/Administration'),
+            Util::finder(self::ROOT_DIR . '/src/Dispute'),
             Util::finder(self::ROOT_DIR . '/src/OrdersApi'),
             Util::finder(self::ROOT_DIR . '/src/PaymentsApi'),
             Util::finder(self::ROOT_DIR . '/src/Pos'),

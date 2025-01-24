@@ -32,6 +32,93 @@
                 }
             }
         },
+        "/api/paypal/dispute": {
+            "get": {
+                "tags": [
+                    "Admin API",
+                    "PayPal"
+                ],
+                "description": "Loads a list of PayPal disputes",
+                "operationId": "disputeList",
+                "parameters": [
+                    {
+                        "parameter": "salesChannelId",
+                        "name": "salesChannelId",
+                        "in": "query",
+                        "description": "ID of the sales channel to which the disputes belong",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{32}$"
+                        }
+                    },
+                    {
+                        "parameter": "disputeStateFilter",
+                        "name": "disputeStateFilter",
+                        "in": "query",
+                        "description": "Filter for dispute state. Separate multiple states with a comma. Must one of these values: Swag\\PayPal\\RestApi\\V1\\Api\\Disputes\\Item::DISPUTE_STATES",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of PayPal disputes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/swag_paypal_v1_disputes"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/paypal/dispute/{disputeId}": {
+            "get": {
+                "tags": [
+                    "Admin API",
+                    "PayPal"
+                ],
+                "description": "Loads the dispute details of the given PayPal dispute ID",
+                "operationId": "disputeDetails",
+                "parameters": [
+                    {
+                        "parameter": "salesChannelId",
+                        "name": "salesChannelId",
+                        "in": "query",
+                        "description": "ID of the sales channel to which the disputes belong",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{32}$"
+                        }
+                    },
+                    {
+                        "parameter": "disputeId",
+                        "name": "disputeId",
+                        "in": "path",
+                        "description": "ID of the dispute",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Details of the PayPal dispute",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/swag_paypal_v1_disputes_item"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/paypal-v2/order/{orderTransactionId}/{paypalOrderId}": {
             "get": {
                 "tags": [
