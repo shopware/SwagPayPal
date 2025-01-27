@@ -16,41 +16,6 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         ...super.options,
 
         /**
-         * This option holds the client token required for field rendering
-         *
-         * @type string
-         */
-        clientToken: '',
-
-        /**
-         * This option specifies the PayPal button color
-         *
-         * @type string|null
-         */
-        buttonColor: null,
-
-        /**
-         * This option specifies the PayPal button shape
-         *
-         * @type string
-         */
-        buttonShape: 'sharp',
-
-        /**
-         * This option specifies the PayPal button size
-         *
-         * @type string
-         */
-        buttonSize: 'small',
-
-        /**
-         * URL to create a new PayPal order
-         *
-         * @type string
-         */
-        createOrderUrl: '',
-
-        /**
          * Is set, if the plugin is used on the order edit page
          *
          * @type string|null
