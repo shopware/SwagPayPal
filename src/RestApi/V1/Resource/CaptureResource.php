@@ -35,6 +35,9 @@ class CaptureResource
         return (new Capture())->assign($response);
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public function refund(string $captureId, Refund $refund, string $salesChannelId): Refund
     {
         $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(

@@ -28,7 +28,7 @@ export default Shopware.Component.wrapComponentConfig({
     computed: {
         disableActiveSwitch(): boolean {
             // @ts-expect-error - paymentMethod is from extended component
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- paymentMethod is from extended component
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument -- paymentMethod is from extended component
             return !this.acl.can('payment.editor') || this.needsOnboarding(this.paymentMethod.id);
         },
     },

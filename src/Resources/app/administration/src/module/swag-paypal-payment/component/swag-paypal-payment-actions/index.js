@@ -13,6 +13,9 @@ import {
 
 const { Component } = Shopware;
 
+/**
+ * @deprecated tag:v10.0.0 - will be removed without replacement
+ */
 Component.register('swag-paypal-payment-actions', {
     template,
 

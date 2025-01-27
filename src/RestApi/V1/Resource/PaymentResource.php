@@ -55,6 +55,9 @@ class PaymentResource
         return (new Payment())->assign($response);
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     public function get(string $paymentId, string $salesChannelId): Payment
     {
         $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
@@ -66,6 +69,8 @@ class PaymentResource
 
     /**
      * @param Patch[] $patches
+     *
+     * @deprecated tag:v10.0.0 - will be removed without replacement
      */
     public function patch(array $patches, string $paymentId, string $salesChannelId): Payment
     {

@@ -3,6 +3,9 @@ import template from './swag-paypal-payment-action-void.html.twig';
 const { Component } = Shopware;
 const utils = Shopware.Utils;
 
+/**
+ * @deprecated tag:v10.0.0 - will be removed without replacement
+ */
 Component.register('swag-paypal-payment-action-void', {
     template,
 

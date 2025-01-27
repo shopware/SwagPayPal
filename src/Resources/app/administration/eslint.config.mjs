@@ -102,6 +102,7 @@ export default tseslint.config(
             '@typescript-eslint/no-unsafe-call': 'error',
             '@typescript-eslint/no-unsafe-assignment': 'error',
             '@typescript-eslint/no-unsafe-return': 'error',
+            '@typescript-eslint/no-unsafe-argument': 'error',
             '@typescript-eslint/explicit-module-boundary-types': 'off',
             '@typescript-eslint/prefer-ts-expect-error': 'error',
             '@typescript-eslint/no-floating-promises': 'off',

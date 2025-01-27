@@ -19,6 +19,8 @@ final class PartnerAttributionId
 
     /**
      * Shopware Partner Id for PayPal Plus
+     *
+     * @deprecated tag:v10.0.0 - will be removed without replacement
      */
     public const PAYPAL_PLUS = 'Shopware_Cart_Plus_6native';
 

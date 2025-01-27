@@ -4,6 +4,9 @@ import { CAPTURE_RESOURCE_TYPE, REFUNDED_STATE, SALE_RESOURCE_TYPE } from '../..
 const { Component, Filter } = Shopware;
 const utils = Shopware.Utils;
 
+/**
+ * @deprecated tag:v10.0.0 - will be removed without replacement
+ */
 Component.register('swag-paypal-payment-action-refund', {
     template,
 

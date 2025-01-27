@@ -10,6 +10,9 @@ namespace Swag\PayPal\Util;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 
+/**
+ * @deprecated tag:v10.0.0 - will be removed without replacement
+ */
 #[Package('checkout')]
 class PaymentTokenExtractor
 {
