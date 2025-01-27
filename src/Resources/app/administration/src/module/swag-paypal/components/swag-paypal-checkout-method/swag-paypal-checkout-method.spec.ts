@@ -38,6 +38,7 @@ async function createWrapper(customOptions = {}) {
     };
     return mount(
         await Shopware.Component.build('swag-paypal-checkout-method') as typeof SwagPayPalCheckoutMethod,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- mergeWith is not typed
         Shopware.Utils.object.mergeWith(options, customOptions),
     );
 }
