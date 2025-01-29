@@ -93,7 +93,7 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
             }
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage(), ['error' => $e]);
 
             throw PaymentException::syncProcessInterrupted($transactionId, $e->getMessage());
         }

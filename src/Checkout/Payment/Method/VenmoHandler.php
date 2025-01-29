@@ -85,7 +85,7 @@ class VenmoHandler extends AbstractSyncAPMHandler implements RecurringPaymentHan
         } catch (PaymentException $e) {
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage(), ['error' => $e]);
 
             throw PaymentException::recurringInterrupted($transactionId, $e->getMessage());
         }
