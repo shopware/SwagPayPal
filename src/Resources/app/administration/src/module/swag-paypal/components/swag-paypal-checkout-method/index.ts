@@ -117,7 +117,7 @@ export default Shopware.Component.wrapComponentConfig({
         onboardingStatusTooltip() {
             const snippetKey = `swag-paypal.settingForm.checkout.onboardingStatusTooltip.${this.onboardingStatus}`;
 
-            if (!this.$te(snippetKey)) {
+            if (!this.$t(snippetKey)) {
                 return null;
             }
 
@@ -133,7 +133,7 @@ export default Shopware.Component.wrapComponentConfig({
             const handlerName = handlerElements[handlerElements.length - 1];
             const snippetKey = `swag-paypal.settingForm.checkout.availabilityToolTip.${handlerName}`;
 
-            if (!this.$te(snippetKey)) {
+            if (!this.$t(snippetKey)) {
                 return null;
             }
 
