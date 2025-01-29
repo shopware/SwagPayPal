@@ -108,7 +108,7 @@ class SyncManagerHandler implements MessageSubscriberInterface
 
             $this->messageBus->bulkDispatch($messages, $runId);
         } catch (\Throwable $e) {
-            $this->logger->critical($e->__toString());
+            $this->logger->critical($e->getMessage(), ['error' => $e]);
             $this->runService->finishRun($runId, $context, PosSalesChannelRunDefinition::STATUS_FAILED);
         } finally {
             $this->runService->writeLog($runId, $context);

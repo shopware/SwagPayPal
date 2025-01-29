@@ -71,8 +71,8 @@ class UnsyncedChecker
         try {
             $this->productResource->deleteProducts($productContext->getPosSalesChannel(), $deletions);
             $this->logger->info('Removed unsynced products at Zettle: {productIds}', ['productIds' => \implode(', ', $deletions)]);
-        } catch (PosApiException $posApiException) {
-            $this->logger->warning('Unsynced product deletion error: ' . $posApiException);
+        } catch (PosApiException $e) {
+            $this->logger->warning('Unsynced product deletion error: ' . $e->getMessage(), ['error' => $e]);
         }
     }
 }

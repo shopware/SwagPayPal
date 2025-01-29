@@ -12,7 +12,10 @@ use Monolog\Logger;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 use Psr\Log\LogLevel;
+use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\ShopwareHttpException;
+use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
 use Swag\PayPal\RestApi\Client\AbstractClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -102,6 +105,11 @@ class IntrospectionProcessor implements ProcessorInterface
             }
         }
 
+        $exception = $record->context['exception'] ?? $record->context['error'] ?? null;
+        if ($exception instanceof \Throwable) {
+            $context['exception'] = $this->exceptionToContext($exception);
+        }
+
         $record->extra = [
             ...$record->extra,
             ...$context,
@@ -125,6 +133,33 @@ class IntrospectionProcessor implements ProcessorInterface
         \array_splice($traces, 0, 3);
 
         return $traces;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function exceptionToContext(\Throwable $exception): array
+    {
+        $context = [
+            'message' => $exception->getMessage(),
+            'class' => $this->traceToClassString($exception->getTrace()[0]),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+        ];
+
+        if ($exception instanceof ShopwareHttpException) {
+            $context['parameters'] = $exception->getParameters();
+        }
+
+        if ($exception instanceof HttpException || $exception instanceof PosException) {
+            $context['errorCode'] = $exception->getErrorCode();
+        }
+
+        if ($exception->getPrevious()) {
+            $context['previous'] = $this->exceptionToContext($exception->getPrevious());
+        }
+
+        return $context;
     }
 
     /**

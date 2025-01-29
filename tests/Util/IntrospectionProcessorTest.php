@@ -14,8 +14,10 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Kernel;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
+use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\RestApi\Client\AbstractClient;
 use Swag\PayPal\RestApi\Client\PayPalClient;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Storefront\Controller\PayPalController;
 use Swag\PayPal\Util\IntrospectionProcessor;
@@ -203,5 +205,70 @@ class IntrospectionProcessorTest extends TestCase
             'class' => null,
             'function' => null,
         ]];
+    }
+
+    /**
+     * @dataProvider invokeWithExceptionDataProvider
+     */
+    public function testInvokeWithException(array $context, array $expected): void
+    {
+        $logRecord = new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Error, 'test', $context);
+
+        $processor = $this->getMockBuilder(IntrospectionProcessor::class)
+            ->setConstructorArgs([Level::Error])
+            ->onlyMethods(['getBacktrace'])
+            ->getMock();
+
+        $processor
+            ->expects(static::once())
+            ->method('getBacktrace')
+            ->willReturn(\array_merge([self::TRACE_MONOLOG], []));
+
+        $processor->__invoke($logRecord);
+
+        $staticExcepted = ['file' => null, 'line' => 1, 'class' => null, 'function' => null];
+        if (isset($logRecord->extra['exception'])) {
+            $staticExcepted['exception'] = [
+                'file' => __FILE__,
+                'class' => self::class . '::invokeWithExceptionDataProvider',
+                'line' => $logRecord->extra['exception']['line'],
+            ];
+        }
+
+        static::assertEquals(
+            \array_merge_recursive($expected, $staticExcepted),
+            $logRecord->extra,
+        );
+    }
+
+    public static function invokeWithExceptionDataProvider(): \Generator
+    {
+        yield 'not a throwable' => [
+            ['error' => ['some-key' => 'some-value']],
+            [],
+        ];
+
+        yield 'throwable' => [
+            ['error' => new \Exception('test-message')],
+            ['exception' => ['message' => 'test-message']],
+        ];
+
+        yield 'PayPalApiException' => [
+            ['error' => new PayPalApiException('test-name', 'test-message', issue: 'test-issue')],
+            ['exception' => [
+                'message' => 'The error "test-name" occurred with the following message: test-message',
+                'parameters' => ['name' => 'test-name', 'message' => 'test-message', 'issue' => 'test-issue'],
+                'errorCode' => 'SWAG_PAYPAL__API_test-issue',
+            ]],
+        ];
+
+        yield 'PosException' => [
+            ['error' => new PosException('test-name', 'test-message')],
+            ['exception' => [
+                'message' => 'The error "test-name" occurred with the following message: test-message',
+                'parameters' => ['name' => 'test-name', 'message' => 'test-message'],
+                'errorCode' => 'SWAG_PAYPAL__POS_EXCEPTION',
+            ]],
+        ];
     }
 }

@@ -46,12 +46,12 @@ class OutdatedUpdater
                     $this->productResource->updateProduct($productContext->getPosSalesChannel(), $product);
                     $productContext->changeProduct($shopwareProduct, $product);
                     $this->logger->info('Product updated', ['product' => $shopwareProduct]);
-                } catch (PosApiException $posApiException) {
-                    if ($posApiException->getApiError()->getErrorType() === PosApiError::ERROR_TYPE_ENTITY_NOT_FOUND) {
+                } catch (PosApiException $e) {
+                    if ($e->getApiError()->getErrorType() === PosApiError::ERROR_TYPE_ENTITY_NOT_FOUND) {
                         $productContext->removeProduct($shopwareProduct);
                         $this->logger->notice('The product was marked as synced, but could not be found at Zettle. It will be recreated with the next sync.', ['product' => $shopwareProduct]);
                     } else {
-                        $this->logger->error('Product update error: ' . $posApiException, ['product' => $shopwareProduct]);
+                        $this->logger->error('Product update error: ' . $e->getMessage(), ['product' => $shopwareProduct, 'error' => $e]);
                     }
                 }
             }

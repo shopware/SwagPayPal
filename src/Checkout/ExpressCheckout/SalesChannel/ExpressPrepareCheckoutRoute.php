@@ -101,7 +101,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 
             return new ContextTokenResponse($cart->getToken());
         } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e, 'trace' => $e->getTraceAsString()]);
+            $this->logger->error($e->getMessage(), ['error' => $e]);
 
             throw $e;
         }
