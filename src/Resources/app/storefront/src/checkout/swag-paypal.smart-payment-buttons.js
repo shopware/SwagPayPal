@@ -1,130 +1,34 @@
 import DomAccess from 'src/helper/dom-access.helper';
-import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import HttpClient from 'src/service/http-client.service';
-import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
-import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
+import SwagPaypalAbstractStandalone from './swag-paypal.abstract-standalone';
 
-export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractButtons {
+export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractStandalone {
     static options = {
         ...super.options,
-
-        /**
-         * This option specifies the PayPal button color
-         *
-         * @type string
-         */
         buttonColor: 'gold',
-
-        /**
-         * This option specifies the PayPal button shape
-         *
-         * @type string
-         */
-        buttonShape: 'sharp',
-
-        /**
-         * This option specifies the PayPal button size
-         *
-         * @type string
-         */
-        buttonSize: 'small',
-
-        /**
-         * This option toggles if credit card and ELV should be shown
-         *
-         * @type boolean
-         */
-        useAlternativePaymentMethods: true,
-
-        /**
-         * This option specifies if selected APMs should be hidden
-         *
-         * @type string[]
-         */
-        disabledAlternativePaymentMethods: [],
-
-        /**
-         * This option toggles if the pay later button should be shown
-         *
-         * @type boolean
-         */
-        showPayLater: true,
-
-        /**
-         * URL to create a new PayPal order
-         *
-         * @type string
-         */
-        createOrderUrl: '',
-
-        /**
-         * Is set, if the plugin is used on the order edit page
-         *
-         * @type string|null
-         */
-        orderId: null,
-
-        /**
-         * URL to the after order edit page, as the payment has failed
-         *
-         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-         *
-         * @type string|null
-         */
-        accountOrderEditFailedUrl: '',
-
-        /**
-         * URL to the after order edit page, as the user has cancelled
-         *
-         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-         *
-         * @type string|null
-         */
-        accountOrderEditCancelledUrl: '',
-
-        /**
-         * Selector of the order confirm form
-         *
-         * @type string
-         */
-        confirmOrderFormSelector: '#confirmOrderForm',
-
-        /**
-         * Selector of the submit button of the order confirm form
-         *
-         * @type string
-         */
-        confirmOrderButtonSelector: 'button[type="submit"]',
-
-        /**
-         * URL for adding flash error message
-         *
-         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-         *
-         * @type string
-         */
-        addErrorUrl: '',
-
-        /**
-         * User ID token for vaulting
-         *
-         * @type string|null
-         */
-        userIdToken: null,
     };
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed without replacement
+     */
     init() {
         this._client = new HttpClient();
 
         this.createButton();
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will part of `init` and be removed without replacement
+     */
     createButton() {
         this.createScript((paypal) => {
             this.renderButton(paypal);
         });
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - will be removed and replaced by {@see render}
+     */
     renderButton(paypal) {
         this.confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
 
@@ -133,94 +37,23 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         return paypal.Buttons(this.getButtonConfig()).render(this.el);
     }
 
-    getButtonConfig() {
-        return {
-            style: {
-                size: this.options.buttonSize,
-                shape: this.options.buttonShape,
-                color: this.options.buttonColor,
-                label: 'pay',
-            },
-
-            /**
-             * Will be called if when the payment process starts
-             */
-            createOrder: this.createOrder.bind(this),
-
-            /**
-             * Will be called if the payment process is approved by paypal
-             */
-            onApprove: this.onApprove.bind(this),
-
-            /**
-             * Remove loading spinner when user comes back
-             */
-            onCancel: this.onCancel.bind(this),
-
-            /**
-             * Check form validity & show loading spinner on confirm click
-             */
-            onClick: this.onClick.bind(this),
-
-            /**
-             * Will be called if an error occurs during the payment process.
-             */
-            onError: this.onError.bind(this),
-        };
+    getFundingSource() {
+        return undefined;
     }
 
     /**
+     * @deprecated tag:v10.0.0 - `fundingSource` parameter will be mandatory
+     */
+    getButtonConfig(fundingSource = this.getFundingSource()) {
+        return super.getButtonConfig(fundingSource);
+    }
+
+    /**
+     * @deprecated tag:v10.0.0 - `product` parameter will be mandatory
+     *
      * @return {Promise}
      */
-    createOrder() {
-        if (!this.confirmOrderForm.checkValidity()) {
-            throw new Error('Checkout form not valid');
-        }
-
-        const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
-        formData.set('product', 'spb');
-        const orderId = this.options.orderId;
-        if (orderId !== null) {
-            formData.set('orderId', orderId);
-        }
-
-        return new Promise((resolve, reject) => {
-            this._client.post(
-                this.options.createOrderUrl,
-                formData,
-                (responseText, request) => {
-                    if (request.status >= 400) {
-                        reject(responseText);
-                    }
-
-                    try {
-                        const response = JSON.parse(responseText);
-                        resolve(response.token);
-                    } catch (error) {
-                        reject(error);
-                    }
-                },
-            );
-        });
-    }
-
-    onApprove(data) {
-        PageLoadingIndicatorUtil.create();
-
-        const input = document.createElement('input');
-        input.setAttribute('type', 'hidden');
-        input.setAttribute('name', 'paypalOrderId');
-        input.setAttribute('value', data.orderID);
-
-        this.confirmOrderForm.appendChild(input);
-        this.confirmOrderForm.submit();
-    }
-
-    onClick(data, actions) {
-        if (!this.confirmOrderForm.checkValidity()) {
-            return actions.reject();
-        }
-
-        return actions.resolve();
+    createOrder(product = 'spb') {
+        super.createOrder(product);
     }
 }

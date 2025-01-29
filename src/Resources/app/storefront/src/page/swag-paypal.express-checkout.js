@@ -12,6 +12,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
     static options = {
         ...super.options,
+        buttonColor: 'gold',
 
         /**
          * This option defines the class name which will be added when the button gets disabled.
@@ -26,27 +27,6 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          * @type string
          */
         buyButtonSelector: '.btn-buy',
-
-        /**
-         * This option specifies the PayPal button color
-         *
-         * @type string
-         */
-        buttonColor: 'gold',
-
-        /**
-         * This option specifies the PayPal button shape
-         *
-         * @type string
-         */
-        buttonShape: 'sharp',
-
-        /**
-         * This option specifies the PayPal button size
-         *
-         * @type string
-         */
-        buttonSize: 'small',
 
         /**
          * This option toggles the text below the PayPal Express button
@@ -75,13 +55,6 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         payPalPaymentMethodId: '',
 
         /**
-         * URL to create a new PayPal order
-         *
-         * @type string
-         */
-        createOrderUrl: '',
-
-        /**
          * URL to delete an existing cart in Shopware
          *
          * @type string
@@ -103,27 +76,11 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         checkoutConfirmUrl: '',
 
         /**
-         * URL for adding flash error message
-         *
-         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-         *
-         * @type string
-         */
-        addErrorUrl: '',
-
-        /**
          * URL for redirecting to after user cancels
          *
          * @type string
          */
         cancelRedirectUrl: '',
-
-        /**
-         * Show additional pay later button
-         *
-         * @type boolean
-         */
-        showPayLater: true,
 
         /**
          * List of payment sources to be rendered
