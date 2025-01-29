@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 
 export default Shopware.Mixin.register('swag-paypal-pos-catch-error', Shopware.Component.wrapComponentConfig({
     mixins: [

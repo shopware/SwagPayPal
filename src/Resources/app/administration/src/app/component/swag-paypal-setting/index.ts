@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 import template from './swag-paypal-setting.html.twig';
 import './swag-paypal-setting.scss';
 import { SystemConfigDefinition } from '../../../types/system-config';

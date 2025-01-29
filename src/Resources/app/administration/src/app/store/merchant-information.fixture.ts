@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 
 const Default = {
     merchantIntegrations: {

@@ -31,5 +31,10 @@ module.exports = (baseConf) => {
                 },
             ],
         },
+        resolve: {
+            alias: {
+                'SwagPayPal': path.resolve(__dirname, '../src/'),
+            },
+        },
     };
 };

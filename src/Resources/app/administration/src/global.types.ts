@@ -1,6 +1,6 @@
 import type Repository from 'src/core/data/repository.data';
 import type Criteria from 'src/core/data/criteria.data';
-import type { Entity } from 'src/types/entity';
+import type { Entity } from 'SwagPayPal/types/entity';
 import type { PropType as TPropType } from 'vue';
 import type SwagPaypalNotificationMixin from './mixin/swag-paypal-notification.mixin';
 import type SwagPaypalCredentialsLoaderMixin from './mixin/swag-paypal-credentials-loader.mixin';
@@ -20,6 +20,7 @@ import type SwagPayPalWebhookService from './core/service/api/swag-paypal-webhoo
 import type SwagPayPalSettingsService from './core/service/api/swag-paypal-settings.service';
 import type { MerchantInformationStore } from './app/store/swag-paypal-merchant-information.store';
 import type { SettingsStore } from './app/store/swag-paypal-settings.store';
+import type { I18n } from 'vue-i18n';
 
 declare global {
     type TEntity<T extends keyof EntitySchema.Entities> = Entity<T>;
@@ -59,5 +60,7 @@ declare global {
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         $super: (name: string) => $TSFixMe;
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+        $te: I18n<{}, {}, {}, string, true>['global']['te'];
     }
 }

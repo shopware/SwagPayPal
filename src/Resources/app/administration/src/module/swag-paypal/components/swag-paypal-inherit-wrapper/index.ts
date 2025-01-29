@@ -1,5 +1,5 @@
-import type * as PayPal from 'src/types';
-import { SystemConfigDefinition } from '../../../../types/system-config';
+import type * as PayPal from 'SwagPayPal/types';
+import { SystemConfigDefinition } from 'SwagPayPal/types/system-config';
 import template from './swag-paypal-inherit-wrapper.html.twig';
 
 /**
