@@ -1203,6 +1203,42 @@
                 }
             }
         },
+        "/api/_action/paypal/test-api-credentials": {
+            "post": {
+                "tags": [
+                    "Admin Api",
+                    "PayPal"
+                ],
+                "operationId": "testApiCredentials",
+                "responses": {
+                    "200": {
+                        "description": "Returns if the provided API credentials are valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "valid",
+                                        "errors"
+                                    ],
+                                    "properties": {
+                                        "valid": {
+                                            "type": "boolean"
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/error"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/_action/paypal/get-api-credentials": {
             "post": {
                 "tags": [
@@ -1276,6 +1312,30 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/swag_paypal_setting_merchant_information"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/_action/paypal/save-settings": {
+            "post": {
+                "tags": [
+                    "Admin Api",
+                    "PayPal"
+                ],
+                "operationId": "saveSettings",
+                "responses": {
+                    "200": {
+                        "description": "Returns information about the saved settings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "$ref": "#/components/schemas/swag_paypal_setting_settings_information"
+                                    }
                                 }
                             }
                         }
@@ -6703,12 +6763,49 @@
                 ],
                 "properties": {
                     "merchantIntegrations": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "capabilities": {
                         "description": "string> key: paymentMethodId, value: capability (see AbstractMethodData)",
                         "type": "object",
                         "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "swag_paypal_setting_settings_information": {
+                "required": [
+                    "sandboxCredentialsChanged",
+                    "sandboxCredentialsValid",
+                    "liveCredentialsChanged",
+                    "liveCredentialsValid",
+                    "webhookErrors"
+                ],
+                "properties": {
+                    "sandboxCredentialsChanged": {
+                        "type": "boolean"
+                    },
+                    "sandboxCredentialsValid": {
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "liveCredentialsChanged": {
+                        "type": "boolean"
+                    },
+                    "liveCredentialsValid": {
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "webhookErrors": {
+                        "type": "array",
+                        "items": {
                             "type": "string"
                         }
                     }

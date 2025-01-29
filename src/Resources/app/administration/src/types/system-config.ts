@@ -1,16 +1,5 @@
 import type { SYSTEM_CONFIG, LANDING_PAGES, BUTTON_COLORS, BUTTON_SHAPES, INTENTS, COUNTRY_OVERRIDES } from 'SwagPayPal/constant/swag-paypal-settings.constant';
 
-/**
- * @deprecated tag:v10.0.0 - Will be moved to constant/swag-paypal-settings.constant.ts.
- */
-export {
-    LANDING_PAGES,
-    BUTTON_COLORS,
-    BUTTON_SHAPES,
-    INTENTS,
-    COUNTRY_OVERRIDES,
-};
-
 // @todo - Keys should be from SYSTEM_CONFIG
 export declare type SystemConfig = {
     'SwagPayPal.settings.clientId'?: string;
