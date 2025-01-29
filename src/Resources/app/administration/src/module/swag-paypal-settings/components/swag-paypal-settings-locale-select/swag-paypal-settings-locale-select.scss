@@ -1,0 +1,13 @@
+@import "~scss/variables";
+
+.swag-paypal-settings-locale-select {
+    &__locale_info {
+        .sw-highlight-text, .sw-select-result__result-item-text {
+            display: inline;
+        }
+    }
+
+    &__locale {
+        color: $color-gray-600;
+    }
+}

@@ -1,6 +1,7 @@
 {
     "swag-paypal-frw-credentials": {
         "buttonGetCredentials": "Hole API Zugangsdaten",
+        "buttonGetSandboxCredentials": "Hole Sandbox API Zugangsdaten",
         "textIntroPayPal": "Um PayPal zu nutzen müssen nur die API Zugangsdaten eingegeben werden.",
         "labelClientId": "Client-ID",
         "labelClientSecret": "Client-Secret",
@@ -15,6 +16,7 @@
         "messageFetchedError": " Bitte versuche es erneut oder nutze die erweiterten Einstellungen um die Zugangsdaten direkt einzugeben.",
         "textFetchedSuccessful": "Die Zugangsdaten wurden erfolgreich abgerufen.",
         "messageNoCredentials": "Es wurden keine Zugangsdaten hinterlegt.",
+        "messageInvalidCredentials": "Die Zugangsdaten sind ungültig.",
         "messageTestSuccess": "Die Zugangsdaten sind gültig."
     }
 }

@@ -190,6 +190,7 @@ export default tseslint.config(
             'jest/prefer-to-contain': 'error',
             'jest/prefer-to-have-length': 'error',
             'jest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
+            '@typescript-eslint/no-unsafe-member-access': 'off', // Needed for any/VueComponent typed wrappers
         },
     },
     {

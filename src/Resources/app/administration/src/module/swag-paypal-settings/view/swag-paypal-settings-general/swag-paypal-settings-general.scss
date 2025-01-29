@@ -1,0 +1,20 @@
+@import "~scss/variables";
+
+.swag-paypal-settings {
+    &-vaulting {
+        &__description-title {
+            color: $color-darkgray-200;
+            font-weight: $font-weight-bold;
+            font-size: $font-size-m;
+            margin-bottom: 16px;
+        }
+
+        &__description-text {
+            margin-bottom: 24px;
+        }
+
+        .swag-paypal-settings.is--boolean {
+            margin-bottom: 24px;
+        }
+    }
+}

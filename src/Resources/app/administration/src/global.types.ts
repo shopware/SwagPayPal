@@ -6,6 +6,8 @@ import type SwagPaypalNotificationMixin from './mixin/swag-paypal-notification.m
 import type SwagPaypalCredentialsLoaderMixin from './mixin/swag-paypal-credentials-loader.mixin';
 import type SwagPaypalPosCatchErrorMixin from './mixin/swag-paypal-pos-catch-error.mixin';
 import type SwagPaypalPosLogLabelMixin from './mixin/swag-paypal-pos-log-label.mixin';
+import type SwagPaypalSettingsMixin from './mixin/swag-paypal-settings.mixin';
+import type SwagPaypalMerchantInformationMixin from './mixin/swag-paypal-merchant-information.mixin';
 import type SwagPayPalApiCredentialsService from './core/service/api/swag-paypal-api-credentials.service';
 import type SwagPayPalDisputeApiService from './core/service/api/swag-paypal-dispute.api.service';
 import type SwagPayPalOrderService from './core/service/api/swag-paypal-order.service';
@@ -15,6 +17,9 @@ import type SwagPayPalPosSettingApiService from './core/service/api/swag-paypal-
 import type SwagPayPalPosWebhookRegisterService from './core/service/api/swag-paypal-pos-webhook-register.service';
 import type SwagPayPalPosApiService from './core/service/api/swag-paypal-pos.api.service';
 import type SwagPayPalWebhookService from './core/service/api/swag-paypal-webhook.service';
+import type SwagPayPalSettingsService from './core/service/api/swag-paypal-settings.service';
+import type { MerchantInformationStore } from './app/store/swag-paypal-merchant-information.store';
+import type { SettingsStore } from './app/store/swag-paypal-settings.store';
 
 declare global {
     type TEntity<T extends keyof EntitySchema.Entities> = Entity<T>;
@@ -28,6 +33,8 @@ declare global {
         'swag-paypal-notification': typeof SwagPaypalNotificationMixin;
         'swag-paypal-pos-catch-error': typeof SwagPaypalPosCatchErrorMixin;
         'swag-paypal-pos-log-label': typeof SwagPaypalPosLogLabelMixin;
+        'swag-paypal-settings': typeof SwagPaypalSettingsMixin;
+        'swag-paypal-merchant-information': typeof SwagPaypalMerchantInformationMixin;
     }
 
     interface ServiceContainer {
@@ -40,6 +47,12 @@ declare global {
         SwagPayPalOrderService: SwagPayPalOrderService;
         SwagPaypalPaymentMethodService: SwagPaypalPaymentMethodService;
         SwagPayPalDisputeApiService: SwagPayPalDisputeApiService;
+        SwagPayPalSettingsService: SwagPayPalSettingsService;
+    }
+
+    interface PiniaRootState {
+        swagPayPalMerchantInformation: MerchantInformationStore;
+        swagPayPalSettings: SettingsStore;
     }
 }
 

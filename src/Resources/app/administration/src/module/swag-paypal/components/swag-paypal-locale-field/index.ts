@@ -6,6 +6,9 @@ const { debounce } = Shopware.Utils;
 
 type ValueEvent = { target: { value?: string } };
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-settings-locale-select`
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 

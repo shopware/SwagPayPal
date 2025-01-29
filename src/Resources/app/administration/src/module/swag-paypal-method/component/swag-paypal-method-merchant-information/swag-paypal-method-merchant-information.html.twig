@@ -1,0 +1,23 @@
+<div class="swag-paypal-merchant-information">
+    <p class="swag-paypal-merchant-information__email">
+        {{ merchantEmail }}
+        <br>
+        {{ merchantInformationStore.actual.merchantIntegrations.legal_name }}
+    </p>
+
+    <swag-paypal-setting
+        v-tooltip.left="{
+            message: tooltipSandbox,
+            disabled: !sandboxToggleDisabled,
+        }"
+        path="SwagPayPal.settings.sandbox"
+        class="swag-paypal-merchant-information__sandbox-toggle"
+        :disabled="sandboxToggleDisabled"
+        :bordered="false"
+        @update:value="onSandboxToggle"
+    />
+
+    <div class="swag-paypal-merchant-information__buttons">
+        <slot />
+    </div>
+</div>

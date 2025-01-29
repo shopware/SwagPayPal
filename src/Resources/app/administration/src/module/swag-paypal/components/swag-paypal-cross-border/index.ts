@@ -2,6 +2,9 @@ import type * as PayPal from 'src/types';
 import template from './swag-paypal-cross-border.html.twig';
 import './swag-paypal-cross-border.scss';
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-settings-advanced`
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 

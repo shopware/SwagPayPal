@@ -1,0 +1,110 @@
+<sw-card
+    class="swag-paypal-method-card sw-card--grid"
+    position-identifier="swag-paypal-method-card"
+>
+    <template #avatar>
+        <img
+            :src="assetFilter('swagpaypal/static/img/paypal-logo-avatar.svg')"
+            :alt="$t('swag-paypal-method.appImageAlt')"
+        >
+    </template>
+
+    <template #title>
+        <p class="sw-card__title">
+            {{ $t('swag-paypal-method.cardTitle') }}
+        </p>
+
+        <sw-label
+            v-if="!merchantInformationStore.isLoading"
+            class="swag-paypal-method-card__status"
+            size="medium"
+            appearance="pill"
+            :variant="statusVariant"
+        >
+            <sw-color-badge rounded :variant="statusVariant" />
+
+            <span>{{ statusText }}</span>
+        </sw-label>
+    </template>
+
+    <template #header-right>
+        <sw-internal-link :router-link="{ name: 'swag.paypal.settings.index' }">
+            {{ $t('swag-paypal-method.settingsLink') }}
+        </sw-internal-link>
+    </template>
+
+    <div class="swag-paypal-method-card__content">
+        <template v-if="merchantInformationStore.isLoading">
+            <sw-skeleton-bar />
+            <sw-skeleton-bar />
+        </template>
+
+        <swag-paypal-method-merchant-information
+            v-else-if="showMerchantInformation"
+            @save="saveSettings"
+        >
+            {% block swag_paypal_method_card_onboarding_buttons_connected %}
+            <swag-paypal-onboarding-button
+                type="live"
+                @onboarded="saveSettings"
+            />
+
+            <swag-paypal-onboarding-button
+                type="sandbox"
+                variant="link"
+                @onboarded="saveSettings"
+            />
+            {% endblock %}
+        </swag-paypal-method-merchant-information>
+
+        <template v-else>
+            <div class="swag-paypal-method-card__info">
+                {% block swag_paypal_method_card_info %}
+                <p class="swag-paypal-method-card__header">
+                    {{ $t('swag-paypal-method.header') }}
+                </p>
+
+                <p class="swag-paypal-method-card__description">
+                    {{ $t('swag-paypal-method.description') }}
+                </p>
+                {% endblock %}
+            </div>
+
+            <div class="swag-paypal-method-card__onboarding_buttons">
+                {% block swag_paypal_method_card_onboarding_buttons_disconnected %}
+                <swag-paypal-onboarding-button
+                    type="live"
+                    @onboarded="saveSettings"
+                />
+
+                <swag-paypal-onboarding-button
+                    type="sandbox"
+                    variant="link"
+                    @onboarded="saveSettings"
+                />
+                {% endblock %}
+            </div>
+        </template>
+
+        {% block swag_paypal_method_card_payment_methods %}
+        <p class="swag-paypal-method-card__payment-method-headline">
+            {{ $t('swag-paypal-method.paymentMethodText') }}
+        </p>
+
+        <template v-if="isLoadingPaymentMethods">
+            <sw-skeleton-bar />
+            <sw-skeleton-bar />
+            <sw-skeleton-bar />
+        </template>
+
+        <div v-else class="swag-paypal-method-card__listing">
+            <swag-paypal-payment-method
+                v-for="paymentMethod in paymentMethods"
+                :key="paymentMethod.id"
+                :payment-method="paymentMethod"
+                @update:active="onUpdateActive(paymentMethod, $event)"
+            />
+        </div>
+        {% endblock %}
+    </div>
+</sw-card>

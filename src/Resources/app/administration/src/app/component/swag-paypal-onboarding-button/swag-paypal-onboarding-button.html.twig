@@ -1,0 +1,19 @@
+<a
+    :href="onboardingUrl"
+    :disabled="isDisabled"
+    :class="classes"
+    class="swag-paypal-onboarding-button"
+    target="_blank"
+    :data-paypal-onboard-complete="callbackName"
+    data-paypal-button="true"
+>
+    <sw-loader
+        v-if="isLoading"
+        class="sw-button_loader"
+        size="20px"
+    />
+
+    <slot>
+        {{ buttonTitle }}
+    </slot>
+</a>

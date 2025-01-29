@@ -2,6 +2,9 @@ import type * as PayPal from 'src/types';
 import template from './sw-settings-payment-detail.html.twig';
 import './sw-settings-payment-detail.scss';
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by swag-paypal-settings/extension/sw-settings-payment-detail
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 

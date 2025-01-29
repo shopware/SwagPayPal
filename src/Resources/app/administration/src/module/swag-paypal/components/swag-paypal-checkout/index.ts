@@ -5,6 +5,9 @@ import './swag-paypal-checkout.scss';
 const { Context } = Shopware;
 const { Criteria } = Shopware.Data;
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-method-card`
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 

@@ -43,6 +43,7 @@ class ApiCredentialService implements ApiCredentialServiceInterface
      * @deprecated tag:v10.0.0 - parameter $merchantPayerId will be added
      *
      * @throws PayPalInvalidApiCredentialsException
+     * @throws PayPalApiException
      */
     public function testApiCredentials(string $clientId, string $clientSecret, bool $sandboxActive /* , ?string $merchantPayerId */): bool
     {

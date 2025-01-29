@@ -5,6 +5,9 @@ type ConfigComponent = {
     save:() => Promise<{ payPalWebhookErrors?: string[] }>;
 };
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `swag-paypal-method-card`
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 

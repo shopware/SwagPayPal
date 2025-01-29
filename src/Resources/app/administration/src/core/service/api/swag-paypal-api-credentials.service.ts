@@ -4,6 +4,9 @@ import type * as PayPal from 'src/types';
 
 const ApiService = Shopware.Classes.ApiService;
 
+/**
+ * @deprecated tag:v10.0.0 - Will be replaced by `SwagPayPalSettingsService`
+ */
 class SwagPayPalApiCredentialsService extends ApiService {
     constructor(httpClient: AxiosInstance, loginService: LoginService, apiEndpoint = 'paypal') {
         super(httpClient, loginService, apiEndpoint);

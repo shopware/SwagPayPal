@@ -7,6 +7,9 @@ import template from './swag-paypal-created-component-helper.html.twig';
  * race conditions can occur here.
 */
 
+/**
+ * @deprecated tag:v10.0.0 - Will be removed without replacement
+ */
 export default Shopware.Component.wrapComponentConfig({
     template,
 

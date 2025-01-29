@@ -1,3 +1,6 @@
+/**
+ * @deprecated tag:v10.0.0 - Will be moved to app directory
+ */
 Shopware.Service('privileges').addPrivilegeMappingEntry({
     category: 'permissions',
     parent: 'swag_paypal',
@@ -27,6 +30,9 @@ Shopware.Service('privileges').addPrivilegeMappingEntry({
     },
 });
 
+/**
+ * @deprecated tag:v10.0.0 - Will be moved to app directory
+ */
 Shopware.Service('privileges').addPrivilegeMappingEntry({
     category: 'permissions',
     parent: null,
