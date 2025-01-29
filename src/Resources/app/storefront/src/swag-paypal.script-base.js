@@ -31,6 +31,13 @@ export default class SwagPayPalScriptBase extends Plugin {
         clientId: '',
 
         /**
+         * This option holds the client token required for field rendering
+         *
+         * @type string
+         */
+        clientToken: '',
+
+        /**
          * This option holds the merchant id specified in the settings
          *
          * @type string
@@ -71,6 +78,34 @@ export default class SwagPayPalScriptBase extends Plugin {
          * @type string
          */
         languageIso: 'en_GB',
+
+        /**
+         * This option toggles if the pay later button should be shown
+         *
+         * @type boolean
+         */
+        showPayLater: true,
+
+        /**
+         * This option toggles if credit card and ELV should be shown
+         *
+         * @type boolean
+         */
+        useAlternativePaymentMethods: true,
+
+        /**
+         * This option specifies if selected APMs should be hidden
+         *
+         * @type string[]
+         */
+        disabledAlternativePaymentMethods: [],
+
+        /**
+         * User ID token for vaulting
+         *
+         * @type string|null
+         */
+        userIdToken: null,
 
         /**
          * This option will await the visibility of the element before continue loading the script.
@@ -169,7 +204,7 @@ export default class SwagPayPalScriptBase extends Plugin {
 
         if (this.options.useAlternativePaymentMethods === false) {
             config['disable-funding'] = availableAPMs.join(',');
-        } else if (Array.isArray(this.options.disabledAlternativePaymentMethods)) {
+        } else if (this.options.disabledAlternativePaymentMethods.length > 0) {
             config['disable-funding'] = this.options.disabledAlternativePaymentMethods.join(',');
         }
 

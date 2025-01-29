@@ -1,5 +1,8 @@
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
+/**
+ * @deprecated tag:v10.0.0 - will extend SwagPaypalScriptBase instead
+ */
 export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButtons {
     static options = {
         ...super.options,
