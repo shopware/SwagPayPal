@@ -11,7 +11,7 @@ on:
       - tests/**/*.php
       - rector.php
       - composer.json
-      - .php-cs-fixer.dist.php
+      - ecs.php
       - phpstan.neon.dist
       - phpstan-baseline.neon
   workflow_dispatch:
@@ -65,8 +65,7 @@ jobs:
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
       - name: Run ecs
-        run: |
-          composer -d custom/plugins/${{ github.event.repository.name }} run ecs
+        run: composer -d custom/plugins/${{ github.event.repository.name }} run ecs
 
   validate-openapi-typescript:
     runs-on: ubuntu-latest
