@@ -42,14 +42,14 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractSta
     }
 
     /**
-     * @deprecated tag:v10.0.0 - product parameter will be mandatory
+     * @deprecated tag:v10.0.0 - `fundingSource` parameter will be mandatory
      */
     getButtonConfig(fundingSource = this.getFundingSource()) {
         return super.getButtonConfig(fundingSource);
     }
 
     /**
-     * @deprecated tag:v10.0.0 - product parameter will be mandatory
+     * @deprecated tag:v10.0.0 - `product` parameter will be mandatory
      *
      * @return {Promise}
      */
