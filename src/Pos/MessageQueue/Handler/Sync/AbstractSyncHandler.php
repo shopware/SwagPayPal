@@ -56,7 +56,7 @@ abstract class AbstractSyncHandler implements MessageSubscriberInterface
             $this->messageHydrator->hydrateMessage($message);
             $this->sync($message);
         } catch (\Throwable $e) {
-            $this->logger->critical($e->__toString());
+            $this->logger->critical($e->getMessage(), ['error' => $e]);
             $this->runService->finishRun($runId, $context, PosSalesChannelRunDefinition::STATUS_CANCELLED);
         } finally {
             $this->runService->decrementMessageCount($runId);

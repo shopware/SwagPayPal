@@ -135,7 +135,7 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
 
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage(), ['error' => $e]);
 
             throw new SyncPaymentProcessException($transactionId, $e->getMessage());
         }

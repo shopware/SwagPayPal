@@ -68,8 +68,8 @@ class RemoteUpdater
 
         try {
             $status = $this->inventoryResource->changeInventoryBulk($inventoryContext->getPosSalesChannel(), $remoteChanges);
-        } catch (PosApiException $posApiException) {
-            $this->logger->error('Inventory sync error: ' . $posApiException);
+        } catch (PosApiException $e) {
+            $this->logger->error('Inventory sync error: ' . $e->getMessage(), ['error' => $e]);
 
             return $changedProducts;
         }

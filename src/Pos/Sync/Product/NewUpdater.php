@@ -46,12 +46,12 @@ class NewUpdater
                     $this->productResource->createProduct($productContext->getPosSalesChannel(), $product);
                     $productContext->changeProduct($shopwareProduct, $product);
                     $this->logger->info('Product created', ['product' => $shopwareProduct]);
-                } catch (PosApiException $posApiException) {
-                    if ($posApiException->getApiError()->getErrorType() === PosApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS) {
+                } catch (PosApiException $e) {
+                    if ($e->getApiError()->getErrorType() === PosApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS) {
                         $productContext->changeProduct($shopwareProduct);
                         $this->logger->notice('The product was not marked as synced, but was found at Zettle. Overwriting.', ['product' => $shopwareProduct]);
                     } else {
-                        $this->logger->error('Product creation error: ' . $posApiException, ['product' => $shopwareProduct]);
+                        $this->logger->error('Product creation error: ' . $e->getMessage(), ['product' => $shopwareProduct, 'error' => $e]);
                     }
                 }
             }
