@@ -105,7 +105,7 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
             }
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage(), ['error' => $e]);
 
             throw PaymentException::asyncProcessInterrupted(
                 $transactionId,
@@ -154,7 +154,7 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
             }
             throw $e;
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage(), ['error' => $e]);
 
             throw PaymentException::asyncProcessInterrupted($transactionId, $e->getMessage());
         }
@@ -162,7 +162,7 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         try {
             $this->transactionDataService->setResourceId($paypalOrder, $transactionId, $salesChannelContext->getContext());
         } catch (\Exception $e) {
-            $this->logger->warning('Could not set resource id: ' . $e->getMessage());
+            $this->logger->warning('Could not set resource id: ' . $e->getMessage(), ['error' => $e]);
         }
     }
 
