@@ -15,4 +15,3 @@ import './module/swag-paypal-settings';
 
 import './init/api-service.init';
 import './init/translation.init';
-import './init/svg-icons.init';
