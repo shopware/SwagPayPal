@@ -208,18 +208,18 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
 
             const field = DomAccess.querySelector(this.cardFieldForm, this.options[firstInvalidFieldKey + 'Selector']);
 
-            // field.scrollIntoView({
-            //     behavior: 'smooth',
-            //     block: 'center',
-            // });
-
             /**
-             * @deprecated tag:v10.0.0 - will be removed without replacement
+             * @deprecated tag:v10.0.0 - will be removed and replaced by `field.scrollIntoView(..)`
              */
             window.scrollTo({
                 top: this.getScrollOffset(field),
                 behavior: 'smooth',
             });
+
+            // field.scrollIntoView({
+            //     behavior: 'smooth',
+            //     block: 'center',
+            // });
         });
     }
 
