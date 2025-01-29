@@ -1,4 +1,4 @@
-import type SwagPayPalCheckout from 'src/module/swag-paypal/components/swag-paypal-checkout';
+import type SwagPayPalCheckout from 'SwagPayPal/module/swag-paypal/components/swag-paypal-checkout';
 import template from './swag-paypal-overview-card.html.twig';
 
 type ConfigComponent = {

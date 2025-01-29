@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 import type { RouteLocationRaw } from 'vue-router';
 import template from './swag-paypal-disputes-detail.html.twig';
 import './swag-paypal-disputes-detail.scss';

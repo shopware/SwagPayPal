@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 import template from './swag-paypal-settings-general.html.twig';
 import './swag-paypal-settings-general.scss';
 import { INTENTS, LANDING_PAGES } from '../../../../constant/swag-paypal-settings.constant';

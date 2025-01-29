@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 import template from './sw-first-run-wizard-paypal-credentials.html.twig';
 import './sw-first-run-wizard-paypal-credentials.scss';
 

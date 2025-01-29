@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 import template from './swag-paypal-locale-field.html.twig';
 import './swag-paypal-locale-field.scss';
 

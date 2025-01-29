@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 import template from './sw-settings-shipping-detail.html.twig';
 import './sw-settings-shipping-detail.scss';
 import carriers, { commonCarriers } from '../../../../constant/swag-paypal-carrier.constant';
