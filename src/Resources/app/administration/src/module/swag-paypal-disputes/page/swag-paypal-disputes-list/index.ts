@@ -183,7 +183,10 @@ export default Shopware.Component.wrapComponentConfig({
             if (errorResponse.response?.data.errors?.[0]?.code === DISPUTE_AUTH_ERROR) {
                 this.notAuthorized = true;
             } else {
-                this.createNotificationFromError({ errorResponse, title: 'swag-paypal-disputes.list.errorTitle' });
+                this.createNotificationError({
+                    title: this.$t('swag-paypal-disputes.list.errorTitle'),
+                    message: this.createMessageFromError(errorResponse),
+                });
             }
 
             this.isLoading = false;
