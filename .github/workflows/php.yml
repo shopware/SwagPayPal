@@ -11,6 +11,9 @@ on:
       - tests/**/*.php
       - rector.php
       - composer.json
+      - .php-cs-fixer.dist.php
+      - phpstan.neon.dist
+      - phpstan-baseline.neon
   workflow_dispatch:
   workflow_call:
 
@@ -45,6 +48,19 @@ jobs:
           sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist
       - run: |
           composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
+
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+      - name: Run php-cs-fixer
+        run: |
+          composer -d custom/plugins/${{ github.event.repository.name }} run ecs
 
   validate-openapi-typescript:
     runs-on: ubuntu-latest
