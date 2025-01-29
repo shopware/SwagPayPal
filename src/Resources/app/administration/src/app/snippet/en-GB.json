@@ -11,6 +11,13 @@
         "title": "PayPal Settings",
         "webhookMessage": "The webhook could not be saved:<br>{message}",
         "errorMessage": "Saving failed:<br>{message}"
+      },
+      "merchantInformation": {
+        "title": "PayPal Account",
+        "errorMessage": "Retrieve failed:<br>{message}"
+      },
+      "posError": {
+        "title": "Zettle POS"
       }
     }
   },
