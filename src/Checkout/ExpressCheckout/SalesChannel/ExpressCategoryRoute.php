@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 
-use OpenApi\Attributes as OA;
 use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRouteResponse;
 use Shopware\Core\Framework\Log\Package;
@@ -20,7 +19,6 @@ use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Package('checkout')]

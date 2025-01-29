@@ -63,16 +63,16 @@ class IdealMethodData extends AbstractMethodData
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-    	$capability = $merchantIntegrations->getSpecificCapability('IDEAL');
+        $capability = $merchantIntegrations->getSpecificCapability('IDEAL');
 
-    	if ($capability === null) {
-    	    return self::CAPABILITY_INACTIVE;
-    	}
+        if ($capability === null) {
+            return self::CAPABILITY_INACTIVE;
+        }
 
-    	if ($capability->getStatus() === Capability::STATUS_ACTIVE) {
-    	    return self::CAPABILITY_ACTIVE;
-    	}
+        if ($capability->getStatus() === Capability::STATUS_ACTIVE) {
+            return self::CAPABILITY_ACTIVE;
+        }
 
-    	return self::CAPABILITY_INELIGIBLE;
+        return self::CAPABILITY_INELIGIBLE;
     }
 }
