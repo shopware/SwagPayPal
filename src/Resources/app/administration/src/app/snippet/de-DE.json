@@ -8,7 +8,7 @@
     },
     "notifications": {
       "save": {
-        "title": "PayPal Einstellungen",
+        "title": "PayPal-Einstellungen",
         "webhookMessage": "Der Webhook konnte nicht gespeichert werden:<br>{message}",
         "errorMessage": "Speicherung fehlgeschlagen:<br>{message}"
       },
@@ -84,10 +84,10 @@
     "helpText": {
       "clientId": "Die Client-ID der REST-API, die das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren.",
       "clientSecret": "Das Client-Secret der REST-API, das das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren.",
-      "merchantPayerId": "Die PayPal-Händler-ID, die dem PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal Kontoeinstellungen).",
+      "merchantPayerId": "Die PayPal-Händler-ID, die dem PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal-Kontoeinstellungen).",
       "clientIdSandbox": "Die Client-ID der REST-API, die das Plugin im Testfall dazu verwendet, sich mit der PayPal-API zu authentifizieren.",
       "clientSecretSandbox": "Das Client-Secret der REST-API, das das Plugin im Testfall dazu verwendet, sich mit der PayPal-API zu authentifizieren.",
-      "merchantPayerIdSandbox": "Die PayPal-Händler-ID, die dem Sandbox-PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal Kontoeinstellungen).",
+      "merchantPayerIdSandbox": "Die PayPal-Händler-ID, die dem Sandbox-PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal-Kontoeinstellungen).",
       "sandbox": "Aktiviere diese Option, um die Integration zu testen.",
       "submitCart": "Wenn diese Option aktiv ist, werden beim Checkout die Warenkorbdaten an PayPal übertragen.",
       "brandName": "Dieser Text wird als Markenname auf der PayPal-Zahlungsseite angezeigt.",
