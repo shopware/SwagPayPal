@@ -38,7 +38,7 @@ class ClearVaultRoute extends AbstractClearVaultRoute
     }
 
     #[OA\Post(
-        path: '/store-api/paypal/vault/clear',
+        path: '/paypal/vault/clear',
         operationId: 'paypalVaultClear',
         description: 'Clears the vault for the current customer',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [

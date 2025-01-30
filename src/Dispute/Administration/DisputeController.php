@@ -35,7 +35,7 @@ class DisputeController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/paypal/dispute',
+        path: '/paypal/dispute',
         operationId: 'disputeList',
         description: 'Loads a list of PayPal disputes',
         tags: ['Admin API', 'PayPal'],
@@ -73,7 +73,7 @@ class DisputeController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/paypal/dispute/{disputeId}',
+        path: '/paypal/dispute/{disputeId}',
         operationId: 'disputeDetails',
         description: 'Loads the dispute details of the given PayPal dispute ID',
         tags: ['Admin API', 'PayPal'],
