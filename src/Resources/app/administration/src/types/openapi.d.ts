@@ -5,131 +5,131 @@
 
 
 export interface paths {
-  "/api/_action/paypal/saleschannel-default": {
-    /** @description Sets PayPal as the default payment method for a given Saleschannel, or all. */
+  "/_action/paypal/saleschannel-default": {
+    /** @description Sets PayPal as the default payment method for a given SalesChannel, or all. */
     post: operations["setPayPalAsDefault"];
   };
-  "/api/paypal/dispute": {
+  "/paypal/dispute": {
     /** @description Loads a list of PayPal disputes */
     get: operations["disputeList"];
   };
-  "/api/paypal/dispute/{disputeId}": {
+  "/paypal/dispute/{disputeId}": {
     /** @description Loads the dispute details of the given PayPal dispute ID */
     get: operations["disputeDetails"];
   };
-  "/api/paypal-v2/order/{orderTransactionId}/{paypalOrderId}": {
+  "/paypal-v2/order/{orderTransactionId}/{paypalOrderId}": {
     /** @description Loads the order details of the given PayPal order ID */
     get: operations["orderDetails"];
   };
-  "/api/paypal-v2/authorization/{orderTransactionId}/{authorizationId}": {
+  "/paypal-v2/authorization/{orderTransactionId}/{authorizationId}": {
     /** @description Loads the authorization details of the given PayPal authorization ID */
     get: operations["authorizationDetails"];
   };
-  "/api/paypal-v2/capture/{orderTransactionId}/{captureId}": {
+  "/paypal-v2/capture/{orderTransactionId}/{captureId}": {
     /** @description Loads the capture details of the given PayPal capture ID */
     get: operations["captureDetails"];
   };
-  "/api/paypal-v2/refund/{orderTransactionId}/{refundId}": {
+  "/paypal-v2/refund/{orderTransactionId}/{refundId}": {
     /** @description Loads the refund details of the given PayPal refund ID */
     get: operations["refundDetails"];
   };
-  "/api/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}": {
+  "/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}": {
     /** @description Refunds the PayPal capture and sets the state of the Shopware order transaction accordingly */
     post: operations["refundCapture"];
   };
-  "/api/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}": {
+  "/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}": {
     /** @description Captures the PayPal authorization and sets the state of the Shopware order transaction accordingly */
     post: operations["captureAuthorization"];
   };
-  "/api/_action/paypal-v2/void-authorization/{orderTransactionId}/{authorizationId}": {
+  "/_action/paypal-v2/void-authorization/{orderTransactionId}/{authorizationId}": {
     /** @description Voids the PayPal authorization and sets the state of the Shopware order transaction accordingly */
     post: operations["voidAuthorization"];
   };
-  "/api/paypal/payment-details/{orderId}/{paymentId}": {
+  "/paypal/payment-details/{orderId}/{paymentId}": {
     /** @description Loads the Payment details of the given PayPal ID */
     get: operations["paymentDetails"];
   };
-  "/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}": {
+  "/paypal/resource-details/{resourceType}/{resourceId}/{orderId}": {
     /** @description Loads the PayPal resource details of the given resource ID */
     get: operations["resourceDetails"];
   };
-  "/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}": {
+  "/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}": {
     post: operations["paypalRefundPayment"];
   };
-  "/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}": {
+  "/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}": {
     post: operations["paypalCapturePayment"];
   };
-  "/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}": {
+  "/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}": {
     post: operations["paypalVoidPayment"];
   };
-  "/api/_action/paypal/pos/sync/{salesChannelId}/products": {
+  "/_action/paypal/pos/sync/{salesChannelId}/products": {
     post: operations["posSyncProducts"];
   };
-  "/api/_action/paypal/pos/sync/{salesChannelId}/images": {
+  "/_action/paypal/pos/sync/{salesChannelId}/images": {
     post: operations["posSyncImages"];
   };
-  "/api/_action/paypal/pos/sync/{salesChannelId}/inventory": {
+  "/_action/paypal/pos/sync/{salesChannelId}/inventory": {
     post: operations["posSyncInventory"];
   };
-  "/api/_action/paypal/pos/sync/{salesChannelId}": {
+  "/_action/paypal/pos/sync/{salesChannelId}": {
     post: operations["posSync"];
   };
-  "/api/_action/paypal/pos/sync/abort/{runId}": {
+  "/_action/paypal/pos/sync/abort/{runId}": {
     post: operations["posSyncAbort"];
   };
-  "/api/_action/paypal/pos/sync/reset/{salesChannelId}": {
+  "/_action/paypal/pos/sync/reset/{salesChannelId}": {
     post: operations["posSyncReset"];
   };
-  "/api/_action/paypal/pos/log/cleanup/{salesChannelId}": {
+  "/_action/paypal/pos/log/cleanup/{salesChannelId}": {
     post: operations["posSyncCleanup"];
   };
-  "/api/paypal/pos/product-log/{salesChannelId}": {
+  "/paypal/pos/product-log/{salesChannelId}": {
     get: operations["posProductLog"];
   };
-  "/api/_action/paypal/pos/validate-api-credentials": {
+  "/_action/paypal/pos/validate-api-credentials": {
     post: operations["posValidateApiCredentials"];
   };
-  "/api/paypal/pos/fetch-information": {
+  "/paypal/pos/fetch-information": {
     post: operations["posFetchInformation"];
   };
-  "/api/_action/paypal/pos/clone-product-visibility": {
+  "/_action/paypal/pos/clone-product-visibility": {
     post: operations["posCloneProductVisibility"];
   };
-  "/api/paypal/pos/product-count": {
+  "/paypal/pos/product-count": {
     get: operations["posGetProductCounts"];
   };
-  "/api/_action/paypal/pos/webhook/registration/{salesChannelId}": {
+  "/_action/paypal/pos/webhook/registration/{salesChannelId}": {
     post: operations["registerPosWebhook"];
     delete: operations["deregisterPosWebhook"];
   };
-  "/api/_action/paypal/pos/webhook/execute/{salesChannelId}": {
+  "/_action/paypal/pos/webhook/execute/{salesChannelId}": {
     post: operations["executePosWebhook"];
   };
-  "/api/_action/paypal/validate-api-credentials": {
+  "/_action/paypal/validate-api-credentials": {
     get: operations["validateApiCredentials"];
   };
-  "/api/_action/paypal/test-api-credentials": {
+  "/_action/paypal/test-api-credentials": {
     post: operations["testApiCredentials"];
   };
-  "/api/_action/paypal/get-api-credentials": {
+  "/_action/paypal/get-api-credentials": {
     post: operations["getApiCredentials"];
   };
-  "/api/_action/paypal/merchant-information": {
+  "/_action/paypal/merchant-information": {
     get: operations["getMerchantInformation"];
   };
-  "/api/_action/paypal/save-settings": {
+  "/_action/paypal/save-settings": {
     post: operations["saveSettings"];
   };
-  "/api/_action/paypal/webhook/status/{salesChannelId}": {
+  "/_action/paypal/webhook/status/{salesChannelId}": {
     get: operations["getWebhookStatus"];
   };
-  "/api/_action/paypal/webhook/register/{salesChannelId}": {
+  "/_action/paypal/webhook/register/{salesChannelId}": {
     post: operations["registerWebhook"];
   };
-  "/api/_action/paypal/webhook/deregister/{salesChannelId}": {
+  "/_action/paypal/webhook/deregister/{salesChannelId}": {
     delete: operations["deregisterWebhook"];
   };
-  "/api/_action/paypal/webhook/execute": {
+  "/_action/paypal/webhook/execute": {
     post: operations["executeWebhook"];
   };
 }
@@ -1424,12 +1424,12 @@ export type external = Record<string, never>;
 
 export interface operations {
 
-  /** @description Sets PayPal as the default payment method for a given Saleschannel, or all. */
+  /** @description Sets PayPal as the default payment method for a given SalesChannel, or all. */
   setPayPalAsDefault: {
     requestBody?: {
       content: {
         "application/json": {
-          /** @description The id of the Saleschannel where PayPal should be set as the default payment method. Set to null to set PayPal as default for every Saleschannel. */
+          /** @description The id of the SalesChannel where PayPal should be set as the default payment method. Set to null to set PayPal as default for every Saleschannel. */
           salesChannelId?: string | null;
         };
       };

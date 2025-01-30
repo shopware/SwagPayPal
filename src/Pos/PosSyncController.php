@@ -51,7 +51,7 @@ class PosSyncController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/pos/sync/{salesChannelId}/products',
+        path: '/_action/paypal/pos/sync/{salesChannelId}/products',
         operationId: 'posSyncProducts',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -83,7 +83,7 @@ class PosSyncController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/pos/sync/{salesChannelId}/images',
+        path: '/_action/paypal/pos/sync/{salesChannelId}/images',
         operationId: 'posSyncImages',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -115,7 +115,7 @@ class PosSyncController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/pos/sync/{salesChannelId}/inventory',
+        path: '/_action/paypal/pos/sync/{salesChannelId}/inventory',
         operationId: 'posSyncInventory',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -147,7 +147,7 @@ class PosSyncController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/pos/sync/{salesChannelId}',
+        path: '/_action/paypal/pos/sync/{salesChannelId}',
         operationId: 'posSync',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -179,7 +179,7 @@ class PosSyncController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/pos/sync/abort/{runId}',
+        path: '/_action/paypal/pos/sync/abort/{runId}',
         operationId: 'posSyncAbort',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -202,7 +202,7 @@ class PosSyncController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/pos/sync/reset/{salesChannelId}',
+        path: '/_action/paypal/pos/sync/reset/{salesChannelId}',
         operationId: 'posSyncReset',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -227,7 +227,7 @@ class PosSyncController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/pos/log/cleanup/{salesChannelId}',
+        path: '/_action/paypal/pos/log/cleanup/{salesChannelId}',
         operationId: 'posSyncCleanup',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -252,7 +252,7 @@ class PosSyncController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/paypal/pos/product-log/{salesChannelId}',
+        path: '/paypal/pos/product-log/{salesChannelId}',
         operationId: 'posProductLog',
         tags: ['Admin Api', 'PayPal'],
         parameters: [

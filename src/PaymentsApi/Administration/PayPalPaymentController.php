@@ -85,7 +85,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/paypal/payment-details/{orderId}/{paymentId}',
+        path: '/paypal/payment-details/{orderId}/{paymentId}',
         operationId: 'paymentDetails',
         description: 'Loads the Payment details of the given PayPal ID',
         tags: ['Admin API', 'PayPal'],
@@ -128,7 +128,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}',
+        path: '/paypal/resource-details/{resourceType}/{resourceId}/{orderId}',
         operationId: 'resourceDetails',
         description: 'Loads the PayPal resource details of the given resource ID',
         tags: ['Admin API', 'PayPal'],
@@ -200,7 +200,7 @@ class PayPalPaymentController extends AbstractController
      * @deprecated tag:v10.0.0 - will be removed without replacement
      */
     #[OA\Post(
-        path: '/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}',
+        path: '/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}',
         operationId: 'paypalRefundPayment',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -276,7 +276,7 @@ class PayPalPaymentController extends AbstractController
      * @deprecated tag:v10.0.0 - will be removed without replacement
      */
     #[OA\Post(
-        path: '/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}',
+        path: '/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}',
         operationId: 'paypalCapturePayment',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -347,7 +347,7 @@ class PayPalPaymentController extends AbstractController
      * @deprecated tag:v10.0.0 - will be removed without replacement
      */
     #[OA\Post(
-        path: '/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}',
+        path: '/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}',
         operationId: 'paypalVoidPayment',
         tags: ['Admin Api', 'PayPal'],
         parameters: [

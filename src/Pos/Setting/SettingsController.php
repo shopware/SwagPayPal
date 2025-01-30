@@ -42,7 +42,7 @@ class SettingsController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/pos/validate-api-credentials',
+        path: '/_action/paypal/pos/validate-api-credentials',
         operationId: 'posValidateApiCredentials',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
             new OA\Property(
@@ -87,7 +87,7 @@ class SettingsController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/paypal/pos/fetch-information',
+        path: '/paypal/pos/fetch-information',
         operationId: 'posFetchInformation',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
             new OA\Property(
@@ -118,7 +118,7 @@ class SettingsController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/pos/clone-product-visibility',
+        path: '/_action/paypal/pos/clone-product-visibility',
         operationId: 'posCloneProductVisibility',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
             new OA\Property(
@@ -150,7 +150,7 @@ class SettingsController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/paypal/pos/product-count',
+        path: '/paypal/pos/product-count',
         operationId: 'posGetProductCounts',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
