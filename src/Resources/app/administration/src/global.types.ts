@@ -1,6 +1,6 @@
 import type Repository from 'src/core/data/repository.data';
 import type Criteria from 'src/core/data/criteria.data';
-import type { Entity } from 'src/types/entity';
+import type { Entity } from 'SwagPayPal/types/entity';
 import type { PropType as TPropType } from 'vue';
 import type SwagPaypalNotificationMixin from './mixin/swag-paypal-notification.mixin';
 import type SwagPaypalCredentialsLoaderMixin from './mixin/swag-paypal-credentials-loader.mixin';

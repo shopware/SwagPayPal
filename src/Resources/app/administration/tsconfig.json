@@ -25,7 +25,6 @@
     "paths": {
       "SwagPayPal/*": ["./src/*"],
       "src/*": [
-        "./src/*",
         "./../../../../../../../src/Administration/Resources/app/administration/src/*"
       ],
       "*": [

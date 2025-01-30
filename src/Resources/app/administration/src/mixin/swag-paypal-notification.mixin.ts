@@ -1,5 +1,4 @@
-import type * as PayPal from 'src/types';
-import type { HttpError } from "src/types";
+import type * as PayPal from 'SwagPayPal/types';
 
 /**
  * Options to handle a service error.
@@ -76,7 +75,7 @@ export default Shopware.Mixin.register('swag-paypal-notification', Shopware.Comp
          * Creates a message from a http error.
          * Can handle axios responses, plain object containing errors or an array of errors.
          */
-        createMessageFromError(httpError: PayPal.ServiceError | { errors?: HttpError[] }): string {
+        createMessageFromError(httpError: PayPal.ServiceError | { errors?: PayPal.HttpError[] }): string {
             const errors = (httpError as { errors?: PayPal.HttpError[] }).errors
                 ?? (httpError as PayPal.ServiceError)?.response?.data?.errors
                 ?? [];

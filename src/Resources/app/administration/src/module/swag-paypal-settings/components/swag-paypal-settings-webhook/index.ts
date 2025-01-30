@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 import template from './swag-paypal-settings-webhook.html.twig';
 import './swag-paypal-settings-webhook.scss';
 
