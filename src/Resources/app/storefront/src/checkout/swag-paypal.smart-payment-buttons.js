@@ -54,6 +54,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractSta
      * @return {Promise}
      */
     createOrder(product = 'spb') {
-        super.createOrder(product);
+        return super.createOrder(product);
     }
 }
