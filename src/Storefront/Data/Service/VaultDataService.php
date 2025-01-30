@@ -61,6 +61,9 @@ class VaultDataService
         return $struct;
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - Will be removed. Use `CustomerVaultTokenRoute::getVaultToken` instead
+     */
     public function getUserIdToken(SalesChannelContext $context): ?string
     {
         $customer = $context->getCustomer();

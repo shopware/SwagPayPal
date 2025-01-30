@@ -16,7 +16,6 @@ use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
-use Swag\PayPal\RestApi\V1\Api\Token;
 use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
 use Swag\PayPal\Storefront\Data\Service\VaultDataService;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
@@ -158,84 +157,5 @@ class VaultDataServiceTest extends TestCase
         static::assertNotNull($data);
         static::assertSame('test-identifier', $data->getIdentifier());
         static::assertSame('card', $data->getSnippetType());
-    }
-
-    public function testGetUserIdTokenWithGuestCustomer(): void
-    {
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->getCustomer()?->setGuest(true);
-
-        $service = new VaultDataService(
-            new StaticEntityRepository([]),
-            $this->createMock(PaymentMethodDataRegistry::class),
-            $this->createMock(TokenResourceInterface::class),
-        );
-
-        $token = $service->getUserIdToken($salesChannelContext);
-        static::assertNull($token);
-    }
-
-    public function testGetUserIdTokenWithExistingToken(): void
-    {
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->getCustomer()?->setGuest(false);
-
-        $token = new Token();
-        $token->setIdToken('test-id-token');
-        $tokenResource = $this->createMock(TokenResourceInterface::class);
-        $tokenResource
-            ->expects(static::once())
-            ->method('getUserIdToken')
-            ->with($salesChannelContext->getSalesChannelId(), 'token-customer')
-            ->willReturn($token);
-
-        $existingToken = new VaultTokenEntity();
-        $existingToken->setId(Uuid::randomHex());
-        $existingToken->setTokenCustomer('token-customer');
-
-        $repository = new StaticEntityRepository([static function (Criteria $criteria) use ($existingToken, $salesChannelContext): VaultTokenCollection {
-            static::assertInstanceOf(EqualsFilter::class, $criteria->getFilters()[0]);
-            static::assertSame('mainMapping.customerId', $criteria->getFilters()[0]->getField());
-            static::assertSame($salesChannelContext->getCustomerId(), $criteria->getFilters()[0]->getValue());
-
-            static::assertInstanceOf(EqualsFilter::class, $criteria->getFilters()[1]);
-            static::assertSame('mainMapping.paymentMethodId', $criteria->getFilters()[1]->getField());
-            static::assertSame($salesChannelContext->getPaymentMethod()->getId(), $criteria->getFilters()[1]->getValue());
-
-            return new VaultTokenCollection([$existingToken]);
-        }]);
-
-        $service = new VaultDataService(
-            $repository,
-            $this->createMock(PaymentMethodDataRegistry::class),
-            $tokenResource,
-        );
-
-        $token = $service->getUserIdToken($salesChannelContext);
-        static::assertSame('test-id-token', $token);
-    }
-
-    public function testGetUserIdTokenWithoutExistingToken(): void
-    {
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->getCustomer()?->setGuest(false);
-
-        $token = new Token();
-        $token->setIdToken('test-id-token');
-        $tokenResource = $this->createMock(TokenResourceInterface::class);
-        $tokenResource
-            ->expects(static::once())
-            ->method('getUserIdToken')
-            ->with($salesChannelContext->getSalesChannelId())
-            ->willReturn($token);
-
-        $service = new VaultDataService(
-            new StaticEntityRepository([new VaultTokenCollection()]),
-            $this->createMock(PaymentMethodDataRegistry::class),
-            $tokenResource,
-        );
-
-        $token = $service->getUserIdToken($salesChannelContext);
-        static::assertSame('test-id-token', $token);
     }
 }
