@@ -52,7 +52,7 @@
             "errorUnknown": "Unbekannter Fehler"
           },
           "status": {
-            "unknown": "Laden...",
+            "unknown": "Laden ...",
             "missing": "Fehlend",
             "invalid": "Registriert, aber mit abweichender Domain",
             "valid": "Gültig"
@@ -161,7 +161,7 @@
                 },
                 "merchantPayerId": {
                     "label": "PayPal-Händler-ID",
-                    "tooltipText": "Die PayPal-Händler-ID, die dem PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal Kontoeinstellungen)."
+                    "tooltipText": "Die PayPal-Händler-ID, die dem PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal-Kontoeinstellungen)."
                 },
                 "clientIdSandbox": {
                     "label": "Sandbox-Client-ID",
@@ -173,7 +173,7 @@
                 },
                 "merchantPayerIdSandbox": {
                     "label": "Sandbox-PayPal-Händler-ID",
-                    "tooltipText": "Die PayPal-Händler-ID, die dem Sandbox-PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal Kontoeinstellungen)."
+                    "tooltipText": "Die PayPal-Händler-ID, die dem Sandbox-PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal-Kontoeinstellungen)."
                 },
                 "sandbox": {
                     "label": "Sandbox aktivieren",
@@ -182,7 +182,7 @@
                 "button": {
                     "title": "Hole API-Zugangsdaten",
                     "titleSandbox": "Hole Sandbox-API-Zugangsdaten",
-                    "messageFetchedError": " Bitte versuche es erneut oder gebe die Zugangsdaten manuell ein."
+                    "messageFetchedError": "Bitte versuche es erneut oder gebe die Zugangsdaten manuell ein."
                 }
             },
             "behavior": {
