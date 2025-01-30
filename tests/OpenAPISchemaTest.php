@@ -124,6 +124,7 @@ class OpenAPISchemaTest extends TestCase
             $routes = \array_map(fn ($r) => $r->getArguments(), $routeAttributes);
             $routeMethods = \array_unique(\array_merge(...\array_column($routes, 'methods')));
             $routePaths = \array_column($routes, 'path');
+            $routePathsWithoutPrefix = \array_map(fn ($path) => \str_replace(['/api', '/store-api'], '', $path), $routePaths);
 
             if (!\in_array($annotation->method, $routeMethods, true)) {
                 $failures[] = $fqdn . ' was expected to have a method of "' . \implode('" or "', $routeMethods) . '", but found "' . $annotation->method . '" in OpenAPI Schema';
@@ -133,8 +134,8 @@ class OpenAPISchemaTest extends TestCase
                 }
             }
 
-            if (!\in_array($annotation->path, $routePaths, true)) {
-                $failures[] = $fqdn . ' was expected to have a path of "' . \implode('" or "', $routePaths) . '", but found "' . $annotation->path . '" in OpenAPI Schema';
+            if (!\in_array($annotation->path, $routePathsWithoutPrefix, true)) {
+                $failures[] = $fqdn . ' was expected to have a path of "' . \implode('" or "', $routePathsWithoutPrefix) . '", but found "' . $annotation->path . '" in OpenAPI Schema';
             }
         }
 

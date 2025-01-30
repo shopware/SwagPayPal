@@ -49,7 +49,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
     }
 
     #[OA\Post(
-        path: '/store-api/paypal/express/prepare-checkout',
+        path: '/paypal/express/prepare-checkout',
         operationId: 'preparePayPalExpressCheckout',
         description: 'Logs in a guest customer, with the data of a paypal order',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [new OA\Property(
