@@ -100,6 +100,23 @@ final class Settings
         self::CROSS_BORDER_BUYER_COUNTRY => null,
     ];
 
+    public const LIVE_CREDENTIAL_KEYS = [
+        Settings::CLIENT_ID,
+        Settings::CLIENT_SECRET,
+        Settings::MERCHANT_PAYER_ID,
+    ];
+
+    public const SANDBOX_CREDENTIAL_KEYS = [
+        Settings::CLIENT_ID_SANDBOX,
+        Settings::CLIENT_SECRET_SANDBOX,
+        Settings::MERCHANT_PAYER_ID_SANDBOX,
+    ];
+
+    public const CREDENTIAL_KEYS = [
+        ...self::LIVE_CREDENTIAL_KEYS,
+        ...self::SANDBOX_CREDENTIAL_KEYS,
+    ];
+
     private function __construct()
     {
     }

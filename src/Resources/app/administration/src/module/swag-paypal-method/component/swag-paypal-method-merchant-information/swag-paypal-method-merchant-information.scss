@@ -1,0 +1,29 @@
+@import "~scss/variables";
+
+.swag-paypal-merchant-information {
+    background-color: $color-gray-50;
+    border: 1px solid $color-gray-300;
+    border-radius: $border-radius-default;
+    padding: 32px;
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-row-gap: 18px;
+
+    &__email {
+        line-height: 24px;
+        font-weight: $font-weight-semi-bold;
+        font-size: $font-size-xs;
+        text-overflow: ellipsis;
+        text-wrap: nowrap;
+        overflow: hidden;
+    }
+
+    &__buttons {
+        grid-column: span 2;
+
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+}

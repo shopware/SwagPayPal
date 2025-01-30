@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 import type { RouteLocationRaw } from 'vue-router';
 import template from './swag-paypal-disputes-detail.html.twig';
 import './swag-paypal-disputes-detail.scss';
@@ -106,7 +106,10 @@ export default Shopware.Component.wrapComponentConfig({
         },
 
         handleError(errorResponse: PayPal.ServiceError) {
-            this.createNotificationFromError({ errorResponse, title: 'swag-paypal-disputes.list.errorTitle' });
+            this.createNotificationError({
+                title: this.$t('swag-paypal-disputes.list.errorTitle'),
+                message: this.createMessageFromError(errorResponse),
+            });
             this.isLoading = false;
         },
 

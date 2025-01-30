@@ -1,9 +1,6 @@
-export const LANDING_PAGES = ['LOGIN', 'BILLING', 'NO_PREFERENCE'] as const;
-export const BUTTON_COLORS = ['gold', 'blue', 'black', 'silver', 'white'] as const;
-export const BUTTON_SHAPES = ['rect', 'pill', 'sharp'] as const;
-export const INTENTS = ['CAPTURE', 'AUTHORIZE'] as const;
-export const COUNTRY_OVERRIDES = ['en-AU', 'de-DE', 'es-ES', 'fr-FR', 'en-GB', 'it-IT', 'en-US'] as const;
+import type { SYSTEM_CONFIG, LANDING_PAGES, BUTTON_COLORS, BUTTON_SHAPES, INTENTS, COUNTRY_OVERRIDES } from 'SwagPayPal/constant/swag-paypal-settings.constant';
 
+// @todo - Keys should be from SYSTEM_CONFIG
 export declare type SystemConfig = {
     'SwagPayPal.settings.clientId'?: string;
     'SwagPayPal.settings.clientSecret'?: string;
@@ -59,7 +56,7 @@ export declare type SystemConfig = {
 /**
  * @private
  */
-export const SystemConfigDefinition: Record<keyof SystemConfig, 'string' | 'boolean' | 'array'> = {
+export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'boolean' | 'array'> = {
     'SwagPayPal.settings.clientId': 'string',
     'SwagPayPal.settings.clientSecret': 'string',
     'SwagPayPal.settings.clientIdSandbox': 'string',

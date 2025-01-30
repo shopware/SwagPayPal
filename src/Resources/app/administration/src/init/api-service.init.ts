@@ -1,4 +1,3 @@
-import SwagPayPalApiCredentialsService from '../core/service/api/swag-paypal-api-credentials.service';
 import SwagPayPalPosSettingApiService from '../core/service/api/swag-paypal-pos-setting.api.service';
 import SwagPayPalPosApiService from '../core/service/api/swag-paypal-pos.api.service';
 import SwagPayPalPosWebhookRegisterService from '../core/service/api/swag-paypal-pos-webhook-register.service';
@@ -7,15 +6,11 @@ import SwagPayPalPaymentService from '../core/service/api/swag-paypal-payment.se
 import SwagPayPalOrderService from '../core/service/api/swag-paypal-order.service';
 import SwagPaypalPaymentMethodService from '../core/service/api/swag-paypal-payment-method.service';
 import SwagPayPalDisputeApiService from '../core/service/api/swag-paypal-dispute.api.service';
+import SwagPayPalSettingsService from '../core/service/api/swag-paypal-settings.service';
 
 const { Application } = Shopware;
 
 const initContainer = Application.getContainer('init');
-
-Application.addServiceProvider(
-    'SwagPayPalApiCredentialsService',
-    (container) => new SwagPayPalApiCredentialsService(initContainer.httpClient, container.loginService),
-);
 
 Application.addServiceProvider(
     'SwagPayPalPosSettingApiService',
@@ -55,4 +50,8 @@ Application.addServiceProvider(
 Application.addServiceProvider(
     'SwagPayPalDisputeApiService',
     (container) => new SwagPayPalDisputeApiService(initContainer.httpClient, container.loginService),
+);
+Application.addServiceProvider(
+    'SwagPayPalSettingsService',
+    (container) => new SwagPayPalSettingsService(initContainer.httpClient, container.loginService),
 );

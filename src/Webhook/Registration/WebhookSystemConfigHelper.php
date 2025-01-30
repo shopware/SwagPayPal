@@ -93,7 +93,7 @@ class WebhookSystemConfigHelper
     }
 
     /**
-     * @param string[] $salesChannelIds
+     * @param array<?string> $salesChannelIds
      *
      * @return \Throwable[]
      */

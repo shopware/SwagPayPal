@@ -23,7 +23,7 @@
         "@types/jest": "^29.5.14",
         "@vue/eslint-config-typescript": "^14.1.4",
         "eslint": "^9.16.0",
-        "eslint-import-resolver-webpack": "^0.13.9",
+        "eslint-import-resolver-typescript": "^3.7.0",
         "eslint-plugin-import": "^2.31.0",
         "eslint-plugin-internal-rules": "file:internal-rules",
         "eslint-plugin-jest": "^28.9.0",

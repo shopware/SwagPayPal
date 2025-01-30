@@ -1,0 +1,125 @@
+{
+  "swag-paypal": {
+    "errors": {
+      "UNKNOWN": "An unknown error occurred",
+      "SWAG_PAYPAL__API_INVALID_CREDENTIALS": "The API credentials are invalid",
+      "SWAG_PAYPAL__API_NOT_AVAILABLE": "PayPal services are currently unavailable. Please try again later.",
+      "SWAG_PAYPAL__INVALID_API_CREDENTIALS": "The API credentials are invalid"
+    },
+    "notifications": {
+      "save": {
+        "title": "PayPal Settings",
+        "webhookMessage": "The webhook could not be saved:<br>{message}",
+        "errorMessage": "Saving failed:<br>{message}"
+      },
+      "merchantInformation": {
+        "title": "PayPal Account",
+        "errorMessage": "Retrieve failed:<br>{message}"
+      },
+      "posError": {
+        "title": "Zettle POS"
+      }
+    }
+  },
+  "swag-paypal-onboarding-button": {
+    "sandbox": {
+      "title": "Connect sandbox account",
+      "changeTitle": "Connect different sandbox account",
+      "onboardingTitle": "Start PayPal sandbox onboarding"
+    },
+    "live": {
+      "title": "Connect PayPal account",
+      "changeTitle": "Connect different account",
+      "onboardingTitle": "Start PayPal onboarding",
+      "restartOnboardingTitle": "Restart PayPal onboarding"
+    }
+  },
+  "swag-paypal-setting": {
+    "label": {
+      "clientId": "Client ID",
+      "clientSecret": "Client secret",
+      "merchantPayerId": "PayPal Merchant ID",
+      "clientIdSandbox": "Sandbox client ID",
+      "clientSecretSandbox": "Sandbox client secret",
+      "merchantPayerIdSandbox": "Sandbox PayPal Merchant ID",
+      "sandbox": "Enable sandbox",
+      "intent": "Payment acquisition",
+      "submitCart": "Submit cart",
+      "brandName": "Your own brand name on PayPal page",
+      "landingPage": "PayPal landing page",
+      "sendOrderNumber": "Submit order number",
+      "orderNumberPrefix": "Order number prefix",
+      "orderNumberSuffix": "Order number suffix",
+      "excludedProductIds": "Excluded products",
+      "excludedProductStreamIds": "Excluded dynamic product groups",
+      "ecsDetailEnabled": "'PayPal Checkout' on detail page",
+      "ecsCartEnabled": "'PayPal Checkout' on cart",
+      "ecsOffCanvasEnabled": "'PayPal Checkout' on off-canvas cart",
+      "ecsLoginEnabled": "'PayPal Checkout' on login page",
+      "ecsListingEnabled": "'PayPal Checkout' on listing pages",
+      "ecsButtonColor": "Button color",
+      "ecsButtonShape": "Button shape",
+      "ecsSubmitCart": "Submit cart",
+      "ecsButtonLanguageIso": "Button locale",
+      "ecsShowPayLater":  "Display 'Pay Later' button next to the 'PayPal Checkout' button",
+      "installmentBannerDetailPageEnabled": "'Pay Later' banner on detail page",
+      "installmentBannerCartEnabled": "'Pay Later' banner on cart",
+      "installmentBannerOffCanvasCartEnabled": "'Pay Later' banner on off-canvas cart",
+      "installmentBannerLoginPageEnabled": "'Pay Later' banner on login page",
+      "installmentBannerFooterEnabled": "'Pay Later' banner on footer",
+      "acdcForce3DS": "Block payments from non-3DS countries",
+      "puiCustomerServiceInstructions": "Customer service instructions for Pay upon invoice",
+      "spbCheckoutEnabled": "Enable Smart Payment Buttons",
+      "spbButtonLanguageIso": "Button locale",
+      "spbAlternativePaymentMethodsEnabled": "Enable the alternative payment methods for the Smart Payment Buttons.",
+      "spbShowPayLater": "Display 'Pay Later' button next to PayPal button",
+      "spbButtonColor": "Button color",
+      "spbButtonShape": "Button shape",
+      "vaultingEnabledWallet": "Enable Vaulting for PayPal payments",
+      "vaultingEnabledACDC": "Enable Vaulting for credit and debit cards",
+      "vaultingEnabledVenmo": "Enable Vaulting for Venmo payments",
+      "crossBorderMessagingEnabled" : "Enable cross-border localization of Pay Later message",
+      "crossBorderBuyerCountry" : "Localization"
+    },
+    "helpText": {
+      "clientId": "The REST API client ID is used to authenticate this plugin with the PayPal API.",
+      "clientSecret": "The REST API client secret is used to authenticate this plugin with the PayPal API.",
+      "merchantPayerId": "The PayPal Merchant ID assigned to your PayPal account (see Business Information in PayPal account settings).",
+      "clientIdSandbox": "The REST API client ID is used while testing to authenticate this plugin with the PayPal API.",
+      "clientSecretSandbox": "The REST API client secret is used while testing to authenticate this plugin with the PayPal API.",
+      "merchantPayerIdSandbox": "The PayPal Merchant ID assigned to your PayPal sandbox account (see Business Information in PayPal account settings).",
+      "sandbox": "Enable, if you want to test the PayPal integration.",
+      "submitCart": "If this option is active, cart data will be submitted to PayPal at checkout.",
+      "brandName": "This text will be displayed as the brand name on the PayPal payment page.",
+      "sendOrderNumber": "If this option is active, the order number will be submitted to PayPal as invoice ID at checkout.",
+      "orderNumberPrefix": "This text is placed before the original order number (e.g MyShop_SW20001). This helps to identify the shop where the payment was made. You can find it as invoice ID in your PayPal dashboard.",
+      "orderNumberSuffix": "This text is placed after the original order number (e.g SW20001_MyShop). This helps to identify the shop where the payment was made. You can find it as invoice ID in your PayPal dashboard.",
+      "excludedProductIds": "Products selected here cannot be purchased with PayPal.",
+      "excludedProductStreamIds": "Products included in the dynamic product groups selected here cannot be purchased with PayPal.",
+      "ecsDetailEnabled": "If this option is active, the Express Checkout button will be shown on each product detail page.",
+      "ecsCartEnabled": "If this option is active, the Express Checkout button will be shown on the cart.",
+      "ecsOffCanvasEnabled": "If this option is active, the Express Checkout button will be shown on the off-canvas cart.",
+      "ecsLoginEnabled": "If this option is active, the Express Checkout button will be shown on the login and register page.",
+      "ecsListingEnabled": "If this option is active, the Express Checkout button will be shown on listing pages.",
+      "ecsSubmitCart": "If this option is active, the cart will be submitted to PayPal for Express orders.",
+      "ecsButtonLanguageIso": "If not set, the sales channel language will be used.",
+      "ecsShowPayLater": "The 'Pay Later' button will be displayed on the same pages and in the same design as the 'PayPal Checkout' button.",
+      "installmentBannerDetailPageEnabled": "If this option is active, the 'Pay Later' banner will be shown on each product detail page.",
+      "installmentBannerCartEnabled": "If this option is active, the 'Pay Later' banner will be shown on the cart.",
+      "installmentBannerOffCanvasCartEnabled": "If this option is active, the 'Pay Later' banner will be shown on the off-canvas cart.",
+      "installmentBannerLoginPageEnabled": "If this option is active, the 'Pay Later' banner will be shown on the login and register page.",
+      "installmentBannerFooterEnabled": "If this option is active, the 'Pay Later' banner will be shown on the footer.",
+      "acdcForce3DS": "PayPal checks whether 3DS (Strong Customer Authentication) is required based on the credit or debit card presented. Setting this option will reject payment attempts without a 3DS check.",
+      "puiCustomerServiceInstructions": "These instructions will be submitted to PayPal & RatePay and shown in emails for the customer.",
+      "spbButtonLanguageIso": "If not set, the sales channel language will be used.",
+      "spbAlternativePaymentMethodsEnabled": "Alternative payment methods are credit- and debit cards and more."
+    },
+    "hintText": {
+      "landingPage": {
+        "LOGIN": "Login: The PayPal site displays a login screen as landing page.",
+        "GUEST_CHECKOUT": "Guest Checkout: The PayPal site displays a form for payment information, the customer does not need to log in.",
+        "NO_PREFERENCE": "No preference: PayPal decides which page is shown, depending on the previous interaction of the customer with PayPal."
+      }
+    }
+  }
+}

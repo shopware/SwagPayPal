@@ -39,19 +39,8 @@ export default tseslint.config(
         settings: {
             'import/resolver': {
                 node: {},
-                webpack: {
-                    config: {
-                        // Sync with webpack.config.js
-                        resolve: {
-                            extensions: ['.js', '.ts', '.vue', '.json', '.sass', '.twig'],
-                            alias: {
-                                SwagPayPal: resolve('./src'),
-                                src: `${process.env.ADMIN_PATH}/src`,
-                                '@vue/test-utils': `${process.env.ADMIN_PATH}/node_modules/@vue/test-utils`,
-                                vue: `${process.env.ADMIN_PATH}/node_modules/@vue/compat/dist/vue.cjs.js`,
-                            },
-                        },
-                    },
+                typescript: {
+                    project: './tsconfig.json',
                 },
             },
         },
@@ -190,6 +179,7 @@ export default tseslint.config(
             'jest/prefer-to-contain': 'error',
             'jest/prefer-to-have-length': 'error',
             'jest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
+            '@typescript-eslint/no-unsafe-member-access': 'off', // Needed for any/VueComponent typed wrappers
         },
     },
     {

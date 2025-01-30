@@ -1,0 +1,114 @@
+{
+  "swag-paypal": {
+    "notifications": {
+      "test": {
+        "title": "PayPal API credentials",
+        "errorMessage": "The validation failed:<br>{message}",
+        "successMessage": "The credentials are valid."
+      },
+      "webhook": {
+        "title": "PayPal Webhook",
+        "errorMessage": "Failed to refresh webhook:<br>{message}",
+        "successMessage": "The webhook has been refreshed."
+      }
+    }
+  },
+  "swag-paypal-settings": {
+    "header": "PayPal",
+    "module": {
+      "title": "PayPal",
+      "description": "PayPal settings"
+    },
+    "tabs": {
+      "general": "General",
+      "storefront": "Storefront presentation",
+      "advanced": "Advanced"
+    },
+    "options": {
+      "intent": {
+        "CAPTURE": "Automatic payment collection (intent CAPTURE)",
+        "AUTHORIZE": "Manual payment collection (intent AUTHORIZE)"
+      },
+      "landingPage": {
+        "LOGIN": "Login",
+        "GUEST_CHECKOUT": "Guest Checkout",
+        "NO_PREFERENCE": "No preference"
+      },
+      "buttonShape": {
+        "sharp": "Rectangular with sharp corners",
+        "pill": "Round",
+        "rect": "Rectangular with rounded corners"
+      },
+      "buttonColor": {
+        "blue": "Blue",
+        "black": "Black",
+        "gold": "Gold (recommended)",
+        "silver": "Silver",
+        "white": "White"
+      }
+    },
+    "credentialsLive": {
+      "title": "Live API credentials",
+      "test": "Test"
+    },
+    "credentialsSandbox": {
+      "title": "Sandbox API credentials",
+      "test": "Test"
+    },
+    "behavior": {
+      "title": "Behaviour"
+    },
+    "vaulting": {
+      "title": "Vaulting",
+      "descriptionTitle": "One-time Paypal checkout",
+      "descriptionText": "Vaulting a PayPal account will allow you to charge the account in the future without requiring your customer to be present during the transaction or re-authenticate with PayPal when they are present during the transaction.",
+      "activeButtonLabel": "Activate Vaulting"
+    },
+    "acdc": {
+      "title": "Credit- or debit card"
+    },
+    "pui": {
+      "title": "Pay upon invoice"
+    },
+    "express": {
+      "title": "Express Checkout Shortcut",
+      "subtitle": "Express Checkouts increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated. ",
+      "alertMessage": "Double opt-in for guests is activated in one of your Sales Channels. This feature is not compatible with PayPal Express Shortcut buttons. Customers who sign up via the Express Checkout Shortcut buttons won't receive double opt-in verification emails."
+    },
+    "installment": {
+      "title": "'Pay Later' banner",
+      "subtitle": "Banners increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated."
+    },
+    "spb": {
+      "title": "Smart Payment Buttons"
+    },
+    "webhook": {
+      "title": "Webhook",
+      "info": "The webhook is used for updating the status of a transaction asynchronously. Incorrectly registered webhooks, e.g. on a different or not publicly available server, may result in unconfirmed transactions, regardless whether the transaction has been processed by PayPal.",
+      "buttonRefresh": "Refresh webhook",
+      "refreshFailed": "Failed to refresh webhook",
+      "fetchFailed": "Failed to fetch webhook status",
+      "status": {
+        "unknown": "Loading...",
+        "missing": "Not registered",
+        "invalid": "Registered, but possible domain mismatch",
+        "valid": "Registered"
+      }
+    },
+    "crossBorder": {
+      "title": "Pay Later cross-border messaging",
+      "warning": "Please contact your PayPal representative to enable this feature for your account.",
+      "info": "Pay Later messaging is a feature that allows you to display a Pay Later message in the language of the customer. This feature is only available for certain countries. {0}",
+      "buyerCountryAuto": "Automatic determination",
+      "buyerCountryOverride": "Localization"
+    }
+  },
+  "swag-paypal-settings-sales-channel-switch": {
+    "description": "Click this button to enable PayPal and select it as default in the selected Sales Channel",
+    "label": "Set PayPal as default"
+  },
+  "swag-paypal-settings-locale-select": {
+    "invalid": "The provided locale is invalid. Please choose one from the list.",
+    "automatic": "Automatic (recommended)"
+  }
+}
