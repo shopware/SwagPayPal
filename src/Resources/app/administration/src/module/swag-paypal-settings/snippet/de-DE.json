@@ -2,7 +2,7 @@
   "swag-paypal": {
     "notifications": {
       "test": {
-        "title": "PayPal API-Zugangsdaten",
+        "title": "PayPal-API-Zugangsdaten",
         "errorMessage": "Die Validation ist fehlgeschlagen:<br>{message}",
         "successMessage": "Die Zugangsdaten sind gültig."
       },
@@ -89,7 +89,7 @@
       "refreshFailed": "Aktualisierung des Webhooks ist fehlgeschlagen",
       "fetchFailed": "Prüfen des Webhooks ist fehlgeschlagen",
       "status": {
-        "unknown": "Laden...",
+        "unknown": "Laden ...",
         "missing": "Fehlend",
         "invalid": "Registriert, aber mit abweichender Domain",
         "valid": "Gültig"
