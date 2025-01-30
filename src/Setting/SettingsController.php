@@ -42,7 +42,7 @@ class SettingsController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/_action/paypal/validate-api-credentials',
+        path: '/_action/paypal/validate-api-credentials',
         operationId: 'validateApiCredentials',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -104,7 +104,7 @@ class SettingsController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/test-api-credentials',
+        path: '/_action/paypal/test-api-credentials',
         operationId: 'testApiCredentials',
         tags: ['Admin Api', 'PayPal'],
         responses: [new OA\Response(
@@ -161,7 +161,7 @@ class SettingsController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/get-api-credentials',
+        path: '/_action/paypal/get-api-credentials',
         operationId: 'getApiCredentials',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
             new OA\Property(property: 'authCode', type: 'string'),
@@ -190,7 +190,7 @@ class SettingsController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/_action/paypal/merchant-information',
+        path: '/_action/paypal/merchant-information',
         operationId: 'getMerchantInformation',
         tags: ['Admin Api', 'PayPal'],
         parameters: [
@@ -219,7 +219,7 @@ class SettingsController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/save-settings',
+        path: '/_action/paypal/save-settings',
         operationId: 'saveSettings',
         tags: ['Admin Api', 'PayPal'],
         responses: [new OA\Response(

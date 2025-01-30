@@ -42,7 +42,7 @@ class WebhookController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/_action/paypal/webhook/status/{salesChannelId}',
+        path: '/_action/paypal/webhook/status/{salesChannelId}',
         operationId: 'getWebhookStatus',
         tags: ['Admin Api', 'SwagPayPalWebhook'],
         parameters: [new OA\Parameter(
@@ -69,7 +69,7 @@ class WebhookController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/webhook/register/{salesChannelId}',
+        path: '/_action/paypal/webhook/register/{salesChannelId}',
         operationId: 'registerWebhook',
         tags: ['Admin Api', 'SwagPayPalWebhook'],
         parameters: [new OA\Parameter(
@@ -96,7 +96,7 @@ class WebhookController extends AbstractController
     }
 
     #[OA\Delete(
-        path: '/api/_action/paypal/webhook/deregister/{salesChannelId}',
+        path: '/_action/paypal/webhook/deregister/{salesChannelId}',
         operationId: 'deregisterWebhook',
         tags: ['Admin Api', 'SwagPayPalWebhook'],
         parameters: [new OA\Parameter(
@@ -123,7 +123,7 @@ class WebhookController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/webhook/execute',
+        path: '/_action/paypal/webhook/execute',
         operationId: 'executeWebhook',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(ref: Webhook::class)),
         tags: ['Admin Api', 'SwagPayPalPosWebhook'],
