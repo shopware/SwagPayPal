@@ -48,7 +48,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/paypal/payment-details/{orderId}/{paymentId}',
+        path: '/paypal/payment-details/{orderId}/{paymentId}',
         operationId: 'paymentDetails',
         description: 'Loads the Payment details of the given PayPal ID',
         tags: ['Admin API', 'PayPal'],
@@ -91,7 +91,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     #[OA\Get(
-        path: '/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}',
+        path: '/paypal/resource-details/{resourceType}/{resourceId}/{orderId}',
         operationId: 'resourceDetails',
         description: 'Loads the PayPal resource details of the given resource ID',
         tags: ['Admin API', 'PayPal'],
