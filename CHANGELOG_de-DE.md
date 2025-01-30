@@ -1,3 +1,6 @@
+# 8.6.6
+- PPI-1044 - Verbesserte Kompatibilität von Vaulting mit der Store-API und Headless
+
 # 8.6.5
 - PPI-1025 - Verbessert die Performance des Ratenzahlungsbanners in der Storefront
 - PPI-1045 - Behebt ein Problem, bei dem in manchen Fällen die Zahlung nicht erstattbar war

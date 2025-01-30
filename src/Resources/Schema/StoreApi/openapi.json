@@ -166,6 +166,33 @@
                 }
             }
         },
+        "/paypal/vault-token": {
+            "get": {
+                "tags": [
+                    "Store API",
+                    "PayPal"
+                ],
+                "description": "Tries to get the customer vault token",
+                "operationId": "getPayPalCustomerVaultToken",
+                "responses": {
+                    "200": {
+                        "description": "The customer vault token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/paypal/payment-method-eligibility": {
             "post": {
                 "tags": [
