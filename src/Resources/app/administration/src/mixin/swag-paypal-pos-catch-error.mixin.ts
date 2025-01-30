@@ -9,27 +9,38 @@ export default Shopware.Mixin.register('swag-paypal-pos-catch-error', Shopware.C
         /**
          * Creates a notification, if an error has been returned
          */
-        catchError(snippet: string, errorResponse: PayPal.ServiceError) {
-            const formatMessage = (message: string, error: PayPal.HttpError) => {
-                message = snippet ? this.$tc(snippet) : message;
+        catchError(snippet: null | string, errorResponse: PayPal.ServiceError) {
+            const errors = errorResponse?.response?.data?.errors ?? [];
+            const errorMessage = errors.map((error) => {
+                let message = '';
 
                 const params = error.meta?.parameters;
                 if (params) {
                     if (params.salesChannelIds) {
-                        message += `: <br>${params.salesChannelIds}`;
+                        message += `<br>${params.salesChannelIds}`;
                     } else if (params.message) {
-                        message += `: ${params.message} (${params.name ?? ''})`;
+                        message += `${params.message} (${params.name ?? ''})`;
                     }
 
                     if (params.name) {
-                        message += `: ${params.name}`;
+                        if (message) {
+                            message += ': ';
+                        }
+
+                        message += `${params.name}`;
                     }
                 }
 
-                return message;
-            };
+                message ||= this.createMessageFromError({ errors: [error] });
 
-            this.createNotificationFromError({ errorResponse, formatMessage });
+                return message;
+            }).join('<br>');
+
+
+            this.createNotificationError({
+                title: this.$t('swag-paypal.notifications.posError.title'),
+                message: (snippet ? this.$t(snippet) + ': ' : '') + errorMessage,
+            });
         },
     },
 }));

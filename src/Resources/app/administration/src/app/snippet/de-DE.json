@@ -11,6 +11,13 @@
         "title": "PayPal Einstellungen",
         "webhookMessage": "Der Webhook konnte nicht gespeichert werden:<br>{message}",
         "errorMessage": "Speicherung fehlgeschlagen:<br>{message}"
+      },
+      "merchantInformation": {
+        "title": "PayPal Account",
+        "errorMessage": "Abrufen fehlgeschlagen:<br>{message}"
+      },
+      "posError": {
+        "title": "Zettle POS"
       }
     }
   },

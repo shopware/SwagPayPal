@@ -2,7 +2,7 @@ import type * as PayPal from 'SwagPayPal/types';
 
 export default Shopware.Mixin.register('swag-paypal-merchant-information', Shopware.Component.wrapComponentConfig({
     inject: [
-        'SwagPayPalApiCredentialsService',
+        'SwagPayPalSettingsService',
     ],
 
     mixins: [
@@ -40,10 +40,15 @@ export default Shopware.Mixin.register('swag-paypal-merchant-information', Shopw
                 return;
             }
 
-            const merchantInformation = await this.SwagPayPalApiCredentialsService
+            const merchantInformation = await this.SwagPayPalSettingsService
                 .getMerchantInformation(salesChannel)
-                .catch((errorResponse: PayPal.ServiceError) => {
-                    this.createNotificationFromError({ errorResponse });
+                .catch((error: PayPal.ServiceError) => {
+                    this.createNotificationError({
+                        title: this.$t('swag-paypal.notifications.merchantInformation.title'),
+                        message: this.$t('swag-paypal.notifications.merchantInformation.errorMessage', {
+                            message: this.createMessageFromError(error),
+                        }),
+                    });
 
                     return null;
                 });

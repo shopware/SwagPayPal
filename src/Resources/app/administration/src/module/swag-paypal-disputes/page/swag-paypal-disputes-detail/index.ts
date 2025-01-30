@@ -106,7 +106,10 @@ export default Shopware.Component.wrapComponentConfig({
         },
 
         handleError(errorResponse: PayPal.ServiceError) {
-            this.createNotificationFromError({ errorResponse, title: 'swag-paypal-disputes.list.errorTitle' });
+            this.createNotificationError({
+                title: this.$t('swag-paypal-disputes.list.errorTitle'),
+                message: this.createMessageFromError(errorResponse),
+            });
             this.isLoading = false;
         },
 

@@ -75,12 +75,14 @@ export default Shopware.Mixin.register('swag-paypal-notification', Shopware.Comp
          * Creates a message from a http error.
          * Can handle axios responses, plain object containing errors or an array of errors.
          */
-        createMessageFromError(httpError: PayPal.ServiceError&{ errors?: PayPal.HttpError[] }): string {
-            const errors = httpError.errors ?? httpError?.response?.data?.errors ?? [];
+        createMessageFromError(httpError: PayPal.ServiceError | { errors?: PayPal.HttpError[] }): string {
+            const errors = (httpError as { errors?: PayPal.HttpError[] }).errors
+                ?? (httpError as PayPal.ServiceError)?.response?.data?.errors
+                ?? [];
 
             const messages = errors.map((error) => {
                 const message = typeof error.meta?.parameters?.message === 'string'
-                    ? error.meta.parameters.message
+                    ? error.meta.parameters.message || error.detail
                     : error.detail;
 
                 const snippet = `swag-paypal.errors.${error.code}`;
