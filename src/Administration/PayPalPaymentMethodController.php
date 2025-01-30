@@ -30,12 +30,12 @@ class PayPalPaymentMethodController extends AbstractController
     }
 
     #[OA\Post(
-        path: '/api/_action/paypal/saleschannel-default',
+        path: '/_action/paypal/saleschannel-default',
         operationId: 'setPayPalAsDefault',
-        description: 'Sets PayPal as the default payment method for a given Saleschannel, or all.',
+        description: 'Sets PayPal as the default payment method for a given SalesChannel, or all.',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [new OA\Property(
             property: 'salesChannelId',
-            description: 'The id of the Saleschannel where PayPal should be set as the default payment method. Set to null to set PayPal as default for every Saleschannel.',
+            description: 'The id of the SalesChannel where PayPal should be set as the default payment method. Set to null to set PayPal as default for every Saleschannel.',
             type: 'string',
             nullable: true
         )])),

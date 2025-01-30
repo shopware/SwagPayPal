@@ -69,7 +69,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
      * @throws CustomerNotLoggedInException
      */
     #[OA\Post(
-        path: '/store-api/paypal/create-order',
+        path: '/paypal/create-order',
         operationId: 'createPayPalOrder',
         description: 'Creates a PayPal order from the existing cart or an order',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [

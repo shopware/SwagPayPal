@@ -42,7 +42,7 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
      * @throws ShopwareHttpException
      */
     #[OA\Get(
-        path: '/store-api/paypal/pui/payment-instructions/{transactionId}',
+        path: '/paypal/pui/payment-instructions/{transactionId}',
         operationId: 'getPUIPaymentInstructions',
         description: 'Tries to get payment instructions for PUI payments',
         tags: ['Store API', 'PayPal'],
