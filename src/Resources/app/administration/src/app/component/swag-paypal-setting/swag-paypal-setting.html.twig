@@ -39,6 +39,19 @@
                 </template>
             </sw-single-select>
 
+            <mt-password-field
+                v-else-if="type === 'password'"
+                v-bind="formAttrs"
+                :name="path"
+                :disabled="props.isInherited || disabled"
+                :model-value="props.currentValue"
+                @update:model-value="props.updateCurrentValue"
+            >
+                <template v-if="attrs.hasOwnProperty('hintText')" #hint>
+                    {{ attrs.hintText }}
+                </template>
+            </mt-password-field>
+
             <mt-text-field
                 v-else-if="type === 'string'"
                 v-bind="formAttrs"
