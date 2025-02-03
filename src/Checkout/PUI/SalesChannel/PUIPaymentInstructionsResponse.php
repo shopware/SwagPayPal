@@ -12,6 +12,9 @@ use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\StoreApiResponse;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 
+/**
+ * @extends StoreApiResponse<ArrayStruct<string, string>>
+ */
 #[Package('checkout')]
 class PUIPaymentInstructionsResponse extends StoreApiResponse
 {
