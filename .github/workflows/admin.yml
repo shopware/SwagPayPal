@@ -2,7 +2,7 @@ name: Admin
 on:
   push:
     branches:
-      - trunk
+      - 6.6.x
   pull_request:
     paths:
       - src/Resources/app/administration/**/*

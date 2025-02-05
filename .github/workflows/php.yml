@@ -3,7 +3,7 @@ name: PHP checks
 on:
   push:
     branches:
-      - trunk
+      - 6.6.x
   pull_request:
     paths:
       - bin/*.php
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        PLATFORM_BRANCH: ["v6.6.0.0", "trunk"]
+        PLATFORM_BRANCH: ["v6.6.0.0", "6.6.x"]
       fail-fast: false
     steps:
       - name: Checkout SwagPayPal
