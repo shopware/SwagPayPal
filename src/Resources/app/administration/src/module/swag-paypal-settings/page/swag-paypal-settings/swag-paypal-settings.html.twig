@@ -9,10 +9,11 @@
 
     <template #smart-bar-actions>
         <sw-button-process
-            :value="savingSettings === 'success'"
+            :process-success="savingSettings === 'success'"
             variant="primary"
             :is-loading="savingSettings === 'loading'"
             :disabled="savingSettings === 'loading' || settingsStore.isLoading || !acl.can('swag_paypal.editor')"
+            @update:process-success="testCredentials = 'none'"
             @click="saveSettings"
         >
             {{ $t('global.default.save') }}
