@@ -9,8 +9,6 @@ namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
-use Swag\PayPal\RestApi\V1\Api\Capture;
-use Swag\PayPal\RestApi\V1\Api\DoVoid;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Authorization;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 
@@ -34,36 +32,5 @@ class AuthorizationResource
         );
 
         return (new Authorization())->assign($response);
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    public function capture(string $authorizationId, Capture $capture, string $salesChannelId): Capture
-    {
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
-            \sprintf('%s/%s/capture', RequestUriV1::AUTHORIZATION_RESOURCE, $authorizationId),
-            $capture
-        );
-
-        $capture->assign($response);
-
-        return $capture;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    public function void(string $authorizationId, string $salesChannelId): DoVoid
-    {
-        $doVoid = new DoVoid();
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
-            \sprintf('%s/%s/void', RequestUriV1::AUTHORIZATION_RESOURCE, $authorizationId),
-            $doVoid
-        );
-
-        $doVoid->assign($response);
-
-        return $doVoid;
     }
 }

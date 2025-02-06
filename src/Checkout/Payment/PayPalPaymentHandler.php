@@ -26,7 +26,6 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
-use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -38,21 +37,10 @@ use Symfony\Component\HttpFoundation\Request;
 class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, RecurringPaymentHandlerInterface
 {
     public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
-    public const PAYPAL_REQUEST_PARAMETER_PAYER_ID = 'PayerID';
     public const PAYPAL_REQUEST_PARAMETER_PAYMENT_ID = 'paymentId';
     public const PAYPAL_REQUEST_PARAMETER_TOKEN = 'token';
     public const PAYPAL_EXPRESS_CHECKOUT_ID = 'isPayPalExpressCheckout';
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
 
     public const FINALIZED_ORDER_TRANSACTION_STATES = [
         OrderTransactionStates::STATE_PAID,
@@ -65,7 +53,6 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
     public function __construct(
         private readonly OrderTransactionStateHandler $orderTransactionStateHandler,
         private readonly PayPalHandler $payPalHandler,
-        private readonly PlusPuiHandler $plusPuiHandler,
         private readonly EntityRepository $stateMachineStateRepository,
         private readonly LoggerInterface $logger,
         private readonly SettingsValidationServiceInterface $settingsValidationService,
@@ -96,10 +83,6 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
 
             if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID) || $dataBag->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
                 return $this->payPalHandler->handlePreparedOrder($transaction, $dataBag, $salesChannelContext);
-            }
-
-            if ($dataBag->getBoolean(self::PAYPAL_PLUS_CHECKOUT_ID)) {
-                return $this->plusPuiHandler->handlePlusPayment($transaction, $dataBag, $salesChannelContext, $customer);
             }
 
             return $this->payPalHandler->handlePayPalOrder($transaction, $dataBag, $salesChannelContext);
@@ -144,33 +127,10 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
 
             $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-            $context = $salesChannelContext->getContext();
-
-            $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
-
             $isExpressCheckout = $request->query->getBoolean(self::PAYPAL_EXPRESS_CHECKOUT_ID);
             $isSPBCheckout = $request->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ID);
-            $isPlus = $request->query->getBoolean(self::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER);
 
-            $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
-
-            if (\is_string($paymentId)) {
-                $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
-                if (!\is_string($payerId)) {
-                    throw RoutingException::missingRequestParameter(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
-                }
-
-                $this->plusPuiHandler->handleFinalizePayment(
-                    $transaction,
-                    $salesChannelId,
-                    $context,
-                    $paymentId,
-                    $payerId,
-                    $partnerAttributionId
-                );
-
-                return;
-            }
+            $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout);
 
             $token = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
             if (!\is_string($token)) {
@@ -216,7 +176,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
         }
     }
 
-    private function getPartnerAttributionId(bool $isECS, bool $isSPB, bool $isPlus): string
+    private function getPartnerAttributionId(bool $isECS, bool $isSPB): string
     {
         if ($isECS) {
             return PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT;
@@ -224,10 +184,6 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, Recur
 
         if ($isSPB) {
             return PartnerAttributionId::SMART_PAYMENT_BUTTONS;
-        }
-
-        if ($isPlus) {
-            return PartnerAttributionId::PAYPAL_PLUS;
         }
 
         return PartnerAttributionId::PAYPAL_CLASSIC;

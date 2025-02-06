@@ -11,8 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\RestApi\V1\Api\Refund;
-use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\CaptureResource;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 
@@ -35,14 +33,6 @@ class CaptureResourceTest extends TestCase
         $captureArray = \json_decode($capture, true);
 
         static::assertTrue($captureArray['is_final_capture']);
-    }
-
-    public function testRefund(): void
-    {
-        $refund = new Refund();
-        $refundResponse = $this->createCaptureResource()->refund('refundId', $refund, TestDefaults::SALES_CHANNEL);
-
-        static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $refundResponse->getState());
     }
 
     private function createCaptureResource(): CaptureResource

@@ -2,14 +2,8 @@ import HttpClient from 'src/service/http-client.service';
 import DomAccess from 'src/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
-import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
 export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractButtons {
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    static scriptLoading = new SwagPayPalScriptLoading();
-
     static options = {
         ...super.options,
         buttonColor: 'gold',

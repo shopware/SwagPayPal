@@ -1,6 +1,5 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import { loadScript } from '@paypal/paypal-js';
-import SwagPayPalScriptLoading from './swag-paypal.script-loading';
 
 const availableAPMs = [
     'card',
@@ -17,11 +16,6 @@ const availableAPMs = [
 ];
 
 export default class SwagPayPalScriptBase extends Plugin {
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    static scriptLoading = new SwagPayPalScriptLoading();
-
     static options = {
         /**
          * This option holds the client id specified in the settings
@@ -155,8 +149,6 @@ export default class SwagPayPalScriptBase extends Plugin {
         } else {
             await wrapper();
         }
-
-        this._createScriptLegacy(callback);
     }
 
     async _awaitVisibility(callback) {
@@ -225,22 +217,5 @@ export default class SwagPayPalScriptBase extends Plugin {
         }
 
         return config;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    callCallbacks() {
-        this.constructor.scriptLoading.callbacks.forEach((callback) => {
-            SwagPayPalScriptBase.scriptPromises[this.scriptOptionsHash]
-                .then((paypal) => callback.call(this, paypal));
-        });
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    _createScriptLegacy(callback) {
-        this.constructor.scriptLoading.callbacks.push(callback);
     }
 }

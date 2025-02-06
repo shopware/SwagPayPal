@@ -66,10 +66,6 @@
             "confirmPageHint": "Your payment has been created. Please complete it, by confirming your order.",
             "description": "Pay easy, fast and secure - Please choose one of these payment methods on the confirm page."
         },
-        "plus": {
-            "paymentNameOverwrite": "PayPal, direct debit or credit card",
-            "paymentDescriptionExtension": "Payment by direct debit or credit card is possible without a PayPal account."
-        },
         "cookie": {
             "name": "PayPal payments",
             "googlePay": "Google Pay payments"

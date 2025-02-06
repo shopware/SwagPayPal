@@ -1,4 +1,3 @@
-import './component/swag-paypal-payment-actions';
 import './component/swag-paypal-payment-actions-v2';
 import './component/swag-paypal-payment-details-v1';
 import './component/swag-paypal-payment-details-v2';

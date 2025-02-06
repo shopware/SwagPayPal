@@ -10,15 +10,11 @@ namespace Swag\PayPal\Test\RestApi\V1\Resource;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
-use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 
 /**
@@ -37,70 +33,6 @@ class PaymentResourceTest extends TestCase
 
     public const SALE_WITH_REFUND_PAYMENT_ID = 'testSaleWithRefundPaymentId';
     private const TEST_PAYMENT_ID = 'testPaymentId';
-
-    public function testCreate(): void
-    {
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $paymentTransaction = $this->createPaymentTransactionStruct();
-        $payment = $this->createPaymentBuilder($this->createDefaultSystemConfig())->getPayment($paymentTransaction, $salesChannelContext);
-        $createdPayment = $this->createPaymentResource()->create(
-            $payment,
-            $salesChannelContext->getSalesChannel()->getId(),
-            PartnerAttributionId::PAYPAL_CLASSIC
-        );
-
-        static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $createdPayment->getId());
-        $link = $createdPayment->getLinks()->getAt(1);
-        static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $link?->getHref());
-    }
-
-    public function testExecuteSale(): void
-    {
-        $executedPayment = $this->createPaymentResource()->execute(
-            'testPayerId',
-            self::TEST_PAYMENT_ID,
-            TestDefaults::SALES_CHANNEL
-        );
-
-        $transaction = $executedPayment->getTransactions()->first();
-        static::assertNotNull($executedPayment->getLinks()->first());
-
-        $sale = $transaction?->getRelatedResources()->first()?->getSale();
-        static::assertNotNull($sale);
-        static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $sale->getState());
-    }
-
-    public function testExecuteAuthorize(): void
-    {
-        $executedPayment = $this->createPaymentResource()->execute(
-            ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE,
-            self::TEST_PAYMENT_ID,
-            TestDefaults::SALES_CHANNEL
-        );
-
-        $transaction = $executedPayment->getTransactions()->first();
-        static::assertNotNull($executedPayment->getLinks()->first());
-
-        $authorization = $transaction?->getRelatedResources()->first()?->getAuthorization();
-        static::assertNotNull($authorization);
-        static::assertSame(PaymentStatusV1::PAYMENT_AUTHORIZED, $authorization->getState());
-    }
-
-    public function testExecuteOrder(): void
-    {
-        $executedPayment = $this->createPaymentResource()->execute(
-            ConstantsForTesting::PAYER_ID_PAYMENT_ORDER,
-            self::TEST_PAYMENT_ID,
-            TestDefaults::SALES_CHANNEL
-        );
-
-        $transaction = $executedPayment->getTransactions()->first();
-        static::assertNotNull($executedPayment->getLinks()->first());
-
-        $order = $transaction?->getRelatedResources()->first()?->getOrder();
-        static::assertNotNull($order);
-        static::assertSame(PaymentStatusV1::PAYMENT_PENDING, $order->getState());
-    }
 
     public function testGetSale(): void
     {
