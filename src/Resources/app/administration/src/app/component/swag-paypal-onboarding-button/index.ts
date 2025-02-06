@@ -137,7 +137,7 @@ export default Shopware.Component.wrapComponentConfig({
                 return this.$t(`swag-paypal-onboarding-button.${this.type}.title`);
             }
 
-            if (!this.merchantInformationStore.canPPCP) {
+            if (this.settingsStore.isSandbox === this.isSandbox && !this.merchantInformationStore.canPPCP) {
                 return this.$t(`swag-paypal-onboarding-button.${this.type}.onboardingTitle`);
             }
 
