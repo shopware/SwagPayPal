@@ -190,7 +190,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         input.setAttribute('value', data.orderID ?? data.orderId);
 
         this.confirmOrderForm.appendChild(input);
-        DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).click();
+        this.confirmOrderForm.submit();
     }
 
     /**
