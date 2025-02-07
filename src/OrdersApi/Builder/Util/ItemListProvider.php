@@ -41,9 +41,11 @@ class ItemListProvider
 
     public function getItemList(CurrencyEntity $currency, OrderEntity $order): ItemCollection
     {
+        $taxStatus = $order->getTaxStatus() ?? $order->getPrice()->getTaxStatus();
+
         $items = new ItemCollection();
         $currencyCode = $currency->getIsoCode();
-        $isNet = $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS; /* @phpstan-ignore-line */
+        $isNet = $taxStatus !== CartPrice::TAX_STATE_GROSS; /* @phpstan-ignore-line */
         $lineItems = $order->getNestedLineItems();
         if ($lineItems === null) {
             return new ItemCollection();

@@ -52,13 +52,15 @@ class PurchaseUnitPatchBuilder
             $itemList = null;
         }
 
+        $taxStatus = $order->getTaxStatus() ?? $order->getPrice()->getTaxStatus();
+
         $purchaseUnit = $this->purchaseUnitProvider->createPurchaseUnit(
             $orderTransaction->getAmount(),
             $order->getShippingCosts(),
             $customer,
             $itemList,
             $salesChannelContext,
-            $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS, /* @phpstan-ignore-line */
+            $taxStatus !== CartPrice::TAX_STATE_GROSS,
             $order,
             $orderTransaction
         );

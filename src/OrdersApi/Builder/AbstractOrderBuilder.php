@@ -112,13 +112,15 @@ abstract class AbstractOrderBuilder
     ): PurchaseUnit {
         $items = $this->submitCart($salesChannelContext) ? $this->itemListProvider->getItemList($salesChannelContext->getCurrency(), $order) : null;
 
+        $taxStatus = $order->getTaxStatus() ?? $order->getPrice()->getTaxStatus();
+
         return $this->purchaseUnitProvider->createPurchaseUnit(
             $orderTransaction->getAmount(),
             $order->getShippingCosts(),
             null,
             $items,
             $salesChannelContext,
-            $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS, /* @phpstan-ignore-line */
+            $taxStatus !== CartPrice::TAX_STATE_GROSS,
             $order,
             $orderTransaction
         );
