@@ -12,7 +12,7 @@ use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\StoreApiResponse;
 
 /**
- * @extends StoreApiResponse<ArrayStruct<string, string>>
+ * @extends StoreApiResponse<ArrayStruct<array{token: string}>>
  */
 #[Package('checkout')]
 class TokenResponse extends StoreApiResponse
