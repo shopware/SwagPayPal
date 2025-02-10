@@ -73,11 +73,9 @@ class WebhookSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (Feature::isActive('PAYPAL_SETTINGS_TWEAKS')) {
-            /** @var array<string, array<string, mixed>> $config */
-            $config = $event->getConfig();
-            $this->webhookSystemConfigHelper->checkWebhookBefore($config);
-        }
+        /** @var array<string, array<string, mixed>> $config */
+        $config = $event->getConfig();
+        $this->webhookSystemConfigHelper->checkWebhookBefore($config);
     }
 
     /**
@@ -92,8 +90,6 @@ class WebhookSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (Feature::isActive('PAYPAL_SETTINGS_TWEAKS')) {
-            $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($event->getConfig()));
-        }
+        $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($event->getConfig()));
     }
 }
