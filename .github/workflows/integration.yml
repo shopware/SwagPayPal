@@ -2,7 +2,7 @@ name: Integration
 on:
   push:
     branches:
-      - trunk
+      - 6.6.x
   pull_request:
   workflow_dispatch:
 
@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         MYSQL_IMAGE: ["mysql:8.0", "mariadb:10.11"]
-        PLATFORM_BRANCH: ["v6.6.0.0", "trunk"]
+        PLATFORM_BRANCH: ["v6.6.0.0", "6.6.x"]
         PHP_VERSION: ["8.2", "8.3"]
         WITH_COMMERCIAL: [true, false]
     env:

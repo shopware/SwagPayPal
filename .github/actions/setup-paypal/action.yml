@@ -29,7 +29,7 @@ inputs:
     required: false
     description: "Which PHP version should be used"
   shopware-version:
-    default: "trunk"
+    default: "6.6.x"
     required: false
     description: "Which version/branch of shopware should be used"
 
@@ -49,6 +49,7 @@ runs:
             {
               "name":"SwagCmsExtensions",
               "repo": "https://github.com/shopware/SwagCmsExtensions.git",
+              "branch": "6.6.x",
               "token": "${{ steps.octo-sts.outputs.token }}"
             }
           ]'
