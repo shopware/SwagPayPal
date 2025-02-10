@@ -10,7 +10,6 @@ namespace Swag\PayPal\Storefront\Data\Service;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -67,8 +66,6 @@ abstract class AbstractCheckoutDataService extends AbstractScriptDataService
             'createOrderUrl' => $context->hasExtension('subscription')
                 ? $this->router->generate('frontend.subscription.paypal.create_order', ['subscriptionToken' => $context->getToken()])
                 : $this->router->generate('frontend.paypal.create_order'),
-            /** @deprecated tag:v10.0.0 - Will be removed, use handleErrorUrl instead */
-            'addErrorUrl' => $this->router->generate('frontend.paypal.error'),
             'handleErrorUrl' => $this->router->generate('frontend.paypal.handle-error'),
             'brandName' => $this->systemConfigService->getString(Settings::BRAND_NAME, $salesChannelId)
                 ?: ($context->getSalesChannel()->getTranslation('name') ?? ''),
@@ -76,25 +73,6 @@ abstract class AbstractCheckoutDataService extends AbstractScriptDataService
 
         if ($order !== null) {
             $data['orderId'] = $order->getId();
-            /** @deprecated tag:v10.0.0 - Will be removed, use handleErrorUrl instead */
-            $data['accountOrderEditFailedUrl'] = $this->router->generate(
-                'frontend.account.edit-order.page',
-                [
-                    'orderId' => $order->getId(),
-                    'error-code' => PaymentException::PAYMENT_ASYNC_PROCESS_INTERRUPTED,
-                    self::PAYPAL_ERROR => 1,
-                ],
-                RouterInterface::ABSOLUTE_URL
-            );
-            /** @deprecated tag:v10.0.0 - Will be removed, use handleErrorUrl instead */
-            $data['accountOrderEditCancelledUrl'] = $this->router->generate(
-                'frontend.account.edit-order.page',
-                [
-                    'orderId' => $order->getId(),
-                    'error-code' => PaymentException::PAYMENT_CUSTOMER_CANCELED_EXTERNAL,
-                ],
-                RouterInterface::ABSOLUTE_URL
-            );
         }
 
         return $data;

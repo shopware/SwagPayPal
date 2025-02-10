@@ -21,11 +21,9 @@ use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Service\CredentialProviderInterface;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
-use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
 #[Package('checkout')]
-class ApiCredentialService implements ApiCredentialServiceInterface
+class ApiCredentialService
 {
     /**
      * @internal
@@ -40,58 +38,39 @@ class ApiCredentialService implements ApiCredentialServiceInterface
     }
 
     /**
-     * @deprecated tag:v10.0.0 - parameter $merchantPayerId will be added
-     *
-     * @throws PayPalInvalidApiCredentialsException
      * @throws PayPalApiException
      */
-    public function testApiCredentials(string $clientId, string $clientSecret, bool $sandboxActive /* , ?string $merchantPayerId */): bool
+    public function testApiCredentials(string $clientId, string $clientSecret, bool $sandboxActive, ?string $merchantPayerId): bool
     {
-        $merchantPayerId = (\func_num_args() > 3) ? \func_get_arg(3) : null;
-        if ($merchantPayerId !== null && !\is_string($merchantPayerId)) {
-            throw new PayPalSettingsInvalidException('merchantPayerId');
-        }
-
         $credentials = new OAuthCredentials();
         $credentials->setRestId($clientId);
         $credentials->setRestSecret($clientSecret);
         $credentials->setUrl($sandboxActive ? BaseURL::SANDBOX : BaseURL::LIVE);
 
-        try {
-            $tokenClient = $this->tokenClientFactory->createTokenClient($credentials);
-            $token = new Token();
-            $token->assign($tokenClient->getToken());
+        $tokenClient = $this->tokenClientFactory->createTokenClient($credentials);
+        $token = new Token();
+        $token->assign($tokenClient->getToken());
 
-            if (!$this->tokenValidator->isTokenValid($token)) {
-                return false;
-            }
-
-            if ($merchantPayerId === null) {
-                return true;
-            }
-
-            $client = new PayPalClient(
-                $this->credentialProvider->createAuthorizationHeaders($token, null),
-                $credentials->getUrl(),
-                $this->logger,
-                PartnerAttributionId::PAYPAL_PPCP
-            );
-
-            $client->sendGetRequest(
-                \sprintf(RequestUriV1::MERCHANT_INTEGRATIONS_RESOURCE, $sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE, $merchantPayerId)
-            );
-
-            return true;
-        } catch (PayPalApiException $payPalApiException) {
-            /**
-             * @deprecated tag:v10.0.0 - Will be removed, use the exception directly
-             */
-            if ($payPalApiException->is(PayPalApiException::ERROR_CODE_INVALID_CREDENTIALS)) {
-                throw new PayPalInvalidApiCredentialsException();
-            }
-
-            throw $payPalApiException;
+        if (!$this->tokenValidator->isTokenValid($token)) {
+            return false;
         }
+
+        if ($merchantPayerId === null) {
+            return true;
+        }
+
+        $client = new PayPalClient(
+            $this->credentialProvider->createAuthorizationHeaders($token, null),
+            $credentials->getUrl(),
+            $this->logger,
+            PartnerAttributionId::PAYPAL_PPCP
+        );
+
+        $client->sendGetRequest(
+            \sprintf(RequestUriV1::MERCHANT_INTEGRATIONS_RESOURCE, $sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE, $merchantPayerId)
+        );
+
+        return true;
     }
 
     public function getApiCredentials(string $authCode, string $sharedId, string $nonce, bool $sandboxActive): array

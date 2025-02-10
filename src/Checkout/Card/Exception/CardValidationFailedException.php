@@ -28,26 +28,4 @@ class CardValidationFailedException extends PaymentException
             ],
         );
     }
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, use {@link cardValidationFailed} instead
-     */
-    public static function asyncCardValidationFailed(string $orderTransactionId, ?string $message = null): PaymentException
-    {
-        return PaymentException::asyncProcessInterrupted(
-            $orderTransactionId,
-            $message ?? 'Credit card validation failed, 3D secure was not validated.'
-        );
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, use {@link cardValidationFailed} instead
-     */
-    public static function syncCardValidationFailed(string $orderTransactionId, ?string $message = null): PaymentException
-    {
-        return PaymentException::syncProcessInterrupted(
-            $orderTransactionId,
-            $message ?? 'Credit card validation failed, 3D secure was not validated.'
-        );
-    }
 }

@@ -17,7 +17,6 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Blik;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Eps;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Giropay;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\GooglePay;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Ideal;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Multibanco;
@@ -26,7 +25,6 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Oxxo;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\P24;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Sofort;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Token;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Trustly;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Venmo;
@@ -56,12 +54,6 @@ class PaymentSource extends PayPalApiStruct
     #[OA\Property(ref: Eps::class, nullable: true)]
     protected ?Eps $eps = null;
 
-    /**
-     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
-     */
-    #[OA\Property(ref: Giropay::class, nullable: true)]
-    protected ?Giropay $giropay = null;
-
     #[OA\Property(ref: Ideal::class, nullable: true)]
     protected ?Ideal $ideal = null;
 
@@ -79,12 +71,6 @@ class PaymentSource extends PayPalApiStruct
 
     #[OA\Property(ref: Paypal::class, nullable: true)]
     protected ?Paypal $paypal = null;
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
-     */
-    #[OA\Property(ref: Sofort::class, nullable: true)]
-    protected ?Sofort $sofort = null;
 
     #[OA\Property(ref: Token::class, nullable: true)]
     protected ?Token $token = null;
@@ -158,22 +144,6 @@ class PaymentSource extends PayPalApiStruct
         $this->eps = $eps;
     }
 
-    /**
-     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
-     */
-    public function getGiropay(): ?Giropay
-    {
-        return $this->giropay;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
-     */
-    public function setGiropay(?Giropay $giropay): void
-    {
-        $this->giropay = $giropay;
-    }
-
     public function getIdeal(): ?Ideal
     {
         return $this->ideal;
@@ -232,22 +202,6 @@ class PaymentSource extends PayPalApiStruct
     public function setPaypal(?Paypal $paypal): void
     {
         $this->paypal = $paypal;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
-     */
-    public function getSofort(): ?Sofort
-    {
-        return $this->sofort;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed, payment method has been disabled
-     */
-    public function setSofort(?Sofort $sofort): void
-    {
-        $this->sofort = $sofort;
     }
 
     public function getToken(): ?Token

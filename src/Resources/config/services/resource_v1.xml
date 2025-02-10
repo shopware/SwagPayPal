@@ -14,9 +14,7 @@
         </service>
 
         <service id="Swag\PayPal\RestApi\V1\Resource\CredentialsResource">
-            <argument type="service" id="Swag\PayPal\RestApi\Client\TokenClientFactory"/>
             <argument type="service" id="Swag\PayPal\RestApi\Client\CredentialsClientFactory"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Service\TokenValidator"/>
         </service>
 
         <service id="Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource">

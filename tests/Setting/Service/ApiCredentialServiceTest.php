@@ -36,7 +36,7 @@ class ApiCredentialServiceTest extends TestCase
         $clientSecret = ConstantsForTesting::VALID_CLIENT_SECRET;
         $sandboxActive = true;
 
-        $apiCredentialsValid = $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
+        $apiCredentialsValid = $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive, 'merchant-id');
 
         static::assertTrue($apiCredentialsValid);
     }
@@ -50,7 +50,7 @@ class ApiCredentialServiceTest extends TestCase
 
         $this->expectException(PayPalApiException::class);
         $this->expectExceptionMessage(GuzzleClientMock::GENERAL_CLIENT_EXCEPTION_MESSAGE);
-        $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
+        $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive, 'merchant-id');
     }
 
     public function testApiCredentialsThrowsInvalidApiCredentialsException(): void
@@ -62,7 +62,7 @@ class ApiCredentialServiceTest extends TestCase
 
         $this->expectException(PayPalApiException::class);
         $this->expectExceptionMessage('The error "TEST" occurred with the following message: generalClientExceptionMessage');
-        $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
+        $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive, 'merchant-id');
     }
 
     public function testGetApiCredentials(): void
@@ -80,9 +80,7 @@ class ApiCredentialServiceTest extends TestCase
 
         return new ApiCredentialService(
             new CredentialsResource(
-                new TokenClientFactoryMock($logger),
                 new CredentialsClientFactoryMock($logger),
-                new TokenValidator()
             ),
             new TokenClientFactoryMock($logger),
             new TokenValidator(),

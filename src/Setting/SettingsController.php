@@ -15,7 +15,7 @@ use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SystemConfig\Validation\SystemConfigValidator;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
+use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Setting\Service\SettingsSaverInterface;
 use Swag\PayPal\Setting\Struct\MerchantInformationStruct;
@@ -34,73 +34,11 @@ class SettingsController extends AbstractController
      * @internal
      */
     public function __construct(
-        private readonly ApiCredentialServiceInterface $apiCredentialService,
+        private readonly ApiCredentialService $apiCredentialService,
         private readonly MerchantIntegrationsService $merchantIntegrationsService,
         private readonly SystemConfigValidator $systemConfigValidator,
         private readonly SettingsSaverInterface $settingsSaver,
     ) {
-    }
-
-    #[OA\Get(
-        path: '/_action/paypal/validate-api-credentials',
-        operationId: 'validateApiCredentials',
-        tags: ['Admin Api', 'PayPal'],
-        parameters: [
-            new OA\Parameter(
-                name: 'clientId',
-                description: 'The client id of the PayPal API credentials',
-                in: 'query',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                name: 'clientSecret',
-                description: 'The client secret of the PayPal API credentials',
-                in: 'query',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                name: 'sandboxActive',
-                description: 'If the sandbox environment should be used',
-                in: 'query',
-                required: false,
-                schema: new OA\Schema(type: 'boolean', nullable: true)
-            ),
-        ],
-        responses: [new OA\Response(
-            response: Response::HTTP_OK,
-            description: 'Returns if the provided API credentials are valid',
-            content: new OA\JsonContent(properties: [new OA\Property(
-                property: 'credentialsValid',
-                type: 'boolean',
-            )])
-        )]
-    )]
-    #[Route(path: '/api/_action/paypal/validate-api-credentials', name: 'api.action.paypal.validate.api.credentials', methods: ['GET'], defaults: ['_acl' => ['swag_paypal.viewer']])]
-    public function validateApiCredentials(Request $request): JsonResponse
-    {
-        $clientId = $request->query->get('clientId');
-        if (!\is_string($clientId)) {
-            throw RoutingException::invalidRequestParameter('clientId');
-        }
-
-        $clientSecret = $request->query->get('clientSecret');
-        if (!\is_string($clientSecret)) {
-            throw RoutingException::invalidRequestParameter('clientSecret');
-        }
-
-        $merchantPayerId = $request->query->get('merchantPayerId');
-        if ($merchantPayerId !== null && !\is_string($merchantPayerId)) {
-            throw RoutingException::invalidRequestParameter('merchantPayerId');
-        }
-
-        $sandboxActive = $request->query->getBoolean('sandboxActive');
-
-        /* @phpstan-ignore-next-line method will have additional method */
-        $credentialsValid = $this->apiCredentialService->testApiCredentials($clientId, $clientSecret, $sandboxActive, $merchantPayerId);
-
-        return new JsonResponse(['credentialsValid' => $credentialsValid]);
     }
 
     #[OA\Post(

@@ -61,10 +61,7 @@ class ProductConverter
         return $groupingCollection;
     }
 
-    /**
-     * @deprecated tag:v10.0.0 - will be private
-     */
-    protected function convertProductGrouping(ProductGrouping $productGrouping, ?CurrencyEntity $currency, ProductContext $productContext): Product
+    private function convertProductGrouping(ProductGrouping $productGrouping, ?CurrencyEntity $currency, ProductContext $productContext): Product
     {
         $shopwareProduct = $productGrouping->getIdentifyingEntity();
 

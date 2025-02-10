@@ -127,41 +127,6 @@ class PayPalController extends StorefrontController
         return $this->createActionResponse($request);
     }
 
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, use {@link onHandleError} instead
-     */
-    #[OA\Post(
-        path: '/paypal/error',
-        operationId: 'paypalError',
-        description: 'Adds an error message to the flash bag',
-        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
-            new OA\Property(property: 'type', type: 'string', enum: ['cancel', 'browser', 'error']),
-        ])),
-        tags: ['Store API', 'PayPal'],
-        responses: [new OA\Response(
-            response: Response::HTTP_NO_CONTENT,
-            description: 'Error was added to the flash bag',
-        )]
-    )]
-    #[Route(path: '/paypal/error', name: 'frontend.paypal.error', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
-    public function addErrorMessage(Request $request): Response
-    {
-        $type = $request->request->get('type');
-
-        if ($type === 'cancel' || $request->request->getBoolean('cancel')) {
-            $this->addFlash(self::DANGER, $this->trans('paypal.general.paymentCancel'));
-            $this->logger->notice('Storefront checkout cancellation', ['reason' => $request->request->get('error')]);
-        } elseif ($type === 'browser') {
-            $this->addFlash(self::DANGER, $this->trans('paypal.general.browserUnsupported'));
-            $this->logger->notice('Storefront checkout browser unsupported', ['error' => $request->request->get('error')]);
-        } else {
-            $this->addFlash(self::DANGER, $this->trans('paypal.general.paymentError'));
-            $this->logger->notice('Storefront checkout error', ['error' => $request->request->get('error')]);
-        }
-
-        return new NoContentResponse();
-    }
-
     #[OA\Post(
         path: '/paypal/handle-error',
         operationId: 'paypalHandleError',

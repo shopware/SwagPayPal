@@ -6,22 +6,12 @@
 
     <services>
         <service id="Swag\PayPal\Setting\SettingsController" public="true">
-            <argument type="service" id="Swag\PayPal\Setting\Service\ApiCredentialService"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\MerchantIntegrationsService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\Validation\SystemConfigValidator"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsSaver"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
-        </service>
-
-        <service id="Swag\PayPal\Setting\Service\ApiCredentialService">
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\CredentialsResource"/>
-
-            <argument type="service" id="Swag\PayPal\RestApi\Client\TokenClientFactory"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Service\TokenValidator"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Service\CredentialProvider"/>
-            <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
         <service id="Swag\PayPal\Setting\Service\CredentialsUtil">
