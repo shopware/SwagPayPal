@@ -18,7 +18,11 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\AbstractScriptDataService;
+use Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService;
+use Swag\PayPal\Util\Availability\AvailabilityContext;
+use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PayLaterAvailabilityChecker;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -63,7 +67,9 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         $salesChannelId = $salesChannelContext->getSalesChannelId();
 
         $fundingSources = ['paypal', 'venmo'];
-        if ($this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)) {
+
+        $availabilityContext = AvailabilityContextBuilder::buildAvailabilityContext($cart, $salesChannelContext);
+        if ($this->showPayLater($salesChannelId, $availabilityContext)) {
             array_splice($fundingSources, 1, 0, ['paylater']);
         }
 
@@ -90,7 +96,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
             'addErrorUrl' => $this->router->generate('frontend.paypal.error'),
             'handleErrorUrl' => $this->router->generate('frontend.paypal.handle-error'),
             'cancelRedirectUrl' => $this->router->generate($addProductToCart ? 'frontend.checkout.cart.page' : 'frontend.checkout.register.page'),
-            'showPayLater' => $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId),
+            'showPayLater' => $this->showPayLater($salesChannelId, $availabilityContext),
             'fundingSources' => $fundingSources,
         ]);
     }
@@ -104,5 +110,14 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         return $this->localeCodeProvider->getFormattedLocaleCode(
             $this->localeCodeProvider->getLocaleCodeFromContext($context->getContext())
         );
+    }
+
+    /**
+     * @return bool
+     */
+    private function showPayLater(string $salesChannelId, AvailabilityContext $availabilityContext): bool
+    {
+        return $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)
+            && PayLaterAvailabilityChecker::isPayLaterAvailable($availabilityContext);
     }
 }

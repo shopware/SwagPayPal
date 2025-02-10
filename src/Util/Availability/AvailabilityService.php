@@ -37,7 +37,7 @@ class AvailabilityService
     {
         $handlers = [];
 
-        $context = $this->buildAvailabilityContext($cart, $salesChannelContext);
+        $context = AvailabilityContextBuilder::buildAvailabilityContext($cart, $salesChannelContext);
 
         foreach ($paymentMethods as $paymentMethod) {
             if (!$this->isAvailable($paymentMethod, $context)) {
@@ -55,7 +55,7 @@ class AvailabilityService
     {
         $handlers = [];
 
-        $context = $this->buildAvailabilityContext($cart, $salesChannelContext);
+        $context = AvailabilityContextBuilder::buildAvailabilityContext($cart, $salesChannelContext);
         $context->assign([
             'totalAmount' => $order->getPrice()->getTotalPrice(),
             'subscription' => $order->getExtensionOfType('foreignKeys', ArrayStruct::class)?->get('subscriptionId') !== null,
@@ -73,9 +73,10 @@ class AvailabilityService
 
     public function isPaymentMethodAvailable(PaymentMethodEntity $paymentMethod, Cart $cart, SalesChannelContext $salesChannelContext): bool
     {
-        $context = $this->buildAvailabilityContext($cart, $salesChannelContext);
-
-        return $this->isAvailable($paymentMethod, $context);
+        return $this->isAvailable(
+            $paymentMethod,
+            AvailabilityContextBuilder::buildAvailabilityContext($cart, $salesChannelContext)
+        );
     }
 
     private function isAvailable(PaymentMethodEntity $paymentMethod, AvailabilityContext $context): bool
@@ -86,30 +87,5 @@ class AvailabilityService
         }
 
         return $methodData->isAvailable($context);
-    }
-
-    private function buildAvailabilityContext(Cart $cart, SalesChannelContext $salesChannelContext): AvailabilityContext
-    {
-        $context = new AvailabilityContext();
-
-        if (($customer = $salesChannelContext->getCustomer())
-         && ($address = $customer->getActiveBillingAddress())
-         && ($country = $address->getCountry())
-         && ($isoCode = $country->getIso())) {
-            $billingCountryCode = $isoCode;
-        } else {
-            $billingCountryCode = $salesChannelContext->getShippingLocation()->getCountry()->getIso();
-        }
-
-        $context->assign([
-            'billingCountryCode' => $billingCountryCode,
-            'currencyCode' => $salesChannelContext->getCurrency()->getIsoCode(),
-            'totalAmount' => $cart->getPrice()->getTotalPrice(),
-            'subscription' => $salesChannelContext->hasExtension('subscription'),
-            'salesChannelId' => $salesChannelContext->getSalesChannelId(),
-            'hasDigitalProducts' => $cart->getLineItems()->hasLineItemWithState(State::IS_DOWNLOAD),
-        ]);
-
-        return $context;
     }
 }
