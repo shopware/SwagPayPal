@@ -40,16 +40,6 @@ const Default = {
 
     'SwagPayPal.settings.crossBorderMessagingEnabled': false,
     'SwagPayPal.settings.crossBorderBuyerCountry': null,
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.merchantLocation': 'other',
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.plusCheckoutEnabled': false,
 } satisfies PayPal.SystemConfig;
 
 const All = {

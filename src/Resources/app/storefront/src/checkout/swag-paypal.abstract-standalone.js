@@ -3,13 +3,8 @@ import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import HttpClient from 'src/service/http-client.service';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
-import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
 export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButtons {
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    static scriptLoading = new SwagPayPalScriptLoading();
     static product = 'spb';
 
     static options = {
@@ -21,24 +16,6 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
          * @type string|null
          */
         orderId: null,
-
-        /**
-         * URL to the after order edit page, as the payment has failed
-         *
-         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-         *
-         * @type string|null
-         */
-        accountOrderEditFailedUrl: '',
-
-        /**
-         * URL to the after order edit page, as the user has cancelled
-         *
-         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-         *
-         * @type string|null
-         */
-        accountOrderEditCancelledUrl: '',
 
         /**
          * Selector of the order confirm form
@@ -190,7 +167,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         input.setAttribute('value', data.orderID ?? data.orderId);
 
         this.confirmOrderForm.appendChild(input);
-        DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).click();
+        this.confirmOrderForm.submit();
     }
 
     /**

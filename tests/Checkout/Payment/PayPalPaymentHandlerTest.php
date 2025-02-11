@@ -28,7 +28,6 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
-use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -41,13 +40,7 @@ use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder as OrderNumberPatchBuilderV2;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
-use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
-use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
-use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
-use Swag\PayPal\PaymentsApi\Patch\TransactionPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V1\Api\Patch;
-use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V2\Api\Patch as PatchV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
@@ -60,10 +53,6 @@ use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentAuthorizeResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
@@ -139,84 +128,6 @@ class PayPalPaymentHandlerTest extends TestCase
         );
 
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
-    }
-
-    public function testPayWithPlus(): void
-    {
-        $settings = $this->getDefaultConfigData();
-        $handler = $this->createPayPalPaymentHandler($settings);
-
-        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $salesChannelContext = $this->createSalesChannelContext(
-            $this->getContainer(),
-            new PaymentMethodCollection()
-        );
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
-        $dataBag = new RequestDataBag();
-        $dataBag->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, true);
-        $dataBag->set(PlusPuiHandler::PAYPAL_PAYMENT_ID_INPUT_NAME, CreateResponseFixture::CREATE_PAYMENT_ID);
-        $response = $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
-
-        static::assertSame('plusPatched', $response->getTargetUrl());
-
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $updatedData = $orderTransactionRepo->getData();
-        static::assertSame(
-            CreateResponseFixture::CREATE_PAYMENT_ID,
-            $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID]
-        );
-
-        $patchData = $this->clientFactory->getClient()->getData();
-        static::assertCount(5, $patchData);
-        foreach ($patchData as $patch) {
-            static::assertInstanceOf(Patch::class, $patch);
-            if ($patch->getPath() === '/transactions/0/item_list/shipping_address') {
-                $patchValue = $patch->getValue();
-                static::assertIsArray($patchValue);
-                static::assertSame(self::TEST_CUSTOMER_STREET, $patchValue['line1']);
-            }
-
-            if ($patch->getPath() === '/payer/payer_info') {
-                $patchValue = $patch->getValue();
-                static::assertIsArray($patchValue);
-                static::assertSame('Some', $patchValue['first_name']);
-                static::assertSame(self::TEST_CUSTOMER_STREET, $patchValue['billing_address']['line1']);
-            }
-
-            if ($patch->getPath() === '/transactions/0/custom') {
-                static::assertSame($transactionId, $patch->getValue());
-            }
-
-            if ($patch->getPath() === '/transactions/0/amount') {
-                $patchValue = $patch->getValue();
-                static::assertIsArray($patchValue);
-                static::assertSame(self::TEST_AMOUNT, $patchValue['total']);
-            }
-        }
-
-        $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
-    }
-
-    public function testPayWithPlusThrowsException(): void
-    {
-        $settings = $this->getDefaultConfigData();
-        $handler = $this->createPayPalPaymentHandler($settings);
-
-        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $salesChannelContext = $this->createSalesChannelContext(
-            $this->getContainer(),
-            new PaymentMethodCollection()
-        );
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
-        $dataBag = new RequestDataBag();
-        $dataBag->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, true);
-        $dataBag->set(PlusPuiHandler::PAYPAL_PAYMENT_ID_INPUT_NAME, self::PAYPAL_PATCH_THROWS_EXCEPTION);
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
-An error occurred during the communication with PayPal
-The error "TEST" occurred with the following message: generalClientExceptionMessage');
-        $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
     }
 
     public function testPayWithEcs(): void
@@ -425,85 +336,6 @@ No approve link provided by PayPal');
         $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
     }
 
-    public function testFinalizeSale(): void
-    {
-        $this->assertFinalizeRequest($this->createPaymentV1Request());
-        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
-    }
-
-    public function testFinalizeEcs(): void
-    {
-        $request = $this->createPaymentV1Request();
-        $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, 'true');
-        $this->assertFinalizeRequest($request);
-        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
-    }
-
-    public function testFinalizeEcsWithDuplicateTransaction(): void
-    {
-        ExecutePaymentSaleResponseFixture::setDuplicateTransaction(true);
-        $request = $this->createPaymentV1Request(self::PAYER_ID_DUPLICATE_TRANSACTION);
-        $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, 'true');
-        $this->assertFinalizeRequest($request);
-        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
-    }
-
-    public function testFinalizeSpb(): void
-    {
-        $request = $this->createPaymentV1Request();
-        $request->query->set(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID, 'true');
-        $this->assertFinalizeRequest($request);
-        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
-    }
-
-    public function testFinalizeSpbWithDuplicateTransaction(): void
-    {
-        ExecutePaymentSaleResponseFixture::setDuplicateTransaction(true);
-        $request = $this->createPaymentV1Request(self::PAYER_ID_DUPLICATE_TRANSACTION);
-        $request->query->set(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID, 'true');
-        $this->assertFinalizeRequest($request);
-        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
-    }
-
-    public function testFinalizePlus(): void
-    {
-        $request = $this->createPaymentV1Request();
-        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, 'true');
-        $this->assertFinalizeRequest($request);
-        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
-    }
-
-    public function testFinalizePlusWithDuplicateTransaction(): void
-    {
-        ExecutePaymentSaleResponseFixture::setDuplicateTransaction(true);
-        $request = $this->createPaymentV1Request(self::PAYER_ID_DUPLICATE_TRANSACTION);
-        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, 'true');
-        $this->assertFinalizeRequest($request);
-        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
-    }
-
-    public function testFinalizeAuthorization(): void
-    {
-        $request = $this->createPaymentV1Request();
-        $request->query->set(
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
-            ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE
-        );
-        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_OPEN);
-        $this->assertCustomFields(ExecutePaymentAuthorizeResponseFixture::AUTHORIZATION_ID);
-    }
-
-    public function testFinalizeOrder(): void
-    {
-        $request = $this->createPaymentV1Request();
-        $request->query->set(
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
-            ConstantsForTesting::PAYER_ID_PAYMENT_ORDER
-        );
-        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_OPEN);
-        $this->assertCustomFields(ExecutePaymentOrderResponseFixture::ORDER_ID);
-    }
-
     public function testFinalizeWithCancel(): void
     {
         $this->expectException(PaymentException::class);
@@ -517,40 +349,6 @@ No approve link provided by PayPal');
                 Context::createDefaultContext()
             ),
             new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
-            Generator::createSalesChannelContext()
-        );
-    }
-
-    public function testFinalizePaymentNotCompleted(): void
-    {
-        $request = $this->createPaymentV1Request();
-        $request->query->set(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID, self::PAYER_ID_PAYMENT_INCOMPLETE);
-        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_FAILED);
-        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
-    }
-
-    public function testFinalizeWithException(): void
-    {
-        $settings = $this->getDefaultConfigData();
-
-        $request = $this->createPaymentV1Request();
-        $request->query->set(
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
-            ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION
-        );
-
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The asynchronous payment finalize was interrupted due to the following error:
-An error occurred during the communication with PayPal');
-        $this->createPayPalPaymentHandler($settings)->finalize(
-            $this->createPaymentTransactionStruct(
-                ConstantsForTesting::VALID_ORDER_ID,
-                'testTransactionId',
-                null,
-                $this->getContainer(),
-                Context::createDefaultContext()
-            ),
-            $request,
             Generator::createSalesChannelContext()
         );
     }
@@ -685,30 +483,12 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
                 $this->createMock(VaultTokenService::class),
                 $logger
             ),
-            new PlusPuiHandler(
-                new PaymentResource($this->clientFactory),
-                $this->orderTransactionRepo,
-                new PayerInfoPatchBuilder(),
-                new OrderNumberPatchBuilder(),
-                new TransactionPatchBuilder($paymentBuilder),
-                new ShippingAddressPatchBuilder(),
-                $orderTransactionStateHandler,
-                $logger
-            ),
             $orderTransactionRepository ?? $orderTransactionRepositoryMock,
             $logger,
             new SettingsValidationService($systemConfig, new NullLogger()),
             $this->createMock(VaultTokenService::class),
             $this->createMock(OrderConverter::class),
         );
-    }
-
-    private function createPaymentV1Request(?string $payerId = null): Request
-    {
-        return new Request([
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID => $payerId ?? 'testPayerId',
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => 'testPaymentId',
-        ]);
     }
 
     private function assertFinalizeRequest(

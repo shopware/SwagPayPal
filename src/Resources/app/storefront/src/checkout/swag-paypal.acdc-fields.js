@@ -2,14 +2,8 @@ import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
 import SwagPaypalAbstractStandalone from './swag-paypal.abstract-standalone';
-import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
 export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    static scriptLoading = new SwagPayPalScriptLoading();
-
     static options = {
         ...super.options,
 
@@ -54,13 +48,6 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
          * @type string
          */
         cardNameFieldSelector: '#swag-paypal-acdc-form-cardholder',
-
-        /**
-         * @deprecated tag:v10.0.0 - Will be removed without replacement
-         *
-         * how much px the scrolling should be offset
-         */
-        scrollOffset: 15,
 
         /**
          * selector for the fixed header element
@@ -208,35 +195,10 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
 
             const field = DomAccess.querySelector(this.cardFieldForm, this.options[firstInvalidFieldKey + 'Selector']);
 
-            /**
-             * @deprecated tag:v10.0.0 - will be removed and replaced by `field.scrollIntoView(..)`
-             */
-            window.scrollTo({
-                top: this.getScrollOffset(field),
+            field.scrollIntoView({
                 behavior: 'smooth',
+                block: 'center',
             });
-
-            // field.scrollIntoView({
-            //     behavior: 'smooth',
-            //     block: 'center',
-            // });
         });
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    getScrollOffset(target) {
-        const rect = target.getBoundingClientRect();
-        const elementScrollOffset = rect.top + window.scrollY;
-        let offset = elementScrollOffset - this.options.scrollOffset;
-
-        const fixedHeader = DomAccess.querySelector(document, this.options.fixedHeaderSelector, false);
-        if (fixedHeader) {
-            const headerRect = fixedHeader.getBoundingClientRect();
-            offset -= headerRect.height;
-        }
-
-        return offset;
     }
 }

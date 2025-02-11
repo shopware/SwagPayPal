@@ -11,10 +11,8 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 
 /**
@@ -36,31 +34,6 @@ class OrdersResourceTest extends TestCase
         $ordersArray = \json_decode($orders, true);
 
         static::assertSame(GetResourceOrderResponseFixture::ID, $ordersArray['id']);
-    }
-
-    public function testCapture(): void
-    {
-        $capture = new Capture();
-        $captureResponse = $this->createOrdersResource()->capture('captureId', $capture, TestDefaults::SALES_CHANNEL);
-
-        $capture = \json_encode($captureResponse);
-        static::assertNotFalse($capture);
-
-        $captureArray = \json_decode($capture, true);
-
-        static::assertTrue($captureArray['is_final_capture']);
-    }
-
-    public function testVoid(): void
-    {
-        $voidResponse = $this->createOrdersResource()->void('voidId', TestDefaults::SALES_CHANNEL);
-
-        $void = \json_encode($voidResponse);
-        static::assertNotFalse($void);
-
-        $voidArray = \json_decode($void, true);
-
-        static::assertSame(VoidOrderResponseFixture::VOID_ID, $voidArray['id']);
     }
 
     private function createOrdersResource(): OrdersResource

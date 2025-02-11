@@ -18,13 +18,6 @@ final class PartnerAttributionId
     public const PAYPAL_CLASSIC = 'Shopware_Cart_EC_6native';
 
     /**
-     * Shopware Partner Id for PayPal Plus
-     *
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    public const PAYPAL_PLUS = 'Shopware_Cart_Plus_6native';
-
-    /**
      * Shopware Partner Id for Smart Payment Buttons
      */
     public const SMART_PAYMENT_BUTTONS = 'Shopware_Cart_SPB_6native';

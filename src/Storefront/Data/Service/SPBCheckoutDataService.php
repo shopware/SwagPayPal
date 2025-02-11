@@ -55,9 +55,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
             return null;
         }
 
-        if ($this->systemConfigService->getString(Settings::MERCHANT_LOCATION, $salesChannelId) === Settings::MERCHANT_LOCATION_GERMANY
-            || !$this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId)
-        ) {
+        if (!$this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId)) {
             return null;
         }
 

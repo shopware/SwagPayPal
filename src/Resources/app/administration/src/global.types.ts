@@ -3,12 +3,10 @@ import type Criteria from 'src/core/data/criteria.data';
 import type { Entity } from 'SwagPayPal/types/entity';
 import type { PropType as TPropType } from 'vue';
 import type SwagPaypalNotificationMixin from './mixin/swag-paypal-notification.mixin';
-import type SwagPaypalCredentialsLoaderMixin from './mixin/swag-paypal-credentials-loader.mixin';
 import type SwagPaypalPosCatchErrorMixin from './mixin/swag-paypal-pos-catch-error.mixin';
 import type SwagPaypalPosLogLabelMixin from './mixin/swag-paypal-pos-log-label.mixin';
 import type SwagPaypalSettingsMixin from './mixin/swag-paypal-settings.mixin';
 import type SwagPaypalMerchantInformationMixin from './mixin/swag-paypal-merchant-information.mixin';
-import type SwagPayPalApiCredentialsService from './core/service/api/swag-paypal-api-credentials.service';
 import type SwagPayPalDisputeApiService from './core/service/api/swag-paypal-dispute.api.service';
 import type SwagPayPalOrderService from './core/service/api/swag-paypal-order.service';
 import type SwagPaypalPaymentMethodService from './core/service/api/swag-paypal-payment-method.service';
@@ -30,7 +28,6 @@ declare global {
     type PropType<T> = TPropType<T>;
 
     interface MixinContainer {
-        'swag-paypal-credentials-loader': typeof SwagPaypalCredentialsLoaderMixin;
         'swag-paypal-notification': typeof SwagPaypalNotificationMixin;
         'swag-paypal-pos-catch-error': typeof SwagPaypalPosCatchErrorMixin;
         'swag-paypal-pos-log-label': typeof SwagPaypalPosLogLabelMixin;
@@ -39,7 +36,6 @@ declare global {
     }
 
     interface ServiceContainer {
-        SwagPayPalApiCredentialsService: SwagPayPalApiCredentialsService;
         SwagPayPalPosSettingApiService: SwagPayPalPosSettingApiService;
         SwagPayPalPosApiService: SwagPayPalPosApiService;
         SwagPayPalPosWebhookRegisterService: SwagPayPalPosWebhookRegisterService;

@@ -139,17 +139,6 @@ export const SYSTEM_CONFIGS = [
 
     'SwagPayPal.settings.webhookId',
     'SwagPayPal.settings.webhookExecuteToken',
-
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.merchantLocation',
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.plusCheckoutEnabled',
 ] as const;
 
 export type SYSTEM_CONFIG = typeof SYSTEM_CONFIGS[number];

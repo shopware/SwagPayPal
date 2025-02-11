@@ -38,7 +38,7 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC,
         bool $isFirstParty = false,
     ): PayPalClientInterface {
-        if ($partnerAttributionId !== PartnerAttributionId::PAYPAL_PLUS && $this->credentialsUtil->getMerchantPayerId($salesChannelId)) {
+        if ($this->credentialsUtil->getMerchantPayerId($salesChannelId)) {
             $partnerAttributionId = PartnerAttributionId::PAYPAL_PPCP;
         }
 
