@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Util\Lifecycle\Method;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
@@ -64,9 +65,7 @@ class PayLaterMethodDataTest extends TestCase
         static::assertSame('swag_paypal_pay_later', $this->payLaterMethodData->getTechnicalName());
     }
 
-    /**
-     * @dataProvider availabilityProvider
-     */
+    #[DataProvider('availabilityProvider')]
     public function testIsAvailable(string $currencyCode, string $countryCode, float $totalAmount, bool $expected): void
     {
         $availabilityContext = $this->createMock(AvailabilityContext::class);

@@ -16,7 +16,7 @@ use Shopware\Core\Framework\Log\Package;
 class PayLaterAvailabilityChecker
 {
     /**
-     * @var array<string, array<string, float>>
+     * @var array<string, array<string, string|float>>
      *
      * @see https://developer.paypal.com/studio/checkout/pay-later/{{countryCode}}
      */

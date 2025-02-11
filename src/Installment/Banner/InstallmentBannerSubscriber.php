@@ -185,7 +185,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
             return $isoCode;
         }
 
-        return $salesChannelContext->getShippingLocation()->getCountry()->getIso();
+        return $salesChannelContext->getShippingLocation()->getCountry()->getIso() ?? '';
     }
 
     private function pageOfCorrectType(Page $page): bool
