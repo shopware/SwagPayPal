@@ -45,6 +45,11 @@
             <argument type="service" id="Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory"/>
         </service>
 
+        <service id="Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute" public="true">
+            <argument type="service" id="swag_paypal_vault_token.repository"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\TokenResource" />
+        </service>
+
         <service id="Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute"
                  decorates="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"
                  decoration-priority="-1500"
