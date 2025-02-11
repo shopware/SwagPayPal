@@ -9,17 +9,18 @@ namespace Swag\PayPal\Test\Util\Availability;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\ShippingLocation;
-use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
-use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Content\Product\State;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Test\Generator;
 use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
 
 /**
@@ -28,64 +29,121 @@ use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
 #[Package('checkout'), CoversClass(AvailabilityContextBuilder::class)]
 class AvailabilityContextBuilderTest extends TestCase
 {
-    public function testBuildAvailabilityContext(): void
+    public function testBuildFromCart(): void
     {
-        $cart = $this->createMock(Cart::class);
-        $salesChannelContext = $this->createMock(SalesChannelContext::class);
+        $country = new CountryEntity();
+        $country->setId(Uuid::randomHex());
+        $country->setIso('US');
 
-        $customer = $this->createMock(CustomerEntity::class);
-        $address = $this->createMock(CustomerAddressEntity::class);
-        $country = $this->createMock(CountryEntity::class);
-        $currency = $this->createMock(CurrencyEntity::class);
-        $cartPrice = $this->createMock(CartPrice::class);
-        $lineItemCollection = $this->createMock(LineItemCollection::class);
+        $address = new CustomerAddressEntity();
+        $address->setId(Uuid::randomHex());
+        $address->setCountry($country);
 
-        $country->method('getIso')->willReturn('US');
-        $address->method('getCountry')->willReturn($country);
-        $customer->method('getActiveBillingAddress')->willReturn($address);
-        $salesChannelContext->method('getCustomer')->willReturn($customer);
-        $salesChannelContext->method('getCurrency')->willReturn($currency);
-        $currency->method('getIsoCode')->willReturn('USD');
-        $cart->method('getPrice')->willReturn($cartPrice);
-        $cartPrice->method('getTotalPrice')->willReturn(100.00);
-        $cart->method('getLineItems')->willReturn($lineItemCollection);
-        $lineItemCollection->method('hasLineItemWithState')->with(State::IS_DOWNLOAD)->willReturn(true);
+        $customer = new CustomerEntity();
+        $customer->setId(Uuid::randomHex());
+        $customer->setActiveBillingAddress($address);
 
-        $context = AvailabilityContextBuilder::buildAvailabilityContext($cart, $salesChannelContext);
+        $currency = new CurrencyEntity();
+        $currency->setId(Uuid::randomHex());
+        $currency->setIsoCode('USD');
+
+        $cart = Generator::createCart();
+
+        $salesChannelContext = Generator::generateSalesChannelContext(currency: $currency, customer: $customer);
+
+        $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
 
         static::assertEquals('US', $context->getBillingCountryCode());
         static::assertEquals('USD', $context->getCurrencyCode());
-        static::assertEquals(100.00, $context->getTotalAmount());
-        static::assertTrue($context->hasDigitalProducts());
+        static::assertEquals(275.00, $context->getTotalAmount());
+        static::assertFalse($context->hasDigitalProducts());
     }
 
-    public function testBuildAvailabilityContextWithoutCustomer(): void
+    public function testBuildFromCartWithoutCustomer(): void
     {
-        $cart = $this->createMock(Cart::class);
-        $salesChannelContext = $this->createMock(SalesChannelContext::class);
+        $currency = new CurrencyEntity();
+        $currency->setId(Uuid::randomHex());
+        $currency->setIsoCode('USD');
 
-        $country = $this->createMock(CountryEntity::class);
-        $currency = $this->createMock(CurrencyEntity::class);
-        $cartPrice = $this->createMock(CartPrice::class);
-        $lineItemCollection = $this->createMock(LineItemCollection::class);
-        $shippingLocation = $this->createMock(ShippingLocation::class);
+        $cart = Generator::createCart();
 
-        $country->method('getIso')->willReturn('US');
-        $salesChannelContext->method('getCustomer')->willReturn(null);
-        $salesChannelContext->method('getShippingLocation')->willReturn($shippingLocation);
-        $salesChannelContext->method('getCurrency')->willReturn($currency);
-        $shippingLocation->method('getCountry')->willReturn($country);
-        $currency->method('getIsoCode')->willReturn('USD');
-        $cart->method('getPrice')->willReturn($cartPrice);
-        $cartPrice->method('getTotalPrice')->willReturn(100.00);
-        $cart->method('getLineItems')->willReturn($lineItemCollection);
-        $lineItemCollection->method('hasLineItemWithState')->with(State::IS_DOWNLOAD)->willReturn(true);
+        $country = new CountryEntity();
+        $country->setId(Uuid::randomHex());
+        $country->setIso('US');
 
-        $context = AvailabilityContextBuilder::buildAvailabilityContext($cart, $salesChannelContext);
+        $shippingLocation = new ShippingLocation($country, null, null);
+
+        $salesChannelContext = Generator::generateSalesChannelContext(
+            currency: $currency,
+            shippingLocation: $shippingLocation,
+            customer: new CustomerEntity()
+        );
+
+        $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
 
         static::assertEquals('US', $context->getBillingCountryCode());
         static::assertEquals('USD', $context->getCurrencyCode());
-        static::assertEquals(100.00, $context->getTotalAmount());
-        static::assertTrue($context->hasDigitalProducts());
+        static::assertEquals(275.00, $context->getTotalAmount());
+        static::assertFalse($context->hasDigitalProducts());
+    }
+
+    public function testBuildFromProduct(): void
+    {
+        $country = new CountryEntity();
+        $country->setId(Uuid::randomHex());
+        $country->setIso('US');
+
+        $address = new CustomerAddressEntity();
+        $address->setId(Uuid::randomHex());
+        $address->setCountry($country);
+
+        $customer = new CustomerEntity();
+        $customer->setId(Uuid::randomHex());
+        $customer->setActiveBillingAddress($address);
+
+        $currency = new CurrencyEntity();
+        $currency->setId(Uuid::randomHex());
+        $currency->setIsoCode('USD');
+
+        $product = new SalesChannelProductEntity();
+        $product->setCalculatedPrice(new CalculatedPrice(275, 275, new CalculatedTaxCollection(), new TaxRuleCollection(), 1));
+
+        $salesChannelContext = Generator::generateSalesChannelContext(currency: $currency, customer: $customer);
+
+        $context = AvailabilityContextBuilder::buildFromProduct($product, $salesChannelContext);
+
+        static::assertEquals('US', $context->getBillingCountryCode());
+        static::assertEquals('USD', $context->getCurrencyCode());
+        static::assertEquals(275.00, $context->getTotalAmount());
+        static::assertFalse($context->hasDigitalProducts());
+    }
+
+    public function testBuildFromProductWithoutCustomer(): void
+    {
+        $country = new CountryEntity();
+        $country->setId(Uuid::randomHex());
+        $country->setIso('US');
+
+        $currency = new CurrencyEntity();
+        $currency->setId(Uuid::randomHex());
+        $currency->setIsoCode('USD');
+
+        $product = new SalesChannelProductEntity();
+        $product->setCalculatedPrice(new CalculatedPrice(275, 275, new CalculatedTaxCollection(), new TaxRuleCollection(), 1));
+
+        $shippingLocation = new ShippingLocation($country, null, null);
+
+        $salesChannelContext = Generator::generateSalesChannelContext(
+            currency: $currency,
+            shippingLocation: $shippingLocation,
+            customer: new CustomerEntity()
+        );
+
+        $context = AvailabilityContextBuilder::buildFromProduct($product, $salesChannelContext);
+
+        static::assertEquals('US', $context->getBillingCountryCode());
+        static::assertEquals('USD', $context->getCurrencyCode());
+        static::assertEquals(275.00, $context->getTotalAmount());
+        static::assertFalse($context->hasDigitalProducts());
     }
 }

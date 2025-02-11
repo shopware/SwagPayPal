@@ -63,11 +63,7 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return PayLaterAvailabilityChecker::isPayLaterAvailable(
-            $availabilityContext->getBillingCountryCode(),
-            $availabilityContext->getCurrencyCode(),
-            $availabilityContext->getTotalAmount()
-        );
+        return PayLaterAvailabilityChecker::isPayLaterAvailable($availabilityContext);
     }
 
     public function getInitialState(): bool

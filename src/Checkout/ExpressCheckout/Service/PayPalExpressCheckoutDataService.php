@@ -67,7 +67,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
 
         $fundingSources = ['paypal', 'venmo'];
 
-        $availabilityContext = AvailabilityContextBuilder::buildAvailabilityContext($cart, $salesChannelContext);
+        $availabilityContext = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
         if ($this->showPayLater($salesChannelId, $availabilityContext)) {
             array_splice($fundingSources, 1, 0, ['paylater']);
         }
@@ -114,10 +114,6 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
     private function showPayLater(string $salesChannelId, AvailabilityContext $availabilityContext): bool
     {
         return $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)
-            && PayLaterAvailabilityChecker::isPayLaterAvailable(
-                $availabilityContext->getBillingCountryCode(),
-                $availabilityContext->getCurrencyCode(),
-                $availabilityContext->getTotalAmount()
-            );
+            && PayLaterAvailabilityChecker::isPayLaterAvailable($availabilityContext);
     }
 }

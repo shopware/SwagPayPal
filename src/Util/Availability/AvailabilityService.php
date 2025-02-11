@@ -37,7 +37,7 @@ class AvailabilityService
     {
         $handlers = [];
 
-        $context = AvailabilityContextBuilder::buildAvailabilityContext($cart, $salesChannelContext);
+        $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
 
         foreach ($paymentMethods as $paymentMethod) {
             if (!$this->isAvailable($paymentMethod, $context)) {
@@ -55,7 +55,7 @@ class AvailabilityService
     {
         $handlers = [];
 
-        $context = AvailabilityContextBuilder::buildAvailabilityContext($cart, $salesChannelContext);
+        $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
         $context->assign([
             'totalAmount' => $order->getPrice()->getTotalPrice(),
             'subscription' => $order->getExtensionOfType('foreignKeys', ArrayStruct::class)?->get('subscriptionId') !== null,
@@ -75,7 +75,7 @@ class AvailabilityService
     {
         return $this->isAvailable(
             $paymentMethod,
-            AvailabilityContextBuilder::buildAvailabilityContext($cart, $salesChannelContext)
+            AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext)
         );
     }
 
