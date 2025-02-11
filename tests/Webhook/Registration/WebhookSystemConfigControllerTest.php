@@ -16,6 +16,7 @@ use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\System\SystemConfig\Validation\SystemConfigValidator;
+use Shopware\Core\Test\Annotation\DisabledFeatures;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
@@ -28,6 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @internal
  */
+#[DisabledFeatures(features: ['PAYPAL_SETTINGS_TWEAKS'])]
 #[Package('checkout')]
 class WebhookSystemConfigControllerTest extends TestCase
 {

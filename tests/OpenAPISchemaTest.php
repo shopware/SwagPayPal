@@ -16,8 +16,7 @@ use OpenApi\Annotations\Operation;
 use OpenApi\Generator;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
-use Swag\PayPal\Checkout\Plus\PlusPaymentHandleController;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute;
 use Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute;
 use Swag\PayPal\Storefront\Controller\PayPalController;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigController;
@@ -41,9 +40,10 @@ class OpenAPISchemaTest extends TestCase
         '\\' . PayPalController::class . '::expressPrepareCart',
         '\\' . PayPalController::class . '::clearVault',
 
+        // Decoration, covered by platform
+        '\\' . ExpressCategoryRoute::class . '::load',
+
         '\\' . FilteredPaymentMethodRoute::class . '::load',
-        '\\' . PlusPaymentHandleController::class . '::handlePlusPayment',
-        '\\' . PlusPaymentFinalizeController::class . '::finalizeTransaction',
 
         // we don't control the routes of the system config controller
         '\\' . WebhookSystemConfigController::class . '::checkConfiguration',
@@ -54,6 +54,7 @@ class OpenAPISchemaTest extends TestCase
     public const IGNORED_LOG_MESSAGES = [
         'Required @OA\Info() not found',
         '$ref "#/components/schemas/" not found for @OA\Response() in \Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute->load()',
+        '$ref "#/components/schemas/" not found for @OA\Items() in \Swag\PayPal\Setting\SettingsController->testApiCredentials()',
     ];
 
     private OpenApi $oa;
@@ -123,6 +124,7 @@ class OpenAPISchemaTest extends TestCase
             $routes = \array_map(fn ($r) => $r->getArguments(), $routeAttributes);
             $routeMethods = \array_unique(\array_merge(...\array_column($routes, 'methods')));
             $routePaths = \array_column($routes, 'path');
+            $routePathsWithoutPrefix = \array_map(fn ($path) => \str_replace(['/api', '/store-api'], '', $path), $routePaths);
 
             if (!\in_array($annotation->method, $routeMethods, true)) {
                 $failures[] = $fqdn . ' was expected to have a method of "' . \implode('" or "', $routeMethods) . '", but found "' . $annotation->method . '" in OpenAPI Schema';
@@ -132,8 +134,8 @@ class OpenAPISchemaTest extends TestCase
                 }
             }
 
-            if (!\in_array($annotation->path, $routePaths, true)) {
-                $failures[] = $fqdn . ' was expected to have a path of "' . \implode('" or "', $routePaths) . '", but found "' . $annotation->path . '" in OpenAPI Schema';
+            if (!\in_array($annotation->path, $routePathsWithoutPrefix, true)) {
+                $failures[] = $fqdn . ' was expected to have a path of "' . \implode('" or "', $routePathsWithoutPrefix) . '", but found "' . $annotation->path . '" in OpenAPI Schema';
             }
         }
 

@@ -11,7 +11,7 @@
         :label="$tc('swag-paypal-payment.captureAction.maxAmount')"
         :disabled="true"
     >
-        <template #suffix v-if="currencyCode">
+        <template v-if="currencyCode" #suffix>
             {{ currencyCode }}
         </template>
     </sw-text-field>
@@ -24,7 +24,7 @@
         :min="0"
         :label="$tc('swag-paypal-payment.captureAction.currentAmount')"
     >
-        <template #suffix v-if="currencyCode">
+        <template v-if="currencyCode" #suffix>
             {{ currencyCode }}
         </template>
     </sw-number-field>
@@ -69,6 +69,6 @@
     </template>
     {% endblock %}
 
-    <sw-loader v-if="isLoading"/>
+    <sw-loader v-if="isLoading" />
 </sw-modal>
 {% endblock %}

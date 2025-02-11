@@ -1,8 +1,6 @@
-export const LANDING_PAGES = ['LOGIN', 'BILLING', 'NO_PREFERENCE'] as const;
-export const BUTTON_COLORS = ['gold', 'blue', 'black', 'silver', 'white'] as const;
-export const BUTTON_SHAPES = ['rect', 'pill', 'sharp'] as const;
-export const INTENTS = ['CAPTURE', 'AUTHORIZE'] as const;
+import type { SYSTEM_CONFIG, LANDING_PAGES, BUTTON_COLORS, BUTTON_SHAPES, INTENTS, COUNTRY_OVERRIDES } from 'SwagPayPal/constant/swag-paypal-settings.constant';
 
+// @todo - Keys should be from SYSTEM_CONFIG
 export declare type SystemConfig = {
     'SwagPayPal.settings.clientId'?: string;
     'SwagPayPal.settings.clientSecret'?: string;
@@ -27,12 +25,12 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.ecsListingEnabled'?: boolean;
     'SwagPayPal.settings.ecsButtonColor'?: typeof BUTTON_COLORS[number];
     'SwagPayPal.settings.ecsButtonShape'?: typeof BUTTON_SHAPES[number];
-    'SwagPayPal.settings.ecsButtonLanguageIso'?: string;
+    'SwagPayPal.settings.ecsButtonLanguageIso'?: string | null;
 
     'SwagPayPal.settings.ecsShowPayLater'?: boolean;
     'SwagPayPal.settings.spbButtonColor'?: typeof BUTTON_COLORS[number];
     'SwagPayPal.settings.spbButtonShape'?: typeof BUTTON_SHAPES[number];
-    'SwagPayPal.settings.spbButtonLanguageIso'?: string;
+    'SwagPayPal.settings.spbButtonLanguageIso'?: string | null;
     'SwagPayPal.settings.acdcForce3DS'?: boolean;
     'SwagPayPal.settings.puiCustomerServiceInstructions'?: string;
     'SwagPayPal.settings.installmentBannerDetailPageEnabled'?: boolean;
@@ -45,17 +43,6 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.spbShowPayLater'?: boolean;
     'SwagPayPal.settings.spbCheckoutEnabled'?: boolean;
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled'?: boolean;
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.merchantLocation'?: string;
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.plusCheckoutEnabled'?: boolean;
-
     'SwagPayPal.settings.vaultingEnabled'?: boolean;
     'SwagPayPal.settings.vaultingEnableAlways'?: boolean;
     'SwagPayPal.settings.vaultingEnabledWallet'?: boolean;
@@ -63,13 +50,13 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.vaultingEnabledVenmo'?: boolean;
 
     'SwagPayPal.settings.crossBorderMessagingEnabled'?: boolean;
-    'SwagPayPal.settings.crossBorderBuyerCountry'?: string;
+    'SwagPayPal.settings.crossBorderBuyerCountry'?: typeof COUNTRY_OVERRIDES[number] | null;
 };
 
 /**
  * @private
  */
-export const SystemConfigDefinition: Record<keyof SystemConfig, 'string' | 'boolean' | 'array'> = {
+export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'boolean' | 'array'> = {
     'SwagPayPal.settings.clientId': 'string',
     'SwagPayPal.settings.clientSecret': 'string',
     'SwagPayPal.settings.clientIdSandbox': 'string',
@@ -111,17 +98,6 @@ export const SystemConfigDefinition: Record<keyof SystemConfig, 'string' | 'bool
     'SwagPayPal.settings.spbShowPayLater': 'boolean',
     'SwagPayPal.settings.spbCheckoutEnabled': 'boolean',
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled': 'boolean',
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.merchantLocation': 'string',
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    'SwagPayPal.settings.plusCheckoutEnabled': 'boolean',
-
     'SwagPayPal.settings.vaultingEnabled': 'boolean',
     'SwagPayPal.settings.vaultingEnableAlways': 'boolean',
     'SwagPayPal.settings.vaultingEnabledWallet': 'boolean',

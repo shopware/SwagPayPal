@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 import template from './swag-paypal-disputes-list.html.twig';
 import {
     DISPUTE_AUTH_ERROR,
@@ -46,32 +46,32 @@ export default Shopware.Component.wrapComponentConfig({
             disputeStates: [
                 {
                     value: DISPUTE_STATE_REQUIRED_ACTION,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_REQUIRED_ACTION),
                 },
                 {
                     value: DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION),
                 },
                 {
                     value: DISPUTE_STATE_UNDER_PAYPAL_REVIEW,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_UNDER_PAYPAL_REVIEW),
                 },
                 {
                     value: DISPUTE_STATE_RESOLVED,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_RESOLVED),
                 },
                 {
                     value: DISPUTE_STATE_OPEN_INQUIRIES,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_OPEN_INQUIRIES),
                 },
                 {
                     value: DISPUTE_STATE_APPEALABLE,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
                     label: this.formatTechnicalText(DISPUTE_STATE_APPEALABLE),
                 },
             ],
@@ -183,7 +183,10 @@ export default Shopware.Component.wrapComponentConfig({
             if (errorResponse.response?.data.errors?.[0]?.code === DISPUTE_AUTH_ERROR) {
                 this.notAuthorized = true;
             } else {
-                this.createNotificationFromError({ errorResponse, title: 'swag-paypal-disputes.list.errorTitle' });
+                this.createNotificationError({
+                    title: this.$t('swag-paypal-disputes.list.errorTitle'),
+                    message: this.createMessageFromError(errorResponse),
+                });
             }
 
             this.isLoading = false;

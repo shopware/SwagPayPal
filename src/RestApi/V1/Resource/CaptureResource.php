@@ -10,7 +10,6 @@ namespace Swag\PayPal\RestApi\V1\Resource;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\V1\Api\Capture;
-use Swag\PayPal\RestApi\V1\Api\Refund;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 
 #[Package('checkout')]
@@ -33,17 +32,5 @@ class CaptureResource
         );
 
         return (new Capture())->assign($response);
-    }
-
-    public function refund(string $captureId, Refund $refund, string $salesChannelId): Refund
-    {
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
-            \sprintf('%s/%s/refund', RequestUriV1::CAPTURE_RESOURCE, $captureId),
-            $refund
-        );
-
-        $refund->assign($response);
-
-        return $refund;
     }
 }

@@ -11,7 +11,10 @@ use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-#[OA\Schema(schema: 'swag_paypal_v1_payment_transaction_item_list_shipping_option')]
+#[OA\Schema(
+    schema: 'swag_paypal_v1_payment_transaction_item_list_shipping_option',
+    properties: [], // so an empty object will be generated
+)]
 #[Package('checkout')]
 class ShippingOption extends PayPalApiStruct
 {

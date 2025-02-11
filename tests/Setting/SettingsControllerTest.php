@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\System\SystemConfig\Validation\SystemConfigValidator;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
@@ -19,6 +20,7 @@ use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
+use Swag\PayPal\Setting\Service\SettingsSaver;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -28,6 +30,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -79,28 +82,35 @@ class SettingsControllerTest extends TestCase
     {
         $logger = new NullLogger();
         $systemConfigService = $this->createDefaultSystemConfig();
+        $apiCredentialsService = new ApiCredentialService(
+            new CredentialsResource(
+                new TokenClientFactoryMock($logger),
+                new CredentialsClientFactoryMock($logger),
+                new TokenValidator()
+            ),
+            new TokenClientFactoryMock($logger),
+            new TokenValidator(),
+            new CredentialProvider(
+                new SettingsValidationService($systemConfigService, $logger),
+                $systemConfigService,
+                new CredentialsUtil($systemConfigService)
+            ),
+            $logger,
+        );
 
         return new SettingsController(
-            new ApiCredentialService(
-                new CredentialsResource(
-                    new TokenClientFactoryMock($logger),
-                    new CredentialsClientFactoryMock($logger),
-                    new TokenValidator()
-                ),
-                new TokenClientFactoryMock($logger),
-                new TokenValidator(),
-                new CredentialProvider(
-                    new SettingsValidationService($systemConfigService, $logger),
-                    $systemConfigService,
-                    new CredentialsUtil($systemConfigService)
-                ),
-                $logger,
-            ),
+            $apiCredentialsService,
             new MerchantIntegrationsService(
                 new MerchantIntegrationsResource(new PayPalClientFactoryMock($logger)),
                 new CredentialsUtil($systemConfigService),
                 $this->getContainer()->get(PaymentMethodDataRegistry::class),
                 new PayPalClientFactoryMock($logger)
+            ),
+            $this->getContainer()->get(SystemConfigValidator::class),
+            new SettingsSaver(
+                $systemConfigService,
+                $apiCredentialsService,
+                $this->createMock(WebhookSystemConfigHelper::class),
             )
         );
     }

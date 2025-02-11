@@ -52,11 +52,8 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
         throw new DecorationPatternException(self::class);
     }
 
-    /**
-     * @phpstan-ignore-next-line
-     */
     #[OA\Post(
-        path: '/store-api/paypal/payment-method-eligibility',
+        path: '/paypal/payment-method-eligibility',
         operationId: 'setPaymentMethodEligibility',
         description: 'Sets ineligible payment methods to be removed from the session',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [

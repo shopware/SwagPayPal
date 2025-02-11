@@ -5,13 +5,32 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
         ...super.options,
 
         /**
-         * URL for adding flash error message
-         *
-         * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
+         * This option specifies the PayPal button color
          *
          * @type string
          */
-        addErrorUrl: '',
+        buttonColor: null,
+
+        /**
+         * This option specifies the PayPal button shape
+         *
+         * @type string
+         */
+        buttonShape: 'sharp',
+
+        /**
+         * This option specifies the PayPal button size
+         *
+         * @type string
+         */
+        buttonSize: 'small',
+
+        /**
+         * URL to create a new PayPal order
+         *
+         * @type string
+         */
+        createOrderUrl: '',
 
         /**
          * URL for adding flash error message
@@ -98,52 +117,6 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
      */
     onCancel(error = undefined) {
         this.handleError(this.USER_CANCELLED, false, error);
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleError} instead
-     *
-     * @param {'cancel'|'browser'|'error'} type
-     * @param {*=} error
-     * @param {String=} redirect
-     * @returns {void}
-     */
-    createError(type, error = undefined, redirect = '') {
-        if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && typeof this._client === 'undefined') {
-            console.error('No HttpClient defined in child plugin class');
-            return;
-        }
-
-        const addErrorUrl = this.options.addErrorUrl;
-        if (process.env.NODE_ENV !== 'production'
-            && typeof console !== 'undefined'
-            && (typeof addErrorUrl === 'undefined' || addErrorUrl === null)
-        ) {
-            console.error('No "addErrorUrl" defined in child plugin class');
-            return;
-        }
-
-        if (this.options.accountOrderEditCancelledUrl && this.options.accountOrderEditFailedUrl) {
-            window.location = type === 'cancel' ? this.options.accountOrderEditCancelledUrl : this.options.accountOrderEditFailedUrl;
-
-            return;
-        }
-
-        if (!!error && typeof error !== 'string') {
-            error = String(error);
-        }
-
-        this._client.post(addErrorUrl, JSON.stringify({error, type}), () => {
-            if (redirect) {
-                window.location = redirect;
-                return;
-            }
-
-            window.onbeforeunload = () => {
-                window.scrollTo(0, 0);
-            };
-            window.location.reload();
-        });
     }
 
     /**

@@ -1,0 +1,125 @@
+{
+  "swag-paypal": {
+    "errors": {
+      "UNKNOWN": "Ein unbekannter Fehler ist aufgetreten",
+      "SWAG_PAYPAL__API_INVALID_CREDENTIALS": "Die API-Zugangsdaten sind ungültig",
+      "SWAG_PAYPAL__API_NOT_AVAILABLE": "Die PayPal-Services sind derzeit nicht verfügbar. Bitte versuchen Sie es später errneut.",
+      "SWAG_PAYPAL__INVALID_API_CREDENTIALS": "Die API-Zugangsdaten sind ungültig"
+    },
+    "notifications": {
+      "save": {
+        "title": "PayPal-Einstellungen",
+        "webhookMessage": "Der Webhook konnte nicht gespeichert werden:<br>{message}",
+        "errorMessage": "Speicherung fehlgeschlagen:<br>{message}"
+      },
+      "merchantInformation": {
+        "title": "PayPal Account",
+        "errorMessage": "Abrufen fehlgeschlagen:<br>{message}"
+      },
+      "posError": {
+        "title": "Zettle POS"
+      }
+    }
+  },
+  "swag-paypal-onboarding-button": {
+    "sandbox": {
+      "title": "PayPal-Sandbox-Konto verbinden",
+      "changeTitle": "Anderes Sandbox-Konto verbinden",
+      "onboardingTitle": "PayPal Sandbox-Onboarding starten"
+    },
+    "live": {
+      "title": "PayPal-Konto verbinden",
+      "changeTitle": "Anderes Konto verbinden",
+      "onboardingTitle": "PayPal Onboarding starten",
+      "restartOnboardingTitle": "PayPal Onboarding wiederholen"
+    }
+  },
+  "swag-paypal-setting": {
+    "label": {
+      "clientId": "Client-ID",
+      "clientSecret": "Client-Secret",
+      "merchantPayerId": "PayPal-Händler-ID",
+      "clientIdSandbox": "Sandbox-Client-ID",
+      "clientSecretSandbox": "Sandbox-Client-Secret",
+      "merchantPayerIdSandbox": "Sandbox-PayPal-Händler-ID",
+      "sandbox": "Sandbox aktivieren",
+      "intent": "Zahlungsabschluss",
+      "submitCart": "Warenkorb übertragen",
+      "brandName": "Eigener Markenname auf der PayPal-Seite",
+      "landingPage": "PayPal-Landingpage",
+      "sendOrderNumber": "Bestellnummer übertragen",
+      "orderNumberPrefix": "Bestellnummer-Präfix",
+      "orderNumberSuffix": "Bestellnummer-Suffix",
+      "excludedProductIds": "Ausgeschlossene Produkte",
+      "excludedProductStreamIds": "Ausgeschlossene dynamische Produktgruppen",
+      "ecsDetailEnabled": "'Direkt zu PayPal' auf Detailseite",
+      "ecsCartEnabled": "'Direkt zu PayPal' im Warenkorb",
+      "ecsOffCanvasEnabled": "'Direkt zu PayPal' im Off-Canvas Warenkorb",
+      "ecsLoginEnabled": "'Direkt zu PayPal' auf Loginseite",
+      "ecsListingEnabled": "'Direkt zu PayPal' auf Listingseiten",
+      "ecsButtonColor": "Buttonfarbe",
+      "ecsButtonShape": "Buttonform",
+      "ecsSubmitCart": "Warenkorb übertragen",
+      "ecsButtonLanguageIso": "Buttonsprache",
+      "ecsShowPayLater": "'Später Bezahlen' neben dem 'PayPal Checkout'-Button anzeigen",
+      "installmentBannerDetailPageEnabled": "'Später Bezahlen'-Banner auf Detailseite",
+      "installmentBannerCartEnabled": "'Später Bezahlen'-Banner im Warenkorb",
+      "installmentBannerOffCanvasCartEnabled": "'Später Bezahlen'-Banner im Off-Canvas-Warenkorb",
+      "installmentBannerLoginPageEnabled": "'Später Bezahlen'-Banner auf Loginseite",
+      "installmentBannerFooterEnabled": "'Später Bezahlen'-Banner im Footer",
+      "acdcForce3DS": "Zahlungen aus Nicht-3DS-Ländern blockieren",
+      "puiCustomerServiceInstructions": "Kundenservice-Anweisungen für Rechnungskauf",
+      "spbCheckoutEnabled": "Smart Payment Buttons aktivieren",
+      "spbButtonLanguageIso": "Buttonsprache",
+      "spbAlternativePaymentMethodsEnabled": "Aktiviert die alternativen Zahlungsarten der Smart Payment Buttons.",
+      "spbShowPayLater": "'Später Bezahlen'-Button neben PayPal-Button anzeigen",
+      "spbButtonColor": "Buttonfarbe",
+      "spbButtonShape": "Buttonform",
+      "vaultingEnabledWallet": "Vaulting für PayPal-Zahlungen aktivieren",
+      "vaultingEnabledACDC": "Vaulting für Kredit- und Debitkarten-Zahlungen verwenden",
+      "vaultingEnabledVenmo": "Vaulting für Venmo-Zahlungen verwenden",
+      "crossBorderMessagingEnabled" : "Länderübergreifende Lokalisierung der \"Später bezahlen\"-Nachricht aktivieren",
+      "crossBorderBuyerCountry" : "Lokalisierung"
+    },
+    "helpText": {
+      "clientId": "Die Client-ID der REST-API, die das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren.",
+      "clientSecret": "Das Client-Secret der REST-API, das das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren.",
+      "merchantPayerId": "Die PayPal-Händler-ID, die dem PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal-Kontoeinstellungen).",
+      "clientIdSandbox": "Die Client-ID der REST-API, die das Plugin im Testfall dazu verwendet, sich mit der PayPal-API zu authentifizieren.",
+      "clientSecretSandbox": "Das Client-Secret der REST-API, das das Plugin im Testfall dazu verwendet, sich mit der PayPal-API zu authentifizieren.",
+      "merchantPayerIdSandbox": "Die PayPal-Händler-ID, die dem Sandbox-PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal-Kontoeinstellungen).",
+      "sandbox": "Aktiviere diese Option, um die Integration zu testen.",
+      "submitCart": "Wenn diese Option aktiv ist, werden beim Checkout die Warenkorbdaten an PayPal übertragen.",
+      "brandName": "Dieser Text wird als Markenname auf der PayPal-Zahlungsseite angezeigt.",
+      "sendOrderNumber": "Wenn diese Option aktiv ist, wird beim Checkout die Bestellnummer an PayPal als Rechnungsnummer übertragen.",
+      "orderNumberPrefix": "Dieser Text wird vor die ursprüngliche Bestellnummer gehängt (z.B. MeinShop_SW20001). Das hilft dabei der Identifizierung des Shops, in dem die Zahlung ausgeführt wurde. Du findest diese als Rechnungsnummer in Deinem PayPal-Dashboard.",
+      "orderNumberSuffix": "Dieser Text wird an die ursprüngliche Bestellnummer gehängt (z.B. SW20001_MeinShop). Das hilft dabei der Identifizierung des Shops, in dem die Zahlung ausgeführt wurde. Du findest diese als Rechnungsnummer in Deinem PayPal-Dashboard.",
+      "excludedProductIds": "Hier ausgewählte Produkte können nicht mit PayPal gekauft werden.",
+      "excludedProductStreamIds": "Hier ausgewählte dynamische Produktgruppen können nicht mit PayPal gekauft werden.",
+      "ecsDetailEnabled": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf jeder Produktdetailseite angezeigt.",
+      "ecsCartEnabled": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Warenkorbseite angezeigt.",
+      "ecsOffCanvasEnabled": "Wenn diese Option aktiv ist, wird der Express Checkout Button in dem Off-Canvas-Warenkorb angezeigt.",
+      "ecsLoginEnabled": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Login- und Registrierungsseite angezeigt.",
+      "ecsListingEnabled": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf Listingseiten angezeigt.",
+      "ecsSubmitCart": "Wenn diese Option aktiv ist, wird der Warenkorb bei Express-Bestellungen an PayPal übertragen.",
+      "ecsButtonLanguageIso": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet.",
+      "ecsShowPayLater": "Die Schaltfläche 'Später Bezahlen' wird auf denselben Seiten und im selben Design wie die Schaltfläche 'Direkt zu PayPal' angezeigt.",
+      "installmentBannerDetailPageEnabled": "Wenn diese Option aktiv ist, wird der 'Später Bezahlen'-Banner auf jeder Produktdetailseite angezeigt.",
+      "installmentBannerCartEnabled": "Wenn diese Option aktiv ist, wird der 'Später Bezahlen'-Banner im Warenkorb angezeigt.",
+      "installmentBannerOffCanvasCartEnabled": "Wenn diese Option aktiv ist, wird der 'Später Bezahlen'-Banner im Off-Canvas-Warenkorb angezeigt.",
+      "installmentBannerLoginPageEnabled": "Wenn diese Option aktiv ist, wird der 'Später Bezahlen'-Banner auf der Login- und Registrierungsseite angezeigt.",
+      "installmentBannerFooterEnabled": "Wenn diese Option aktiv ist, wird der 'Später Bezahlen'-Banner im Footer angezeigt.",
+      "acdcForce3DS": "PayPal prüft auf Basis der präsentierten Kredit- oder Debitkarte, ob 3DS (Starke Kunden-Authentifizierung) erforderlich ist. Durch das Setzen dieser Option werden Zahlungsversuche ohne 3DS-Check abgelehnt.",
+      "puiCustomerServiceInstructions": "Diese Anweisungen werden an PayPal & RatePay übermittelt und in Kunden-E-Mails verwendet.",
+      "spbButtonLanguageIso": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet.",
+      "spbAlternativePaymentMethodsEnabled": "Die alternativen Zahlungsarten sind Kredit- und Debitkarten und weitere."
+    },
+    "hintText": {
+      "landingPage": {
+        "LOGIN": "Anmeldung: Auf der PayPal-Seite wird der Login als Landingpage angezeigt.",
+        "GUEST_CHECKOUT": "Gast-Checkout: Auf der PayPal-Seite werden direkt Zahlungsdaten des Kunden abgefragt, ohne dass dieser sich bei PayPal einloggen muss.",
+        "NO_PREFERENCE": "Keine Präferenz: PayPal entscheidet auf Grundlage früherer Interaktionen des Kunden mit PayPal welche Seite angezeigt wird."
+      }
+    }
+  }
+}

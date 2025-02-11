@@ -28,7 +28,6 @@ class VaultDataService
     public function __construct(
         private readonly EntityRepository $vaultRepository,
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
-        private readonly TokenResourceInterface $tokenResource,
     ) {
     }
 
@@ -59,21 +58,6 @@ class VaultDataService
         }
 
         return $struct;
-    }
-
-    public function getUserIdToken(SalesChannelContext $context): ?string
-    {
-        $customer = $context->getCustomer();
-        if ($customer === null || $customer->getGuest() === true) {
-            return null;
-        }
-
-        $vault = $this->fetchVaultData($customer, $context);
-        if ($vault !== null) {
-            return $this->tokenResource->getUserIdToken($context->getSalesChannelId(), $vault->getTokenCustomer())->getIdToken();
-        }
-
-        return $this->tokenResource->getUserIdToken($context->getSalesChannelId())->getIdToken();
     }
 
     private function fetchVaultData(CustomerEntity $customer, SalesChannelContext $context): ?VaultTokenEntity

@@ -1,6 +1,5 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import { loadScript } from '@paypal/paypal-js';
-import SwagPayPalScriptLoading from './swag-paypal.script-loading';
 
 const availableAPMs = [
     'card',
@@ -17,11 +16,6 @@ const availableAPMs = [
 ];
 
 export default class SwagPayPalScriptBase extends Plugin {
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    static scriptLoading = new SwagPayPalScriptLoading();
-
     static options = {
         /**
          * This option holds the client id specified in the settings
@@ -29,6 +23,13 @@ export default class SwagPayPalScriptBase extends Plugin {
          * @type string
          */
         clientId: '',
+
+        /**
+         * This option holds the client token required for field rendering
+         *
+         * @type string
+         */
+        clientToken: '',
 
         /**
          * This option holds the merchant id specified in the settings
@@ -71,6 +72,34 @@ export default class SwagPayPalScriptBase extends Plugin {
          * @type string
          */
         languageIso: 'en_GB',
+
+        /**
+         * This option toggles if the pay later button should be shown
+         *
+         * @type boolean
+         */
+        showPayLater: true,
+
+        /**
+         * This option toggles if credit card and ELV should be shown
+         *
+         * @type boolean
+         */
+        useAlternativePaymentMethods: true,
+
+        /**
+         * This option specifies if selected APMs should be hidden
+         *
+         * @type string[]
+         */
+        disabledAlternativePaymentMethods: [],
+
+        /**
+         * User ID token for vaulting
+         *
+         * @type string|null
+         */
+        userIdToken: null,
 
         /**
          * This option will await the visibility of the element before continue loading the script.
@@ -120,8 +149,6 @@ export default class SwagPayPalScriptBase extends Plugin {
         } else {
             await wrapper();
         }
-
-        this._createScriptLegacy(callback);
     }
 
     async _awaitVisibility(callback) {
@@ -138,9 +165,7 @@ export default class SwagPayPalScriptBase extends Plugin {
     }
 
     async _loadScript() {
-        await loadScript(this.getScriptOptions());
-
-        SwagPayPalScriptBase.paypal[this.scriptOptionsHash] = window.paypal;
+        SwagPayPalScriptBase.paypal[this.scriptOptionsHash] = await loadScript(this.getScriptOptions());
 
         // overwriting an existing `window.paypal` object would remove previously rendered elements
         // therefore we remove it so other scripts can load it on their own
@@ -171,7 +196,7 @@ export default class SwagPayPalScriptBase extends Plugin {
 
         if (this.options.useAlternativePaymentMethods === false) {
             config['disable-funding'] = availableAPMs.join(',');
-        } else if (Array.isArray(this.options.disabledAlternativePaymentMethods)) {
+        } else if (this.options.disabledAlternativePaymentMethods.length > 0) {
             config['disable-funding'] = this.options.disabledAlternativePaymentMethods.join(',');
         }
 
@@ -192,22 +217,5 @@ export default class SwagPayPalScriptBase extends Plugin {
         }
 
         return config;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    callCallbacks() {
-        this.constructor.scriptLoading.callbacks.forEach((callback) => {
-            SwagPayPalScriptBase.scriptPromises[this.scriptOptionsHash]
-                .then((paypal) => callback.call(this, paypal));
-        });
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed without replacement
-     */
-    _createScriptLegacy(callback) {
-        this.constructor.scriptLoading.callbacks.push(callback);
     }
 }

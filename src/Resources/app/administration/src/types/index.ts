@@ -1,5 +1,5 @@
 import type { AxiosError } from 'axios';
-import type { components, operations } from 'src/types/openapi';
+import type { components, operations } from 'SwagPayPal/types/openapi';
 
 type AsKey<T extends string> = T extends `${infer N extends number}` ? N : T;
 

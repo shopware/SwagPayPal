@@ -66,54 +66,14 @@ parameters:
 			path: src/Pos/PosSyncController.php
 
 		-
-			message: "#^Class Swag\\\\PayPal\\\\Pos\\\\Sync\\\\Context\\\\InventoryContext has an uninitialized property \\$salesChannel\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Pos/Sync/Context/InventoryContext.php
-
-		-
 			message: "#^Array method calls \\[\\$this, \"method\"\\] are not allowed\\. Use explicit method instead to help PhpStorm, PHPStan and Rector understand your code$#"
 			count: 2
 			path: src/Pos/Sync/Context/InventoryContextFactory.php
 
 		-
-			message: "#^Class Swag\\\\PayPal\\\\Pos\\\\Sync\\\\Inventory\\\\Calculator\\\\LocalWebhookCalculator has an uninitialized property \\$fixedUpdates\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Pos/Sync/Inventory/Calculator/LocalWebhookCalculator.php
-
-		-
 			message: "#^Array method calls \\[\\$this, \"method\"\\] are not allowed\\. Use explicit method instead to help PhpStorm, PHPStan and Rector understand your code$#"
 			count: 1
 			path: src/Pos/Sync/Product/DeletedUpdater.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Pos\\\\Sync\\\\Product\\\\Util\\\\ProductGrouping has an uninitialized property \\$product\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Pos/Sync/Product/Util/ProductGrouping.php
-
-		-
-			message: "#^Access to an uninitialized property Swag\\\\PayPal\\\\Pos\\\\Webhook\\\\WebhookRegistry\\:\\:\\$registeredWebhooks\\.$#"
-			count: 2
-			path: src/Pos/Webhook/WebhookRegistry.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Reporting\\\\DataAbstractionLayer\\\\TransactionReport\\\\TransactionReportEntity has an uninitialized property \\$currencyIso\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Reporting/DataAbstractionLayer/TransactionReport/TransactionReportEntity.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Reporting\\\\DataAbstractionLayer\\\\TransactionReport\\\\TransactionReportEntity has an uninitialized property \\$orderTransactionId\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Reporting/DataAbstractionLayer/TransactionReport/TransactionReportEntity.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Reporting\\\\DataAbstractionLayer\\\\TransactionReport\\\\TransactionReportEntity has an uninitialized property \\$orderTransactionVersionId\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Reporting/DataAbstractionLayer/TransactionReport/TransactionReportEntity.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Reporting\\\\DataAbstractionLayer\\\\TransactionReport\\\\TransactionReportEntity has an uninitialized property \\$totalPrice\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Reporting/DataAbstractionLayer/TransactionReport/TransactionReportEntity.php
 
 		-
 			message: "#^Use explicit names over dynamic ones$#"
@@ -129,61 +89,6 @@ parameters:
 			message: "#^Mixed variable in a `\\$checkoutMethod\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
 			count: 2
 			path: src/Storefront/Data/CheckoutDataSubscriber.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$billingCountryCode\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Util/Availability/AvailabilityContext.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$currencyCode\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Util/Availability/AvailabilityContext.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$hasDigitalProducts\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Util/Availability/AvailabilityContext.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$salesChannelId\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Util/Availability/AvailabilityContext.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$subscription\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Util/Availability/AvailabilityContext.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Util\\\\Availability\\\\AvailabilityContext has an uninitialized property \\$totalAmount\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: src/Util/Availability/AvailabilityContext.php
-
-		-
-			message: "#^Access to an uninitialized property Swag\\\\PayPal\\\\Webhook\\\\WebhookRegistry\\:\\:\\$registeredWebhooks\\.$#"
-			count: 2
-			path: src/Webhook/WebhookRegistry.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Card\\\\AbstractCardValidatorTestCase has an uninitialized property \\$systemConfigService\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Checkout/Card/AbstractCardValidatorTestCase.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Card\\\\AbstractCardValidatorTestCase has an uninitialized property \\$validator\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Checkout/Card/AbstractCardValidatorTestCase.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Method\\\\AbstractTestSyncAPMHandler has an uninitialized property \\$clientFactory\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Checkout/Method/AbstractTestSyncAPMHandler.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Method\\\\PUIHandlerTest has an uninitialized property \\$session\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Checkout/Method/PUIHandlerTest.php
 
 		-
 			message: "#^Mixed variable in a `\\$criteria\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
@@ -206,24 +111,9 @@ parameters:
 			path: tests/Checkout/Payment/MessageQueue/TransactionStatusSyncMessageHandlerTest.php
 
 		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Payment\\\\PayPalPaymentHandlerTest has an uninitialized property \\$clientFactory\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Checkout/Payment/PayPalPaymentHandlerTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Plus\\\\PlusPaymentFinalizeControllerTest has an uninitialized property \\$orderTransactionStateHandler\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Checkout/Plus/PlusPaymentFinalizeControllerTest.php
-
-		-
 			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Installment\\\\Banner\" does not follow PSR\\-4 configuration in composer\\.json$#"
 			count: 1
 			path: tests/Installment/Banner/Service/BannerDataServiceTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Mock\\\\PayPal\\\\Client\\\\GuzzleClientMock has an uninitialized property \\$data\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Mock/PayPal/Client/GuzzleClientMock.php
 
 		-
 			message: "#^Mixed variable in a `\\$struct\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
@@ -241,46 +131,6 @@ parameters:
 			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
 
 		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct has an uninitialized property \\$bar\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Api/Common/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct has an uninitialized property \\$foo\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Api/Common/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct has an uninitialized property \\$id\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Api/Common/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct has an uninitialized property \\$notExistingClass\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Api/Common/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct has an uninitialized property \\$notExistingCollectionClass\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Api/Common/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct\\\\Bar has an uninitialized property \\$bar\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Api/Common/_fixtures/TestStruct/Bar.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct\\\\Foo has an uninitialized property \\$fooBaz\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Api/Common/_fixtures/TestStruct/Foo.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Api\\\\Common\\\\_fixtures\\\\TestStruct\\\\Foo has an uninitialized property \\$fooBoo\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Api/Common/_fixtures/TestStruct/Foo.php
-
-		-
 			message: "#^Provide more specific return type \"GuzzleHttp\\\\Psr7\\\\Response\" over abstract one$#"
 			count: 1
 			path: tests/Pos/Mock/Client/GuzzleClientMock.php
@@ -289,11 +139,6 @@ parameters:
 			message: "#^Use explicit names over dynamic ones$#"
 			count: 1
 			path: tests/Pos/Mock/MessageBusMock.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Mock\\\\ProductContextMock has an uninitialized property \\$status\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Mock/ProductContextMock.php
 
 		-
 			message: "#^Parameter \\#1 \\$entity of method Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityCollection\\<Shopware\\\\Core\\\\Content\\\\Product\\\\ProductEntity\\>\\:\\:add\\(\\) expects Shopware\\\\Core\\\\Content\\\\Product\\\\ProductEntity, Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Entity given\\.$#"
@@ -309,36 +154,6 @@ parameters:
 			message: "#^Use explicit names over dynamic ones$#"
 			count: 2
 			path: tests/Pos/Run/PosSyncControllerTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$messageBus\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Util/SettingsControllerTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$productVisibilityRepository\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Util/SettingsControllerTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$runRepository\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Util/SettingsControllerTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$runService\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Util/SettingsControllerTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$salesChannelProductRepository\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Util/SettingsControllerTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\\\\SettingsControllerTest has an uninitialized property \\$salesChannelRepository\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Pos/Util/SettingsControllerTest.php
 
 		-
 			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\" does not follow PSR\\-4 configuration in composer\\.json$#"
@@ -371,61 +186,6 @@ parameters:
 			path: tests/RestApi/PayPalApiStructStructureTest.php
 
 		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\V1\\\\Resource\\\\WebhookResourceTest has an uninitialized property \\$clientFactory\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/RestApi/V1/Resource/WebhookResourceTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$bar\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/RestApi/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$foo\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/RestApi/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$id\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/RestApi/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$notExistingClass\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/RestApi/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$notExistingCollectionClass\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/RestApi/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct has an uninitialized property \\$scalarArray\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/RestApi/_fixtures/TestStruct.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct\\\\Bar has an uninitialized property \\$bar\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/RestApi/_fixtures/TestStruct/Bar.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\RestApi\\\\_fixtures\\\\TestStruct\\\\Foo has an uninitialized property \\$fooBaz\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/RestApi/_fixtures/TestStruct/Foo.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Setting\\\\Service\\\\MerchantIntegrationsServiceTest has an uninitialized property \\$clientFactory\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Setting/Service/MerchantIntegrationsServiceTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Setting\\\\Service\\\\MerchantIntegrationsServiceTest has an uninitialized property \\$systemConfigService\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Setting/Service/MerchantIntegrationsServiceTest.php
-
-		-
 			message: "#^Class like namespace \"\" does not follow PSR\\-4 configuration in composer\\.json$#"
 			count: 1
 			path: tests/ShopwarePluginClassTest.php
@@ -439,11 +199,6 @@ parameters:
 			message: "#^Use explicit names over dynamic ones$#"
 			count: 4
 			path: tests/Storefront/Data/CheckoutSubscriberTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Storefront\\\\Data\\\\FundingSubscriberTest has an uninitialized property \\$session\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Storefront/Data/FundingSubscriberTest.php
 
 		-
 			message: "#^Class like namespace \"Shopware\\\\Core\" does not follow PSR\\-4 configuration in composer\\.json$#"
@@ -464,13 +219,3 @@ parameters:
 			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Util\\\\Lifecycle\" does not follow PSR\\-4 configuration in composer\\.json$#"
 			count: 1
 			path: tests/Util/Availability/AvailabilityServiceTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Util\\\\Lifecycle\\\\State\\\\PaymentMethodStateServiceTest has an uninitialized property \\$paymentMethodRepository\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Util/Lifecycle/State/PaymentMethodStateServiceTest.php
-
-		-
-			message: "#^Class Swag\\\\PayPal\\\\Test\\\\Webhook\\\\Handler\\\\SaleRefundedTest has an uninitialized property \\$sale\\. Give it default value or assign it in the constructor\\.$#"
-			count: 1
-			path: tests/Webhook/Handler/SaleRefundedTest.php

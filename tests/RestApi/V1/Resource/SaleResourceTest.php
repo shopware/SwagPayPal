@@ -11,9 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\RestApi\V1\Api\Refund;
-use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
@@ -37,18 +34,6 @@ class SaleResourceTest extends TestCase
         $saleArray = \json_decode($sale, true);
 
         static::assertSame(GetResourceSaleResponseFixture::ID, $saleArray['id']);
-    }
-
-    public function testRefund(): void
-    {
-        $refund = new Refund();
-        $refundResponse = $this->createSaleResource()->refund(
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID,
-            $refund,
-            TestDefaults::SALES_CHANNEL
-        );
-
-        static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $refundResponse->getState());
     }
 
     private function createSaleResource(): SaleResource

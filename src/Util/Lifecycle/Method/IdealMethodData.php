@@ -9,6 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 /**
@@ -69,6 +70,16 @@ class IdealMethodData extends AbstractMethodData
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        return self::CAPABILITY_ACTIVE;
+        $capability = $merchantIntegrations->getSpecificCapability('IDEAL');
+
+        if ($capability === null) {
+            return self::CAPABILITY_INACTIVE;
+        }
+
+        if ($capability->getStatus() === Capability::STATUS_ACTIVE) {
+            return self::CAPABILITY_ACTIVE;
+        }
+
+        return self::CAPABILITY_INELIGIBLE;
     }
 }

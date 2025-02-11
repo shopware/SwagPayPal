@@ -1,0 +1,85 @@
+name: PHP checks
+
+on:
+  push:
+    branches:
+      - trunk
+  pull_request:
+    paths:
+      - bin/*.php
+      - src/**/*.php
+      - tests/**/*.php
+      - rector.php
+      - composer.json
+      - .php-cs-fixer.dist.php
+      - phpstan.neon.dist
+      - phpstan-baseline.neon
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PLATFORM_BRANCH: ["trunk"]
+      fail-fast: false
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          install-commercial: true
+          install-admin: true
+          install-storefront: true
+          shopware-version: ${{ matrix.PLATFORM_BRANCH }}
+      - name: Prepare phpstan
+        working-directory: custom/plugins/${{ github.event.repository.name }}
+        run: |
+          composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCmsExtensions"
+          composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCommercial"
+          sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist
+      - run: |
+          composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
+
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+      - name: Run php-cs-fixer
+        run: |
+          composer -d custom/plugins/${{ github.event.repository.name }} run ecs
+
+  validate-openapi-typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          install-admin: true
+          install-storefront: true
+          shopware-version: ${{ matrix.PLATFORM_BRANCH }}
+      - working-directory: custom/plugins/${{ github.event.repository.name }}
+        run: |
+          ${GITHUB_WORKSPACE}/bin/console bundle:dump
+          composer init:admin
+          composer openapi:generate
+          git update-index --refresh || printf ''
+          git diff-index "${{ github.sha }}" --quiet -- src/Resources/app/administration/src/types/openapi.d.ts || (echo "Please run 'composer openapi:generate' to update openapi.d.ts" && exit 1)
+          git diff-index "${{ github.sha }}" --quiet -- src/Resources/Schema || (echo "Please run 'composer openapi:generate' to update Resources/Schema files" && exit 1)

@@ -3,26 +3,13 @@
     scopes: ['default', 'subscription']
 } %}
 
-{% set isBootstrap5 = feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
-
 {% block component_payment_method_description %}
     {{ parent() }}
 
-    {# @var \Swag\PayPal\Checkout\Plus\PlusData payPalPlusData #}
-    {# @deprecated tag:v10.0.0 - Will be removed without replacement #}
-    {% set payPalPlusData = page.extensions[constant('Swag\\PayPal\\Checkout\\Plus\\PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Storefront\Data\Struct\VaultData payPalVaultData #}
     {% set payPalVaultData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\VaultSubscriber::VAULT_EXTENSION')] %}
 
-    {% if payPalPlusData and payPalPlusData.approvalUrl and payPalPlusData.paymentMethodId is same as(context.paymentMethod.id) and payPalPlusData.paymentMethodId is same as(payment.id) %}
-        {% block component_payment_method_description_paypal_plus %}
-        <div class="d-none"
-             data-swag-paypal-payment-wall="true"
-             data-swag-pay-pal-plus-payment-wall-options="{{ payPalPlusData|json_encode }}">
-        </div>
-        <div id="ppplus"></div>
-        {% endblock %}
-    {% elseif payment.id is same as(context.paymentMethod.id) and payPalVaultData is not null %}
+    {% if payment.id is same as(context.paymentMethod.id) and payPalVaultData is not null %}
         {% block component_payment_method_description_paypal_vault %}
         {% if payPalVaultData.identifier %}
             <div>{{ payPalVaultData.identifier }}</div>
@@ -131,13 +118,13 @@
                     {% endblock %}
 
                     {% block swag_paypal_pui_customer_data_form_birthday_selects %}
-                    <div class="{{ isBootstrap5 ? 'row g-2' : 'form-row' }}">
+                    <div class="row g-2">
 
                         {% block swag_paypal_pui_customer_data_form_birthday_select_day %}
                             <div class="form-group col-4">
                                 <select id="{{ birthdayName }}"
                                         name="{{ birthdayName }}[day]"
-                                        class="{{ isBootstrap5 ? 'form-select' : 'custom-select' }}"
+                                        class="form-select"
                                         form="confirmOrderForm"
                                         required="required">
                                     <option selected="selected"
@@ -155,7 +142,7 @@
                         {% block swag_paypal_pui_customer_data_form_birthday_select_month %}
                             <div class="form-group col-4">
                                 <select name="{{ birthdayName }}[month]"
-                                        class="{{ isBootstrap5 ? 'form-select' : 'custom-select' }}"
+                                        class="form-select"
                                         form="confirmOrderForm"
                                         required="required">
                                     <option selected="selected"
@@ -176,7 +163,7 @@
                                 {% set startYear = currentYear - 120 %}
 
                                 <select name="{{ birthdayName }}[year]"
-                                        class="{{ isBootstrap5 ? 'form-select' : 'custom-select' }}"
+                                        class="form-select"
                                         form="confirmOrderForm"
                                         required="required">
                                     <option selected="selected"

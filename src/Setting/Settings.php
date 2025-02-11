@@ -40,7 +40,6 @@ final class Settings
     public const ECS_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonColor';
     public const ECS_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonShape';
     public const ECS_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonLanguageIso';
-
     public const ECS_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'ecsShowPayLater';
     public const SPB_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonColor';
     public const SPB_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonShape';
@@ -59,21 +58,8 @@ final class Settings
     public const SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbAlternativePaymentMethodsEnabled';
     public const CROSS_BORDER_MESSAGING_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'crossBorderMessagingEnabled';
     public const CROSS_BORDER_BUYER_COUNTRY = self::SYSTEM_CONFIG_DOMAIN . 'crossBorderBuyerCountry';
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    public const MERCHANT_LOCATION = self::SYSTEM_CONFIG_DOMAIN . 'merchantLocation';
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
-
     public const VAULTING_ENABLED_WALLET = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledWallet';
-
     public const VAULTING_ENABLED_ACDC = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledACDC';
-
     public const VAULTING_ENABLED_VENMO = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledVenmo';
 
     /**
@@ -85,7 +71,6 @@ final class Settings
         self::SUBMIT_CART => true,
         self::LANDING_PAGE => ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE,
         self::SEND_ORDER_NUMBER => true,
-        self::MERCHANT_LOCATION => self::MERCHANT_LOCATION_OTHER,
         self::ECS_DETAIL_ENABLED => true,
         self::ECS_CART_ENABLED => true,
         self::ECS_OFF_CANVAS_ENABLED => true,
@@ -99,7 +84,6 @@ final class Settings
         self::SPB_BUTTON_COLOR => 'gold',
         self::SPB_BUTTON_SHAPE => 'sharp',
         self::SPB_SHOW_PAY_LATER => false,
-        self::PLUS_CHECKOUT_ENABLED => false,
         self::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED => true,
         self::INSTALLMENT_BANNER_CART_ENABLED => true,
         self::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED => true,
@@ -116,22 +100,21 @@ final class Settings
         self::CROSS_BORDER_BUYER_COUNTRY => null,
     ];
 
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    public const MERCHANT_LOCATION_GERMANY = 'germany';
+    public const LIVE_CREDENTIAL_KEYS = [
+        Settings::CLIENT_ID,
+        Settings::CLIENT_SECRET,
+        Settings::MERCHANT_PAYER_ID,
+    ];
 
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    public const MERCHANT_LOCATION_OTHER = 'other';
+    public const SANDBOX_CREDENTIAL_KEYS = [
+        Settings::CLIENT_ID_SANDBOX,
+        Settings::CLIENT_SECRET_SANDBOX,
+        Settings::MERCHANT_PAYER_ID_SANDBOX,
+    ];
 
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed without replacement.
-     */
-    public const VALID_MERCHANT_LOCATIONS = [
-        self::MERCHANT_LOCATION_GERMANY,
-        self::MERCHANT_LOCATION_OTHER,
+    public const CREDENTIAL_KEYS = [
+        ...self::LIVE_CREDENTIAL_KEYS,
+        ...self::SANDBOX_CREDENTIAL_KEYS,
     ];
 
     private function __construct()

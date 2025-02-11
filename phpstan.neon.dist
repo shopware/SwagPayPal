@@ -1,6 +1,6 @@
 includes:
     - phpstan-baseline.neon
-    - %ShopwareRoot%/vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - phar://phpstan.phar/conf/bleedingEdge.neon
     - %ShopwareRoot%/src/Core/DevOps/StaticAnalyze/PHPStan/extension.neon
     - %ShopwareRoot%/src/Core/DevOps/StaticAnalyze/PHPStan/rules.neon
 
@@ -11,7 +11,6 @@ parameters:
     treatPhpDocTypesAsCertain: false
     checkFunctionNameCase: true
     checkInternalClassCaseSensitivity: true
-    checkUninitializedProperties: true
     reportUnmatchedIgnoredErrors: true
 
     paths:
@@ -48,24 +47,6 @@ parameters:
         - '#.* generic class Shopware\\Core\\System\\SalesChannel\\Entity\\SalesChannelRepository.*not specify its types: TEntityCollection#'
         - '#.* generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult.*does not specify its types: TEntityCollection#'
 
-        - # Ignore uninitialized property in structs
-            message: '#Class .* has an uninitialized property .* Give it default value or assign it in the constructor#'
-            paths:
-                - src/Checkout/ExpressCheckout/ExpressCheckoutButtonData.php
-                - src/Checkout/PUI/PUIFraudNetData.php
-                - src/Checkout/PUI/PUIPaymentInstructionData.php
-                - src/Checkout/Plus/PlusData.php
-                - src/Checkout/SPBCheckout/SPBCheckoutButtonData.php
-                - src/DataAbstractionLayer
-                - src/Installment/Banner/BannerData.php
-                - src/RestApi
-                - src/Setting/Struct
-                - src/Storefront/Data/Struct
-                - src/Pos/Api
-                - src/Pos/DataAbstractionLayer/Entity
-                - src/Pos/MessageQueue/Message
-                - src/Pos/Setting/Struct
-
         - # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
@@ -95,10 +76,6 @@ parameters:
                 - src/Pos/Schedule/AbstractSyncTaskHandler.php
                 - src/Reporting/ScheduledTask/TurnoverReportingTaskHandler.php
 
-        - # The RouteScopeRule seems to be broken if extending a controller
-            message: '#Method Shopware\\Core\\System\\SystemConfig\\Api\\SystemConfigController::.* has no route scope defined. Please add a route scope to the method or the class#'
-            path: src/Webhook/Registration/WebhookSystemConfigController.php
-
         - # ignore shopware v6.7 payment handlers refactor deprecations
             message: '#tag:v6.7.0 -.*PaymentTransactionStruct#'
             paths:
@@ -123,14 +100,7 @@ parameters:
         - # ignore shopware v6.7 payment handlers refactor deprecations
             message: '#Swag\\PayPal\\Pos\\Payment\\PosPayment#'
             paths:
-                - src/Pos/Setting/Service/InformationDefaultService.php
-                - tests/Checkout/CheckoutSubscriberTest.php
                 - tests/Pos/Util/InformationDefaultServiceTest.php
-
-        - # ignore shopware v6.7 native type deprecations
-            message: '#.*tag:v6.7.0 - Will be natively typed|Native type for property ".*" is missing#'
-            paths:
-                - src/Checkout/TokenResponse.php
 
 services:
     -   # register the class, so we can decorate it, but don't tag it as a rule, so only our decorator is used by PHPStan

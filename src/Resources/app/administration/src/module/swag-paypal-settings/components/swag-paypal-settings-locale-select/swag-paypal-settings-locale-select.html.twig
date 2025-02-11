@@ -1,0 +1,29 @@
+<sw-single-select
+    v-bind="$attrs"
+    :value="value"
+    :options="options"
+    :error="invalidError"
+    class="swag-paypal-settings-locale-select"
+    @update:value="updateValue"
+>
+    <template #result-label-property="{ item, highlightSearchTerm, searchTerm }">
+        <span class="swag-paypal-settings-locale-select__locale_info">
+            <sw-highlight-text
+                v-if="highlightSearchTerm && item.value !== value"
+                :text="item.label"
+                :search-term="searchTerm"
+            />
+
+            <template v-else>
+                {{ item.label }}
+            </template>
+
+            <span
+                v-if="item.label !== item.dashed"
+                class="swag-paypal-settings-locale-select__locale"
+            >
+                {{ item.dashed }}
+            </span>
+        </span>
+    </template>
+</sw-single-select>

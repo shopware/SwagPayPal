@@ -1,0 +1,114 @@
+{
+  "swag-paypal": {
+    "notifications": {
+      "test": {
+        "title": "PayPal-API-Zugangsdaten",
+        "errorMessage": "Die Validation ist fehlgeschlagen:<br>{message}",
+        "successMessage": "Die Zugangsdaten sind gültig."
+      },
+      "webhook": {
+        "title": "PayPal Webhook",
+        "errorMessage": "Der Webhook konnte nicht aktualisiert werden:<br>{message}",
+        "successMessage": "Die Aktualisierung war erfolgreich."
+      }
+    }
+  },
+  "swag-paypal-settings": {
+    "header": "PayPal",
+    "module": {
+      "title": "PayPal",
+      "description": "Einstellungen für PayPal"
+    },
+    "tabs": {
+      "general": "Allgemein",
+      "storefront": "Storefront-Darstellung",
+      "advanced": "Fortgeschritten"
+    },
+    "options": {
+      "intent": {
+        "CAPTURE": "Automatischer Zahlungseinzug (Intent CAPTURE)",
+        "AUTHORIZE": "Manueller Zahlungseinzug (Intent AUTHORIZE)"
+      },
+      "landingPage": {
+        "LOGIN": "Anmeldung",
+        "GUEST_CHECKOUT": "Gast-Checkout",
+        "NO_PREFERENCE": "Keine Präferenz"
+      },
+      "buttonColor": {
+        "blue": "Blau",
+        "black": "Schwarz",
+        "gold": "Gold (empfohlen)",
+        "silver": "Silber",
+        "white": "Weiß"
+      },
+      "buttonShape": {
+        "sharp": "Rechteckig mit spitzen Ecken",
+        "pill": "Rund",
+        "rect": "Rechteckig mit abgerundeten Ecken"
+      }
+    },
+    "credentialsLive": {
+      "title": "Live-API-Zugangsdaten",
+      "test": "Testen"
+    },
+    "credentialsSandbox": {
+      "title": "Sandbox-API-Zugangsdaten",
+      "test": "Testen"
+    },
+    "behavior": {
+      "title": "Verhalten"
+    },
+    "vaulting": {
+      "title": "Vaulting",
+      "descriptionTitle": "Einmal-Paypal-Checkout",
+      "descriptionText": "PayPal-Kontos mit aktiviertem 'Vaulting' können kontinuierlich belastet werden, ohne dass Deine Kunden während der Transaktionen anwesend sein müssen. Auch weitere Transaktionen können durchgeführt werden, ohne dass sich Deine Kunden erneut bei PayPal authentifizieren müssen.",
+      "activeButtonLabel": "Vaulting freischalten"
+    },
+    "acdc": {
+      "title": "Kredit- oder Debitkarte"
+    },
+    "pui": {
+      "title": "Rechnungskauf"
+    },
+    "express": {
+      "title": "Express Checkout Shortcut",
+      "subtitle": "Express Checkouts erhöhen die Konversionsrate in Deinem Shop und stellen für Dich als Händler kein finanzielles Risiko dar, daher sollten sie immer aktiv sein.",
+      "alertMessage": "Double Opt-In für Gast-Bestellungen ist in einem Deiner Verkaufskanäle aktiviert. Diese Funktion ist nicht mit dem PayPal Express Checkout Shortcut kompatibel. Kunden, die sich über den Express Checkout Shortcut anmelden, erhalten keine Double-Opt-In-Verifizierungs-E-Mails."
+    },
+    "installment": {
+      "title": "'Später Bezahlen'-Banner",
+      "subtitle": "Banner erhöhen die Konversionsrate in Deinem Shop und stellen für Dich als Händler kein finanzielles Risiko dar, daher sollten sie immer aktiv sein."
+    },
+    "spb": {
+      "title": "Smart Payment Buttons"
+    },
+    "webhook": {
+      "title": "Webhook",
+      "info": "Der Webhook dient dazu, den Status einer Transaktion asynchron zu aktualisieren. Falsch registrierte Webhooks, z.B. auf einem anderen oder nicht öffentlich zugänglichen Server, können zu unbestätigten Transaktionen führen, unabhängig davon, ob die Transaktion von PayPal verarbeitet wurde.",
+      "buttonRefresh": "Webhook aktualisieren",
+      "refreshFailed": "Aktualisierung des Webhooks ist fehlgeschlagen",
+      "fetchFailed": "Prüfen des Webhooks ist fehlgeschlagen",
+      "status": {
+        "unknown": "Laden ...",
+        "missing": "Fehlend",
+        "invalid": "Registriert, aber mit abweichender Domain",
+        "valid": "Gültig"
+      }
+    },
+    "crossBorder": {
+      "title": "Später bezahlen - Länderübergreifende Nachrichten",
+      "warning": "Bitte wenden Sie sich an Ihren PayPal-Vertreter, um diese Funktion für Ihr Konto zu aktivieren.",
+      "info": "Mit länderübergreifende Nachrichten für \"Später bezahlen\" wird die \"Später bezahlen\"-Nachricht in der Sprache des Kunden anzeigt. Diese Funktion ist nur für bestimmte Länder verfügbar. {0}",
+      "buyerCountryAuto": "Automatische Bestimmung",
+      "buyerCountryOverride": "Lokalisierung"
+    }
+  },
+  "swag-paypal-settings-sales-channel-switch": {
+    "description": "Klicken, um PayPal im ausgewählten Sales Channel zu aktivieren und als Standardzahlungsart zu setzen",
+    "label": "Setze PayPal als Standard"
+  },
+  "swag-paypal-settings-locale-select": {
+    "invalid": "Die angegebene Sprache ist ungültig. Bitte wähle eine aus der Liste aus.",
+    "automatic": "Automatisch (empfohlen)"
+  }
+}

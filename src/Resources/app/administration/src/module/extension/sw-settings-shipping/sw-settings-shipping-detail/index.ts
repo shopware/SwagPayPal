@@ -1,4 +1,4 @@
-import type * as PayPal from 'src/types';
+import type * as PayPal from 'SwagPayPal/types';
 import template from './sw-settings-shipping-detail.html.twig';
 import './sw-settings-shipping-detail.scss';
 import carriers, { commonCarriers } from '../../../../constant/swag-paypal-carrier.constant';
@@ -139,15 +139,6 @@ export default Shopware.Component.wrapComponentConfig({
                     this.isPayPalEnabled = !!values['SwagPayPal.settings.merchantPayerId']
                         || !!values['SwagPayPal.settings.merchantPayerIdSandbox'];
                 });
-        },
-
-        /**
-         * @deprecated tag:v10.0.0 - Will be removed, use `fetchConfigCredentials` instead.
-         */
-        async fetchMerchantIntegrations() {
-            const merchantInformation = await this.SwagPayPalApiCredentialsService.getMerchantInformation();
-
-            this.isPayPalEnabled = merchantInformation?.merchantIntegrations !== null;
         },
     },
 });

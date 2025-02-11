@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
+use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
@@ -37,7 +38,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
         RouterInterface $router,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
-        private readonly VaultDataService $vaultDataService,
+        private readonly CustomerVaultTokenRoute $customerVaultTokenRoute,
     ) {
         parent::__construct($paymentMethodDataRegistry, $localeCodeProvider, $router, $systemConfigService, $credentialsUtil);
     }
@@ -54,9 +55,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
             return null;
         }
 
-        if ($this->systemConfigService->getString(Settings::MERCHANT_LOCATION, $salesChannelId) === Settings::MERCHANT_LOCATION_GERMANY
-            || !$this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId)
-        ) {
+        if (!$this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId)) {
             return null;
         }
 
@@ -75,7 +74,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
             'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
             'disabledAlternativePaymentMethods' => $this->getDisabledAlternativePaymentMethods($price, $currency->getIsoCode()),
             'showPayLater' => $this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId),
-            'userIdToken' => $this->vaultDataService->getUserIdToken($context),
+            'userIdToken' => $this->customerVaultTokenRoute->getVaultToken($context)->getToken(),
         ]));
     }
 

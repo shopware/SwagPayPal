@@ -16,6 +16,10 @@ This plugin is listed in the Shopware store as [PayPal for Shopware 6](https://s
 
 Documentation can be found as part of the Shopware extensions docs: [Shopware Docs > PayPal](https://docs.shopware.com/en/shopware-6-en/extensions/paypal)
 
+## Reporting issues
+
+**Please use the [shopware repository](https://github.com/shopware/shopware/issues) to raise any issues.
+
 ##  Contributing
 
 Contributions are welcome! Here are several ways you can contribute:

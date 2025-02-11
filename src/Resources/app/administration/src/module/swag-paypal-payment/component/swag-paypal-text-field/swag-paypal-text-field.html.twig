@@ -8,19 +8,19 @@
 >
 
     <template v-if="hasPrefix" #sw-contextual-field-prefix="{ disabled, identification }">
-        <slot name="prefix" v-bind="{disabled, identification}"/>
+        <slot name="prefix" v-bind="{disabled, identification}" />
     </template>
 
     <template #sw-field-input="{ identification, error, disabled, size, setFocusClass, removeFocusClass, hasSuffix, hasPrefix }">
         <input
             v-bind="$attrs"
-            v-on="additionalListeners"
+            :id="identification"
             type="text"
             :name="identification"
-            :id="identification"
             :disabled="disabled"
             :value="currentValue"
             :placeHolder="placeholder"
+            v-on="additionalListeners"
             @input="onInput"
             @change="onChange"
             @focus="setFocusClass"
@@ -29,7 +29,7 @@
     </template>
 
     <template v-if="copyable || hasSuffix" #sw-contextual-field-suffix="{disabled, identification}">
-        <slot name="suffix" v-bind="{ identification }"/>
+        <slot name="suffix" v-bind="{ identification }" />
         <sw-field-copyable
             v-if="copyable"
             :displayName="identification"
