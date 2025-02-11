@@ -9,6 +9,7 @@ namespace Swag\PayPal\Installment\Banner;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -17,6 +18,7 @@ use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPage;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
+use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
@@ -29,6 +31,7 @@ use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Installment\Banner\Service\BannerDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Util\PayLaterAvailabilityChecker;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -95,13 +98,23 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         /** @var CheckoutCartPage|CheckoutConfirmPage|CheckoutRegisterPage|OffcanvasCartPage|ProductPage $page */
         $page = $pageLoadedEvent->getPage();
 
-        if ($page instanceof ProductPage
-            && $this->excludedProductValidator->isProductExcluded($page->getProduct(), $pageLoadedEvent->getSalesChannelContext())) {
-            return;
+        if ($page instanceof ProductPage) {
+            if ($this->excludedProductValidator->isProductExcluded($page->getProduct(), $pageLoadedEvent->getSalesChannelContext())) {
+                return;
+            }
+
+            $totalAmount = $page->getProduct()->getCalculatedPrice()->getTotalPrice();
         }
 
-        if (!$page instanceof ProductPage
-            && $this->excludedProductValidator->cartContainsExcludedProduct($page->getCart(), $pageLoadedEvent->getSalesChannelContext())) {
+        if (!$page instanceof ProductPage) {
+            if ($this->excludedProductValidator->cartContainsExcludedProduct($page->getCart(), $pageLoadedEvent->getSalesChannelContext())) {
+                return;
+            }
+
+            $totalAmount = $page->getCart()->getPrice()->getTotalPrice();
+        }
+
+        if (!$this->shouldDisplayPayLaterBanner($page, $salesChannelContext, $totalAmount)) {
             return;
         }
 
@@ -151,5 +164,34 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
             self::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID,
             $bannerData
         );
+    }
+
+    private function shouldDisplayPayLaterBanner(Page $page, SalesChannelContext $salesChannelContext, float $totalAmount): bool
+    {
+        return !($this->pageOfCorrectType($page)
+            && !PayLaterAvailabilityChecker::isPayLaterAvailable(
+                $this->getCountryCode($salesChannelContext),
+                $salesChannelContext->getCurrency()->getIsoCode(),
+                $totalAmount
+            ));
+    }
+
+    private function getCountryCode(SalesChannelContext $salesChannelContext): string
+    {
+        if (($customer = $salesChannelContext->getCustomer())
+            && ($address = $customer->getActiveBillingAddress())
+            && ($country = $address->getCountry())
+            && ($isoCode = $country->getIso())) {
+            return $isoCode;
+        }
+
+        return $salesChannelContext->getShippingLocation()->getCountry()->getIso();
+    }
+
+    private function pageOfCorrectType(Page $page): bool
+    {
+        return $page instanceof CheckoutRegisterPage
+            || $page instanceof OffcanvasCartPage
+            || $page instanceof CheckoutConfirmPage;
     }
 }
