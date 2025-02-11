@@ -7,7 +7,9 @@
 
 namespace Swag\PayPal\Test\Util\Lifecycle\Method;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService;
@@ -15,6 +17,10 @@ use Swag\PayPal\Util\Availability\AvailabilityContext;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @internal
+ */
+#[Package('checkout'), CoversClass(PayLaterMethodData::class)]
 class PayLaterMethodDataTest extends TestCase
 {
     private PayLaterMethodData $payLaterMethodData;
