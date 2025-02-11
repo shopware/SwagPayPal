@@ -9,8 +9,13 @@ namespace Swag\PayPal\Util\Availability;
 
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Content\Product\State;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
+/**
+ * @internal
+ */
+#[Package('checkout')]
 class AvailabilityContextBuilder
 {
     public static function buildAvailabilityContext(Cart $cart, SalesChannelContext $salesChannelContext): AvailabilityContext
