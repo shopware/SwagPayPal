@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: '/src/Resources/app/administration'
+    target-branch: 6.6.x
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'build: '
+    groups:
+      all:
+        patterns:
+          - '*'
+
+  - package-ecosystem: npm
+    directory: '/src/Resources/app/storefront'
+    target-branch: 6.6.x
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'build: '
+    groups:
+      all:
+        patterns:
+          - '*'
