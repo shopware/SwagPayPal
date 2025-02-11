@@ -1,8 +1,11 @@
 <?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Swag\PayPal\Util;
-
-use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 class PayLaterAvailabilityChecker
 {
@@ -21,12 +24,8 @@ class PayLaterAvailabilityChecker
         'AU' => ['currency' => 'AUD', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
     ];
 
-    public static function isPayLaterAvailable(AvailabilityContext $availabilityContext): bool
+    public static function isPayLaterAvailable(string $countryCode, string $currencyCode, float $totalAmount): bool
     {
-        $countryCode = $availabilityContext->getBillingCountryCode();
-        $currencyCode = $availabilityContext->getCurrencyCode();
-        $totalAmount = $availabilityContext->getTotalAmount();
-
         if (!isset(self::PAYPAL_PAY_LATER_CRITERIA[$countryCode])) {
             return false;
         }

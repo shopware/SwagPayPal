@@ -18,7 +18,6 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\AbstractScriptDataService;
-use Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -112,12 +111,13 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         );
     }
 
-    /**
-     * @return bool
-     */
     private function showPayLater(string $salesChannelId, AvailabilityContext $availabilityContext): bool
     {
         return $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)
-            && PayLaterAvailabilityChecker::isPayLaterAvailable($availabilityContext);
+            && PayLaterAvailabilityChecker::isPayLaterAvailable(
+                $availabilityContext->getBillingCountryCode(),
+                $availabilityContext->getCurrencyCode(),
+                $availabilityContext->getTotalAmount()
+            );
     }
 }
