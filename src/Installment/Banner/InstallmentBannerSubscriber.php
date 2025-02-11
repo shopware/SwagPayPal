@@ -9,7 +9,6 @@ namespace Swag\PayPal\Installment\Banner;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -31,6 +30,8 @@ use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Installment\Banner\Service\BannerDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Util\Availability\AvailabilityContext;
+use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
 use Swag\PayPal\Util\PayLaterAvailabilityChecker;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -103,7 +104,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
                 return;
             }
 
-            $totalAmount = $page->getProduct()->getCalculatedPrice()->getTotalPrice();
+            $availabilityContext = AvailabilityContextBuilder::buildFromProduct($page->getProduct(), $salesChannelContext);
         }
 
         if (!$page instanceof ProductPage) {
@@ -111,10 +112,10 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
                 return;
             }
 
-            $totalAmount = $page->getCart()->getPrice()->getTotalPrice();
+            $availabilityContext = AvailabilityContextBuilder::buildFromCart($page->getCart(), $salesChannelContext);
         }
 
-        if (!$this->shouldDisplayPayLaterBanner($page, $salesChannelContext, $totalAmount)) {
+        if (!$this->shouldDisplayPayLaterBanner($page, $availabilityContext)) {
             return;
         }
 
@@ -166,26 +167,11 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         );
     }
 
-    private function shouldDisplayPayLaterBanner(Page $page, SalesChannelContext $salesChannelContext, float $totalAmount): bool
+    private function shouldDisplayPayLaterBanner(Page $page, AvailabilityContext $availabilityContext): bool
     {
-        return !($this->pageOfCorrectType($page)
-            && !PayLaterAvailabilityChecker::isPayLaterAvailable(
-                $this->getCountryCode($salesChannelContext),
-                $salesChannelContext->getCurrency()->getIsoCode(),
-                $totalAmount
-            ));
-    }
-
-    private function getCountryCode(SalesChannelContext $salesChannelContext): string
-    {
-        if (($customer = $salesChannelContext->getCustomer())
-            && ($address = $customer->getActiveBillingAddress())
-            && ($country = $address->getCountry())
-            && ($isoCode = $country->getIso())) {
-            return $isoCode;
-        }
-
-        return $salesChannelContext->getShippingLocation()->getCountry()->getIso() ?? '';
+        return $this->pageOfCorrectType($page)
+            ? PayLaterAvailabilityChecker::isPayLaterAvailable($availabilityContext)
+            : true;
     }
 
     private function pageOfCorrectType(Page $page): bool

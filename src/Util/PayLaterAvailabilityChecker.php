@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Util;
 
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 /**
  * @internal
@@ -30,8 +31,12 @@ class PayLaterAvailabilityChecker
         'AU' => ['currency' => 'AUD', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
     ];
 
-    public static function isPayLaterAvailable(string $countryCode, string $currencyCode, float $totalAmount): bool
+    public static function isPayLaterAvailable(AvailabilityContext $availabilityContext): bool
     {
+        $countryCode = $availabilityContext->getBillingCountryCode();
+        $currencyCode = $availabilityContext->getCurrencyCode();
+        $totalAmount = $availabilityContext->getTotalAmount();
+
         if (!isset(self::PAYPAL_PAY_LATER_CRITERIA[$countryCode])) {
             return false;
         }

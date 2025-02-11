@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Util\Lifecycle\Method;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
@@ -26,7 +27,7 @@ class PayLaterMethodDataTest extends TestCase
 {
     private PayLaterMethodData $payLaterMethodData;
 
-    private ContainerInterface $container;
+    private MockObject&ContainerInterface $container;
 
     protected function setUp(): void
     {
@@ -68,10 +69,12 @@ class PayLaterMethodDataTest extends TestCase
     #[DataProvider('availabilityProvider')]
     public function testIsAvailable(string $currencyCode, string $countryCode, float $totalAmount, bool $expected): void
     {
-        $availabilityContext = $this->createMock(AvailabilityContext::class);
-        $availabilityContext->method('getCurrencyCode')->willReturn($currencyCode);
-        $availabilityContext->method('getBillingCountryCode')->willReturn($countryCode);
-        $availabilityContext->method('getTotalAmount')->willReturn($totalAmount);
+        $availabilityContext = new AvailabilityContext();
+        $availabilityContext->assign([
+            'currencyCode' => $currencyCode,
+            'billingCountryCode' => $countryCode,
+            'totalAmount' => $totalAmount,
+        ]);
 
         static::assertSame($expected, $this->payLaterMethodData->isAvailable($availabilityContext));
     }
@@ -89,7 +92,10 @@ class PayLaterMethodDataTest extends TestCase
     public function testGetCheckoutDataService(): void
     {
         $payLaterCheckoutDataService = $this->createMock(PayLaterCheckoutDataService::class);
-        $this->container->method('get')->with(PayLaterCheckoutDataService::class)->willReturn($payLaterCheckoutDataService);
+        $this->container->expects(static::once())
+            ->method('get')
+            ->with(PayLaterCheckoutDataService::class)
+            ->willReturn($payLaterCheckoutDataService);
 
         static::assertSame($payLaterCheckoutDataService, $this->payLaterMethodData->getCheckoutDataService());
     }
