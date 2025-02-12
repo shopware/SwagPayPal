@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Util\Availability;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Delivery\Struct\ShippingLocation;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
@@ -49,7 +48,7 @@ class AvailabilityContextBuilderTest extends TestCase
 
         $cart = Generator::createCart();
 
-        $salesChannelContext = Generator::generateSalesChannelContext(currency: $currency, customer: $customer);
+        $salesChannelContext = Generator::createSalesChannelContext(currency: $currency, customer: $customer);
 
         $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
 
@@ -71,11 +70,12 @@ class AvailabilityContextBuilderTest extends TestCase
         $country->setId(Uuid::randomHex());
         $country->setIso('US');
 
-        $shippingLocation = new ShippingLocation($country, null, null);
+        $customerAddress = new CustomerAddressEntity();
+        $customerAddress->setCountry($country);
 
-        $salesChannelContext = Generator::generateSalesChannelContext(
+        $salesChannelContext = Generator::createSalesChannelContext(
             currency: $currency,
-            shippingLocation: $shippingLocation,
+            shipping: $customerAddress,
             customer: new CustomerEntity()
         );
 
@@ -108,7 +108,7 @@ class AvailabilityContextBuilderTest extends TestCase
         $product = new SalesChannelProductEntity();
         $product->setCalculatedPrice(new CalculatedPrice(275, 275, new CalculatedTaxCollection(), new TaxRuleCollection(), 1));
 
-        $salesChannelContext = Generator::generateSalesChannelContext(currency: $currency, customer: $customer);
+        $salesChannelContext = Generator::createSalesChannelContext(currency: $currency, customer: $customer);
 
         $context = AvailabilityContextBuilder::buildFromProduct($product, $salesChannelContext);
 
@@ -131,11 +131,12 @@ class AvailabilityContextBuilderTest extends TestCase
         $product = new SalesChannelProductEntity();
         $product->setCalculatedPrice(new CalculatedPrice(275, 275, new CalculatedTaxCollection(), new TaxRuleCollection(), 1));
 
-        $shippingLocation = new ShippingLocation($country, null, null);
+        $customerAddress = new CustomerAddressEntity();
+        $customerAddress->setCountry($country);
 
-        $salesChannelContext = Generator::generateSalesChannelContext(
+        $salesChannelContext = Generator::createSalesChannelContext(
             currency: $currency,
-            shippingLocation: $shippingLocation,
+            shipping: $customerAddress,
             customer: new CustomerEntity()
         );
 
