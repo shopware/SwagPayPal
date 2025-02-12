@@ -36,6 +36,7 @@ use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
+use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
@@ -65,6 +66,8 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
 
     private SystemConfigService $systemConfigService;
 
+    private PayLaterMethodData $payLaterMethodData;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -73,6 +76,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         $this->paymentMethodUtil = $container->get(PaymentMethodUtil::class);
         $this->salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
         $this->cartService = $container->get(CartService::class);
+        $this->payLaterMethodData = $container->get(PayLaterMethodData::class);
 
         /** @var RouterInterface $router */
         $router = $container->get('router');
@@ -86,7 +90,8 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $this->paymentMethodUtil,
             $this->systemConfigService,
             new CredentialsUtil($this->systemConfigService),
-            new CartPriceService()
+            new CartPriceService(),
+            $this->payLaterMethodData
         );
 
         /** @var EntityRepository $productRepo */

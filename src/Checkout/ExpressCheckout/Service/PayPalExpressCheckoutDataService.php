@@ -20,8 +20,8 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\AbstractScriptDataService;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
+use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
-use Swag\PayPal\Util\PayLaterAvailabilityChecker;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -39,6 +39,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
         private readonly CartPriceService $cartPriceService,
+        private readonly PayLaterMethodData $payLaterMethodData,
     ) {
         parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
     }
@@ -114,6 +115,6 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
     private function showPayLater(string $salesChannelId, AvailabilityContext $availabilityContext): bool
     {
         return $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)
-            && PayLaterAvailabilityChecker::isPayLaterAvailable($availabilityContext);
+            && $this->payLaterMethodData->isAvailable($availabilityContext);
     }
 }

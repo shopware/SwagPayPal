@@ -14,7 +14,6 @@ use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
-use Swag\PayPal\Util\PayLaterAvailabilityChecker;
 
 /**
  * @internal
@@ -25,6 +24,21 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
     public const TECHNICAL_NAME = 'swag_paypal_pay_later';
 
     public const PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID = 'payPalPayLaterFieldData';
+
+    /**
+     * @var array<string, array<string, string|float>>
+     *
+     * @see https://developer.paypal.com/studio/checkout/pay-later/{{countryCode}}
+     */
+    public const PAYPAL_PAY_LATER_CRITERIA = [
+        'DE' => ['currency' => 'EUR', 'minAmount' => 1.00, 'maxAmount' => 5000.00],
+        'FR' => ['currency' => 'EUR', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
+        'IT' => ['currency' => 'EUR', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
+        'ES' => ['currency' => 'EUR', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
+        'GB' => ['currency' => 'GBP', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
+        'US' => ['currency' => 'USD', 'minAmount' => 30.00, 'maxAmount' => 10000.00],
+        'AU' => ['currency' => 'AUD', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
+    ];
 
     /**
      * @return array<string, array<string, string>>
@@ -63,7 +77,19 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return PayLaterAvailabilityChecker::isPayLaterAvailable($availabilityContext);
+        $countryCode = $availabilityContext->getBillingCountryCode();
+        $currencyCode = $availabilityContext->getCurrencyCode();
+        $totalAmount = $availabilityContext->getTotalAmount();
+
+        if (!isset(self::PAYPAL_PAY_LATER_CRITERIA[$countryCode])) {
+            return false;
+        }
+
+        $criteria = self::PAYPAL_PAY_LATER_CRITERIA[$countryCode];
+
+        return $currencyCode === $criteria['currency']
+            && $totalAmount >= $criteria['minAmount']
+            && $totalAmount <= $criteria['maxAmount'];
     }
 
     public function getInitialState(): bool
