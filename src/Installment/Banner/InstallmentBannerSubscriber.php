@@ -32,7 +32,7 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
-use Swag\PayPal\Util\PayLaterAvailabilityChecker;
+use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -45,28 +45,14 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
     public const PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID = 'payPalInstallmentBannerData';
     public const PAYPAL_INSTALLMENT_BANNER_DATA_CART_PAGE_EXTENSION_ID = 'payPalInstallmentBannerDataCheckoutCart';
 
-    private SettingsValidationServiceInterface $settingsValidationService;
-
-    private PaymentMethodUtil $paymentMethodUtil;
-
-    private BannerDataServiceInterface $bannerDataService;
-
-    private LoggerInterface $logger;
-
-    private ExcludedProductValidator $excludedProductValidator;
-
     public function __construct(
-        SettingsValidationServiceInterface $settingsValidationService,
-        PaymentMethodUtil $paymentMethodUtil,
-        BannerDataServiceInterface $bannerDataService,
-        ExcludedProductValidator $excludedProductValidator,
-        LoggerInterface $logger,
+        private readonly SettingsValidationServiceInterface $settingsValidationService,
+        private readonly PaymentMethodUtil $paymentMethodUtil,
+        private readonly BannerDataServiceInterface $bannerDataService,
+        private readonly ExcludedProductValidator $excludedProductValidator,
+        private readonly LoggerInterface $logger,
+        private readonly PayLaterMethodData $payLaterMethodData,
     ) {
-        $this->settingsValidationService = $settingsValidationService;
-        $this->paymentMethodUtil = $paymentMethodUtil;
-        $this->bannerDataService = $bannerDataService;
-        $this->excludedProductValidator = $excludedProductValidator;
-        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents(): array
@@ -170,7 +156,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
     private function shouldDisplayPayLaterBanner(Page $page, AvailabilityContext $availabilityContext): bool
     {
         return $this->pageOfCorrectType($page)
-            ? PayLaterAvailabilityChecker::isPayLaterAvailable($availabilityContext)
+            ? $this->payLaterMethodData->isAvailable($availabilityContext)
             : true;
     }
 
