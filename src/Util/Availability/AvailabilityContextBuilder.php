@@ -55,7 +55,7 @@ class AvailabilityContextBuilder
         SalesChannelContext $salesChannelContext,
         float $price,
         bool $subscription,
-        bool $downloadable
+        bool $downloadable,
     ): AvailabilityContext {
         $context = new AvailabilityContext();
 
