@@ -62,6 +62,10 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
      * @param {*} [error=undefined] - The error. Can be any type, but will be converted to a string
      */
     handleError(code, fatal = false, error = undefined) {
+        if (error instanceof Error) {
+            error = String(error);
+        }
+
         if (error && typeof error !== 'string') {
             error = JSON.stringify(error);
         }
