@@ -55,12 +55,7 @@ class AvailabilityService
     {
         $handlers = [];
 
-        $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
-        $context->assign([
-            'totalAmount' => $order->getPrice()->getTotalPrice(),
-            'subscription' => $order->getExtensionOfType('foreignKeys', ArrayStruct::class)?->get('subscriptionId') !== null,
-            'hasDigitalProducts' => (bool) $order->getLineItems()?->hasLineItemWithState(State::IS_DOWNLOAD),
-        ]);
+        $context = AvailabilityContextBuilder::buildFromOrder($order, $salesChannelContext);
 
         foreach ($paymentMethods as $paymentMethod) {
             if (!$this->isAvailable($paymentMethod, $context)) {
