@@ -33,7 +33,7 @@ class AvailabilityContextBuilder
         return self::buildContext(
             $salesChannelContext,
             $product->getCalculatedPrice()->getTotalPrice(),
-            self::isDownloadable($product, State::IS_DOWNLOAD)
+            \in_array(State::IS_DOWNLOAD, $product->getStates(), true)
         );
     }
 
@@ -57,10 +57,5 @@ class AvailabilityContextBuilder
     {
         return $salesChannelContext->getCustomer()?->getActiveBillingAddress()?->getCountry()?->getIso()
             ?? $salesChannelContext->getShippingLocation()->getCountry()->getIso() ?? '';
-    }
-
-    private static function isDownloadable(SalesChannelProductEntity $product, string $state): bool
-    {
-        return \in_array($state, $product->getStates(), true);
     }
 }
