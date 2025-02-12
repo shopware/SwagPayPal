@@ -60,6 +60,7 @@ use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
+use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -553,7 +554,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
                 $this->getContainer()->get(PaymentMethodUtil::class),
                 $settings,
                 new CredentialsUtil($settings),
-                new CartPriceService()
+                new CartPriceService(),
+                new PayLaterMethodData($this->getContainer())
             ),
             new SettingsValidationService($settings, new NullLogger()),
             $settings,

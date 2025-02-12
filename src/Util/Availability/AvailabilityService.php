@@ -11,9 +11,7 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
-use Shopware\Core\Content\Product\State;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
@@ -37,7 +35,7 @@ class AvailabilityService
     {
         $handlers = [];
 
-        $context = $this->buildAvailabilityContext($cart, $salesChannelContext);
+        $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
 
         foreach ($paymentMethods as $paymentMethod) {
             if (!$this->isAvailable($paymentMethod, $context)) {
@@ -55,12 +53,7 @@ class AvailabilityService
     {
         $handlers = [];
 
-        $context = $this->buildAvailabilityContext($cart, $salesChannelContext);
-        $context->assign([
-            'totalAmount' => $order->getPrice()->getTotalPrice(),
-            'subscription' => $order->getExtensionOfType('foreignKeys', ArrayStruct::class)?->get('subscriptionId') !== null,
-            'hasDigitalProducts' => (bool) $order->getLineItems()?->hasLineItemWithState(State::IS_DOWNLOAD),
-        ]);
+        $context = AvailabilityContextBuilder::buildFromOrder($order, $salesChannelContext);
 
         foreach ($paymentMethods as $paymentMethod) {
             if (!$this->isAvailable($paymentMethod, $context)) {
@@ -73,9 +66,10 @@ class AvailabilityService
 
     public function isPaymentMethodAvailable(PaymentMethodEntity $paymentMethod, Cart $cart, SalesChannelContext $salesChannelContext): bool
     {
-        $context = $this->buildAvailabilityContext($cart, $salesChannelContext);
-
-        return $this->isAvailable($paymentMethod, $context);
+        return $this->isAvailable(
+            $paymentMethod,
+            AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext)
+        );
     }
 
     private function isAvailable(PaymentMethodEntity $paymentMethod, AvailabilityContext $context): bool
@@ -86,30 +80,5 @@ class AvailabilityService
         }
 
         return $methodData->isAvailable($context);
-    }
-
-    private function buildAvailabilityContext(Cart $cart, SalesChannelContext $salesChannelContext): AvailabilityContext
-    {
-        $context = new AvailabilityContext();
-
-        if (($customer = $salesChannelContext->getCustomer())
-         && ($address = $customer->getActiveBillingAddress())
-         && ($country = $address->getCountry())
-         && ($isoCode = $country->getIso())) {
-            $billingCountryCode = $isoCode;
-        } else {
-            $billingCountryCode = $salesChannelContext->getShippingLocation()->getCountry()->getIso();
-        }
-
-        $context->assign([
-            'billingCountryCode' => $billingCountryCode,
-            'currencyCode' => $salesChannelContext->getCurrency()->getIsoCode(),
-            'totalAmount' => $cart->getPrice()->getTotalPrice(),
-            'subscription' => $salesChannelContext->hasExtension('subscription'),
-            'salesChannelId' => $salesChannelContext->getSalesChannelId(),
-            'hasDigitalProducts' => $cart->getLineItems()->hasLineItemWithState(State::IS_DOWNLOAD),
-        ]);
-
-        return $context;
     }
 }

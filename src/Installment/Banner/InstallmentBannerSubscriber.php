@@ -17,6 +17,7 @@ use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPage;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
+use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
@@ -29,6 +30,9 @@ use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Installment\Banner\Service\BannerDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Util\Availability\AvailabilityContext;
+use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
+use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -41,28 +45,14 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
     public const PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID = 'payPalInstallmentBannerData';
     public const PAYPAL_INSTALLMENT_BANNER_DATA_CART_PAGE_EXTENSION_ID = 'payPalInstallmentBannerDataCheckoutCart';
 
-    private SettingsValidationServiceInterface $settingsValidationService;
-
-    private PaymentMethodUtil $paymentMethodUtil;
-
-    private BannerDataServiceInterface $bannerDataService;
-
-    private LoggerInterface $logger;
-
-    private ExcludedProductValidator $excludedProductValidator;
-
     public function __construct(
-        SettingsValidationServiceInterface $settingsValidationService,
-        PaymentMethodUtil $paymentMethodUtil,
-        BannerDataServiceInterface $bannerDataService,
-        ExcludedProductValidator $excludedProductValidator,
-        LoggerInterface $logger,
+        private readonly SettingsValidationServiceInterface $settingsValidationService,
+        private readonly PaymentMethodUtil $paymentMethodUtil,
+        private readonly BannerDataServiceInterface $bannerDataService,
+        private readonly ExcludedProductValidator $excludedProductValidator,
+        private readonly LoggerInterface $logger,
+        private readonly PayLaterMethodData $payLaterMethodData,
     ) {
-        $this->settingsValidationService = $settingsValidationService;
-        $this->paymentMethodUtil = $paymentMethodUtil;
-        $this->bannerDataService = $bannerDataService;
-        $this->excludedProductValidator = $excludedProductValidator;
-        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents(): array
@@ -95,13 +85,23 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         /** @var CheckoutCartPage|CheckoutConfirmPage|CheckoutRegisterPage|OffcanvasCartPage|ProductPage $page */
         $page = $pageLoadedEvent->getPage();
 
-        if ($page instanceof ProductPage
-            && $this->excludedProductValidator->isProductExcluded($page->getProduct(), $pageLoadedEvent->getSalesChannelContext())) {
-            return;
+        if ($page instanceof ProductPage) {
+            if ($this->excludedProductValidator->isProductExcluded($page->getProduct(), $pageLoadedEvent->getSalesChannelContext())) {
+                return;
+            }
+
+            $availabilityContext = AvailabilityContextBuilder::buildFromProduct($page->getProduct(), $salesChannelContext);
         }
 
-        if (!$page instanceof ProductPage
-            && $this->excludedProductValidator->cartContainsExcludedProduct($page->getCart(), $pageLoadedEvent->getSalesChannelContext())) {
+        if (!$page instanceof ProductPage) {
+            if ($this->excludedProductValidator->cartContainsExcludedProduct($page->getCart(), $pageLoadedEvent->getSalesChannelContext())) {
+                return;
+            }
+
+            $availabilityContext = AvailabilityContextBuilder::buildFromCart($page->getCart(), $salesChannelContext);
+        }
+
+        if (!$this->shouldDisplayPayLaterBanner($page, $availabilityContext)) {
             return;
         }
 
@@ -151,5 +151,19 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
             self::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID,
             $bannerData
         );
+    }
+
+    private function shouldDisplayPayLaterBanner(Page $page, AvailabilityContext $availabilityContext): bool
+    {
+        return $this->pageOfCorrectType($page)
+            ? $this->payLaterMethodData->isAvailable($availabilityContext)
+            : true;
+    }
+
+    private function pageOfCorrectType(Page $page): bool
+    {
+        return $page instanceof CheckoutRegisterPage
+            || $page instanceof OffcanvasCartPage
+            || $page instanceof CheckoutConfirmPage;
     }
 }
