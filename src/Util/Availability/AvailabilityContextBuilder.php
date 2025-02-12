@@ -19,8 +19,12 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  * @internal
  */
 #[Package('checkout')]
-class AvailabilityContextBuilder
+final class AvailabilityContextBuilder
 {
+    private function __construct()
+    {
+    }
+
     public static function buildFromCart(Cart $cart, SalesChannelContext $salesChannelContext): AvailabilityContext
     {
         return self::buildContext(
