@@ -29,19 +29,20 @@ export default {
 
     transform: {
         // stringify svg imports
-        '.*\\.(svg)$': `${process.env.ADMIN_PATH}/test/transformer/svgStringifyTransformer.js`,
+        '.*\\.svg$': `${process.env.ADMIN_PATH}/test/transformer/svgStringifyTransformer.js`,
     },
 
     transformIgnorePatterns: [
-        '/node_modules/(?!(@shopware-ag/meteor-icon-kit|uuidv7|other)/)',
+        '/node_modules/(?!(@shopware-ag/meteor-component-library|@shopware-ag/meteor-icon-kit|uuidv7|other)/)',
     ],
 
     moduleNameMapper: {
         '^SwagPayPal(.*)$': '<rootDir>/src$1',
         '^src(.*)$': `${process.env.ADMIN_PATH}/src$1`,
-        '^\@shopware-ag\/meteor-admin-sdk\/es\/(.*)': `${process.env.ADMIN_PATH}/node_modules/@shopware-ag/meteor-admin-sdk/umd/$1`,
-        vue$: `${process.env.ADMIN_PATH}/node_modules/@vue/compat/dist/vue.cjs.js`,
-        '^@vue\/test-utils$': `${process.env.ADMIN_PATH}/node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js`,
+        '^(@shopware-ag/meteor-admin-sdk)/es/(.*)': `${process.env.ADMIN_PATH}/node_modules/$1/umd/$2`,
+        '^(@shopware-ag/meteor-component-library)$': `${process.env.ADMIN_PATH}/node_modules/$1/dist/common/index.js`,
+        vue$: '<rootDir>/node_modules/vue/dist/vue.cjs.js',
+        '@vue/(.*)$': '<rootDir>/node_modules/@vue/$1',
     },
 
     testEnvironmentOptions: {
