@@ -1,6 +1,6 @@
 import template from './swag-paypal-settings-locale-select.html.twig';
 import './swag-paypal-settings-locale-select.scss';
-import { LOCALES, type LOCALE } from '../../../../constant/swag-paypal-settings.constant';
+import { LOCALES, type LOCALE } from 'SwagPayPal/constant/swag-paypal-settings.constant';
 
 type LocaleOption = {
     value: string | null;
@@ -10,8 +10,6 @@ type LocaleOption = {
 
 export default Shopware.Component.wrapComponentConfig({
     template,
-
-    compatConfig: Shopware.compatConfig,
 
     props: {
         value: {

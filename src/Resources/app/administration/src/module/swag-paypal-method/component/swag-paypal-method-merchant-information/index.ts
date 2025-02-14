@@ -4,8 +4,6 @@ import './swag-paypal-method-merchant-information.scss';
 export default Shopware.Component.wrapComponentConfig({
     template,
 
-    compatConfig: Shopware.compatConfig,
-
     emits: ['save'],
 
     computed: {

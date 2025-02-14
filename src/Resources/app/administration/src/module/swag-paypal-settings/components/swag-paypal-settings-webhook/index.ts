@@ -9,8 +9,6 @@ const STATUS_WEBHOOK_VALID = 'valid';
 export default Shopware.Component.wrapComponentConfig({
     template,
 
-    compatConfig: Shopware.compatConfig,
-
     inject: [
         'acl',
         'SwagPayPalWebhookService',

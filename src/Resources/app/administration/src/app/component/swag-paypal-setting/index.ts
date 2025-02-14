@@ -12,8 +12,6 @@ const { string, object } = Shopware.Utils;
 export default Shopware.Component.wrapComponentConfig({
     template,
 
-    compatConfig: Shopware.compatConfig,
-
     inject: ['acl'],
 
     emits: ['update:value'],

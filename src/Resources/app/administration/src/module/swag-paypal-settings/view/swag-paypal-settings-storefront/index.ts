@@ -1,10 +1,8 @@
 import template from './swag-paypal-settings-storefront.html.twig';
-import { BUTTON_COLORS, BUTTON_SHAPES } from '../../../../constant/swag-paypal-settings.constant';
+import { BUTTON_COLORS, BUTTON_SHAPES } from 'SwagPayPal/constant/swag-paypal-settings.constant';
 
 export default Shopware.Component.wrapComponentConfig({
     template,
-
-    compatConfig: Shopware.compatConfig,
 
     inject: [
         'systemConfigApiService',

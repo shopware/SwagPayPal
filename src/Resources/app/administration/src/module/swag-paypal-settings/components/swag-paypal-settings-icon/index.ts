@@ -9,6 +9,4 @@ export default Shopware.Component.wrapComponentConfig({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         IconsPaypalMulticolor,
     },
-
-    compatConfig: Shopware.compatConfig,
 });
