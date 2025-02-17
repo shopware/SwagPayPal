@@ -44,11 +44,6 @@ class OpenAPISchemaTest extends TestCase
         '\\' . ExpressCategoryRoute::class . '::load',
 
         '\\' . FilteredPaymentMethodRoute::class . '::load',
-
-        // we don't control the routes of the system config controller
-        '\\' . WebhookSystemConfigController::class . '::checkConfiguration',
-        '\\' . WebhookSystemConfigController::class . '::getConfiguration',
-        '\\' . WebhookSystemConfigController::class . '::getConfigurationValues',
     ];
 
     public const IGNORED_LOG_MESSAGES = [

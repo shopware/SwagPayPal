@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SystemConfig\Validation\SystemConfigValidator;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
@@ -42,11 +43,11 @@ class SettingsControllerTest extends TestCase
     use IntegrationTestBehaviour;
     use ServicesTrait;
 
-    public function testValidateApiWithValidData(): void
+    public function testTestApiWithValidData(): void
     {
         $controller = $this->createApiValidationController();
 
-        $request = new Request(
+        $request = new RequestDataBag(
             [
                 'clientId' => ConstantsForTesting::VALID_CLIENT_ID,
                 'clientSecret' => ConstantsForTesting::VALID_CLIENT_SECRET,
@@ -54,18 +55,18 @@ class SettingsControllerTest extends TestCase
             ]
         );
 
-        $content = $controller->validateApiCredentials($request)->getContent();
+        $content = $controller->testApiCredentials($request)->getContent();
         static::assertNotFalse($content);
 
         $result = \json_decode($content, true);
-        static::assertSame(['credentialsValid' => true], $result);
+        static::assertSame(['valid' => true, 'errors' => []], $result);
     }
 
-    public function testValidateApiWithInvalidData(): void
+    public function testTestApiWithInvalidData(): void
     {
         $controller = $this->createApiValidationController();
 
-        $request = new Request(
+        $request = new RequestDataBag(
             [
                 'clientId' => ConstantsForTesting::INVALID_CLIENT_ID,
                 'clientSecret' => ConstantsForTesting::INVALID_CLIENT_SECRET,
@@ -73,9 +74,28 @@ class SettingsControllerTest extends TestCase
             ]
         );
 
-        $this->expectException(PayPalApiException::class);
-        $this->expectExceptionMessage(GuzzleClientMock::GENERAL_CLIENT_EXCEPTION_MESSAGE);
-        $controller->validateApiCredentials($request);
+        $content = $controller->testApiCredentials($request)->getContent();
+        static::assertNotFalse($content);
+
+        $result = \json_decode($content, true);
+        static::assertSame([
+            'valid' => false,
+            'errors' => [
+                [
+                    'status' => '400',
+                    'code' => 'SWAG_PAYPAL__API_EXCEPTION',
+                    'title' => 'Bad Request',
+                    'detail' => 'The error "TEST" occurred with the following message: generalClientExceptionMessage',
+                    'meta' => [
+                        'parameters' => [
+                            'name' => 'TEST',
+                            'message' => 'generalClientExceptionMessage',
+                            'issue' => null,
+                        ],
+                    ],
+                ],
+            ],
+        ], $result);
     }
 
     private function createApiValidationController(): SettingsController
@@ -84,9 +104,7 @@ class SettingsControllerTest extends TestCase
         $systemConfigService = $this->createDefaultSystemConfig();
         $apiCredentialsService = new ApiCredentialService(
             new CredentialsResource(
-                new TokenClientFactoryMock($logger),
                 new CredentialsClientFactoryMock($logger),
-                new TokenValidator()
             ),
             new TokenClientFactoryMock($logger),
             new TokenValidator(),

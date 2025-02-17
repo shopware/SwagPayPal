@@ -85,7 +85,6 @@ class SettingsController extends AbstractController
         $sandboxActive = $data->getBoolean('sandboxActive');
 
         try {
-            /* @phpstan-ignore-next-line method will have additional method */
             $valid = $this->apiCredentialService->testApiCredentials($clientId, $clientSecret, $sandboxActive, $merchantPayerId);
         } catch (PayPalApiException $error) {
             $valid = false;
