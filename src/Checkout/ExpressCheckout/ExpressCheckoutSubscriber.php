@@ -200,8 +200,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         }
 
         $event->getDefinition()->set('additionalAddressLine1')
-                               ->set('additionalAddressLine2')
-                               ->set('phoneNumber');
+            ->set('additionalAddressLine2')
+            ->set('phoneNumber');
     }
 
     public function disableCustomerValidation(BuildValidationEvent $event): void
@@ -211,8 +211,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         }
 
         $event->getDefinition()->set('birthdayDay')
-                               ->set('birthdayMonth')
-                               ->set('birthdayYear');
+            ->set('birthdayMonth')
+            ->set('birthdayYear');
     }
 
     public function addPayerIdToCustomer(DataMappingEvent $event): void

@@ -75,9 +75,9 @@ rules:
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Tests\CoversAttributeRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Tests\MockingSimpleObjectsNotAllowedRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\DecorationPatternRule
-    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\AddColumnRule
+    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Migration\AddColumnRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\PackageAnnotationRule
-    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\NoAfterStatementRule
+    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Migration\NoAfterStatementRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\NoNewRequestInStorefrontRule
 
     # rules from https://github.com/symplify/phpstan-rules

@@ -57,8 +57,8 @@ class LogCleanerTest extends TestCase
         $runRepository = new RunRepoMock();
         for ($i = 1; $i <= 7; ++$i) {
             $run = new PosSalesChannelRunEntity();
-            $run->setId("run$i");
-            $run->setCreatedAt(new \DateTime("-$i hours"));
+            $run->setId("run{$i}");
+            $run->setCreatedAt(new \DateTime("-{$i} hours"));
             if ($i === 7) {
                 $run->setCreatedAt(new \DateTime('-2 months'));
             }

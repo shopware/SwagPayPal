@@ -75,12 +75,12 @@ class RemoteUpdaterTest extends TestCase
         $bulkChanges->setReturnBalanceForLocationUuid($this->locations['STORE']);
 
         $this->inventoryResource->expects($change === 0 ? static::never() : static::once())
-                                ->method('changeInventoryBulk')
-                                ->with(static::anything(), $bulkChanges)
-                                ->willReturn($this->createStatus($variantChange->getProductUuid(), $variantChange->getVariantUuid()));
+            ->method('changeInventoryBulk')
+            ->with(static::anything(), $bulkChanges)
+            ->willReturn($this->createStatus($variantChange->getProductUuid(), $variantChange->getVariantUuid()));
 
         $this->logger->expects($change === 0 ? static::never() : static::once())
-                     ->method('info');
+            ->method('info');
 
         $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
@@ -110,8 +110,8 @@ class RemoteUpdaterTest extends TestCase
         $bulkChanges->setReturnBalanceForLocationUuid($this->locations['STORE']);
 
         $this->inventoryResource->expects($change === 0 ? static::never() : static::once())
-                                ->method('changeInventoryBulk')
-                                ->with(static::anything(), $bulkChanges);
+            ->method('changeInventoryBulk')
+            ->with(static::anything(), $bulkChanges);
 
         $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
