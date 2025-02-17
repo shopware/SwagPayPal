@@ -108,6 +108,7 @@ abstract class AbstractOrderBuilder
         $currency = $order->getCurrency();
         \assert($currency !== null);
         $items = $this->submitCart($order->getSalesChannelId()) ? $this->itemListProvider->getItemList($currency, $order) : null;
+        $taxStatus = $order->getTaxStatus() ?? $order->getPrice()->getTaxStatus();
 
         return $this->purchaseUnitProvider->createPurchaseUnit(
             $orderTransaction->getAmount(),
@@ -116,7 +117,7 @@ abstract class AbstractOrderBuilder
             $items,
             $currency,
             $context,
-            $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS,
+            $taxStatus !== CartPrice::TAX_STATE_GROSS,
             $order,
             $orderTransaction
         );
