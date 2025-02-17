@@ -7,24 +7,28 @@
 
 namespace Swag\PayPal\OrdersApi\Builder\APM;
 
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Multibanco;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
 class MultibancoOrderBuilder extends AbstractAPMOrderBuilder
 {
     protected function buildPaymentSource(
-        SyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag,
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+        Request $request,
         PaymentSource $paymentSource,
     ): void {
         $sourceElement = new Multibanco();
-        $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);
+        $this->fillPaymentSource($paymentTransaction, $order, $context, $sourceElement);
 
         $paymentSource->setMultibanco($sourceElement);
     }

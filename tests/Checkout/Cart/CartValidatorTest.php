@@ -134,7 +134,7 @@ class CartValidatorTest extends TestCase
             CartPrice::TAX_STATE_GROSS
         ));
 
-        $context = Generator::createSalesChannelContext();
+        $context = Generator::generateSalesChannelContext();
         $errors = new ErrorCollection();
 
         $this->validator->validate($cart, $errors, $context);

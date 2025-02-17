@@ -41,7 +41,7 @@ class RequestSubscriberTest extends TestCase
             '_route' => 'frontend.account.edit-order.update-order',
         ]);
         $storeApiRequest = new Request();
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $event = new HandlePaymentMethodRouteRequestEvent($storefrontRequest, $storeApiRequest, $salesChannelContext);
         $subscriber->addHandlePaymentParameters($event);
 
@@ -58,7 +58,7 @@ class RequestSubscriberTest extends TestCase
             '_route' => 'frontend.account.edit-order.update-order',
         ]);
         $storeApiRequest = new Request();
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $event = new HandlePaymentMethodRouteRequestEvent($storefrontRequest, $storeApiRequest, $salesChannelContext);
         $subscriber->addHandlePaymentParameters($event);
 
@@ -71,7 +71,7 @@ class RequestSubscriberTest extends TestCase
 
         $storefrontRequest = new Request([], $this->getParameterData(), ['_route' => 'wrong.route']);
         $storeApiRequest = new Request();
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $event = new HandlePaymentMethodRouteRequestEvent($storefrontRequest, $storeApiRequest, $salesChannelContext);
         $subscriber->addHandlePaymentParameters($event);
 
@@ -87,7 +87,7 @@ class RequestSubscriberTest extends TestCase
             '_route' => 'frontend.account.edit-order.page',
         ]);
         $storeApiRequest = new Request();
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $event = new PaymentMethodRouteRequestEvent($storefrontRequest, $storeApiRequest, $salesChannelContext);
         $subscriber->addAfterOrderId($event);
 
@@ -101,7 +101,7 @@ class RequestSubscriberTest extends TestCase
 
         $storefrontRequest = new Request([], [], ['orderId' => 'tada', '_route' => 'wrong.route']);
         $storeApiRequest = new Request();
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $event = new PaymentMethodRouteRequestEvent($storefrontRequest, $storeApiRequest, $salesChannelContext);
         $subscriber->addAfterOrderId($event);
 

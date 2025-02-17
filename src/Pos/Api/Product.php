@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Pos\Api;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Util\Hasher;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Product\Category;
 use Swag\PayPal\Pos\Api\Product\Metadata;
@@ -148,6 +149,6 @@ class Product extends PosStruct
      */
     public function generateChecksum(): string
     {
-        return \md5(\serialize($this));
+        return Hasher::hash(\serialize($this), 'md5');
     }
 }

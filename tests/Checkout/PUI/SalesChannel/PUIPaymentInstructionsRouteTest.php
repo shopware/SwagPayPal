@@ -73,7 +73,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
             ->method('fetchPUIInstructions')
             ->with($orderTransaction);
 
-        $this->route->getPaymentInstructions('test-id', Generator::createSalesChannelContext());
+        $this->route->getPaymentInstructions('test-id', Generator::generateSalesChannelContext());
     }
 
     public function testGetPaymentInstructionsWithoutTransaction(): void
@@ -99,6 +99,6 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         static::expectException(OrderException::class);
         static::expectExceptionMessage('Could not find order transaction with id "test-id"');
 
-        $this->route->getPaymentInstructions('test-id', Generator::createSalesChannelContext());
+        $this->route->getPaymentInstructions('test-id', Generator::generateSalesChannelContext());
     }
 }

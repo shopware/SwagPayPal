@@ -7,9 +7,9 @@
 
 namespace Swag\PayPal\Test\Checkout\Card;
 
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Card\GooglePayValidator;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\RestApi\V2\Api\Order;
@@ -34,13 +34,12 @@ class GooglePayValidatorTest extends AbstractCardValidatorTestCase
             'payment_source' => ['google_pay' => ['card' => null]],
         ]);
 
-        $transaction = $this->createMock(SyncPaymentTransactionStruct::class);
-        $salesChannelContext = $this->createMock(SalesChannelContext::class);
+        $transaction = new OrderTransactionEntity();
 
         static::expectException(MissingPayloadException::class);
         static::expectExceptionMessage('Missing request payload payment_source.google_pay.card to order "paypalOrderId" not found');
 
-        $this->validator->validate($order, $transaction, $salesChannelContext);
+        $this->validator->validate($order, $transaction, Context::createDefaultContext());
     }
 
     public function testValidationWithMissingAuthenticationResultWillReturnTrue(): void
@@ -50,9 +49,8 @@ class GooglePayValidatorTest extends AbstractCardValidatorTestCase
             'payment_source' => ['google_pay' => ['card' => ['authentication_result' => null]]],
         ]);
 
-        $transaction = $this->createMock(SyncPaymentTransactionStruct::class);
-        $salesChannelContext = $this->createMock(SalesChannelContext::class);
+        $transaction = new OrderTransactionEntity();
 
-        static::assertTrue($this->validator->validate($order, $transaction, $salesChannelContext));
+        static::assertTrue($this->validator->validate($order, $transaction, Context::createDefaultContext()));
     }
 }

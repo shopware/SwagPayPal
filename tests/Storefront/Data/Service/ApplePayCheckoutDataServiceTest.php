@@ -51,18 +51,9 @@ class ApplePayCheckoutDataServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->context = Generator::createSalesChannelContext(
-            null,
-            null,
-            null,
-            $this->createCurrencyEntity(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            $this->createCustomer(),
+        $this->context = Generator::generateSalesChannelContext(
+            currency: $this->createCurrencyEntity(),
+            customer: $this->createCustomer(),
         );
 
         $this->systemConfigService = $this->createSystemConfigServiceMock([

@@ -8,7 +8,10 @@
 namespace Swag\PayPal\OrdersApi\Builder;
 
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -16,18 +19,23 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Verification;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\GooglePay;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
 class GooglePayOrderBuilder extends AbstractOrderBuilder
 {
     protected function buildPaymentSource(
-        SyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag,
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+        Request $request,
         PaymentSource $paymentSource,
     ): void {
+        $salesChannel = $order->getSalesChannel();
+        \assert($salesChannel !== null);
         $googlePay = new GooglePay();
-        $googlePay->setExperienceContext($this->createExperienceContext($salesChannelContext, $paymentTransaction));
+        $googlePay->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction));
 
         $attributes = new Attributes();
         $attributes->setVerification(new Verification());
@@ -39,7 +47,7 @@ class GooglePayOrderBuilder extends AbstractOrderBuilder
     protected function buildPaymentSourceFromCart(Cart $cart, SalesChannelContext $salesChannelContext, RequestDataBag $requestDataBag, PaymentSource $paymentSource): void
     {
         $googlePay = new GooglePay();
-        $googlePay->setExperienceContext($this->createExperienceContext($salesChannelContext));
+        $googlePay->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext()));
 
         $attributes = new Attributes();
         $verification = new Verification();

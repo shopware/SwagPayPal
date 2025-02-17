@@ -9,8 +9,11 @@ namespace Swag\PayPal\OrdersApi\Builder;
 
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderException;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -24,6 +27,7 @@ use Swag\PayPal\RestApi\V2\Api\Common\Name;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
 class PayPalOrderBuilder extends AbstractOrderBuilder
@@ -43,15 +47,17 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
     }
 
     protected function buildPaymentSource(
-        SyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag,
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+        Request $request,
         PaymentSource $paymentSource,
     ): void {
         $paypal = new Paypal();
         $paymentSource->setPaypal($paypal);
 
-        $billingAddress = $paymentTransaction->getOrder()->getBillingAddress();
+        $billingAddress = $order->getBillingAddress();
         if ($billingAddress === null) {
             throw OrderException::missingAssociation('billingAddress');
         }
@@ -60,16 +66,18 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $this->addressProvider->createAddress($billingAddress, $address);
         $paypal->setAddress($address);
 
-        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $salesChannelContext->getContext())) {
+        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
             $paypal->setVaultId($token->getToken());
 
             return;
         }
 
-        $experienceContext = $this->createExperienceContext($salesChannelContext, $paymentTransaction);
+        $salesChannel = $order->getSalesChannel();
+        \assert($salesChannel !== null);
+        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction);
         $paypal->setExperienceContext($experienceContext);
 
-        $customer = $paymentTransaction->getOrder()->getOrderCustomer();
+        $customer = $order->getOrderCustomer();
         if ($customer === null) {
             throw OrderException::missingAssociation('orderCustomer');
         }
@@ -84,7 +92,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
             $this->vaultTokenService->requestVaulting($paypal);
         }
 
-        if ($requestDataBag->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+        if ($request->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
             $this->vaultTokenService->requestVaulting($paypal);
         }
     }
@@ -94,7 +102,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $paypal = new Paypal();
         $paymentSource->setPaypal($paypal);
 
-        $paypal->setExperienceContext($this->createExperienceContext($salesChannelContext, $cart));
+        $paypal->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext()));
 
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {

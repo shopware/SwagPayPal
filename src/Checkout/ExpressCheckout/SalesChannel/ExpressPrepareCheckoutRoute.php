@@ -19,7 +19,6 @@ use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
-use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,6 +29,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 {
     public const PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID = 'payPalEcsCartData';
+    public const PAYPAL_REQUEST_PARAMETER_TOKEN = 'token';
 
     /**
      * @internal
@@ -72,10 +72,10 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
     {
         try {
             $this->logger->debug('Started', ['request' => $request->request->all()]);
-            $paypalOrderId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
+            $paypalOrderId = $request->request->get(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
 
             if (!\is_string($paypalOrderId)) {
-                throw RoutingException::missingRequestParameter(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
+                throw RoutingException::missingRequestParameter(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
             }
 
             $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannel()->getId());

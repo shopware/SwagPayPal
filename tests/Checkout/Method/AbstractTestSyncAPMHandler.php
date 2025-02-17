@@ -12,21 +12,21 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
-use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Shopware\Core\Test\Generator;
+use Swag\PayPal\Checkout\CheckoutException;
+use Swag\PayPal\Checkout\Exception\OrderFailedException;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
-use Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
@@ -36,10 +36,12 @@ use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Patch as PatchV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
@@ -52,11 +54,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
-use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Swag\PayPal\Util\PriceFormatter;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -79,10 +78,7 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
 
     protected function setUp(): void
     {
-        $definitionRegistry = new DefinitionInstanceRegistryMock([], $this->createMock(ContainerInterface::class));
-        $this->orderTransactionRepo = $definitionRegistry->getRepository(
-            (new OrderTransactionDefinition())->getEntityName()
-        );
+        $this->orderTransactionRepo = $this->getContainer()->get(OrderTransactionDefinition::ENTITY_NAME . '.repository');
         $this->stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
     }
 
@@ -91,13 +87,12 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
         $handler = $this->createPaymentHandler($this->getDefaultConfigData());
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+        $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
-        $handler->pay($paymentTransaction, $this->createRequest(GetOrderCapture::ID), $salesChannelContext);
+        $handler->pay($this->createRequest(GetOrderCapture::ID), $paymentTransaction, Context::createDefaultContext(), null);
 
-        $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, $salesChannelContext->getContext());
-        $this->assertCustomFields(GetOrderCapture::ID, PartnerAttributionId::PAYPAL_PPCP, CaptureOrderCapture::CAPTURE_ID);
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, Context::createDefaultContext());
+        $this->assertCustomFields($transactionId, Context::createDefaultContext(), GetOrderCapture::ID, PartnerAttributionId::PAYPAL_PPCP, CaptureOrderCapture::CAPTURE_ID);
         $this->assertPatchData($transactionId);
     }
 
@@ -106,13 +101,11 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
         $handler = $this->createPaymentHandler($this->getDefaultConfigData());
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+        $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage(\sprintf('The synchronous payment process was interrupted due to the following error:
-Order "%s" failed', CaptureOrderDeclined::ID));
-        $handler->pay($paymentTransaction, $this->createRequest(CaptureOrderDeclined::ID), $salesChannelContext);
+        $this->expectException(OrderFailedException::class);
+        $this->expectExceptionMessage(\sprintf('Order "%s" failed', CaptureOrderDeclined::ID));
+        $handler->pay($this->createRequest(CaptureOrderDeclined::ID), $paymentTransaction, Context::createDefaultContext(), null);
     }
 
     public function testPayAuthorize(): void
@@ -120,13 +113,12 @@ Order "%s" failed', CaptureOrderDeclined::ID));
         $handler = $this->createPaymentHandler($this->getDefaultConfigData());
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+        $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
-        $handler->pay($paymentTransaction, $this->createRequest(GetOrderAuthorization::ID), $salesChannelContext);
+        $handler->pay($this->createRequest(GetOrderAuthorization::ID), $paymentTransaction, Context::createDefaultContext(), null);
 
-        $this->assertOrderTransactionState(OrderTransactionStates::STATE_AUTHORIZED, $transactionId, $salesChannelContext->getContext());
-        $this->assertCustomFields(GetOrderAuthorization::ID, PartnerAttributionId::PAYPAL_PPCP, GetAuthorization::ID);
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_AUTHORIZED, $transactionId, Context::createDefaultContext());
+        $this->assertCustomFields($transactionId, Context::createDefaultContext(), GetOrderAuthorization::ID, PartnerAttributionId::PAYPAL_PPCP, GetAuthorization::ID);
         $this->assertPatchData($transactionId);
     }
 
@@ -135,66 +127,58 @@ Order "%s" failed', CaptureOrderDeclined::ID));
         $handler = $this->createPaymentHandler($this->getDefaultConfigData());
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+        $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage(\sprintf('The synchronous payment process was interrupted due to the following error:
-Order "%s" failed', AuthorizeOrderDenied::ID));
-        $handler->pay($paymentTransaction, $this->createRequest(AuthorizeOrderDenied::ID), $salesChannelContext);
+        $this->expectException(OrderFailedException::class);
+        $this->expectExceptionMessage(\sprintf('Order "%s" failed', AuthorizeOrderDenied::ID));
+        $handler->pay($this->createRequest(AuthorizeOrderDenied::ID), $paymentTransaction, Context::createDefaultContext(), null);
     }
 
     public function testPayWithExceptionDuringPayPalCommunication(): void
     {
         $handler = $this->createPaymentHandler($this->getDefaultConfigData());
 
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+        $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. The instrument presented  was either declined by the processor or bank, or it can\'t be used for this payment. INSTRUMENT_DECLINED ');
-        $handler->pay($paymentTransaction, $this->createRequest(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED), $salesChannelContext);
+        $handler->pay($this->createRequest(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED), $paymentTransaction, Context::createDefaultContext(), null);
     }
 
     public function testPayWithInvalidSettingsException(): void
     {
         $handler = $this->createPaymentHandler();
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $this->getContainer());
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
-Required setting "SwagPayPal.settings.clientId" is missing or invalid');
-        $handler->pay($paymentTransaction, $this->createRequest(GetOrderCapture::ID), $salesChannelContext);
+        $this->expectException(PayPalSettingsInvalidException::class);
+        $handler->pay($this->createRequest(GetOrderCapture::ID), $paymentTransaction, Context::createDefaultContext(), null);
     }
 
     public function testPayWithoutValidOrderId(): void
     {
         $handler = $this->createPaymentHandler($this->getDefaultConfigData());
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
 
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $paymentTransaction = $this->createPaymentTransactionStruct();
-        $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
-Missing PayPal order id');
-        $handler->pay($paymentTransaction, $this->createRequest(), $salesChannelContext);
+        $paymentTransaction = new PaymentTransactionStruct($transactionId);
+        $this->expectException(CheckoutException::class);
+        $this->expectExceptionMessage('PayPal Order ID does not exist in the request. The payment method ' . $handler::class . ' requires a prepared PayPal order.');
+        $handler->pay($this->createRequest(), $paymentTransaction, Context::createDefaultContext(), null);
     }
 
     public function testPayWithDuplicateTransaction(): void
     {
         $handler = $this->createPaymentHandler($this->getDefaultConfigData());
 
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+        $paymentTransaction = new PaymentTransactionStruct($transactionId);
         CaptureOrderCapture::setDuplicateOrderNumber(true);
 
-        $handler->pay($paymentTransaction, $this->createRequest(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER), $salesChannelContext);
+        $handler->pay($this->createRequest(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER), $paymentTransaction, Context::createDefaultContext(), null);
 
-        $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, $salesChannelContext->getContext());
-        $this->assertCustomFields(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER, PartnerAttributionId::PAYPAL_PPCP, CaptureOrderCapture::CAPTURE_ID);
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, Context::createDefaultContext());
+        $this->assertCustomFields($transactionId, Context::createDefaultContext(), PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER, PartnerAttributionId::PAYPAL_PPCP, CaptureOrderCapture::CAPTURE_ID);
         $this->assertPatchData($transactionId, true);
     }
 
@@ -209,7 +193,7 @@ Missing PayPal order id');
             } else {
                 $value = $patch->getValue();
                 static::assertIsArray($value);
-                static::assertSame(OrderPaymentBuilderTest::TEST_ORDER_NUMBER, $value['invoice_id']);
+                static::assertSame(ConstantsForTesting::TEST_ORDER_NUMBER, $value['invoice_id']);
                 static::assertStringContainsString($orderTransactionId, $value['custom_id']);
                 static::assertSame(PatchV2::OPERATION_REPLACE, $patch->getOp());
             }
@@ -217,11 +201,11 @@ Missing PayPal order id');
     }
 
     /**
-     * @return class-string<AbstractSyncAPMHandler>
+     * @return class-string<AbstractPaymentMethodHandler>
      */
     abstract protected function getPaymentHandlerClassName(): string;
 
-    protected function createPaymentHandler(array $settings = []): AbstractSyncAPMHandler
+    protected function createPaymentHandler(array $settings = []): AbstractPaymentMethodHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
@@ -233,7 +217,7 @@ Missing PayPal order id');
 
         return new $handlerClass(
             new SettingsValidationService($systemConfig, new NullLogger()),
-            $orderTransactionStateHandler,
+            $this->stateMachineRegistry,
             new OrderExecuteService(
                 $orderResource,
                 $orderTransactionStateHandler,
@@ -261,31 +245,30 @@ Missing PayPal order id');
                 $this->orderTransactionRepo,
                 new CredentialsUtil($systemConfig),
             ),
-            $logger,
             $orderResource,
             new VaultTokenService(
                 $this->createMock(EntityRepository::class),
                 $this->createMock(EntityRepository::class),
                 null,
-            )
+            ),
+            $this->orderTransactionRepo,
+            $this->createMock(AbstractOrderBuilder::class),
         );
     }
 
-    protected function createRequest(?string $orderId = null): RequestDataBag
+    protected function createRequest(?string $orderId = null): Request
     {
-        return new RequestDataBag([
+        return new Request([], [
             AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $orderId,
         ]);
     }
 
-    protected function assertCustomFields(string $orderId, string $attributionId, ?string $resourceId): void
+    protected function assertCustomFields(string $orderTransactionId, Context $context, string $orderId, string $attributionId, ?string $resourceId): void
     {
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $updatedData = $orderTransactionRepo->getData();
+        $transaction = $this->getTransaction($orderTransactionId, $this->getContainer(), $context);
 
-        static::assertSame($orderId, $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID]);
-        static::assertSame($attributionId, $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID]);
-        static::assertSame($resourceId, $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID]);
+        static::assertSame($orderId, $transaction?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID));
+        static::assertSame($attributionId, $transaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID));
+        static::assertSame($resourceId, $transaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID));
     }
 }

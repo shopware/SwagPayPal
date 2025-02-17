@@ -24,12 +24,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\IdsCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\StateMachine\Loader\InitialStateIdLoader;
 use Shopware\Core\System\StateMachine\StateMachineException;
+use Shopware\Core\Test\Stub\Framework\IdsCollection;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
@@ -174,7 +174,7 @@ trait OrderTransactionTrait
         $orderLineItemId = $ids->get($idsPrefix . '-line-item-id');
         $countryStateId = $ids->get($idsPrefix . '-country-state-id');
         $customerId = $ids->get($idsPrefix . '-customer-id');
-        $orderNumber = $ids->get($idsPrefix . '-order-number');
+        $orderNumber = ConstantsForTesting::TEST_ORDER_NUMBER;
 
         /** @var EntityRepository $salesChannelRepository */
         $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
@@ -188,7 +188,7 @@ trait OrderTransactionTrait
         $paymentMethodId = $salesChannel->getPaymentMethodId();
         $shippingMethodId = $salesChannel->getShippingMethodId();
         $salutationId = $this->getValidSalutationId();
-        $countryId = $this->getValidCountryId(TestDefaults::SALES_CHANNEL);
+        $countryId = $this->getValidCountryId();
 
         return [
             [
@@ -214,11 +214,11 @@ trait OrderTransactionTrait
                         'shippingDateLatest' => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_FORMAT),
                         'shippingOrderAddress' => [
                             'salutationId' => $salutationId,
-                            'firstName' => 'Floy',
-                            'lastName' => 'Glover',
+                            'firstName' => 'FirstName',
+                            'lastName' => 'LastName',
                             'zipcode' => '59438-0403',
                             'city' => 'Stellaberg',
-                            'street' => 'street',
+                            'street' => 'Street 1',
                             'country' => [
                                 'name' => 'kasachstan',
                                 'id' => $countryId,

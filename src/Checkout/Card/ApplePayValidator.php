@@ -7,16 +7,16 @@
 
 namespace Swag\PayPal\Checkout\Card;
 
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\RestApi\V2\Api\Order;
 
 #[Package('checkout')]
 class ApplePayValidator extends AbstractCardValidator
 {
-    public function validate(Order $order, SyncPaymentTransactionStruct $transaction, SalesChannelContext $salesChannelContext): bool
+    public function validate(Order $order, OrderTransactionEntity $transaction, Context $context): bool
     {
         $card = $order->getPaymentSource()?->getApplePay()?->getCard();
 

@@ -7,209 +7,43 @@
 
 namespace Swag\PayPal\Checkout\Payment;
 
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\CartException;
-use Shopware\Core\Checkout\Cart\Order\OrderConverter;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
-use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\RecurringPaymentHandlerInterface;
-use Shopware\Core\Checkout\Payment\Cart\RecurringPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\PaymentException;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Routing\RoutingException;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
-use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
-use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Swag\PayPal\RestApi\V2\Api\Common\Link;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
-class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface, RecurringPaymentHandlerInterface
+class PayPalPaymentHandler extends AbstractPaymentMethodHandler
 {
-    public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
-    public const PAYPAL_REQUEST_PARAMETER_PAYMENT_ID = 'paymentId';
-    public const PAYPAL_REQUEST_PARAMETER_TOKEN = 'token';
     public const PAYPAL_EXPRESS_CHECKOUT_ID = 'isPayPalExpressCheckout';
-    public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
 
-    public const FINALIZED_ORDER_TRANSACTION_STATES = [
-        OrderTransactionStates::STATE_PAID,
-        OrderTransactionStates::STATE_AUTHORIZED,
-    ];
-
-    /**
-     * @internal
-     */
-    public function __construct(
-        private readonly OrderTransactionStateHandler $orderTransactionStateHandler,
-        private readonly PayPalHandler $payPalHandler,
-        private readonly EntityRepository $stateMachineStateRepository,
-        private readonly LoggerInterface $logger,
-        private readonly SettingsValidationServiceInterface $settingsValidationService,
-        private readonly VaultTokenService $vaultTokenService,
-        private readonly OrderConverter $orderConverter,
-    ) {
-    }
-
-    /**
-     * @throws PaymentException
-     */
-    public function pay(
-        AsyncPaymentTransactionStruct $transaction,
-        RequestDataBag $dataBag,
-        SalesChannelContext $salesChannelContext,
-    ): RedirectResponse {
-        $this->logger->debug('Started');
-        $transactionId = $transaction->getOrderTransaction()->getId();
-
-        try {
-            $customer = $salesChannelContext->getCustomer();
-            if ($customer === null) {
-                throw CartException::customerNotLoggedIn();
-            }
-
-            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
-            $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
-
-            if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID) || $dataBag->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
-                return $this->payPalHandler->handlePreparedOrder($transaction, $dataBag, $salesChannelContext);
-            }
-
-            return $this->payPalHandler->handlePayPalOrder($transaction, $dataBag, $salesChannelContext);
-        } catch (PaymentException $e) {
-            if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
-                $e->setOrderTransactionId($transactionId);
-            }
-            throw $e;
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
-
-            throw PaymentException::asyncProcessInterrupted($transactionId, $e->getMessage());
-        }
-    }
-
-    /**
-     * @throws PaymentException
-     */
-    public function finalize(
-        AsyncPaymentTransactionStruct $transaction,
-        Request $request,
-        SalesChannelContext $salesChannelContext,
-    ): void {
-        $this->logger->debug('Started');
-
-        if ($this->transactionAlreadyFinalized($transaction, $salesChannelContext)) {
-            $this->logger->debug('Already finalized');
-
-            return;
-        }
-
-        if ($request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
-            $this->logger->debug('Customer canceled');
-
-            throw PaymentException::customerCanceled(
-                $transaction->getOrderTransaction()->getId(),
-                'Customer canceled the payment on the PayPal page'
-            );
-        }
-
-        try {
-            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
-
-            $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-            $isExpressCheckout = $request->query->getBoolean(self::PAYPAL_EXPRESS_CHECKOUT_ID);
-            $isSPBCheckout = $request->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ID);
-
-            $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout);
-
-            $token = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
-            if (!\is_string($token)) {
-                throw RoutingException::missingRequestParameter(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
-            }
-
-            $this->payPalHandler->handleFinalizeOrder(
-                $transaction,
-                $token,
-                $salesChannelId,
-                $salesChannelContext,
-                $partnerAttributionId
-            );
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
-
-            throw PaymentException::asyncFinalizeInterrupted($transaction->getOrderTransaction()->getId(), $e->getMessage());
-        }
-    }
-
-    public function captureRecurring(RecurringPaymentTransactionStruct $transaction, Context $context): void
+    protected function resolvePartnerAttributionId(Request $request): string
     {
-        $this->logger->debug('Started');
-        $transactionId = $transaction->getOrderTransaction()->getId();
-
-        $subscription = $this->vaultTokenService->getSubscription($transaction);
-        if (!$subscription) {
-            throw PaymentException::recurringInterrupted($transactionId, 'Subscription not found');
-        }
-
-        $salesChannelContext = $this->orderConverter->assembleSalesChannelContext($transaction->getOrder(), $context);
-
-        try {
-            $this->settingsValidationService->validate($subscription->getSalesChannelId());
-            $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $context);
-
-            $redirect = $this->payPalHandler->handlePayPalOrder($transaction, new RequestDataBag(), $salesChannelContext);
-            $this->payPalHandler->handleFinalizeOrder($transaction, $redirect->getTargetUrl(), $subscription->getSalesChannelId(), $salesChannelContext, PartnerAttributionId::PAYPAL_PPCP);
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
-
-            throw PaymentException::recurringInterrupted($transactionId, $e->getMessage());
-        }
-    }
-
-    private function getPartnerAttributionId(bool $isECS, bool $isSPB): string
-    {
-        if ($isECS) {
+        if ($request->request->getBoolean(self::PAYPAL_EXPRESS_CHECKOUT_ID)) {
             return PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT;
         }
 
-        if ($isSPB) {
+        if ($request->request->getAlnum(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
             return PartnerAttributionId::SMART_PAYMENT_BUTTONS;
         }
 
-        return PartnerAttributionId::PAYPAL_CLASSIC;
+        return PartnerAttributionId::PAYPAL_PPCP;
     }
 
-    private function transactionAlreadyFinalized(
-        AsyncPaymentTransactionStruct $transaction,
-        SalesChannelContext $salesChannelContext,
-    ): bool {
-        $transactionStateMachineStateId = $transaction->getOrderTransaction()->getStateId();
-        $criteria = new Criteria([$transactionStateMachineStateId]);
+    protected function isVaultable(): bool
+    {
+        return true;
+    }
 
-        /** @var StateMachineStateEntity|null $stateMachineState */
-        $stateMachineState = $this->stateMachineStateRepository->search(
-            $criteria,
-            $salesChannelContext->getContext()
-        )->get($transactionStateMachineStateId);
+    protected function requirePreparedOrder(): bool
+    {
+        return false;
+    }
 
-        if ($stateMachineState === null) {
-            return false;
-        }
-
-        return \in_array(
-            $stateMachineState->getTechnicalName(),
-            self::FINALIZED_ORDER_TRANSACTION_STATES,
-            true
-        );
+    protected function resolveRedirect(?Order $order): ?string
+    {
+        return parent::resolveRedirect($order) ?? $order?->getLinks()->getRelation(Link::RELATION_APPROVE)?->getHref();
     }
 }

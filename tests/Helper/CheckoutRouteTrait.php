@@ -47,17 +47,12 @@ trait CheckoutRouteTrait
     private function getSalesChannelContext(): SalesChannelContext
     {
         $paymentMethod = $this->getAvailablePaymentMethod();
-        $salesChannelContext = Generator::createSalesChannelContext(
-            null,
-            null,
-            $this->getSalesChannel($paymentMethod),
-            $this->getCurrency(),
-            null,
-            $this->getCountry(),
-            null,
-            null,
-            $paymentMethod,
-            $this->getShippingMethod()
+        $salesChannelContext = Generator::generateSalesChannelContext(
+            salesChannel: $this->getSalesChannel($paymentMethod),
+            currency: $this->getCurrency(),
+            country: $this->getCountry(),
+            paymentMethod: $paymentMethod,
+            shippingMethod: $this->getShippingMethod()
         );
         $salesChannelContext->assign(['customer' => null]);
 

@@ -20,6 +20,8 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
+use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -540,7 +542,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     private function createFooterPageletLoadedEvent(bool $withPayPalInContext = true): FooterPageletLoadedEvent
     {
         return new FooterPageletLoadedEvent(
-            new FooterPagelet(null),
+            new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()),
             $this->createSalesChannelContext($withPayPalInContext),
             $this->createRequest()
         );
@@ -556,7 +558,7 @@ class InstallmentBannerSubscriberTest extends TestCase
         $shipping->setId(Uuid::randomHex());
         $shipping->setCountry($country);
 
-        $salesChannelContext = Generator::createSalesChannelContext(shipping: $shipping);
+        $salesChannelContext = Generator::generateSalesChannelContext(customerAddress: $shipping, country: $country);
         $salesChannelContext->getCurrency()->setIsoCode('EUR');
         $salesChannelContext->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection([
             $salesChannelContext->getPaymentMethod(),

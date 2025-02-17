@@ -10,10 +10,11 @@ namespace Swag\PayPal\OrdersApi\Builder;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\PUI\Exception\MissingBirthdayException;
 use Swag\PayPal\Checkout\PUI\Exception\MissingPhoneNumberException;
 use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
@@ -23,17 +24,20 @@ use Swag\PayPal\RestApi\V2\Api\Common\PhoneNumber;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 use Swag\PayPal\Setting\Settings;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
 class PUIOrderBuilder extends AbstractAPMOrderBuilder
 {
     protected function buildPaymentSource(
-        SyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag,
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+        Request $request,
         PaymentSource $paymentSource,
     ): void {
-        $orderCustomer = $paymentTransaction->getOrder()->getOrderCustomer();
+        $orderCustomer = $order->getOrderCustomer();
         if ($orderCustomer === null) {
             throw CartException::customerNotLoggedIn();
         }
@@ -45,21 +49,23 @@ class PUIOrderBuilder extends AbstractAPMOrderBuilder
         $name->setGivenName($orderCustomer->getFirstName());
         $name->setSurname($orderCustomer->getLastName());
 
-        $orderAddress = $paymentTransaction->getOrder()->getBillingAddress();
+        $orderAddress = $order->getBillingAddress();
         if ($orderAddress === null) {
-            throw new AddressNotFoundException($paymentTransaction->getOrder()->getBillingAddressId());
+            throw new AddressNotFoundException($order->getBillingAddressId());
         }
         $address = new Address();
         $this->addressProvider->createAddress($orderAddress, $address);
 
-        $experienceContext = $this->createExperienceContext($salesChannelContext, $paymentTransaction);
+        $salesChannel = $order->getSalesChannel();
+        \assert($salesChannel !== null);
+        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction);
         $experienceContext->setCustomerServiceInstructions([
-            $this->systemConfigService->getString(Settings::PUI_CUSTOMER_SERVICE_INSTRUCTIONS, $salesChannelContext->getSalesChannelId()),
+            $this->systemConfigService->getString(Settings::PUI_CUSTOMER_SERVICE_INSTRUCTIONS, $order->getSalesChannelId()),
         ]);
 
         $payUponInvoice->setName($name);
         $payUponInvoice->setEmail($orderCustomer->getEmail());
-        $payUponInvoice->setBirthDate($this->getBirthday($salesChannelContext));
+        $payUponInvoice->setBirthDate($this->getBirthday($order));
         $payUponInvoice->setPhone($this->getPhoneNumber($orderAddress));
         $payUponInvoice->setBillingAddress($address);
         $payUponInvoice->setExperienceContext($experienceContext);
@@ -67,7 +73,7 @@ class PUIOrderBuilder extends AbstractAPMOrderBuilder
         $paymentSource->setPayUponInvoice($payUponInvoice);
     }
 
-    protected function submitCart(SalesChannelContext $salesChannelContext): bool
+    protected function submitCart(string $salesChannelId): bool
     {
         return true;
     }
@@ -95,9 +101,9 @@ class PUIOrderBuilder extends AbstractAPMOrderBuilder
         return $phone;
     }
 
-    private function getBirthday(SalesChannelContext $salesChannelContext): string
+    private function getBirthday(OrderEntity $order): string
     {
-        $customer = $salesChannelContext->getCustomer();
+        $customer = $order->getOrderCustomer()?->getCustomer();
         if ($customer === null) {
             throw CartException::customerNotLoggedIn();
         }

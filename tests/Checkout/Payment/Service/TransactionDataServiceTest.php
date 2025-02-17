@@ -15,7 +15,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -103,12 +102,12 @@ class TransactionDataServiceTest extends TestCase
     #[DataProvider('dataProviderSetOrderId')]
     public function testSetOrderId(bool $isSandbox): void
     {
-        $context = Generator::createSalesChannelContext();
+        $context = Context::createDefaultContext();
 
         $this->credentialsUtil
             ->expects(static::once())
             ->method('isSandbox')
-            ->with($context->getSalesChannelId())
+            ->with('sales-channel-id')
             ->willReturn($isSandbox);
 
         $this->transactionRepository
@@ -121,13 +120,14 @@ class TransactionDataServiceTest extends TestCase
                     SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID => 'partner-attribution-id',
                     SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_IS_SANDBOX => $isSandbox,
                 ],
-            ]], $context->getContext())
+            ]], $context)
             ->willReturn($this->createMock(EntityWrittenContainerEvent::class));
 
         $this->transactionDataService->setOrderId(
             'order-transaction-id',
             'paypal-order-id',
             'partner-attribution-id',
+            'sales-channel-id',
             $context,
         );
     }

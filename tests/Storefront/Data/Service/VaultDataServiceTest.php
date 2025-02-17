@@ -29,7 +29,7 @@ class VaultDataServiceTest extends TestCase
 {
     public function testBuildDataWithNonVaultablePaymentMethod(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(false);
 
         $method = $this->createMock(AbstractMethodData::class);
@@ -55,7 +55,7 @@ class VaultDataServiceTest extends TestCase
 
     public function testBuildDataWithoutCustomer(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->assign(['customer' => null]);
 
         $service = new VaultDataService(
@@ -69,7 +69,7 @@ class VaultDataServiceTest extends TestCase
 
     public function testBuildDataWithGuestCustomer(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(true);
 
         $service = new VaultDataService(
@@ -83,7 +83,7 @@ class VaultDataServiceTest extends TestCase
 
     public function testBuildDataWithoutExistingToken(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(false);
 
         $method = $this->createMock(AbstractMethodData::class);
@@ -111,7 +111,7 @@ class VaultDataServiceTest extends TestCase
 
     public function testBuildDataWithExistingToken(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(false);
 
         $method = $this->createMock(ACDCMethodData::class);

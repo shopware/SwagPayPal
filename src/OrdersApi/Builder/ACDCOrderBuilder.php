@@ -8,7 +8,10 @@
 namespace Swag\PayPal\OrdersApi\Builder;
 
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -23,6 +26,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\StoredCredential;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Verification;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
 class ACDCOrderBuilder extends AbstractOrderBuilder
@@ -42,13 +46,17 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
     }
 
     protected function buildPaymentSource(
-        SyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag,
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+        Request $request,
         PaymentSource $paymentSource,
     ): void {
+        $salesChannel = $order->getSalesChannel();
+        \assert($salesChannel !== null);
         $card = new Card();
-        $card->setExperienceContext($this->createExperienceContext($salesChannelContext, $paymentTransaction));
+        $card->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction));
 
         $attributes = new Attributes();
         $attributes->setVerification(new Verification());
@@ -56,7 +64,7 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
 
         $paymentSource->setCard($card);
 
-        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $salesChannelContext->getContext())) {
+        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
             $card->setVaultId($token->getToken());
             $storedCredential = new StoredCredential();
 
@@ -79,7 +87,7 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
             $this->vaultTokenService->requestVaulting($card);
         }
 
-        if ($requestDataBag->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+        if ($request->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
             $this->vaultTokenService->requestVaulting($card);
         }
     }
@@ -87,7 +95,7 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
     protected function buildPaymentSourceFromCart(Cart $cart, SalesChannelContext $salesChannelContext, RequestDataBag $requestDataBag, PaymentSource $paymentSource): void
     {
         $card = new Card();
-        $card->setExperienceContext($this->createExperienceContext($salesChannelContext, $cart));
+        $card->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext()));
 
         $attributes = new Attributes();
         $attributes->setVerification(new Verification());

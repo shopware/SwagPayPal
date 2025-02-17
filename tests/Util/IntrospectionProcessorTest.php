@@ -15,7 +15,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Kernel;
-use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\RestApi\Client\AbstractClient;
 use Swag\PayPal\RestApi\Client\PayPalClient;
@@ -69,7 +69,7 @@ class IntrospectionProcessorTest extends TestCase
     private const TRACE_PAYPAL = [
         'line' => 6,
         'function' => 'handlePayPalOrder',
-        'class' => PayPalHandler::class,
+        'class' => PayPalPaymentHandler::class,
         'type' => '->',
     ];
 
@@ -109,7 +109,7 @@ class IntrospectionProcessorTest extends TestCase
             'resource' => OrderResource::class . '->get',
             'file' => null,
             'line' => 4,
-            'class' => PayPalHandler::class,
+            'class' => PayPalPaymentHandler::class,
             'function' => 'handlePayPalOrder',
         ]];
 
@@ -144,7 +144,7 @@ class IntrospectionProcessorTest extends TestCase
             'client' => PayPalClient::class . '->sendPostRequest',
             'file' => null,
             'line' => 3,
-            'class' => PayPalHandler::class,
+            'class' => PayPalPaymentHandler::class,
             'function' => 'handlePayPalOrder',
         ]];
 
@@ -157,7 +157,7 @@ class IntrospectionProcessorTest extends TestCase
             'client' => PayPalClient::class . '->sendPostRequest',
             'file' => null,
             'line' => 3,
-            'class' => PayPalHandler::class,
+            'class' => PayPalPaymentHandler::class,
             'function' => 'handlePayPalOrder',
         ]];
 
@@ -169,7 +169,7 @@ class IntrospectionProcessorTest extends TestCase
             'client' => PayPalClient::class . '->sendPostRequest',
             'file' => null,
             'line' => 3,
-            'class' => PayPalHandler::class,
+            'class' => PayPalPaymentHandler::class,
             'function' => 'handlePayPalOrder',
         ]];
 
@@ -186,7 +186,7 @@ class IntrospectionProcessorTest extends TestCase
             'controller' => PayPalController::class . '->createOrder',
             'file' => null,
             'line' => 4,
-            'class' => PayPalHandler::class,
+            'class' => PayPalPaymentHandler::class,
             'function' => 'handlePayPalOrder',
         ]];
 

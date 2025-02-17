@@ -13,8 +13,8 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionColl
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -60,7 +60,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
         $orderTransaction->setId('orderTransactionId');
         $orderTransaction->setOrder($order);
         $order->setSalesChannelId('salesChannelId');
-        $struct = new SyncPaymentTransactionStruct($orderTransaction, $order);
+        $struct = new PaymentTransactionStruct($orderTransaction->getId());
 
         $payPalOrder = new Order();
         $payPalOrder->assign(['payment_source' => ['card' => $card]]);
@@ -69,14 +69,14 @@ class VaultPaymentTokenCreatedTest extends TestCase
         $vaultTokenService
             ->expects(static::once())
             ->method('saveToken')
-            ->with($struct, $card, 'customerId', $context);
+            ->with($struct, $orderTransaction, $card, 'customerId', $context);
         /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
         $orderTransactionRepo = new StaticEntityRepository([new OrderTransactionCollection([$orderTransaction])]);
         $paymentTransactionStructFactory = $this->createMock(PaymentTransactionStructFactory::class);
         $paymentTransactionStructFactory
             ->expects(static::once())
-            ->method('sync')
-            ->with($orderTransaction, $order)
+            ->method('build')
+            ->with($orderTransaction->getId(), $context)
             ->willReturn($struct);
         $orderResource = $this->createMock(OrderResource::class);
         $orderResource
@@ -207,7 +207,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
         $orderTransaction->setId('orderTransactionId');
         $orderTransaction->setOrder($order);
         $order->setSalesChannelId('salesChannelId');
-        $struct = new SyncPaymentTransactionStruct($orderTransaction, $order);
+        $struct = new PaymentTransactionStruct($orderTransaction->getId());
 
         $webhook = new Webhook();
         $webhook->assign($this->getResourceFixture());
@@ -215,8 +215,8 @@ class VaultPaymentTokenCreatedTest extends TestCase
         $paymentTransactionStructFactory = $this->createMock(PaymentTransactionStructFactory::class);
         $paymentTransactionStructFactory
             ->expects(static::once())
-            ->method('sync')
-            ->with($orderTransaction, $order)
+            ->method('build')
+            ->with($orderTransaction->getId(), $context)
             ->willReturn($struct);
         $orderResource = $this->createMock(OrderResource::class);
         $orderResource

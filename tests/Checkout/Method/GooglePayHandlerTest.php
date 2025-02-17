@@ -10,13 +10,17 @@ namespace Swag\PayPal\Test\Checkout\Method;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\Test\Generator;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Swag\PayPal\Checkout\Card\GooglePayValidator;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\GooglePayHandler;
@@ -24,14 +28,17 @@ use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @internal
  */
-#[Package('checkout'), CoversClass(GooglePayHandler::class)]
+#[Package('checkout')]
+#[CoversClass(GooglePayHandler::class)]
 class GooglePayHandlerTest extends TestCase
 {
     private MockObject&OrderResource $orderResource;
@@ -40,20 +47,30 @@ class GooglePayHandlerTest extends TestCase
 
     private GooglePayHandler $googlePayHandler;
 
+    /**
+     * @var StaticEntityRepository<OrderTransactionCollection>
+     */
+    private StaticEntityRepository $orderTransactionRepo;
+
     protected function setUp(): void
     {
         $this->orderResource = $this->createMock(OrderResource::class);
         $this->cardValidator = $this->createMock(GooglePayValidator::class);
 
+        /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
+        $orderTransactionRepo = new StaticEntityRepository([], new OrderTransactionDefinition());
+        $this->orderTransactionRepo = $orderTransactionRepo;
+
         $this->googlePayHandler = new GooglePayHandler(
             $this->createMock(SettingsValidationServiceInterface::class),
-            $this->createMock(OrderTransactionStateHandler::class),
+            $this->createMock(StateMachineRegistry::class),
             $this->createMock(OrderExecuteService::class),
             $this->createMock(OrderPatchService::class),
             $this->createMock(TransactionDataService::class),
-            $this->createMock(LoggerInterface::class),
             $this->orderResource,
             $this->createMock(VaultTokenService::class),
+            $this->orderTransactionRepo,
+            $this->createMock(AbstractOrderBuilder::class),
             $this->cardValidator,
         );
     }
@@ -66,6 +83,7 @@ class GooglePayHandlerTest extends TestCase
                 'liability_shift' => 'no',
                 'three_d_secure' => null,
             ]]]],
+            'links' => [['rel' => 'self', 'href' => 'https://example.com']],
         ]);
 
         $this->orderResource->method('get')->willReturn($order);
@@ -75,10 +93,19 @@ class GooglePayHandlerTest extends TestCase
         static::expectException(PaymentException::class);
         static::expectExceptionMessage('Credit card validation failed, 3D secure was not validated.');
 
+        $orderTransaction = new OrderTransactionEntity();
+        $orderTransaction->setId(Uuid::randomHex());
+        $order = new OrderEntity();
+        $order->setId(Uuid::randomHex());
+        $order->setSalesChannelId(Uuid::randomHex());
+        $orderTransaction->setOrder($order);
+        $this->orderTransactionRepo->addSearch([$orderTransaction]);
+
         $this->googlePayHandler->pay(
-            $this->createMock(SyncPaymentTransactionStruct::class),
-            new RequestDataBag([AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => 'paypalOrderId']),
-            Generator::createSalesChannelContext()
+            new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => 'paypalOrderId']),
+            new PaymentTransactionStruct($orderTransaction->getId()),
+            Context::createDefaultContext(),
+            null
         );
     }
 }

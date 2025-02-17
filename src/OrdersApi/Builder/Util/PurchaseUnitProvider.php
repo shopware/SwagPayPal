@@ -13,8 +13,9 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
@@ -54,7 +55,8 @@ class PurchaseUnitProvider
         CalculatedPrice $shippingCosts,
         ?CustomerEntity $customer,
         ?ItemCollection $itemList,
-        SalesChannelContext $salesChannelContext,
+        CurrencyEntity $currency,
+        Context $context,
         bool $isNet,
         ?OrderEntity $order = null,
         ?OrderTransactionEntity $orderTransaction = null,
@@ -68,7 +70,7 @@ class PurchaseUnitProvider
         $amount = $this->amountProvider->createAmount(
             $totalAmount,
             $shippingCosts,
-            $salesChannelContext->getCurrency(),
+            $currency,
             $purchaseUnit,
             $isNet
         );
@@ -81,14 +83,14 @@ class PurchaseUnitProvider
         }
 
         if ($orderTransaction !== null) {
-            $purchaseUnit->setCustomId($this->customIdProvider->createCustomId($orderTransaction, $salesChannelContext->getContext()));
+            $purchaseUnit->setCustomId($this->customIdProvider->createCustomId($orderTransaction, $context));
         }
 
-        $orderNumber = $order !== null ? $order->getOrderNumber() : null;
+        $orderNumber = $order?->getOrderNumber();
 
-        if ($orderNumber !== null && $this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelContext->getSalesChannelId())) {
-            $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelContext->getSalesChannelId());
-            $orderNumberSuffix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_SUFFIX, $salesChannelContext->getSalesChannelId());
+        if ($orderNumber !== null && $this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $order?->getSalesChannelId())) {
+            $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $order?->getSalesChannelId());
+            $orderNumberSuffix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_SUFFIX, $order?->getSalesChannelId());
             $orderNumber = $orderNumberPrefix . $orderNumber . $orderNumberSuffix;
             $purchaseUnit->setInvoiceId($orderNumber);
         }

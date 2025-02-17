@@ -9,6 +9,7 @@ namespace Swag\PayPal\Pos\Resource;
 
 use Psr\Cache\CacheItemPoolInterface;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Util\Hasher;
 use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Api\Authentication\Token;
 use Swag\PayPal\Pos\Client\TokenClientFactory;
@@ -35,7 +36,7 @@ class TokenResource
 
     public function getToken(OAuthCredentials $credentials): Token
     {
-        $cacheId = \md5(\serialize($credentials));
+        $cacheId = Hasher::hash(\serialize($credentials));
         $token = $this->getTokenFromCache($cacheId);
         if ($token === null || !$this->isTokenValid($token)) {
             $tokenClient = $this->tokenClientFactory->createTokenClient();

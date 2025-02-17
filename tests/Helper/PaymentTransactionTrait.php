@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
@@ -21,18 +22,14 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @internal
@@ -42,40 +39,10 @@ trait PaymentTransactionTrait
 {
     use StateMachineStateTrait;
 
-    protected function createPaymentTransactionStruct(
-        string $orderId = 'some-order-id',
-        ?string $transactionId = null,
-        ?string $orderNumber = null,
-        ?ContainerInterface $container = null,
-        ?Context $context = null,
-    ): AsyncPaymentTransactionStruct {
-        $orderTransaction = $this->createOrderTransaction($transactionId);
-
-        if ($context !== null && $container !== null) {
-            $stateId = $this->getOrderTransactionStateIdByTechnicalName(
-                OrderTransactionStates::STATE_OPEN,
-                $container,
-                $context
-            );
-
-            if ($stateId !== null) {
-                $orderTransaction->setStateId($stateId);
-            }
-        }
-
-        $order = $this->createOrderEntity($orderId, $orderNumber);
-
-        return new AsyncPaymentTransactionStruct(
-            $orderTransaction,
-            $order,
-            ConstantsForTesting::PAYMENT_TRANSACTION_DOMAIN
-        );
-    }
-
     protected function createOrderTransaction(?string $transactionId = null): OrderTransactionEntity
     {
         $orderTransaction = new OrderTransactionEntity();
-        $orderTransaction->setOrderId(OrderPaymentBuilderTest::TEST_ORDER_ID);
+        $orderTransaction->setOrderId(ConstantsForTesting::TEST_ORDER_ID);
 
         if ($transactionId === null) {
             $transactionId = Uuid::randomHex();
@@ -90,11 +57,14 @@ trait PaymentTransactionTrait
 
     protected function createOrderEntity(string $orderId, ?string $orderNumber = null): OrderEntity
     {
-        $orderNumber = $orderNumber ?? OrderPaymentBuilderTest::TEST_ORDER_NUMBER_WITHOUT_PREFIX;
+        $orderNumber = $orderNumber ?? ConstantsForTesting::TEST_ORDER_NUMBER_WITHOUT_PREFIX;
         $order = new OrderEntity();
         $order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $order->setShippingCosts(new CalculatedPrice(4.99, 4.99, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $order->setId($orderId);
+        $salesChannel = new SalesChannelEntity();
+        $salesChannel->setId(TestDefaults::SALES_CHANNEL);
+        $order->setSalesChannel($salesChannel);
         $currency = $this->createCurrencyEntity();
         $order->setCurrency($currency);
         $order->setOrderNumber($orderNumber);
@@ -181,10 +151,15 @@ trait PaymentTransactionTrait
         $delivery->setShippingOrderAddress($address);
         $order->setDeliveries(new OrderDeliveryCollection([$delivery]));
 
+        $customer = new CustomerEntity();
+        $customer->setId(Uuid::randomHex());
+        $customer->setBirthday(new \DateTime('-30 years'));
+
         $orderCustomer = new OrderCustomerEntity();
         $orderCustomer->setFirstName('Test');
         $orderCustomer->setLastName('Customer');
         $orderCustomer->setEmail('test@test.com');
+        $orderCustomer->setCustomer($customer);
         $order->setOrderCustomer($orderCustomer);
 
         return $order;
@@ -216,7 +191,7 @@ trait PaymentTransactionTrait
     {
         $currency = new CurrencyEntity();
         $currency->setId(Uuid::randomHex());
-        $currency->setIsoCode(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
+        $currency->setIsoCode(ConstantsForTesting::EXPECTED_ITEM_CURRENCY);
 
         return $currency;
     }
@@ -226,12 +201,12 @@ trait PaymentTransactionTrait
         $orderLineItem = new OrderLineItemEntity();
 
         $orderLineItem->setId('6198ff79c4144931919977829dbca3d6');
-        $orderLineItem->setQuantity(OrderPaymentBuilderTest::EXPECTED_ITEM_QUANTITY);
+        $orderLineItem->setQuantity(ConstantsForTesting::EXPECTED_ITEM_QUANTITY);
         $orderLineItem->setUnitPrice(855.01);
         $orderLineItem->setTotalPrice($orderLineItem->getUnitPrice() * $orderLineItem->getQuantity());
 
-        $orderLineItem->setLabel(OrderPaymentBuilderTest::EXPECTED_ITEM_NAME);
-        $orderLineItem->setPayload(['productNumber' => OrderPaymentBuilderTest::EXPECTED_PRODUCT_NUMBER]);
+        $orderLineItem->setLabel(ConstantsForTesting::EXPECTED_ITEM_NAME);
+        $orderLineItem->setPayload(['productNumber' => ConstantsForTesting::EXPECTED_PRODUCT_NUMBER]);
 
         return new OrderLineItemCollection([$orderLineItem]);
     }

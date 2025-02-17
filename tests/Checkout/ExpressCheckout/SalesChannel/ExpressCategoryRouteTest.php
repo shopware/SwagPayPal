@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Content\Category\SalesChannel\CachedCategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRouteResponse;
 use Shopware\Core\Framework\Context;
@@ -48,22 +47,16 @@ class ExpressCategoryRouteTest extends TestCase
     public function testDecoration(): void
     {
         $route = $this->getContainer()->get(CategoryRoute::class);
-        $foundCachedRoute = false;
         $foundExpressRoute = false;
 
         while ($route !== null && !$foundExpressRoute) {
-            if ($route instanceof CachedCategoryRoute) {
-                $foundCachedRoute = true;
-            }
-
             if ($route instanceof ExpressCategoryRoute) {
-                static::assertFalse($foundCachedRoute);
                 $foundExpressRoute = true;
             }
 
             try {
                 $route = $route->getDecorated();
-            } catch (DecorationPatternException $exception) {
+            } catch (DecorationPatternException) {
                 $route = null;
             }
         }

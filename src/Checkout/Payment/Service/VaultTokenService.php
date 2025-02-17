@@ -8,8 +8,12 @@
 namespace Swag\PayPal\Checkout\Payment\Service;
 
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Customer\CustomerCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -18,6 +22,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Exception\SubscriptionTypeNotSupportedException;
 use Swag\PayPal\DataAbstractionLayer\Extension\CustomerExtension;
+use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Vault;
@@ -33,6 +38,10 @@ class VaultTokenService
 
     /**
      * @internal
+     *
+     * @param EntityRepository<VaultTokenCollection> $vaultTokenRepository
+     * @param EntityRepository<CustomerCollection> $customerRepository
+     * @param EntityRepository<SubscriptionCollection>|null $subscriptionRepository
      */
     public function __construct(
         private readonly EntityRepository $vaultTokenRepository,
@@ -41,37 +50,34 @@ class VaultTokenService
     ) {
     }
 
-    public function getAvailableToken(SyncPaymentTransactionStruct $struct, Context $context): ?VaultTokenEntity
+    public function getAvailableToken(PaymentTransactionStruct $struct, OrderTransactionEntity $orderTransaction, OrderEntity $order, Context $context): ?VaultTokenEntity
     {
-        $customerId = $struct->getOrder()->getOrderCustomer()?->getCustomerId();
+        $customerId = $order->getOrderCustomer()?->getCustomerId();
         if (!$customerId) {
             return null;
         }
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('customerId', $customerId));
-        $criteria->addFilter(new EqualsFilter('paymentMethodId', $struct->getOrderTransaction()->getPaymentMethodId()));
+        $criteria->addFilter(new EqualsFilter('paymentMethodId', $orderTransaction->getPaymentMethodId()));
 
         if ($subscription = $this->getSubscription($struct)) {
             // try to get the token from the subscription
-            $tokenId = ($subscription->getCustomFields() ?? [])[$this->getSubscriptionCustomFieldKey($struct->getOrderTransaction()->getPaymentMethodId())] ?? null;
+            $tokenId = ($subscription->getCustomFields() ?? [])[$this->getSubscriptionCustomFieldKey($orderTransaction->getPaymentMethodId())] ?? null;
 
-            if (!$tokenId) {
-                return null;
+            if ($tokenId) {
+                $criteria->setIds([$tokenId]);
             }
+        }
 
-            $criteria->setIds([$tokenId]);
-        } else {
+        if (!$criteria->getIds()) {
             $criteria->addFilter(new EqualsFilter('mainMapping.customerId', $customerId));
         }
 
-        /** @var VaultTokenEntity|null $token */
-        $token = $this->vaultTokenRepository->search($criteria, $context)->first();
-
-        return $token;
+        return $this->vaultTokenRepository->search($criteria, $context)->getEntities()->first();
     }
 
-    public function saveToken(SyncPaymentTransactionStruct $struct, VaultablePaymentSourceInterface $paymentSource, string $customerId, Context $context): void
+    public function saveToken(PaymentTransactionStruct $struct, OrderTransactionEntity $orderTransaction, VaultablePaymentSourceInterface $paymentSource, string $customerId, Context $context): void
     {
         $token = $paymentSource->getAttributes()?->getVault();
         if (!$token || !$token->getId()) {
@@ -86,21 +92,21 @@ class VaultTokenService
                     'id' => $tokenId,
                     'token' => $token->getId(),
                     'tokenCustomer' => $token->getCustomer()?->getId(),
-                    'paymentMethodId' => $struct->getOrderTransaction()->getPaymentMethodId(),
+                    'paymentMethodId' => $orderTransaction->getPaymentMethodId(),
                     'identifier' => $paymentSource->getVaultIdentifier(),
                     'customerId' => $customerId,
                 ],
             ], $context);
         }
 
-        $this->saveTokenToCustomer($tokenId, $struct->getOrderTransaction()->getPaymentMethodId(), $customerId, $context);
+        $this->saveTokenToCustomer($tokenId, $orderTransaction->getPaymentMethodId(), $customerId, $context);
 
         if ($subscription = $this->getSubscription($struct)) {
-            $this->saveTokenToSubscription($subscription, $tokenId, $struct->getOrderTransaction()->getPaymentMethodId(), $context);
+            $this->saveTokenToSubscription($subscription, $tokenId, $orderTransaction->getPaymentMethodId(), $context);
         }
     }
 
-    public function getSubscription(SyncPaymentTransactionStruct $struct): ?SubscriptionEntity
+    public function getSubscription(PaymentTransactionStruct $struct): ?SubscriptionEntity
     {
         $recurring = $struct->getRecurring();
         if ($recurring === null) {

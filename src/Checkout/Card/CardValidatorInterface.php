@@ -7,9 +7,9 @@
 
 namespace Swag\PayPal\Checkout\Card;
 
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order;
 
 #[Package('checkout')]
@@ -35,5 +35,5 @@ interface CardValidatorInterface
     public const AUTHENTICATION_STATUS_INFORMATION_ONLY = 'I';
     public const AUTHENTICATION_STATUS_DECOUPLED = 'D';
 
-    public function validate(Order $order, SyncPaymentTransactionStruct $transaction, SalesChannelContext $salesChannelContext): bool;
+    public function validate(Order $order, OrderTransactionEntity $transaction, Context $context): bool;
 }
