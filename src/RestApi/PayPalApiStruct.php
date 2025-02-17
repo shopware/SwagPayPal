@@ -38,27 +38,27 @@ abstract class PayPalApiStruct implements \JsonSerializable
             }
 
             if ($this->isScalar($value)) {
-                $this->$setterMethod($value);
+                $this->{$setterMethod}($value);
 
                 continue;
             }
 
             /** @var class-string<PayPalApiStruct> $className */
             if ($this->isAssociativeArray($value) && $className = $this->getPropertyType($propertyName)) {
-                $this->$setterMethod((new $className())->assign($value));
+                $this->{$setterMethod}((new $className())->assign($value));
 
                 continue;
             }
 
             /** @var class-string<PayPalApiCollection<PayPalApiStruct>> $collectionClass */
             if ($collectionClass = $this->getCollection($propertyName)) {
-                $this->$setterMethod($collectionClass::createFromAssociative($value));
+                $this->{$setterMethod}($collectionClass::createFromAssociative($value));
 
                 continue;
             }
 
             // try for scalar value arrays like string[]
-            $this->$setterMethod($value);
+            $this->{$setterMethod}($value);
         }
 
         return $this;
@@ -73,7 +73,7 @@ abstract class PayPalApiStruct implements \JsonSerializable
             $snakeCasePropertyName = $nameConverter->normalize($property);
 
             if ((new \ReflectionProperty($this, $property))->isInitialized($this)) {
-                $data[$snakeCasePropertyName] = $this->$property;
+                $data[$snakeCasePropertyName] = $this->{$property};
             }
         }
 
@@ -82,12 +82,12 @@ abstract class PayPalApiStruct implements \JsonSerializable
 
     public function unset(string $propertyName): void
     {
-        unset($this->$propertyName);
+        unset($this->{$propertyName});
     }
 
     public function isset(string $propertyName): bool
     {
-        return isset($this->$propertyName);
+        return isset($this->{$propertyName});
     }
 
     private function isScalar(mixed $value): bool

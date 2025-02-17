@@ -97,7 +97,7 @@ class APMOrderBuilderTest extends TestCase
         $paymentSource = $order->getPaymentSource();
         static::assertNotNull($paymentSource);
         $getter = 'get' . $this->getPropertyName($structClass);
-        $struct = $paymentSource->$getter();
+        $struct = $paymentSource->{$getter}();
         static::assertInstanceOf($structClass, $struct);
         static::assertSame('DE', $struct->getCountryCode());
         static::assertSame('Some One', $struct->getName());
@@ -148,7 +148,7 @@ class APMOrderBuilderTest extends TestCase
         $paymentSource = $order->getPaymentSource();
         static::assertNotNull($paymentSource);
         $getter = 'get' . $this->getPropertyName($structClass);
-        $struct = $paymentSource->$getter();
+        $struct = $paymentSource->{$getter}();
 
         static::assertSame(ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING, $struct?->getExperienceContext()?->getShippingPreference());
     }

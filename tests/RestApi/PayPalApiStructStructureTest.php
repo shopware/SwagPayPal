@@ -68,8 +68,8 @@ class PayPalApiStructStructureTest extends TestCase
                 static::assertStringContainsString($propertyTypeName ?: '-', $this->getTypeName($reflectionSetterParameters[0]->getType()) ?: '', \sprintf('Setter for property %s in class %s has wrong parameter type', $propertyName, $structClass));
 
                 $value = $this->getMockValue($propertyType);
-                $struct->$setter($value);
-                static::assertSame($value, $struct->$getter(), \sprintf('Getter for property %s in class %s does not return the same value as set', $propertyName, $structClass));
+                $struct->{$setter}($value);
+                static::assertSame($value, $struct->{$getter}(), \sprintf('Getter for property %s in class %s does not return the same value as set', $propertyName, $structClass));
             }
         }
     }
