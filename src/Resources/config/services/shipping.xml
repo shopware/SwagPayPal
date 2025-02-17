@@ -6,7 +6,7 @@
 
     <services>
         <service id="Swag\PayPal\Checkout\Order\Shipping\ShippingSubscriber">
-            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="messenger.default_bus"/>
 
             <tag name="kernel.event_subscriber"/>
         </service>

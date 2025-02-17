@@ -9,9 +9,8 @@ namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AbstractPaymentHandler;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerRegistry;
-use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -101,7 +100,7 @@ class PaymentMethodInstallerTest extends TestCase
         $reflectionProperty = $reflectionRegistry->getProperty('handlers');
         $reflectionProperty->setAccessible(true); // <--- you set the property to public before you read the value
 
-        /** @var array<string, SynchronousPaymentHandlerInterface|AsynchronousPaymentHandlerInterface> $registeredHandlers */
+        /** @var array<string, AbstractPaymentHandler> $registeredHandlers */
         $registeredHandlers = $reflectionProperty->getValue($registry);
 
         foreach (\array_keys($registeredHandlers) as $serviceId) {

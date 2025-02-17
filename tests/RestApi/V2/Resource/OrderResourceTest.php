@@ -9,18 +9,12 @@ namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\Test\Helper\ConstantsForTesting;
-use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
-use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
-use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
@@ -35,11 +29,6 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 #[Package('checkout')]
 class OrderResourceTest extends TestCase
 {
-    use IntegrationTestBehaviour;
-    use PaymentTransactionTrait;
-    use SalesChannelContextTrait;
-    use ServicesTrait;
-
     public function testGetCreated(): void
     {
         $orderId = GetOrderCapture::ID;
@@ -86,21 +75,12 @@ class OrderResourceTest extends TestCase
 
     public function testCreate(): void
     {
-        $orderBuilder = $this->createOrderBuilder();
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $order = $orderBuilder->getOrder(
-            $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
-        );
-
-        static::assertNotNull($order->getPurchaseUnits()->first()?->getItems());
+        $order = new Order();
+        $order->setIntent(CreateOrderCapture::ID);
 
         $orderResponse = $this->createResource()->create($order, TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         static::assertSame(CreateOrderCapture::ID, $orderResponse->getId());
-        static::assertStringContainsString('token=' . CreateOrderCapture::ID, $orderResponse->getLinks()->getAt(1)?->getHref() ?? '');
     }
 
     public function testAuthorize(): void

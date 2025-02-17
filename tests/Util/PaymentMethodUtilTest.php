@@ -82,10 +82,8 @@ class PaymentMethodUtilTest extends TestCase
 
         $salesChannel = new SalesChannelEntity();
         $salesChannel->setId(TestDefaults::SALES_CHANNEL);
-        $salesChannelContext = Generator::createSalesChannelContext(
-            null,
-            null,
-            $salesChannel
+        $salesChannelContext = Generator::generateSalesChannelContext(
+            salesChannel: $salesChannel
         );
         static::assertTrue($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext));
     }
@@ -100,10 +98,8 @@ class PaymentMethodUtilTest extends TestCase
 
         $salesChannel = new SalesChannelEntity();
         $salesChannel->setId(TestDefaults::SALES_CHANNEL);
-        $salesChannelContext = Generator::createSalesChannelContext(
-            null,
-            null,
-            $salesChannel
+        $salesChannelContext = Generator::generateSalesChannelContext(
+            salesChannel: $salesChannel
         );
         static::assertFalse($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext));
     }
@@ -120,10 +116,8 @@ class PaymentMethodUtilTest extends TestCase
 
         $salesChannel = new SalesChannelEntity();
         $salesChannel->setId(TestDefaults::SALES_CHANNEL);
-        $salesChannelContext = Generator::createSalesChannelContext(
-            null,
-            null,
-            $salesChannel
+        $salesChannelContext = Generator::generateSalesChannelContext(
+            salesChannel: $salesChannel
         );
         static::assertFalse($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext));
     }

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\PUI\ScheduledTask;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -32,11 +33,12 @@ class PUIInstructionsFetchTaskHandler extends ScheduledTaskHandler
 {
     public function __construct(
         EntityRepository $scheduledTaskRepository,
+        LoggerInterface $logger,
         private readonly EntityRepository $orderTransactionRepository,
         private readonly PaymentMethodDataRegistry $methodDataRegistry,
         private readonly MessageBusInterface $bus,
     ) {
-        parent::__construct($scheduledTaskRepository);
+        parent::__construct($scheduledTaskRepository, $logger);
     }
 
     public function run(): void
@@ -59,7 +61,7 @@ class PUIInstructionsFetchTaskHandler extends ScheduledTaskHandler
             ]));
 
         /** @var string[] $transactionIds */
-        $transactionIds = $this->orderTransactionRepository->searchIds($criteria, Context::createDefaultContext())->getIds();
+        $transactionIds = $this->orderTransactionRepository->searchIds($criteria, Context::createCLIContext())->getIds();
 
         foreach ($transactionIds as $transactionId) {
             $this->bus->dispatch(new PUIInstructionsFetchMessage($transactionId));

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Payment\ScheduledTask;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Defaults;
@@ -34,11 +35,12 @@ class TransactionStatusSyncTaskHandler extends ScheduledTaskHandler
 {
     public function __construct(
         EntityRepository $scheduledTaskRepository,
+        LoggerInterface $logger,
         private readonly EntityRepository $orderTransactionRepository,
         private readonly PaymentMethodDataRegistry $methodDataRegistry,
         private readonly MessageBusInterface $bus,
     ) {
-        parent::__construct($scheduledTaskRepository);
+        parent::__construct($scheduledTaskRepository, $logger);
     }
 
     public function run(): void
@@ -65,7 +67,7 @@ class TransactionStatusSyncTaskHandler extends ScheduledTaskHandler
                 RangeFilter::GTE => $twoDaysAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT),
             ]));
 
-        $transactions = $this->orderTransactionRepository->search($criteria, Context::createDefaultContext());
+        $transactions = $this->orderTransactionRepository->search($criteria, Context::createCLIContext());
 
         /** @var OrderTransactionEntity $transaction */
         foreach ($transactions as $transaction) {

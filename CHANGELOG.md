@@ -1,3 +1,7 @@
+# 9.7.0
+- PPI-1044 - Improved compatibility of Vaulting with Store API usage and Headless setups
+- PPI-1000 - Fixes an issue, where PayLater is shown in cases where it should not be available
+
 # 9.6.5
 - PPI-1025 - Improves the performance of the installment banner in the Storefront
 - PPI-1043 - Fixes an issue, where a payment method is toggled twice in the Administration 

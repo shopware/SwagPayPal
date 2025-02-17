@@ -11,8 +11,8 @@ use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Patch;
@@ -20,34 +20,30 @@ use Swag\PayPal\RestApi\V2\Api\Patch;
 #[Package('checkout')]
 class PurchaseUnitPatchBuilder
 {
-    private PurchaseUnitProvider $purchaseUnitProvider;
-
-    private ItemListProvider $itemListProvider;
-
     /**
      * @internal
      */
     public function __construct(
-        PurchaseUnitProvider $purchaseUnitProvider,
-        ItemListProvider $itemListProvider,
+        private readonly PurchaseUnitProvider $purchaseUnitProvider,
+        private readonly ItemListProvider $itemListProvider,
     ) {
-        $this->purchaseUnitProvider = $purchaseUnitProvider;
-        $this->itemListProvider = $itemListProvider;
     }
 
     public function createFinalPurchaseUnitPatch(
         OrderEntity $order,
         OrderTransactionEntity $orderTransaction,
-        SalesChannelContext $salesChannelContext,
+        Context $context,
         bool $submitCart = true,
     ): Patch {
-        $customer = $salesChannelContext->getCustomer();
+        $customer = $order->getOrderCustomer()?->getCustomer();
         if ($customer === null) {
             throw CartException::customerNotLoggedIn();
         }
 
+        $currency = $order->getCurrency();
+        \assert($currency !== null);
         if ($submitCart) {
-            $itemList = $this->itemListProvider->getItemList($salesChannelContext->getCurrency(), $order);
+            $itemList = $this->itemListProvider->getItemList($currency, $order);
         } else {
             $itemList = null;
         }
@@ -59,7 +55,8 @@ class PurchaseUnitPatchBuilder
             $order->getShippingCosts(),
             $customer,
             $itemList,
-            $salesChannelContext,
+            $currency,
+            $context,
             $taxStatus !== CartPrice::TAX_STATE_GROSS,
             $order,
             $orderTransaction

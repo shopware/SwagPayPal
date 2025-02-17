@@ -10,6 +10,15 @@ namespace Swag\PayPal\Checkout\Payment\Method;
 use Shopware\Core\Framework\Log\Package;
 
 #[Package('checkout')]
-class SEPAHandler extends AbstractSyncAPMHandler
+class SEPAHandler extends AbstractPaymentMethodHandler
 {
+    protected function isVaultable(): bool
+    {
+        return false;
+    }
+
+    protected function requirePreparedOrder(): bool
+    {
+        return true;
+    }
 }

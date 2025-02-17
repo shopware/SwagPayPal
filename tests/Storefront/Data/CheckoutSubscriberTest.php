@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Storefront\Data;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -28,6 +29,7 @@ use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
@@ -37,7 +39,6 @@ use Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
-use Swag\PayPal\Storefront\Data\Service\VaultDataService;
 use Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 use Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutData;
@@ -285,6 +286,9 @@ class CheckoutSubscriberTest extends TestCase
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     private function createSubscriber(array $settingsOverride = []): CheckoutDataSubscriber
     {
         $settings = $this->createSystemConfigServiceMock(\array_merge([
@@ -320,7 +324,7 @@ class CheckoutSubscriberTest extends TestCase
             $router,
             $settings,
             $credentialsUtil,
-            $this->createMock(VaultDataService::class),
+            $this->createMock(CustomerVaultTokenRoute::class)
         );
 
         $acdcDataService = new ACDCCheckoutDataService(
@@ -337,7 +341,7 @@ class CheckoutSubscriberTest extends TestCase
             $router,
             $settings,
             $credentialsUtil,
-            $this->createMock(VaultDataService::class),
+            $this->createMock(CustomerVaultTokenRoute::class)
         );
 
         $sessionMock = $this->createMock(Session::class);

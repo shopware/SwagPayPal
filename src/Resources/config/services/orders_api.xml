@@ -49,13 +49,11 @@
         <service id="Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\BoletoBancarioOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\EpsOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\GiropayOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\IdealOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\MultibancoOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\MyBankOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\OxxoOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\P24OrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\SofortOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\TrustlyOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder" />
 
 

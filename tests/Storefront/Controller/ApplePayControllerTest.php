@@ -34,7 +34,7 @@ class ApplePayControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->credentialsUtil = $this->createMock(CredentialsUtil::class);
-        $this->context = Generator::createSalesChannelContext();
+        $this->context = Generator::generateSalesChannelContext();
     }
 
     public function testLiveDomainAssociation(): void

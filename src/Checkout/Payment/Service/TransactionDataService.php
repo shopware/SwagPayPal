@@ -10,7 +10,6 @@ namespace Swag\PayPal\Checkout\Payment\Service;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
@@ -32,17 +31,18 @@ class TransactionDataService
         string $orderTransactionId,
         string $paypalOrderId,
         string $partnerAttributionId,
-        SalesChannelContext $salesChannelContext,
+        string $salesChannelId,
+        Context $context,
     ): void {
         $data = [
             'id' => $orderTransactionId,
             'customFields' => [
                 SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $paypalOrderId,
                 SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID => $partnerAttributionId,
-                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_IS_SANDBOX => $this->credentialsUtil->isSandbox($salesChannelContext->getSalesChannelId()),
+                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_IS_SANDBOX => $this->credentialsUtil->isSandbox($salesChannelId),
             ],
         ];
-        $this->orderTransactionRepository->update([$data], $salesChannelContext->getContext());
+        $this->orderTransactionRepository->update([$data], $context);
     }
 
     public function setResourceId(PayPalOrder $order, string $transactionId, Context $context): void

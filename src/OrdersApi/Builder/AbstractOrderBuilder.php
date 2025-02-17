@@ -9,26 +9,21 @@ namespace Swag\PayPal\OrdersApi\Builder;
 
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
-use Swag\PayPal\RestApi\V2\Api\Common\Address;
-use Swag\PayPal\RestApi\V2\Api\Common\Name;
 use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
-use Swag\PayPal\RestApi\V2\Api\Order\Payer;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
@@ -37,6 +32,7 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
 abstract class AbstractOrderBuilder
@@ -54,24 +50,21 @@ abstract class AbstractOrderBuilder
     }
 
     public function getOrder(
-        SyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag,
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+        Request $request,
     ): Order {
-        $purchaseUnit = $this->createPurchaseUnitFromOrder(
-            $salesChannelContext,
-            $paymentTransaction->getOrder(),
-            $paymentTransaction->getOrderTransaction(),
-        );
-
-        $order = new Order();
-        $order->setIntent($this->getIntent($salesChannelContext->getSalesChannelId()));
-        $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
+        $purchaseUnit = $this->createPurchaseUnitFromOrder($context, $order, $orderTransaction);
+        $payPalOrder = new Order();
+        $payPalOrder->setIntent($this->getIntent($order->getSalesChannelId()));
+        $payPalOrder->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
         $paymentSource = new PaymentSource();
-        $this->buildPaymentSource($paymentTransaction, $salesChannelContext, $requestDataBag, $paymentSource);
-        $order->setPaymentSource($paymentSource);
+        $this->buildPaymentSource($paymentTransaction, $orderTransaction, $order, $context, $request, $paymentSource);
+        $payPalOrder->setPaymentSource($paymentSource);
 
-        return $order;
+        return $payPalOrder;
     }
 
     public function getOrderFromCart(
@@ -92,9 +85,11 @@ abstract class AbstractOrderBuilder
     }
 
     abstract protected function buildPaymentSource(
-        SyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag,
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+        Request $request,
         PaymentSource $paymentSource,
     ): void;
 
@@ -106,12 +101,13 @@ abstract class AbstractOrderBuilder
     ): void;
 
     protected function createPurchaseUnitFromOrder(
-        SalesChannelContext $salesChannelContext,
+        Context $context,
         OrderEntity $order,
         OrderTransactionEntity $orderTransaction,
     ): PurchaseUnit {
-        $items = $this->submitCart($salesChannelContext) ? $this->itemListProvider->getItemList($salesChannelContext->getCurrency(), $order) : null;
-
+        $currency = $order->getCurrency();
+        \assert($currency !== null);
+        $items = $this->submitCart($order->getSalesChannelId()) ? $this->itemListProvider->getItemList($currency, $order) : null;
         $taxStatus = $order->getTaxStatus() ?? $order->getPrice()->getTaxStatus();
 
         return $this->purchaseUnitProvider->createPurchaseUnit(
@@ -119,7 +115,8 @@ abstract class AbstractOrderBuilder
             $order->getShippingCosts(),
             null,
             $items,
-            $salesChannelContext,
+            $currency,
+            $context,
             $taxStatus !== CartPrice::TAX_STATE_GROSS,
             $order,
             $orderTransaction
@@ -135,7 +132,7 @@ abstract class AbstractOrderBuilder
             throw PaymentException::invalidTransaction('');
         }
 
-        $items = $this->submitCart($salesChannelContext)
+        $items = $this->submitCart($salesChannelContext->getSalesChannelId())
             ? $this->itemListProvider->getItemListFromCart($salesChannelContext->getCurrency(), $cart)
             : null;
 
@@ -144,7 +141,8 @@ abstract class AbstractOrderBuilder
             $cart->getShippingCosts(),
             $salesChannelContext->getCustomer(),
             $items,
-            $salesChannelContext,
+            $salesChannelContext->getCurrency(),
+            $salesChannelContext->getContext(),
             $cart->getPrice()->getTaxStatus() !== CartPrice::TAX_STATE_GROSS
         );
     }
@@ -163,62 +161,25 @@ abstract class AbstractOrderBuilder
         return $intent;
     }
 
-    /**
-     * @deprecated tag:v10.0.0 - will be removed, use payment source attributes instead
-     */
-    protected function createPayer(CustomerEntity $customer): Payer
-    {
-        $payer = new Payer();
-        $payer->setEmailAddress($customer->getEmail());
-        $name = new Name();
-        $name->setGivenName($customer->getFirstName());
-        $name->setSurname($customer->getLastName());
-        $payer->setName($name);
-
-        $billingAddress = $customer->getActiveBillingAddress();
-        if ($billingAddress === null) {
-            throw new AddressNotFoundException($customer->getDefaultBillingAddressId());
-        }
-        $address = new Address();
-        $this->addressProvider->createAddress($billingAddress, $address);
-        $payer->setAddress($address);
-
-        return $payer;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - will be removed, use experience context instead
-     */
-    protected function createApplicationContext(
-        SalesChannelContext $salesChannelContext,
-    ): ApplicationContext {
-        $applicationContext = new ApplicationContext();
-        $applicationContext->setBrandName($this->getBrandName($salesChannelContext));
-        $applicationContext->setLandingPage($this->getLandingPageType($salesChannelContext->getSalesChannelId()));
-
-        return $applicationContext;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - parameter $paymentTransaction will be required
-     */
     protected function createExperienceContext(
-        SalesChannelContext $salesChannelContext,
-        SyncPaymentTransactionStruct|Cart|null $paymentTransaction = null,
+        OrderEntity|Cart $orderOrCart,
+        SalesChannelEntity $salesChannel,
+        Context $context,
+        ?PaymentTransactionStruct $paymentTransaction = null,
     ): ExperienceContext {
         $experienceContext = new ExperienceContext();
-        $experienceContext->setBrandName($this->getBrandName($salesChannelContext));
-        $experienceContext->setLocale($this->localeCodeProvider->getLocaleCodeFromContext($salesChannelContext->getContext()));
-        $experienceContext->setLandingPage($this->getLandingPageType($salesChannelContext->getSalesChannelId()));
-        $delivery = $paymentTransaction instanceof Cart
-            ? $paymentTransaction->getDeliveries()->first()
-            : $paymentTransaction?->getOrder()?->getDeliveries()?->first();
+        $experienceContext->setBrandName($this->getBrandName($salesChannel));
+        $experienceContext->setLocale($this->localeCodeProvider->getLocaleCodeFromContext($context));
+        $experienceContext->setLandingPage($this->getLandingPageType($salesChannel->getId()));
+        $delivery = $orderOrCart instanceof Cart
+            ? $orderOrCart->getDeliveries()->first()
+            : $orderOrCart->getDeliveries()?->first();
 
         $experienceContext->setShippingPreference($delivery !== null
             ? ExperienceContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS
             : ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING);
 
-        if ($paymentTransaction instanceof AsyncPaymentTransactionStruct) {
+        if ($paymentTransaction?->getReturnUrl()) {
             $experienceContext->setReturnUrl($paymentTransaction->getReturnUrl());
             $experienceContext->setCancelUrl(\sprintf('%s&cancel=1', $paymentTransaction->getReturnUrl()));
         } else {
@@ -229,20 +190,20 @@ abstract class AbstractOrderBuilder
         return $experienceContext;
     }
 
-    protected function getBrandName(SalesChannelContext $salesChannelContext): string
+    protected function getBrandName(SalesChannelEntity $salesChannel): string
     {
-        $brandName = $this->systemConfigService->getString(Settings::BRAND_NAME, $salesChannelContext->getSalesChannelId());
+        $brandName = $this->systemConfigService->getString(Settings::BRAND_NAME, $salesChannel->getId());
 
         if ($brandName === '') {
-            $brandName = $salesChannelContext->getSalesChannel()->getTranslation('name') ?? '';
+            $brandName = $salesChannel->getTranslation('name') ?? '';
         }
 
         return $brandName;
     }
 
-    protected function submitCart(SalesChannelContext $salesChannelContext): bool
+    protected function submitCart(string $salesChannelId): bool
     {
-        return $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId());
+        return $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelId);
     }
 
     /**

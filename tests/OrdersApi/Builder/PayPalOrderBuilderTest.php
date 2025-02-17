@@ -31,9 +31,10 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderException;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\Recurring\RecurringDataStruct;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -41,6 +42,7 @@ use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
@@ -54,12 +56,13 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
-use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @internal
@@ -102,28 +105,16 @@ class PayPalOrderBuilderTest extends TestCase
 
     public function testGetOrderHasShippingAddressName(): void
     {
-        $paymentTransaction = new SyncPaymentTransactionStruct($this->createOrderTransaction(), $this->createOrder());
-        $salesChannelContext = $this->createSalesChannelContext();
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
-
-        $countryState = new CountryStateEntity();
-        $countryState->setShortCode(self::STATE_SHORT_CODE);
-
-        $shippingAddress = new CustomerAddressEntity();
-        $shippingAddress->setFirstName(self::TEST_FIRST_NAME);
-        $shippingAddress->setLastName(self::TEST_LAST_NAME);
-        $shippingAddress->setAdditionalAddressLine1(self::ADDRESS_LINE_1);
-        $shippingAddress->setCountryState($countryState);
-        $shippingAddress->setStreet('Test street 123');
-        $shippingAddress->setCity('Test City');
-        $shippingAddress->setZipcode('12345');
-        $customer->setActiveShippingAddress($shippingAddress);
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
         $order = $this->orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
         );
 
         $shipping = $order->getPurchaseUnits()->first()?->getShipping();
@@ -137,33 +128,36 @@ class PayPalOrderBuilderTest extends TestCase
 
     public function testGetOrderNoBillingAddress(): void
     {
-        $paymentTransaction = new SyncPaymentTransactionStruct($this->createOrderTransaction(), $this->createOrder());
-        $salesChannelContext = $this->createSalesChannelContext();
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
-        $paymentTransaction->getOrder()->assign(['billingAddress' => null]);
-        $customer->assign(['activeBillingAddress' => null, 'defaultBillingAddress' => null]);
+        $order->assign(['billingAddress' => null]);
 
         $this->expectException(OrderException::class);
         $this->expectExceptionMessage('The required association "billingAddress" is missing .');
         $this->orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
         );
     }
 
     public function testGetOrderNoShippingAddress(): void
     {
-        $paymentTransaction = new SyncPaymentTransactionStruct($this->createOrderTransaction(), $this->createOrder());
-        $salesChannelContext = $this->createSalesChannelContext();
-        $paymentTransaction->getOrder()->getDeliveries()?->clear();
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $order->getDeliveries()?->clear();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
         $order = $this->orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
         );
 
         static::assertSame(ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING, $order->getPaymentSource()?->getPaypal()?->getExperienceContext()?->getShippingPreference());
@@ -171,15 +165,18 @@ class PayPalOrderBuilderTest extends TestCase
 
     public function testGetOrderPrefix(): void
     {
-        $paymentTransaction = new SyncPaymentTransactionStruct($this->createOrderTransaction(), $this->createOrder());
-        $salesChannelContext = $this->createSalesChannelContext();
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
 
         $this->systemConfig->set(Settings::ORDER_NUMBER_PREFIX, 'foo');
         $this->systemConfig->set(Settings::ORDER_NUMBER_SUFFIX, 'bar');
         $order = $this->orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
         );
 
         $invoiceId = $order->getPurchaseUnits()->first()?->getInvoiceId();
@@ -194,10 +191,9 @@ class PayPalOrderBuilderTest extends TestCase
             static::markTestSkipped('Commercial is not installed');
         }
 
-        $paymentTransaction = new SyncPaymentTransactionStruct($this->createOrderTransaction(), $this->createOrder(), new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
-        $salesChannelContext = $this->createSalesChannelContext();
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
 
         $this->vaultTokenService->expects(static::once())->method('getAvailableToken')->willReturn(null);
         $this->vaultTokenService->expects(static::once())->method('getSubscription')->willReturn(new SubscriptionEntity());
@@ -205,34 +201,36 @@ class PayPalOrderBuilderTest extends TestCase
 
         $this->orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag(),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
         );
     }
 
     public function testGetOrderRequestsVaultingWithUserRequest(): void
     {
-        $paymentTransaction = new SyncPaymentTransactionStruct($this->createOrderTransaction(), $this->createOrder(), new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
-        $salesChannelContext = $this->createSalesChannelContext();
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
 
         $this->vaultTokenService->expects(static::once())->method('getAvailableToken')->willReturn(null);
         $this->vaultTokenService->expects(static::once())->method('requestVaulting');
 
         $this->orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag([VaultTokenService::REQUEST_CREATE_VAULT => true]),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], [VaultTokenService::REQUEST_CREATE_VAULT => true]),
         );
     }
 
     public function testGetOrderUsesVaultTokenIfExists(): void
     {
-        $paymentTransaction = new SyncPaymentTransactionStruct($this->createOrderTransaction(), $this->createOrder(), new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
-        $salesChannelContext = $this->createSalesChannelContext();
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
 
         $vaultToken = new VaultTokenEntity();
         $vaultToken->setToken('testToken');
@@ -241,8 +239,10 @@ class PayPalOrderBuilderTest extends TestCase
 
         $order = $this->orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            new RequestDataBag([VaultTokenService::REQUEST_CREATE_VAULT => true]),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], [VaultTokenService::REQUEST_CREATE_VAULT => true]),
         );
 
         static::assertSame('testToken', $order->getPaymentSource()?->getPaypal()?->getVaultId());
@@ -412,7 +412,7 @@ class PayPalOrderBuilderTest extends TestCase
     private function createOrderTransaction(?string $transactionId = null): OrderTransactionEntity
     {
         $orderTransaction = new OrderTransactionEntity();
-        $orderTransaction->setOrderId(OrderPaymentBuilderTest::TEST_ORDER_ID);
+        $orderTransaction->setOrderId(ConstantsForTesting::TEST_ORDER_ID);
 
         if ($transactionId === null) {
             $transactionId = Uuid::randomHex();
@@ -444,11 +444,14 @@ class PayPalOrderBuilderTest extends TestCase
 
     private function createOrder(): OrderEntity
     {
-        $orderNumber = OrderPaymentBuilderTest::TEST_ORDER_NUMBER_WITHOUT_PREFIX;
+        $orderNumber = ConstantsForTesting::TEST_ORDER_NUMBER_WITHOUT_PREFIX;
         $order = new OrderEntity();
         $order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $order->setShippingCosts(new CalculatedPrice(4.99, 4.99, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $order->setId(Uuid::randomHex());
+        $salesChannel = new SalesChannelEntity();
+        $salesChannel->setId(TestDefaults::SALES_CHANNEL);
+        $order->setSalesChannel($salesChannel);
         $currency = new CurrencyEntity();
         $currency->setId(Uuid::randomHex());
         $currency->setIsoCode('EUR');
@@ -492,7 +495,7 @@ class PayPalOrderBuilderTest extends TestCase
         $country = new CountryEntity();
         $country->setIso('DE');
         $state = new CountryStateEntity();
-        $state->setShortCode('NRW');
+        $state->setShortCode(self::STATE_SHORT_CODE);
         $address = new OrderAddressEntity();
         $address->setFirstName('Some');
         $address->setLastName('One');
@@ -509,10 +512,10 @@ class PayPalOrderBuilderTest extends TestCase
         $delivery = new OrderDeliveryEntity();
         $delivery->setId(Uuid::randomHex());
         $address = new OrderAddressEntity();
-        $address->setFirstName('FirstName');
-        $address->setLastName('LastName');
+        $address->setFirstName(self::TEST_FIRST_NAME);
+        $address->setLastName(self::TEST_LAST_NAME);
         $address->setStreet('Street 1');
-        $address->setAdditionalAddressLine1('Test address line 1');
+        $address->setAdditionalAddressLine1(self::ADDRESS_LINE_1);
         $address->setZipcode('12345');
         $address->setCity('City');
         $address->setPhoneNumber('+41 (0123) 49567-89'); // extra weird for filter testing
@@ -533,7 +536,7 @@ class PayPalOrderBuilderTest extends TestCase
 
     private function createSalesChannelContext(): SalesChannelContext
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCurrency()->setIsoCode('EUR');
         $salesChannelContext->getCustomer()?->setEmail('test@example.com');
         $salesChannelContext->getCustomer()?->setFirstName('Test');

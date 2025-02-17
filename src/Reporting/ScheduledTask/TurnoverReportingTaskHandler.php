@@ -49,7 +49,7 @@ class TurnoverReportingTaskHandler extends ScheduledTaskHandler
     public function run(): void
     {
         $transactionReportIds = $this->transactionReportRepository
-            ->searchIds(new Criteria(), Context::createDefaultContext())->getIds();
+            ->searchIds(new Criteria(), Context::createCLIContext())->getIds();
 
         /**
          * All transactions no longer in paid state will be ignored, but deleted at the end

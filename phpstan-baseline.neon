@@ -11,11 +11,6 @@ parameters:
 			path: src/Checkout/ExpressCheckout/Service/ExpressCustomerService.php
 
 		-
-			message: "#^Mixed variable in a `\\$session\\-\\>getFlashBag\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
-			count: 1
-			path: src/Checkout/Payment/Method/PUIHandler.php
-
-		-
 			message: "#^Usage of ALTER TABLE \\.\\. AFTER is disallowed in migrations to avoid implicit temporary table usage\\.$#"
 			count: 1
 			path: src/Migration/Migration1706111604AddCustomerIdToVault.php
@@ -214,8 +209,3 @@ parameters:
 			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\TestBootstrapper\" over abstract one$#"
 			count: 11
 			path: tests/TestBootstrapper.php
-
-		-
-			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Util\\\\Lifecycle\" does not follow PSR\\-4 configuration in composer\\.json$#"
-			count: 1
-			path: tests/Util/Availability/AvailabilityServiceTest.php

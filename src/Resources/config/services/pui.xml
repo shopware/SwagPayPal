@@ -5,17 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\Checkout\Payment\Method\PUIHandler">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+        <service id="Swag\PayPal\Checkout\Payment\Method\PUIHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler">
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PUIOrderBuilder"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
             <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService"/>
-            <argument type="service" id="request_stack"/>
-            <argument type="service" id="translator"/>
-            <argument type="service" id="monolog.logger.paypal"/>
-            <tag name="shopware.payment.method.sync"/>
+            <tag name="shopware.payment.method"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService">
@@ -60,9 +54,10 @@
 
         <service id="Swag\PayPal\Checkout\PUI\ScheduledTask\PUIInstructionsFetchTaskHandler">
             <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="logger"/>
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
-            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="messenger.default_bus"/>
             <tag name="messenger.message_handler"/>
         </service>
 

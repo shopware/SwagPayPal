@@ -19,8 +19,8 @@ parameters:
     excludePaths:
         - src/Resources
         - src/DevOps/Rector
-        # tag:v6.7.0 - does not fully understand overwrite multiple definitions of DefaultPayment
-        - src/Pos/Payment/PosPayment.php
+        - tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
+        - tests/DeprecatedTagTest.php
 
     bootstrapFiles:
         - bin/static-analyze-autoloader.php
@@ -36,9 +36,6 @@ parameters:
         null_over_false: true
 
     ignoreErrors:
-        # Will be fixed in v6.7
-        - '#Do not use md5 function, use class Shopware\\Core\\Framework\\Util\\Hasher instead.#'
-
         # We won't type all arrays/iterables for now
         - '#no value type specified in iterable type#'
 
@@ -66,46 +63,6 @@ parameters:
             message: '#.*tag:v6.7.0 -#'
             paths:
                 - tests/**/*.php
-
-        - # Can be removed once the min SW version is 6.6.1.0
-            message: '#Method Context::createDefaultContext\(\) should not be used in CLI context. Use Context::createCLIContext\(\) instead#'
-            paths:
-                - src/Checkout/PUI/ScheduledTask/PUIInstructionsFetchTaskHandler.php
-                - src/Checkout/Payment/ScheduledTask/TransactionStatusSyncTaskHandler.php
-                - src/Pos/Command/AbstractPosCommand.php
-                - src/Pos/Schedule/AbstractSyncTaskHandler.php
-                - src/Reporting/ScheduledTask/TurnoverReportingTaskHandler.php
-
-        - # ignore shopware v6.7 payment handlers refactor deprecations
-            message: '#tag:v6.7.0 -.*PaymentTransactionStruct#'
-            paths:
-                - src/Checkout/Card/*Validator.php
-                - src/Checkout/Card/CardValidatorInterface.php
-                - src/Checkout/Payment/**/*Handler.php
-                - src/Checkout/Payment/PayPalPaymentHandler.php
-                - src/Checkout/Payment/Service/VaultTokenService.php
-                - src/OrdersApi/Builder/*Builder.php
-                - src/PaymentsApi/Builder/OrderPaymentBuilderInterface.php
-                - src/PaymentsApi/Builder/*Builder.php
-                - src/PaymentsApi/Patch/*.php
-
-        - # ignore shopware v6.7 payment handlers refactor deprecations
-            message: '#.*tag:v6.7.0 - will be removed, (extend AbstractPaymentHandler)|(use `build`) instead#'
-            paths:
-                - src/Checkout/Payment/**/*Handler.php
-                - src/Checkout/Payment/PayPalPaymentHandler.php
-                - src/Checkout/SalesChannel/CreateOrderRoute.php
-                - src/Webhook/Handler/VaultPaymentTokenCreated.php
-
-        - # ignore shopware v6.7 payment handlers refactor deprecations
-            message: '#Swag\\PayPal\\Pos\\Payment\\PosPayment#'
-            paths:
-                - tests/Pos/Util/InformationDefaultServiceTest.php
-
-        - # ignore shopware v6.7 native type deprecations
-            message: '#.*tag:v6.7.0 - Will be natively typed|Native type for property ".*" is missing#'
-            paths:
-                - src/Checkout/TokenResponse.php
 
 services:
     -   # register the class, so we can decorate it, but don't tag it as a rule, so only our decorator is used by PHPStan

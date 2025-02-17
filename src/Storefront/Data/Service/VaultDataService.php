@@ -14,7 +14,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
-use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
 use Swag\PayPal\Storefront\Data\Struct\VaultData;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -28,7 +27,6 @@ class VaultDataService
     public function __construct(
         private readonly EntityRepository $vaultRepository,
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
-        private readonly TokenResourceInterface $tokenResource,
     ) {
     }
 
@@ -59,21 +57,6 @@ class VaultDataService
         }
 
         return $struct;
-    }
-
-    public function getUserIdToken(SalesChannelContext $context): ?string
-    {
-        $customer = $context->getCustomer();
-        if ($customer === null || $customer->getGuest() === true) {
-            return null;
-        }
-
-        $vault = $this->fetchVaultData($customer, $context);
-        if ($vault !== null) {
-            return $this->tokenResource->getUserIdToken($context->getSalesChannelId(), $vault->getTokenCustomer())->getIdToken();
-        }
-
-        return $this->tokenResource->getUserIdToken($context->getSalesChannelId())->getIdToken();
     }
 
     private function fetchVaultData(CustomerEntity $customer, SalesChannelContext $context): ?VaultTokenEntity

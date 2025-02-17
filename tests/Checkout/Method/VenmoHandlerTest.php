@@ -11,17 +11,17 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\NullLogger;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
-use Shopware\Core\Checkout\Cart\Order\OrderConverter;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Cart\RecurringPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Test\Generator;
-use Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler;
+use Shopware\Core\Test\TestDefaults;
+use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
@@ -44,6 +44,7 @@ use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -66,24 +67,23 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
 
     private VenmoOrderBuilder&MockObject $orderBuilder;
 
-    private OrderConverter&MockObject $orderConverter;
+    private OrderExecuteService&MockObject $orderExecuteService;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->handler = new VenmoHandler(
             $this->settingsValidationService = $this->createMock(SettingsValidationService::class),
-            $this->createMock(OrderTransactionStateHandler::class),
-            $this->createMock(OrderExecuteService::class),
+            $this->stateMachineRegistry,
+            $this->orderExecuteService = $this->createMock(OrderExecuteService::class),
             $this->orderPatchService = $this->createMock(OrderPatchService::class),
             $this->transactionDataService = $this->createMock(TransactionDataService::class),
-            new NullLogger(),
             $this->orderResource = $this->createMock(OrderResource::class),
             $this->vaultTokenService = $this->createMock(VaultTokenService::class),
+            $this->orderTransactionRepo,
             $this->orderBuilder = $this->createMock(VenmoOrderBuilder::class),
-            $this->orderConverter = $this->createMock(OrderConverter::class),
         );
-
-        parent::setUp();
     }
 
     public function testRecurring(): void
@@ -92,17 +92,14 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
             static::markTestSkipped('Commercial is not available');
         }
 
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $context = Context::createDefaultContext();
 
-        $transaction = new OrderTransactionEntity();
-        $transaction->setId('orderTransactionId');
-        $order = new OrderEntity();
         $subscription = new SubscriptionEntity();
         $subscription->setId('subscriptionId');
         $subscription->setNextSchedule(new \DateTime());
-        $paymentTransaction = new RecurringPaymentTransactionStruct(
-            $transaction,
-            $order,
+        $paymentTransaction = new PaymentTransactionStruct(
+            $this->getTransactionId($context, $this->getContainer()),
+            null,
             new SubscriptionRecurringDataStruct($subscription),
         );
 
@@ -118,15 +115,16 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
             ->expects(static::once())
             ->method('setOrderId')
             ->with(
-                $paymentTransaction->getOrderTransaction()->getId(),
+                $paymentTransaction->getOrderTransactionId(),
                 'paypalOrderId',
                 PartnerAttributionId::PAYPAL_PPCP,
-                $salesChannelContext
+                TestDefaults::SALES_CHANNEL,
+                $context
             );
         $this->transactionDataService
             ->expects(static::once())
             ->method('setResourceId')
-            ->with($paypalOrder, $paymentTransaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
+            ->with($paypalOrder, $paymentTransaction->getOrderTransactionId(), $context);
 
         $this->orderPatchService
             ->expects(static::never())
@@ -135,12 +133,12 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
         $this->settingsValidationService
             ->expects(static::once())
             ->method('validate')
-            ->with($salesChannelContext->getSalesChannelId());
+            ->with(TestDefaults::SALES_CHANNEL);
 
         $this->orderBuilder
             ->expects(static::once())
             ->method('getOrder')
-            ->with($paymentTransaction, $salesChannelContext, new RequestDataBag())
+            ->with($paymentTransaction, static::isInstanceOf(OrderTransactionEntity::class), static::isInstanceOf(OrderEntity::class), $context, new Request())
             ->willReturn($paypalOrder);
 
         $this->orderResource
@@ -149,27 +147,27 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
             ->with($paypalOrder)
             ->willReturn($paypalOrder);
 
-        $this->orderConverter
+        $this->orderExecuteService
             ->expects(static::once())
-            ->method('assembleSalesChannelContext')
-            ->with($order, $salesChannelContext->getContext())
-            ->willReturn($salesChannelContext);
+            ->method('captureOrAuthorizeOrder')
+            ->with($paymentTransaction->getOrderTransactionId(), $paypalOrder)
+            ->willReturn($paypalOrder);
 
-        $this->handler->captureRecurring(
+        $this->handler->recurring(
             $paymentTransaction,
-            $salesChannelContext->getContext(),
+            $context,
         );
     }
 
     public function testRecurringWithoutSubscription(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = Generator::generateSalesChannelContext();
 
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
-        $paymentTransaction = new RecurringPaymentTransactionStruct(
-            $transaction,
-            new OrderEntity(),
+        $paymentTransaction = new PaymentTransactionStruct(
+            'orderTransactionId',
+            null,
             null,
         );
 
@@ -182,7 +180,7 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('The recurring capture process was interrupted due to the following error:
 Subscription not found');
-        $this->handler->captureRecurring(
+        $this->handler->recurring(
             $paymentTransaction,
             $salesChannelContext->getContext(),
         );
@@ -193,7 +191,7 @@ Subscription not found');
         return VenmoHandler::class;
     }
 
-    protected function createPaymentHandler(array $settings = []): AbstractSyncAPMHandler
+    protected function createPaymentHandler(array $settings = []): AbstractPaymentMethodHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
@@ -203,7 +201,7 @@ Subscription not found');
 
         return new VenmoHandler(
             new SettingsValidationService($systemConfig, new NullLogger()),
-            $orderTransactionStateHandler,
+            $this->stateMachineRegistry,
             new OrderExecuteService(
                 $orderResource,
                 $orderTransactionStateHandler,
@@ -231,15 +229,14 @@ Subscription not found');
                 $this->orderTransactionRepo,
                 new CredentialsUtil($systemConfig),
             ),
-            $logger,
             $orderResource,
             new VaultTokenService(
                 $this->createMock(EntityRepository::class),
                 $this->createMock(EntityRepository::class),
                 null,
             ),
+            $this->orderTransactionRepo,
             $this->createMock(VenmoOrderBuilder::class),
-            $this->createMock(OrderConverter::class),
         );
     }
 

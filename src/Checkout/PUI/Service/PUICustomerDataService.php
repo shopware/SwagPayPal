@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\Checkout\PUI\Service;
 
-use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 #[Package('checkout')]
 class PUICustomerDataService
@@ -19,45 +21,43 @@ class PUICustomerDataService
     public const PUI_CUSTOMER_DATA_BIRTHDAY = 'payPalPuiCustomerBirthday';
     public const PUI_CUSTOMER_DATA_PHONE_NUMBER = 'payPalPuiCustomerPhoneNumber';
 
-    private EntityRepository $orderAddressRepository;
-
-    private EntityRepository $customerRepository;
-
     /**
      * @internal
      */
     public function __construct(
-        EntityRepository $orderAddressRepository,
-        EntityRepository $customerRepository,
+        private readonly EntityRepository $orderAddressRepository,
+        private readonly EntityRepository $customerRepository,
     ) {
-        $this->orderAddressRepository = $orderAddressRepository;
-        $this->customerRepository = $customerRepository;
     }
 
-    public function checkForCustomerData(OrderEntity $order, DataBag $dataBag, SalesChannelContext $salesChannelContext): void
+    public function checkForCustomerData(PaymentTransactionStruct $transaction, DataBag $dataBag, Context $context): void
     {
         $birthday = $this->getBirthday($dataBag);
         $phoneNumber = $dataBag->get(self::PUI_CUSTOMER_DATA_PHONE_NUMBER);
-        $customer = $salesChannelContext->getCustomer();
 
-        if ($birthday && $customer !== null) {
-            $this->customerRepository->update([[
-                'id' => $customer->getId(),
-                'birthday' => $birthday,
-            ]], $salesChannelContext->getContext());
+        if ($birthday) {
+            $customerCriteria = new Criteria();
+            $customerCriteria->addFilter(new EqualsFilter('orderCustomers.order.transactions.id', $transaction->getOrderTransactionId()));
+            $customerId = $this->customerRepository->searchIds($customerCriteria, $context)->firstId();
 
-            $customer->setBirthday($birthday);
+            if ($customerId !== null) {
+                $this->customerRepository->update([[
+                    'id' => $customerId,
+                    'birthday' => $birthday,
+                ]], $context);
+            }
         }
 
         if ($phoneNumber) {
-            $this->orderAddressRepository->update([[
-                'id' => $order->getBillingAddressId(),
-                'phoneNumber' => $phoneNumber,
-            ]], $salesChannelContext->getContext());
+            $addressCriteria = new Criteria();
+            $addressCriteria->addFilter(new EqualsFilter('order.transactions.id', $transaction->getOrderTransactionId()));
+            $billingAddressId = $this->orderAddressRepository->searchIds($addressCriteria, $context)->firstId();
 
-            $billingAddress = $order->getBillingAddress();
-            if ($billingAddress !== null) {
-                $billingAddress->setPhoneNumber($phoneNumber);
+            if ($billingAddressId !== null) {
+                $this->orderAddressRepository->update([[
+                    'id' => $billingAddressId,
+                    'phoneNumber' => $phoneNumber,
+                ]], $context);
             }
         }
     }

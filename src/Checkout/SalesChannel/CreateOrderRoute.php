@@ -100,16 +100,16 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
     public function createPayPalOrder(SalesChannelContext $salesChannelContext, Request $request): TokenResponse
     {
         try {
-            $requestDataBag = new RequestDataBag($request->request->all());
-            $this->logger->debug('Started', ['request' => $requestDataBag->all()]);
+            $this->logger->debug('Started', ['request' => $request->request->all()]);
             $customer = $salesChannelContext->getCustomer();
             if ($customer === null) {
                 throw CartException::customerNotLoggedIn();
             }
 
-            $orderId = $requestDataBag->getAlnum('orderId');
+            $orderId = $request->request->getAlnum('orderId');
+            $product = $request->request->getString('product');
 
-            $orderBuilder = match ($requestDataBag->get('product')) {
+            $orderBuilder = match ($product) {
                 'acdc' => $this->acdcOrderBuilder,
                 'applepay' => $this->applePayOrderBuilder,
                 'googlepay' => $this->googlePayOrderBuilder,
@@ -118,11 +118,11 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             };
 
             $paypalOrder = $orderId
-                ? $this->getOrderFromOrder($orderBuilder, $orderId, $customer, $requestDataBag, $salesChannelContext)
-                : $this->getOrderFromCart($orderBuilder, $salesChannelContext, $requestDataBag);
+                ? $this->getOrderFromOrder($orderBuilder, $orderId, $customer, $request, $salesChannelContext)
+                : $this->getOrderFromCart($orderBuilder, $salesChannelContext, $request);
 
             $salesChannelId = $salesChannelContext->getSalesChannelId();
-            $response = $this->orderResource->create($paypalOrder, $salesChannelId, $this->getPartnerAttributionId($requestDataBag));
+            $response = $this->orderResource->create($paypalOrder, $salesChannelId, $this->getPartnerAttributionId($product));
 
             return new TokenResponse($response->getId());
         } catch (\Throwable $e) {
@@ -135,9 +135,11 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
     private function getOrderFromCart(
         AbstractOrderBuilder $orderBuilder,
         SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag,
+        Request $request,
     ): Order {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+
+        $requestDataBag = new RequestDataBag($request->request->all());
 
         return $orderBuilder->getOrderFromCart($cart, $salesChannelContext, $requestDataBag);
     }
@@ -146,7 +148,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         AbstractOrderBuilder $orderBuilder,
         string $orderId,
         CustomerEntity $customer,
-        RequestDataBag $requestDataBag,
+        Request $request,
         SalesChannelContext $salesChannelContext,
     ): Order {
         $criteria = new Criteria([$orderId]);
@@ -156,6 +158,8 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         $criteria->addAssociation('orderCustomer');
         $criteria->addAssociation('deliveries.shippingOrderAddress.country');
         $criteria->addAssociation('subscription');
+        $criteria->addAssociation('currency');
+        $criteria->addAssociation('salesChannel');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->first();
@@ -180,17 +184,17 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         }
 
         return $orderBuilder->getOrder(
-            $this->paymentTransactionStructFactory->sync($transaction, $order),
-            $salesChannelContext,
-            $requestDataBag,
+            $this->paymentTransactionStructFactory->build($transaction->getPaymentMethodId(), $salesChannelContext->getContext()),
+            $transaction,
+            $order,
+            $salesChannelContext->getContext(),
+            $request,
         );
     }
 
-    private function getPartnerAttributionId(RequestDataBag $requestDataBag): string
+    private function getPartnerAttributionId(string $product): string
     {
-        $product = $requestDataBag->get('product');
-
-        if (!\is_string($product) || $product === '') {
+        if ($product === '') {
             return PartnerAttributionId::PAYPAL_PPCP;
         }
 

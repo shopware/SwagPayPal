@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Checkout\Payment\ScheduledTask;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -49,6 +50,7 @@ class PUIInstructionsFetchTaskHandlerTest extends TestCase
 
         $this->handler = new PUIInstructionsFetchTaskHandler(
             $this->createMock(EntityRepository::class),
+            new NullLogger(),
             $this->orderTransactionRepository,
             $this->paymentMethodDataRegistry,
             $this->bus,

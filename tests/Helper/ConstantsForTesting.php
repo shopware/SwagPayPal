@@ -39,4 +39,15 @@ final class ConstantsForTesting
     public const WITHOUT_ORDER = 'noOrderFound';
 
     public const PAYMENT_TRANSACTION_DOMAIN = 'http://www.test.de/';
+
+    public const TEST_ORDER_NUMBER = 'TEST_12345_TEST';
+    public const TEST_ORDER_NUMBER_WITHOUT_PREFIX = '12345';
+    public const TEST_ORDER_NUMBER_PREFIX = 'TEST_';
+    public const TEST_ORDER_NUMBER_SUFFIX = '_TEST';
+    public const TEST_ORDER_ID = 'test-order-id';
+    public const EXPECTED_ITEM_NAME = 'Aerodynamic Paper Ginger Vitro';
+    public const EXPECTED_PRODUCT_NUMBER = '0716562764cd43389abe16faad1838b8';
+    public const EXPECTED_ITEM_CURRENCY = 'EUR';
+    public const EXPECTED_ITEM_TAX = 0.0;
+    public const EXPECTED_ITEM_QUANTITY = 1;
 }

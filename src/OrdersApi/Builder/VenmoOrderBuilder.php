@@ -8,8 +8,11 @@
 namespace Swag\PayPal\OrdersApi\Builder;
 
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderException;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -21,6 +24,7 @@ use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Venmo;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
 class VenmoOrderBuilder extends AbstractOrderBuilder
@@ -40,21 +44,25 @@ class VenmoOrderBuilder extends AbstractOrderBuilder
     }
 
     protected function buildPaymentSource(
-        SyncPaymentTransactionStruct $paymentTransaction,
-        SalesChannelContext $salesChannelContext,
-        RequestDataBag $requestDataBag,
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+        Request $request,
         PaymentSource $paymentSource,
     ): void {
         $venmo = new Venmo();
         $paymentSource->setVenmo($venmo);
 
-        $experienceContext = $this->createExperienceContext($salesChannelContext, $paymentTransaction);
+        $salesChannel = $order->getSalesChannel();
+        \assert($salesChannel !== null);
+        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction);
         $venmo->setExperienceContext($experienceContext);
 
-        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $salesChannelContext->getContext())) {
+        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
             $venmo->setVaultId($token->getToken());
         } else {
-            $customer = $paymentTransaction->getOrder()->getOrderCustomer();
+            $customer = $order->getOrderCustomer();
             if ($customer === null) {
                 throw OrderException::missingAssociation('orderCustomer');
             }
@@ -66,7 +74,7 @@ class VenmoOrderBuilder extends AbstractOrderBuilder
             $this->vaultTokenService->requestVaulting($venmo);
         }
 
-        if ($requestDataBag->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+        if ($request->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
             $this->vaultTokenService->requestVaulting($venmo);
         }
     }
@@ -76,7 +84,7 @@ class VenmoOrderBuilder extends AbstractOrderBuilder
         $venmo = new Venmo();
         $paymentSource->setVenmo($venmo);
 
-        $venmo->setExperienceContext($this->createExperienceContext($salesChannelContext));
+        $venmo->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext()));
 
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {

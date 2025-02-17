@@ -427,12 +427,6 @@ class GuzzleClientMock implements ClientInterface
     private function handleApiV2PostRequests(string $resourceUri, ?PayPalApiStruct $data): array
     {
         if (\mb_strpos($resourceUri, RequestUriV2::ORDERS_RESOURCE) !== false) {
-            if ($data instanceof Order
-                && \mb_stripos((string) $data->getPurchaseUnits()->first()?->getInvoiceId(), ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) !== false
-            ) {
-                throw new \RuntimeException('A PayPal test error occurred.');
-            }
-
             if (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER) !== false
                 && CaptureOrderCapture::isDuplicateOrderNumber()) {
                 CaptureOrderCapture::setDuplicateOrderNumber(false);

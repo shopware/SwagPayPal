@@ -45,6 +45,11 @@
             <argument type="service" id="Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory"/>
         </service>
 
+        <service id="Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute" public="true">
+            <argument type="service" id="swag_paypal_vault_token.repository"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\TokenResource" />
+        </service>
+
         <service id="Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute"
                  decorates="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"
                  decoration-priority="-1500"
@@ -73,78 +78,53 @@
         <service id="Swag\PayPal\Checkout\Card\ACDCValidator" parent="Swag\PayPal\Checkout\Card\AbstractCardValidator">
         </service>
 
-        <service id="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler" abstract="true">
+        <service id="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler" abstract="true">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
-            <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
+            <argument type="service" id="order_transaction.repository"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\Payment\Method\ACDCHandler">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
-            <argument type="service" id="monolog.logger.paypal"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Card\ACDCValidator"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
+        <service id="Swag\PayPal\Checkout\Payment\Method\ACDCHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler">
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder"/>
-            <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
-
-            <tag name="shopware.payment.method.async"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Card\ACDCValidator"/>
+            <tag name="shopware.payment.method"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\Payment\Method\PayLaterHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
-            <tag name="shopware.payment.method.sync"/>
-        </service>
-
-        <service id="Swag\PayPal\Checkout\Payment\Method\SEPAHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
-            <tag name="shopware.payment.method.sync"/>
-        </service>
-
-        <service id="Swag\PayPal\Checkout\Payment\Method\VenmoHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\VenmoOrderBuilder"/>
-            <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
-
-            <tag name="shopware.payment.method.sync"/>
-        </service>
-
-        <service id="Swag\PayPal\Checkout\Payment\Method\ApplePayHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
-            <argument type="service" id="Swag\PayPal\Checkout\Card\ApplePayValidator" index-by="applePayValidator" />
-            <tag name="shopware.payment.method.sync"/>
-        </service>
-
-        <service id="Swag\PayPal\Checkout\Payment\Method\GooglePayHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
-            <argument type="service" id="Swag\PayPal\Checkout\Card\GooglePayValidator" index-by="googlePayValidator" />
-            <tag name="shopware.payment.method.sync"/>
-        </service>
-
-        <service id="Swag\PayPal\Checkout\Payment\PayPalPaymentHandler">
-            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\PayPalHandler"/>
-            <argument type="service" id="state_machine_state.repository"/>
-            <argument type="service" id="monolog.logger.paypal"/>
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Cart\Order\OrderConverter"/>
-
-            <tag name="shopware.payment.method.async"/>
-        </service>
-
-        <service id="Swag\PayPal\Checkout\Payment\Handler\PayPalHandler">
+        <service id="Swag\PayPal\Checkout\Payment\Method\PayLaterHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler">
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
-            <argument type="service" id="monolog.logger.paypal"/>
+            <tag name="shopware.payment.method"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\SEPAHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
+            <tag name="shopware.payment.method"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\VenmoHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\VenmoOrderBuilder"/>
+            <tag name="shopware.payment.method"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\ApplePayHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\ApplePayOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Card\ApplePayValidator" index-by="applePayValidator" />
+            <tag name="shopware.payment.method"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\GooglePayHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\GooglePayOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Card\GooglePayValidator" index-by="googlePayValidator" />
+            <tag name="shopware.payment.method"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\PayPalPaymentHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
+            <tag name="shopware.payment.method"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService">
@@ -181,9 +161,10 @@
 
         <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\TransactionStatusSyncTaskHandler">
             <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="logger"/>
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
-            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="messenger.default_bus"/>
             <tag name="messenger.message_handler"/>
         </service>
 

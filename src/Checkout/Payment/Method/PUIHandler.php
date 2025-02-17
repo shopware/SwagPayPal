@@ -7,167 +7,93 @@
 
 namespace Swag\PayPal\Checkout\Payment\Method;
 
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\CartException;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
-use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Controller\StorefrontController;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
+use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
+use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService;
-use Swag\PayPal\OrdersApi\Builder\PUIOrderBuilder;
-use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
-use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
-class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaymentHandlerInterface
+class PUIHandler extends AbstractPaymentMethodHandler
 {
     public const PUI_FRAUD_NET_SESSION_ID = 'payPalPuiFraudnetSessionId';
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, also delete corresponding snippets
-     */
-    private const ERROR_KEYS = [
-        'PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED' => 'unverifiedInfo',
-        'PAYMENT_SOURCE_DECLINED_BY_PROCESSOR' => 'declined',
-    ];
-
-    private PUIOrderBuilder $puiOrderBuilder;
-
-    private OrderResource $orderResource;
-
-    private TransactionDataService $transactionDataService;
-
-    private PUICustomerDataService $puiCustomerDataService;
-
-    private OrderTransactionStateHandler $orderTransactionStateHandler;
-
-    private SettingsValidationServiceInterface $settingsValidationService;
-
-    private RequestStack $requestStack;
-
-    private TranslatorInterface $translator;
-
-    private LoggerInterface $logger;
 
     /**
      * @internal
      */
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
-        OrderTransactionStateHandler $orderTransactionStateHandler,
-        PUIOrderBuilder $puiOrderBuilder,
-        OrderResource $orderResource,
+        StateMachineRegistry $stateMachineRegistry,
+        OrderExecuteService $orderExecuteService,
+        OrderPatchService $orderPatchService,
         TransactionDataService $transactionDataService,
-        PUICustomerDataService $puiCustomerDataService,
-        RequestStack $requestStack,
-        TranslatorInterface $translator,
-        LoggerInterface $logger,
+        OrderResource $orderResource,
+        VaultTokenService $vaultTokenService,
+        EntityRepository $orderTransactionRepository,
+        AbstractOrderBuilder $orderBuilder,
+        private readonly PUICustomerDataService $puiCustomerDataService,
     ) {
-        $this->settingsValidationService = $settingsValidationService;
-        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
-        $this->orderResource = $orderResource;
-        $this->puiOrderBuilder = $puiOrderBuilder;
-        $this->transactionDataService = $transactionDataService;
-        $this->puiCustomerDataService = $puiCustomerDataService;
-        $this->requestStack = $requestStack;
-        $this->translator = $translator;
-        $this->logger = $logger;
+        parent::__construct($settingsValidationService, $stateMachineRegistry, $orderExecuteService, $orderPatchService, $transactionDataService, $orderResource, $vaultTokenService, $orderTransactionRepository, $orderBuilder);
     }
 
-    public function pay(SyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): void
-    {
-        $transactionId = $transaction->getOrderTransaction()->getId();
-        $fraudnetSessionId = $dataBag->get(self::PUI_FRAUD_NET_SESSION_ID);
-
+    public function pay(
+        Request $request,
+        PaymentTransactionStruct $transaction,
+        Context $context,
+        ?Struct $validateStruct,
+    ): ?RedirectResponse {
+        $fraudnetSessionId = $request->request->get(self::PUI_FRAUD_NET_SESSION_ID);
         if (!$fraudnetSessionId) {
-            throw PaymentException::syncProcessInterrupted($transactionId, 'Missing Fraudnet session id');
+            throw PaymentException::syncProcessInterrupted($transaction->getOrderTransactionId(), 'Missing Fraudnet session id');
         }
 
-        $customer = $salesChannelContext->getCustomer();
-        if ($customer === null) {
-            throw CartException::customerNotLoggedIn();
-        }
+        $dataBag = new RequestDataBag($request->request->all());
+        $this->puiCustomerDataService->checkForCustomerData($transaction, $dataBag, $context);
 
-        try {
-            $this->puiCustomerDataService->checkForCustomerData($transaction->getOrder(), $dataBag, $salesChannelContext);
-            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
-            $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
-
-            $order = $this->puiOrderBuilder->getOrder(
-                $transaction,
-                $salesChannelContext,
-                $dataBag,
-            );
-
-            $updateTime = $transaction->getOrderTransaction()->getUpdatedAt();
-
-            $paypalOrderResponse = $this->orderResource->create(
-                $order,
-                $salesChannelContext->getSalesChannelId(),
-                PartnerAttributionId::PAYPAL_PPCP,
-                true,
-                $transactionId . ($updateTime ? $updateTime->getTimestamp() : ''),
-                $fraudnetSessionId
-            );
-
-            $this->transactionDataService->setOrderId(
-                $transactionId,
-                $paypalOrderResponse->getId(),
-                PartnerAttributionId::PAYPAL_PPCP,
-                $salesChannelContext
-            );
-        } catch (PaymentException $e) {
-            if ($e->getParameter('orderTransactionId') === null && method_exists($e, 'setOrderTransactionId')) {
-                $e->setOrderTransactionId($transactionId);
-            }
-            throw $e;
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
-
-            throw PaymentException::syncProcessInterrupted($transactionId, $e->getMessage());
-        }
+        return parent::pay($request, $transaction, $context, $validateStruct);
     }
 
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed. Use PayPalController::handleError instead
-     */
-    public function handleError(PayPalApiException $exception): void
+    protected function isVaultable(): bool
     {
-        if ($exception->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY) {
-            return;
-        }
+        return false;
+    }
 
-        $issue = $exception->getIssue();
-        if (!$issue) {
-            return;
-        }
+    protected function requirePreparedOrder(): bool
+    {
+        return false;
+    }
 
-        if (!\array_key_exists($issue, self::ERROR_KEYS)) {
-            return;
-        }
+    protected function executeOrder(PaymentTransactionStruct $transaction, Order $paypalOrder, OrderEntity $order, OrderTransactionEntity $orderTransaction, Context $context, bool $isUserPresent = true): Order
+    {
+        // PUI orders are created with `ORDER_COMPLETE_ON_PAYMENT_APPROVAL`
+        // Therefore it will automatically capture the payment
+        return $paypalOrder;
+    }
 
-        try {
-            $session = $this->requestStack->getSession();
-            if (!\method_exists($session, 'getFlashBag')) {
-                throw new SessionNotFoundException();
-            }
+    protected function getProgressTransactionState(): string
+    {
+        return StateMachineTransitionActions::ACTION_DO_PAY;
+    }
 
-            $session->getFlashBag()->add(
-                StorefrontController::DANGER,
-                $this->translator->trans(\sprintf('paypal.payUponInvoice.error.%s', self::ERROR_KEYS[$issue]))
-            );
-        } catch (SessionNotFoundException $e) {
-        }
+    protected function getMetaDataId(Request $request): ?string
+    {
+        return $request->request->getString(self::PUI_FRAUD_NET_SESSION_ID);
     }
 }

@@ -52,9 +52,6 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
         throw new DecorationPatternException(self::class);
     }
 
-    /**
-     * @phpstan-ignore-next-line
-     */
     #[OA\Post(
         path: '/paypal/payment-method-eligibility',
         operationId: 'setPaymentMethodEligibility',
