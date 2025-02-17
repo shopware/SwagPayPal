@@ -134,7 +134,7 @@ class PosSyncControllerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $this->expectException(InvalidSalesChannelIdException::class);
-        $this->posSyncController->$syncFunction(self::INVALID_CHANNEL_ID, $context);
+        $this->posSyncController->{$syncFunction}(self::INVALID_CHANNEL_ID, $context);
     }
 
     #[DataProvider('dataProviderSyncFunctions')]
@@ -142,7 +142,7 @@ class PosSyncControllerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
-        $this->posSyncController->$syncFunction($salesChannelId->getId(), $context);
+        $this->posSyncController->{$syncFunction}($salesChannelId->getId(), $context);
 
         $envelope = \current($this->messageBus->getEnvelopes());
         static::assertNotFalse($envelope);

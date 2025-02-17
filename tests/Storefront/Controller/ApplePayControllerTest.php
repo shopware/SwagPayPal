@@ -25,11 +25,11 @@ class ApplePayControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;
 
+    private const EXPECTED_PATH = '/.well-known/apple-developer-merchantid-domain-association';
+
     private CredentialsUtil&MockObject $credentialsUtil;
 
     private SalesChannelContext $context;
-
-    private const EXPECTED_PATH = '/.well-known/apple-developer-merchantid-domain-association';
 
     protected function setUp(): void
     {

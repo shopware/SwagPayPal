@@ -19,6 +19,10 @@ use Symfony\Contracts\Service\ResetInterface;
 #[Package('checkout')]
 class LocaleCodeProvider implements ResetInterface
 {
+    private const SUPPORTED_LOCALE_CODE_LENGTH = 5;
+
+    private const DEFAULT_LOCALE_CODE = 'en_GB';
+
     private EntityRepository $languageRepository;
 
     private LoggerInterface $logger;
@@ -27,10 +31,6 @@ class LocaleCodeProvider implements ResetInterface
      * @var array<string, string>
      */
     private array $cache = [];
-
-    private const SUPPORTED_LOCALE_CODE_LENGTH = 5;
-
-    private const DEFAULT_LOCALE_CODE = 'en_GB';
 
     /**
      * @param EntityRepository<LanguageCollection> $languageRepository

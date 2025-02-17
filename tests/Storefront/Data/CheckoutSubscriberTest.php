@@ -111,7 +111,7 @@ class CheckoutSubscriberTest extends TestCase
         if ($extensionId === PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID) {
             static::assertFalse($event->getPage()->hasExtension($extensionId));
         } else {
-            $this->$assertionMethod($event, $paymentMethodId, $extensionId);
+            $this->{$assertionMethod}($event, $paymentMethodId, $extensionId);
         }
     }
 
@@ -147,7 +147,7 @@ class CheckoutSubscriberTest extends TestCase
         $subscriber = $this->createSubscriber();
         $event = $this->createEditOrderPageLoadedEvent($paymentMethodId);
         $subscriber->onAccountOrderEditLoaded($event);
-        $this->$assertionMethod($event, $paymentMethodId, $extensionId);
+        $this->{$assertionMethod}($event, $paymentMethodId, $extensionId);
     }
 
     #[DataProvider('dataProviderPaymentMethods')]
@@ -164,7 +164,7 @@ class CheckoutSubscriberTest extends TestCase
         if ($extensionId === PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID) {
             static::assertFalse($event->getPage()->hasExtension($extensionId));
         } else {
-            $this->$assertionMethod($event, $paymentMethodId, $extensionId);
+            $this->{$assertionMethod}($event, $paymentMethodId, $extensionId);
         }
     }
 
@@ -201,7 +201,7 @@ class CheckoutSubscriberTest extends TestCase
         $event = $this->createConfirmPageLoadedEvent($paymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        $this->$assertionMethod($event, $paymentMethodId, $extensionId);
+        $this->{$assertionMethod}($event, $paymentMethodId, $extensionId);
     }
 
     #[DataProvider('dataProviderPaymentMethods')]

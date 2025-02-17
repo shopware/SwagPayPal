@@ -80,23 +80,6 @@ class OrderExecuteService
         }
     }
 
-    private function doPayPalRequest(PayPalOrder $paypalOrder, string $salesChannelId, string $partnerAttributionId, string $transactionId, Context $context): PayPalOrder
-    {
-        if ($this->checkFinalizedStatus($paypalOrder, $salesChannelId, $transactionId, $context, false)) {
-            return $paypalOrder;
-        }
-
-        if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
-            $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
-        } else {
-            $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
-        }
-
-        $this->checkFinalizedStatus($response, $salesChannelId, $transactionId, $context);
-
-        return $response;
-    }
-
     public function checkFinalizedStatus(PayPalOrder $order, string $salesChannelId, string $transactionId, Context $context, bool $refetch = true): bool
     {
         if ($order->getIntent() === PaymentIntentV2::CAPTURE) {
@@ -136,6 +119,23 @@ class OrderExecuteService
         }
 
         return false;
+    }
+
+    private function doPayPalRequest(PayPalOrder $paypalOrder, string $salesChannelId, string $partnerAttributionId, string $transactionId, Context $context): PayPalOrder
+    {
+        if ($this->checkFinalizedStatus($paypalOrder, $salesChannelId, $transactionId, $context, false)) {
+            return $paypalOrder;
+        }
+
+        if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
+            $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
+        } else {
+            $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
+        }
+
+        $this->checkFinalizedStatus($response, $salesChannelId, $transactionId, $context);
+
+        return $response;
     }
 
     private function getPayments(PayPalOrder $order, string $salesChannelId, bool $refetch): ?Payments

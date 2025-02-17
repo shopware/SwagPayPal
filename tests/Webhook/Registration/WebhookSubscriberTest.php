@@ -52,7 +52,7 @@ class WebhookSubscriberTest extends TestCase
     public function testRemoveWebhookWithInheritedConfiguration(): void
     {
         $this->createWebhookSubscriber(['' => self::WEBHOOK_ID, TestDefaults::SALES_CHANNEL => null])
-             ->removeSalesChannelWebhookConfiguration($this->createEvent());
+            ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
         static::assertSame(self::WEBHOOK_ID, $this->systemConfigService->getString(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
     }
@@ -60,7 +60,7 @@ class WebhookSubscriberTest extends TestCase
     public function testRemoveWebhookWithOwnConfiguration(): void
     {
         $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => self::WEBHOOK_ID])
-             ->removeSalesChannelWebhookConfiguration($this->createEvent());
+            ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
         static::assertEmpty($this->systemConfigService->getString(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
     }
@@ -68,7 +68,7 @@ class WebhookSubscriberTest extends TestCase
     public function testRemoveWebhookWithNoConfiguration(): void
     {
         $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
-             ->removeSalesChannelWebhookConfiguration($this->createEvent());
+            ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
         static::assertEmpty($this->systemConfigService->getString(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
     }

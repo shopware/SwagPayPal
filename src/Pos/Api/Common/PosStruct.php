@@ -34,7 +34,7 @@ abstract class PosStruct implements \JsonSerializable
 
             if ($this->isScalar($value)) {
                 if ($value !== null) {
-                    $this->$setterMethod($value);
+                    $this->{$setterMethod}($value);
                 }
 
                 continue;
@@ -49,7 +49,7 @@ abstract class PosStruct implements \JsonSerializable
                 }
 
                 $instance = $this->createNewAssociation($className, $value);
-                $this->$setterMethod($instance);
+                $this->{$setterMethod}($instance);
 
                 continue;
             }
@@ -64,7 +64,7 @@ abstract class PosStruct implements \JsonSerializable
                         return $var !== null;
                     }
                 );
-                $this->$setterMethod($arrayData);
+                $this->{$setterMethod}($arrayData);
 
                 continue;
             }
@@ -78,7 +78,7 @@ abstract class PosStruct implements \JsonSerializable
                 $instance = $this->createNewAssociation($className, $toManyAssociation);
                 $arrayWithToManyAssociations[] = $instance;
             }
-            $this->$setterMethod($arrayWithToManyAssociations);
+            $this->{$setterMethod}($arrayWithToManyAssociations);
         }
 
         return $this;
@@ -93,7 +93,7 @@ abstract class PosStruct implements \JsonSerializable
 
         foreach (\array_keys(\get_class_vars(static::class)) as $property) {
             try {
-                $data[$property] = $this->$property;
+                $data[$property] = $this->{$property};
                 /* @phpstan-ignore-next-line */
             } catch (\Error $error) {
                 $data[$property] = null;
