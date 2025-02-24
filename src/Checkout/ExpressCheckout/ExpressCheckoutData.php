@@ -13,11 +13,8 @@ use Shopware\Core\Framework\Struct\Struct;
 #[Package('checkout')]
 class ExpressCheckoutData extends Struct
 {
-    private string $paypalOrderId;
-
-    public function __construct(string $paypalOrderId)
+    public function __construct(protected readonly string $paypalOrderId)
     {
-        $this->paypalOrderId = $paypalOrderId;
     }
 
     public function getPaypalOrderId(): string
