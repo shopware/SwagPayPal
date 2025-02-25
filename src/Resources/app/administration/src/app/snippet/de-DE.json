@@ -16,6 +16,10 @@
         "title": "PayPal Account",
         "errorMessage": "Abrufen fehlgeschlagen:<br>{message}"
       },
+      "credentials": {
+        "title": "PayPal Zugangsdaten",
+        "errorMessage": "Abrufen fehlgeschlagen:<br>{message}"
+      },
       "posError": {
         "title": "Zettle POS"
       }
