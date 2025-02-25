@@ -3,6 +3,7 @@ import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import HttpClient from 'src/service/http-client.service';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
+import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
 export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButtons {
     static product = 'spb';
@@ -54,14 +55,22 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
             DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).disabled = 'disabled';
 
             return;
+        } else {
+            ElementLoadingIndicatorUtil.create(this.el);
         }
 
         DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
 
         this._client = new HttpClient();
 
-        this.createScript((paypal) => {
-            this.render(paypal);
+        this.createScript(async (paypal) => {
+            // catch sync and async errors - `.catch()` or similar aren't able to do so
+            try {
+                await this.render(paypal);
+                ElementLoadingIndicatorUtil.remove(this.el);
+            } catch (error) {
+                this.handleError(this.SCRIPT_ERROR, true, error);
+            }
         });
     }
 

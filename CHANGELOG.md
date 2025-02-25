@@ -1,6 +1,7 @@
 # 9.7.0
 - PPI-1000 - Fixes an issue, where PayLater is shown in cases where it should not be available
 - PPI-1044 - Improved compatibility of Vaulting with Store API usage and Headless setups
+- PPI-1073 - Changed logging behaviour of errors happening during checkout
 - PPI-1076 - Improved information passing in Express Checkout API calls
 - PPI-1077 - Improved the availability for Google Pay and Apple Pay
 
