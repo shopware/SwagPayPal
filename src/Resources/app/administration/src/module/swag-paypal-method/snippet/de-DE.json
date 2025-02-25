@@ -7,8 +7,10 @@
     "banner": "Mit PayPal Checkout Kannst Du Deinen Kunden die Bezahlung per Rechnung, Kreditkarte und viele andere lokale Zahlungsmethoden anbieten. PayPal Checkout unterstützt Dich mit der neuesten Technologie und bringt Dir höchste Flexibilität. Du behältst Deine bisherigen Zahlungsarten und die Gebühren bleiben gleich! Aktiviere PayPal Checkout und deaktiviere PayPal PLUS, um doppelte Zahlungsmethoden in Deinem Shop zu vermeiden.",
     "bannerLink": "Mehr Informationen",
     "sandbox": {
+      "label": "Sandbox",
       "onlySandboxTooltip": "Du bist bisher nur mit einem PayPal-Sandbox-Konto verbunden.",
-      "onlyLiveTooltip": "Du bist bisher nur mit einem PayPal-Live-Konto verbunden."
+      "onlyLiveTooltip": "Du bist bisher nur mit einem PayPal-Live-Konto verbunden.",
+      "helpText": "Aktiviere diese Option, um die Integration zu testen."
     },
     "switch": {
       "label": "Aktiv",
