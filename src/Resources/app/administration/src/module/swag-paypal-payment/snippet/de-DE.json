@@ -4,6 +4,7 @@
             "title": "Bestellungen"
         },
         "tabs": {
+            "order": "PayPal",
             "overview": "Übersicht"
         },
         "paymentDetails": {

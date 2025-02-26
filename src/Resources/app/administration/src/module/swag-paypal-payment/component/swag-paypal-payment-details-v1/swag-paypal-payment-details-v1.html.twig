@@ -39,7 +39,7 @@
                             {% block swag_paypal_payment_detail_payment_list %}
                             <sw-description-list class="swag-paypal-payment-detail__data" grid="1fr 1fr">
                                 <dt>{{ $tc('swag-paypal-payment.paymentDetails.payment.intent') }}</dt>
-                                <dd>{{ $tc(`swag-paypal.settingForm.behavior.intent.${paymentResource.intent}`) }}</dd>
+                                <dd>{{ $tc(`swag-paypal-settings.options.intent.${paymentResource.intent}`) }}</dd>
 
                                 <dt>{{ $tc('swag-paypal-payment.paymentDetails.payment.paymentId') }}</dt>
                                 <dd>{{ paymentResource.id }}</dd>

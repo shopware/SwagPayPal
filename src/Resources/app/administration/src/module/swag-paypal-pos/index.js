@@ -7,8 +7,8 @@ const { Module } = Shopware;
 Module.register('swag-paypal-pos', {
     type: 'plugin',
     name: 'SwagPayPalPos',
-    title: 'swag-paypal.general.mainMenuItemGeneral',
-    description: 'swag-paypal.general.descriptionTextModule',
+    title: 'swag-paypal-settings.module.title',
+    description: 'swag-paypal-settings.module.description',
     version: '1.0.0',
     targetVersion: '1.0.0',
     color: '#9AA8B5',

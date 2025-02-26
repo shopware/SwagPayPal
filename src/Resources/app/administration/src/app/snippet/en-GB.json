@@ -16,6 +16,10 @@
         "title": "PayPal Account",
         "errorMessage": "Retrieve failed:<br>{message}"
       },
+      "credentials": {
+        "title": "PayPal credentials",
+        "errorMessage": "Retrieve failed:<br>{message}"
+      },
       "posError": {
         "title": "Zettle POS"
       }

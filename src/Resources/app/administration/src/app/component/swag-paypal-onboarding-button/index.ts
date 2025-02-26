@@ -1,5 +1,6 @@
 import template from './swag-paypal-onboarding-button.html.twig';
 import './swag-paypal-onboarding-button.scss';
+import type * as PayPal from 'SwagPayPal/types';
 
 /**
  * @private - The component has a stable public API (props), but expect that implementation details may change.
@@ -17,7 +18,7 @@ export default Shopware.Component.wrapComponentConfig({
     emits: ['onboarded'],
 
     mixins: [
-        Shopware.Mixin.getByName('notification'),
+        Shopware.Mixin.getByName('swag-paypal-notification'),
     ],
 
     props: {
@@ -243,11 +244,12 @@ export default Shopware.Component.wrapComponentConfig({
                 sharedId,
                 this.requestParams.sellerNonce,
                 this.isSandbox,
-            ).catch(() => {
+            ).catch((error: PayPal.ServiceError) => {
                 this.createNotificationError({
-                    message: this.$t('swag-paypal.settingForm.credentials.button.messageFetchedError'),
-                    // @ts-expect-error - wrongly typed as string
-                    duration: 10000,
+                    title: this.$t('swag-paypal.notifications.credentials.title'),
+                    message: this.$t('swag-paypal.notifications.credentials.errorMessage', {
+                        message: this.createMessageFromError(error),
+                    }),
                 });
 
                 return {} as Record<string, string>;
