@@ -17,7 +17,7 @@
         "errorMessage": "Abrufen fehlgeschlagen:<br>{message}"
       },
       "credentials": {
-        "title": "PayPal Zugangsdaten",
+        "title": "PayPal-Zugangsdaten",
         "errorMessage": "Abrufen fehlgeschlagen:<br>{message}"
       },
       "posError": {
