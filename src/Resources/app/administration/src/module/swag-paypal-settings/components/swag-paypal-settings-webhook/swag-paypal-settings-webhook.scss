@@ -1,19 +1,24 @@
 @import "~scss/variables";
 
 .swag-paypal-settings-webhook {
-    .sw-card__titles {
+    &__title {
         display: grid;
         grid-template-columns: min-content min-content;
         gap: 12px;
         place-items: center;
+
+        p {
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-m);
+        }
     }
 
-    .sw-card__content {
+    &__content {
         display: grid;
         gap: 16px;
         place-items: end;
-        font-size: $font-size-xs;
-        line-height: $line-height-sm;
+        font-size: var(--font-size-xs);
+        line-height: var(--line-height-sm);
     }
 
     &__label {

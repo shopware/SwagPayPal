@@ -10,6 +10,8 @@ Component.register('swag-paypal-pos-detail-synced-products', {
         'SwagPayPalPosApiService',
     ],
 
+    emits: ['buttons-update'],
+
     mixins: [
         Shopware.Mixin.getByName('swag-paypal-pos-log-label'),
         Shopware.Mixin.getByName('listing'),

@@ -1,9 +1,9 @@
-<sw-card
+<mt-card
     class="swag-paypal-settings-sales-channel-switch"
     position-identifier="swag-paypal-settings-sales-channel-switch"
     :title="$tc('global.entities.sales_channel', 2)"
 >
-    <template #header-right>
+    <template #headerRight>
         <sw-internal-link :router-link="{ name: 'sw.settings.payment.overview' }">
             {{ $t('sw-settings-payment.general.mainMenuItemGeneral') }}
         </sw-internal-link>
@@ -16,19 +16,17 @@
         :disabled="!acl.can('swag_paypal.editor') || isLoading || settingsStore.isLoading"
     />
 
-    <template #footer>
-        <sw-container columns="2fr 1fr" gap="0px 30px">
-            <p>{{ $t('swag-paypal-settings-sales-channel-switch.description') }}</p>
+    <sw-container columns="2fr 1fr" gap="0px 30px">
+        <p>{{ $t('swag-paypal-settings-sales-channel-switch.description') }}</p>
 
-            <sw-button-process
-                :process-success="defaultPaymentMethods === 'success'"
-                :is-loading="defaultPaymentMethods === 'loading'"
-                :disabled="!acl.can('swag_paypal.editor') || isLoading"
-                @update:process-success="defaultPaymentMethods === 'none'"
-                @click="onSetPaymentMethodDefault"
-            >
-                {{ $t('swag-paypal-settings-sales-channel-switch.label') }}
-            </sw-button-process>
-        </sw-container>
-    </template>
-</sw-card>
+        <sw-button-process
+            :process-success="defaultPaymentMethods === 'success'"
+            :is-loading="defaultPaymentMethods === 'loading'"
+            :disabled="!acl.can('swag_paypal.editor') || isLoading"
+            @update:process-success="defaultPaymentMethods === 'none'"
+            @click="onSetPaymentMethodDefault"
+        >
+            {{ $t('swag-paypal-settings-sales-channel-switch.label') }}
+        </sw-button-process>
+    </sw-container>
+</mt-card>

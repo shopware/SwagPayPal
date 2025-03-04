@@ -41,8 +41,8 @@
                 </div>
 
                 {% block swag_paypal_pos_status_view_detail_errors %}
-                    <sw-alert v-if="syncErrors"
-                              variant="error"
+                    <mt-banner v-if="syncErrors"
+                              variant="critical"
                               :closable="true"
                               :title="$tc('swag-paypal-pos.detail.overview.syncErrorTitle')">
                         <ul>
@@ -50,7 +50,7 @@
 {{ error.detail }} ({{ error.code }})
 </li>
                         </ul>
-                    </sw-alert>
+                    </mt-banner>
                 {% endblock %}
             </template>
         {% endblock %}

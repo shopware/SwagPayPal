@@ -10,6 +10,8 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
         'SwagPayPalPosSettingApiService',
     ],
 
+    emits: ['frw-set-title', 'buttons-update', 'toggle-loading'],
+
     props: {
         salesChannel: {
             type: Object,

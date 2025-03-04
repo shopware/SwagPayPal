@@ -13,6 +13,8 @@ Component.register('swag-paypal-pos-detail-overview', {
         'repositoryFactory',
     ],
 
+    emits: ['run-update', 'buttons-update'],
+
     mixins: [
         Shopware.Mixin.getByName('placeholder'),
     ],

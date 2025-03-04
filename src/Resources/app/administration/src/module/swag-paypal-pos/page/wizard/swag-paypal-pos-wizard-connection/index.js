@@ -1,5 +1,6 @@
 import template from './swag-paypal-pos-wizard-connection.html.twig';
 import './swag-paypal-pos-wizard-connection.scss';
+import paypalPosLogoFull from 'SwagPayPal/static/img/paypal-pos-logo-full.png?url';
 
 const { Component } = Shopware;
 
@@ -9,6 +10,8 @@ Component.register('swag-paypal-pos-wizard-connection', {
     inject: [
         'SwagPayPalPosSettingApiService',
     ],
+
+    emits: ['frw-set-title', 'buttons-update', 'toggle-loading'],
 
     mixins: [
         Shopware.Mixin.getByName('notification'),
@@ -34,6 +37,7 @@ Component.register('swag-paypal-pos-wizard-connection', {
 
     data() {
         return {
+            paypalPosLogoFull,
             isConnecting: false,
             apiKeyUrl: this.SwagPayPalPosSettingApiService.generateApiUrl(),
         };
@@ -46,12 +50,6 @@ Component.register('swag-paypal-pos-wizard-connection', {
             }
 
             this.updateButtons();
-        },
-    },
-
-    computed: {
-        assetFilter() {
-            return Shopware.Filter.getByName('asset');
         },
     },
 

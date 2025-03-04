@@ -11,6 +11,8 @@ Component.register('swag-paypal-pos-wizard-customization', {
         'repositoryFactory',
     ],
 
+    emits: ['frw-set-title', 'buttons-update', 'toggle-loading'],
+
     props: {
         salesChannel: {
             type: Object,

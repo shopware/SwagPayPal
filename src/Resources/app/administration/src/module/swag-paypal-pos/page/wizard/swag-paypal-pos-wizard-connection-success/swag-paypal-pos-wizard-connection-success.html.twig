@@ -6,7 +6,7 @@
 
                 {% block swag_paypal_pos_wizard_connection_success_icon %}
                     <div class="swag-paypal-pos-wizard-connection-success__icon-wrapper">
-                        <sw-icon class="swag-paypal-pos-wizard-connection-success__icon"
+                        <mt-icon class="swag-paypal-pos-wizard-connection-success__icon"
                                  name="regular-thumbs-up"
                                  size="80px"
                                  color="#37D046" />
@@ -26,7 +26,7 @@
                 {% endblock %}
 
                 {% block swag_paypal_pos_wizard_connection_success_user %}
-                    <sw-card class="swag-paypal-pos-wizard-connection-success__user"
+                    <mt-card class="swag-paypal-pos-wizard-connection-success__user"
                              position-identifier="swag-paypal-pos-wizard-connection-success-user"
                              :isLoading="isFetchingInformation">
                         <sw-container class="swag-paypal-pos-wizard-connection-success__user-container"
@@ -57,15 +57,16 @@
                             {% endblock %}
 
                             {% block swag_paypal_pos_wizard_connection_success_user_disconnect_button %}
-                                <sw-button class="swag-paypal-pos-wizard-connection-success__user-disconnect"
-                                           variant="ghost"
+                                <mt-button class="swag-paypal-pos-wizard-connection-success__user-disconnect"
+                                           ghost
                                            size="small"
-                                           @click="onDisconnect">
+                                           variant="secondary"
+@click="onDisconnect">
                                     {{ $tc('swag-paypal-pos.wizard.connectionSuccess.disconnectButton') }}
-                                </sw-button>
+                                </mt-button>
                             {% endblock %}
                         </sw-container>
-                    </sw-card>
+                    </mt-card>
                 {% endblock %}
             </div>
         {% endblock %}

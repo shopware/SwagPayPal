@@ -3,8 +3,8 @@
 
     {% block sw_order_detail_details_shipping_paypal_carrier %}
     <div v-if="payPalResourceId" class="swag-paypal-order-carrier">
-        <sw-text-field
-            v-model:value="payPalCarrier"
+        <mt-text-field
+            v-model="payPalCarrier"
             disabled
             :label="$tc('sw-order-detail.payPalCarrierLabel')"
             :helpText="$tc('sw-order-detail.payPalCarrierHelpText')"

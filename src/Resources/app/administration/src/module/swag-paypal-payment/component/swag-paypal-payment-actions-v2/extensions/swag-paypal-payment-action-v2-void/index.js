@@ -7,6 +7,8 @@ Component.register('swag-paypal-payment-action-v2-void', {
 
     inject: ['SwagPayPalOrderService'],
 
+    emits: ['modal-close'],
+
     mixins: [
         Shopware.Mixin.getByName('notification'),
     ],

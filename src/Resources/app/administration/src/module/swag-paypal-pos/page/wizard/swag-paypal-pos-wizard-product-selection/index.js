@@ -6,6 +6,8 @@ const { Criteria } = Shopware.Data;
 Component.register('swag-paypal-pos-wizard-product-selection', {
     template,
 
+    emits: ['update-clone-sales-channel', 'frw-set-title', 'buttons-update', 'toggle-loading'],
+
     props: {
         salesChannel: {
             type: Object,

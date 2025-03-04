@@ -1,5 +1,6 @@
 import template from './swag-paypal-pos-account.html.twig';
 import './swag-paypal-pos-account.scss';
+import paypalPosLogo from 'SwagPayPal/static/img/paypal-pos-logo.svg?url';
 
 const { Component } = Shopware;
 
@@ -26,6 +27,7 @@ Component.register('swag-paypal-pos-account', {
 
     data() {
         return {
+            paypalPosLogo,
             isLoading: false,
             isError: false,
             merchantInfo: null,
@@ -75,10 +77,6 @@ Component.register('swag-paypal-pos-account', {
 
         runRepository() {
             return this.repositoryFactory.create('swag_paypal_pos_sales_channel_run');
-        },
-
-        assetFilter() {
-            return Shopware.Filter.getByName('asset');
         },
 
         dateFilter() {

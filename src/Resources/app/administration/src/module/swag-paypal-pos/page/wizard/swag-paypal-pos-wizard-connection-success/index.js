@@ -11,6 +11,8 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
         'SwagPayPalPosSettingApiService',
     ],
 
+    emits: ['frw-set-title', 'buttons-update'],
+
     mixin: [
         'placeholder',
     ],

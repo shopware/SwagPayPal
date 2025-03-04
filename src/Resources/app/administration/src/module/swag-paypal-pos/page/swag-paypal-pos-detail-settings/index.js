@@ -18,6 +18,8 @@ Component.register('swag-paypal-pos-detail-settings', {
         'acl',
     ],
 
+    emits: ['load-sales-channel', 'buttons-update'],
+
     mixins: [
         Shopware.Mixin.getByName('swag-paypal-pos-catch-error'),
         Shopware.Mixin.getByName('placeholder'),

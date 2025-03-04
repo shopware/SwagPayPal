@@ -6,15 +6,12 @@
 >
 
     {% block swag_paypal_payment_action_refund_v2_capture_select %}
-    <sw-select-field
-        v-model:value="selectedCaptureId"
+    <mt-select
+        v-model="selectedCaptureId"
         :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
-        @update:value="setCapture"
-    >
-        <option v-for="capture in captures" :value="capture.id">
-            {{ dateFilter(capture.create_time) }} ({{ capture.amount.value }} {{ capture.amount.currency_code }}) - {{ capture.id }} [{{ capture.status }}]
-        </option>
-    </sw-select-field>
+        :options="captureOptions"
+        @update:modelValue="setCapture"
+    />
     {% endblock %}
 
     {% block swag_paypal_payment_action_refund_v2_invoice_number %}
@@ -27,7 +24,7 @@
     {% endblock %}
 
     {% block swag_paypal_payment_action_refund_v2_amount %}
-    <sw-number-field
+    <mt-number-field
         v-model:value="refundAmount"
         :max="refundableAmountForSelectedCapture"
         :min="0"
@@ -37,7 +34,7 @@
         <template #suffix>
             {{ selectedCapture.amount.currency_code }}
         </template>
-    </sw-number-field>
+    </mt-number-field>
     {% endblock %}
 
     {% block swag_paypal_payment_action_refund_v2_note_to_payer %}
@@ -51,9 +48,9 @@
 
     {% block swag_paypal_payment_action_refund_v2_confirm_button %}
     <template #modal-footer>
-        <sw-button variant="primary" @click="refund">
+        <mt-button variant="primary" @click="refund">
             {{ $tc('swag-paypal-payment.refundAction.confirmButton.text') }}
-        </sw-button>
+        </mt-button>
     </template>
     {% endblock %}
 

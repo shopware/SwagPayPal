@@ -1,5 +1,5 @@
 {% block swag_paypal_pos_account %}
-    <sw-card class="swag-paypal-pos-account"
+    <mt-card class="swag-paypal-pos-account"
              position-identifier="swag-paypal-pos-account"
              :title="$tc('sw-sales-channel.detail.titleAccount')"
              :isLoading="isLoading">
@@ -10,7 +10,7 @@
                 {% block swag_paypal_pos_account_grid_logo %}
                     <img class="swag-paypal-pos-account__logo"
                          alt="Zettle Logo"
-                         :src="assetFilter('/swagpaypal/static/img/paypal-pos-logo.svg')">
+                         :src="paypalPosLogo">
                 {% endblock %}
 
                 {% block swag_paypal_pos_account_grid_container %}
@@ -44,12 +44,13 @@
 
                                 {% block swag_paypal_pos_account_grid_container_info_edit_button %}
                                     {# ToDo PPI-109 - Implement edit connection functionality #}
-                                    <sw-button v-if="false"
+                                    <mt-button v-if="false"
                                                class="swag-paypal-pos-account__edit-connection-button"
                                                size="small"
-                                               block>
+                                               block
+                                               variant="secondary">
                                         {{ $tc('swag-paypal-pos.account.editConnection') }}
-                                    </sw-button>
+                                    </mt-button>
                                 {% endblock %}
                             </div>
                         {% endblock %}
@@ -98,5 +99,5 @@
                 {% endblock %}
             </sw-container>
         {% endblock %}
-    </sw-card>
+    </mt-card>
 {% endblock %}

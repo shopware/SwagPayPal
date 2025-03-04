@@ -1,5 +1,5 @@
 {% block swag_paypal_pos_getting_started %}
-    <sw-card position-identifier="swag-paypal-pos-getting-started"
+    <mt-card position-identifier="swag-paypal-pos-getting-started"
              :title="$tc('swag-paypal-pos.gettingStarted.cardTitle')">
 
         {% block swag_paypal_pos_getting_started_reader %}
@@ -11,7 +11,7 @@
 
                 {% block swag_paypal_pos_getting_started_reader_image %}
                     <img class="swag-paypal-pos-getting-started__image"
-                         :src="assetFilter('swagpaypal/static/img/paypal-pos-reader.png')"
+                         :src="paypalPosReader"
                          :alt="$tc('swag-paypal-pos.gettingStarted.readerImageAlt')">
                 {% endblock %}
 
@@ -50,7 +50,7 @@
 
                 {% block swag_paypal_pos_getting_started_app_image %}
                     <img class="swag-paypal-pos-getting-started__image"
-                         :src="assetFilter('swagpaypal/static/img/paypal-pos-app.png')"
+                         :src="paypalPosApp"
                          :alt="$tc('swag-paypal-pos.gettingStarted.appImageAlt')">
                 {% endblock %}
 
@@ -71,5 +71,5 @@
                 {% endblock %}
             </sw-container>
         {% endblock %}
-    </sw-card>
+    </mt-card>
 {% endblock %}

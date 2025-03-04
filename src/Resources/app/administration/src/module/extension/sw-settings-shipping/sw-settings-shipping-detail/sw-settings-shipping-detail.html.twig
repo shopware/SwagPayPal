@@ -1,6 +1,6 @@
 {% block sw_settings_shipping_detail_tax_cost %}
     {% block sw_settings_shipping_detail_paypal_default_carrier %}
-    <sw-card
+    <mt-card
         v-show="isPayPalEnabled"
         class="swag-paypal-settings-shipping-carrier"
         position-identifier="swag-paypal-settings-shipping-carrier"
@@ -66,16 +66,16 @@
             </template>
         </sw-single-select>
 
-        <sw-text-field
+        <mt-text-field
             v-if="selectedCarrierOption?.value === 'OTHER'"
-            v-model:value="payPalOtherCarrierName"
+            v-model="payPalOtherCarrierName"
             :label="$tc('swag-paypal-settings-shipping-carrier.inputLabelOther')"
             :placeholder="$tc('swag-paypal-settings-shipping-carrier.inputPlaceholderOther')"
             :help-text="$tc('swag-paypal-settings-shipping-carrier.inputHelpTextOther')"
         />
         {% endblock %}
 
-    </sw-card>
+    </mt-card>
     {% endblock %}
 
     {% parent %}

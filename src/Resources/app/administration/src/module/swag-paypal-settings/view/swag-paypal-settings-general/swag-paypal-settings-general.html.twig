@@ -1,5 +1,5 @@
 {% block swag_paypal_settings_live_credentials %}
-<sw-card
+<mt-card
     class="swag-paypal-settings-live-credentials"
     position-identifier="swag-paypal-settings-live-credentials"
     :is-loading="settingsStore.isLoading"
@@ -13,17 +13,17 @@
             :help-text="null"
         >
             <template #content="props">
-                <sw-switch-field
+                <mt-switch
                     :name="props.path"
                     :disabled="props.disabled"
-                    :value="!props.currentValue"
-                    @update:value="props.updateCurrentValue(!$event)"
+                    :model-value="!props.currentValue"
+                    @update:model-value="props.updateCurrentValue(!$event)"
                 />
             </template>
         </swag-paypal-setting>
     </template>
 
-    <template #header-right>
+    <template #headerRight>
         <sw-button-process
             :process-success="testCredentials === 'success'"
             :is-loading="testCredentials === 'loading'"
@@ -49,11 +49,11 @@
         path="SwagPayPal.settings.merchantPayerId"
         :disabled="settingsStore.isSandbox && !settingsStore.salesChannel"
     />
-</sw-card>
+</mt-card>
 {% endblock %}
 
 {% block swag_paypal_settings_sandbox_credentials %}
-<sw-card
+<mt-card
     class="swag-paypal-settings-sandbox-credentials"
     position-identifier="swag-paypal-sandbox-credentials"
     :is-loading="settingsStore.isLoading"
@@ -68,7 +68,7 @@
         />
     </template>
 
-    <template #header-right>
+    <template #headerRight>
         <sw-button-process
             :process-success="testCredentialsSandbox === 'success'"
             :is-loading="testCredentialsSandbox === 'loading'"
@@ -94,10 +94,10 @@
         path="SwagPayPal.settings.merchantPayerIdSandbox"
         :disabled="!settingsStore.isSandbox && !settingsStore.salesChannel"
     />
-</sw-card>
+</mt-card>
 {% endblock %}
 
-<sw-card
+<mt-card
     class="swag-paypal-settings-behavior"
     position-identifier="swag-paypal-settings-behavior"
     :title="$t('swag-paypal-settings.behavior.title')"
@@ -167,9 +167,9 @@
             />
         </template>
     </swag-paypal-setting>
-</sw-card>
+</mt-card>
 
-<sw-card
+<mt-card
     class="swag-paypal-settings-vaulting"
     position-identifier="swag-paypal-settings-vaulting"
     :title="$t('swag-paypal-settings.vaulting.title')"
@@ -202,28 +202,28 @@
         <div v-if="!merchantInformationStore.canVault">
             <swag-paypal-onboarding-button
                 class="swag-paypal-settings-vaulting__activate-button"
-                :type="settingsStore.isSandbox ? 'sandbox' : 'live'"
+                :mode="settingsStore.isSandbox ? 'sandbox' : 'live'"
             >
                 {{ $t('swag-paypal-settings.vaulting.activeButtonLabel') }}
             </swag-paypal-onboarding-button>
         </div>
     </template>
-</sw-card>
+</mt-card>
 
-<sw-card
+<mt-card
     class="swag-paypal-settings-acdc"
     position-identifier="swag-paypal-settings-acdc"
     :title="$t('swag-paypal-settings.acdc.title')"
     :is-loading="settingsStore.isLoading"
 >
     <swag-paypal-setting path="SwagPayPal.settings.acdcForce3DS" />
-</sw-card>
+</mt-card>
 
-<sw-card
+<mt-card
     class="swag-paypal-settings-pui"
     position-identifier="swag-paypal-settings-pui"
     :title="$t('swag-paypal-settings.pui.title')"
     :is-loading="settingsStore.isLoading"
 >
     <swag-paypal-setting path="SwagPayPal.settings.puiCustomerServiceInstructions" />
-</sw-card>
+</mt-card>

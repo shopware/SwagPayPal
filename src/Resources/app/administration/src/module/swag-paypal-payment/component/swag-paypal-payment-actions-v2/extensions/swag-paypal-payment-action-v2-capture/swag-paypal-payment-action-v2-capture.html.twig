@@ -6,19 +6,19 @@
 >
 
     {% block swag_paypal_payment_action_capture_v2_max_amount %}
-    <sw-text-field
-        v-model:value="captureableAmount"
+    <mt-text-field
+        v-model="captureableAmount"
         :label="$tc('swag-paypal-payment.captureAction.maxAmount')"
         :disabled="true"
     >
         <template v-if="currencyCode" #suffix>
             {{ currencyCode }}
         </template>
-    </sw-text-field>
+    </mt-text-field>
     {% endblock %}
 
     {% block swag_paypal_payment_action_capture_v2_amount %}
-    <sw-number-field
+    <mt-number-field
         v-model:value="captureAmount"
         :max="captureableAmount"
         :min="0"
@@ -27,7 +27,7 @@
         <template v-if="currencyCode" #suffix>
             {{ currencyCode }}
         </template>
-    </sw-number-field>
+    </mt-number-field>
     {% endblock %}
 
     {% block swag_paypal_payment_action_capture_v2_invoice_number %}
@@ -49,23 +49,23 @@
     {% endblock %}
 
     {% block swag_paypal_payment_action_capture_v2_is_final_capture %}
-    <sw-checkbox-field
-        v-model:value="isFinalCapture"
+    <mt-checkbox
+        v-model:checked="isFinalCapture"
         :label="$tc('swag-paypal-payment.captureAction.isFinal')"
     />
     {% endblock %}
 
     {% block swag_paypal_payment_action_capture_v2_hint %}
-    <sw-alert v-if="showHint">
+    <mt-banner v-if="showHint">
         {{ $tc('swag-paypal-payment.captureAction.isFinalHint') }}
-    </sw-alert>
+    </mt-banner>
     {% endblock %}
 
     {% block swag_paypal_payment_action_capture_v2_confirm_button %}
     <template #modal-footer>
-        <sw-button variant="primary" @click="capture">
+        <mt-button variant="primary" @click="capture">
             {{ $tc('swag-paypal-payment.captureAction.button.text') }}
-        </sw-button>
+        </mt-button>
     </template>
     {% endblock %}
 

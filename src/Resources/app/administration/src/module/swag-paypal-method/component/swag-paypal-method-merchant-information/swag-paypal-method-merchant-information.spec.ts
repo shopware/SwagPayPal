@@ -2,9 +2,8 @@ import { mount } from '@vue/test-utils';
 import SwagPayPalMethodMerchantInformation from '.';
 import MIFixture from 'SwagPayPal/app/store/merchant-information.fixture';
 import SettingsFixture from 'SwagPayPal/app/store/settings.fixture';
-import SwagPayPalSetting from 'SwagPayPal/app/component/swag-paypal-setting';
+import type SwagPayPalSetting from 'SwagPayPal/app/component/swag-paypal-setting';
 
-Shopware.Component.register('swag-paypal-setting', Promise.resolve(SwagPayPalSetting));
 Shopware.Component.register('swag-paypal-method-merchant-information', Promise.resolve(SwagPayPalMethodMerchantInformation));
 
 async function createWrapper(active: boolean = true) {
@@ -13,11 +12,12 @@ async function createWrapper(active: boolean = true) {
         {
             global: {
                 stubs: {
-                    'sw-alert': await wrapTestComponent('sw-alert', { sync: true }),
-                    'sw-alert-deprecated': await wrapTestComponent('sw-alert-deprecated', { sync: true }),
                     'sw-external-link': await wrapTestComponent('sw-external-link', { sync: true }),
-                    'sw-external-link-deprecated': await wrapTestComponent('sw-external-link-deprecated', { sync: true }),
-                    'swag-paypal-setting': await Shopware.Component.build('swag-paypal-setting'),
+                    'swag-paypal-setting': {
+                        emit: ['update:value'],
+                        props: ['value'],
+                        template: '<div class="swag-paypal-setting"></div>',
+                    },
                 },
             },
             props: {

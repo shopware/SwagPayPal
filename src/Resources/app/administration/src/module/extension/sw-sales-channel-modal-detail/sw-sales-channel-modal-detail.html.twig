@@ -3,10 +3,10 @@
     v-if="isPayPalPosSalesChannel(detailType.id)"
     class="sw-sales-channel-modal-detail__header-icon"
 >
-     <img
-         class="swag-paypal-pos-modal-detail__icon"
-         :src="assetFilter('swagpaypal/static/img/paypal-pos-logo.svg')"
-     >
+    <img
+        class="swag-paypal-pos-modal-detail__icon"
+        :src="paypalPosLogo"
+    >
 </span>
 
 <template v-else>

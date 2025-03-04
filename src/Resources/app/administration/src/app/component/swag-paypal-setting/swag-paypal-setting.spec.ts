@@ -9,32 +9,28 @@ async function createWrapper(props: $TSFixMe = { path: 'SwagPayPal.settings.clie
     return mount(
         await Shopware.Component.build('swag-paypal-setting') as typeof SwagPayPalSetting,
         {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
             props,
             global: {
                 mocks: { $t: (key: string) => translations[key] ?? key },
-                provide: { acl: { can: () => true } },
                 stubs: {
                     'sw-inherit-wrapper': await wrapTestComponent('sw-inherit-wrapper', { sync: true }),
                     'sw-inheritance-switch': await wrapTestComponent('sw-inheritance-switch', { sync: true }),
                     'sw-help-text': await wrapTestComponent('sw-help-text', { sync: true }),
                     'sw-icon': await wrapTestComponent('sw-icon', { sync: true }),
-                    'sw-icon-deprecated': await wrapTestComponent('sw-icon-deprecated', { sync: true }),
-                    // type === boolean
-                    'sw-switch-field': await wrapTestComponent('sw-switch-field', { sync: true }),
-                    'sw-switch-field-deprecated': await wrapTestComponent('sw-switch-field-deprecated', { sync: true }),
-                    'sw-checkbox-field': await wrapTestComponent('sw-checkbox-field', { sync: true }),
-                    'sw-checkbox-field-deprecated': await wrapTestComponent('sw-checkbox-field-deprecated', { sync: true }),
-                    // type === string
-                    'sw-text-field': await wrapTestComponent('sw-text-field', { sync: true }),
-                    'sw-text-field-deprecated': await wrapTestComponent('sw-text-field-deprecated', { sync: true }),
                     // type === string + options
                     'sw-single-select': await wrapTestComponent('sw-single-select', { sync: true }),
                     'sw-select-base': await wrapTestComponent('sw-select-base', { sync: true }),
+                    'sw-highlight-text': await wrapTestComponent('sw-highlight-text', { sync: true }),
+                    'sw-select-result': await wrapTestComponent('sw-select-result', { sync: true }),
+                    'sw-select-result-list': await wrapTestComponent('sw-select-result-list', { sync: true }),
                     // field bases
                     'sw-contextual-field': await wrapTestComponent('sw-contextual-field', { sync: true }),
                     'sw-block-field': await wrapTestComponent('sw-block-field', { sync: true }),
                     'sw-base-field': await wrapTestComponent('sw-base-field', { sync: true }),
+                    'sw-loader': await wrapTestComponent('sw-loader', { sync: true }),
+                    'sw-ai-copilot-badge': await wrapTestComponent('sw-ai-copilot-badge', { sync: true }),
+                    'sw-field-error': await wrapTestComponent('sw-field-error', { sync: true }),
                 },
             },
         },
@@ -43,6 +39,10 @@ async function createWrapper(props: $TSFixMe = { path: 'SwagPayPal.settings.clie
 
 describe('swag-paypal-setting', () => {
     const store = Shopware.Store.get('swagPayPalSettings');
+
+    beforeEach(() => {
+        global.activeAclRoles = ['swag_paypal.editor'];
+    });
 
     it('should be a Vue.js component', async () => {
         const wrapper = await createWrapper();
@@ -167,18 +167,10 @@ describe('swag-paypal-setting', () => {
         expect(wrapper.vm.helpText).toBeNull();
         expect(wrapper.vm.hintText).toBeNull();
 
-        const field = wrapper.findComponent<VueComponent>('.sw-field--text');
-
-        expect(field.exists()).toBe(true);
-        expect(field.vm.value).toBe('some-client-id');
-        expect(field.vm.$attrs.name).toBe('SwagPayPal.settings.clientId');
-        expect(field.vm.$attrs.disabled).toBe(false);
-        expect(field.vm.$attrs['map-inheritance']).toBeUndefined();
-
-        Object.keys(wrapper.vm.formAttrs).forEach((key) => {
-            expect(field.vm.$attrs).toHaveProperty(key);
-            expect(field.vm.$attrs[key]).toBe(wrapper.vm.formAttrs[key]);
-        });
+        const input = wrapper.get<HTMLInputElement>('input[type="text"]');
+        expect(input.attributes().value).toBe('some-client-id');
+        expect(input.attributes().name).toBe('SwagPayPal.settings.clientId');
+        expect(input.attributes().disabled).toBeUndefined();
     });
 
     it('should be a boolean field without inheritance', async () => {
@@ -200,17 +192,10 @@ describe('swag-paypal-setting', () => {
         expect(wrapper.vm.helpText).toBeNull();
         expect(wrapper.vm.hintText).toBeNull();
 
-        const field = wrapper.findComponent<VueComponent>('.sw-field--switch');
-
-        expect(field.exists()).toBe(true);
-        expect(field.vm.value).toBe(false);
-        expect(field.vm.$attrs.name).toBe('SwagPayPal.settings.sandbox');
-        expect(field.vm.$attrs.disabled).toBe(false);
-
-        Object.keys(wrapper.vm.formAttrs).forEach((key) => {
-            expect(field.vm.$attrs).toHaveProperty(key);
-            expect(field.vm.$attrs[key]).toBe(wrapper.vm.formAttrs[key]);
-        });
+        const input = wrapper.get<HTMLInputElement>('input[type="checkbox"]');
+        expect(input.attributes().checked).toBeUndefined();
+        expect(input.attributes().name).toBe('SwagPayPal.settings.sandbox');
+        expect(input.attributes().disabled).toBeUndefined();
     });
 
     it('should be a select field without inheritance', async () => {
@@ -271,10 +256,10 @@ describe('swag-paypal-setting', () => {
         expect(wrapper.vm.wrapperAttrs.label).toBe('Client ID');
 
         // field shows actual value
-        const field = wrapper.findComponent<VueComponent>('.sw-field--text');
-        expect(field.exists()).toBe(true);
-        expect(field.vm.value).toBe('');
-        expect(field.vm.$attrs.disabled).toBe(false);
+        const input = wrapper.get<HTMLInputElement>('input[type="text"]');
+        expect(input.attributes().value).toBe('');
+        expect(input.attributes().name).toBe('SwagPayPal.settings.clientId');
+        expect(input.attributes().disabled).toBeUndefined();
 
         // inheritance switch exists and is not inherited
         const inheritSwitch = wrapper.findComponent<VueComponent>('.sw-inheritance-switch');
@@ -282,15 +267,14 @@ describe('swag-paypal-setting', () => {
         expect(inheritSwitch.vm.isInherited).toBe(false);
 
         // Switch inheritance - value should be restored
-        const icon = inheritSwitch.findComponent('.sw-icon');
-        expect(icon.exists()).toBe(true);
+        const icon = inheritSwitch.getComponent({ name: 'mt-icon' });
         await icon.trigger('click');
 
         expect(inheritSwitch.vm.isInherited).toBe(true);
         expect(wrapper.vm.value).toBeUndefined();
         expect(wrapper.vm.inheritedValue).toBe('some-client-id');
-        expect(field.vm.$attrs.disabled).toBe(true);
-        expect(field.vm.value).toBe('some-client-id');
+        expect(input.attributes().disabled).toBe('');
+        expect(input.attributes().value).toBe('some-client-id');
 
         // Switch to "All Sales Channels" - inheritance should be disabled
         store.salesChannel = null;
@@ -336,7 +320,7 @@ describe('swag-paypal-setting', () => {
         expect(inheritSwitch.vm.isInherited).toBe(false);
 
         // Switch inheritance - value should be restored
-        const icon = inheritSwitch.findComponent<VueComponent>('.sw-icon');
+        const icon = inheritSwitch.findComponent<VueComponent>({ name: 'mt-icon' });
         expect(icon.exists()).toBe(true);
         await icon.trigger('click');
 
@@ -373,10 +357,9 @@ describe('swag-paypal-setting', () => {
         expect(wrapper.vm.type).toBe('boolean');
 
         // field shows actual value
-        const field = wrapper.findComponent<VueComponent>('.sw-field--switch');
-        expect(field.exists()).toBe(true);
-        expect(field.vm.value).toBe(true);
-        expect(field.vm.$attrs.disabled).toBe(false);
+        const input = wrapper.get<HTMLInputElement>('input[type="checkbox"]');
+        expect(input.attributes().checked).toBe('');
+        expect(input.attributes().disabled).toBeUndefined();
 
         // inheritance switch exists and is not inherited
         const inheritSwitch = wrapper.findComponent<VueComponent>('.sw-inheritance-switch');
@@ -384,15 +367,15 @@ describe('swag-paypal-setting', () => {
         expect(inheritSwitch.vm.isInherited).toBe(false);
 
         // Switch inheritance - value should be restored
-        const icon = inheritSwitch.findComponent('.sw-icon');
+        const icon = inheritSwitch.findComponent('.mt-icon');
         expect(icon.exists()).toBe(true);
         await icon.trigger('click');
 
         expect(inheritSwitch.vm.isInherited).toBe(true);
         expect(wrapper.vm.value).toBeUndefined();
         expect(wrapper.vm.inheritedValue).toBe(false);
-        expect(field.vm.$attrs.disabled).toBe(true);
-        expect(field.vm.value).toBe(false);
+        expect(input.attributes().disabled).toBe('');
+        expect(input.attributes().checked).toBeUndefined();
 
         // Switch to "All Sales Channels" - inheritance should be disabled
         store.salesChannel = null;

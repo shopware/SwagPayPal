@@ -10,6 +10,8 @@ const { Component, Filter } = Shopware;
 Component.register('swag-paypal-payment-details-v2', {
     template,
 
+    emits: ['reload-paypal-order'],
+
     props: {
         paypalOrder: {
             type: Object,

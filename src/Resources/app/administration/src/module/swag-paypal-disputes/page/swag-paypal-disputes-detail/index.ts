@@ -160,8 +160,7 @@ export default Shopware.Component.wrapComponentConfig({
             }
 
             try {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                Utils.dom.copyToClipboard(JSON.stringify(this.dispute));
+                Utils.dom.copyStringToClipboard(JSON.stringify(this.dispute));
                 this.createNotificationInfo({
                     message: this.$tc('global.sw-field.notification.notificationCopySuccessMessage'),
                 });

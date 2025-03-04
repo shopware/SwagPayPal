@@ -1,5 +1,5 @@
 {% block swag_paypal_pui_details %}
-<sw-card
+<mt-card
     position-identifier="swag-paypal-pui-details"
     :title="$tc('swag-paypal-payment.puiDetails.cardTitle')"
 >
@@ -16,15 +16,16 @@
     {% endblock %}
 
     {% block swag_paypal_pui_details_copy_button %}
-    <sw-button
+    <mt-button
         class="swag-paypal-pui-details__copy-button"
-        variant="ghost"
+        ghost
         size="small"
+        variant="secondary"
         @click="onCopy"
     >
         {{ $tc('swag-paypal-payment.puiDetails.buttonCopy') }}
-    </sw-button>
+    </mt-button>
     {% endblock %}
 
-</sw-card>
+</mt-card>
 {% endblock %}

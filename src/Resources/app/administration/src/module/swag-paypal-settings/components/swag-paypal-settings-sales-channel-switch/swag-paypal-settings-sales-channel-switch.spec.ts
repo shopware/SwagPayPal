@@ -10,7 +10,6 @@ async function createWrapper() {
             global: {
                 mocks: { $t: (key: string) => key },
                 provide: {
-                    acl: { can: () => true },
                     repositoryFactory: {
                         create: () => ({
                             search: jest.fn(() => Promise.resolve([
@@ -24,12 +23,16 @@ async function createWrapper() {
                     },
                 },
                 stubs: {
-                    'sw-card': await wrapTestComponent('sw-card', { sync: true }),
-                    'sw-card-deprecated': await wrapTestComponent('sw-card-deprecated', { sync: true }),
                     'sw-container': await wrapTestComponent('sw-container', { sync: true }),
                     'sw-internal-link': await wrapTestComponent('sw-internal-link', { sync: true }),
                     'sw-button-process': await wrapTestComponent('sw-button-process', { sync: true }),
-                    'sw-single-select': await wrapTestComponent('sw-single-select', { sync: true }),
+                    'sw-loader': true,
+                    'sw-single-select': {
+                        props: ['value'],
+                        emit: ['update:value'],
+                        template: '<div class="sw-single-select"></div>',
+                    },
+                    'sw-highlight-text': await wrapTestComponent('sw-highlight-text', { sync: true }),
                 },
             },
         },
@@ -45,6 +48,8 @@ describe('swag-paypal-settings-sales-channel-switch', () => {
 
     it('should fetch sales channels on creation', async () => {
         const wrapper = await createWrapper();
+
+        wrapper.vm.createdComponent();
 
         expect(wrapper.vm.salesChannelRepository.search).toHaveBeenCalledWith(
             wrapper.vm.salesChannelCriteria,
@@ -71,12 +76,11 @@ describe('swag-paypal-settings-sales-channel-switch', () => {
     });
 
     it('should set payment method as default', async () => {
+        global.activeAclRoles = ['swag_paypal.editor'];
         const wrapper = await createWrapper();
 
-        const button = wrapper.findComponent<VueComponent>('.sw-button-process');
-        expect(button.exists()).toBe(true);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        button.vm.$emit('click');
+        const button = wrapper.get('button');
+        button.trigger('click');
 
         expect(wrapper.vm.defaultPaymentMethods).toBe('loading');
         expect(wrapper.vm.SwagPaypalPaymentMethodService.setDefaultPaymentForSalesChannel).toHaveBeenCalledWith(null);

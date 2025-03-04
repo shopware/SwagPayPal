@@ -3,7 +3,6 @@ import './swag-paypal-payment-detail.scss';
 
 const { Component, Filter } = Shopware;
 const { isEmpty } = Shopware.Utils.types;
-const { mapState } = Component.getComponentHelper();
 
 Component.register('swag-paypal-payment-detail', {
     template,
@@ -34,7 +33,9 @@ Component.register('swag-paypal-payment-detail', {
     },
 
     computed: {
-        ...mapState('swOrderDetail', ['order']),
+        order() {
+            return Shopware.Store.get('swOrderDetail').order;
+        },
 
         orderTransaction() {
             return this.order.transactions.last();

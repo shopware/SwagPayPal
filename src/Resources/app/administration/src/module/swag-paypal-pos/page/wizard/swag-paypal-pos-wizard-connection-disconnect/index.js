@@ -11,6 +11,8 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
         'SwagPayPalPosSettingApiService',
     ],
 
+    emits: ['frw-set-title', 'buttons-update', 'recreate-sales-channel'],
+
     mixin: [
         Shopware.Mixin.getByName('placeholder'),
         Shopware.Mixin.getByName('notification'),

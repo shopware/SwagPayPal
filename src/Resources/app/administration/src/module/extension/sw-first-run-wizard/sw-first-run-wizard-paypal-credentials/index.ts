@@ -9,6 +9,8 @@ export default Shopware.Component.wrapComponentConfig({
         'SwagPayPalSettingsService',
     ],
 
+    emits: ['frw-redirect'],
+
     mixins: [
         Shopware.Mixin.getByName('swag-paypal-notification'),
         Shopware.Mixin.getByName('swag-paypal-settings'),

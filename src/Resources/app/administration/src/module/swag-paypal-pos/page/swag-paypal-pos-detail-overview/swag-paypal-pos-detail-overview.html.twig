@@ -17,11 +17,11 @@
                         <sw-button-group v-if="salesChannel && salesChannel.active && !isSyncing">
 
                             {% block swag_paypal_pos_detail_overview_status_actions_sync_button %}
-                                <sw-button class="swag-paypal-pos-detail-overview__sync-button"
+                                <mt-button class="swag-paypal-pos-detail-overview__sync-button"
                                            variant="primary"
                                            @click="onStartSync">
                                     {{ $tc('swag-paypal-pos.detail.overview.buttonSync') }}
-                                </sw-button>
+                                </mt-button>
                             {% endblock %}
 
                             {% block swag_paypal_pos_detail_overview_status_actions_sync_context_menu %}
@@ -29,12 +29,12 @@
 
                                     {% block swag_paypal_pos_detail_overview_status_actions_sync_context_menu_button %}
                                         <template #button>
-                                            <sw-button class="swag-paypal-pos-detail-overview__sync-button-context"
+                                            <mt-button class="swag-paypal-pos-detail-overview__sync-button-context"
                                                        variant="primary"
                                                        square
                                                        :disabled="isSyncing">
-                                                <sw-icon name="regular-chevron-down-xs" size="16" />
-                                            </sw-button>
+                                                <mt-icon name="regular-chevron-down-xs" size="16px" />
+                                            </mt-button>
                                         </template>
                                     {% endblock %}
 
@@ -60,10 +60,11 @@
                         </sw-button-group>
 
                         {% block swag_paypal_pos_detail_overview_status_actions_sync_abort_button %}
-                            <sw-button v-if="isSyncing"
+                            <mt-button v-if="isSyncing"
+                                       variant="secondary"
                                        @click="onSyncAbort">
                                 {{ $tc('swag-paypal-pos.detail.overview.buttonSyncAbort') }}
-                            </sw-button>
+                            </mt-button>
                         {% endblock %}
                     </template>
                 {% endblock %}

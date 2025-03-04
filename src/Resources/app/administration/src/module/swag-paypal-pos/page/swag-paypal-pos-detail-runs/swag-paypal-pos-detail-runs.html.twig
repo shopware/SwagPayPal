@@ -2,7 +2,7 @@
     <div class="swag-paypal-pos-detail-runs">
 
         {% block swag_paypal_pos_detail_runs_card %}
-            <sw-card position-identifier="swag-paypal-pos-detail-runs"
+            <mt-card position-identifier="swag-paypal-pos-detail-runs"
                      :title="$tc('swag-paypal-pos.detail.runs.title')"
                      :isLoading="isLoading">
 
@@ -106,11 +106,12 @@
                                 {% endblock %}
 
                                 {% block swag_paypal_pos_detail_runs_card_toolbar_container_button %}
-                                    <sw-button
+                                    <mt-button
                                             :disabled="!acl.can('sales_channel.editor')"
+                                            variant="secondary"
                                             @click="onClearLogs">
                                         {{ $tc('swag-paypal-pos.detail.cleanLog') }}
-                                    </sw-button>
+                                    </mt-button>
                                 {% endblock %}
 
                             </sw-container>
@@ -119,7 +120,7 @@
                     </template>
                 {% endblock %}
 
-            </sw-card>
+            </mt-card>
         {% endblock %}
 
         {% block swag_paypal_pos_detail_runs_log_modal %}
@@ -138,10 +139,10 @@
                     <template #modal-footer>
 
                         {% block swag_paypal_pos_detail_runs_log_modal_footer_close_modal_button %}
-                            <sw-button variant="primary"
+                            <mt-button variant="primary"
                                        @click="onCloseModal">
                                 {{ $tc('global.default.cancel') }}
-                            </sw-button>
+                            </mt-button>
                         {% endblock %}
 
                     </template>

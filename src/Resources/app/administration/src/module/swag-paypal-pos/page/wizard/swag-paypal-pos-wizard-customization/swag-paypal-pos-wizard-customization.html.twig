@@ -3,14 +3,14 @@
          class="swag-paypal-pos-wizard-customization">
 
         {% block swag_paypal_pos_wizard_customization_name %}
-            <sw-text-field
-                v-model:value="salesChannel.name"
+            <mt-text-field
+                v-model="salesChannel.name"
                 class="swag-paypal-pos-wizard-customization__name-field"
                 validation="required"
                 required
                 :label="$tc('swag-paypal-pos.wizard.customization.salesChannelLabel')"
                 :placeholder="$tc('sw-sales-channel.detail.placeholderName')"
-                @update:value="forceUpdate" />
+                @update:modelValue="forceUpdate" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_customization_language %}
@@ -23,14 +23,14 @@
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_customization_media_domain %}
-            <sw-url-field
-                v-model:value="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
+            <mt-url-field
+                v-model="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
                 class="swag-paypal-pos-wizard-customization__domain-field"
                 required
                 :label="$tc('swag-paypal-pos.wizard.customization.labelDomain')"
                 :placeholder="$tc('swag-paypal-pos.wizard.customization.placeholderDomain')"
-                :value="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
-                @update:value="forceUpdate" />
+                :modelValue="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
+                @update:modelValue="forceUpdate" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_connection_success_disclaimer %}

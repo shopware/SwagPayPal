@@ -6,6 +6,8 @@ const { Component } = Shopware;
 Component.register('swag-paypal-pos-wizard-sync-prices', {
     template,
 
+    emits: ['frw-set-title', 'buttons-update', 'toggle-loading'],
+
     props: {
         salesChannel: {
             type: Object,

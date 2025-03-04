@@ -10,6 +10,8 @@ Component.register('swag-paypal-pos-wizard-finish', {
         'SwagPayPalPosApiService',
     ],
 
+    emits: ['frw-set-title', 'buttons-update', 'frw-finish'],
+
     props: {
         salesChannel: {
             type: Object,

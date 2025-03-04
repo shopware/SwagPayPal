@@ -57,7 +57,7 @@
 
                         {% block swag_paypal_pos_wizard_modal_footer_left %}
                             <div class="footer-left">
-                                <sw-button v-for="button in buttons.left"
+                                <mt-button v-for="button in buttons.left"
                                            :key="button.action"
                                            size="small"
                                            :disabled="button.disabled"
@@ -65,13 +65,13 @@
                                            :variant="button.variant"
                                            @click="onButtonClick(button.action)">
                                     {{ button.label }}
-                                </sw-button>
+                                </mt-button>
                             </div>
                         {% endblock %}
 
                         {% block swag_paypal_pos_wizard_modal_footer_right %}
                             <div class="footer-right">
-                                <sw-button v-for="button in buttons.right"
+                                <mt-button v-for="button in buttons.right"
                                            :key="button.action"
                                            size="small"
                                            :disabled="button.disabled"
@@ -79,7 +79,7 @@
                                            :variant="button.variant"
                                            @click="onButtonClick(button.action)">
                                     {{ button.label }}
-                                </sw-button>
+                                </mt-button>
                             </div>
                         {% endblock %}
                         </div>

@@ -23,6 +23,8 @@ export default Shopware.Component.wrapComponentConfig({
         'systemConfigApiService',
     ],
 
+    emits: ['page-change'],
+
     mixins: [
         Shopware.Mixin.getByName('swag-paypal-notification'),
     ],

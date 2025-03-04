@@ -8,6 +8,8 @@ Component.register('swag-paypal-payment-action-v2-refund', {
 
     inject: ['SwagPayPalOrderService'],
 
+    emits: ['modal-close'],
+
     mixins: [
         Shopware.Mixin.getByName('notification'),
     ],
@@ -58,6 +60,14 @@ Component.register('swag-paypal-payment-action-v2-refund', {
             }
 
             return Number(this.selectedCapture.amount.value);
+        },
+
+        captureOptions() {
+            return this.captures.map((capture) => ({
+                id: capture.id,
+                value: capture.id,
+                label: `${this.dateFilter(capture.create_time)} (${capture.amount.value} ${capture.amount.currency_code}) - ${capture.id} [${capture.status}]`,
+            }));
         },
     },
 

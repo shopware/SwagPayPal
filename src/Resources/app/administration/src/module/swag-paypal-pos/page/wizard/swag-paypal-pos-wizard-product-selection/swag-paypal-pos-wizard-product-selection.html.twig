@@ -8,12 +8,12 @@
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_product_selection_sales_channel_toggle %}
-            <sw-switch-field
-                    v-model:value="hasClone"
+            <mt-switch
+                    v-model="hasClone"
                     class="swag-paypal-pos-wizard-product-selection__clone-switch"
                     bordered
                     :label="$tc('swag-paypal-pos.wizard.productSelection.labelToggle')"
-                    @update:value="updateClone" />
+                    @update:modelValue="updateClone" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_product_selection_sales_channel_select %}
