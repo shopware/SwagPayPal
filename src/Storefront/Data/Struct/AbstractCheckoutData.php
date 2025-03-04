@@ -28,10 +28,6 @@ class AbstractCheckoutData extends AbstractScriptData
 
     protected ?string $orderId = null;
 
-    protected ?string $accountOrderEditCancelledUrl = null;
-
-    protected ?string $accountOrderEditFailedUrl = null;
-
     protected string $brandName;
 
     public function getUserIdToken(): ?string
@@ -92,26 +88,6 @@ class AbstractCheckoutData extends AbstractScriptData
     public function setOrderId(?string $orderId): void
     {
         $this->orderId = $orderId;
-    }
-
-    public function getAccountOrderEditCancelledUrl(): ?string
-    {
-        return $this->accountOrderEditCancelledUrl;
-    }
-
-    public function setAccountOrderEditCancelledUrl(?string $accountOrderEditCancelledUrl): void
-    {
-        $this->accountOrderEditCancelledUrl = $accountOrderEditCancelledUrl;
-    }
-
-    public function getAccountOrderEditFailedUrl(): ?string
-    {
-        return $this->accountOrderEditFailedUrl;
-    }
-
-    public function setAccountOrderEditFailedUrl(?string $accountOrderEditFailedUrl): void
-    {
-        $this->accountOrderEditFailedUrl = $accountOrderEditFailedUrl;
     }
 
     public function getButtonShape(): string

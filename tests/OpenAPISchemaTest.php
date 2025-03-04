@@ -19,7 +19,6 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute;
 use Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute;
 use Swag\PayPal\Storefront\Controller\PayPalController;
-use Swag\PayPal\Webhook\Registration\WebhookSystemConfigController;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**

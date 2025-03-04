@@ -100,18 +100,6 @@
         </service>
 
         <!-- registration -->
-        <service id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigController"
-                 decorates="Shopware\Core\System\SystemConfig\Api\SystemConfigController"
-                 public="true">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\Service\ConfigurationService"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\Validation\SystemConfigValidator" on-invalid="ignore"/>
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
-        </service>
-
         <service id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper">
             <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>

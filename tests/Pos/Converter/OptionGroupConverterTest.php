@@ -16,6 +16,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Api\Product\Variant;
 use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions;
+use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions\Definition\Property;
 use Swag\PayPal\Pos\Api\Service\Converter\OptionGroupConverter;
 
 /**
@@ -81,9 +82,9 @@ class OptionGroupConverterTest extends TestCase
             'definitions' => [
                 [
                     'name' => 'Test Group',
-                    'propertys' => [
-                        ['value' => 'Test Option'],
-                        ['value' => 'Test Option 2'],
+                    'properties' => [
+                        (new Property())->assign(['value' => 'Test Option']),
+                        (new Property())->assign(['value' => 'Test Option 2']),
                     ],
                 ],
             ],

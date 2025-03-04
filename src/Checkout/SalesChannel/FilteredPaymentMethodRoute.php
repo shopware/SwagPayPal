@@ -8,8 +8,10 @@
 namespace Swag\PayPal\Checkout\SalesChannel;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute;
 use Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRouteResponse;
 use Shopware\Core\Framework\Context;
@@ -32,47 +34,22 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(defaults: ['_routeScope' => ['store-api']])]
 class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 {
-    private AbstractPaymentMethodRoute $decorated;
-
-    private PaymentMethodDataRegistry $methodDataRegistry;
-
-    private SettingsValidationServiceInterface $settingsValidationService;
-
-    private CartService $cartService;
-
-    private CartPriceService $cartPriceService;
-
-    private RequestStack $requestStack;
-
-    private ExcludedProductValidator $excludedProductValidator;
-
-    private AvailabilityService $availabilityService;
-
-    private EntityRepository $orderRepository;
-
     /**
      * @internal
+     *
+     * @param EntityRepository<OrderCollection> $orderRepository
      */
     public function __construct(
-        AbstractPaymentMethodRoute $decorated,
-        PaymentMethodDataRegistry $methodDataRegistry,
-        SettingsValidationServiceInterface $settingsValidationService,
-        CartService $cartService,
-        CartPriceService $cartPriceService,
-        ExcludedProductValidator $excludedProductValidator,
-        RequestStack $requestStack,
-        AvailabilityService $availabilityService,
-        EntityRepository $orderRepository,
+        private readonly AbstractPaymentMethodRoute $decorated,
+        private readonly PaymentMethodDataRegistry $methodDataRegistry,
+        private readonly SettingsValidationServiceInterface $settingsValidationService,
+        private readonly CartService $cartService,
+        private readonly CartPriceService $cartPriceService,
+        private readonly ExcludedProductValidator $excludedProductValidator,
+        private readonly RequestStack $requestStack,
+        private readonly AvailabilityService $availabilityService,
+        private readonly EntityRepository $orderRepository,
     ) {
-        $this->decorated = $decorated;
-        $this->methodDataRegistry = $methodDataRegistry;
-        $this->settingsValidationService = $settingsValidationService;
-        $this->cartService = $cartService;
-        $this->cartPriceService = $cartPriceService;
-        $this->excludedProductValidator = $excludedProductValidator;
-        $this->requestStack = $requestStack;
-        $this->availabilityService = $availabilityService;
-        $this->orderRepository = $orderRepository;
     }
 
     public function getDecorated(): AbstractPaymentMethodRoute
@@ -91,62 +68,57 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
         try {
             $this->settingsValidationService->validate($context->getSalesChannelId());
-        } catch (PayPalSettingsInvalidException $e) {
-            $this->removeAllPaymentMethods($response->getPaymentMethods());
-
-            return $response;
+        } catch (PayPalSettingsInvalidException) {
+            return $this->removeAllPaymentMethods($response);
         }
+
         $cart = $this->cartService->getCart($context->getToken(), $context);
         if ($this->cartPriceService->isZeroValueCart($cart)) {
-            $this->removeAllPaymentMethods($response->getPaymentMethods());
-
-            return $response;
+            return $this->removeAllPaymentMethods($response);
         }
 
         if ($this->excludedProductValidator->cartContainsExcludedProduct($cart, $context)) {
-            $this->removeAllPaymentMethods($response->getPaymentMethods());
-
-            return $response;
+            return $this->removeAllPaymentMethods($response);
         }
 
         try {
             $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
+
             if (\is_array($ineligiblePaymentMethods)) {
-                $this->removePaymentMethods($response->getPaymentMethods(), $ineligiblePaymentMethods);
+                $response = $this->removePaymentMethods($response, $ineligiblePaymentMethods);
             }
-        } catch (SessionNotFoundException $e) {
+        } catch (SessionNotFoundException) {
         }
 
         $order = $this->checkOrder($request, $context->getContext());
-        $this->removePaymentMethods(
-            $response->getPaymentMethods(),
+
+        return $this->removePaymentMethods(
+            $response,
             $order
                 ? $this->availabilityService->filterPaymentMethodsByOrder($response->getPaymentMethods(), $cart, $order, $context)
                 : $this->availabilityService->filterPaymentMethods($response->getPaymentMethods(), $cart, $context)
         );
-
-        return $response;
     }
 
     /**
      * @param string[] $handlers
      */
-    private function removePaymentMethods(PaymentMethodCollection $paymentMethods, array $handlers): void
+    private function removePaymentMethods(PaymentMethodRouteResponse $response, array $handlers): PaymentMethodRouteResponse
     {
-        foreach ($paymentMethods as $paymentMethod) {
-            if (\in_array($paymentMethod->getHandlerIdentifier(), $handlers, true)) {
-                $paymentMethods->remove($paymentMethod->getId());
-            }
-        }
+        $paymentMethods = $response->getPaymentMethods()->filter(static function (PaymentMethodEntity $entity) use ($handlers) {
+            return !\in_array($entity->getHandlerIdentifier(), $handlers, true);
+        });
+
+        return $this->updateResponse($response, $paymentMethods);
     }
 
-    private function removeAllPaymentMethods(PaymentMethodCollection $paymentMethods): void
+    private function removeAllPaymentMethods(PaymentMethodRouteResponse $response): PaymentMethodRouteResponse
     {
-        foreach ($paymentMethods as $paymentMethod) {
-            if ($this->methodDataRegistry->isPayPalPaymentMethod($paymentMethod)) {
-                $paymentMethods->remove($paymentMethod->getId());
-            }
-        }
+        $paymentMethods = $response->getPaymentMethods()->filter(function (PaymentMethodEntity $entity) {
+            return !$this->methodDataRegistry->isPayPalPaymentMethod($entity);
+        });
+
+        return $this->updateResponse($response, $paymentMethods);
     }
 
     private function checkOrder(Request $request, Context $context): ?OrderEntity
@@ -158,9 +130,18 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
         $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('lineItems');
-        /** @var OrderEntity|null $order */
-        $order = $this->orderRepository->search($criteria, $context)->first();
 
-        return $order;
+        return $this->orderRepository->search($criteria, $context)->first();
+    }
+
+    private function updateResponse(PaymentMethodRouteResponse $response, PaymentMethodCollection $paymentMethods): PaymentMethodRouteResponse
+    {
+        $response->getObject()->assign([
+            'entities' => $paymentMethods,
+            'elements' => $paymentMethods->getElements(),
+            'total' => $paymentMethods->count(),
+        ]);
+
+        return $response;
     }
 }
