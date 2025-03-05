@@ -125,7 +125,7 @@ Component.register('swag-paypal-payment-action-v2-refund', {
                 this.paypalPartnerAttributionId,
             ).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('swag-paypal-payment.refundAction.successMessage'),
+                    message: this.$t('swag-paypal-payment.refundAction.successMessage'),
                 });
                 this.isLoading = false;
                 this.$emit('modal-close');

@@ -64,14 +64,14 @@ Component.register('swag-paypal-pos-wizard-connection', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-pos.wizard.connection.modalTitle'));
+            this.$emit('frw-set-title', this.$t('swag-paypal-pos.wizard.connection.modalTitle'));
         },
 
         updateButtons() {
             const buttonConfig = [
                 {
                     key: 'next',
-                    label: this.$tc('sw-first-run-wizard.general.buttonNext'),
+                    label: this.$t('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToConnectionSuccess,

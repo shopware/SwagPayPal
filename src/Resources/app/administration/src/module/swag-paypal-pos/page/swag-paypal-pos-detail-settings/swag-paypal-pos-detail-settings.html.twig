@@ -3,14 +3,14 @@
 
         {% block swag_paypal_pos_detail_settings_alert %}
             <mt-banner class="swag-paypal-pos-detail-settings__save-alert">
-                {{ $tc('swag-paypal-pos.detail.settings.saveAlert') }}
+                {{ $t('swag-paypal-pos.detail.settings.saveAlert') }}
             </mt-banner>
         {% endblock %}
 
         {% block swag_paypal_pos_detail_settings_basic %}
             <mt-card position-identifier="swag-paypal-pos-detail-settings-basic"
                      :isLoading="isLoading"
-                     :title="$tc('swag-paypal-pos.detail.settings.titleGeneralSettings')">
+                     :title="$t('swag-paypal-pos.detail.settings.titleGeneralSettings')">
                 <sw-container columns="1fr 200px" gap="0px 30px">
 
                     {% block swag_paypal_pos_detail_settings_input_name %}
@@ -21,8 +21,8 @@
                                 validation="required"
                                 :error="salesChannelNameError"
                                 :disabled="!acl.can('sales_channel.editor')"
-                                :label="$tc('sw-sales-channel.detail.labelInputName')"
-                                :placeholder="placeholder(salesChannel, 'name', $tc('sw-sales-channel.detail.placeholderName'))" />
+                                :label="$t('sw-sales-channel.detail.labelInputName')"
+                                :placeholder="placeholder(salesChannel, 'name', $t('sw-sales-channel.detail.placeholderName'))" />
                     {% endblock %}
 
                     {% block swag_paypal_pos_detail_settings_input_active %}
@@ -30,8 +30,8 @@
                                 v-model="salesChannel.active"
                                 bordered
                                 :disabled="!acl.can('sales_channel.editor')"
-                                :label="$tc('sw-sales-channel.detail.labelInputActive')"
-                                :helpText="$tc('swag-paypal-pos.detail.settings.activeHelpText')" />
+                                :label="$t('sw-sales-channel.detail.labelInputActive')"
+                                :helpText="$t('swag-paypal-pos.detail.settings.activeHelpText')" />
                     {% endblock %}
 
                 </sw-container>
@@ -43,8 +43,8 @@
                             validation="required"
                             :error="swagPaypalPosSalesChannelMediaDomainError"
                             :disabled="!acl.can('sales_channel.editor')"
-                            :label="$tc('swag-paypal-pos.detail.settings.domain')"
-                            :helpText="$tc('swag-paypal-pos.detail.settings.domainHelpText')"
+                            :label="$t('swag-paypal-pos.detail.settings.domain')"
+                            :helpText="$t('swag-paypal-pos.detail.settings.domainHelpText')"
                             @update:value="forceUpdate" />
                 {% endblock %}
 
@@ -54,7 +54,7 @@
                             entity="language"
                             required
                             :disabled="!acl.can('sales_channel.editor')"
-                            :label="$tc('global.entities.language')"
+                            :label="$t('global.entities.language')"
                             @update:value="changeLanguage" />
                 {% endblock %}
 
@@ -65,7 +65,7 @@
                             v-model:value="swagPaypalPosSalesChannel.productStreamId"
                             entity="product_stream"
                             :disabled="!acl.can('sales_channel.editor')"
-                            :label="$tc('swag-paypal-pos.detail.settings.productStream')"
+                            :label="$t('swag-paypal-pos.detail.settings.productStream')"
                             @update:value="forceUpdate" />
                 {% endblock %}
 
@@ -76,12 +76,12 @@
             <div class="sw-sales-channel-detail-sync">
                 <mt-card position-identifier="swag-paypal-pos-detail-settings-sync"
                          :isLoading="isLoading"
-                         :title="$tc('swag-paypal-pos.detail.settings.titleSync')">
+                         :title="$t('swag-paypal-pos.detail.settings.titleSync')">
 
                     {% block swag_paypal_pos_detail_settings_sync_input %}
                         <sw-radio-field
                             v-model:value="salesChannel.extensions.paypalPosSalesChannel.replace"
-                            :label="$tc('swag-paypal-pos.wizard.syncLibrary.description')"
+                            :label="$t('swag-paypal-pos.wizard.syncLibrary.description')"
                             class="swag-paypal-pos-boolean-radio"
                             :options="optionsReplace"
                             :disabled="!acl.can('sales_channel.editor')"
@@ -96,13 +96,13 @@
             <div class="sw-sales-channel-detail-prices">
                 <mt-card position-identifier="swag-paypal-pos-detail-settings-prices"
                          :isLoading="isLoading"
-                         :title="$tc('swag-paypal-pos.detail.settings.titlePrices')">
+                         :title="$t('swag-paypal-pos.detail.settings.titlePrices')">
 
                     {% block swag_paypal_pos_detail_settings_prices_input %}
                         <swag-paypal-pos-boolean-radio
                             v-model:value="swagPaypalPosSalesChannel.syncPrices"
                             class="swag-paypal-pos-detail-settings__sync-prices-input"
-                            :label="$tc('swag-paypal-pos.wizard.syncPrices.description')"
+                            :label="$t('swag-paypal-pos.wizard.syncPrices.description')"
                             :optionTrue="optionSyncPrices"
                             :optionFalse="optionNotSyncPrices"
                             :disabled="!acl.can('sales_channel.editor')"
@@ -117,16 +117,16 @@
             <div class="sw-sales-channel-detail-credentials">
                 <mt-card position-identifier="swag-paypal-pos-detail-settings-credentials"
                          :isLoading="isLoading"
-                         :title="$tc('swag-paypal-pos.detail.settings.titleCredentials')">
+                         :title="$t('swag-paypal-pos.detail.settings.titleCredentials')">
 
                     {% block swag_paypal_pos_detail_settings_credentials_apikey %}
                         <mt-password-field
                                 v-model="swagPaypalPosSalesChannel.apiKey"
                                 class="swag-paypal-pos-detail-settings__apikey-field"
                                 required
-                                :label="$tc('swag-paypal-pos.authentication.labelApiKey')"
+                                :label="$t('swag-paypal-pos.authentication.labelApiKey')"
                                 :disabled="!acl.can('sales_channel.editor')"
-                                :placeholder="$tc('swag-paypal-pos.authentication.placeholderApiKey')"
+                                :placeholder="$t('swag-paypal-pos.authentication.placeholderApiKey')"
                                 @update:modelValue="forceUpdate" />
                     {% endblock %}
 
@@ -135,7 +135,7 @@
 
                             {% block swag_paypal_pos_detail_settings_credentials_apikey_description_text %}
                                 <div class="swag-paypal-pos-detail-settings__apikey-description-text">
-                                    {{ $tc('swag-paypal-pos.authentication.apiKeyDescription') }}
+                                    {{ $t('swag-paypal-pos.authentication.apiKeyDescription') }}
                                 </div>
                             {% endblock %}
 
@@ -145,7 +145,7 @@
                                                   class="swag-paypal-pos-detail-settings__apikey-description-link">
 
                                     {% block swag_paypal_pos_detail_settings_credentials_apikey_description_link_text %}
-                                        {{ $tc('swag-paypal-pos.authentication.buttonGenerateKey') }}
+                                        {{ $t('swag-paypal-pos.authentication.buttonGenerateKey') }}
                                     {% endblock %}
                                 </sw-external-link>
                             {% endblock %}
@@ -158,7 +158,7 @@
 
         {% block swag_paypal_pos_detail_settings_options %}
             <mt-card position-identifier="swag-paypal-pos-detail-settings-options"
-                     :title="$tc('swag-paypal-pos.detail.settings.optionsTitle')"
+                     :title="$t('swag-paypal-pos.detail.settings.optionsTitle')"
                      :isLoading="isLoading">
                 <template #grid>
                     <sw-container rows="auto auto">
@@ -169,7 +169,7 @@
 
                                     {% block sw_sales_channel_detail_base_options_reset_text %}
                                         <div class="swag-paypal-pos-detail-settings__options-description-text">
-                                            {{ $tc('swag-paypal-pos.detail.settings.reset.descriptionText') }}
+                                            {{ $t('swag-paypal-pos.detail.settings.reset.descriptionText') }}
                                         </div>
                                     {% endblock %}
 
@@ -179,7 +179,7 @@
                                                        :disabled="!acl.can('sales_channel.editor')"
                                                        variant="secondary"
                                                        @click="showResetModal = true">
-                                                {{ $tc('swag-paypal-pos.detail.settings.reset.buttonTitle') }}
+                                                {{ $t('swag-paypal-pos.detail.settings.reset.buttonTitle') }}
                                             </mt-button>
                                         </div>
                                     {% endblock %}
@@ -194,8 +194,8 @@
 
                                     {% block sw_sales_channel_detail_base_options_delete_text %}
                                         <div class="swag-paypal-pos-detail-settings__options-description-text">
-                                            <strong>{{ $tc('global.default.warning') }}</strong>
-                                            {{ $tc('sw-sales-channel.detail.textDeleteSalesChannelWarning') }}
+                                            <strong>{{ $t('global.default.warning') }}</strong>
+                                            {{ $t('sw-sales-channel.detail.textDeleteSalesChannelWarning') }}
                                         </div>
                                     {% endblock %}
 
@@ -206,7 +206,7 @@
                                                 size="small"
                                                 :disabled="!acl.can('sales_channel.deleter')"
                                                 @click="showDeleteModal = true">
-                                                {{ $tc('sw-sales-channel.detail.buttonDelete') }}
+                                                {{ $t('sw-sales-channel.detail.buttonDelete') }}
                                             </mt-button>
                                         </div>
                                     {% endblock %}
@@ -223,17 +223,17 @@
                               ref="modal"
                               class="swag-paypal-pos-detail-settings__reset-sync-modal"
                               variant="small"
-                              :title="$tc('swag-paypal-pos.detail.settings.reset.modalTitle')"
+                              :title="$t('swag-paypal-pos.detail.settings.reset.modalTitle')"
                               @modal-close="showResetModal = false">
 
                         {% block swag_paypal_pos_detail_settings_options_reset_modal_confirmtext %}
                             <p class="swag-paypal-pos-detail-settings__reset-modal-confirm-text">
-                                {{ $tc('swag-paypal-pos.detail.settings.reset.modalConfirmText') }}
+                                {{ $t('swag-paypal-pos.detail.settings.reset.modalConfirmText') }}
                             </p>
                             <p class="swag-paypal-pos-detail-settings__reset-modal-name">
                                 <strong>{{ placeholder(salesChannel, 'name') }}</strong>
                             </p>
-                            <p>{{ $tc('swag-paypal-pos.detail.settings.reset.modalTextInfo') }}</p>
+                            <p>{{ $t('swag-paypal-pos.detail.settings.reset.modalTextInfo') }}</p>
                         {% endblock %}
 
                         {% block sw_sales_channel_detail_options_reset_modal_footer %}
@@ -241,7 +241,7 @@
 
                                 {% block swag_paypal_pos_detail_settings_options_reset_modal_abort %}
                                     <mt-button size="small" variant="secondary" @click="showResetModal = false">
-                                        {{ $tc('global.default.cancel') }}
+                                        {{ $t('global.default.cancel') }}
                                     </mt-button>
                                 {% endblock %}
 
@@ -249,7 +249,7 @@
                                     <mt-button size="small"
                                                variant="critical"
                                                @click="onConfirmReset">
-                                        {{ $tc('swag-paypal-pos.detail.settings.reset.modalButtonConfirm') }}
+                                        {{ $t('swag-paypal-pos.detail.settings.reset.modalButtonConfirm') }}
                                     </mt-button>
                                 {% endblock %}
 
@@ -264,17 +264,17 @@
                               ref="modal"
                               class="sw-sales-channel-detail-settings__delete-modal"
                               variant="small"
-                              :title="$tc('sw-sales-channel.detail.deleteModalTitle')"
+                              :title="$t('sw-sales-channel.detail.deleteModalTitle')"
                               @modal-close="showDeleteModal = false">
 
                         {% block swag_paypal_pos_detail_settings_options_delete_modal_confirmtext %}
                             <p class="sw-sales-channel-detail-settings__delete-modal-confirm-text">
-                                {{ $tc('sw-sales-channel.detail.textConfirmDelete') }}
+                                {{ $t('sw-sales-channel.detail.textConfirmDelete') }}
                             </p>
                             <p class="sw-sales-channel-detail-settings__delete-modal-name">
                                 <strong>{{ placeholder(salesChannel, 'name') }}</strong>
                             </p>
-                            <p>{{ $tc('sw-sales-channel.detail.textDeleteInfo') }}</p>
+                            <p>{{ $t('sw-sales-channel.detail.textDeleteInfo') }}</p>
                         {% endblock %}
 
                         {% block sw_sales_channel_detail_options_delete_modal_footer %}
@@ -282,7 +282,7 @@
 
                                 {% block swag_paypal_pos_detail_settings_options_delete_modal_abort %}
                                     <mt-button size="small" variant="secondary" @click="showDeleteModal = false">
-                                        {{ $tc('global.default.cancel') }}
+                                        {{ $t('global.default.cancel') }}
                                     </mt-button>
                                 {% endblock %}
 
@@ -290,7 +290,7 @@
                                     <mt-button size="small"
                                                variant="critical"
                                                @click="onConfirmDelete">
-                                        {{ $tc('sw-sales-channel.detail.buttonConfirmDelete') }}
+                                        {{ $t('sw-sales-channel.detail.buttonConfirmDelete') }}
                                     </mt-button>
                                 {% endblock %}
 

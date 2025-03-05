@@ -37,11 +37,11 @@ Component.register('swag-paypal-pos-account', {
     computed: {
         accountName() {
             if (this.isError) {
-                return this.$tc('swag-paypal-pos.account.errorName');
+                return this.$t('swag-paypal-pos.account.errorName');
             }
 
             if (!this.merchantInfo) {
-                return this.$tc('swag-paypal-pos.account.loadingName');
+                return this.$t('swag-paypal-pos.account.loadingName');
             }
 
             return this.merchantInfo.name;
@@ -49,11 +49,11 @@ Component.register('swag-paypal-pos-account', {
 
         accountEmail() {
             if (this.isError) {
-                return this.$tc('swag-paypal-pos.account.errorEmail');
+                return this.$t('swag-paypal-pos.account.errorEmail');
             }
 
             if (!this.merchantInfo) {
-                return this.$tc('swag-paypal-pos.account.loadingEmail');
+                return this.$t('swag-paypal-pos.account.loadingEmail');
             }
 
             return this.merchantInfo.contactEmail;
@@ -61,10 +61,10 @@ Component.register('swag-paypal-pos-account', {
 
         connectionStatusText() {
             if (this.isError) {
-                return this.$tc('swag-paypal-pos.account.noConnectionStatus');
+                return this.$t('swag-paypal-pos.account.noConnectionStatus');
             }
 
-            return this.$tc('swag-paypal-pos.account.connectedStatus');
+            return this.$t('swag-paypal-pos.account.connectedStatus');
         },
 
         connectionStatusVariant() {

@@ -164,7 +164,7 @@ Component.register('swag-paypal-pos-detail-overview', {
             const buttonConfig = [
                 {
                     key: 'sync',
-                    label: this.$tc('swag-paypal-pos.detail.overview.buttonSync'),
+                    label: this.$t('swag-paypal-pos.detail.overview.buttonSync'),
                     variant: 'primary',
                     action: this.onStartSync,
                     disabled: !(this.salesChannel && this.salesChannel.active),
@@ -176,7 +176,7 @@ Component.register('swag-paypal-pos-detail-overview', {
                 buttonConfig.unshift(
                     {
                         key: 'abortSync',
-                        label: this.$tc('swag-paypal-pos.detail.overview.buttonSyncAbort'),
+                        label: this.$t('swag-paypal-pos.detail.overview.buttonSyncAbort'),
                         action: this.onSyncAbort,
                         disabled: !(this.salesChannel && this.salesChannel.active),
                     },

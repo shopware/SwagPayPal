@@ -20,7 +20,7 @@
                                 <mt-button class="swag-paypal-pos-detail-overview__sync-button"
                                            variant="primary"
                                            @click="onStartSync">
-                                    {{ $tc('swag-paypal-pos.detail.overview.buttonSync') }}
+                                    {{ $t('swag-paypal-pos.detail.overview.buttonSync') }}
                                 </mt-button>
                             {% endblock %}
 
@@ -40,19 +40,19 @@
 
                                     {% block swag_paypal_pos_detail_overview_status_actions_sync_context_menu_item_products %}
                                         <sw-context-menu-item @click="onStartProductSync">
-                                            {{ $tc('swag-paypal-pos.detail.overview.buttonSyncProducts') }}
+                                            {{ $t('swag-paypal-pos.detail.overview.buttonSyncProducts') }}
                                         </sw-context-menu-item>
                                     {% endblock %}
 
                                     {% block swag_paypal_pos_detail_overview_status_actions_sync_context_menu_item_image %}
                                         <sw-context-menu-item @click="onStartImageSync">
-                                            {{ $tc('swag-paypal-pos.detail.overview.buttonSyncImages') }}
+                                            {{ $t('swag-paypal-pos.detail.overview.buttonSyncImages') }}
                                         </sw-context-menu-item>
                                     {% endblock %}
 
                                     {% block swag_paypal_pos_detail_overview_status_actions_sync_context_menu_item_inventory %}
                                         <sw-context-menu-item @click="onStartInventorySync">
-                                            {{ $tc('swag-paypal-pos.detail.overview.buttonSyncInventory') }}
+                                            {{ $t('swag-paypal-pos.detail.overview.buttonSyncInventory') }}
                                         </sw-context-menu-item>
                                     {% endblock %}
                                 </sw-context-button>
@@ -63,7 +63,7 @@
                             <mt-button v-if="isSyncing"
                                        variant="secondary"
                                        @click="onSyncAbort">
-                                {{ $tc('swag-paypal-pos.detail.overview.buttonSyncAbort') }}
+                                {{ $t('swag-paypal-pos.detail.overview.buttonSyncAbort') }}
                             </mt-button>
                         {% endblock %}
                     </template>

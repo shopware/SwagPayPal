@@ -104,13 +104,13 @@ Component.register('swag-paypal-payment-detail', {
         handleError(errorResponse) {
             try {
                 this.createNotificationError({
-                    message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${
+                    message: `${this.$t('swag-paypal-payment.paymentDetails.error.title')}: ${
                         errorResponse.response.data.errors[0].detail}`,
                     autoClose: false,
                 });
             } catch (e) {
                 this.createNotificationError({
-                    message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${errorResponse.message}`,
+                    message: `${this.$t('swag-paypal-payment.paymentDetails.error.title')}: ${errorResponse.message}`,
                     autoClose: false,
                 });
             } finally {

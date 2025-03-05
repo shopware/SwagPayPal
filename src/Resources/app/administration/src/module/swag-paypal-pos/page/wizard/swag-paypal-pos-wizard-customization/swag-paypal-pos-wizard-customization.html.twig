@@ -8,8 +8,8 @@
                 class="swag-paypal-pos-wizard-customization__name-field"
                 validation="required"
                 required
-                :label="$tc('swag-paypal-pos.wizard.customization.salesChannelLabel')"
-                :placeholder="$tc('sw-sales-channel.detail.placeholderName')"
+                :label="$t('swag-paypal-pos.wizard.customization.salesChannelLabel')"
+                :placeholder="$t('sw-sales-channel.detail.placeholderName')"
                 @update:modelValue="forceUpdate" />
         {% endblock %}
 
@@ -18,7 +18,7 @@
                 v-model:value="salesChannel.languageId"
                 entity="language"
                 required
-                :label="$tc('global.entities.language')"
+                :label="$t('global.entities.language')"
                 @update:value="changeLanguage" />
         {% endblock %}
 
@@ -27,15 +27,15 @@
                 v-model="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
                 class="swag-paypal-pos-wizard-customization__domain-field"
                 required
-                :label="$tc('swag-paypal-pos.wizard.customization.labelDomain')"
-                :placeholder="$tc('swag-paypal-pos.wizard.customization.placeholderDomain')"
+                :label="$t('swag-paypal-pos.wizard.customization.labelDomain')"
+                :placeholder="$t('swag-paypal-pos.wizard.customization.placeholderDomain')"
                 :modelValue="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
                 @update:modelValue="forceUpdate" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_connection_success_disclaimer %}
             <div class="swag-paypal-pos-wizard-customization__subtitle">
-                {{ $tc('swag-paypal-pos.wizard.customization.subtitle') }}
+                {{ $t('swag-paypal-pos.wizard.customization.subtitle') }}
             </div>
         {% endblock %}
     </div>

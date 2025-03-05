@@ -3,7 +3,7 @@
 
         {% block swag_paypal_pos_wizard_product_selection_info %}
             <p class="swag-paypal-pos-wizard-product-selection__info">
-                {{ $tc('swag-paypal-pos.wizard.productSelection.info') }}
+                {{ $t('swag-paypal-pos.wizard.productSelection.info') }}
             </p>
         {% endblock %}
 
@@ -12,7 +12,7 @@
                     v-model="hasClone"
                     class="swag-paypal-pos-wizard-product-selection__clone-switch"
                     bordered
-                    :label="$tc('swag-paypal-pos.wizard.productSelection.labelToggle')"
+                    :label="$t('swag-paypal-pos.wizard.productSelection.labelToggle')"
                     @update:modelValue="updateClone" />
         {% endblock %}
 
@@ -23,7 +23,7 @@
                     entity="sales_channel"
                     :criteria="salesChannelCriteria"
                     :disabled="!hasClone"
-                    :label="$tc('swag-paypal-pos.wizard.productSelection.labelSelect')"
+                    :label="$t('swag-paypal-pos.wizard.productSelection.labelSelect')"
                     @update:value="forceUpdate" />
         {% endblock %}
     </div>

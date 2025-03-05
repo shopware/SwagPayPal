@@ -94,8 +94,8 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
         wizardTitle() {
             const params = [
-                this.$tc('global.sw-admin-menu.textShopwareAdmin'),
-                this.$tc('swag-paypal-pos.general.moduleTitle'),
+                this.$t('global.sw-admin-menu.textShopwareAdmin'),
+                this.$t('swag-paypal-pos.general.moduleTitle'),
                 this.title,
             ];
 
@@ -215,7 +215,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
                 this.isLoading = false;
 
                 this.createNotificationError({
-                    message: this.$tc('sw-sales-channel.detail.messageSaveError', 0, {
+                    message: this.$t('sw-sales-channel.detail.messageSaveError', 0, {
                         name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name'),
                     }),
                 });
@@ -243,7 +243,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
             ).catch((errorResponse) => {
                 if (errorResponse.response.data && errorResponse.response.data.errors) {
                     this.createNotificationError({
-                        message: this.$tc('swag-paypal-pos.messageCloneError'),
+                        message: this.$t('swag-paypal-pos.messageCloneError'),
                     });
                 }
             });
@@ -257,7 +257,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
             this.previousApiKey = null;
             this.salesChannel = this.salesChannelRepository.create(Context.api);
             this.salesChannel.typeId = PAYPAL_POS_SALES_CHANNEL_TYPE_ID;
-            this.salesChannel.name = this.$tc('swag-paypal-pos.wizard.salesChannelPrototypeName');
+            this.salesChannel.name = this.$t('swag-paypal-pos.wizard.salesChannelPrototypeName');
             this.salesChannel.active = false;
 
             this.salesChannel.extensions.paypalPosSalesChannel
@@ -279,7 +279,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
                 this.salesChannel.accessKey = response.accessKey;
             }).catch(() => {
                 this.createNotificationError({
-                    message: this.$tc('sw-sales-channel.detail.messageAPIError'),
+                    message: this.$t('sw-sales-channel.detail.messageAPIError'),
                 });
             });
         },

@@ -10,7 +10,7 @@
                 variant="secondary"
                 @click="spawnModal('void')"
             >
-                {{ $tc('swag-paypal-payment.buttons.label.void') }}
+                {{ $t('swag-paypal-payment.buttons.label.void') }}
             </mt-button>
             {% endblock %}
 
@@ -22,7 +22,7 @@
                 variant="secondary"
                 @click="spawnModal('capture')"
             >
-                {{ $tc('swag-paypal-payment.buttons.label.capture') }}
+                {{ $t('swag-paypal-payment.buttons.label.capture') }}
             </mt-button>
             {% endblock %}
         </div>
@@ -34,7 +34,7 @@
             :disabled="refundableAmount <= 0 || !acl.can('order.editor')"
             @click="spawnModal('refund')"
         >
-            {{ $tc('swag-paypal-payment.buttons.label.refund') }}
+            {{ $t('swag-paypal-payment.buttons.label.refund') }}
         </mt-button>
         {% endblock %}
     </div>

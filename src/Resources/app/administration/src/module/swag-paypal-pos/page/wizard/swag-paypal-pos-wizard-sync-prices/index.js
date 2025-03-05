@@ -27,15 +27,15 @@ Component.register('swag-paypal-pos-wizard-sync-prices', {
     computed: {
         optionTrue() {
             return {
-                name: this.$tc('swag-paypal-pos.wizard.syncPrices.optionTrueLabel'),
-                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionTrueDescription'),
+                name: this.$t('swag-paypal-pos.wizard.syncPrices.optionTrueLabel'),
+                description: this.$t('swag-paypal-pos.wizard.syncPrices.optionTrueDescription'),
             };
         },
 
         optionFalse() {
             return {
-                name: this.$tc('swag-paypal-pos.wizard.syncPrices.optionFalseLabel'),
-                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionFalseDescription'),
+                name: this.$t('swag-paypal-pos.wizard.syncPrices.optionFalseLabel'),
+                description: this.$t('swag-paypal-pos.wizard.syncPrices.optionFalseDescription'),
             };
         },
     },
@@ -51,21 +51,21 @@ Component.register('swag-paypal-pos-wizard-sync-prices', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-pos.wizard.syncPrices.modalTitle'));
+            this.$emit('frw-set-title', this.$t('swag-paypal-pos.wizard.syncPrices.modalTitle'));
         },
 
         updateButtons() {
             const buttonConfig = [
                 {
                     key: 'back',
-                    label: this.$tc('sw-first-run-wizard.general.buttonBack'),
+                    label: this.$t('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
                     action: this.routeBackToSyncLibrary,
                     disabled: false,
                 },
                 {
                     key: 'next',
-                    label: this.$tc('sw-first-run-wizard.general.buttonNext'),
+                    label: this.$t('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToFinish,

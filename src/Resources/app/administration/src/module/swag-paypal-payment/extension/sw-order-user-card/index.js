@@ -36,7 +36,7 @@ Component.override('sw-order-user-card', {
         },
 
         payPalCarrierDescription() {
-            return this.$tc('sw-order-detail.payPalCarrierDescription', 1, { orderLink: this.payPalOrderLink });
+            return this.$t('sw-order-detail.payPalCarrierDescription', { orderLink: this.payPalOrderLink }, 1);
         },
     },
 

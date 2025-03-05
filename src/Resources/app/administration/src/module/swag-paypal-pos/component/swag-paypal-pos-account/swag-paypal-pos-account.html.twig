@@ -1,7 +1,7 @@
 {% block swag_paypal_pos_account %}
     <mt-card class="swag-paypal-pos-account"
              position-identifier="swag-paypal-pos-account"
-             :title="$tc('sw-sales-channel.detail.titleAccount')"
+             :title="$t('sw-sales-channel.detail.titleAccount')"
              :isLoading="isLoading">
 
         {% block swag_paypal_pos_account_grid %}
@@ -36,7 +36,7 @@
                                                       class="swag-paypal-pos-account__manage-link">
 
                                         {% block swag_paypal_pos_account_grid_container_info_link_text %}
-                                            {{ $tc('swag-paypal-pos.account.manageAccount') }}
+                                            {{ $t('swag-paypal-pos.account.manageAccount') }}
                                         {% endblock %}
 
                                     </sw-external-link>
@@ -49,7 +49,7 @@
                                                size="small"
                                                block
                                                variant="secondary">
-                                        {{ $tc('swag-paypal-pos.account.editConnection') }}
+                                        {{ $t('swag-paypal-pos.account.editConnection') }}
                                     </mt-button>
                                 {% endblock %}
                             </div>
@@ -83,7 +83,7 @@
                                 {% block swag_paypal_pos_account_grid_container_status_updated %}
                                     <div v-if="lastRun"
                                          class="swag-paypal-pos-account__status-updated">
-                                        {{ $tc('swag-paypal-pos.account.lastUpdated') }} {{ dateFilter(lastRun.updatedAt, {
+                                        {{ $t('swag-paypal-pos.account.lastUpdated') }} {{ dateFilter(lastRun.updatedAt, {
                                             hour: '2-digit',
                                             minute: '2-digit',
                                             second: '2-digit',

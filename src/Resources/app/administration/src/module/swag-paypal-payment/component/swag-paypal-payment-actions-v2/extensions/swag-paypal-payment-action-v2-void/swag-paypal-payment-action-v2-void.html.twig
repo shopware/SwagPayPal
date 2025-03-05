@@ -1,25 +1,25 @@
 {% block swag_paypal_paymemnt_action_v2_void %}
 <sw-modal
     variant="small"
-    :title="$tc(`swag-paypal-payment.modal.title.void`)"
+    :title="$t(`swag-paypal-payment.modal.title.void`)"
     @modal-close="closeModal"
 >
 
     {% block swag_paypal_paymemnt_action_v2_void_headline %}
-    <p>{{ $tc('swag-paypal-payment.voidAction.confirm.message') }}</p>
+    <p>{{ $t('swag-paypal-payment.voidAction.confirm.message') }}</p>
     {% endblock %}
 
     <template #modal-footer>
 
         {% block swag_paypal_paymemnt_action_v2_void_cancel_button %}
         <mt-button variant="secondary" @click="closeModal">
-            {{ $tc('global.default.no') }}
+            {{ $t('global.default.no') }}
         </mt-button>
         {% endblock %}
 
         {% block swag_paypal_paymemnt_action_v2_void_confirm_button %}
         <mt-button variant="primary" @click="voidPayment">
-            {{ $tc('swag-paypal-payment.voidAction.confirm.button.confirm') }}
+            {{ $t('swag-paypal-payment.voidAction.confirm.button.confirm') }}
         </mt-button>
         {% endblock %}
 

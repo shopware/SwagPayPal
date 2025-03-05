@@ -47,7 +47,7 @@ Component.register('swag-paypal-payment-action-v2-void', {
                 this.paypalPartnerAttributionId,
             ).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('swag-paypal-payment.voidAction.successMessage'),
+                    message: this.$t('swag-paypal-payment.voidAction.successMessage'),
                 });
                 this.isLoading = false;
                 this.closeModal();

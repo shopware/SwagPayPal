@@ -3,7 +3,7 @@
 
         {% block swag_paypal_pos_wizard_connection_headline %}
             <div class="swag-paypal-pos-wizard-connection__headline">
-                {{ $tc('swag-paypal-pos.wizard.connection.headerConnect') }}
+                {{ $t('swag-paypal-pos.wizard.connection.headerConnect') }}
             </div>
         {% endblock %}
 
@@ -12,8 +12,8 @@
                 v-model="salesChannel.extensions.paypalPosSalesChannel.apiKey"
                 class="swag-paypal-pos-wizard-connection__apikey-field"
                 required
-                :label="$tc('swag-paypal-pos.authentication.labelApiKey')"
-                :placeholder="$tc('swag-paypal-pos.authentication.placeholderApiKey')"
+                :label="$t('swag-paypal-pos.authentication.labelApiKey')"
+                :placeholder="$t('swag-paypal-pos.authentication.placeholderApiKey')"
                 @update:modelValue="forceUpdate"
             />
         {% endblock %}
@@ -23,7 +23,7 @@
 
                 {% block swag_paypal_pos_wizard_connection_apikey_description_text %}
                     <div class="swag-paypal-pos-wizard-connection__apikey-description-text">
-                        {{ $tc('swag-paypal-pos.authentication.apiKeyDescription') }}
+                        {{ $t('swag-paypal-pos.authentication.apiKeyDescription') }}
                     </div>
                 {% endblock %}
 
@@ -32,7 +32,7 @@
                                       class="swag-paypal-pos-wizard-connection__apikey-description-link">
 
                         {% block swag_paypal_pos_wizard_connection_apikey_description_link_text %}
-                            {{ $tc('swag-paypal-pos.authentication.buttonGenerateKey') }}
+                            {{ $t('swag-paypal-pos.authentication.buttonGenerateKey') }}
                         {% endblock %}
                     </sw-external-link>
                 {% endblock %}
@@ -41,7 +41,7 @@
 
         {% block swag_paypal_pos_wizard_connection_header_new_customer %}
             <div class="swag-paypal-pos-wizard-connection__new-customer-headline">
-                {{ $tc('swag-paypal-pos.wizard.connection.headerNewCustomer') }}
+                {{ $t('swag-paypal-pos.wizard.connection.headerNewCustomer') }}
             </div>
         {% endblock %}
 
@@ -65,12 +65,12 @@
                         <mt-button class="swag-paypal-pos-wizard-connection__pos-link"
                                    ghost
                                    size="small"
-                                   :link="$tc('swag-paypal-pos.wizard.connection.buttonCreateAccountLink')"
+                                   :link="$t('swag-paypal-pos.wizard.connection.buttonCreateAccountLink')"
                                    variant="secondary">
 
                             {% block swag_paypal_pos_wizard_connection_new_customer_button_text %}
                                 <span class="swag-paypal-pos-wizard-connection__pos-link-text">
-                                    {{ $tc('swag-paypal-pos.wizard.connection.buttonCreateAccount') }}
+                                    {{ $t('swag-paypal-pos.wizard.connection.buttonCreateAccount') }}
                                 </span>
                             {% endblock %}
 

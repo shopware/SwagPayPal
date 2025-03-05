@@ -74,7 +74,7 @@ export default Shopware.Component.wrapComponentConfig({
         async onClickNext(): Promise<boolean> {
             if (!this.hasCredentials) {
                 this.createNotificationError({
-                    message: this.$tc('swag-paypal-frw-credentials.messageNoCredentials'),
+                    message: this.$t('swag-paypal-frw-credentials.messageNoCredentials'),
                 });
 
                 return true;
@@ -95,7 +95,7 @@ export default Shopware.Component.wrapComponentConfig({
 
             if (!areValid) {
                 this.error = {
-                    detail: this.$tc('swag-paypal-frw-credentials.messageInvalidCredentials'),
+                    detail: this.$t('swag-paypal-frw-credentials.messageInvalidCredentials'),
                     code: 'ASD',
                 };
 

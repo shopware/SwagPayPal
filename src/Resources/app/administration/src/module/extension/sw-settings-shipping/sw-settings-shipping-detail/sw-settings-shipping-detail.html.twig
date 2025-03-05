@@ -8,8 +8,8 @@
         {% block sw_settings_shipping_detail_paypal_default_carrier_title %}
         <template #title>
             <div class="sw-card__title">
-                {{ $tc('swag-paypal-settings-shipping-carrier.cardTitle') }}
-                <sw-help-text :text="$tc('swag-paypal-settings-shipping-carrier.cardHelpText')" />
+                {{ $t('swag-paypal-settings-shipping-carrier.cardTitle') }}
+                <sw-help-text :text="$t('swag-paypal-settings-shipping-carrier.cardHelpText')" />
             </div>
         </template>
         {% endblock %}
@@ -17,7 +17,7 @@
         {% block sw_settings_shipping_detail_paypal_default_carrier_description %}
         <div
             class="swag-paypal-settings-shipping-carrier__description"
-            v-html="$tc('swag-paypal-settings-shipping-carrier.description')"
+            v-html="$t('swag-paypal-settings-shipping-carrier.description')"
         />
         {% endblock %}
 
@@ -25,9 +25,9 @@
         <sw-single-select
             ref="carrierSelect"
             v-model:value="payPalDefaultCarrier"
-            :label="$tc('swag-paypal-settings-shipping-carrier.inputLabel')"
-            :placeholder="$tc('swag-paypal-settings-shipping-carrier.inputPlaceholder')"
-            :help-text="$tc('swag-paypal-settings-shipping-carrier.inputHelpText')"
+            :label="$t('swag-paypal-settings-shipping-carrier.inputLabel')"
+            :placeholder="$t('swag-paypal-settings-shipping-carrier.inputPlaceholder')"
+            :help-text="$t('swag-paypal-settings-shipping-carrier.inputHelpText')"
             :options="carrierOptions"
             :search-function="() => carrierOptions"
             :error="carrierInvalidError"
@@ -60,7 +60,7 @@
                         v-if="commonCarriers.includes(item.value)"
                         class="swag-paypal-settings-shipping-carrier__carrier_info__common"
                     >
-                        {{ $tc('swag-paypal-settings-shipping-carrier.commonCarrierBadge') }}
+                        {{ $t('swag-paypal-settings-shipping-carrier.commonCarrierBadge') }}
                     </span>
                 </span>
             </template>
@@ -69,9 +69,9 @@
         <mt-text-field
             v-if="selectedCarrierOption?.value === 'OTHER'"
             v-model="payPalOtherCarrierName"
-            :label="$tc('swag-paypal-settings-shipping-carrier.inputLabelOther')"
-            :placeholder="$tc('swag-paypal-settings-shipping-carrier.inputPlaceholderOther')"
-            :help-text="$tc('swag-paypal-settings-shipping-carrier.inputHelpTextOther')"
+            :label="$t('swag-paypal-settings-shipping-carrier.inputLabelOther')"
+            :placeholder="$t('swag-paypal-settings-shipping-carrier.inputPlaceholderOther')"
+            :help-text="$t('swag-paypal-settings-shipping-carrier.inputHelpTextOther')"
         />
         {% endblock %}
 

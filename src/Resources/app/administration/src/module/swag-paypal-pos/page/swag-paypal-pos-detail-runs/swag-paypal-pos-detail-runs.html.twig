@@ -3,7 +3,7 @@
 
         {% block swag_paypal_pos_detail_runs_card %}
             <mt-card position-identifier="swag-paypal-pos-detail-runs"
-                     :title="$tc('swag-paypal-pos.detail.runs.title')"
+                     :title="$t('swag-paypal-pos.detail.runs.title')"
                      :isLoading="isLoading">
 
                 {% block swag_paypal_pos_detail_runs_card_grid %}
@@ -35,7 +35,7 @@
 
                             {% block swag_paypal_pos_detail_runs_other_grid_column_log %}
                                 <template #column-task="{ item }">
-                                    {{ $tc(`swag-paypal-pos.detail.runs.${item.task}Task`) }}
+                                    {{ $t(`swag-paypal-pos.detail.runs.${item.task}Task`) }}
                                 </template>
                             {% endblock %}
 
@@ -45,7 +45,7 @@
                                     {% block swag_paypal_pos_detail_runs_card_grid_column_state_label %}
                                         <sw-label appearance="pill"
                                                   :variant="getLabelVariant(item)">
-                                            {{ $tc(getLabel(item)) }}
+                                            {{ $t(getLabel(item)) }}
                                         </sw-label>
                                     {% endblock %}
 
@@ -74,7 +74,7 @@
                                     {% block swag_paypal_pos_detail_runs_card_grid_actions_details %}
                                         <sw-context-menu-item :disabled="item.logs.length <= 0"
                                                               @click="onShowModal(item.id)">
-                                            {{ $tc('swag-paypal-pos.detail.runs.actions.showDetails') }}
+                                            {{ $t('swag-paypal-pos.detail.runs.actions.showDetails') }}
                                         </sw-context-menu-item>
                                     {% endblock %}
 
@@ -89,8 +89,8 @@
                     <template #default>
                         <sw-empty-state v-if="total < 1"
                                         class="swag-paypal-pos-detail-runs__empty-state"
-                                        :title="$tc('swag-paypal-pos.detail.runs.emptyState.title')"
-                                        :subline="$tc('swag-paypal-pos.detail.runs.emptyState.message')" />
+                                        :title="$t('swag-paypal-pos.detail.runs.emptyState.title')"
+                                        :subline="$t('swag-paypal-pos.detail.runs.emptyState.message')" />
                     </template>
                 {% endblock %}
 
@@ -102,7 +102,7 @@
                                           align="center">
 
                                 {% block swag_paypal_pos_detail_runs_card_toolbar_container_text %}
-                                    <p>{{ $tc('swag-paypal-pos.detail.runs.toolbarText') }}</p>
+                                    <p>{{ $t('swag-paypal-pos.detail.runs.toolbarText') }}</p>
                                 {% endblock %}
 
                                 {% block swag_paypal_pos_detail_runs_card_toolbar_container_button %}
@@ -110,7 +110,7 @@
                                             :disabled="!acl.can('sales_channel.editor')"
                                             variant="secondary"
                                             @click="onClearLogs">
-                                        {{ $tc('swag-paypal-pos.detail.cleanLog') }}
+                                        {{ $t('swag-paypal-pos.detail.cleanLog') }}
                                     </mt-button>
                                 {% endblock %}
 
@@ -126,7 +126,7 @@
         {% block swag_paypal_pos_detail_runs_log_modal %}
             <sw-modal v-if="showModal"
                       class="swag-paypal-pos-detail-runs__modal"
-                      :title="$tc('swag-paypal-pos.detail.runs.title')"
+                      :title="$t('swag-paypal-pos.detail.runs.title')"
                       :isLoading="isLoading"
                       variant="large"
                       @modal-close="onCloseModal">
@@ -141,7 +141,7 @@
                         {% block swag_paypal_pos_detail_runs_log_modal_footer_close_modal_button %}
                             <mt-button variant="primary"
                                        @click="onCloseModal">
-                                {{ $tc('global.default.cancel') }}
+                                {{ $t('global.default.cancel') }}
                             </mt-button>
                         {% endblock %}
 

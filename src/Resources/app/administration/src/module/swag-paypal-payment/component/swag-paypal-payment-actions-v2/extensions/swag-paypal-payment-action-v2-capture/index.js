@@ -83,7 +83,7 @@ Component.register('swag-paypal-payment-action-v2-capture', {
                 this.isFinalCapture,
             ).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('swag-paypal-payment.captureAction.successMessage'),
+                    message: this.$t('swag-paypal-payment.captureAction.successMessage'),
                 });
                 this.isLoading = false;
                 this.$emit('modal-close');

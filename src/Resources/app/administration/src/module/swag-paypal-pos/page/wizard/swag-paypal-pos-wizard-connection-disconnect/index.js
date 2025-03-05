@@ -48,9 +48,9 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
 
         posUser() {
             if (this.isFetchingInformation) {
-                const firstName = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeFirstName');
-                const lastName = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeLastName');
-                const mail = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeMail');
+                const firstName = this.$t('swag-paypal-pos.wizard.connectionSuccess.fakeFirstName');
+                const lastName = this.$t('swag-paypal-pos.wizard.connectionSuccess.fakeLastName');
+                const mail = this.$t('swag-paypal-pos.wizard.connectionSuccess.fakeMail');
 
                 return {
                     firstName,
@@ -89,21 +89,21 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-pos.wizard.connectionDisconnect.modalTitle'));
+            this.$emit('frw-set-title', this.$t('swag-paypal-pos.wizard.connectionDisconnect.modalTitle'));
         },
 
         updateButtons() {
             const buttonConfig = [
                 {
                     key: 'cancel',
-                    label: this.$tc('global.default.cancel'),
+                    label: this.$t('global.default.cancel'),
                     position: 'right',
                     action: this.routeBackToConnectionSuccess,
                     disabled: false,
                 },
                 {
                     key: 'next',
-                    label: this.$tc('swag-paypal-pos.wizard.connectionDisconnect.disconnectButton'),
+                    label: this.$t('swag-paypal-pos.wizard.connectionDisconnect.disconnectButton'),
                     position: 'right',
                     variant: 'danger',
                     action: this.onDisconnect,
@@ -133,7 +133,7 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
                 this.$router.push({ name: 'swag.paypal.pos.wizard.connection' });
             }).catch(() => {
                 this.createNotificationError({
-                    message: this.$tc('swag-paypal-pos.wizard.connectionDisconnect.disconnectErrorMessage'),
+                    message: this.$t('swag-paypal-pos.wizard.connectionDisconnect.disconnectErrorMessage'),
                 });
             });
         },

@@ -15,13 +15,13 @@
 
                 {% block swag_paypal_pos_wizard_connection_success_headline %}
                     <div class="swag-paypal-pos-wizard-connection-success__headline">
-                        {{ $tc('swag-paypal-pos.wizard.connectionSuccess.headline') }}
+                        {{ $t('swag-paypal-pos.wizard.connectionSuccess.headline') }}
                     </div>
                 {% endblock %}
 
                 {% block swag_paypal_pos_wizard_connection_success_info %}
                     <div class="swag-paypal-pos-wizard-connection-success__info">
-                        {{ $tc('swag-paypal-pos.wizard.connectionSuccess.info') }}
+                        {{ $t('swag-paypal-pos.wizard.connectionSuccess.info') }}
                     </div>
                 {% endblock %}
 
@@ -62,7 +62,7 @@
                                            size="small"
                                            variant="secondary"
 @click="onDisconnect">
-                                    {{ $tc('swag-paypal-pos.wizard.connectionSuccess.disconnectButton') }}
+                                    {{ $t('swag-paypal-pos.wizard.connectionSuccess.disconnectButton') }}
                                 </mt-button>
                             {% endblock %}
                         </sw-container>
@@ -73,7 +73,7 @@
 
         {% block swag_paypal_pos_wizard_connection_success_disclaimer %}
             <div class="swag-paypal-pos-wizard-connection-success__disclaimer">
-                {{ $tc('swag-paypal-pos.wizard.connectionSuccess.disclaimer') }}
+                {{ $t('swag-paypal-pos.wizard.connectionSuccess.disclaimer') }}
             </div>
         {% endblock %}
     </div>
