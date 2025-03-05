@@ -4,8 +4,6 @@ import './swag-paypal-method-domain-association.scss';
 export default Shopware.Component.wrapComponentConfig({
     template,
 
-    compatConfig: Shopware.compatConfig,
-
     props: {
         paymentMethod: {
             type: Object as PropType<TEntity<'payment_method'>>,

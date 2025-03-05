@@ -199,7 +199,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame('/paypal/express/prepare-checkout', $expressCheckoutButtonData->getPrepareCheckoutUrl());
         static::assertStringContainsString('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
         static::assertSame('/paypal/express/prepare-cart', $expressCheckoutButtonData->getContextSwitchUrl());
-        static::assertSame('/paypal/error', $expressCheckoutButtonData->getAddErrorUrl());
+        static::assertSame('/paypal/handle-error', $expressCheckoutButtonData->getHandleErrorUrl());
         static::assertSame($addToCart ? '/checkout/cart' : '/checkout/register', $expressCheckoutButtonData->getCancelRedirectUrl());
         static::assertTrue($expressCheckoutButtonData->isShowPayLater());
         static::assertSame(['paypal', 'paylater', 'venmo'], $expressCheckoutButtonData->getFundingSources());

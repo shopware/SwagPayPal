@@ -39,14 +39,6 @@ class ProductExtension extends EntityExtension
         );
     }
 
-    /**
-     * @deprecated tag:v10.0.0 - Not needed for Shopware 6.7 anymore
-     */
-    public function getDefinitionClass(): string
-    {
-        return ProductDefinition::class;
-    }
-
     public function getEntityName(): string
     {
         return ProductDefinition::ENTITY_NAME;

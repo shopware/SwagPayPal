@@ -1,14 +1,12 @@
 import type * as PayPal from 'SwagPayPal/types';
 import template from './swag-paypal-settings-general.html.twig';
 import './swag-paypal-settings-general.scss';
-import { INTENTS, LANDING_PAGES } from '../../../../constant/swag-paypal-settings.constant';
+import { INTENTS, LANDING_PAGES } from 'SwagPayPal/constant/swag-paypal-settings.constant';
 
 const { Criteria } = Shopware.Data;
 
 export default Shopware.Component.wrapComponentConfig({
     template,
-
-    compatConfig: Shopware.compatConfig,
 
     inject: [
         'acl',

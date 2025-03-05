@@ -4,8 +4,6 @@ import './swag-paypal-payment-method.scss';
 export default Shopware.Component.wrapComponentConfig({
     template,
 
-    compatConfig: Shopware.compatConfig,
-
     inject: [
         'acl',
         'repositoryFactory',

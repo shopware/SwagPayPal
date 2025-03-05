@@ -19,7 +19,6 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute;
 use Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute;
 use Swag\PayPal\Storefront\Controller\PayPalController;
-use Swag\PayPal\Webhook\Registration\WebhookSystemConfigController;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -44,11 +43,6 @@ class OpenAPISchemaTest extends TestCase
         '\\' . ExpressCategoryRoute::class . '::load',
 
         '\\' . FilteredPaymentMethodRoute::class . '::load',
-
-        // we don't control the routes of the system config controller
-        '\\' . WebhookSystemConfigController::class . '::checkConfiguration',
-        '\\' . WebhookSystemConfigController::class . '::getConfiguration',
-        '\\' . WebhookSystemConfigController::class . '::getConfigurationValues',
     ];
 
     public const IGNORED_LOG_MESSAGES = [

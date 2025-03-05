@@ -3,8 +3,6 @@ import template from './swag-paypal-settings.html.twig';
 export default Shopware.Component.wrapComponentConfig({
     template,
 
-    compatConfig: Shopware.compatConfig,
-
     inject: [
         'acl',
     ],

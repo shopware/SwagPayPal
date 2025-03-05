@@ -9,19 +9,13 @@ namespace Swag\PayPal\OrdersApi\Builder\Util;
 
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 
 #[Package('checkout')]
 class AddressProvider
 {
-    /**
-     * @deprecated tag:v10.0.0 - parameter $customerAddress will strictly typed with CustomerAddressEntity|OrderAddressEntity
-     *
-     * @param OrderAddressEntity|CustomerAddressEntity $customerAddress
-     */
-    public function createAddress(Entity $customerAddress, Address $address): Address
+    public function createAddress(OrderAddressEntity|CustomerAddressEntity $customerAddress, Address $address): Address
     {
         $address->setAddressLine1($customerAddress->getStreet());
 

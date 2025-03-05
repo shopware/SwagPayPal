@@ -92,8 +92,6 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
                 [PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true],
                 RouterInterface::ABSOLUTE_URL
             ),
-            /** @deprecated tag:v10.0.0 - Will be removed, use handleErrorUrl instead */
-            'addErrorUrl' => $this->router->generate('frontend.paypal.error'),
             'handleErrorUrl' => $this->router->generate('frontend.paypal.handle-error'),
             'cancelRedirectUrl' => $this->router->generate($addProductToCart ? 'frontend.checkout.cart.page' : 'frontend.checkout.register.page'),
             'showPayLater' => $this->showPayLater($salesChannelId, $availabilityContext),

@@ -39,11 +39,6 @@ class ExpressCheckoutButtonData extends AbstractScriptData
 
     protected string $checkoutConfirmUrl;
 
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-     */
-    protected string $addErrorUrl;
-
     protected string $handleErrorUrl;
 
     protected string $cancelRedirectUrl;
@@ -183,22 +178,6 @@ class ExpressCheckoutButtonData extends AbstractScriptData
     public function setCheckoutConfirmUrl(string $checkoutConfirmUrl): void
     {
         $this->checkoutConfirmUrl = $checkoutConfirmUrl;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-     */
-    public function getAddErrorUrl(): string
-    {
-        return $this->addErrorUrl;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-     */
-    public function setAddErrorUrl(string $addErrorUrl): void
-    {
-        $this->addErrorUrl = $addErrorUrl;
     }
 
     public function getHandleErrorUrl(): string

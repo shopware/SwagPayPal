@@ -9,7 +9,6 @@ namespace Swag\PayPal\Webhook\Registration;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
-use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
 use Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigMultipleChangedEvent;
@@ -73,11 +72,9 @@ class WebhookSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (Feature::isActive('PAYPAL_SETTINGS_TWEAKS')) {
-            /** @var array<string, array<string, mixed>> $config */
-            $config = $event->getConfig();
-            $this->webhookSystemConfigHelper->checkWebhookBefore($config);
-        }
+        /** @var array<string, array<string, mixed>> $config */
+        $config = $event->getConfig();
+        $this->webhookSystemConfigHelper->checkWebhookBefore($config);
     }
 
     /**
@@ -92,8 +89,6 @@ class WebhookSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (Feature::isActive('PAYPAL_SETTINGS_TWEAKS')) {
-            $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($event->getConfig()));
-        }
+        $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($event->getConfig()));
     }
 }

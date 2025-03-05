@@ -22,20 +22,11 @@ class AbstractCheckoutData extends AbstractScriptData
 
     protected string $createOrderUrl;
 
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-     */
-    protected string $addErrorUrl;
-
     protected string $handleErrorUrl;
 
     protected bool $preventErrorReload;
 
     protected ?string $orderId = null;
-
-    protected ?string $accountOrderEditCancelledUrl = null;
-
-    protected ?string $accountOrderEditFailedUrl = null;
 
     protected string $brandName;
 
@@ -69,22 +60,6 @@ class AbstractCheckoutData extends AbstractScriptData
         $this->createOrderUrl = $createOrderUrl;
     }
 
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-     */
-    public function getAddErrorUrl(): string
-    {
-        return $this->addErrorUrl;
-    }
-
-    /**
-     * @deprecated tag:v10.0.0 - Will be removed, use {@link handleErrorUrl} instead
-     */
-    public function setAddErrorUrl(string $addErrorUrl): void
-    {
-        $this->addErrorUrl = $addErrorUrl;
-    }
-
     public function getHandleErrorUrl(): string
     {
         return $this->handleErrorUrl;
@@ -113,26 +88,6 @@ class AbstractCheckoutData extends AbstractScriptData
     public function setOrderId(?string $orderId): void
     {
         $this->orderId = $orderId;
-    }
-
-    public function getAccountOrderEditCancelledUrl(): ?string
-    {
-        return $this->accountOrderEditCancelledUrl;
-    }
-
-    public function setAccountOrderEditCancelledUrl(?string $accountOrderEditCancelledUrl): void
-    {
-        $this->accountOrderEditCancelledUrl = $accountOrderEditCancelledUrl;
-    }
-
-    public function getAccountOrderEditFailedUrl(): ?string
-    {
-        return $this->accountOrderEditFailedUrl;
-    }
-
-    public function setAccountOrderEditFailedUrl(?string $accountOrderEditFailedUrl): void
-    {
-        $this->accountOrderEditFailedUrl = $accountOrderEditFailedUrl;
     }
 
     public function getButtonShape(): string

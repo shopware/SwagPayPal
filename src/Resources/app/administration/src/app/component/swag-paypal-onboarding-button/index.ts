@@ -8,8 +8,6 @@ import type * as PayPal from 'SwagPayPal/types';
 export default Shopware.Component.wrapComponentConfig({
     template,
 
-    compatConfig: Shopware.compatConfig,
-
     inject: [
         'acl',
         'SwagPayPalSettingsService',

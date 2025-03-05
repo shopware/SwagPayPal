@@ -38,16 +38,6 @@ class Definition extends PosStruct
 
     /**
      * @param Property[] $properties
-     *
-     * @deprecated tag:v10.0.0 - Use setProperties instead
-     */
-    public function setPropertys(array $properties): void
-    {
-        $this->properties = $properties;
-    }
-
-    /**
-     * @param Property[] $properties
      */
     public function setProperties(array $properties): void
     {

@@ -29,14 +29,6 @@ class ProductStreamExtension extends EntityExtension
         );
     }
 
-    /**
-     * @deprecated tag:v10.0.0 - Not needed for Shopware 6.7 anymore
-     */
-    public function getDefinitionClass(): string
-    {
-        return ProductStreamDefinition::class;
-    }
-
     public function getEntityName(): string
     {
         return ProductStreamDefinition::ENTITY_NAME;

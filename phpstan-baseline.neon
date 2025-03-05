@@ -6,11 +6,6 @@ parameters:
 			path: src/Checkout/Card/Exception/CardValidationFailedException.php
 
 		-
-			message: "#^Call to deprecated method get\\(\\) of class Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Entity:\ntag:v6.7.0 - reason:exception\\-change Thrown exception will change from InternalFieldAccessNotAllowedException to DataAbstractionLayerException$#"
-			count: 1
-			path: src/Checkout/ExpressCheckout/Service/ExpressCustomerService.php
-
-		-
 			message: "#^Usage of ALTER TABLE \\.\\. AFTER is disallowed in migrations to avoid implicit temporary table usage\\.$#"
 			count: 1
 			path: src/Migration/Migration1706111604AddCustomerIdToVault.php
@@ -77,7 +72,7 @@ parameters:
 
 		-
 			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\System\\\\SalesChannel\\\\NoContentResponse\" over abstract one$#"
-			count: 3
+			count: 2
 			path: src/Storefront/Controller/PayPalController.php
 
 		-

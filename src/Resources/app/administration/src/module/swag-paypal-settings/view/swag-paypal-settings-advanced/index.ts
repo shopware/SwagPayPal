@@ -1,11 +1,9 @@
 import template from './swag-paypal-settings-advanced.html.twig';
 import './swag-paypal-settings-advanced.scss';
-import { COUNTRY_OVERRIDES } from '../../../../constant/swag-paypal-settings.constant';
+import { COUNTRY_OVERRIDES } from 'SwagPayPal/constant/swag-paypal-settings.constant';
 
 export default Shopware.Component.wrapComponentConfig({
     template,
-
-    compatConfig: Shopware.compatConfig,
 
     computed: {
         settingsStore() {

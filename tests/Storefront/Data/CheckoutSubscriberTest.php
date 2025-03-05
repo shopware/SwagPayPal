@@ -471,22 +471,13 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame($paymentMethodId, $extension->getPaymentMethodId());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $extension->getIntent());
         static::assertSame('/paypal/create-order', $extension->getCreateOrderUrl());
-        static::assertSame('/paypal/error', $extension->getAddErrorUrl());
         static::assertSame('/paypal/handle-error', $extension->getHandleErrorUrl());
 
         if ($event instanceof AccountEditOrderPageLoadedEvent) {
-            $accountOrderEditUrl = $extension->getAccountOrderEditCancelledUrl();
-            static::assertNotNull($accountOrderEditUrl);
-            static::assertStringContainsString('/account/order/edit', $accountOrderEditUrl);
-            $accountOrderEditUrl = $extension->getAccountOrderEditFailedUrl();
-            static::assertNotNull($accountOrderEditUrl);
-            static::assertStringContainsString('/account/order/edit', $accountOrderEditUrl);
             $orderId = $extension->getOrderId();
             static::assertNotNull($orderId);
             static::assertSame(ConstantsForTesting::VALID_ORDER_ID, $orderId);
         } else {
-            static::assertNull($extension->getAccountOrderEditCancelledUrl());
-            static::assertNull($extension->getAccountOrderEditFailedUrl());
             static::assertNull($extension->getOrderId());
         }
     }
