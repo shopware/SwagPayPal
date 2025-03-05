@@ -21,8 +21,9 @@ class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterf
     /**
      * @internal
      */
-    public function __construct(private readonly PayPalClientFactoryInterface $payPalClientFactory)
-    {
+    public function __construct(
+        private readonly PayPalClientFactoryInterface $payPalClientFactory,
+    ) {
     }
 
     /**
