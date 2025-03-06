@@ -1,6 +1,7 @@
 # 8.7.0
 - PPI-1044 - Improved compatibility of Vaulting with Store API usage and Headless setups
 - PPI-1076 - Improved information passing in Express Checkout API calls
+- PPI-1077 - Improved the availability for Google Pay and Apple Pay
 
 # 8.6.5
 - PPI-1025 - Improves the performance of the installment banner in the Storefront
