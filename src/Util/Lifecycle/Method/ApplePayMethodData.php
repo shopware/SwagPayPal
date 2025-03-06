@@ -25,6 +25,9 @@ class ApplePayMethodData extends AbstractMethodData implements CheckoutDataMetho
 
     public const PAYPAL_APPLE_PAY_FIELD_DATA_EXTENSION_ID = 'payPalApplePayFieldData';
 
+    /**
+     * @deprecated tag:v10.0.0 - Will be removed, no longer used
+     */
     public const AVAILABLE_COUNTRIES = ['AU', 'AT', 'BE', 'BG', 'CA', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'US', 'GB'];
 
     public const AVAILABLE_CURRENCIES = ['AUD', 'BRL', 'CAD', 'CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'HKD', 'HUF', 'ILS', 'JPY', 'MXN', 'NOK', 'NZD', 'PHP', 'PLN', 'SEK', 'SGD', 'THB', 'TWD', 'USD'];
@@ -66,8 +69,7 @@ class ApplePayMethodData extends AbstractMethodData implements CheckoutDataMetho
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return \in_array($availabilityContext->getCurrencyCode(), self::AVAILABLE_CURRENCIES, true)
-            && \in_array($availabilityContext->getBillingCountryCode(), self::AVAILABLE_COUNTRIES, true);
+        return \in_array($availabilityContext->getCurrencyCode(), self::AVAILABLE_CURRENCIES, true);
     }
 
     public function getInitialState(): bool
