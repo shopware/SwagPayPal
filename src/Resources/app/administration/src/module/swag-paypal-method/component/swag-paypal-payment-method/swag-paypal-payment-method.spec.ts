@@ -34,9 +34,6 @@ async function createWrapper(
                     formattedHandlerIdentifier: 'handler_swag_paypal',
                 }, paymentMethod) as TEntity<'payment_method'>,
             },
-            provide: {
-                repositoryFactory: {},
-            },
         },
     );
 }
