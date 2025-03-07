@@ -89,16 +89,16 @@ Component.register('swag-paypal-pos-status-view', {
         },
 
         statusTitle() {
-            let title = this.$tc(`swag-paypal-pos.detail.overview.status.message.${this.status}`);
+            let title = this.$t(`swag-paypal-pos.detail.overview.status.message.${this.status}`);
             if (this.incompleteLastRun) {
-                const task = this.$tc(`swag-paypal-pos.detail.overview.status.task.${this.lastFinishedRun.task}`);
+                const task = this.$t(`swag-paypal-pos.detail.overview.status.task.${this.lastFinishedRun.task}`);
                 if (!this.isSyncing) {
                     title += ` (${task})`;
                 }
             }
 
             if (this.lastFinishedRun && this.lastFinishedRun.status === 'cancelled' && !this.isSyncing) {
-                title = this.$tc('swag-paypal-pos.detail.overview.status.message.aborted');
+                title = this.$t('swag-paypal-pos.detail.overview.status.message.aborted');
             }
 
             return title;

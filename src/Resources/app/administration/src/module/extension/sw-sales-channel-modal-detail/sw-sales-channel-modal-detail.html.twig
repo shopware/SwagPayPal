@@ -3,10 +3,10 @@
     v-if="isPayPalPosSalesChannel(detailType.id)"
     class="sw-sales-channel-modal-detail__header-icon"
 >
-     <img
-         class="swag-paypal-pos-modal-detail__icon"
-         :src="assetFilter('swagpaypal/static/img/paypal-pos-logo.svg')"
-     >
+    <img
+        class="swag-paypal-pos-modal-detail__icon"
+        :src="paypalPosLogo"
+    >
 </span>
 
 <template v-else>
@@ -23,7 +23,7 @@
         {{ detailType.translated.name }}
     </h4>
     <div class="sw-sales-channel-modal-detail__header-manufacturer">
-        {{ $tc('swag-paypal-pos.general.salesChannelDetailDescription.manufacturer') }}
+        {{ $t('swag-paypal-pos.general.salesChannelDetailDescription.manufacturer') }}
     </div>
 </div>
 
@@ -35,7 +35,7 @@
 {% block sw_sales_channel_modal_detail_description %}
 <template v-if="isPayPalPosSalesChannel(detailType.id)">
     <h4 class="sw-sales-channel-modal-detail__description-long-title">
-        {{ $tc('swag-paypal-pos.general.salesChannelDetailDescription.title') }}
+        {{ $t('swag-paypal-pos.general.salesChannelDetailDescription.title') }}
     </h4>
     <div
         v-if="detailType.translated.descriptionLong"

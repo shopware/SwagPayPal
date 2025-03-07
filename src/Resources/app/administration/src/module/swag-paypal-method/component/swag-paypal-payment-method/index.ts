@@ -6,7 +6,6 @@ export default Shopware.Component.wrapComponentConfig({
 
     inject: [
         'acl',
-        'repositoryFactory',
     ],
 
     emits: ['update:active'],

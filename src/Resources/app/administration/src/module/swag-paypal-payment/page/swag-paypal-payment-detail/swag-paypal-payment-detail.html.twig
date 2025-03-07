@@ -11,8 +11,8 @@
         {% block swag_paypal_payment_detail_error_page_cancelled %}
         <sw-empty-state
             v-if="stateFailedCancelled"
-            :title="$tc('swag-paypal-payment.errorPage.title')"
-            :subline="$tc('swag-paypal-payment.errorPage.canceledPaymentContent')"
+            :title="$t('swag-paypal-payment.errorPage.title')"
+            :subline="$t('swag-paypal-payment.errorPage.canceledPaymentContent')"
             icon="regular-shopping-bag"
             color="#A092F0"
         />
@@ -21,8 +21,8 @@
         {% block swag_paypal_payment_detail_error_page_other %}
         <sw-empty-state
             v-else
-            :title="$tc('swag-paypal-payment.errorPage.title')"
-            :subline="$tc('swag-paypal-payment.errorPage.other')"
+            :title="$t('swag-paypal-payment.errorPage.title')"
+            :subline="$t('swag-paypal-payment.errorPage.other')"
             icon="regular-shopping-bag"
             color="#A092F0"
         />

@@ -1,6 +1,6 @@
 {% block swag_paypal_pos_getting_started %}
-    <sw-card position-identifier="swag-paypal-pos-getting-started"
-             :title="$tc('swag-paypal-pos.gettingStarted.cardTitle')">
+    <mt-card position-identifier="swag-paypal-pos-getting-started"
+             :title="$t('swag-paypal-pos.gettingStarted.cardTitle')">
 
         {% block swag_paypal_pos_getting_started_reader %}
             <sw-container
@@ -11,8 +11,8 @@
 
                 {% block swag_paypal_pos_getting_started_reader_image %}
                     <img class="swag-paypal-pos-getting-started__image"
-                         :src="assetFilter('swagpaypal/static/img/paypal-pos-reader.png')"
-                         :alt="$tc('swag-paypal-pos.gettingStarted.readerImageAlt')">
+                         :src="paypalPosReader"
+                         :alt="$t('swag-paypal-pos.gettingStarted.readerImageAlt')">
                 {% endblock %}
 
                 {% block swag_paypal_pos_getting_started_reader_description %}
@@ -20,18 +20,18 @@
 
                         {% block swag_paypal_pos_getting_started_reader_description_headline %}
                             <div class="swag-paypal-pos-getting-started__description-headline">
-                                {{ $tc('swag-paypal-pos.gettingStarted.readerHeadline') }}
+                                {{ $t('swag-paypal-pos.gettingStarted.readerHeadline') }}
                             </div>
                         {% endblock %}
 
                         {% block swag_paypal_pos_getting_started_reader_description_text %}
                             <div class="swag-paypal-pos-getting-started__description-text">
-                                {{ $tc('swag-paypal-pos.gettingStarted.readerText') }}
+                                {{ $t('swag-paypal-pos.gettingStarted.readerText') }}
 
                                 {% block swag_paypal_pos_getting_started_reader_description_link %}
-                                    <sw-external-link :href="$tc('swag-paypal-pos.gettingStarted.readerLinkTarget')"
+                                    <sw-external-link :href="$t('swag-paypal-pos.gettingStarted.readerLinkTarget')"
                                                       class="swag-paypal-pos-getting-started__description-text-link">
-                                        {{ $tc('swag-paypal-pos.gettingStarted.readerLinkText') }}
+                                        {{ $t('swag-paypal-pos.gettingStarted.readerLinkText') }}
                                     </sw-external-link>
                                 {% endblock %}
                             </div>
@@ -50,8 +50,8 @@
 
                 {% block swag_paypal_pos_getting_started_app_image %}
                     <img class="swag-paypal-pos-getting-started__image"
-                         :src="assetFilter('swagpaypal/static/img/paypal-pos-app.png')"
-                         :alt="$tc('swag-paypal-pos.gettingStarted.appImageAlt')">
+                         :src="paypalPosApp"
+                         :alt="$t('swag-paypal-pos.gettingStarted.appImageAlt')">
                 {% endblock %}
 
                 {% block swag_paypal_pos_getting_started_app_description %}
@@ -59,17 +59,17 @@
 
                         {% block swag_paypal_pos_getting_started_app_description_headline %}
                             <div class="swag-paypal-pos-getting-started__description-headline">
-                                {{ $tc('swag-paypal-pos.gettingStarted.appHeadline') }}
+                                {{ $t('swag-paypal-pos.gettingStarted.appHeadline') }}
                             </div>
                         {% endblock %}
 
                         {% block swag_paypal_pos_getting_started_app_description_text %}
                             <div class="swag-paypal-pos-getting-started__description-text"
-                                 v-html="$tc('swag-paypal-pos.gettingStarted.appText')" />
+                                 v-html="$t('swag-paypal-pos.gettingStarted.appText')" />
                         {% endblock %}
                     </div>
                 {% endblock %}
             </sw-container>
         {% endblock %}
-    </sw-card>
+    </mt-card>
 {% endblock %}

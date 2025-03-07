@@ -9,6 +9,8 @@ Component.register('swag-paypal-pos-boolean-radio', {
 
     inject: ['feature'],
 
+    emits: ['update:value'],
+
     props: {
         value: {
             type: Boolean,

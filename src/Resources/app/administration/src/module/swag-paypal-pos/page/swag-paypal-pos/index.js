@@ -38,9 +38,9 @@ Component.register('swag-paypal-pos', {
     computed: {
         title() {
             return [
-                this.$tc('global.sw-admin-menu.textShopwareAdmin'),
-                this.$tc('sw-sales-channel.general.titleMenuItems'),
-                this.$tc('swag-paypal-pos.general.moduleTitle'),
+                this.$t('global.sw-admin-menu.textShopwareAdmin'),
+                this.$t('sw-sales-channel.general.titleMenuItems'),
+                this.$t('swag-paypal-pos.general.moduleTitle'),
             ].reverse().join(' | ');
         },
 

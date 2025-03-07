@@ -1,5 +1,6 @@
 import template from './swag-paypal-pos-wizard-connection.html.twig';
 import './swag-paypal-pos-wizard-connection.scss';
+import paypalPosLogoFull from 'SwagPayPal/static/img/paypal-pos-logo-full.png?url';
 
 const { Component } = Shopware;
 
@@ -9,6 +10,8 @@ Component.register('swag-paypal-pos-wizard-connection', {
     inject: [
         'SwagPayPalPosSettingApiService',
     ],
+
+    emits: ['frw-set-title', 'buttons-update', 'toggle-loading'],
 
     mixins: [
         Shopware.Mixin.getByName('notification'),
@@ -34,6 +37,7 @@ Component.register('swag-paypal-pos-wizard-connection', {
 
     data() {
         return {
+            paypalPosLogoFull,
             isConnecting: false,
             apiKeyUrl: this.SwagPayPalPosSettingApiService.generateApiUrl(),
         };
@@ -49,12 +53,6 @@ Component.register('swag-paypal-pos-wizard-connection', {
         },
     },
 
-    computed: {
-        assetFilter() {
-            return Shopware.Filter.getByName('asset');
-        },
-    },
-
     created() {
         this.createdComponent();
     },
@@ -66,14 +64,14 @@ Component.register('swag-paypal-pos-wizard-connection', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-pos.wizard.connection.modalTitle'));
+            this.$emit('frw-set-title', this.$t('swag-paypal-pos.wizard.connection.modalTitle'));
         },
 
         updateButtons() {
             const buttonConfig = [
                 {
                     key: 'next',
-                    label: this.$tc('sw-first-run-wizard.general.buttonNext'),
+                    label: this.$t('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToConnectionSuccess,

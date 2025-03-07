@@ -3,7 +3,6 @@ import './swag-paypal-payment-detail.scss';
 
 const { Component, Filter } = Shopware;
 const { isEmpty } = Shopware.Utils.types;
-const { mapState } = Component.getComponentHelper();
 
 Component.register('swag-paypal-payment-detail', {
     template,
@@ -34,7 +33,9 @@ Component.register('swag-paypal-payment-detail', {
     },
 
     computed: {
-        ...mapState('swOrderDetail', ['order']),
+        order() {
+            return Shopware.Store.get('swOrderDetail').order;
+        },
 
         orderTransaction() {
             return this.order.transactions.last();
@@ -103,13 +104,13 @@ Component.register('swag-paypal-payment-detail', {
         handleError(errorResponse) {
             try {
                 this.createNotificationError({
-                    message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${
+                    message: `${this.$t('swag-paypal-payment.paymentDetails.error.title')}: ${
                         errorResponse.response.data.errors[0].detail}`,
                     autoClose: false,
                 });
             } catch (e) {
                 this.createNotificationError({
-                    message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${errorResponse.message}`,
+                    message: `${this.$t('swag-paypal-payment.paymentDetails.error.title')}: ${errorResponse.message}`,
                     autoClose: false,
                 });
             } finally {

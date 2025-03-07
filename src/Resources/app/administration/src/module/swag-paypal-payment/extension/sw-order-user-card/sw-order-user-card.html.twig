@@ -4,13 +4,13 @@
     {% block sw_detail_base_secondary_info_order_overview_paypal_carrier %}
     <template v-if="payPalResourceId">
         <dt>
-            {{ $tc('sw-order-detail.payPalCarrierLabel') }}
-            <sw-help-text :text="$tc('sw-order-detail.payPalCarrierHelpText')" />
+            {{ $t('sw-order-detail.payPalCarrierLabel') }}
+            <sw-help-text :text="$t('sw-order-detail.payPalCarrierHelpText')" />
         </dt>
 
         <dd>
             <div>
-                {{ payPalCarrier ? payPalCarrier : $tc('sw-order-detail.payPalCarrierPlaceholder') }}
+                {{ payPalCarrier ? payPalCarrier : $t('sw-order-detail.payPalCarrierPlaceholder') }}
             </div>
 
             <div

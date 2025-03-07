@@ -6,7 +6,7 @@
 
                 {% block swag_paypal_pos_wizard_connection_success_icon %}
                     <div class="swag-paypal-pos-wizard-connection-success__icon-wrapper">
-                        <sw-icon class="swag-paypal-pos-wizard-connection-success__icon"
+                        <mt-icon class="swag-paypal-pos-wizard-connection-success__icon"
                                  name="regular-thumbs-up"
                                  size="80px"
                                  color="#37D046" />
@@ -15,18 +15,18 @@
 
                 {% block swag_paypal_pos_wizard_connection_success_headline %}
                     <div class="swag-paypal-pos-wizard-connection-success__headline">
-                        {{ $tc('swag-paypal-pos.wizard.connectionSuccess.headline') }}
+                        {{ $t('swag-paypal-pos.wizard.connectionSuccess.headline') }}
                     </div>
                 {% endblock %}
 
                 {% block swag_paypal_pos_wizard_connection_success_info %}
                     <div class="swag-paypal-pos-wizard-connection-success__info">
-                        {{ $tc('swag-paypal-pos.wizard.connectionSuccess.info') }}
+                        {{ $t('swag-paypal-pos.wizard.connectionSuccess.info') }}
                     </div>
                 {% endblock %}
 
                 {% block swag_paypal_pos_wizard_connection_success_user %}
-                    <sw-card class="swag-paypal-pos-wizard-connection-success__user"
+                    <mt-card class="swag-paypal-pos-wizard-connection-success__user"
                              position-identifier="swag-paypal-pos-wizard-connection-success-user"
                              :isLoading="isFetchingInformation">
                         <sw-container class="swag-paypal-pos-wizard-connection-success__user-container"
@@ -57,22 +57,23 @@
                             {% endblock %}
 
                             {% block swag_paypal_pos_wizard_connection_success_user_disconnect_button %}
-                                <sw-button class="swag-paypal-pos-wizard-connection-success__user-disconnect"
-                                           variant="ghost"
+                                <mt-button class="swag-paypal-pos-wizard-connection-success__user-disconnect"
+                                           ghost
                                            size="small"
-                                           @click="onDisconnect">
-                                    {{ $tc('swag-paypal-pos.wizard.connectionSuccess.disconnectButton') }}
-                                </sw-button>
+                                           variant="secondary"
+@click="onDisconnect">
+                                    {{ $t('swag-paypal-pos.wizard.connectionSuccess.disconnectButton') }}
+                                </mt-button>
                             {% endblock %}
                         </sw-container>
-                    </sw-card>
+                    </mt-card>
                 {% endblock %}
             </div>
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_connection_success_disclaimer %}
             <div class="swag-paypal-pos-wizard-connection-success__disclaimer">
-                {{ $tc('swag-paypal-pos.wizard.connectionSuccess.disclaimer') }}
+                {{ $t('swag-paypal-pos.wizard.connectionSuccess.disclaimer') }}
             </div>
         {% endblock %}
     </div>

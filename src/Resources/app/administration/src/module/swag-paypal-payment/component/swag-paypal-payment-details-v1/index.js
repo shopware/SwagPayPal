@@ -37,42 +37,42 @@ Component.register('swag-paypal-payment-details-v1', {
             return [
                 {
                     property: 'type',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.type'),
+                    label: this.$t('swag-paypal-payment.transactionHistory.types.type'),
                     rawData: true,
                 },
                 {
                     property: 'total',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.amount'),
+                    label: this.$t('swag-paypal-payment.transactionHistory.types.amount'),
                     rawData: true,
                 },
                 {
                     property: 'id',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.trackingId'),
+                    label: this.$t('swag-paypal-payment.transactionHistory.types.trackingId'),
                     rawData: true,
                 },
                 {
                     property: 'status',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.state'),
+                    label: this.$t('swag-paypal-payment.transactionHistory.types.state'),
                     rawData: true,
                 },
                 {
                     property: 'transactionFee',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.transactionFee'),
+                    label: this.$t('swag-paypal-payment.transactionHistory.types.transactionFee'),
                     rawData: true,
                 },
                 {
                     property: 'paymentMode',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.paymentMode'),
+                    label: this.$t('swag-paypal-payment.transactionHistory.types.paymentMode'),
                     rawData: true,
                 },
                 {
                     property: 'create',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.createTime'),
+                    label: this.$t('swag-paypal-payment.transactionHistory.types.createTime'),
                     rawData: true,
                 },
                 {
                     property: 'update',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.updateTime'),
+                    label: this.$t('swag-paypal-payment.transactionHistory.types.updateTime'),
                     rawData: true,
                 },
             ];
@@ -134,7 +134,7 @@ Component.register('swag-paypal-payment-details-v1', {
 
             this.relatedResources.push({
                 id: relatedResource.id,
-                type: this.$tc(`swag-paypal-payment.transactionHistory.states.${type}`),
+                type: this.$t(`swag-paypal-payment.transactionHistory.states.${type}`),
                 total: `${relatedResource.amount.total} ${currency}`,
                 create: this.formatDate(relatedResource.create_time),
                 createRaw: relatedResource.create_time,

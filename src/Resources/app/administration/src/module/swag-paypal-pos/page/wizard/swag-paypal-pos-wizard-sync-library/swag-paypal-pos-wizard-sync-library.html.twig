@@ -6,10 +6,10 @@
                   path="swag-paypal-pos.wizard.syncLibrary.header"
                   tag="div">
                 <template #shopwareProducts>
-                    <span>{{ $tc('swag-paypal-pos.wizard.syncLibrary.shopwareProducts', shopwareProductsCount) }}</span>
+                    <span>{{ $t('swag-paypal-pos.wizard.syncLibrary.shopwareProducts', shopwareProductsCount) }}</span>
                 </template>
                 <template #posProducts>
-                    <span>{{ $tc('swag-paypal-pos.wizard.syncLibrary.posProducts', posProductsCount) }}</span>
+                    <span>{{ $t('swag-paypal-pos.wizard.syncLibrary.posProducts', posProductsCount) }}</span>
                 </template>
             </i18n>
         {% endblock %}
@@ -18,13 +18,13 @@
             <sw-radio-field
                 v-model:value="salesChannel.extensions.paypalPosSalesChannel.replace"
                 class="swag-paypal-pos-boolean-radio"
-                :label="$tc('swag-paypal-pos.wizard.syncLibrary.description')"
+                :label="$t('swag-paypal-pos.wizard.syncLibrary.description')"
                 :options="options" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_sync_library_disclaimer %}
             <div class="swag-paypal-pos-wizard-sync-library__disclaimer">
-                {{ $tc('swag-paypal-pos.wizard.syncLibrary.disclaimer') }}
+                {{ $t('swag-paypal-pos.wizard.syncLibrary.disclaimer') }}
             </div>
         {% endblock %}
     </div>

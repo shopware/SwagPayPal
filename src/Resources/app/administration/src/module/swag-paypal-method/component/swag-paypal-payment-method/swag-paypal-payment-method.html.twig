@@ -48,11 +48,11 @@
         </router-link>
     </div>
 
-    <sw-switch-field
+    <mt-switch
         :label="$t('swag-paypal-method.switch.label')"
         :disabled="paymentMethodToggleDisabled || !acl.can('swag_paypal.editor')"
-        :value="paymentMethod.active"
-        @update:value="onUpdateActive"
+        :model-value="paymentMethod.active"
+        @update:model-value="onUpdateActive"
     />
 
     <swag-paypal-method-domain-association

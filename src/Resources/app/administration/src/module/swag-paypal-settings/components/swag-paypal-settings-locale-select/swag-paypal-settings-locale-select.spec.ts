@@ -15,7 +15,14 @@ async function createWrapper(value: LOCALE | undefined = undefined) {
                     $te: () => true,
                 },
                 stubs: {
-                    'sw-single-select': await wrapTestComponent('sw-single-select', { sync: true }),
+                    'sw-single-select': {
+                        props: ['value'],
+                        emit: ['update:value'],
+                        template: '<div class="sw-single-select"></div>',
+                    },
+                    'sw-highlight-text': await wrapTestComponent('sw-highlight-text', { sync: true }),
+                    'router-link': true,
+                    'sw-loader': true,
                 },
             },
         },
