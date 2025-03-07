@@ -1,7 +1,7 @@
 {% block swag_paypal_pos_account %}
-    <sw-card class="swag-paypal-pos-account"
+    <mt-card class="swag-paypal-pos-account"
              position-identifier="swag-paypal-pos-account"
-             :title="$tc('sw-sales-channel.detail.titleAccount')"
+             :title="$t('sw-sales-channel.detail.titleAccount')"
              :isLoading="isLoading">
 
         {% block swag_paypal_pos_account_grid %}
@@ -10,7 +10,7 @@
                 {% block swag_paypal_pos_account_grid_logo %}
                     <img class="swag-paypal-pos-account__logo"
                          alt="Zettle Logo"
-                         :src="assetFilter('/swagpaypal/static/img/paypal-pos-logo.svg')">
+                         :src="paypalPosLogo">
                 {% endblock %}
 
                 {% block swag_paypal_pos_account_grid_container %}
@@ -36,7 +36,7 @@
                                                       class="swag-paypal-pos-account__manage-link">
 
                                         {% block swag_paypal_pos_account_grid_container_info_link_text %}
-                                            {{ $tc('swag-paypal-pos.account.manageAccount') }}
+                                            {{ $t('swag-paypal-pos.account.manageAccount') }}
                                         {% endblock %}
 
                                     </sw-external-link>
@@ -44,12 +44,13 @@
 
                                 {% block swag_paypal_pos_account_grid_container_info_edit_button %}
                                     {# ToDo PPI-109 - Implement edit connection functionality #}
-                                    <sw-button v-if="false"
+                                    <mt-button v-if="false"
                                                class="swag-paypal-pos-account__edit-connection-button"
                                                size="small"
-                                               block>
-                                        {{ $tc('swag-paypal-pos.account.editConnection') }}
-                                    </sw-button>
+                                               block
+                                               variant="secondary">
+                                        {{ $t('swag-paypal-pos.account.editConnection') }}
+                                    </mt-button>
                                 {% endblock %}
                             </div>
                         {% endblock %}
@@ -82,7 +83,7 @@
                                 {% block swag_paypal_pos_account_grid_container_status_updated %}
                                     <div v-if="lastRun"
                                          class="swag-paypal-pos-account__status-updated">
-                                        {{ $tc('swag-paypal-pos.account.lastUpdated') }} {{ dateFilter(lastRun.updatedAt, {
+                                        {{ $t('swag-paypal-pos.account.lastUpdated') }} {{ dateFilter(lastRun.updatedAt, {
                                             hour: '2-digit',
                                             minute: '2-digit',
                                             second: '2-digit',
@@ -98,5 +99,5 @@
                 {% endblock %}
             </sw-container>
         {% endblock %}
-    </sw-card>
+    </mt-card>
 {% endblock %}

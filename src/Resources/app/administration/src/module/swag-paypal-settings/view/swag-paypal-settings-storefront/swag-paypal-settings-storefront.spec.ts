@@ -1,11 +1,10 @@
 import { mount } from '@vue/test-utils';
 import SwagPayPalSettingsStorefront from '.';
-import SwagPayPalSetting from 'SwagPayPal/app/component/swag-paypal-setting';
 import { SYSTEM_CONFIGS } from '../../../../constant/swag-paypal-settings.constant';
 import SettingsFixture from '../../../../app/store/settings.fixture';
+import type SwagPayPalSetting from 'SwagPayPal/app/component/swag-paypal-setting';
 
 Shopware.Component.register('swag-paypal-settings-storefront', Promise.resolve(SwagPayPalSettingsStorefront));
-Shopware.Component.register('swag-paypal-setting', Promise.resolve(SwagPayPalSetting));
 
 async function createWrapper() {
     return mount(
@@ -14,11 +13,14 @@ async function createWrapper() {
             global: {
                 stubs: {
                     'sw-card': await wrapTestComponent('sw-card', { sync: true }),
-                    'sw-card-deprecated': await wrapTestComponent('sw-card-deprecated', { sync: true }),
-                    'swag-paypal-setting': await Shopware.Component.build('swag-paypal-setting'),
+                    'swag-paypal-setting': {
+                        name: 'swag-paypal-setting',
+                        props: ['path'],
+                        template: '<div class="swag-paypal-setting"></div>',
+                    },
+                    'swag-paypal-settings-locale-select': true,
                 },
                 provide: {
-                    acl: { can: () => true },
                     systemConfigApiService: { getValues: () => false },
                 },
             },
@@ -39,7 +41,7 @@ describe('swag-paypal-settings-storefront', () => {
         const wrapper = await createWrapper();
 
         const cardClasses = wrapper
-            .findAll('.sw-card')
+            .findAll('.mt-card')
             .map((el) => el.classes())
             .flat()
             .filter((cl) => cl.startsWith('swag-paypal'));
@@ -55,9 +57,9 @@ describe('swag-paypal-settings-storefront', () => {
         const wrapper = await createWrapper();
 
         const components = wrapper.findAllComponents<typeof SwagPayPalSetting>({ name: 'swag-paypal-setting' });
-        const settings = Object.fromEntries(components.map((el) => [el.props().path, el]));
+        const settings = components.map((el) => el.props().path);
 
-        expect(Object.keys(settings)).toEqual([
+        expect(settings).toEqual([
             'SwagPayPal.settings.ecsDetailEnabled',
             'SwagPayPal.settings.ecsCartEnabled',
             'SwagPayPal.settings.ecsOffCanvasEnabled',
@@ -100,14 +102,14 @@ describe('swag-paypal-settings-storefront', () => {
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.ecsSettingsDisabled).toBe(false);
-        expect(disabledSettings.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toContain(false);
+        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(4).fill(false));
 
         // disable all
         SYSTEM_CONFIGS.filter((setting) => setting.startsWith('SwagPayPal.settings.ecs')).forEach((setting) => store.set(setting, false));
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.ecsSettingsDisabled).toBe(true);
-        expect(disabledSettings.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toContain(true);
+        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(4).fill(true));
     });
 
     it('should disable spb fields based on spbCheckoutEnabled', async () => {
@@ -129,12 +131,12 @@ describe('swag-paypal-settings-storefront', () => {
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.sbpSettingsDisabled).toBe(false);
-        expect(disabledSettings.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toContain(false);
+        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(5).fill(false));
 
         store.set('SwagPayPal.settings.spbCheckoutEnabled', false);
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.sbpSettingsDisabled).toBe(true);
-        expect(disabledSettings.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toContain(true);
+        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(5).fill(true));
     });
 });

@@ -13,6 +13,8 @@ Component.register('swag-paypal-payment-actions-v2', {
         'acl',
     ],
 
+    emits: ['reload-paypal-order'],
+
     props: {
         paypalOrder: {
             type: Object,

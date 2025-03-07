@@ -6,6 +6,8 @@ const { Criteria } = Shopware.Data;
 Component.register('swag-paypal-pos-wizard-product-selection', {
     template,
 
+    emits: ['update-clone-sales-channel', 'frw-set-title', 'buttons-update', 'toggle-loading'],
+
     props: {
         salesChannel: {
             type: Object,
@@ -61,21 +63,21 @@ Component.register('swag-paypal-pos-wizard-product-selection', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-pos.wizard.productSelection.modalTitle'));
+            this.$emit('frw-set-title', this.$t('swag-paypal-pos.wizard.productSelection.modalTitle'));
         },
 
         updateButtons() {
             const buttonConfig = [
                 {
                     key: 'back',
-                    label: this.$tc('sw-first-run-wizard.general.buttonBack'),
+                    label: this.$t('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
                     action: this.routeBackToCustomization,
                     disabled: false,
                 },
                 {
                     key: 'next',
-                    label: this.$tc('sw-first-run-wizard.general.buttonNext'),
+                    label: this.$t('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToSyncLibrary,

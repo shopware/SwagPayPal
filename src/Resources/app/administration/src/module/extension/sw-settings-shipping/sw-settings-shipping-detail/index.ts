@@ -96,7 +96,7 @@ export default Shopware.Component.wrapComponentConfig({
 
         carrierInvalidError() {
             if (this.selectedCarrierOption?.isInvalid) {
-                return { detail: this.$tc('swag-paypal-settings-shipping-carrier.invalid') };
+                return { detail: this.$t('swag-paypal-settings-shipping-carrier.invalid') };
             }
 
             return undefined;

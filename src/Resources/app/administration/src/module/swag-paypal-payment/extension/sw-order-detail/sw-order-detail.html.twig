@@ -4,9 +4,9 @@
 <sw-tabs-item
     v-if="isPayPalPayment"
     :route="{ name: 'swag.paypal.payment.detail', params: { id: $route.params.id } }"
-    :title="$tc('swag-paypal-payment.tabs.order')"
+    :title="$t('swag-paypal-payment.tabs.order')"
 >
-    {{ $tc('swag-paypal-payment.tabs.order') }}
+    {{ $t('swag-paypal-payment.tabs.order') }}
 </sw-tabs-item>
 {% endblock %}
 

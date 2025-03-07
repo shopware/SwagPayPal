@@ -8,7 +8,7 @@
         <h2>
 
             {% block swag_paypal_disputes_list_smart_bar_header_title_text %}
-            {{ $tc('swag-paypal-disputes.list.title') }}
+            {{ $t('swag-paypal-disputes.list.title') }}
             {% endblock %}
 
             {% block swag_paypal_disputes_list_smart_bar_header_amount %}
@@ -50,11 +50,11 @@
                 {% block swag_paypal_disputes_list_content_grid_column_seller_response_due_date %}
                 <template #column-response_due_date="{ item }">
                     <template v-if="item.seller_response_due_date">
-                        <strong>{{ $tc('swag-paypal-disputes.common.response_due_date.seller') }}</strong>:
+                        <strong>{{ $t('swag-paypal-disputes.common.response_due_date.seller') }}</strong>:
                         {{ formatDate(item.seller_response_due_date) }}
                     </template>
                     <template v-else-if="item.buyer_response_due_date">
-                        <strong>{{ $tc('swag-paypal-disputes.common.response_due_date.buyer') }}</strong>:
+                        <strong>{{ $t('swag-paypal-disputes.common.response_due_date.buyer') }}</strong>:
                         {{ formatDate(item.buyer_response_due_date) }}
                     </template>
                 </template>
@@ -126,7 +126,7 @@
             {% block swag_paypal_disputes_list_content_empty_state %}
                 <sw-empty-state
                     v-if="notAuthorized"
-                    :title="$tc('swag-paypal-disputes.list.emptyStateNotAuthorized.title')"
+                    :title="$t('swag-paypal-disputes.list.emptyStateNotAuthorized.title')"
                     icon="regular-exclamation-triangle"
                     color="#F88962"
                 >
@@ -140,7 +140,7 @@
                                 :inline="true"
                                 :hideIcon="true"
                             >
-                                {{ $tc('swag-paypal-disputes.list.emptyStateNotAuthorized.link') }}
+                                {{ $t('swag-paypal-disputes.list.emptyStateNotAuthorized.link') }}
                             </sw-internal-link>
                         </template>
                     </i18n-t>
@@ -148,8 +148,8 @@
 
                 <sw-empty-state
                     v-else-if="showEmptyStateWithNoDisputes"
-                    :title="$tc('swag-paypal-disputes.list.emptyState.title')"
-                    :subline="$tc('swag-paypal-disputes.list.emptyState.subline')"
+                    :title="$t('swag-paypal-disputes.list.emptyState.title')"
+                    :subline="$t('swag-paypal-disputes.list.emptyState.subline')"
                     icon="regular-comments"
                     color="#F88962"
                 />
@@ -166,7 +166,7 @@
             {% block swag_paypal_disputes_list_sidebar_refresh %}
             <sw-sidebar-item
                 icon="regular-sync"
-                :title="$tc('swag-paypal-disputes.list.titleSidebarItemRefresh')"
+                :title="$t('swag-paypal-disputes.list.titleSidebarItemRefresh')"
                 @click="onRefresh"
             />
             {% endblock %}
@@ -174,20 +174,20 @@
             {% block swag_paypal_disputes_list_sidebar_filter %}
             <sw-sidebar-item
                 icon="regular-filter"
-                :title="$tc('swag-paypal-disputes.list.titleSidebarItemFilter')"
+                :title="$t('swag-paypal-disputes.list.titleSidebarItemFilter')"
             >
 
                 {% block swag_paypal_disputes_list_sidebar_filter_items %}
                     {% block swag_paypal_disputes_list_sidebar_filter_sales_channel %}
                     <sw-sales-channel-switch
-                        :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                        :label="$t('sw-settings.system-config.labelSalesChannelSelect')"
                         @change-sales-channel-id="onSalesChannelChanged"
                     />
                     {% endblock %}
 
                     {% block swag_paypal_disputes_list_sidebar_filter_dispute_state %}
                     <sw-multi-select
-                        :label="$tc('swag-paypal-disputes.common.status')"
+                        :label="$t('swag-paypal-disputes.common.status')"
                         :options="disputeStates"
                         :value="disputeStateFilter"
                         @update:value="onChangeDisputeStateFilter"

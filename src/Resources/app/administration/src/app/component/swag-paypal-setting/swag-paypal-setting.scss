@@ -20,8 +20,12 @@
             padding: 16px 16px;
         }
 
-        .sw-field--switch {
+        .mt-switch {
             margin: 0;
+        }
+
+        .mt-switch.mt-switch--not-bordered {
+           min-height: inherit;
         }
     }
 
@@ -31,7 +35,7 @@
 
     // sw-card margin fixes
     &:first-child {
-        .sw-field {
+        .mt-field {
             margin-top: 0;
         }
     }
@@ -39,7 +43,7 @@
     &:nth-last-child(1 of :not(.sw-loader)) {
         margin-bottom: 0;
 
-        .sw-field {
+        .mt-field {
             margin-bottom: 0;
         }
     }

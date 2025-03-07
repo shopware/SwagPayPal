@@ -18,6 +18,8 @@ Component.register('swag-paypal-pos-detail-settings', {
         'acl',
     ],
 
+    emits: ['load-sales-channel', 'buttons-update'],
+
     mixins: [
         Shopware.Mixin.getByName('swag-paypal-pos-catch-error'),
         Shopware.Mixin.getByName('placeholder'),
@@ -59,15 +61,15 @@ Component.register('swag-paypal-pos-detail-settings', {
 
         optionSyncPrices() {
             return {
-                name: this.$tc('swag-paypal-pos.wizard.syncPrices.optionTrueLabel'),
-                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionTrueDescription'),
+                name: this.$t('swag-paypal-pos.wizard.syncPrices.optionTrueLabel'),
+                description: this.$t('swag-paypal-pos.wizard.syncPrices.optionTrueDescription'),
             };
         },
 
         optionNotSyncPrices() {
             return {
-                name: this.$tc('swag-paypal-pos.wizard.syncPrices.optionFalseLabel'),
-                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionFalseDescription'),
+                name: this.$t('swag-paypal-pos.wizard.syncPrices.optionFalseLabel'),
+                description: this.$t('swag-paypal-pos.wizard.syncPrices.optionFalseDescription'),
             };
         },
 
@@ -75,16 +77,16 @@ Component.register('swag-paypal-pos-detail-settings', {
             return [
                 {
                     value: 2,
-                    name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyDescription'),
+                    name: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyLabel'),
+                    description: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyDescription'),
                 }, {
                     value: 1,
-                    name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeDescription'),
+                    name: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeLabel'),
+                    description: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeDescription'),
                 }, {
                     value: 0,
-                    name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotDescription'),
+                    name: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotLabel'),
+                    description: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotDescription'),
                 },
             ];
         },
@@ -155,7 +157,7 @@ Component.register('swag-paypal-pos-detail-settings', {
                     this.updateButtons();
 
                     this.createNotificationError({
-                        message: this.$tc('sw-sales-channel.detail.messageSaveError', 0, {
+                        message: this.$t('sw-sales-channel.detail.messageSaveError', 0, {
                             name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name'),
                         }),
                     });
@@ -196,7 +198,7 @@ Component.register('swag-paypal-pos-detail-settings', {
             const buttonConfig = [
                 {
                     key: 'save',
-                    label: this.$tc('global.default.save'),
+                    label: this.$t('global.default.save'),
                     variant: 'primary',
                     action: this.onSave,
                     disabled: false,

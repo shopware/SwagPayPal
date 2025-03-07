@@ -142,12 +142,12 @@ export default Shopware.Component.wrapComponentConfig({
 
         getDueDate(sellerResponseDueDate: string, buyerResponseDueDate: string) {
             if (sellerResponseDueDate !== null) {
-                return `${this.$tc('swag-paypal-disputes.common.response_due_date.seller')}: ${
+                return `${this.$t('swag-paypal-disputes.common.response_due_date.seller')}: ${
                     this.formatDate(sellerResponseDueDate)}`;
             }
 
             if (buyerResponseDueDate !== null) {
-                return `${this.$tc('swag-paypal-disputes.common.response_due_date.buyer')}: ${
+                return `${this.$t('swag-paypal-disputes.common.response_due_date.buyer')}: ${
                     this.formatDate(buyerResponseDueDate)}`;
             }
 
@@ -160,14 +160,13 @@ export default Shopware.Component.wrapComponentConfig({
             }
 
             try {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                Utils.dom.copyToClipboard(JSON.stringify(this.dispute));
+                Utils.dom.copyStringToClipboard(JSON.stringify(this.dispute));
                 this.createNotificationInfo({
-                    message: this.$tc('global.sw-field.notification.notificationCopySuccessMessage'),
+                    message: this.$t('global.sw-field.notification.notificationCopySuccessMessage'),
                 });
             } catch (err) {
                 this.createNotificationError({
-                    message: this.$tc('global.sw-field.notification.notificationCopyFailureMessage'),
+                    message: this.$t('global.sw-field.notification.notificationCopyFailureMessage'),
                 });
             }
         },

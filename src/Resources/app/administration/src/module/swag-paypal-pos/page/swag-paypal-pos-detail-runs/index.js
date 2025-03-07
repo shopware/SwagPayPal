@@ -13,6 +13,8 @@ Component.register('swag-paypal-pos-detail-runs', {
         'acl',
     ],
 
+    emits: ['buttons-update', 'run-update'],
+
     mixins: [
         Shopware.Mixin.getByName('swag-paypal-pos-catch-error'),
         Shopware.Mixin.getByName('notification'),

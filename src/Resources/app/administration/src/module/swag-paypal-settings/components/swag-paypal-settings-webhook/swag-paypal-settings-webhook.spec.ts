@@ -10,19 +10,15 @@ async function createWrapper() {
             global: {
                 mocks: { $tc: (key: string) => key },
                 provide: {
-                    acl: {
-                        can: () => true,
-                    },
                     SwagPayPalWebhookService: {
                         status: jest.fn(() => Promise.resolve({ result: null })),
                         register: jest.fn(() => Promise.resolve()),
                     },
+                    SwagPayPalSettingsService: {},
                 },
                 stubs: {
-                    'sw-button': await wrapTestComponent('sw-button', { sync: true }),
-                    'sw-card': await wrapTestComponent('sw-card', { sync: true }),
-                    'sw-card-deprecated': await wrapTestComponent('sw-card-deprecated', { sync: true }),
                     'sw-label': await wrapTestComponent('sw-label', { sync: true }),
+                    'sw-color-badge': await wrapTestComponent('sw-color-badge', { sync: true }),
                 },
             },
         },
@@ -39,7 +35,7 @@ describe('swag-paypal-settings-webhook', () => {
     it('should fetch status on creation', async () => {
         const wrapper = await createWrapper();
 
-        expect(wrapper.vm.SwagPayPalWebhookService.status).toBeCalled();
+        expect(wrapper.vm.SwagPayPalWebhookService.status).toHaveBeenCalled();
     });
 
     it('should pick correct status variant', async () => {
@@ -107,7 +103,7 @@ describe('swag-paypal-settings-webhook', () => {
         wrapper.vm.fetchWebhookStatus(null);
 
         expect(wrapper.vm.status).toBe('fetching');
-        expect(spyStatus).toBeCalled();
+        expect(spyStatus).toHaveBeenCalled();
 
         await wrapper.vm.$nextTick();
 
@@ -123,7 +119,7 @@ describe('swag-paypal-settings-webhook', () => {
         wrapper.vm.onRefreshWebhook();
 
         expect(wrapper.vm.status).toBe('refreshing');
-        expect(spyRegister).toBeCalled();
+        expect(spyRegister).toHaveBeenCalled();
 
         await flushPromises();
 
@@ -131,7 +127,7 @@ describe('swag-paypal-settings-webhook', () => {
 
         await wrapper.vm.$nextTick();
 
-        expect(spyStatus).toBeCalled();
+        expect(spyStatus).toHaveBeenCalled();
     });
 
     it('should refresh webhook with error', async () => {
@@ -146,6 +142,6 @@ describe('swag-paypal-settings-webhook', () => {
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.status).toBe('refreshing');
-        expect(wrapper.vm.createNotificationError).toBeCalled();
+        expect(wrapper.vm.createNotificationError).toHaveBeenCalled();
     });
 });

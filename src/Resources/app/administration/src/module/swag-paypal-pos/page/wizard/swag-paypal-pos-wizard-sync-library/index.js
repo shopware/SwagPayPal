@@ -10,6 +10,8 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
         'SwagPayPalPosSettingApiService',
     ],
 
+    emits: ['frw-set-title', 'buttons-update', 'toggle-loading'],
+
     props: {
         salesChannel: {
             type: Object,
@@ -38,16 +40,16 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
             return [
                 {
                     value: 2,
-                    name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyDescription'),
+                    name: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyLabel'),
+                    description: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyDescription'),
                 }, {
                     value: 1,
-                    name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeDescription'),
+                    name: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeLabel'),
+                    description: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeDescription'),
                 }, {
                     value: 0,
-                    name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotDescription'),
+                    name: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotLabel'),
+                    description: this.$t('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotDescription'),
                 },
             ];
         },
@@ -65,21 +67,21 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-pos.wizard.syncLibrary.modalTitle'));
+            this.$emit('frw-set-title', this.$t('swag-paypal-pos.wizard.syncLibrary.modalTitle'));
         },
 
         updateButtons() {
             const buttonConfig = [
                 {
                     key: 'back',
-                    label: this.$tc('sw-first-run-wizard.general.buttonBack'),
+                    label: this.$t('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
                     action: this.routeBackToProductSelection,
                     disabled: false,
                 },
                 {
                     key: 'next',
-                    label: this.$tc('sw-first-run-wizard.general.buttonNext'),
+                    label: this.$t('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToSyncPrices,

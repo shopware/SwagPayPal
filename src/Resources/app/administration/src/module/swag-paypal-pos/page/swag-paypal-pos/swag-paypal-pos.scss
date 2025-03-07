@@ -4,10 +4,7 @@
     &__disclaimer {
         color: $color-gray-500;
         font-size: $font-size-xxs;
-
-        &-card > .sw-card__content {
-            padding: 0;
-        }
+        text-align: center;
 
         & > a {
             font-size: $font-size-xs;

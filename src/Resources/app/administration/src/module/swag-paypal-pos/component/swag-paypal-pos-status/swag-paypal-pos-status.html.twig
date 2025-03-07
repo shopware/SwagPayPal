@@ -1,12 +1,12 @@
 {% block swag_paypal_pos_status %}
-    <sw-card position-identifier="swag-paypal-pos-status"
+    <mt-card position-identifier="swag-paypal-pos-status"
              :class="statusClasses"
              :isLoading="isLoading"
              :title="title">
 
         {% block swag_paypal_pos_status_icon %}
             <div class="swag-paypal-pos-status__icon-base">
-                <sw-icon :class="iconClasses"
+                <mt-icon :class="iconClasses"
                          :name="icon" />
             </div>
         {% endblock %}
@@ -14,8 +14,8 @@
         {% block swag_paypal_pos_status_status %}
             <div class="swag-paypal-pos-status__status">
                 <slot name="status">
-{{ status }}
-</slot>
+                    {{ status }}
+                </slot>
             </div>
         {% endblock %}
 
@@ -29,7 +29,7 @@
             <div v-if="showSubStatus" class="swag-paypal-pos-status__substatus">
 
                 {% block swag_paypal_pos_status_substatus_icon %}
-                    <sw-icon v-if="showSubIcon"
+                    <mt-icon v-if="showSubIcon"
                              :class="subIconClasses"
                              :name="subIcon" />
                 {% endblock %}
@@ -55,5 +55,5 @@
 </slot>
             </div>
         {% endblock %}
-    </sw-card>
+    </mt-card>
 {% endblock %}
