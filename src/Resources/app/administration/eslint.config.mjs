@@ -2,12 +2,12 @@ import { resolve } from 'path';
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import vue from 'eslint-plugin-vue';
-import vueTs from '@vue/eslint-config-typescript';
 import swESLintBase from '@shopware-ag/eslint-config-base';
-import importPlugin from 'eslint-plugin-import' ;
+import importPlugin from 'eslint-plugin-import';
 import stylistic from '@stylistic/eslint-plugin';
 import pluginJest from 'eslint-plugin-jest';
 import globals from 'globals';
+import internalRules from './internal-rules/index.mjs';
 
 process.env.ADMIN_PATH =
     process.env.ADMIN_PATH ??
@@ -17,13 +17,21 @@ const twigVuePlugin = await import(`${process.env.ADMIN_PATH}/twigVuePlugin/lib/
 
 export default tseslint.config(
     eslint.configs.recommended,
+    tseslint.configs.recommended,
     ...vue.configs['flat/recommended'],
-    ...vueTs(),
     {
         files: ['**/*.ts', '**/*.js'],
         ignores: ['**/*.d.ts'],
 
-        plugins: { import: importPlugin, stylistic },
+        plugins: {
+            import: importPlugin,
+            stylistic,
+            internalRules,
+        },
+
+        extends: [
+            ...tseslint.configs.recommendedTypeCheckedOnly,
+        ],
 
         languageOptions: {
             ecmaVersion: 'latest',
@@ -55,7 +63,7 @@ export default tseslint.config(
             'internal-rules/no-src-imports': 'off',
 
             /* import rules */
-            // lets depend on shopware's deps (vue and @vue/test-utils)
+            'internalRules/no-src-imports': 'error',
             'import/no-extraneous-dependencies': 'off',
             'import/no-useless-path-segments': 'off',
             'import/extensions': [
@@ -114,7 +122,7 @@ export default tseslint.config(
 
         processor: 'twigVuePlugin/twig-vue',
 
-        extends: [vue.configs['flat/recommended']],
+        extends: vue.configs['flat/recommended'],
 
         rules: {
             'vue/multiline-html-element-content-newline': 'off',
@@ -155,7 +163,10 @@ export default tseslint.config(
         },
     },
     {
-        files: ['**/*.spec.js', '**/*.spec.ts'],
+        files: [
+            '**/*.spec.js',
+            '**/*.spec.ts',
+        ],
 
         plugins: { jest: pluginJest },
 
@@ -180,6 +191,15 @@ export default tseslint.config(
             'jest/prefer-to-have-length': 'error',
             'jest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
             '@typescript-eslint/no-unsafe-member-access': 'off', // Needed for any/VueComponent typed wrappers
+            '@typescript-eslint/prefer-promise-reject-errors': 'off',
+            '@typescript-eslint/unbound-method': 'off',
+        },
+    },
+    {
+        files: ['jest.config.mjs', 'eslint.config.mjs'],
+
+        languageOptions: {
+            globals: globals.node,
         },
     },
     {

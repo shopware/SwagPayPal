@@ -21,12 +21,12 @@ Component.register('swag-paypal-pui-details', {
 
     computed: {
         copyText() {
-            return `${this.$tc('swag-paypal-payment.puiDetails.bank')} ${this.bankName}
-${this.$tc('swag-paypal-payment.puiDetails.iban')} ${this.iban}
-${this.$tc('swag-paypal-payment.puiDetails.bic')} ${this.bic}
-${this.$tc('swag-paypal-payment.puiDetails.accountHolder')} ${this.accountHolderName}
-${this.$tc('swag-paypal-payment.puiDetails.amount')} ${this.amount}
-${this.$tc('swag-paypal-payment.puiDetails.reference')} ${this.reference}`;
+            return `${this.$t('swag-paypal-payment.puiDetails.bank')} ${this.bankName}
+${this.$t('swag-paypal-payment.puiDetails.iban')} ${this.iban}
+${this.$t('swag-paypal-payment.puiDetails.bic')} ${this.bic}
+${this.$t('swag-paypal-payment.puiDetails.accountHolder')} ${this.accountHolderName}
+${this.$t('swag-paypal-payment.puiDetails.amount')} ${this.amount}
+${this.$t('swag-paypal-payment.puiDetails.reference')} ${this.reference}`;
         },
 
         bankName() {

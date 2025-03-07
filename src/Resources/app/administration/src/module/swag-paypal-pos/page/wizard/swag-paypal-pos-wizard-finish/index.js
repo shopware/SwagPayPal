@@ -10,6 +10,8 @@ Component.register('swag-paypal-pos-wizard-finish', {
         'SwagPayPalPosApiService',
     ],
 
+    emits: ['frw-set-title', 'buttons-update', 'frw-finish'],
+
     props: {
         salesChannel: {
             type: Object,
@@ -33,21 +35,21 @@ Component.register('swag-paypal-pos-wizard-finish', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-pos.wizard.finish.modalTitle'));
+            this.$emit('frw-set-title', this.$t('swag-paypal-pos.wizard.finish.modalTitle'));
         },
 
         updateButtons() {
             const buttonConfig = [
                 {
                     key: 'back',
-                    label: this.$tc('sw-first-run-wizard.general.buttonBack'),
+                    label: this.$t('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
                     action: this.routeBackToSyncPrices,
                     disabled: false,
                 },
                 {
                     key: 'finish',
-                    label: this.$tc('sw-first-run-wizard.general.buttonFinish'),
+                    label: this.$t('sw-first-run-wizard.general.buttonFinish'),
                     position: 'right',
                     variant: 'primary',
                     action: this.onFinish,

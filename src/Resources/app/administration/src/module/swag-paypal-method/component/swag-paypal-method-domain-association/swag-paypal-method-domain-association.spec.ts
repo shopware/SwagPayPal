@@ -9,10 +9,7 @@ async function createWrapper(active: boolean = true) {
         {
             global: {
                 stubs: {
-                    'sw-alert': await wrapTestComponent('sw-alert', { sync: true }),
-                    'sw-alert-deprecated': await wrapTestComponent('sw-alert-deprecated', { sync: true }),
                     'sw-external-link': await wrapTestComponent('sw-external-link', { sync: true }),
-                    'sw-external-link-deprecated': await wrapTestComponent('sw-external-link-deprecated', { sync: true }),
                 },
             },
             props: {
@@ -34,7 +31,7 @@ describe('swag-paypal-method-domain-association', () => {
 
         expect(wrapper.vm.show).toBe(true);
 
-        const alert = wrapper.findComponent<VueComponent>('.sw-alert');
+        const alert = wrapper.find('.swag-paypal-method-domain-association');
         expect(alert.exists()).toBe(true);
         expect(alert.isVisible()).toBe(true);
     });
@@ -42,7 +39,7 @@ describe('swag-paypal-method-domain-association', () => {
     it('should hide', async () => {
         const wrapper = await createWrapper(false);
 
-        const alert = wrapper.findComponent<VueComponent>('.sw-alert');
+        const alert = wrapper.find('.swag-paypal-method-domain-association');
         expect(alert.exists()).toBe(true);
 
         expect(wrapper.vm.show).toBe(false);
@@ -52,13 +49,13 @@ describe('swag-paypal-method-domain-association', () => {
     it('should hide on close', async () => {
         const wrapper = await createWrapper();
 
-        const alert = wrapper.findComponent<VueComponent>('.sw-alert');
+        const alert = wrapper.find('.swag-paypal-method-domain-association');
         expect(alert.exists()).toBe(true);
 
         expect(wrapper.vm.show).toBe(true);
         expect(alert.isVisible()).toBe(true);
 
-        alert.get('.sw-alert__close').trigger('click');
+        alert.get('.mt-banner__close').trigger('click');
         await flushPromises();
 
         expect(wrapper.vm.show).toBe(false);
@@ -79,7 +76,7 @@ describe('swag-paypal-method-domain-association', () => {
     it('should have external link', async () => {
         const wrapper = await createWrapper();
 
-        const link = wrapper.findComponent<VueComponent>('.sw-external-link');
+        const link = wrapper.find('a');
         expect(link.exists()).toBe(true);
         expect(link.attributes('href')).toBe(wrapper.vm.domainAssociationLink);
     });

@@ -11,6 +11,8 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
         'SwagPayPalPosSettingApiService',
     ],
 
+    emits: ['frw-set-title', 'buttons-update'],
+
     mixin: [
         'placeholder',
     ],
@@ -41,9 +43,9 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
     computed: {
         posUser() {
             if (this.isFetchingInformation) {
-                const firstName = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeFirstName');
-                const lastName = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeLastName');
-                const mail = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeMail');
+                const firstName = this.$t('swag-paypal-pos.wizard.connectionSuccess.fakeFirstName');
+                const lastName = this.$t('swag-paypal-pos.wizard.connectionSuccess.fakeLastName');
+                const mail = this.$t('swag-paypal-pos.wizard.connectionSuccess.fakeMail');
 
                 return {
                     firstName,
@@ -91,14 +93,14 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-pos.wizard.connectionSuccess.modalTitle'));
+            this.$emit('frw-set-title', this.$t('swag-paypal-pos.wizard.connectionSuccess.modalTitle'));
         },
 
         updateButtons() {
             const buttonConfig = [
                 {
                     key: 'next',
-                    label: this.$tc('sw-first-run-wizard.general.buttonNext'),
+                    label: this.$t('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToCustomization,

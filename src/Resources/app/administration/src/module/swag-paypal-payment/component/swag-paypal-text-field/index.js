@@ -12,4 +12,6 @@ const { Component } = Shopware;
  */
 Component.extend('swag-paypal-text-field', 'sw-text-field', {
     template,
+
+    emits: ['inheritance-restore', 'inheritance-remove'],
 });

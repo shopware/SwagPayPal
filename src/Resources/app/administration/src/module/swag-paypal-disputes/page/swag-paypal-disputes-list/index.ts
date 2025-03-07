@@ -23,6 +23,8 @@ export default Shopware.Component.wrapComponentConfig({
         'systemConfigApiService',
     ],
 
+    emits: ['page-change'],
+
     mixins: [
         Shopware.Mixin.getByName('swag-paypal-notification'),
     ],
@@ -97,27 +99,27 @@ export default Shopware.Component.wrapComponentConfig({
             return [
                 {
                     property: 'dispute_id',
-                    label: this.$tc('swag-paypal-disputes.common.dispute_id'),
+                    label: this.$t('swag-paypal-disputes.common.dispute_id'),
                 },
                 {
                     property: 'update_time',
-                    label: this.$tc('swag-paypal-disputes.common.update_time'),
+                    label: this.$t('swag-paypal-disputes.common.update_time'),
                 },
                 {
                     property: 'response_due_date',
-                    label: this.$tc('swag-paypal-disputes.common.response_due_date.label'),
+                    label: this.$t('swag-paypal-disputes.common.response_due_date.label'),
                 },
                 {
                     property: 'status',
-                    label: this.$tc('swag-paypal-disputes.common.status'),
+                    label: this.$t('swag-paypal-disputes.common.status'),
                 },
                 {
                     property: 'dispute_life_cycle_stage',
-                    label: this.$tc('swag-paypal-disputes.common.dispute_life_cycle_stage'),
+                    label: this.$t('swag-paypal-disputes.common.dispute_life_cycle_stage'),
                 },
                 {
                     property: 'dispute_amount',
-                    label: this.$tc('swag-paypal-disputes.common.dispute_amount'),
+                    label: this.$t('swag-paypal-disputes.common.dispute_amount'),
                 },
             ];
         },

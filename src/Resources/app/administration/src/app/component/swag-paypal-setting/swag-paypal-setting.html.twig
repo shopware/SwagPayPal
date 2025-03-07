@@ -17,13 +17,13 @@
                 path: path,
             }"
         >
-            <sw-switch-field
+            <mt-switch
                 v-if="type === 'boolean'"
                 v-bind="formAttrs"
                 :name="path"
                 :disabled="props.isInherited || disabled"
-                :value="props.currentValue"
-                @update:value="props.updateCurrentValue"
+                :model-value="props.currentValue"
+                @update:model-value="props.updateCurrentValue"
             />
 
             <sw-single-select
@@ -39,18 +39,18 @@
                 </template>
             </sw-single-select>
 
-            <sw-text-field
+            <mt-text-field
                 v-else-if="type === 'string'"
                 v-bind="formAttrs"
                 :name="path"
                 :disabled="props.isInherited || disabled"
-                :value="props.currentValue"
-                @update:value="props.updateCurrentValue"
+                :model-value="props.currentValue"
+                @update:model-value="props.updateCurrentValue"
             >
                 <template v-if="attrs.hasOwnProperty('hintText')" #hint>
                     {{ attrs.hintText }}
                 </template>
-            </sw-text-field>
+            </mt-text-field>
         </slot>
     </template>
 </sw-inherit-wrapper>

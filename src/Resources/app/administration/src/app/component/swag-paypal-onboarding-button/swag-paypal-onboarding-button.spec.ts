@@ -39,10 +39,12 @@ async function createWrapper() {
                     },
                 },
                 provide: {
-                    acl: { can: () => true },
                     SwagPayPalSettingsService: {
                         getApiCredentials: jest.fn(),
                     },
+                },
+                stubs: {
+                    'sw-loader': true,
                 },
             },
         },
@@ -57,6 +59,7 @@ describe('swag-paypal-onboarding-button', () => {
     });
 
     it('should initialize component', async () => {
+        global.activeAclRoles = ['swag_paypal.editor'];
         const wrapper = await createWrapper();
 
         const script = document.head.querySelector('#paypal-js');
@@ -79,7 +82,7 @@ describe('swag-paypal-onboarding-button', () => {
         const store = Shopware.Store.get('swagPayPalSettings');
 
         store.setConfig(null, {});
-        wrapper.setProps({ type: 'live' });
+        wrapper.setProps({ mode: 'live' });
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.suffix).toBe('');
@@ -95,7 +98,7 @@ describe('swag-paypal-onboarding-button', () => {
         });
 
         store.setConfig(null, {});
-        wrapper.setProps({ type: 'sandbox' });
+        wrapper.setProps({ mode: 'sandbox' });
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.suffix).toBe('Sandbox');
@@ -128,7 +131,7 @@ describe('swag-paypal-onboarding-button', () => {
         wrapper.vm.live.sellerNonce = 'live-nonce';
         wrapper.vm.sandbox.sellerNonce = 'sandbox-nonce';
 
-        wrapper.setProps({ type: 'live' });
+        wrapper.setProps({ mode: 'live' });
         await wrapper.vm.$nextTick();
 
         const liveUrl = new URL(wrapper.vm.onboardingUrl);
@@ -142,7 +145,7 @@ describe('swag-paypal-onboarding-button', () => {
             ['returnToPartnerUrl', 'http://localhost/#/sw/path?ppOnboarding=live'],
         ]);
 
-        wrapper.setProps({ type: 'sandbox' });
+        wrapper.setProps({ mode: 'sandbox' });
         await wrapper.vm.$nextTick();
 
         const sandboxUrl = new URL(wrapper.vm.onboardingUrl);
@@ -223,7 +226,7 @@ describe('swag-paypal-onboarding-button', () => {
 
         expect(wrapper.vm.suffix).toBe('');
 
-        wrapper.setProps({ type: 'sandbox' });
+        wrapper.setProps({ mode: 'sandbox' });
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.suffix).toBe('Sandbox');

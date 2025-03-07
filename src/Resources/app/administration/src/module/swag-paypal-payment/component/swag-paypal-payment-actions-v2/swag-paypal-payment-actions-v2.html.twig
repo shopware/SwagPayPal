@@ -3,37 +3,39 @@
     <div class="swag-paypal-payment-actions-v2__button-container">
         <div>
             {% block swag_paypal_payment_actions_v2_void %}
-            <sw-button
+            <mt-button
                 v-if="showVoidButton"
                 size="small"
                 :disabled="!acl.can('order.editor')"
+                variant="secondary"
                 @click="spawnModal('void')"
             >
-                {{ $tc('swag-paypal-payment.buttons.label.void') }}
-            </sw-button>
+                {{ $t('swag-paypal-payment.buttons.label.void') }}
+            </mt-button>
             {% endblock %}
 
             {% block swag_paypal_payment_actions_v2_capture %}
-            <sw-button
+            <mt-button
                 v-if="captureableAmount > 0"
                 size="small"
                 :disabled="!acl.can('order.editor')"
+                variant="secondary"
                 @click="spawnModal('capture')"
             >
-                {{ $tc('swag-paypal-payment.buttons.label.capture') }}
-            </sw-button>
+                {{ $t('swag-paypal-payment.buttons.label.capture') }}
+            </mt-button>
             {% endblock %}
         </div>
 
         {% block swag_paypal_payment_actions_v2_refund %}
-        <sw-button
+        <mt-button
             variant="primary"
             size="small"
             :disabled="refundableAmount <= 0 || !acl.can('order.editor')"
             @click="spawnModal('refund')"
         >
-            {{ $tc('swag-paypal-payment.buttons.label.refund') }}
-        </sw-button>
+            {{ $t('swag-paypal-payment.buttons.label.refund') }}
+        </mt-button>
         {% endblock %}
     </div>
 

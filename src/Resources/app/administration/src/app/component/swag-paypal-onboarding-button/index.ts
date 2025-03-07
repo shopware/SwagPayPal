@@ -20,7 +20,7 @@ export default Shopware.Component.wrapComponentConfig({
     ],
 
     props: {
-        type: {
+        mode: {
             type: String as PropType<'live' | 'sandbox'>,
             required: false,
             default: 'live',
@@ -41,7 +41,7 @@ export default Shopware.Component.wrapComponentConfig({
         return {
             // Will allow local overrides as props are readonly.
             // Note that this is overridden if the prop changes.
-            type: this.$props.type,
+            type: this.mode,
 
             callbackId: Shopware.Utils.createId(),
 
@@ -89,8 +89,8 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     watch: {
-        '$props.type'() {
-            this.type = this.$props.type;
+        mode() {
+            this.type = this.mode;
         },
     },
 
@@ -156,8 +156,7 @@ export default Shopware.Component.wrapComponentConfig({
                 'is--sandbox': this.isSandbox,
                 'is--live': !this.isSandbox,
                 'is--link': this.variant === 'link',
-                'sw-button': this.variant === 'ghost',
-                'sw-button--ghost': this.variant === 'ghost',
+                'is--ghost': this.variant === 'ghost',
                 'is--disabled': this.isDisabled,
             };
         },

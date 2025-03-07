@@ -11,6 +11,8 @@ Component.register('swag-paypal-pos-wizard-customization', {
         'repositoryFactory',
     ],
 
+    emits: ['frw-set-title', 'buttons-update', 'toggle-loading'],
+
     props: {
         salesChannel: {
             type: Object,
@@ -60,21 +62,21 @@ Component.register('swag-paypal-pos-wizard-customization', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-pos.wizard.customization.modalTitle'));
+            this.$emit('frw-set-title', this.$t('swag-paypal-pos.wizard.customization.modalTitle'));
         },
 
         updateButtons() {
             const buttonConfig = [
                 {
                     key: 'back',
-                    label: this.$tc('sw-first-run-wizard.general.buttonBack'),
+                    label: this.$t('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
                     action: this.routeBackToConnectionSuccess,
                     disabled: false,
                 },
                 {
                     key: 'next',
-                    label: this.$tc('sw-first-run-wizard.general.buttonNext'),
+                    label: this.$t('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToProductSelection,

@@ -2,13 +2,13 @@
     <sw-context-menu-item
             v-if="extension?.name === 'SwagPayPal'"
             :router-link="{ name: 'sw.settings.payment.overview' }">
-        {{ $tc('sw-settings-payment.general.mainMenuItemGeneral') }}
+        {{ $t('sw-settings-payment.general.mainMenuItemGeneral') }}
     </sw-context-menu-item>
 
     <sw-context-menu-item
             v-if="extension?.name === 'SwagPayPal'"
             :router-link="{ name: 'swag.paypal.index' }">
-        {{ $tc('sw-extension-store.component.sw-extension-card-base.contextMenu.config') }}
+        {{ $t('sw-extension-store.component.sw-extension-card-base.contextMenu.config') }}
     </sw-context-menu-item>
 
     {% parent %}

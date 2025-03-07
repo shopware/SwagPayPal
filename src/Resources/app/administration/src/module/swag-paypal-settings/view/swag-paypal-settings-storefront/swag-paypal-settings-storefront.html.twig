@@ -1,13 +1,13 @@
-<sw-card
+<mt-card
     class="swag-paypal-settings-express"
     position-identifier="swag-paypal-settings-express"
     :title="$t('swag-paypal-settings.express.title')"
     :subtitle="$t('swag-paypal-settings.express.subtitle')"
     :is-loading="settingsStore.isLoading"
 >
-    <sw-alert v-if="doubleOptInConfig" variant="warning">
+    <mt-banner v-if="doubleOptInConfig" variant="attention">
         {{ $t('swag-paypal-settings.express.alertMessage') }}
-    </sw-alert>
+    </mt-banner>
 
     <swag-paypal-setting path="SwagPayPal.settings.ecsDetailEnabled" />
     <swag-paypal-setting path="SwagPayPal.settings.ecsCartEnabled" />
@@ -45,9 +45,9 @@
         path="SwagPayPal.settings.ecsShowPayLater"
         :disabled="ecsSettingsDisabled"
     />
-</sw-card>
+</mt-card>
 
-<sw-card
+<mt-card
     class="swag-paypal-settings-installment"
     position-identifier="swag-paypal-settings-installment"
     :title="$t('swag-paypal-settings.installment.title')"
@@ -59,9 +59,9 @@
     <swag-paypal-setting path="SwagPayPal.settings.installmentBannerOffCanvasCartEnabled" />
     <swag-paypal-setting path="SwagPayPal.settings.installmentBannerLoginPageEnabled" />
     <swag-paypal-setting path="SwagPayPal.settings.installmentBannerFooterEnabled" />
-</sw-card>
+</mt-card>
 
-<sw-card
+<mt-card
     class="swag-paypal-settings-spb"
     position-identifier="swag-paypal-settings-spb"
     :is-loading="settingsStore.isLoading"
@@ -110,4 +110,4 @@
             />
         </template>
     </swag-paypal-setting>
-</sw-card>
+</mt-card>

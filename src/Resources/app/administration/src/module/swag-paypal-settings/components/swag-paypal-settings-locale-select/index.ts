@@ -11,6 +11,8 @@ type LocaleOption = {
 export default Shopware.Component.wrapComponentConfig({
     template,
 
+    emits: ['update:value'],
+
     props: {
         value: {
             type: String as PropType<LOCALE>,

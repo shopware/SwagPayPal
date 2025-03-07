@@ -2,7 +2,7 @@
 
 .swag-paypal-pos-status {
 
-    .sw-card__content {
+    .mt-card__content {
         text-align: center;
     }
 
@@ -68,7 +68,7 @@
     }
 
     &.swag-paypal-pos-status--warning {
-        .sw-card__content {
+        .mt-card__content {
             border-color: $color-pumpkin-spice-200;
         }
 
@@ -78,7 +78,7 @@
     }
 
     &.swag-paypal-pos-status--error {
-        .sw-card__content {
+        .mt-card__content {
             border-color: $color-crimson-200;
         }
 
@@ -88,7 +88,7 @@
     }
 
     &.swag-paypal-pos-status--success {
-        .sw-card__content {
+        .mt-card__content {
             border-color: $color-emerald-200;
         }
 
@@ -98,7 +98,7 @@
     }
 
     &.swag-paypal-pos-status--info {
-        .sw-card__content {
+        .mt-card__content {
             border-color: $color-shopware-brand-200;
         }
 

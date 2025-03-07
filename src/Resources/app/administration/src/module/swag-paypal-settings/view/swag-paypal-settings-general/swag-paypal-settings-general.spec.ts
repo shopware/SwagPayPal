@@ -11,19 +11,23 @@ async function createWrapper() {
         await Shopware.Component.build('swag-paypal-settings-general') as typeof SwagPayPalSettingsGeneral,
         {
             global: {
-                provide: { acl: { can: () => true } },
+                provide: {
+                    SwagPayPalSettingsService: {},
+                },
                 mocks: { $t: (key: string) => key },
                 stubs: {
+                    'swag-paypal-onboarding-button': true,
+                    'sw-container': await wrapTestComponent('sw-container', { sync: true }),
+
+                    // swag-paypal-setting deps
                     'swag-paypal-setting': await Shopware.Component.build('swag-paypal-setting'),
                     'sw-inherit-wrapper': await wrapTestComponent('sw-inherit-wrapper', { sync: true }),
-                    'sw-switch-field': await wrapTestComponent('sw-switch-field', { sync: true }),
-                    'sw-switch-field-deprecated': await wrapTestComponent('sw-switch-field-deprecated', { sync: true }),
-                    'sw-checkbox-field': await wrapTestComponent('sw-checkbox-field', { sync: true }),
-                    'sw-checkbox-field-deprecated': await wrapTestComponent('sw-checkbox-field-deprecated', { sync: true }),
-
-                    'sw-card': await wrapTestComponent('sw-card', { sync: true }),
-                    'sw-card-deprecated': await wrapTestComponent('sw-card-deprecated', { sync: true }),
-                    'sw-base-field': await wrapTestComponent('sw-base-field', { sync: true }),
+                    'sw-help-text': true,
+                    'sw-inheritance-switch': true,
+                    'sw-single-select': true,
+                    'sw-button-process': true,
+                    'sw-product-variant-info': true,
+                    'sw-entity-multi-id-select': true,
                 },
             },
         },
@@ -47,7 +51,7 @@ describe('swag-paypal-settings-general', () => {
         const wrapper = await createWrapper();
 
         const cardClasses = wrapper
-            .findAll('.sw-card')
+            .findAll('.mt-card')
             .map((el) => el.classes())
             .flat()
             .filter((cl) => cl.startsWith('swag-paypal'));
@@ -91,34 +95,35 @@ describe('swag-paypal-settings-general', () => {
     });
 
     it('should invert sandbox toggle for live and sandbox', async () => {
+        global.activeAclRoles = ['swag_paypal.editor'];
         const wrapper = await createWrapper();
 
-        const liveSwitch = wrapper.findComponent<VueComponent>('.swag-paypal-settings-live-credentials .sw-field--switch');
+        const liveSwitch = wrapper.find('.swag-paypal-settings-live-credentials input');
         expect(liveSwitch.exists()).toBe(true);
 
-        const sandboxSwitch = wrapper.findComponent<VueComponent>('.swag-paypal-settings-sandbox-credentials .sw-field--switch');
+        const sandboxSwitch = wrapper.find('.swag-paypal-settings-sandbox-credentials input');
         expect(sandboxSwitch.exists()).toBe(true);
 
         expect(store.isSandbox).toBe(false);
-        expect(liveSwitch.vm.value).toBe(true);
-        expect(sandboxSwitch.vm.value).toBe(false);
+        expect(liveSwitch.attributes().checked).toBe('');
+        expect(sandboxSwitch.attributes().checked).toBeUndefined();
 
         // Switch trough store
         store.set('SwagPayPal.settings.sandbox', true);
 
         await wrapper.vm.$nextTick();
 
-        expect(liveSwitch.vm.value).toBe(false);
-        expect(sandboxSwitch.vm.value).toBe(true);
+        expect(liveSwitch.attributes().checked).toBeUndefined();
+        expect(sandboxSwitch.attributes().checked).toBe('');
 
         // Switch trough UI
-        await sandboxSwitch.find('input').setValue(false);
-        expect(liveSwitch.vm.value).toBe(true);
-        expect(sandboxSwitch.vm.value).toBe(false);
+        await sandboxSwitch.setValue(false);
+        expect(liveSwitch.attributes().checked).toBe('');
+        expect(sandboxSwitch.attributes().checked).toBeUndefined();
 
-        await liveSwitch.find('input').setValue(false);
-        expect(liveSwitch.vm.value).toBe(false);
-        expect(sandboxSwitch.vm.value).toBe(true);
+        await liveSwitch.setValue(false);
+        expect(liveSwitch.attributes().checked).toBeUndefined();
+        expect(sandboxSwitch.attributes().checked).toBe('');
     });
 
     it('should disable credentials fields on sandbox toggle', async () => {
@@ -142,13 +147,13 @@ describe('swag-paypal-settings-general', () => {
         store.set('SwagPayPal.settings.sandbox', true);
         await wrapper.vm.$nextTick();
 
-        expect(live.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toContain(true);
-        expect(sandbox.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toContain(false);
+        expect(live.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toStrictEqual(Array(3).fill(true));
+        expect(sandbox.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toStrictEqual(Array(3).fill(false));
 
         store.set('SwagPayPal.settings.sandbox', false);
         await wrapper.vm.$nextTick();
 
-        expect(live.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toContain(false);
-        expect(sandbox.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toContain(true);
+        expect(live.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toStrictEqual(Array(3).fill(false));
+        expect(sandbox.map((setting) => settings[setting]?.vm.formAttrs.disabled)).toStrictEqual(Array(3).fill(true));
     });
 });

@@ -12,10 +12,11 @@ async function createWrapper() {
             global: {
                 stubs: {
                     'sw-card': await wrapTestComponent('sw-card', { sync: true }),
-                    'sw-card-deprecated': await wrapTestComponent('sw-card-deprecated', { sync: true }),
-                    'sw-alert': await wrapTestComponent('sw-alert', { sync: true }),
-                    'sw-alert-deprecated': await wrapTestComponent('sw-alert-deprecated', { sync: true }),
-                    'swag-paypal-setting': await Shopware.Component.build('swag-paypal-setting'),
+                    'swag-paypal-setting': {
+                        name: 'swag-paypal-setting',
+                        props: ['path'],
+                        template: '<div class="swag-paypal-setting"></div>',
+                    },
                     'swag-paypal-settings-webhook': true,
                 },
             },
@@ -34,7 +35,7 @@ describe('swag-paypal-settings-advanced', () => {
         const wrapper = await createWrapper();
 
         const cardClasses = wrapper
-            .findAll('.sw-card')
+            .findAll('.mt-card')
             .map((el) => el.classes())
             .flat()
             .filter((cl) => cl.startsWith('swag-paypal'));
@@ -62,7 +63,7 @@ describe('swag-paypal-settings-advanced', () => {
     it('should have cross-border information', async () => {
         const wrapper = await createWrapper();
 
-        const alert = wrapper.find('.sw-alert');
+        const alert = wrapper.find('.mt-banner');
 
         expect(alert.exists()).toBe(true);
         expect(alert.classes()).toContain('swag-paypal-settings-cross-border__warning-text');

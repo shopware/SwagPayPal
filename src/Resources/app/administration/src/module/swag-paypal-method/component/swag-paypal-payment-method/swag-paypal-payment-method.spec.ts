@@ -15,10 +15,12 @@ async function createWrapper(
                 stubs: {
                     'sw-help-text': await wrapTestComponent('sw-help-text', { sync: true }),
                     'sw-label': await wrapTestComponent('sw-label', { sync: true }),
+                    'sw-color-badge': await wrapTestComponent('sw-color-badge', { sync: true }),
                     'sw-switch-field': await wrapTestComponent('sw-switch-field', { sync: true }),
-                    'sw-switch-field-deprecated': await wrapTestComponent('sw-switch-field-deprecated', { sync: true }),
                     'sw-skeleton-bar': await wrapTestComponent('sw-skeleton-bar', { sync: true }),
                     'sw-skeleton-bar-deprecated': await wrapTestComponent('sw-skeleton-bar-deprecated', { sync: true }),
+                    'swag-paypal-method-domain-association': true,
+                    'router-link': true,
                 },
                 mocks: {
                     $te: (key: string) => availableTrans.includes(key),
@@ -119,19 +121,19 @@ describe('swag-paypal-payment-method', () => {
     });
 
     it('should toggle payment method active state', async () => {
+        global.activeAclRoles = ['swag_paypal.editor'];
         const wrapper = await createWrapper({ active: true });
 
-        const switchField = wrapper.findComponent<VueComponent>('.sw-field--switch');
+        const switchField = wrapper.find('input[type="checkbox"]');
         expect(switchField.exists()).toBe(true);
 
-        // emitting same value should not trigger event
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- component exists, we can emit
-        await switchField.vm.$emit('update:value', true);
+        await switchField.setValue(true);
+        await wrapper.vm.$nextTick();
 
         expect(wrapper.emitted('update:active')).toBeFalsy();
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- component exists, we can emit
-        await switchField.vm.$emit('update:value', false);
+        await switchField.setValue(false);
+        await wrapper.vm.$nextTick();
 
         expect(wrapper.emitted('update:active')).toBeTruthy();
     });
