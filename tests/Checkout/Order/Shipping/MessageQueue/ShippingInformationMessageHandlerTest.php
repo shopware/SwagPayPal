@@ -509,7 +509,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
         );
     }
 
-    private static function exactlyIf(bool $condition, int $count): InvokedCount
+    private function exactlyIf(bool $condition, int $count): InvokedCount
     {
         return $condition ? static::exactly($count) : static::never();
     }
