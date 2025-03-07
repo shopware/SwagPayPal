@@ -1147,62 +1147,6 @@
                 }
             }
         },
-        "/_action/paypal/validate-api-credentials": {
-            "get": {
-                "tags": [
-                    "Admin Api",
-                    "PayPal"
-                ],
-                "operationId": "validateApiCredentials",
-                "parameters": [
-                    {
-                        "name": "clientId",
-                        "in": "query",
-                        "description": "The client id of the PayPal API credentials",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "clientSecret",
-                        "in": "query",
-                        "description": "The client secret of the PayPal API credentials",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "sandboxActive",
-                        "in": "query",
-                        "description": "If the sandbox environment should be used",
-                        "required": false,
-                        "schema": {
-                            "type": "boolean",
-                            "nullable": true
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Returns if the provided API credentials are valid",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "credentialsValid": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/_action/paypal/test-api-credentials": {
             "post": {
                 "tags": [
@@ -4715,14 +4659,12 @@
                     "boletobancario",
                     "card",
                     "eps",
-                    "giropay",
                     "ideal",
                     "multibanco",
                     "my_bank",
                     "oxxo",
                     "p24",
                     "paypal",
-                    "sofort",
                     "token",
                     "trustly",
                     "google_pay",
@@ -4780,14 +4722,6 @@
                         ],
                         "nullable": true
                     },
-                    "giropay": {
-                        "oneOf": [
-                            {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_giropay"
-                            }
-                        ],
-                        "nullable": true
-                    },
                     "ideal": {
                         "oneOf": [
                             {
@@ -4832,14 +4766,6 @@
                         "oneOf": [
                             {
                                 "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_paypal"
-                            }
-                        ],
-                        "nullable": true
-                    },
-                    "sofort": {
-                        "oneOf": [
-                            {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_sofort"
                             }
                         ],
                         "nullable": true
@@ -5344,25 +5270,6 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_giropay": {
-                "required": [
-                    "name",
-                    "country_code",
-                    "experience_context"
-                ],
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "country_code": {
-                        "type": "string"
-                    },
-                    "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
-                    }
-                },
-                "type": "object"
-            },
             "swag_paypal_v2_order_payment_source_google_pay": {
                 "required": [
                     "experience_context",
@@ -5614,25 +5521,6 @@
                             }
                         ],
                         "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "swag_paypal_v2_order_payment_source_sofort": {
-                "required": [
-                    "name",
-                    "country_code",
-                    "experience_context"
-                ],
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "country_code": {
-                        "type": "string"
-                    },
-                    "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
                     }
                 },
                 "type": "object"
