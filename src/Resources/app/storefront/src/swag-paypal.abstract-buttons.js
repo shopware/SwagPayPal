@@ -44,8 +44,8 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
     NOT_ELIGIBLE = 'SWAG_PAYPAL__NOT_ELIGIBLE';
     USER_CANCELLED = 'SWAG_PAYPAL__USER_CANCELLED';
     BROWSER_UNSUPPORTED = 'SWAG_PAYPAL__BROWSER_UNSUPPORTED';
-
-
+    SCRIPT_ERROR = 'SWAG_PAYPAL__SCRIPT_ERROR';
+    SCRIPT_NOT_LOADED = 'SWAG_PAYPAL__SCRIPT_NOT_LOADED';
 
     /**
      * @param {String} code - The error code. Will be replaced by an extracted error code from {@link error} if available

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Storefront\Controller;
 
+use Monolog\Level;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
@@ -166,13 +167,17 @@ class PayPalController extends StorefrontController
             $request->getSession()->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
         }
 
-        $this->logger->warning('Storefront checkout error', [
-            'error' => $request->request->get('error'),
-            'code' => $code,
-            'fatal' => $fatal,
-            'paymentMethodId' => $context->getPaymentMethod()->getId(),
-            'paymentMethodName' => $context->getPaymentMethod()->getName(),
-        ]);
+        $this->logger->log(
+            \in_array($code, ['SWAG_PAYPAL__SCRIPT_ERROR', 'SWAG_PAYPAL__SCRIPT_NOT_LOADED'], true) ? Level::Error : Level::Warning,
+            'Storefront checkout error',
+            [
+                'error' => $request->request->get('error'),
+                'code' => $code,
+                'fatal' => $fatal,
+                'paymentMethodId' => $context->getPaymentMethod()->getId(),
+                'paymentMethodName' => $context->getPaymentMethod()->getName(),
+            ],
+        );
 
         return new NoContentResponse();
     }
