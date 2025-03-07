@@ -109,7 +109,11 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
     createButton() {
         this.createScript((paypal) => {
-            this.renderButton(paypal);
+            try {
+                this.renderButton(paypal);
+            } catch (error) {
+                this.handleError(this.SCRIPT_ERROR, true, error);
+            }
         });
     }
 
