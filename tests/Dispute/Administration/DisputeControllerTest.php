@@ -36,7 +36,8 @@ class DisputeControllerTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         $content = $response->getContent();
         static::assertNotFalse($content);
-        $data = \json_decode($content, true);
+        $data = \json_decode($content, true, \JSON_THROW_ON_ERROR);
+        static::assertIsArray($data);
         static::assertArrayHasKey('items', $data);
         static::assertArrayHasKey('links', $data);
         static::assertCount(3, $data['items']);
@@ -57,7 +58,8 @@ class DisputeControllerTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         $content = $response->getContent();
         static::assertNotFalse($content);
-        $data = \json_decode($content, true);
+        $data = \json_decode($content, true, \JSON_THROW_ON_ERROR);
+        static::assertIsArray($data);
         static::assertArrayHasKey('items', $data);
         static::assertArrayHasKey('links', $data);
         static::assertCount(3, $data['items']);
@@ -77,7 +79,8 @@ class DisputeControllerTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         $content = $response->getContent();
         static::assertNotFalse($content);
-        $data = \json_decode($content, true);
+        $data = \json_decode($content, true, \JSON_THROW_ON_ERROR);
+        static::assertIsArray($data);
         static::assertArrayHasKey('dispute_id', $data);
         static::assertSame(GetDispute::ID, $data['dispute_id']);
     }

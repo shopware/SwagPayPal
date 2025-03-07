@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Pos\Run;
 
 use Doctrine\DBAL\Connection;
-use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
@@ -69,17 +68,17 @@ class SyncManagerTest extends TestCase
         $imageSyncer = $this->createMock(ImageSyncManager::class);
         $imageSyncer
             ->method('createMessages')
-            ->with($this->salesChannel, $this->context, static::isType(IsType::TYPE_STRING))
+            ->with($this->salesChannel, $this->context, static::isString())
             ->willReturn([]);
         $inventorySyncer = $this->createMock(InventorySyncManager::class);
         $inventorySyncer
             ->method('createMessages')
-            ->with($this->salesChannel, $this->context, static::isType(IsType::TYPE_STRING))
+            ->with($this->salesChannel, $this->context, static::isString())
             ->willReturn([]);
         $productSyncer = $this->createMock(ProductSyncManager::class);
         $productSyncer
             ->method('createMessages')
-            ->with($this->salesChannel, $this->context, static::isType(IsType::TYPE_STRING))
+            ->with($this->salesChannel, $this->context, static::isString())
             ->willReturn([new ProductSingleSyncMessage()], []);
         $salesChannelRepo = new SalesChannelRepoMock();
         $salesChannelRepo->addMockEntity($this->salesChannel);
