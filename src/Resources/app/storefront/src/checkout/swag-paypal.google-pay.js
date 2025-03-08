@@ -30,15 +30,12 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
     }
 
     async render(paypal) {
-        await this.renderGooglePay(paypal)
-            .catch(this.onFatalError.bind(this));
-
-        ElementLoadingIndicatorUtil.remove(this.el);
+        await this.renderGooglePay(paypal);
     }
 
     async renderGooglePay(paypal) {
         if (!window?.google?.payments?.api?.PaymentsClient) {
-            throw new Error('Google Pay script wasn\'t load');
+            return void this.handleError(this.SCRIPT_NOT_LOADED, true, 'Google Pay script wasn\'t load');
         }
 
         const {
