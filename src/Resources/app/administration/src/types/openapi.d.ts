@@ -96,9 +96,6 @@ export interface paths {
   "/_action/paypal/pos/webhook/execute/{salesChannelId}": {
     post: operations["executePosWebhook"];
   };
-  "/_action/paypal/validate-api-credentials": {
-    get: operations["validateApiCredentials"];
-  };
   "/_action/paypal/test-api-credentials": {
     post: operations["testApiCredentials"];
   };
@@ -929,14 +926,12 @@ export interface components {
       boletobancario: components["schemas"]["swag_paypal_v2_order_payment_source_boletobancario"] | null;
       card: components["schemas"]["swag_paypal_v2_order_payment_source_card"] | null;
       eps: components["schemas"]["swag_paypal_v2_order_payment_source_eps"] | null;
-      giropay: components["schemas"]["swag_paypal_v2_order_payment_source_giropay"] | null;
       ideal: components["schemas"]["swag_paypal_v2_order_payment_source_ideal"] | null;
       multibanco: components["schemas"]["swag_paypal_v2_order_payment_source_multibanco"] | null;
       my_bank: components["schemas"]["swag_paypal_v2_order_payment_source_my_bank"] | null;
       oxxo: components["schemas"]["swag_paypal_v2_order_payment_source_oxxo"] | null;
       p24: components["schemas"]["swag_paypal_v2_order_payment_source_p24"] | null;
       paypal: components["schemas"]["swag_paypal_v2_order_payment_source_paypal"] | null;
-      sofort: components["schemas"]["swag_paypal_v2_order_payment_source_sofort"] | null;
       token: components["schemas"]["swag_paypal_v2_order_payment_source_token"] | null;
       trustly: components["schemas"]["swag_paypal_v2_order_payment_source_trustly"] | null;
       google_pay: components["schemas"]["swag_paypal_v2_order_payment_source_google_pay"] | null;
@@ -1062,11 +1057,6 @@ export interface components {
       country_code: string;
       experience_context: components["schemas"]["swag_paypal_v2_order_payment_source_common_experience_context"];
     };
-    swag_paypal_v2_order_payment_source_giropay: {
-      name: string;
-      country_code: string;
-      experience_context: components["schemas"]["swag_paypal_v2_order_payment_source_common_experience_context"];
-    };
     swag_paypal_v2_order_payment_source_google_pay: {
       experience_context: components["schemas"]["swag_paypal_v2_order_payment_source_common_experience_context"];
       card: components["schemas"]["swag_paypal_v2_order_payment_source_card"] | null;
@@ -1127,11 +1117,6 @@ export interface components {
       birth_date: string;
       phone_type: string;
       attributes: components["schemas"]["swag_paypal_v2_order_payment_source_common_attributes"] | null;
-    };
-    swag_paypal_v2_order_payment_source_sofort: {
-      name: string;
-      country_code: string;
-      experience_context: components["schemas"]["swag_paypal_v2_order_payment_source_common_experience_context"];
     };
     swag_paypal_v2_order_payment_source_token: {
       experience_context: components["schemas"]["swag_paypal_v2_order_payment_source_common_experience_context"];
@@ -1921,28 +1906,6 @@ export interface operations {
       /** @description Webhook execution was successful */
       204: {
         content: never;
-      };
-    };
-  };
-  validateApiCredentials: {
-    parameters: {
-      query: {
-        /** @description The client id of the PayPal API credentials */
-        clientId: string;
-        /** @description The client secret of the PayPal API credentials */
-        clientSecret: string;
-        /** @description If the sandbox environment should be used */
-        sandboxActive?: boolean | null;
-      };
-    };
-    responses: {
-      /** @description Returns if the provided API credentials are valid */
-      200: {
-        content: {
-          "application/json": {
-            credentialsValid?: boolean;
-          };
-        };
       };
     };
   };

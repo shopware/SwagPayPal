@@ -137,7 +137,10 @@ class OpenAPISchemaTest extends TestCase
     {
         $input = \str_replace(
             \array_keys(self::CONVERSION_EXCEPTIONS),
-            \array_values(self::CONVERSION_EXCEPTIONS),
+            \array_map(
+                static fn (?string $v) => (string) $v,
+                \array_values(self::CONVERSION_EXCEPTIONS),
+            ),
             $input
         );
 
