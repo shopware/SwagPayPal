@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Pos\Payment;
 
-use Shopware\Core\Checkout\Order\Exception\PaymentMethodNotAvailableException;
+use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\DefaultPayment;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
@@ -21,6 +21,6 @@ class PosPayment extends DefaultPayment
 {
     public function pay(Request $request, PaymentTransactionStruct $transaction, Context $context, ?Struct $validateStruct): ?RedirectResponse
     {
-        throw new PaymentMethodNotAvailableException(self::class);
+        throw OrderException::paymentMethodNotAvailable(self::class);
     }
 }

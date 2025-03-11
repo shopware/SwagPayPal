@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Payment;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Order\Exception\PaymentMethodNotAvailableException;
+use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -25,7 +25,7 @@ class PosPaymentTest extends TestCase
     public function testPaymentMethodNotUsable(): void
     {
         $paymentHandler = new PosPayment();
-        $this->expectException(PaymentMethodNotAvailableException::class);
+        $this->expectException(OrderException::class);
         $paymentHandler->pay(
             new Request(),
             new PaymentTransactionStruct(Uuid::randomHex()),
