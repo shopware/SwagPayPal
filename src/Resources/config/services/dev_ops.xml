@@ -8,5 +8,9 @@
         <service id="Swag\PayPal\DevOps\Command\GenerateOpenApi">
             <tag name="console.command"/>
         </service>
+
+        <service id="Swag\PayPal\DevOps\Command\CrawlWebhookEventNames">
+            <tag name="console.command"/>
+        </service>
     </services>
 </container>

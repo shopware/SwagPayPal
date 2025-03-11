@@ -115,9 +115,5 @@
             <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-
-        <service id="Swag\PayPal\Webhook\Command\CrawlWebhookEventNamesCommand">
-            <tag name="console.command"/>
-        </service>
     </services>
 </container>

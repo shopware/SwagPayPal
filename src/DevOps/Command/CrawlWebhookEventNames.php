@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Webhook\Command;
+namespace Swag\PayPal\DevOps\Command;
 
 use Shopware\Core\Framework\Log\Package;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -14,16 +14,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
+/**
+ * @internal
+ */
 #[AsCommand(
     name: 'swag:paypal:crawl:webhooks',
     description: 'Crawls the PayPal developer website for webhook event names and updates "Swag\PayPal\Webhook\WebhookEventTypes"'
 )]
 #[Package('checkout')]
-class CrawlWebhookEventNamesCommand extends Command
+class CrawlWebhookEventNames extends Command
 {
     private const PAYPAL_WEBHOOK_PAGE = 'https://developer.paypal.com/docs/api-basics/notifications/webhooks/event-names/';
     private const WEBHOOK_NAME_KEY = 'webhookName';
     private const WEBHOOK_DESCRIPTION_KEY = 'webhookDescription';
+    private const PATH = __DIR__ . '/../../src/Webhook/WebhookEventTypes.php';
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -78,10 +82,9 @@ class CrawlWebhookEventNamesCommand extends Command
 
         $webhookEventTypesClass = \sprintf($this->getClassTemplate(), self::PAYPAL_WEBHOOK_PAGE, $webhooksString);
 
-        $webhookEventTypesClassPath = __DIR__ . '/../WebhookEventTypes.php';
-        $result = \file_put_contents($webhookEventTypesClassPath, $webhookEventTypesClass, \LOCK_EX);
+        $result = \file_put_contents(self::PATH, $webhookEventTypesClass, \LOCK_EX);
         if ($result === false) {
-            throw new \RuntimeException(\sprintf('File "%s" could not be written', $webhookEventTypesClassPath));
+            throw new \RuntimeException(\sprintf('File "%s" could not be written', self::PATH));
         }
 
         return 0;
