@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\Helper;
 
 use Doctrine\DBAL\Connection;
-use Shopware\Core\Checkout\Order\Exception\PaymentMethodNotAvailableException;
+use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Defaults;
@@ -115,7 +115,7 @@ trait CheckoutRouteTrait
 
         $paymentMethodIds = $salesChannel->getPaymentMethodIds();
         if ($paymentMethodIds !== null && !\in_array($payPalPaymentMethodId, $paymentMethodIds, true)) {
-            throw new PaymentMethodNotAvailableException($payPalPaymentMethodId);
+            throw OrderException::paymentMethodNotAvailable($payPalPaymentMethodId);
         }
 
         return $salesChannel;
