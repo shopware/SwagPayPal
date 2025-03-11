@@ -19,8 +19,6 @@ use Symfony\Contracts\Service\ResetInterface;
 #[Package('checkout')]
 class LocaleCodeProvider implements ResetInterface
 {
-    private const SUPPORTED_LOCALE_CODE_LENGTH = 5;
-
     private const DEFAULT_LOCALE_CODE = 'en_GB';
 
     private EntityRepository $languageRepository;
@@ -67,16 +65,31 @@ class LocaleCodeProvider implements ResetInterface
     {
         $canonicalizedCode = (string) \Locale::canonicalize($localeCode);
 
-        if (\mb_strlen($canonicalizedCode) !== self::SUPPORTED_LOCALE_CODE_LENGTH) {
+        $locales = (new \ReflectionClass(PaypalLocales::class))->getConstants();
+
+        if (!\in_array($canonicalizedCode, \array_unique(\array_merge(...\array_values($locales))), true)) {
+            $matched = $this->findMatchingSupportedLocale($canonicalizedCode, $locales);
+            if (!$matched) {
+                $this->logger->notice(
+                    \sprintf(
+                        'PayPal does not support locale code %s. Switched to default %s.',
+                        $localeCode,
+                        self::DEFAULT_LOCALE_CODE
+                    )
+                );
+
+                return self::DEFAULT_LOCALE_CODE;
+            }
+
             $this->logger->notice(
                 \sprintf(
-                    'PayPal does not support locale code %s. Switch to default %s',
+                    'PayPal does not support locale code %s. Switched to %s.',
                     $localeCode,
-                    self::DEFAULT_LOCALE_CODE
+                    $matched
                 )
             );
 
-            return self::DEFAULT_LOCALE_CODE;
+            return $matched;
         }
 
         return $canonicalizedCode;
@@ -85,5 +98,12 @@ class LocaleCodeProvider implements ResetInterface
     public function reset(): void
     {
         $this->cache = [];
+    }
+
+    private function findMatchingSupportedLocale(string $localeCode, array $locales): ?string
+    {
+        $localeCode = \Locale::getRegion($localeCode);
+
+        return $locales[$localeCode][0] ?? null;
     }
 }

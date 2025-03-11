@@ -1,0 +1,47 @@
+name: Weekly
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  locale-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Scrape PayPal locale codes
+        run: bin/console swag:paypal:scrape:locales
+
+      - name: Check for changes
+        id: git_diff
+        run: |
+          git diff --exit-code src/Util/PaypalLocales.php || echo "changed=true" >> $GITHUB_ENV
+
+      - name: Commit and push changes
+        if: env.changed == 'true'
+        run: |
+          git checkout -b chore-update-paypal-locales
+          git add src/Util/PaypalLocales.php
+          git commit -m "chore: auto update of paypal locales"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git chore-update-paypal-locales
+
+      - name: Create Pull Request
+        if: env.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "chore: Update PayPal locales"
+          body: "Automated update of supported PayPal locales list."
+          branch: update-paypal-locales
+          token: ${{ secrets.GITHUB_TOKEN }}

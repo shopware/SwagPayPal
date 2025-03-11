@@ -173,7 +173,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         $this->systemConfigService->set(Settings::CLIENT_SECRET, 'someClientSecret');
 
         if ($withSettingsLocale) {
-            $this->systemConfigService->set(Settings::ECS_BUTTON_LANGUAGE_ISO, 'zz_ZZ');
+            $this->systemConfigService->set(Settings::ECS_BUTTON_LANGUAGE_ISO, 'de_AT');
         }
 
         $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext, $addToCart);
@@ -187,7 +187,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame('gold', $expressCheckoutButtonData->getButtonColor());
         static::assertSame('sharp', $expressCheckoutButtonData->getButtonShape());
         if ($withSettingsLocale) {
-            static::assertSame('zz_ZZ', $expressCheckoutButtonData->getLanguageIso());
+            static::assertSame('de_DE', $expressCheckoutButtonData->getLanguageIso());
         } else {
             static::assertSame('en_GB', $expressCheckoutButtonData->getLanguageIso());
         }

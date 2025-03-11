@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Util;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
@@ -20,13 +21,16 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 #[Package('checkout')]
 class LocaleCodeProviderTest extends TestCase
 {
+    private MockObject $logger;
+
     private LocaleCodeProvider $provider;
 
     protected function setUp(): void
     {
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->provider = new LocaleCodeProvider(
             new LanguageRepoMock(),
-            $this->createMock(LoggerInterface::class)
+            $this->logger
         );
     }
 
@@ -37,10 +41,34 @@ class LocaleCodeProviderTest extends TestCase
         static::assertSame(LanguageRepoMock::LOCALE_CODE, $iso);
     }
 
-    public function testGetDefaultLocale(): void
+    public function testGetFormattedLocaleCodeWithSupportedLocale(): void
     {
-        $locale = $this->provider->getFormattedLocaleCode('cch-NG');
+        $this->logger->expects(static::never())->method('notice');
+
+        $locale = $this->provider->getFormattedLocaleCode('en_US');
+
+        static::assertSame('en_US', $locale);
+    }
+
+    public function testGetFormattedLocaleCodeWithUnsupportedLocale(): void
+    {
+        $this->logger->expects(static::once())
+            ->method('notice')
+            ->with('PayPal does not support locale code cch-ZZ. Switched to default en_GB.');
+
+        $locale = $this->provider->getFormattedLocaleCode('cch-ZZ');
 
         static::assertSame('en_GB', $locale);
+    }
+
+    public function testGetFormattedLocaleCodeWithFallbackLocale(): void
+    {
+        $this->logger->expects(static::once())
+            ->method('notice')
+            ->with('PayPal does not support locale code en_ZA. Switched to en_US.');
+
+        $locale = $this->provider->getFormattedLocaleCode('en_ZA');
+
+        static::assertSame('en_US', $locale);
     }
 }

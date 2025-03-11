@@ -171,5 +171,9 @@
         <service id="Swag\PayPal\Util\Availability\AvailabilityService">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
         </service>
+
+        <service id="Swag\PayPal\Util\Command\PaypalLocaleScraperCommand">
+            <tag name="console.command"/>
+        </service>
     </services>
 </container>
