@@ -1,10 +1,10 @@
 # 9.7.0
 - PPI-1000 - Behebt ein Problem, bei dem 'Später Bezahlen' in Fällen angezeigt wird, in denen es nicht verfügbar sein sollte
 - PPI-1044 - Verbesserte Kompatibilität von Vaulting mit der Store-API und Headless
+- PPI-1070 - Verbessertes Fallback-Verhalten der Lokalisierung
 - PPI-1073 - Verändert die Protokollierung von Fehlern während des Bestellvorganges
 - PPI-1076 - Verbesserte Informationsweitergabe in Express Checkout-API-Aufrufen
 - PPI-1077 - Verbesserte Verfügbarkeit von Google Pay und Apple Pay
-- PPI-1070 - Verbesserte Locale-Fallback verhalten
 
 # 9.6.5
 - PPI-1025 - Verbessert die Performance des Ratenzahlungsbanners in der Storefront

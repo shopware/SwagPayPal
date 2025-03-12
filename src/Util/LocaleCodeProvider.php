@@ -14,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageEntity;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Symfony\Contracts\Service\ResetInterface;
 
 #[Package('checkout')]
@@ -65,9 +66,9 @@ class LocaleCodeProvider implements ResetInterface
     {
         $canonicalizedCode = (string) \Locale::canonicalize($localeCode);
 
-        $locales = (new \ReflectionClass(PaypalLocales::class))->getConstants();
+        $locales = SupportedLocales::LOCALES;
 
-        if (!\in_array($canonicalizedCode, \array_unique(\array_merge(...\array_values($locales))), true)) {
+        if (!\in_array($canonicalizedCode, \array_merge(...\array_values($locales)), true)) {
             $matched = $this->findMatchingSupportedLocale($canonicalizedCode, $locales);
             if (!$matched) {
                 $this->logger->notice(

@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Util\Command;
+namespace Swag\PayPal\DevOps\Command;
 
 use Shopware\Core\Framework\Log\Package;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpClient\HttpClient;
     description: 'Scrapes the PayPal developer website for locales and updates "Swag\PayPal\Util\PaypalLocales"',
 )]
 #[Package('checkout')]
-class PaypalLocaleScraperCommand extends Command
+class LocaleScraperCommand extends Command
 {
     public const REGION_KEY = 'region';
     public const LOCALE_CODE_KEY = 'locale_code';
@@ -46,7 +46,6 @@ class PaypalLocaleScraperCommand extends Command
 
             $locales[$countryCode][] = [
                 self::PRIORITY => trim($columns->eq(2)->text()),
-                self::REGION_KEY => trim($columns->eq(0)->text()),
                 self::LOCALE_CODE_KEY => trim($columns->eq(3)->text()),
             ];
         });
@@ -58,8 +57,7 @@ class PaypalLocaleScraperCommand extends Command
                 $localeString .= $this->getLocaleString($locale);
             }
             $localesClassContent .= \sprintf(
-                "\n    /* %s */\n    public const %s = [\n%s\n    ];\n",
-                \htmlspecialchars_decode(\ucwords(\strtolower($locale[self::REGION_KEY])), \ENT_NOQUOTES),
+                "        '%s' => [\n%s\n        ],\n",
                 $countryCode,
                 trim($localeString, "\n")
             );
@@ -67,7 +65,7 @@ class PaypalLocaleScraperCommand extends Command
 
         $localesClass = \sprintf($this->getClassTemplate(), self::PAYPAL_LOCALES_PAGE, \trim($localesClassContent, "\n"));
 
-        $localesClassPath = __DIR__ . '/../PaypalLocales.php';
+        $localesClassPath = __DIR__ . '/../../Util/SupportedLocales.php';
         $result = \file_put_contents($localesClassPath, $localesClass, \LOCK_EX);
         if ($result === false) {
             throw new \RuntimeException(\sprintf('File "%s" could not be written', $localesClassPath));
@@ -79,7 +77,7 @@ class PaypalLocaleScraperCommand extends Command
     private function getLocaleString(array $locale): string
     {
         return <<<EOD
-        {$locale[self::PRIORITY]} => '{$locale[self::LOCALE_CODE_KEY]}',
+            {$locale[self::PRIORITY]} => '{$locale[self::LOCALE_CODE_KEY]}',
 
 EOD;
     }
@@ -105,7 +103,9 @@ use Swag\PayPal\Util\Command\PaypalLocaleScraperCommand;
 #[Package('checkout')]
 final class PaypalLocales
 {
+    public const LOCALES = [
 %s
+    ];
 }
 
 EOD;
