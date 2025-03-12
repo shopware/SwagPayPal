@@ -13,8 +13,15 @@ permissions:
   id-token: write
 
 jobs:
-  eslint:
+
+  locale-scraper:
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
@@ -22,16 +29,47 @@ jobs:
           path: custom/plugins/${{ github.event.repository.name }}
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
-        with:
-          install-admin: true
-      - name: Run ESLint
-        env:
-          ADMIN_PATH: ${{ github.workspace }}/src/Administration/Resources/app/administration
-        working-directory: custom/plugins/${{ github.event.repository.name }}
-        run: composer run lint:admin:ci
 
-  jest:
-    uses: shopware/github-actions/.github/workflows/admin-jest.yml@main
-    with:
-      extensionName: ${{ github.event.repository.name }}
-      uploadCoverage: false
+      - name: Scrape PayPal locale codes
+        run: bin/console swag:paypal:scrape:locales
+
+      - name: Check for changes
+        id: git_diff
+        run: |
+          cd custom/plugins/SwagPayPal
+          git diff --exit-code src/Util/SupportedLocales.php || echo "changed=true" >> $GITHUB_ENV
+
+      - name: Create Pull Request
+        if: env.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "chore: Update PayPal locales"
+          body: "Automated update of supported PayPal locales list."
+          branch: update-paypal-locales
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: custom/plugins/SwagPayPal
+          team-reviewers: "product-cc-checkout"
+          commit-message: "chore: auto update of paypal locales"
+
+#  eslint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout SwagPayPal
+#        uses: actions/checkout@v4
+#        with:
+#          path: custom/plugins/${{ github.event.repository.name }}
+#      - name: Setup SwagPayPal
+#        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+#        with:
+#          install-admin: true
+#      - name: Run ESLint
+#        env:
+#          ADMIN_PATH: ${{ github.workspace }}/src/Administration/Resources/app/administration
+#        working-directory: custom/plugins/${{ github.event.repository.name }}
+#        run: composer run lint:admin:ci
+#
+#  jest:
+#    uses: shopware/github-actions/.github/workflows/admin-jest.yml@main
+#    with:
+#      extensionName: ${{ github.event.repository.name }}
+#      uploadCoverage: false
