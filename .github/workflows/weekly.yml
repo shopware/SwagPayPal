@@ -9,7 +9,6 @@ jobs:
   locale-scraper:
     permissions:
       contents: write
-      pull-requests: write
       id-token: write
 
     runs-on: ubuntu-latest
@@ -21,6 +20,12 @@ jobs:
           path: custom/plugins/${{ github.event.repository.name }}
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+
+      - uses: octo-sts/action@main
+        id: create-pr-token
+        with:
+          scope: shopware
+          identity: CreatePR
 
       - name: Scrape PayPal locale codes
         run: bin/console swag:paypal:scrape:locales
@@ -38,6 +43,6 @@ jobs:
           title: "chore: Update PayPal locales"
           body: "Automated update of supported PayPal locales list."
           branch: update-paypal-locales
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.create-pr-token.outputs.token }}
           path: custom/plugins/SwagPayPal
           commit-message: "chore: auto update of paypal locales"
