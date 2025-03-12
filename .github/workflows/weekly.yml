@@ -10,16 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout SwagPayPal
         uses: actions/checkout@v4
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
-
-      - name: Install dependencies
-        run: composer install
+          path: custom/plugins/${{ github.event.repository.name }}
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
 
       - name: Scrape PayPal locale codes
         run: bin/console swag:paypal:scrape:locales
@@ -27,13 +23,13 @@ jobs:
       - name: Check for changes
         id: git_diff
         run: |
-          git diff --exit-code src/Util/PaypalLocales.php || echo "changed=true" >> $GITHUB_ENV
+          git diff --exit-code src/Util/SupportedLocales.php || echo "changed=true" >> $GITHUB_ENV
 
       - name: Commit and push changes
         if: env.changed == 'true'
         run: |
           git checkout -b chore-update-paypal-locales
-          git add src/Util/PaypalLocales.php
+          git add src/Util/SupportedLocales.php
           git commit -m "chore: auto update of paypal locales"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git chore-update-paypal-locales
 
