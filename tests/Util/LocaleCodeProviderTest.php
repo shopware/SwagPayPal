@@ -21,7 +21,7 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 #[Package('checkout')]
 class LocaleCodeProviderTest extends TestCase
 {
-    private MockObject $logger;
+    private LoggerInterface&MockObject $logger;
 
     private LocaleCodeProvider $provider;
 
