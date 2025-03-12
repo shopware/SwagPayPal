@@ -8,13 +8,12 @@
 namespace Swag\PayPal\Util;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Util\Command\PaypalLocaleScraperCommand;
 
 /**
  * @url https://developer.paypal.com/reference/locale-codes/
  */
 #[Package('checkout')]
-final class PaypalLocales
+final class SupportedLocales
 {
     public const LOCALES = [
         'AL' => [

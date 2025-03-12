@@ -14,7 +14,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageEntity;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Symfony\Contracts\Service\ResetInterface;
 
 #[Package('checkout')]

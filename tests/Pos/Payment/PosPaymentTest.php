@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Pos\Payment;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Order\Exception\PaymentMethodNotAvailableException;
 use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
