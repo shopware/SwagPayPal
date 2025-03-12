@@ -7,6 +7,11 @@ on:
 
 jobs:
   locale-scraper:
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
     runs-on: ubuntu-latest
 
     steps:
@@ -23,21 +28,16 @@ jobs:
       - name: Check for changes
         id: git_diff
         run: |
+          cd custom/plugins/SwagPayPal
           git diff --exit-code src/Util/SupportedLocales.php || echo "changed=true" >> $GITHUB_ENV
-
-      - name: Commit and push changes
-        if: env.changed == 'true'
-        run: |
-          git checkout -b chore-update-paypal-locales
-          git add src/Util/SupportedLocales.php
-          git commit -m "chore: auto update of paypal locales"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git chore-update-paypal-locales
 
       - name: Create Pull Request
         if: env.changed == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           title: "chore: Update PayPal locales"
           body: "Automated update of supported PayPal locales list."
           branch: update-paypal-locales
           token: ${{ secrets.GITHUB_TOKEN }}
+          path: custom/plugins/SwagPayPal
+          commit-message: "chore: auto update of paypal locales"
