@@ -9,6 +9,10 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="Swag\PayPal\DevOps\Command\LocaleScraperCommand">
+            <tag name="console.command"/>
+        </service>
+
         <service id="Swag\PayPal\DevOps\Command\CrawlWebhookEventNames">
             <tag name="console.command"/>
         </service>
