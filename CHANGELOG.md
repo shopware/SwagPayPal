@@ -6,6 +6,7 @@
 - PPI-1076 - Improved information passing in Express Checkout API calls
 - PPI-1077 - Improved the availability for Google Pay and Apple Pay
 - PPI-1082 - Fixes an issue, where timezone discrepancies can lead to authentication issues
+- PPI-1083 - Fixes an issue, where Express Checkout was not possible with double opt-in enabled
 
 # 9.6.5
 - PPI-1025 - Improves the performance of the installment banner in the Storefront
