@@ -106,6 +106,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
             CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmLoaded',
 
             CustomerEvents::MAPPING_REGISTER_CUSTOMER => 'addPayerIdToCustomer',
+            CustomerEvents::CUSTOMER_WRITTEN_EVENT => 'onCustomerWritten',
         ];
 
         static::assertSame($expectedEvents, $subscribedEvents);
@@ -562,6 +563,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
                 $settings,
                 $this->createMock(SalesChannelRepository::class)
             ),
+            $this->createMock(EntityRepository::class),
             new NullLogger()
         );
     }
