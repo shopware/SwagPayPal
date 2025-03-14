@@ -19,6 +19,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\RestApi\V2\Api\Order;
@@ -116,6 +117,19 @@ class ExpressCustomerServiceTest extends TestCase
         $addresses = $secondCustomer->getAddresses();
         static::assertNotNull($addresses);
         static::assertCount(1, $addresses);
+    }
+
+    public function testLoginWithDoubleOptInEnabled(): void
+    {
+        $systemConfig = $this->getContainer()->get(SystemConfigService::class);
+        $systemConfig->set('core.loginRegistration.doubleOptInGuestOrder', true);
+
+        $order = new Order();
+        $order->assign(GetOrderCapture::get());
+        $customer = $this->doLogin($order);
+
+        static::assertFalse($customer->getDoubleOptInRegistration());
+        static::assertNull($customer->getDoubleOptInEmailSentDate());
     }
 
     private function doLogin(Order $order): CustomerEntity

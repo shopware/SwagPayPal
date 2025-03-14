@@ -8,9 +8,12 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\Event\DataMappingEvent;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -58,14 +61,23 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     private ExcludedProductValidator $excludedProductValidator;
 
+    /**
+     * @var EntityRepository<CustomerCollection>
+     */
+    private EntityRepository $customerRepository;
+
     private LoggerInterface $logger;
 
+    /**
+     * @param EntityRepository<CustomerCollection> $customerRepository
+     */
     public function __construct(
         ExpressCheckoutDataServiceInterface $service,
         SettingsValidationServiceInterface $settingsValidationService,
         SystemConfigService $systemConfigService,
         PaymentMethodUtil $paymentMethodUtil,
         ExcludedProductValidator $excludedProductValidator,
+        EntityRepository $customerRepository,
         LoggerInterface $logger
     ) {
         $this->expressCheckoutDataService = $service;
@@ -73,6 +85,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         $this->systemConfigService = $systemConfigService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->excludedProductValidator = $excludedProductValidator;
+        $this->customerRepository = $customerRepository;
         $this->logger = $logger;
     }
 
@@ -99,6 +112,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmLoaded',
 
             CustomerEvents::MAPPING_REGISTER_CUSTOMER => 'addPayerIdToCustomer',
+            CustomerEvents::CUSTOMER_WRITTEN_EVENT => 'onCustomerWritten',
         ];
     }
 
@@ -225,6 +239,44 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         $output = $event->getOutput();
         $output['customFields'][ExpressCustomerService::EXPRESS_PAYER_ID] = $input->get(ExpressCustomerService::EXPRESS_PAYER_ID);
         $event->setOutput($output);
+    }
+
+    /**
+     * If double opt-in is enabled, we need to patch the customer to disable it again.
+     * Otherwise, we will not get a logged-in customer and an email will be sent, requiring confirmation.
+     * We don't need this confirmation as PayPal is our trusted source.
+     */
+    public function onCustomerWritten(EntityWrittenEvent $event): void
+    {
+        if (!$event->getContext()->hasExtension(ExpressCustomerService::EXPRESS_CHECKOUT_ACTIVE)) {
+            return;
+        }
+
+        // as we're in express checkout, there will be only one write result
+        foreach ($event->getWriteResults() as $result) {
+            $id = $result->getProperty('id');
+            $salesChannelId = $result->getProperty('salesChannelId');
+            $expressId = $result->getProperty('customFields')[ExpressCustomerService::EXPRESS_PAYER_ID] ?? null;
+            $guest = (bool) $result->getProperty('guest');
+
+            // double-checking if we should patch
+            if (!$id || !$salesChannelId || !$expressId || !$guest) {
+                continue;
+            }
+
+            if ($this->systemConfigService->getBool('core.loginRegistration.doubleOptInGuestOrder', $salesChannelId)) {
+                // prevent looping on with another written event after patching
+                $event->getContext()->removeExtension(ExpressCustomerService::EXPRESS_CHECKOUT_ACTIVE);
+
+                $this->customerRepository->update([[
+                    'id' => $id,
+                    'doubleOptInRegistration' => false,
+                    'doubleOptInEmailSentDate' => null,
+                ]], $event->getContext());
+
+                $event->getContext()->addExtension(ExpressCustomerService::EXPRESS_CHECKOUT_ACTIVE, new ArrayStruct());
+            }
+        }
     }
 
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void

@@ -4,6 +4,7 @@
 - PPI-1076 - Verbesserte Informationsweitergabe in Express Checkout-API-Aufrufen
 - PPI-1077 - Verbesserte Verfügbarkeit von Google Pay und Apple Pay
 - PPI-1082 - Behebt ein Problem, bei dem Zeitzonenabweichungen zu Authentifizierungsproblemen führen konnten
+- PPI-1083 - Behebt ein Problem, bei dem der Express-Checkout mit aktivem Double Opt-In nicht möglich war
 
 # 8.6.5
 - PPI-1025 - Verbessert die Performance des Ratenzahlungsbanners in der Storefront
