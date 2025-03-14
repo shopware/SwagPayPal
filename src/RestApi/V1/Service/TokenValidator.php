@@ -15,7 +15,7 @@ class TokenValidator
 {
     public function isTokenValid(Token $token): bool
     {
-        $dateTimeNow = new \DateTime();
+        $dateTimeNow = new \DateTime('now', new \DateTimeZone('UTC'));
         $dateTimeExpire = $token->getExpireDateTime();
         // Decrease expire date by one hour just to make sure, it doesn't run into an unauthorized exception.
         $dateTimeExpire = $dateTimeExpire->sub(new \DateInterval('PT1H'));
