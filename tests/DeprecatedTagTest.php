@@ -31,7 +31,6 @@ class DeprecatedTagTest extends TestCase
 
     public function testAllFilesForDeprecated(): void
     {
-        static::markTestSkipped('deprecations are not removed yet completely');
         $pluginPath = __DIR__ . '/../';
         $return = [];
         $finder = new Finder();
