@@ -8,8 +8,6 @@
 namespace Swag\PayPal\Test\Storefront\Data\Service;
 
 use Monolog\Test\TestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
@@ -36,9 +34,10 @@ use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
+ *
+ * @covers \Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService
  */
 #[Package('checkout')]
-#[CoversClass(VenmoCheckoutDataService::class)]
 class VenmoCheckoutDataServiceTest extends TestCase
 {
     use CartTrait;
@@ -87,7 +86,9 @@ class VenmoCheckoutDataServiceTest extends TestCase
         );
     }
 
-    #[DataProvider('providerTestSetUserIdToken')]
+    /**
+     * @dataProvider providerTestSetUserIdToken
+     */
     public function testSetUserIdToken(?string $expected, bool $guest, bool $enabled): void
     {
         $this->systemConfigService->set(Settings::VAULTING_ENABLED_VENMO, $enabled);
