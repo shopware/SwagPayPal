@@ -91,7 +91,7 @@ class SPBCheckoutDataServiceTest extends TestCase
     public function testSetUserIdToken(?string $expected, bool $guest, bool $enabled): void
     {
         $this->systemConfigService->set(Settings::VAULTING_ENABLED_WALLET, $enabled);
-        $context = Generator::createSalesChannelContext(currency: $this->createCurrency(), customer: $this->createCustomer($guest));
+        $context = Generator::generateSalesChannelContext(currency: $this->createCurrency(), customer: $this->createCustomer($guest));
         $this->customerVaultTokenRoute
             ->expects(static::exactly((int) (!$guest && $enabled)))
             ->method('getVaultToken')
