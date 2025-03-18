@@ -1,3 +1,6 @@
+# 8.7.1
+- Fixes an issue where payments could not be refunded (shopware/shopware#7644)
+
 # 8.7.0
 - PPI-1044 - Improved compatibility of Vaulting with Store API usage and Headless setups
 - PPI-1073 - Changed logging behaviour of errors happening during checkout
