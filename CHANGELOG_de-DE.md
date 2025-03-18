@@ -1,3 +1,6 @@
+# 9.7.1
+- Behebt ein Problem, bei dem Zahlungen nicht erstattet werden konnten (shopware/shopware#7644)
+
 # 9.7.0
 - PPI-1000 - Behebt ein Problem, bei dem 'Später Bezahlen' in Fällen angezeigt wird, in denen es nicht verfügbar sein sollte
 - PPI-1044 - Verbesserte Kompatibilität von Vaulting mit der Store-API und Headless
