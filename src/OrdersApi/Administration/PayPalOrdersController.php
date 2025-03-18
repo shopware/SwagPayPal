@@ -267,7 +267,7 @@ class PayPalOrdersController extends AbstractController
             content: new OA\JsonContent(ref: Order\PurchaseUnit\Payments\Refund::class)
         )]
     )]
-    #[Route(path: '/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}', name: 'api.action.paypal_v2.refund_capture', defaults: ['_acl' => ['order.editor']], methods: ['POST'])]
+    #[Route(path: '/api/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}', name: 'api.action.paypal_v2.refund_capture', defaults: ['_acl' => ['order.editor']], methods: ['POST'])]
     public function refundCapture(
         string $orderTransactionId,
         string $captureId,
@@ -330,7 +330,7 @@ class PayPalOrdersController extends AbstractController
             content: new OA\JsonContent(ref: Order\PurchaseUnit\Payments\Capture::class)
         )]
     )]
-    #[Route(path: '/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}', name: 'api.action.paypal_v2.capture_authorization', defaults: ['_acl' => ['order.editor']], methods: ['POST'])]
+    #[Route(path: '/api/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}', name: 'api.action.paypal_v2.capture_authorization', defaults: ['_acl' => ['order.editor']], methods: ['POST'])]
     public function captureAuthorization(
         string $orderTransactionId,
         string $authorizationId,
