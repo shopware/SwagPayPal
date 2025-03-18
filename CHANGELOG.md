@@ -1,3 +1,6 @@
+# 9.7.1
+- Fixes an issue where payments could not be refunded (shopware/shopware#7644)
+
 # 9.7.0
 - PPI-1000 - Fixes an issue, where PayLater is shown in cases where it should not be available
 - PPI-1044 - Improved compatibility of Vaulting with Store API usage and Headless setups
