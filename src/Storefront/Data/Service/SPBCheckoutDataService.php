@@ -74,7 +74,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
             'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
             'disabledAlternativePaymentMethods' => $this->getDisabledAlternativePaymentMethods($price, $currency->getIsoCode()),
             'showPayLater' => $this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId),
-            'userIdToken' => $this->customerVaultTokenRoute->getVaultToken($context)->getToken(),
+            'userIdToken' => !$context->getCustomer()?->getGuest() ? $this->customerVaultTokenRoute->getVaultToken($context)->getToken() : null,
         ]));
     }
 
