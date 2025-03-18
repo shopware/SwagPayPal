@@ -1,3 +1,6 @@
+# 8.7.1
+- Behebt ein Problem, bei dem Zahlungen nicht erstattet werden konnten (shopware/shopware#7644)
+
 # 8.7.0
 - PPI-1044 - Verbesserte Kompatibilität von Vaulting mit der Store-API und Headless
 - PPI-1073 - Verändert die Protokollierung von Fehlern während des Bestellvorganges
