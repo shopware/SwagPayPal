@@ -71,12 +71,17 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
 
         $data = $this->getBaseData($context, $order);
 
+        $userIdToken = null;
+        if ($this->methodData->isVaultable($context)) {
+            $userIdToken = $this->customerVaultTokenRoute->getVaultToken($context)->getToken();
+        }
+
         return (new SPBCheckoutButtonData())->assign(\array_merge($data, [
             'buttonColor' => $this->systemConfigService->getString(Settings::SPB_BUTTON_COLOR, $salesChannelId),
             'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
             'disabledAlternativePaymentMethods' => $this->getDisabledAlternativePaymentMethods($price, $currency->getIsoCode()),
             'showPayLater' => $this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId),
-            'userIdToken' => !$context->getCustomer()?->getGuest() ? $this->customerVaultTokenRoute->getVaultToken($context)->getToken() : null,
+            'userIdToken' => $userIdToken,
         ]));
     }
 
