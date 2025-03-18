@@ -1,5 +1,8 @@
+# 9.7.2
+- Fixes an issue, where guest checkout was not possible (shopware/SwagPayPal#165)
+
 # 9.7.1
-- Fixes an issue where payments could not be refunded (shopware/shopware#7644)
+- Fixes an issue, where payments could not be refunded (shopware/shopware#7644)
 
 # 9.7.0
 - PPI-1000 - Fixes an issue, where PayLater is shown in cases where it should not be available
