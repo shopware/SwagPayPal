@@ -1,3 +1,6 @@
+# 8.7.2
+- Behebt ein Problem, bei dem der Checkout als Gast nicht möglich war (shopware/SwagPayPal#165)
+
 # 8.7.1
 - Behebt ein Problem, bei dem Zahlungen nicht erstattet werden konnten (shopware/shopware#7644)
 
