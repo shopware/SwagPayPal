@@ -41,8 +41,13 @@ class VenmoCheckoutDataService extends AbstractCheckoutDataService
     {
         $data = $this->getBaseData($context, $order);
 
+        $userIdToken = null;
+        if ($this->methodData->isVaultable($context)) {
+            $userIdToken = $this->customerVaultTokenRoute->getVaultToken($context)->getToken();
+        }
+
         return (new VenmoCheckoutData())->assign(\array_merge($data, [
-            'userIdToken' => $this->customerVaultTokenRoute->getVaultToken($context)->getToken(),
+            'userIdToken' => $userIdToken,
         ]));
     }
 
