@@ -87,7 +87,7 @@ class SPBCheckoutDataServiceTest extends TestCase
         );
     }
 
-    #[DataProvider('setUserIdTokenProvider')]
+    #[DataProvider('providerTestSetUserIdToken')]
     public function testSetUserIdToken(?string $expected, bool $guest, bool $enabled): void
     {
         $this->systemConfigService->set(Settings::VAULTING_ENABLED_WALLET, $enabled);
@@ -102,10 +102,10 @@ class SPBCheckoutDataServiceTest extends TestCase
             $this->createCart(Uuid::randomHex()),
         );
 
-        static::assertSame($expected, $data->getUserIdToken());
+        static::assertSame($expected, $data?->getUserIdToken());
     }
 
-    public static function setUserIdTokenProvider(): \Generator
+    public static function providerTestSetUserIdToken(): \Generator
     {
         yield 'non-guest, setting enabled' => ['user-id-token', false, true];
         yield 'guest, setting enabled' => [null, true, true];
