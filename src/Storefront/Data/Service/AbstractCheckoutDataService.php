@@ -26,6 +26,8 @@ abstract class AbstractCheckoutDataService extends AbstractScriptDataService
 {
     public const PAYPAL_ERROR = 'isPayPalError';
 
+    protected AbstractMethodData $methodData;
+
     /**
      * @internal
      */
@@ -37,6 +39,7 @@ abstract class AbstractCheckoutDataService extends AbstractScriptDataService
         CredentialsUtilInterface $credentialsUtil,
     ) {
         parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
+        $this->methodData = $this->paymentMethodDataRegistry->getPaymentMethod($this->getMethodDataClass());
     }
 
     abstract public function buildCheckoutData(SalesChannelContext $context, ?Cart $cart = null, ?OrderEntity $order = null): ?AbstractCheckoutData;
@@ -52,10 +55,7 @@ abstract class AbstractCheckoutDataService extends AbstractScriptDataService
             throw CartException::customerNotLoggedIn();
         }
 
-        $paymentMethodId = $this->paymentMethodDataRegistry->getEntityIdFromData(
-            $this->paymentMethodDataRegistry->getPaymentMethod($this->getMethodDataClass()),
-            $context->getContext()
-        );
+        $paymentMethodId = $this->paymentMethodDataRegistry->getEntityIdFromData($this->methodData, $context->getContext());
 
         $salesChannelId = $context->getSalesChannelId();
 

@@ -98,6 +98,10 @@ class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInt
 
     public function isVaultable(SalesChannelContext $context): bool
     {
+        if (!$context->getCustomer() || $context->getCustomer()->getGuest()) {
+            return false;
+        }
+
         $systemConfigService = $this->container->get(SystemConfigService::class);
 
         return $systemConfigService->getBool(Settings::VAULTING_ENABLED_ACDC, $context->getSalesChannelId());
