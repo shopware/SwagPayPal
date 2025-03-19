@@ -66,16 +66,7 @@ class WebhookSubscriber implements EventSubscriberInterface
      */
     public function checkWebhookBefore(BeforeSystemConfigMultipleChangedEvent $event): void
     {
-        $routeName = (string) $this->requestStack->getMainRequest()?->attributes->getString('_route');
-
-        if (\str_contains($routeName, 'api.action.paypal.settings.save')) {
-            return;
-        }
-
-        /** @var array<string, mixed> $config */
-        $config = $event->getConfig();
-
-        if ($this->webhookSystemConfigHelper->needsCheck($config)) {
+        if ($config = $this->getConfigToCheck($event)) {
             $this->webhookSystemConfigHelper->checkWebhookBefore([$event->getSalesChannelId() => $config]);
         }
     }
@@ -86,17 +77,24 @@ class WebhookSubscriber implements EventSubscriberInterface
      */
     public function checkWebhookAfter(SystemConfigMultipleChangedEvent $event): void
     {
-        $routeName = (string) $this->requestStack->getMainRequest()?->attributes->getString('_route');
-
-        if (\str_contains($routeName, 'api.action.paypal.settings.save')) {
-            return;
-        }
-
-        /** @var array<string, mixed> $config */
-        $config = $event->getConfig();
-
-        if ($this->webhookSystemConfigHelper->needsCheck($config)) {
+        if ($this->getConfigToCheck($event)) {
             $this->webhookSystemConfigHelper->checkWebhookAfter([$event->getSalesChannelId()]);
         }
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function getConfigToCheck(BeforeSystemConfigMultipleChangedEvent|SystemConfigMultipleChangedEvent $event): ?array
+    {
+        /** @var array<string, mixed> $config */
+        $config = $event->getConfig();
+        $routeName = (string) $this->requestStack->getMainRequest()?->attributes->getString('_route');
+
+        if (!$this->webhookSystemConfigHelper->needsCheck($config) || \str_contains($routeName, 'api.action.paypal.settings.save')) {
+            return null;
+        }
+
+        return $config;
     }
 }
