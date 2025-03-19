@@ -1,3 +1,6 @@
+# 9.7.3
+- Fixes an issue, where card fields were not displayed in the after order payment process (shopware/shopware#7643)
+
 # 9.7.2
 - Fixes an issue, where guest checkout was not possible (shopware/SwagPayPal#165)
 
