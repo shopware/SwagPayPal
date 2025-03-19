@@ -62,33 +62,41 @@ class WebhookSubscriber implements EventSubscriberInterface
 
     /**
      * system-config should be written by {@see SettingsSaver} only, which checks the webhook on its own.
-     * Just in case new/changed credentials will be saved via the normal system config save route.
+     * Just in case new/changed credentials will be saved via the normal system config.
      */
     public function checkWebhookBefore(BeforeSystemConfigMultipleChangedEvent $event): void
     {
         $routeName = (string) $this->requestStack->getMainRequest()?->attributes->getString('_route');
 
-        if (!\str_contains($routeName, 'api.action.core.save.system-config')) {
+        if (\str_contains($routeName, 'api.action.paypal.settings.save')) {
             return;
         }
 
-        /** @var array<string, array<string, mixed>> $config */
+        /** @var array<string, mixed> $config */
         $config = $event->getConfig();
-        $this->webhookSystemConfigHelper->checkWebhookBefore($config);
+
+        if ($this->webhookSystemConfigHelper->needsCheck($config)) {
+            $this->webhookSystemConfigHelper->checkWebhookBefore([$event->getSalesChannelId() => $config]);
+        }
     }
 
     /**
      * system-config should be written by {@see SettingsSaver} only, which checks the webhook on its own.
-     * Just in case new/changed credentials will be saved via the normal system config save route.
+     * Just in case new/changed credentials will be saved via the normal system config.
      */
     public function checkWebhookAfter(SystemConfigMultipleChangedEvent $event): void
     {
         $routeName = (string) $this->requestStack->getMainRequest()?->attributes->getString('_route');
 
-        if (!\str_contains($routeName, 'api.action.core.save.system-config')) {
+        if (\str_contains($routeName, 'api.action.paypal.settings.save')) {
             return;
         }
 
-        $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($event->getConfig()));
+        /** @var array<string, mixed> $config */
+        $config = $event->getConfig();
+
+        if ($this->webhookSystemConfigHelper->needsCheck($config)) {
+            $this->webhookSystemConfigHelper->checkWebhookAfter([$event->getSalesChannelId()]);
+        }
     }
 }

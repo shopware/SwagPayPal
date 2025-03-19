@@ -59,7 +59,7 @@ class WebhookSystemConfigHelper
         $errors = [];
 
         foreach ($newData as $salesChannelId => $newSettings) {
-            if ($salesChannelId === 'null') {
+            if (!$salesChannelId || $salesChannelId === 'null') {
                 $salesChannelId = null;
             }
 
@@ -102,7 +102,7 @@ class WebhookSystemConfigHelper
         $errors = [];
 
         foreach ($salesChannelIds as $salesChannelId) {
-            if ($salesChannelId === 'null') {
+            if (!$salesChannelId || $salesChannelId === 'null') {
                 $salesChannelId = null;
             }
 
@@ -127,6 +127,14 @@ class WebhookSystemConfigHelper
         }
 
         return $errors;
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function needsCheck(array $config): bool
+    {
+        return !empty($this->filterSettings($config));
     }
 
     private function fetchSettings(?string $salesChannelId, bool $inherit = false): array

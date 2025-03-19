@@ -29,6 +29,7 @@ use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -44,9 +45,15 @@ class WebhookSubscriberTest extends TestCase
 
     private SystemConfigService $systemConfigService;
 
+    private WebhookSystemConfigHelper $webhookSystemConfigHelper;
+
+    private RequestStack $requestStack;
+
     protected function setUp(): void
     {
         $this->systemConfigService = SystemConfigServiceMock::createWithCredentials();
+        $this->webhookSystemConfigHelper = $this->createMock(WebhookSystemConfigHelper::class);
+        $this->requestStack = new RequestStack();
     }
 
     public function testRemoveWebhookWithInheritedConfiguration(): void
@@ -71,6 +78,157 @@ class WebhookSubscriberTest extends TestCase
             ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
         static::assertEmpty($this->systemConfigService->getString(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
+    }
+
+    public function testCheckWebhookBefore(): void
+    {
+        $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], null);
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('checkWebhookBefore')
+            ->with(['' => ['some-key' => 'some-value']]);
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('needsCheck')
+            ->with(['some-key' => 'some-value'])
+            ->willReturn(true);
+
+        $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
+            ->checkWebhookBefore($event);
+    }
+
+    public function testCheckWebhookBeforeWithSalesChannelId(): void
+    {
+        $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('checkWebhookBefore')
+            ->with(['some-sales-channel-id' => ['some-key' => 'some-value']]);
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('needsCheck')
+            ->with(['some-key' => 'some-value'])
+            ->willReturn(true);
+
+        $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
+            ->checkWebhookBefore($event);
+    }
+
+    public function testCheckWebhookBeforeWithSaveRoute(): void
+    {
+        $request = new Request(attributes: ['_route' => 'api.action.paypal.settings.save']);
+        $this->requestStack->push($request);
+
+        $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::never())
+            ->method('checkWebhookBefore');
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::never())
+            ->method('needsCheck');
+
+        $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
+            ->checkWebhookBefore($event);
+    }
+
+    public function testCheckWebhookBeforeWithNoCheckNeeded(): void
+    {
+        $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::never())
+            ->method('checkWebhookBefore');
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('needsCheck')
+            ->with(['some-key' => 'some-value'])
+            ->willReturn(false);
+
+        $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
+            ->checkWebhookBefore($event);
+    }
+
+    public function testCheckWebhookAfter(): void
+    {
+        $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], null);
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('checkWebhookAfter')
+            ->with(['']);
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('needsCheck')
+            ->with(['some-key' => 'some-value'])
+            ->willReturn(true);
+
+        $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
+            ->checkWebhookAfter($event);
+    }
+
+    public function testCheckWebhookAfterWithSalesChannelId(): void
+    {
+        $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('checkWebhookAfter')
+            ->with(['some-sales-channel-id']);
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('needsCheck')
+            ->with(['some-key' => 'some-value'])
+            ->willReturn(true);
+
+        $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
+            ->checkWebhookAfter($event);
+    }
+
+    public function testCheckWebhookAfterWithSaveRoute(): void
+    {
+        $request = new Request(attributes: ['_route' => 'api.action.paypal.settings.save']);
+        $this->requestStack->push($request);
+
+        $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('checkWebhookAfter')
+            ->with(['some-sales-channel-id']);
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::never())
+            ->method('needsCheck');
+
+        $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
+            ->checkWebhookAfter($event);
+    }
+
+    public function testCheckWebhookAfterWithNoCheckNeeded(): void
+    {
+        $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::never())
+            ->method('checkWebhookAfter');
+
+        $this->webhookSystemConfigHelper
+            ->expects(static::once())
+            ->method('needsCheck')
+            ->with(['some-key' => 'some-value'])
+            ->willReturn(false);
+
+        $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
+            ->checkWebhookBefore($event);
     }
 
     public function testSubscribedEvents(): void
@@ -105,8 +263,8 @@ class WebhookSubscriberTest extends TestCase
             new NullLogger(),
             $this->systemConfigService,
             $webhookService,
-            $this->createMock(WebhookSystemConfigHelper::class),
-            new RequestStack(),
+            $this->webhookSystemConfigHelper,
+            $this->requestStack,
         );
     }
 
