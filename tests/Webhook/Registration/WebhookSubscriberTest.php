@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Webhook\Registration;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
@@ -45,7 +46,7 @@ class WebhookSubscriberTest extends TestCase
 
     private SystemConfigService $systemConfigService;
 
-    private WebhookSystemConfigHelper $webhookSystemConfigHelper;
+    private WebhookSystemConfigHelper&MockObject $webhookSystemConfigHelper;
 
     private RequestStack $requestStack;
 
@@ -201,9 +202,8 @@ class WebhookSubscriberTest extends TestCase
         $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
-            ->method('checkWebhookAfter')
-            ->with(['some-sales-channel-id']);
+            ->expects(static::never())
+            ->method('checkWebhookAfter');
 
         $this->webhookSystemConfigHelper
             ->expects(static::never())
