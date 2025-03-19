@@ -90,10 +90,10 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
             // catch sync and async errors - `.catch()` or similar aren't able to do so
             try {
                 await this.render(paypal);
-                ElementLoadingIndicatorUtil.remove(this.el);
             } catch (error) {
                 this.handleError(this.SCRIPT_ERROR, true, error);
             }
+            ElementLoadingIndicatorUtil.remove(this.el);
         });
     }
 

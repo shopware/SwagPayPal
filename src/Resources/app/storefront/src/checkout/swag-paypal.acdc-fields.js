@@ -172,7 +172,10 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
         this.confirmOrderForm.addEventListener('submit', this.onFieldSubmit.bind(this, cardFields));
 
         // remove history listener, it messes up errors
-        window.PluginManager.getPluginInstanceFromElement(this.confirmOrderForm, 'FormAddHistory').options.entries = [];
+        const formAddHistoryPlugin = window.PluginManager.getPluginInstanceFromElement(this.confirmOrderForm, 'FormAddHistory');
+        if (formAddHistoryPlugin) {
+            formAddHistoryPlugin.options.entries = [];
+        }
     }
 
     onFieldSubmit(cardFields, event) {
