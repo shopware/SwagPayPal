@@ -91,7 +91,7 @@ class WebhookSubscriber implements EventSubscriberInterface
         $config = $event->getConfig();
         $routeName = (string) $this->requestStack->getMainRequest()?->attributes->getString('_route');
 
-        if (!$this->webhookSystemConfigHelper->needsCheck($config) || \str_contains($routeName, 'api.action.paypal.settings.save')) {
+        if (\str_contains($routeName, 'api.action.paypal.settings.save') || !$this->webhookSystemConfigHelper->needsCheck($config)) {
             return null;
         }
 
