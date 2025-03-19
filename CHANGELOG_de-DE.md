@@ -1,3 +1,6 @@
+# 9.7.3
+- Behebt ein Problem, bei dem Kartenfelder im Zahlungsprozess nach einer Bestellung nicht angezeigt wurden (shopware/shopware#7643)
+
 # 9.7.2
 - Behebt ein Problem, bei dem der Checkout als Gast nicht möglich war (shopware/SwagPayPal#165)
 
