@@ -62,33 +62,39 @@ class WebhookSubscriber implements EventSubscriberInterface
 
     /**
      * system-config should be written by {@see SettingsSaver} only, which checks the webhook on its own.
-     * Just in case new/changed credentials will be saved via the normal system config save route.
+     * Just in case new/changed credentials will be saved via the normal system config.
      */
     public function checkWebhookBefore(BeforeSystemConfigMultipleChangedEvent $event): void
     {
-        $routeName = (string) $this->requestStack->getMainRequest()?->attributes->getString('_route');
-
-        if (!\str_contains($routeName, 'api.action.core.save.system-config')) {
-            return;
+        if ($config = $this->getConfigToCheck($event)) {
+            $this->webhookSystemConfigHelper->checkWebhookBefore([$event->getSalesChannelId() => $config]);
         }
-
-        /** @var array<string, array<string, mixed>> $config */
-        $config = $event->getConfig();
-        $this->webhookSystemConfigHelper->checkWebhookBefore($config);
     }
 
     /**
      * system-config should be written by {@see SettingsSaver} only, which checks the webhook on its own.
-     * Just in case new/changed credentials will be saved via the normal system config save route.
+     * Just in case new/changed credentials will be saved via the normal system config.
      */
     public function checkWebhookAfter(SystemConfigMultipleChangedEvent $event): void
     {
+        if ($this->getConfigToCheck($event)) {
+            $this->webhookSystemConfigHelper->checkWebhookAfter([$event->getSalesChannelId()]);
+        }
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function getConfigToCheck(BeforeSystemConfigMultipleChangedEvent|SystemConfigMultipleChangedEvent $event): ?array
+    {
+        /** @var array<string, mixed> $config */
+        $config = $event->getConfig();
         $routeName = (string) $this->requestStack->getMainRequest()?->attributes->getString('_route');
 
-        if (!\str_contains($routeName, 'api.action.core.save.system-config')) {
-            return;
+        if (\str_contains($routeName, 'api.action.paypal.settings.save') || !$this->webhookSystemConfigHelper->needsCheck($config)) {
+            return null;
         }
 
-        $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($event->getConfig()));
+        return $config;
     }
 }
