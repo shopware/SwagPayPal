@@ -228,7 +228,7 @@ class WebhookSubscriberTest extends TestCase
             ->willReturn(false);
 
         $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
-            ->checkWebhookBefore($event);
+            ->checkWebhookAfter($event);
     }
 
     public function testSubscribedEvents(): void
