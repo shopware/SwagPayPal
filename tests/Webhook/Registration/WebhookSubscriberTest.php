@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\EntityExistence;
+use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
@@ -83,6 +84,8 @@ class WebhookSubscriberTest extends TestCase
 
     public function testCheckWebhookBefore(): void
     {
+        Feature::skipTestIfInActive('PAYPAL_SETTINGS_TWEAKS', $this);
+
         $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], null);
 
         $this->webhookSystemConfigHelper
@@ -102,6 +105,8 @@ class WebhookSubscriberTest extends TestCase
 
     public function testCheckWebhookBeforeWithSalesChannelId(): void
     {
+        Feature::skipTestIfInActive('PAYPAL_SETTINGS_TWEAKS', $this);
+
         $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
@@ -121,6 +126,8 @@ class WebhookSubscriberTest extends TestCase
 
     public function testCheckWebhookBeforeWithSaveRoute(): void
     {
+        Feature::skipTestIfInActive('PAYPAL_SETTINGS_TWEAKS', $this);
+
         $request = new Request(attributes: ['_route' => 'api.action.paypal.settings.save']);
         $this->requestStack->push($request);
 
@@ -140,6 +147,8 @@ class WebhookSubscriberTest extends TestCase
 
     public function testCheckWebhookBeforeWithNoCheckNeeded(): void
     {
+        Feature::skipTestIfInActive('PAYPAL_SETTINGS_TWEAKS', $this);
+
         $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
@@ -158,6 +167,8 @@ class WebhookSubscriberTest extends TestCase
 
     public function testCheckWebhookAfter(): void
     {
+        Feature::skipTestIfInActive('PAYPAL_SETTINGS_TWEAKS', $this);
+
         $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], null);
 
         $this->webhookSystemConfigHelper
@@ -177,6 +188,8 @@ class WebhookSubscriberTest extends TestCase
 
     public function testCheckWebhookAfterWithSalesChannelId(): void
     {
+        Feature::skipTestIfInActive('PAYPAL_SETTINGS_TWEAKS', $this);
+
         $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
@@ -196,6 +209,8 @@ class WebhookSubscriberTest extends TestCase
 
     public function testCheckWebhookAfterWithSaveRoute(): void
     {
+        Feature::skipTestIfInActive('PAYPAL_SETTINGS_TWEAKS', $this);
+
         $request = new Request(attributes: ['_route' => 'api.action.paypal.settings.save']);
         $this->requestStack->push($request);
 
@@ -215,6 +230,8 @@ class WebhookSubscriberTest extends TestCase
 
     public function testCheckWebhookAfterWithNoCheckNeeded(): void
     {
+        Feature::skipTestIfInActive('PAYPAL_SETTINGS_TWEAKS', $this);
+
         $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
