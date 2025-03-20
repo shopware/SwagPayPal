@@ -116,9 +116,10 @@ class WebhookControllerTest extends TestCase
         $context->addExtension(self::THROW_PAYPAL_API_EXCEPTION, new ArrayStruct());
         $request = $this->createRequestWithWebhookData();
 
-        $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('An error occurred during execution of webhook');
-        $this->controller->executeWebhook($request, $context);
+        $response = $this->controller->executeWebhook($request, $context);
+
+        static::assertSame('An error occurred during execution of webhook', $response->getContent());
+        static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
 
         static::assertTrue(
             $this->logger->hasRecordThatContains('testPayPalApiExceptionMessage', Level::Error),
@@ -132,9 +133,10 @@ class WebhookControllerTest extends TestCase
         $context->addExtension(self::THROW_WEBHOOK_EXCEPTION, new ArrayStruct());
         $request = $this->createRequestWithWebhookData();
 
-        $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('An error occurred during execution of webhook');
-        $this->controller->executeWebhook($request, $context);
+        $response = $this->controller->executeWebhook($request, $context);
+
+        static::assertSame('An error occurred during execution of webhook', $response->getContent());
+        static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
 
         static::assertTrue(
             $this->logger->hasRecordThatContains('testWebhookExceptionMessage', Level::Error),
@@ -148,9 +150,10 @@ class WebhookControllerTest extends TestCase
         $context->addExtension(self::THROW_GENERAL_EXCEPTION, new ArrayStruct());
         $request = $this->createRequestWithWebhookData();
 
-        $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('An error occurred during execution of webhook');
-        $this->controller->executeWebhook($request, $context);
+        $response = $this->controller->executeWebhook($request, $context);
+
+        static::assertSame('An error occurred during execution of webhook', $response->getContent());
+        static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
 
         static::assertTrue(
             $this->logger->hasRecordThatContains('testGeneralExceptionMessage', Level::Error),
@@ -164,9 +167,14 @@ class WebhookControllerTest extends TestCase
         $context->addExtension(self::EMPTY_TOKEN, new ArrayStruct());
         $request = $this->createRequestWithWebhookData();
 
-        $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('Shopware token is invalid');
-        $this->controller->executeWebhook($request, $context);
+        $response = $this->controller->executeWebhook($request, $context);
+
+        static::assertSame('Shopware token is invalid', $response->getContent());
+        static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        static::assertTrue(
+            $this->logger->hasRecordThatContains('Shopware token of webhook "{webhookId}" is invalid', Level::Warning),
+            'Expected invalid-shopware-token log entry not found',
+        );
     }
 
     public function testExecuteWebhookEmptyTokenSent(): void
@@ -174,9 +182,11 @@ class WebhookControllerTest extends TestCase
         $context = Context::createDefaultContext();
         $request = new Request();
 
-        $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('Shopware token is invalid');
-        $this->controller->executeWebhook($request, $context);
+        $response = $this->controller->executeWebhook($request, $context);
+
+        static::assertSame('Shopware token is invalid', $response->getContent());
+        static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        static::assertEquals([], $this->logger->getRecords());
     }
 
     public function testExecuteWebhookInvalidToken(): void
@@ -186,9 +196,27 @@ class WebhookControllerTest extends TestCase
             [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'invalid-token']
         );
 
-        $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('Shopware token is invalid');
-        $this->controller->executeWebhook($request, $context);
+        $response = $this->controller->executeWebhook($request, $context);
+
+        static::assertSame('Shopware token is invalid', $response->getContent());
+        static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        static::assertEquals([], $this->logger->getRecords());
+    }
+
+    public function testExecuteWebhookInvalidTokenWithId(): void
+    {
+        $context = Context::createDefaultContext();
+        $request = $this->createRequestWithWebhookData();
+        $request->query->set(WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME, 'invalid-token');
+
+        $response = $this->controller->executeWebhook($request, $context);
+
+        static::assertSame('Shopware token is invalid', $response->getContent());
+        static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        static::assertTrue(
+            $this->logger->hasRecordThatContains('Shopware token of webhook "{webhookId}" is invalid', Level::Warning),
+            'Expected invalid-shopware-token log entry not found',
+        );
     }
 
     public function testExecuteWebhookNoData(): void
