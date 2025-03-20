@@ -138,11 +138,26 @@ class WebhookController extends AbstractController
     #[Route(path: '/api/_action/paypal/webhook/execute', name: 'api.action.paypal.webhook.execute', methods: ['POST'], defaults: ['auth_required' => false])]
     public function executeWebhook(Request $request, Context $context): Response
     {
-        $token = $this->getShopwareToken($request);
-        $this->validateShopwareToken($token, $context);
+        $token = $request->query->getAlnum(WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME);
+        if (!$this->validateShopwareToken($token, $context)) {
+            if ($id = $request->request->get('id')) {
+                $this->logger->warning(
+                    '[PayPal Webhook] Shopware token of webhook "{webhookId}" is invalid. Please check for stale webhooks.',
+                    ['webhookId' => $id],
+                );
+            }
+
+            return new Response('Shopware token is invalid', Response::HTTP_BAD_REQUEST);
+        }
 
         $webhook = $this->createWebhookFromPostData($request);
-        $this->tryToExecuteWebhook($context, $webhook);
+
+        try {
+            $this->tryToExecuteWebhook($context, $webhook);
+        } catch (BadRequestHttpException $e) {
+            // errors are already logged, no need to throw this exception
+            return new Response($e->getMessage(), $e->getStatusCode());
+        }
 
         return new Response();
     }
@@ -198,34 +213,22 @@ class WebhookController extends AbstractController
         }
     }
 
-    /**
-     * @throws BadRequestHttpException
-     */
-    private function getShopwareToken(Request $request): string
+    private function validateShopwareToken(string $token, Context $context): bool
     {
-        $token = $request->query->getAlnum(WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME);
         if ($token === '') {
-            throw new BadRequestHttpException('Shopware token is invalid');
+            return false;
         }
 
-        return $token;
-    }
-
-    /**
-     * @throws BadRequestHttpException
-     */
-    private function validateShopwareToken(string $token, Context $context): void
-    {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('configurationValue', $token));
         /** @var SystemConfigCollection $systemConfigCollection */
         $systemConfigCollection = $this->systemConfigRepository->search($criteria, $context)->getEntities();
 
         foreach ($systemConfigCollection as $systemConfigEntity) {
             if ($systemConfigEntity->getConfigurationKey() === Settings::WEBHOOK_EXECUTE_TOKEN) {
-                return;
+                return true;
             }
         }
 
-        throw new BadRequestHttpException('Shopware token is invalid');
+        return false;
     }
 }
