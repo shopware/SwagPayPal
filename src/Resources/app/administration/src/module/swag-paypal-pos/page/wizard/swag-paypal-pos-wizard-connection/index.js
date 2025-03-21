@@ -1,6 +1,6 @@
 import template from './swag-paypal-pos-wizard-connection.html.twig';
 import './swag-paypal-pos-wizard-connection.scss';
-import paypalPosLogoFull from 'SwagPayPal/static/img/paypal-pos-logo-full.png?url';
+import paypalPosLogoFull from 'SwagPayPal/static/img/paypal-pos-logo-full.png';
 
 const { Component } = Shopware;
 

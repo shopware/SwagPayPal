@@ -1,6 +1,6 @@
 import template from './swag-paypal-method-card.html.twig';
 import './swag-paypal-method-card.scss';
-import paypalLogoAvatar from 'SwagPayPal/static/img/paypal-logo-avatar.svg?url';
+import paypalLogoAvatar from 'SwagPayPal/static/img/paypal-logo-avatar.svg';
 
 const { Context } = Shopware;
 const { Criteria } = Shopware.Data;

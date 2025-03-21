@@ -1,7 +1,7 @@
 import template from './sw-sales-channel-modal-grid.html.twig';
 import './sw-sales-channel-modal-grid.scss';
 import { PAYPAL_POS_SALES_CHANNEL_TYPE_ID } from '../../../constant/swag-paypal.constant';
-import paypalPosLogo from 'SwagPayPal/static/img/paypal-pos-logo.svg?url';
+import paypalPosLogo from 'SwagPayPal/static/img/paypal-pos-logo.svg';
 
 // salesChannelTypes is from extended component - fake the existence of salesChannelTypes
 export default Shopware.Component.wrapComponentConfig<{ salesChannelTypes: TEntityCollection<'sales_channel_type'> }>({
