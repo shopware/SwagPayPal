@@ -15,7 +15,6 @@
 /rector.php export-ignore
 
 ; admin
-/src/Resources/app/administration/internal-rules export-ignore
 /src/Resources/app/administration/*.js export-ignore
 /src/Resources/app/administration/*.mjs export-ignore
 *.spec.ts export-ignore
