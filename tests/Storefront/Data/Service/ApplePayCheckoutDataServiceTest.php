@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Test\Storefront\Data\Service;
 
-use Monolog\Test\TestCase;
+use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
@@ -49,8 +49,6 @@ class ApplePayCheckoutDataServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->context = Generator::createSalesChannelContext(
             null,
             null,
