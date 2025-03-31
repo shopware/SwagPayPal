@@ -37,7 +37,6 @@ export default {
 
     moduleNameMapper: {
         '^SwagPayPal(.*)$': '<rootDir>/src$1',
-        '^SwagPayPal/static/(.*)$': '<rootDir>/static/$1',
         '^src(.*)$': `${process.env.ADMIN_PATH}/src$1`,
         '^@shopware-ag/meteor-admin-sdk/es/(.*)': `${process.env.ADMIN_PATH}/node_modules/@shopware-ag/meteor-admin-sdk/umd/$1`,
         '^@shopware-ag/meteor-component-library$': `${process.env.ADMIN_PATH}/node_modules/@shopware-ag/meteor-component-library/dist/common/index.js`,
