@@ -1,6 +1,5 @@
 import template from './swag-paypal-method-card.html.twig';
 import './swag-paypal-method-card.scss';
-import paypalLogoAvatar from 'SwagPayPal/static/img/paypal-logo-avatar.svg?url';
 
 const { Context } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -23,13 +22,16 @@ export default Shopware.Component.wrapComponentConfig({
         paymentMethods: TEntity<'payment_method'>[];
     } {
         return {
-            paypalLogoAvatar,
             isLoadingPaymentMethods: true,
             paymentMethods: [],
         };
     },
 
     computed: {
+        assetFilter() {
+            return Shopware.Filter.getByName('asset');
+        },
+
         paymentMethodRepository(): TRepository<'payment_method'> {
             return this.repositoryFactory.create('payment_method');
         },
