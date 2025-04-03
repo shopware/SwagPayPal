@@ -3,13 +3,51 @@ import template from './swag-paypal-text-field.html.twig';
 const { Component } = Shopware;
 
 /**
- * @protected
+ * @deprecated tag:v10.0.0 - Will be removed, use `max-length` of mt-text-field
+ *
  * @description Simple text field. But this one allows attribute downpassing to the input field instead of the block.
- * @status ready
- * @example-type dynamic
- * @component-example
- * <swag-paypal-text-field label="Name" placeholder="placeholder goes here..."></swag-paypal-text-field>
  */
-Component.extend('swag-paypal-text-field', 'sw-text-field', {
+Component.register('swag-paypal-text-field', {
     template,
+
+    emits: ['update:value'],
+
+    props: {
+        value: {
+            type: String,
+            required: false,
+            default: null,
+        },
+        maxLength: {
+            type: [String, Number],
+            required: false,
+            default: null,
+        },
+    },
+
+    computed: {
+        allowedLength() {
+            return this.maxLength ? Number(this.maxLength) : null;
+        },
+
+        currentLength() {
+            return this.maxLength ? (this.value ?? '').length : null;
+        },
+
+        hintText() {
+            return this.allowedLength
+                ? `${this.currentLength}/${this.allowedLength}`
+                : null;
+        },
+    },
+
+    methods: {
+        updateValue(value) {
+            if (this.allowedLength && (value ?? '').length > this.allowedLength) {
+                value = (value ?? '').substring(0, this.allowedLength);
+            }
+
+            this.$emit('update:value', value);
+        },
+    },
 });

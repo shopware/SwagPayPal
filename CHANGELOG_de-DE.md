@@ -1,3 +1,6 @@
+# 9.7.4
+- Behebt ein Problem, bei dem die Eingabefelder des Modals für Rückerstattungen fehlen konnten
+
 # 9.7.3
 - Behebt ein Problem, bei dem Kartenfelder im Zahlungsprozess nach einer Bestellung nicht angezeigt wurden (shopware/shopware#7643)
 
