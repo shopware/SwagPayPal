@@ -1,3 +1,6 @@
+# 9.7.4
+- Fixes an issue, where input fields of the refund modal could be missing
+
 # 9.7.3
 - Fixes an issue, where card fields were not displayed in the after order payment process (shopware/shopware#7643)
 
