@@ -38,14 +38,14 @@
 
                 {% block swag_paypal_pos_detail_settings_input_media_domain %}
                     <swag-paypal-pos-url-field
-                            v-model:value="swagPaypalPosSalesChannel.mediaDomain"
-                            required
-                            validation="required"
-                            :error="swagPaypalPosSalesChannelMediaDomainError"
-                            :disabled="!acl.can('sales_channel.editor')"
-                            :label="$t('swag-paypal-pos.detail.settings.domain')"
-                            :helpText="$t('swag-paypal-pos.detail.settings.domainHelpText')"
-                            @update:value="forceUpdate" />
+                        v-model="swagPaypalPosSalesChannel.mediaDomain"
+                        required
+                        :error="swagPaypalPosSalesChannelMediaDomainError"
+                        :disabled="!acl.can('sales_channel.editor')"
+                        :label="$t('swag-paypal-pos.detail.settings.domain')"
+                        :helpText="$t('swag-paypal-pos.detail.settings.domainHelpText')"
+                        @update:model-value="forceUpdate"
+                    />
                 {% endblock %}
 
                 {% block swag_paypal_pos_detail_settings_input_language %}

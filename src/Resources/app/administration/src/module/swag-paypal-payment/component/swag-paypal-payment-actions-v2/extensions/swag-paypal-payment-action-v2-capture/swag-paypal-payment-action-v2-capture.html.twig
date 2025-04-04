@@ -31,18 +31,18 @@
     {% endblock %}
 
     {% block swag_paypal_payment_action_capture_v2_invoice_number %}
-    <swag-paypal-text-field
-        v-model:value="captureInvoiceNumber"
-        maxLength="127"
+    <mt-text-field
+        v-model="captureInvoiceNumber"
+        :max-length="127"
         :label="$t('swag-paypal-payment.captureAction.captureInvoiceNumber.label')"
         :placeholder="$t('swag-paypal-payment.captureAction.captureInvoiceNumber.placeholder')"
     />
     {% endblock %}
 
     {% block swag_paypal_payment_action_capture_v2_note_to_payer %}
-    <swag-paypal-textarea-field
-        v-model:value="captureNoteToPayer"
-        maxLength="255"
+    <mt-textarea
+        v-model="captureNoteToPayer"
+        :max-length="255"
         :placeholder="$t('swag-paypal-payment.captureAction.captureNoteToPayer.placeholder')"
         :label="$t('swag-paypal-payment.captureAction.captureNoteToPayer.label')"
     />

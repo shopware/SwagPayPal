@@ -1,0 +1,22 @@
+<mt-text-field
+    v-bind="$attrs"
+    :model-value="value"
+    @update:model-value="updateValue"
+>
+    <template #prefix>
+        <mt-icon
+            name="solid-lock"
+            color="var(--color-icon-positive-default)"
+            size="var(--scale-size-12)"
+            aria-hidden="true"
+        />
+        https://
+    </template>
+
+    <template #hint>
+        <p v-if="url === null" style="color: var(--color-text-critical-default)">
+            {{ $t('swag-paypal-pos.detail.settings.domainError') }}
+        </p>
+    </template>
+</mt-text-field>
+
