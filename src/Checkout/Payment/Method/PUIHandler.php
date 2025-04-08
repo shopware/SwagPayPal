@@ -89,7 +89,7 @@ class PUIHandler extends AbstractPaymentMethodHandler
 
     protected function getProgressTransactionState(): string
     {
-        return StateMachineTransitionActions::ACTION_DO_PAY;
+        return StateMachineTransitionActions::ACTION_PROCESS;
     }
 
     protected function getMetaDataId(Request $request): ?string

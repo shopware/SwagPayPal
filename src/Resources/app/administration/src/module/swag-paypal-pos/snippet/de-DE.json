@@ -84,6 +84,7 @@
                 "titleGeneralSettings": "Allgemein",
                 "domain": "Deine Shop-Domain",
                 "domainHelpText": "Zettle wird diese Domain nutzen, um Mediendaten Deiner synchronisierten Produkte herunterzuladen.",
+                "domainError": "Die angegebene Domain muss gültig sein",
                 "productStream": "Dynamische Produktgruppe",
                 "titleCredentials": "Zugangsdaten",
                 "titleSync": "Synchronisation",

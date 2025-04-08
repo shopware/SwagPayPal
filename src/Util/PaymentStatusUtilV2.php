@@ -109,7 +109,7 @@ class PaymentStatusUtilV2
         // TODO PPI-59 - Do transition even if transaction is already partially paid.
         if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_PARTIALLY_PAID) {
             $this->reopenTransaction($stateMachineState, $transactionId, $context);
-            $this->orderTransactionStateHandler->payPartially($transactionId, $context);
+            $this->orderTransactionStateHandler->paidPartially($transactionId, $context);
         }
     }
 
