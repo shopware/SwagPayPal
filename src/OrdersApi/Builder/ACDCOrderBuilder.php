@@ -64,7 +64,7 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
 
         $paymentSource->setCard($card);
 
-        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
+        if (!$request->attributes->getBoolean(self::PRELIMINARY_ATTRIBUTE) && $token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
             $card->setVaultId($token->getToken());
             $storedCredential = new StoredCredential();
 
