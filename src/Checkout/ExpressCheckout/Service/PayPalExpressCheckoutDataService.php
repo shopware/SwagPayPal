@@ -9,11 +9,13 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
+use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
@@ -44,6 +46,9 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
     }
 
+    /**
+     * @deprecated tag:v10.0.0 - reason:new-optional-parameter - a SalesChannelProductEntity that defaults to null will be added
+     */
     public function buildExpressCheckoutButtonData(
         SalesChannelContext $salesChannelContext,
         bool $addProductToCart = false,
@@ -68,7 +73,15 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
 
         $fundingSources = ['paypal', 'venmo'];
 
-        $availabilityContext = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
+        if ($product = $salesChannelContext->getExtensionOfType(ExpressCheckoutSubscriber::PAYPAL_PAYLATER_PRODUCT, SalesChannelProductEntity::class)) {
+            $availabilityContext = AvailabilityContextBuilder::buildFromProduct(
+                $product,
+                $salesChannelContext
+            );
+        } else {
+            $availabilityContext = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
+        }
+
         if ($this->showPayLater($salesChannelId, $availabilityContext)) {
             array_splice($fundingSources, 1, 0, ['paylater']);
         }
