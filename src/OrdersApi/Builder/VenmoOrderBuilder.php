@@ -50,6 +50,7 @@ class VenmoOrderBuilder extends AbstractOrderBuilder
         Context $context,
         Request $request,
         PaymentSource $paymentSource,
+        bool $isPreliminary = false,
     ): void {
         $venmo = new Venmo();
         $paymentSource->setVenmo($venmo);
@@ -59,7 +60,7 @@ class VenmoOrderBuilder extends AbstractOrderBuilder
         $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction);
         $venmo->setExperienceContext($experienceContext);
 
-        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
+        if (!$request->attributes->getBoolean(self::PRELIMINARY_ATTRIBUTE) && $token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
             $venmo->setVaultId($token->getToken());
         } else {
             $customer = $order->getOrderCustomer();
