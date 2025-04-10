@@ -1,3 +1,6 @@
+# 8.7.6
+- Behebt ein Problem, bei dem Vaulting-Zahlungen in bestimmten Fällen im Zahlungsprozess nach einer Bestellung nicht ausgeführt werden konnten
+
 # 8.7.5
 - Behebt ein Problem mit dem vorkompilierten Storefront-Javascript (shopware/shopware#8483)
 
