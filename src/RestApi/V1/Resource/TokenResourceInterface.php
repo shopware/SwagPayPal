@@ -8,7 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Token;
+use Shopware\PayPalSDK\Struct\V1\Token;
 
 #[Package('checkout')]
 interface TokenResourceInterface

@@ -15,10 +15,10 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Kernel;
+use Shopware\PayPalSDK\Gateway\OrderGateway;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Pos\Api\Exception\PosException;
-use Swag\PayPal\RestApi\Client\AbstractClient;
-use Swag\PayPal\RestApi\Client\PayPalClient;
+use Swag\PayPal\Pos\Client\AbstractClient;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Storefront\Controller\PayPalController;
@@ -45,10 +45,10 @@ class IntrospectionProcessorTest extends TestCase
         'type' => '->',
     ];
 
-    private const TRACE_CLIENT = [
+    private const TRACE_GATEWAY = [
         'line' => 3,
-        'function' => 'sendPostRequest',
-        'class' => PayPalClient::class,
+        'function' => 'getOrder',
+        'class' => OrderGateway::class,
         'type' => '->',
     ];
 
@@ -137,36 +137,36 @@ class IntrospectionProcessorTest extends TestCase
             'function' => 'handle',
         ]];
 
-        yield 'paypal client' => [[
-            self::TRACE_CLIENT,
+        yield 'gateway' => [[
+            self::TRACE_GATEWAY,
             self::TRACE_PAYPAL,
         ], [
-            'client' => PayPalClient::class . '->sendPostRequest',
+            'gateway' => OrderGateway::class . '->getOrder',
             'file' => null,
             'line' => 3,
             'class' => PayPalPaymentHandler::class,
             'function' => 'handlePayPalOrder',
         ]];
 
-        yield 'paypal client + resource' => [[
+        yield 'gateway + resource' => [[
             self::TRACE_RESOURCE,
-            self::TRACE_CLIENT,
+            self::TRACE_GATEWAY,
             self::TRACE_PAYPAL,
         ], [
             'resource' => OrderResource::class . '->get',
-            'client' => PayPalClient::class . '->sendPostRequest',
+            'gateway' => OrderGateway::class . '->getOrder',
             'file' => null,
             'line' => 3,
             'class' => PayPalPaymentHandler::class,
             'function' => 'handlePayPalOrder',
         ]];
 
-        yield 'paypal client + abstract client' => [[
+        yield 'gateway + abstract client' => [[
             self::TRACE_ABSTRACT_CLIENT,
-            self::TRACE_CLIENT,
+            self::TRACE_GATEWAY,
             self::TRACE_PAYPAL,
         ], [
-            'client' => PayPalClient::class . '->sendPostRequest',
+            'gateway' => OrderGateway::class . '->getOrder',
             'file' => null,
             'line' => 3,
             'class' => PayPalPaymentHandler::class,
@@ -175,14 +175,14 @@ class IntrospectionProcessorTest extends TestCase
 
         yield 'paypal full' => [[
             self::TRACE_ABSTRACT_CLIENT,
-            self::TRACE_CLIENT,
+            self::TRACE_GATEWAY,
             self::TRACE_RESOURCE,
             self::TRACE_PAYPAL,
             self::TRACE_CONTROLLER,
             self::TRACE_NOT_PAYPAL,
         ], [
             'resource' => OrderResource::class . '->get',
-            'client' => PayPalClient::class . '->sendPostRequest',
+            'gateway' => OrderGateway::class . '->getOrder',
             'controller' => PayPalController::class . '->createOrder',
             'file' => null,
             'line' => 4,

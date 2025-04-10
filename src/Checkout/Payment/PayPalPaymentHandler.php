@@ -8,10 +8,10 @@
 namespace Swag\PayPal\Checkout\Payment;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\V2\Common\Link;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Common\Link;
-use Swag\PayPal\RestApi\V2\Api\Order;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]

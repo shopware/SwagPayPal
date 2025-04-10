@@ -27,11 +27,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\Tracker;
 use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessage;
 use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessageHandler;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\Tracker;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
 

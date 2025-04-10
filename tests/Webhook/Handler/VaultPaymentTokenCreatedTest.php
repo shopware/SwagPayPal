@@ -19,12 +19,12 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Card;
+use Shopware\PayPalSDK\Struct\V3\PaymentToken;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
-use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\RestApi\V3\Api\PaymentToken;
 use Swag\PayPal\Webhook\Handler\VaultPaymentTokenCreated;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -85,7 +85,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
             ->with('00D91479YH268914P', 'salesChannelId')
             ->willReturn($payPalOrder);
 
-        $webhook = new Webhook();
+        $webhook = new Event();
         $webhook->assign($this->getResourceFixture());
 
         $handler = new VaultPaymentTokenCreated(
@@ -111,7 +111,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
             ->expects(static::never())
             ->method('saveToken');
 
-        $webhook = new Webhook();
+        $webhook = new Event();
         $webhook->assign($this->getResourceFixture());
         $resource = $webhook->getResource();
         static::assertInstanceOf(PaymentToken::class, $resource);
@@ -140,7 +140,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
             ->expects(static::never())
             ->method('saveToken');
 
-        $webhook = new Webhook();
+        $webhook = new Event();
         $webhook->assign($this->getResourceFixture());
 
         /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
@@ -173,7 +173,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
         $orderTransaction->setId('orderTransactionId');
         $orderTransaction->setOrder($order);
 
-        $webhook = new Webhook();
+        $webhook = new Event();
         $webhook->assign($this->getResourceFixture());
 
         /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
@@ -209,7 +209,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
         $order->setSalesChannelId('salesChannelId');
         $struct = new PaymentTransactionStruct($orderTransaction->getId());
 
-        $webhook = new Webhook();
+        $webhook = new Event();
         $webhook->assign($this->getResourceFixture());
 
         $paymentTransactionStructFactory = $this->createMock(PaymentTransactionStructFactory::class);

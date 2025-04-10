@@ -41,7 +41,8 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
@@ -53,6 +54,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 class PUIHandlerTest extends TestCase
 {
     use FullCheckoutTrait;
+    use GatewayTestBehaviour;
     use IntegrationTestBehaviour;
     use OrderTransactionTrait;
     use ServicesTrait;
@@ -150,7 +152,7 @@ class PUIHandlerTest extends TestCase
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        static::expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. The provided payment source is declined by the processor. Please try again with a different payment source by creating a new order. PAYMENT_SOURCE_DECLINED_BY_PROCESSOR ');
+        static::expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. | [PAYMENT_SOURCE_DECLINED_BY_PROCESSOR] The provided payment source is declined by the processor. Please try again with a different payment source by creating a new order.');
 
         $this->processPayment(
             $order,
@@ -171,7 +173,7 @@ class PUIHandlerTest extends TestCase
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        static::expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. The combination of the payment_source name, billing address, shipping name and shipping address could not be verified. Please correct this information and try again by creating a new order. PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED ');
+        static::expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. | [PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED] The combination of the payment_source name, billing address, shipping name and shipping address could not be verified. Please correct this information and try again by creating a new order.');
 
         $this->processPayment(
             $order,
@@ -188,8 +190,7 @@ class PUIHandlerTest extends TestCase
     private function processPayment(OrderEntity $order, array $requestData, SalesChannelContext $context, array $settings): void
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $clientFactory = new PayPalClientFactoryMock(new NullLogger());
-        $orderResource = new OrderResource($clientFactory);
+        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
 
         $criteria = new Criteria([$order->getId()]);
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));

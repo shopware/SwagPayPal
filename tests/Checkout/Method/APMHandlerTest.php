@@ -47,7 +47,8 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderAPM;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -58,6 +59,7 @@ use Symfony\Component\HttpFoundation\Request;
 class APMHandlerTest extends TestCase
 {
     use FullCheckoutTrait;
+    use GatewayTestBehaviour;
     use IntegrationTestBehaviour;
     use OrderTransactionTrait;
     use ServicesTrait;
@@ -141,8 +143,7 @@ class APMHandlerTest extends TestCase
     private function getPaymentHandler(AbstractAPMOrderBuilder $orderBuilder, array $settings): APMHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $clientFactory = new PayPalClientFactoryMock(new NullLogger());
-        $orderResource = new OrderResource($clientFactory);
+        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
         $logger = new NullLogger();
 
         return new APMHandler(

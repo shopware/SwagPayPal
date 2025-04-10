@@ -11,10 +11,10 @@ use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Swag\PayPal\Test\OrdersApi\Builder\Trait\VaultableOrderBuildTrait;
 use Symfony\Component\HttpFoundation\Request;
 

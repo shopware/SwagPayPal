@@ -13,8 +13,8 @@ use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\P24;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\P24;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]

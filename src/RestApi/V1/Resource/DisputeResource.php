@@ -8,45 +8,43 @@
 namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
-use Swag\PayPal\RestApi\V1\Api\Disputes;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item as DisputeItem;
-use Swag\PayPal\RestApi\V1\RequestUriV1;
+use Shopware\PayPalSDK\Gateway\CustomerGateway;
+use Shopware\PayPalSDK\Struct\V1\Disputes;
+use Shopware\PayPalSDK\Struct\V1\Disputes\Item;
+use Swag\PayPal\RestApi\ApiContextFactoryInterface;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 
 #[Package('checkout')]
 class DisputeResource
 {
-    private PayPalClientFactoryInterface $payPalClientFactory;
-
     /**
      * @internal
      */
-    public function __construct(PayPalClientFactoryInterface $payPalClientFactory)
-    {
-        $this->payPalClientFactory = $payPalClientFactory;
+    public function __construct(
+        private readonly CustomerGateway $customerGateway,
+        private readonly ApiContextFactoryInterface $apiContextFactory,
+    ) {
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function list(?string $salesChannelId, ?string $disputeStateFilter = null): Disputes
     {
-        $queryParameter = [];
+        $context = $this->apiContextFactory->getApiContext($salesChannelId);
+
         if ($disputeStateFilter !== null) {
-            $queryParameter['dispute_state'] = $disputeStateFilter;
+            $context = $context->withQueryParameter('dispute_state', $disputeStateFilter);
         }
-        $requestUri = \sprintf('%s?%s', RequestUriV1::DISPUTES_RESOURCE, \http_build_query($queryParameter));
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
-            $requestUri
-        );
-
-        return (new Disputes())->assign($response);
+        return $this->customerGateway->getDisputes($context);
     }
 
-    public function get(string $disputeId, ?string $salesChannelId): DisputeItem
+    /**
+     * @throws PayPalApiException
+     */
+    public function get(string $disputeId, ?string $salesChannelId): Item
     {
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
-            \sprintf('%s/%s', RequestUriV1::DISPUTES_RESOURCE, $disputeId)
-        );
-
-        return (new DisputeItem())->assign($response);
+        return $this->customerGateway->getDispute($disputeId, $this->apiContextFactory->getApiContext($salesChannelId));
     }
 }

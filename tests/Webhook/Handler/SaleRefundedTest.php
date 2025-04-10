@@ -10,8 +10,8 @@ namespace Swag\PayPal\Test\Webhook\Handler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Sale;
-use Swag\PayPal\RestApi\V1\PaymentStatusV1;
+use Shopware\PayPalSDK\Struct\ConstantsV1;
+use Shopware\PayPalSDK\Struct\V1\Payment\Transaction\RelatedResource\Sale;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceSaleResponseFixture;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
@@ -40,7 +40,7 @@ class SaleRefundedTest extends AbstractWebhookHandlerTestCase
     public function testInvokeWithPartialRefund(): void
     {
         $webhook = $this->createWebhookV1();
-        $this->sale->setState(PaymentStatusV1::PAYMENT_PARTIALLY_REFUNDED);
+        $this->sale->setState(ConstantsV1::STATUS_PARTIALLY_REFUNDED);
         $this->assertInvoke(OrderTransactionStates::STATE_PARTIALLY_REFUNDED, $webhook, OrderTransactionStates::STATE_PAID);
     }
 
@@ -66,7 +66,7 @@ class SaleRefundedTest extends AbstractWebhookHandlerTestCase
     {
         $saleResource = $this->createMock(SaleResource::class);
         $this->sale = (new Sale())->assign(GetResourceSaleResponseFixture::get());
-        $this->sale->setState(PaymentStatusV1::PAYMENT_REFUNDED);
+        $this->sale->setState(ConstantsV1::STATUS_REFUNDED);
         $saleResource->method('get')->willReturn($this->sale);
 
         return new SaleRefunded(

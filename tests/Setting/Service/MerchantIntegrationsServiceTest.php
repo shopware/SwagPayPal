@@ -7,18 +7,19 @@
 
 namespace Swag\PayPal\Test\Setting\Service;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\Client\PayPalClient;
-use Swag\PayPal\RestApi\Client\PayPalClientFactory;
+use Swag\PayPal\RestApi\ApiContextFactory;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceMerchantIntegrations;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
@@ -34,21 +35,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 #[Package('checkout')]
 class MerchantIntegrationsServiceTest extends TestCase
 {
-    private SystemConfigServiceMock $systemConfigService;
+    use GatewayTestBehaviour;
 
-    private PayPalClientFactory&MockObject $clientFactory;
+    private SystemConfigServiceMock $systemConfigService;
 
     public function testGetInformation(): void
     {
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-
-        $client = $this->createMock(PayPalClient::class);
-        $client->expects(static::once())
-            ->method('sendGetRequest')
-            ->willReturn(GetResourceMerchantIntegrations::get());
-        $this->clientFactory->expects(static::once())
-            ->method('getPayPalClient')
-            ->willReturn($client);
 
         $information = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext());
 
@@ -67,10 +60,8 @@ class MerchantIntegrationsServiceTest extends TestCase
     public function testGetInformationWithoutCredentials(): void
     {
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-
-        $this->clientFactory
-            ->method('getPayPalClient')
-            ->willThrowException(new PayPalSettingsInvalidException('clientId'));
+        $this->systemConfigService->set(Settings::CLIENT_ID, null);
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, null);
 
         $information = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext());
 
@@ -104,7 +95,6 @@ class MerchantIntegrationsServiceTest extends TestCase
     private function createMerchantIntegrationService(): MerchantIntegrationsService
     {
         $this->systemConfigService = SystemConfigServiceMock::createWithCredentials();
-        $this->clientFactory = $this->createMock(PayPalClientFactory::class);
 
         $container = $this->createMock(ContainerInterface::class);
 
@@ -139,11 +129,17 @@ class MerchantIntegrationsServiceTest extends TestCase
                 throw new \RuntimeException('Invalid method data');
             });
 
+        $apiContextFactory = new ApiContextFactory(
+            new SettingsValidationService($this->systemConfigService, new NullLogger()),
+            $this->systemConfigService,
+            new CredentialsUtil($this->systemConfigService)
+        );
+
         return new MerchantIntegrationsService(
-            new MerchantIntegrationsResource($this->clientFactory),
+            new MerchantIntegrationsResource(self::customerGateway(), $apiContextFactory),
+            new TokenResource(self::tokenGateway(), $apiContextFactory),
             new CredentialsUtil($this->systemConfigService),
             $dataRegistry,
-            $this->clientFactory,
         );
     }
 }

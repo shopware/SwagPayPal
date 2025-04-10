@@ -8,10 +8,10 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
+use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations\Capability;
+use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations\Product;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 /**

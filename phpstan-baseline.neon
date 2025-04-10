@@ -66,11 +66,6 @@ parameters:
 			path: src/Pos/Sync/Product/DeletedUpdater.php
 
 		-
-			message: "#^Use explicit names over dynamic ones$#"
-			count: 7
-			path: src/RestApi/PayPalApiStruct.php
-
-		-
 			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\System\\\\SalesChannel\\\\NoContentResponse\" over abstract one$#"
 			count: 2
 			path: src/Storefront/Controller/PayPalController.php
@@ -159,21 +154,6 @@ parameters:
 			message: "#^Mixed variable in a `\\$entry\\['request'\\]\\-\\>getBody\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
 			count: 1
 			path: tests/Reporting/ScheduledTask/TurnoverReportingTaskHandlerTest.php
-
-		-
-			message: "#^Multiple class/interface/trait is not allowed in single file$#"
-			count: 1
-			path: tests/RestApi/PayPalApiCollectionTest.php
-
-		-
-			message: "#^Array method calls \\[\\$this, \"method\"\\] are not allowed\\. Use explicit method instead to help PhpStorm, PHPStan and Rector understand your code$#"
-			count: 1
-			path: tests/RestApi/PayPalApiStructStructureTest.php
-
-		-
-			message: "#^Use explicit names over dynamic ones$#"
-			count: 2
-			path: tests/RestApi/PayPalApiStructStructureTest.php
 
 		-
 			message: "#^Class like namespace \"\" does not follow PSR\\-4 configuration in composer\\.json$#"

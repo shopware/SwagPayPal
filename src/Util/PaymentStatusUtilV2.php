@@ -16,9 +16,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
-use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund;
 
 #[Package('checkout')]
 class PaymentStatusUtilV2

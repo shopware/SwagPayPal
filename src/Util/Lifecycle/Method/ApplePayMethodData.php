@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
 use Swag\PayPal\Checkout\Payment\Method\ApplePayHandler;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\ApplePayCheckoutDataService;

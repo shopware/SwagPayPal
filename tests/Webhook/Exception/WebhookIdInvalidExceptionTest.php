@@ -9,7 +9,7 @@ namespace Swag\PayPal\Test\Webhook\Exception;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\MockRequestHandler;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,7 +21,7 @@ class WebhookIdInvalidExceptionTest extends TestCase
 {
     public function testGetStatusCode(): void
     {
-        $webhookId = GuzzleClientMock::TEST_WEBHOOK_ID;
+        $webhookId = MockRequestHandler::TEST_WEBHOOK_ID;
         $exception = new WebhookIdInvalidException($webhookId);
 
         static::assertSame(\sprintf('Webhook with ID "%s" is invalid', $webhookId), $exception->getMessage());

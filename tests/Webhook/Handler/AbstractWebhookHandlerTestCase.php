@@ -15,10 +15,10 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Payment;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
@@ -60,7 +60,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
 
     protected function assertInvoke(
         string $expectedStateName,
-        Webhook $webhook,
+        Event $webhook,
         string $initialStateName = OrderTransactionStates::STATE_OPEN,
     ): void {
         $context = Context::createDefaultContext();
@@ -94,7 +94,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $this->webhookHandler->invoke($webhook, $context);
     }
 
-    protected function assertInvokeWithoutTransaction(string $webhookName, Webhook $webhook, string $reason): void
+    protected function assertInvokeWithoutTransaction(string $webhookName, Event $webhook, string $reason): void
     {
         $context = Context::createDefaultContext();
 
@@ -125,16 +125,16 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $this->webhookHandler->invoke($webhook, $context);
     }
 
-    protected function createWebhookV1(?string $parentPayment = OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID): Webhook
+    protected function createWebhookV1(?string $parentPayment = OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID): Event
     {
-        return (new Webhook())->assign(['resource' => ['parent_payment' => $parentPayment]]);
+        return (new Event())->assign(['resource' => ['parent_payment' => $parentPayment]]);
     }
 
-    protected function createWebhookV2(string $resourceType, ?string $orderTransactionId = null): Webhook
+    protected function createWebhookV2(string $resourceType, ?string $orderTransactionId = null): Event
     {
         $customId = \json_encode(['orderTransactionId' => $orderTransactionId]);
 
-        $webhook = new Webhook();
+        $webhook = new Event();
         $webhook->assign(['resource_type' => $resourceType, 'resource_version' => '2.0', 'resource' => ['custom_id' => $customId]]);
         $resource = $webhook->getResource();
         if ($resource instanceof Capture) {

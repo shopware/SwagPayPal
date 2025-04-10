@@ -8,12 +8,11 @@
 namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
+use Shopware\PayPalSDK\Gateway\CustomerGateway;
+use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
+use Swag\PayPal\RestApi\ApiContextFactoryInterface;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerId;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
-use Swag\PayPal\RestApi\V1\RequestUriV1;
-use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
 class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterface
@@ -22,7 +21,8 @@ class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterf
      * @internal
      */
     public function __construct(
-        private readonly PayPalClientFactoryInterface $payPalClientFactory,
+        private readonly CustomerGateway $customerGateway,
+        private readonly ApiContextFactoryInterface $apiContextFactory,
     ) {
     }
 
@@ -31,21 +31,11 @@ class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterf
      */
     public function get(string $merchantId, ?string $salesChannelId = null, bool $sandboxActive = true): MerchantIntegrations
     {
-        if (!$merchantId) {
-            throw new PayPalApiException(
-                'merchant_id_missing',
-                'The merchant id is missing',
-                Response::HTTP_UNAUTHORIZED,
-                PayPalApiException::ERROR_CODE_INVALID_CREDENTIALS,
-            );
-        }
+        $context = $this->apiContextFactory
+            ->getApiContext($salesChannelId)
+            ->withSandbox($sandboxActive)
+            ->withMerchantId($merchantId);
 
-        $partnerId = $sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE;
-
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, isFirstParty: true)->sendGetRequest(
-            \sprintf(RequestUriV1::MERCHANT_INTEGRATIONS_RESOURCE, $partnerId, $merchantId)
-        );
-
-        return (new MerchantIntegrations())->assign($response);
+        return $this->customerGateway->getMerchantIntegrations($context->isSandbox() ? PartnerId::SANDBOX : PartnerId::LIVE, $context);
     }
 }

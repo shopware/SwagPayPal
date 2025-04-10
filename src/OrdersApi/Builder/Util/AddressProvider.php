@@ -10,7 +10,7 @@ namespace Swag\PayPal\OrdersApi\Builder\Util;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Common\Address;
+use Shopware\PayPalSDK\Struct\V2\Common\Address;
 
 #[Package('checkout')]
 class AddressProvider

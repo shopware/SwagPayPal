@@ -12,9 +12,9 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
-use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
-use Swag\PayPal\RestApi\V1\PaymentStatusV1;
+use Shopware\PayPalSDK\Struct\ConstantsV1;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Resource;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
@@ -41,7 +41,7 @@ class SaleRefunded extends AbstractWebhookHandler
         return WebhookEventTypes::PAYMENT_SALE_REFUNDED;
     }
 
-    public function invoke(Webhook $webhook, Context $context): void
+    public function invoke(Event $webhook, Context $context): void
     {
         if (!$webhook->getResource() instanceof Resource) {
             throw new WebhookException($this->getEventType(), 'Given webhook does not have needed resource data');
@@ -56,7 +56,7 @@ class SaleRefunded extends AbstractWebhookHandler
 
         $sale = $this->saleResource->get($webhook->getResource()->getSaleId() ?? '', $order->getSalesChannelId());
 
-        if ($sale->getState() === PaymentStatusV1::PAYMENT_PARTIALLY_REFUNDED) {
+        if ($sale->getState() === ConstantsV1::STATUS_PARTIALLY_REFUNDED) {
             if ($this->isChangeAllowed($orderTransaction, OrderTransactionStates::STATE_PARTIALLY_REFUNDED)) {
                 $this->orderTransactionStateHandler->refundPartially($orderTransaction->getId(), $context);
             }

@@ -11,7 +11,8 @@ use OpenApi\Analysis;
 use OpenApi\Annotations as OA;
 use OpenApi\Generator;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\PayPalApiStruct;
+use Shopware\PayPalSDK\Struct\Struct;
+use Shopware\PayPalSDK\Util\CaseConverter;
 
 #[Package('checkout')]
 class PayPalApiStructSnakeCasePropertiesProcessor
@@ -33,8 +34,8 @@ class PayPalApiStructSnakeCasePropertiesProcessor
                 continue;
             }
 
-            if ((new \ReflectionClass($fqdn))->isSubclassOf(PayPalApiStruct::class)) {
-                $property->property = \mb_strtolower(\preg_replace('/[A-Z]/', '_\\0', $property->_context->property) ?? '');
+            if ((new \ReflectionClass($fqdn))->isSubclassOf(Struct::class)) {
+                $property->property = CaseConverter::normalize($property->_context->property, true);
             }
         }
     }

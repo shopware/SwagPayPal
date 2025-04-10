@@ -15,9 +15,9 @@ use Psr\Log\LogLevel;
 use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
+use Shopware\PayPalSDK\Contract\Gateway\GatewayInterface;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
-use Swag\PayPal\RestApi\Client\AbstractClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -34,7 +34,7 @@ class IntrospectionProcessor implements ProcessorInterface
     private Level $level;
 
     /**
-     * @param string|int|Level $level The minimum logging level at which this Processor will be triggered
+     * @param int|string|Level|LogLevel::* $level
      *
      * @phpstan-param value-of<Level::VALUES>|value-of<Level::NAMES>|Level|LogLevel::* $level
      */
@@ -75,6 +75,12 @@ class IntrospectionProcessor implements ProcessorInterface
 
             if ($this->isClient($trace)) {
                 $context['client'] ??= $this->traceToClassString($trace);
+
+                continue;
+            }
+
+            if ($this->isGateway($trace)) {
+                $context['gateway'] ??= $this->traceToClassString($trace);
 
                 continue;
             }
@@ -175,8 +181,15 @@ class IntrospectionProcessor implements ProcessorInterface
      */
     private function isAbstractClient(array $trace): bool
     {
-        return \str_contains($trace['class'] ?? '', AbstractClient::class)
-            || \str_contains($trace['class'] ?? '', PosAbstractClient::class);
+        return \str_contains($trace['class'] ?? '', PosAbstractClient::class);
+    }
+
+    /**
+     * @param Trace $trace
+     */
+    private function isGateway(array $trace): bool
+    {
+        return \is_subclass_of($trace['class'] ?? '', GatewayInterface::class);
     }
 
     /**
@@ -184,8 +197,7 @@ class IntrospectionProcessor implements ProcessorInterface
      */
     private function isClient(array $trace): bool
     {
-        return \is_subclass_of($trace['class'] ?? '', AbstractClient::class)
-            || \is_subclass_of($trace['class'] ?? '', PosAbstractClient::class);
+        return \is_subclass_of($trace['class'] ?? '', PosAbstractClient::class);
     }
 
     /**
@@ -210,6 +222,7 @@ class IntrospectionProcessor implements ProcessorInterface
      */
     private function isPayPalClass(array $trace): bool
     {
-        return \str_contains($trace['class'] ?? '', 'Swag\PayPal');
+        return \str_contains($trace['class'] ?? '', 'Swag\PayPal')
+            || \str_starts_with($trace['class'] ?? '', 'Shopware\PayPalSDK');
     }
 }

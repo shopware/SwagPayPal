@@ -11,9 +11,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Card\AuthenticationResult;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Card\AuthenticationResult\ThreeDSecure;
 use Swag\PayPal\Checkout\Card\CardValidatorInterface;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult\ThreeDSecure;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 

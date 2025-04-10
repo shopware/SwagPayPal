@@ -20,9 +20,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\StateMachineException;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
-use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -76,18 +75,18 @@ class TransactionStatusSyncMessageHandler
 
             $order = $this->orderResource->get($message->getPayPalOrderId(), $message->getSalesChannelId());
 
-            if ($order->getIntent() === PaymentIntentV2::CAPTURE) {
+            if ($order->getIntent() === ConstantsV2::INTENT_CAPTURE) {
                 match ($order->getPurchaseUnits()->first()?->getPayments()?->getCaptures()?->first()?->getStatus()) {
-                    PaymentStatusV2::ORDER_CAPTURE_COMPLETED => $this->orderTransactionStateHandler->paid($message->getTransactionId(), $context),
-                    PaymentStatusV2::ORDER_CAPTURE_DECLINED, PaymentStatusV2::ORDER_CAPTURE_FAILED => $this->orderTransactionStateHandler->fail($message->getTransactionId(), $context),
+                    ConstantsV2::ORDER_CAPTURE_COMPLETED => $this->orderTransactionStateHandler->paid($message->getTransactionId(), $context),
+                    ConstantsV2::ORDER_CAPTURE_DECLINED, ConstantsV2::ORDER_CAPTURE_FAILED => $this->orderTransactionStateHandler->fail($message->getTransactionId(), $context),
                     default => null,
                 };
-            } elseif ($order->getIntent() === PaymentIntentV2::AUTHORIZE) {
+            } elseif ($order->getIntent() === ConstantsV2::INTENT_AUTHORIZE) {
                 match ($order->getPurchaseUnits()->first()?->getPayments()?->getAuthorizations()?->first()?->getStatus()) {
-                    PaymentStatusV2::ORDER_AUTHORIZATION_CAPTURED => $this->orderTransactionStateHandler->paid($message->getTransactionId(), $context),
-                    PaymentStatusV2::ORDER_AUTHORIZATION_CREATED => $transaction->getStateMachineState()?->getTechnicalName() !== OrderTransactionStates::STATE_AUTHORIZED ? $this->orderTransactionStateHandler->authorize($message->getTransactionId(), $context) : null,
-                    PaymentStatusV2::ORDER_AUTHORIZATION_VOIDED => $this->orderTransactionStateHandler->cancel($message->getTransactionId(), $context),
-                    PaymentStatusV2::ORDER_AUTHORIZATION_DENIED => $this->orderTransactionStateHandler->fail($message->getTransactionId(), $context),
+                    ConstantsV2::ORDER_AUTHORIZATION_CAPTURED => $this->orderTransactionStateHandler->paid($message->getTransactionId(), $context),
+                    ConstantsV2::ORDER_AUTHORIZATION_CREATED => $transaction->getStateMachineState()?->getTechnicalName() !== OrderTransactionStates::STATE_AUTHORIZED ? $this->orderTransactionStateHandler->authorize($message->getTransactionId(), $context) : null,
+                    ConstantsV2::ORDER_AUTHORIZATION_VOIDED => $this->orderTransactionStateHandler->cancel($message->getTransactionId(), $context),
+                    ConstantsV2::ORDER_AUTHORIZATION_DENIED => $this->orderTransactionStateHandler->fail($message->getTransactionId(), $context),
                     default => null,
                 };
             }

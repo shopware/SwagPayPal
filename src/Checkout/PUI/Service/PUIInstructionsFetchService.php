@@ -16,11 +16,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
 use Shopware\Core\System\StateMachine\Exception\UnnecessaryTransitionException;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\PayUponInvoice;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\PUI\Exception\MissingPaymentInstructionsException;
 use Swag\PayPal\Checkout\PUI\Exception\PaymentInstructionsNotReadyException;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
-use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
 
@@ -57,18 +57,18 @@ class PUIInstructionsFetchService
 
         $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
         try {
-            if ($order->getStatus() === PaymentStatusV2::ORDER_APPROVED) {
+            if ($order->getStatus() === ConstantsV2::ORDER_APPROVED) {
                 $this->orderTransactionStateHandler->authorize($transaction->getId(), $context);
             }
 
-            if ($order->getStatus() === PaymentStatusV2::ORDER_VOIDED) {
+            if ($order->getStatus() === ConstantsV2::ORDER_VOIDED) {
                 $this->orderTransactionStateHandler->fail($transaction->getId(), $context);
             }
         } catch (UnnecessaryTransitionException|IllegalTransitionException $e) {
             // do nothing here, it's ok, probably something got mixed up in the order of requests
         }
 
-        if ($order->getStatus() !== PaymentStatusV2::ORDER_COMPLETED) {
+        if ($order->getStatus() !== ConstantsV2::ORDER_COMPLETED) {
             throw new PaymentInstructionsNotReadyException($transaction->getId());
         }
 

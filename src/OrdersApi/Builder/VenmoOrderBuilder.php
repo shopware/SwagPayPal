@@ -17,12 +17,12 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Venmo;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Venmo;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
 

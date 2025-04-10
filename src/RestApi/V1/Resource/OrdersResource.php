@@ -8,29 +8,28 @@
 namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Order;
-use Swag\PayPal\RestApi\V1\RequestUriV1;
+use Shopware\PayPalSDK\Gateway\PaymentV1Gateway;
+use Shopware\PayPalSDK\Struct\V1\Payment\Transaction\RelatedResource\Order;
+use Swag\PayPal\RestApi\ApiContextFactoryInterface;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 
 #[Package('checkout')]
 class OrdersResource
 {
-    private PayPalClientFactoryInterface $payPalClientFactory;
-
     /**
      * @internal
      */
-    public function __construct(PayPalClientFactoryInterface $payPalClientFactory)
-    {
-        $this->payPalClientFactory = $payPalClientFactory;
+    public function __construct(
+        private readonly PaymentV1Gateway $paymentGateway,
+        private readonly ApiContextFactoryInterface $apiContextFactory,
+    ) {
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function get(string $orderId, string $salesChannelId): Order
     {
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
-            \sprintf('%s/%s', RequestUriV1::ORDERS_RESOURCE, $orderId)
-        );
-
-        return (new Order())->assign($response);
+        return $this->paymentGateway->getOrder($orderId, $this->apiContextFactory->getApiContext($salesChannelId));
     }
 }

@@ -8,9 +8,9 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
+use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations\Capability;
 use Swag\PayPal\Checkout\Payment\Method\GooglePayHandler;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\GooglePayCheckoutDataService;

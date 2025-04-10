@@ -19,6 +19,12 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\PayPalSDK\Struct\ConstantsV1;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V1\Payment\ApplicationContext as ApplicationContextV1;
+use Shopware\PayPalSDK\Struct\V2\Order\ApplicationContext;
+use Shopware\PayPalSDK\Struct\V2\Order\ApplicationContext as ApplicationContextV2;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
@@ -28,12 +34,6 @@ use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
 use Swag\PayPal\Pos\Webhook\Exception\WebhookNotRegisteredException;
 use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
-use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV1;
-use Swag\PayPal\RestApi\V1\PaymentIntentV1;
-use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
-use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
@@ -388,21 +388,21 @@ class Update
                 continue;
             }
 
-            if (\in_array($intent, PaymentIntentV2::INTENTS, true)) {
+            if (\in_array($intent, [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::INTENT_CAPTURE], true)) {
                 continue;
             }
 
-            if (!\in_array($intent, PaymentIntentV1::INTENTS, true)) {
+            if (!\in_array($intent, [ConstantsV1::INTENT_AUTHORIZE, ConstantsV1::INTENT_ORDER, ConstantsV1::INTENT_SALE], true)) {
                 throw new \RuntimeException('Invalid value for "' . Settings::INTENT . '" setting');
             }
 
-            if ($intent === PaymentIntentV1::SALE) {
-                $this->systemConfig->set(Settings::INTENT, PaymentIntentV2::CAPTURE, $salesChannelId);
+            if ($intent === ConstantsV1::INTENT_SALE) {
+                $this->systemConfig->set(Settings::INTENT, ConstantsV2::INTENT_CAPTURE, $salesChannelId);
 
                 continue;
             }
 
-            $this->systemConfig->set(Settings::INTENT, PaymentIntentV2::AUTHORIZE, $salesChannelId);
+            $this->systemConfig->set(Settings::INTENT, ConstantsV2::INTENT_AUTHORIZE, $salesChannelId);
         }
     }
 

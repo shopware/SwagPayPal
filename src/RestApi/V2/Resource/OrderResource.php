@@ -8,34 +8,37 @@
 namespace Swag\PayPal\RestApi\V2\Resource;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
-use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\Tracker;
-use Swag\PayPal\RestApi\V2\Api\Patch;
-use Swag\PayPal\RestApi\V2\RequestUriV2;
+use Shopware\PayPalSDK\Gateway\OrderGateway;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\Tracker;
+use Shopware\PayPalSDK\Struct\V2\Patch;
+use Shopware\PayPalSDK\Struct\V2\PatchCollection;
+use Swag\PayPal\RestApi\ApiContextFactoryInterface;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 
 #[Package('checkout')]
 class OrderResource
 {
-    private PayPalClientFactoryInterface $payPalClientFactory;
-
     /**
      * @internal
      */
-    public function __construct(PayPalClientFactoryInterface $payPalClientFactory)
-    {
-        $this->payPalClientFactory = $payPalClientFactory;
+    public function __construct(
+        private readonly OrderGateway $orderGateway,
+        private readonly ApiContextFactoryInterface $apiContextFactory,
+    ) {
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function get(string $orderId, string $salesChannelId): Order
     {
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
-            \sprintf('%s/%s', RequestUriV2::ORDERS_RESOURCE, $orderId)
-        );
-
-        return (new Order())->assign($response);
+        return $this->orderGateway->getOrder($orderId, $this->apiContextFactory->getApiContext($salesChannelId));
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function create(
         Order $order,
         string $salesChannelId,
@@ -44,35 +47,28 @@ class OrderResource
         ?string $requestId = null,
         ?string $metaDataId = null,
     ): Order {
-        $headers = [];
-        if ($minimalResponse === false) {
-            $headers['Prefer'] = 'return=representation';
-        }
-        if ($metaDataId !== null) {
-            $headers['PayPal-Client-Metadata-Id'] = $metaDataId;
-        }
-        if ($requestId !== null) {
-            $headers['PayPal-Request-Id'] = $requestId;
-        }
+        $context = $this->apiContextFactory
+            ->getApiContext($salesChannelId)
+            ->withPartnerAttributionId($partnerAttributionId)
+            ->withPreferRepresentation($minimalResponse)
+            ->withRequestId($requestId)
+            ->withClientMetadataId($metaDataId);
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
-            RequestUriV2::ORDERS_RESOURCE,
-            $order,
-            $headers
-        );
-
-        return $order->assign($response);
+        return $this->orderGateway->createOrder($order, $context);
     }
 
     /**
      * @param Patch[] $patches
+     *
+     * @throws PayPalApiException
      */
     public function update(array $patches, string $orderId, string $salesChannelId, string $partnerAttributionId): void
     {
-        $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPatchRequest(
-            \sprintf('%s/%s', RequestUriV2::ORDERS_RESOURCE, $orderId),
-            $patches
-        );
+        $context = $this->apiContextFactory
+            ->getApiContext($salesChannelId)
+            ->withPartnerAttributionId($partnerAttributionId);
+
+        $this->orderGateway->patchOrder($orderId, new PatchCollection($patches), $context);
     }
 
     public function capture(
@@ -81,75 +77,60 @@ class OrderResource
         string $partnerAttributionId,
         bool $minimalResponse = false,
     ): Order {
-        $headers = [];
-        if ($minimalResponse === false) {
-            $headers['Prefer'] = 'return=representation';
-        }
+        $context = $this->apiContextFactory
+            ->getApiContext($salesChannelId)
+            ->withPartnerAttributionId($partnerAttributionId)
+            ->withPreferRepresentation($minimalResponse);
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
-            \sprintf('%s/%s/capture', RequestUriV2::ORDERS_RESOURCE, $orderId),
-            null,
-            $headers
-        );
-
-        return (new Order())->assign($response);
+        return $this->orderGateway->captureOrder($orderId, $context);
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function authorize(
         string $orderId,
         string $salesChannelId,
         string $partnerAttributionId,
         bool $minimalResponse = false,
     ): Order {
-        $headers = [];
-        if ($minimalResponse === false) {
-            $headers['Prefer'] = 'return=representation';
-        }
+        $context = $this->apiContextFactory
+            ->getApiContext($salesChannelId)
+            ->withPartnerAttributionId($partnerAttributionId)
+            ->withPreferRepresentation($minimalResponse);
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
-            \sprintf('%s/%s/authorize', RequestUriV2::ORDERS_RESOURCE, $orderId),
-            null,
-            $headers
-        );
-
-        return (new Order())->assign($response);
+        return $this->orderGateway->authorizeOrder($orderId, $context);
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function addTracker(
         Tracker $tracker,
         string $orderId,
         string $salesChannelId,
         string $partnerAttributionId,
     ): Order {
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
-            \sprintf('%s/%s/track', RequestUriV2::ORDERS_RESOURCE, $orderId),
-            $tracker,
-        );
+        $context = $this->apiContextFactory
+            ->getApiContext($salesChannelId)
+            ->withPartnerAttributionId($partnerAttributionId);
 
-        return (new Order())->assign($response);
+        return $this->orderGateway->addTracker($tracker, $orderId, $context);
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function removeTracker(
         Tracker $tracker,
         string $orderId,
         string $salesChannelId,
         string $partnerAttributionId,
     ): void {
-        $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPatchRequest(
-            \sprintf(
-                '%s/%s/trackers/%s-%s',
-                RequestUriV2::ORDERS_RESOURCE,
-                $orderId,
-                $tracker->getCaptureId(),
-                $tracker->getTrackingNumber(),
-            ),
-            [
-                (new Patch())->assign([
-                    'op' => Patch::OPERATION_REPLACE,
-                    'path' => '/status',
-                    'value' => Order\PurchaseUnit\Shipping\Tracker::STATUS_CANCELLED,
-                ]),
-            ],
-        );
+        $context = $this->apiContextFactory
+            ->getApiContext($salesChannelId)
+            ->withPartnerAttributionId($partnerAttributionId);
+
+        $this->orderGateway->removeTracker($tracker, $orderId, $context);
     }
 }

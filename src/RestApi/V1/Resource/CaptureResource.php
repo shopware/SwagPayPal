@@ -8,29 +8,28 @@
 namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
-use Swag\PayPal\RestApi\V1\Api\Capture;
-use Swag\PayPal\RestApi\V1\RequestUriV1;
+use Shopware\PayPalSDK\Gateway\PaymentV1Gateway;
+use Shopware\PayPalSDK\Struct\V1\Capture;
+use Swag\PayPal\RestApi\ApiContextFactoryInterface;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 
 #[Package('checkout')]
 class CaptureResource
 {
-    private PayPalClientFactoryInterface $payPalClientFactory;
-
     /**
      * @internal
      */
-    public function __construct(PayPalClientFactoryInterface $payPalClientFactory)
-    {
-        $this->payPalClientFactory = $payPalClientFactory;
+    public function __construct(
+        private readonly PaymentV1Gateway $paymentGateway,
+        private readonly ApiContextFactoryInterface $apiContextFactory,
+    ) {
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function get(string $captureId, string $salesChannelId): Capture
     {
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
-            \sprintf('%s/%s', RequestUriV1::CAPTURE_RESOURCE, $captureId)
-        );
-
-        return (new Capture())->assign($response);
+        return $this->paymentGateway->getCapture($captureId, $this->apiContextFactory->getApiContext($salesChannelId));
     }
 }

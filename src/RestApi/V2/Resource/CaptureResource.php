@@ -8,33 +8,35 @@
 namespace Swag\PayPal\RestApi\V2\Resource;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
-use Swag\PayPal\RestApi\V2\RequestUriV2;
+use Shopware\PayPalSDK\Gateway\PaymentGateway;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund;
+use Swag\PayPal\RestApi\ApiContextFactoryInterface;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 
 #[Package('checkout')]
 class CaptureResource
 {
-    private PayPalClientFactoryInterface $payPalClientFactory;
-
     /**
      * @internal
      */
-    public function __construct(PayPalClientFactoryInterface $payPalClientFactory)
-    {
-        $this->payPalClientFactory = $payPalClientFactory;
+    public function __construct(
+        private readonly PaymentGateway $paymentGateway,
+        private readonly ApiContextFactoryInterface $apiContextFactory,
+    ) {
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function get(string $captureId, string $salesChannelId): Capture
     {
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
-            \sprintf('%s/%s', RequestUriV2::CAPTURES_RESOURCE, $captureId)
-        );
-
-        return (new Capture())->assign($response);
+        return $this->paymentGateway->getCapture($captureId, $this->apiContextFactory->getApiContext($salesChannelId));
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function refund(
         string $captureId,
         Refund $refund,
@@ -42,17 +44,11 @@ class CaptureResource
         string $partnerAttributionId,
         bool $minimalResponse = true,
     ): Refund {
-        $headers = [];
-        if ($minimalResponse === false) {
-            $headers['Prefer'] = 'return=representation';
-        }
+        $context = $this->apiContextFactory
+            ->getApiContext($salesChannelId)
+            ->withPartnerAttributionId($partnerAttributionId)
+            ->withPreferRepresentation($minimalResponse);
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
-            \sprintf('%s/%s/refund', RequestUriV2::CAPTURES_RESOURCE, $captureId),
-            $refund,
-            $headers
-        );
-
-        return $refund->assign($response);
+        return $this->paymentGateway->refundCapture($captureId, $refund, $context);
     }
 }

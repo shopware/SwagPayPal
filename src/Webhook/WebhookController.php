@@ -15,8 +15,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
@@ -125,7 +125,7 @@ class WebhookController extends AbstractController
     #[OA\Post(
         path: '/_action/paypal/webhook/execute',
         operationId: 'executeWebhook',
-        requestBody: new OA\RequestBody(content: new OA\JsonContent(ref: Webhook::class)),
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(ref: Event::class)),
         tags: ['Admin Api', 'SwagPayPalPosWebhook'],
         parameters: [new OA\Parameter(
             parameter: WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME,
@@ -165,7 +165,7 @@ class WebhookController extends AbstractController
     /**
      * @throws BadRequestHttpException
      */
-    protected function createWebhookFromPostData(Request $request): Webhook
+    protected function createWebhookFromPostData(Request $request): Event
     {
         $postData = $request->request->all();
         $this->logger->debug('Received webhook', ['payload' => $postData]);
@@ -174,7 +174,7 @@ class WebhookController extends AbstractController
             throw new BadRequestHttpException('No webhook data sent');
         }
 
-        $webhook = new Webhook();
+        $webhook = new Event();
         $webhook->assign($postData);
 
         return $webhook;
@@ -184,7 +184,7 @@ class WebhookController extends AbstractController
      * @throws BadRequestHttpException
      * @throws PayPalApiException
      */
-    protected function tryToExecuteWebhook(Context $context, Webhook $webhook): void
+    protected function tryToExecuteWebhook(Context $context, Event $webhook): void
     {
         $logContext = ['type' => $webhook->getEventType(), 'webhook' => \json_encode($webhook)];
 

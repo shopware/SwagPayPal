@@ -32,6 +32,9 @@ inputs:
     default: "trunk"
     required: false
     description: "Which version/branch of shopware should be used"
+  extension-zip:
+    description: "Artifact (extension zip archive) to download; Setting this will prevent a checkout of the extension and download the referenced archive instead"
+    required: false
 
 runs:
   using: composite
@@ -86,6 +89,7 @@ runs:
         echo "repos=$(echo $REPOS | jq -c .)" >> "$GITHUB_OUTPUT"
     - uses: shopware/github-actions/setup-extension@main
       with:
+        extension-zip: ${{ inputs.extension-zip }}
         extensionName: ${{ github.event.repository.name }}
         mysqlVersion: ${{ inputs.mysql-version }}
         shopwareVersion: ${{ inputs.shopware-version }}

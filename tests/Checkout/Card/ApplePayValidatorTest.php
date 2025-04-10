@@ -9,9 +9,9 @@ namespace Swag\PayPal\Test\Checkout\Card;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Card\ApplePayValidator;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
-use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 
 /**

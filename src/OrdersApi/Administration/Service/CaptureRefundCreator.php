@@ -8,11 +8,11 @@
 namespace Swag\PayPal\OrdersApi\Administration\Service;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\V2\Common\Money;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\OrdersApi\Administration\Exception\RequestParameterInvalidException;
 use Swag\PayPal\OrdersApi\Administration\PayPalOrdersController;
-use Swag\PayPal\RestApi\V2\Api\Common\Money;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 

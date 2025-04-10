@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "shopware/core": "~6.7.0@dev"
+        "shopware/core": "~6.7.0@dev",
+        "shopware/paypal-sdk": "dev-feat/implement-test-structure"
     },
     "require-dev": {
         "rector/rector": "^0.18.3"
@@ -98,7 +99,8 @@
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
             "phpstan/extension-installer": true,
-            "symfony/runtime": true
+            "symfony/runtime": true,
+            "php-http/discovery": false
         }
     }
 }

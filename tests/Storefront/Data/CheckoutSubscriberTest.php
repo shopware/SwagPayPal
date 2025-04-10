@@ -19,6 +19,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -30,7 +31,6 @@ use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
@@ -234,7 +234,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame('EUR', $extension->getCurrency());
         static::assertSame('en_GB', $extension->getLanguageIso());
         static::assertSame($paymentMethodId, $extension->getPaymentMethodId());
-        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $extension->getIntent());
+        static::assertSame(\mb_strtolower(ConstantsV2::INTENT_CAPTURE), $extension->getIntent());
         static::assertSame('sharp', $extension->getButtonShape());
     }
 
@@ -469,7 +469,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame('EUR', $extension->getCurrency());
         static::assertSame('de_DE', $extension->getLanguageIso());
         static::assertSame($paymentMethodId, $extension->getPaymentMethodId());
-        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $extension->getIntent());
+        static::assertSame(\mb_strtolower(ConstantsV2::INTENT_CAPTURE), $extension->getIntent());
         static::assertSame('/paypal/create-order', $extension->getCreateOrderUrl());
         static::assertSame('/paypal/handle-error', $extension->getHandleErrorUrl());
 

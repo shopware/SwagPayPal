@@ -13,9 +13,9 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
-use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;

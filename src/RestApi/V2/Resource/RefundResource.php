@@ -8,29 +8,28 @@
 namespace Swag\PayPal\RestApi\V2\Resource;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
-use Swag\PayPal\RestApi\V2\RequestUriV2;
+use Shopware\PayPalSDK\Gateway\PaymentGateway;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund;
+use Swag\PayPal\RestApi\ApiContextFactoryInterface;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 
 #[Package('checkout')]
 class RefundResource
 {
-    private PayPalClientFactoryInterface $payPalClientFactory;
-
     /**
      * @internal
      */
-    public function __construct(PayPalClientFactoryInterface $payPalClientFactory)
-    {
-        $this->payPalClientFactory = $payPalClientFactory;
+    public function __construct(
+        private readonly PaymentGateway $paymentGateway,
+        private readonly ApiContextFactoryInterface $apiContextFactory,
+    ) {
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function get(string $refundId, string $salesChannelId): Refund
     {
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
-            \sprintf('%s/%s', RequestUriV2::REFUNDS_RESOURCE, $refundId)
-        );
-
-        return (new Refund())->assign($response);
+        return $this->paymentGateway->getRefund($refundId, $this->apiContextFactory->getApiContext($salesChannelId));
     }
 }

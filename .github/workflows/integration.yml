@@ -11,11 +11,21 @@ permissions:
   id-token: write
 
 jobs:
-  build_zip:
-    name: Build and validate zip
-    uses: shopware/github-actions/.github/workflows/build-zip.yml@main
-    with:
-      extensionName: ${{ github.event.repository.name }}
+  build-zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and validate zip
+        uses: shopware/github-actions/build-zip@main
+        with:
+          extensionName: ${{ github.event.repository.name }}
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+      - name: Test install zip
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          extension-zip: ${{ steps.upload.outputs.artifact-url }}
 
   phpunit:
     runs-on: ubuntu-latest

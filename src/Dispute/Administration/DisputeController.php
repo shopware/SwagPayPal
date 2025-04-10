@@ -12,10 +12,10 @@ use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\PayPalSDK\Struct\V1\Disputes;
+use Shopware\PayPalSDK\Struct\V1\Disputes\Item;
 use Swag\PayPal\Dispute\Exception\NotAuthorizedException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\V1\Api\Disputes;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use Swag\PayPal\RestApi\V1\Resource\DisputeResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -51,7 +51,7 @@ class DisputeController extends AbstractController
             new OA\Parameter(
                 parameter: 'disputeStateFilter',
                 name: 'disputeStateFilter',
-                description: "Filter for dispute state. Separate multiple states with a comma. Must one of these values: Swag\PayPal\RestApi\V1\Api\Disputes\Item::DISPUTE_STATES",
+                description: "Filter for dispute state. Separate multiple states with a comma. Must one of these values: Shopware\PayPalSDK\Struct\V1\Disputes\Item::DISPUTE_STATES",
                 in: 'query',
                 schema: new OA\Schema(type: 'string')
             ),

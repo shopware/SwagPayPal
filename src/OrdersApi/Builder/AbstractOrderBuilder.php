@@ -19,16 +19,16 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnitCollection;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
-use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -157,7 +157,7 @@ abstract class AbstractOrderBuilder
     {
         $intent = $this->systemConfigService->getString(Settings::INTENT, $salesChannelId);
 
-        if (!\in_array($intent, PaymentIntentV2::INTENTS, true)) {
+        if (!\in_array($intent, [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::INTENT_CAPTURE], true)) {
             throw new PayPalSettingsInvalidException('intent');
         }
 

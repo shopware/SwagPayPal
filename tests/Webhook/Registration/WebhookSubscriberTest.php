@@ -24,7 +24,8 @@ use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
@@ -40,6 +41,7 @@ use Symfony\Component\Routing\RouterInterface;
 #[Package('checkout')]
 class WebhookSubscriberTest extends TestCase
 {
+    use GatewayTestBehaviour;
     use ServicesTrait;
 
     private const WEBHOOK_ID = 'someWebhookId';
@@ -246,7 +248,7 @@ class WebhookSubscriberTest extends TestCase
     private function createWebhookSubscriber(array $configuration): WebhookSubscriber
     {
         $webhookService = new WebhookService(
-            new WebhookResource(new PayPalClientFactoryMock(new NullLogger())),
+            new WebhookResource(self::webhookGateway(), new ApiContextFactoryMock()),
             new WebhookRegistry([]),
             $this->systemConfigService,
             $this->createMock(RouterInterface::class),

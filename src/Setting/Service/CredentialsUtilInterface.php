@@ -17,6 +17,4 @@ interface CredentialsUtilInterface
     public function getClientId(?string $salesChannelId = null): string;
 
     public function getMerchantPayerId(?string $salesChannelId = null): string;
-
-    public function getBaseUrl(?string $salesChannelId = null): string;
 }

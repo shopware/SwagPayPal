@@ -14,10 +14,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\Generator;
+use Shopware\PayPalSDK\Struct\V1\Token;
 use Swag\PayPal\Checkout\Exception\MissingCustomerVaultTokenException;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
-use Swag\PayPal\RestApi\V1\Api\Token;
 use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
 
 /**

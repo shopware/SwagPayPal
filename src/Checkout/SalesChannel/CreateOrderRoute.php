@@ -22,8 +22,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
@@ -32,7 +34,6 @@ use Swag\PayPal\OrdersApi\Builder\GooglePayOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\VenmoOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -117,40 +118,54 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
                 default => $this->payPalOrderBuilder,
             };
 
-            $paypalOrder = $orderId
+            [$paypalOrder, $requestId] = $orderId
                 ? $this->getOrderFromOrder($orderBuilder, $orderId, $customer, $request, $salesChannelContext)
                 : $this->getOrderFromCart($orderBuilder, $salesChannelContext, $request);
 
             $salesChannelId = $salesChannelContext->getSalesChannelId();
-            $response = $this->orderResource->create($paypalOrder, $salesChannelId, $this->getPartnerAttributionId($product));
+            $response = $this->orderResource->create(
+                $paypalOrder,
+                $salesChannelId,
+                $this->getPartnerAttributionId($product),
+                // requestId: $requestId,
+            );
 
             return new TokenResponse($response->getId());
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage(), ['error' => $e]);
+        } catch (ShopwareHttpException $e) {
+            $this->logger->error($e->getMessage(), ['error' => \iterator_to_array($e->getErrors())]);
 
             throw $e;
         }
     }
 
+    /**
+     * @return array{0: Order, 1: null}
+     */
     private function getOrderFromCart(
         AbstractOrderBuilder $orderBuilder,
         SalesChannelContext $salesChannelContext,
         Request $request,
-    ): Order {
+    ): array {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
         $requestDataBag = new RequestDataBag($request->request->all());
 
-        return $orderBuilder->getOrderFromCart($cart, $salesChannelContext, $requestDataBag);
+        return [
+            $orderBuilder->getOrderFromCart($cart, $salesChannelContext, $requestDataBag),
+            null,
+        ];
     }
 
+    /**
+     * @return array{0: Order, 1: string}
+     */
     private function getOrderFromOrder(
         AbstractOrderBuilder $orderBuilder,
         string $orderId,
         CustomerEntity $customer,
         Request $request,
         SalesChannelContext $salesChannelContext,
-    ): Order {
+    ): array {
         $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('transactions');
         $criteria->addAssociation('lineItems');
@@ -183,13 +198,16 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             throw PaymentException::invalidOrder($orderId);
         }
 
-        return $orderBuilder->getOrder(
-            $this->paymentTransactionStructFactory->build($transaction->getPaymentMethodId(), $salesChannelContext->getContext()),
-            $transaction,
-            $order,
-            $salesChannelContext->getContext(),
-            $request,
-        );
+        return [
+            $orderBuilder->getOrder(
+                $this->paymentTransactionStructFactory->build($transaction->getPaymentMethodId(), $salesChannelContext->getContext()),
+                $transaction,
+                $order,
+                $salesChannelContext->getContext(),
+                $request,
+            ),
+            $transaction->getId() . ($transaction->getUpdatedAt()?->getTimestamp() ?: ''),
+        ];
     }
 
     private function getPartnerAttributionId(string $product): string

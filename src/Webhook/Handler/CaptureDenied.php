@@ -10,8 +10,8 @@ namespace Swag\PayPal\Webhook\Handler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -23,7 +23,7 @@ class CaptureDenied extends AbstractWebhookHandler
         return WebhookEventTypes::PAYMENT_CAPTURE_DENIED;
     }
 
-    public function invoke(Webhook $webhook, Context $context): void
+    public function invoke(Event $webhook, Context $context): void
     {
         $capture = $webhook->getResource();
         if (!$capture instanceof Capture) {

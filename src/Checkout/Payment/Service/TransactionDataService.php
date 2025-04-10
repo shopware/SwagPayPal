@@ -10,8 +10,8 @@ namespace Swag\PayPal\Checkout\Payment\Service;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\SwagPayPal;
 
@@ -48,8 +48,8 @@ class TransactionDataService
     public function setResourceId(PayPalOrder $order, string $transactionId, Context $context): void
     {
         $id = match ($order->getIntent()) {
-            PaymentIntentV2::CAPTURE => $order->getPurchaseUnits()->first()?->getPayments()?->getCaptures()?->first()?->getId(),
-            PaymentIntentV2::AUTHORIZE => $order->getPurchaseUnits()->first()?->getPayments()?->getAuthorizations()?->first()?->getId(),
+            ConstantsV2::INTENT_CAPTURE => $order->getPurchaseUnits()->first()?->getPayments()?->getCaptures()?->first()?->getId(),
+            ConstantsV2::INTENT_AUTHORIZE => $order->getPurchaseUnits()->first()?->getPayments()?->getAuthorizations()?->first()?->getId(),
             default => null,
         };
 

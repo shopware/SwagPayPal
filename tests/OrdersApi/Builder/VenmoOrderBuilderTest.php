@@ -8,10 +8,10 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Venmo;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\VenmoOrderBuilder;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Venmo;
 use Swag\PayPal\Test\OrdersApi\Builder\Trait\VaultableOrderBuildTrait;
 
 /**

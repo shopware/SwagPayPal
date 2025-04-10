@@ -20,23 +20,14 @@ use Swag\PayPal\Setting\Settings;
 #[Package('checkout')]
 class OrderPatchService
 {
-    private SystemConfigService $systemConfigService;
-
-    private PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder;
-
-    private OrderResource $orderResource;
-
     /**
      * @internal
      */
     public function __construct(
-        SystemConfigService $systemConfigService,
-        PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder,
-        OrderResource $orderResource,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder,
+        private readonly OrderResource $orderResource,
     ) {
-        $this->systemConfigService = $systemConfigService;
-        $this->purchaseUnitPatchBuilder = $purchaseUnitPatchBuilder;
-        $this->orderResource = $orderResource;
     }
 
     /**

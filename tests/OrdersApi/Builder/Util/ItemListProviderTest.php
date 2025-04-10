@@ -25,8 +25,8 @@ use Shopware\Core\Content\Product\State;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Item;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 

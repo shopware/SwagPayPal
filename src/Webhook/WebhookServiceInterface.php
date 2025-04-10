@@ -9,7 +9,7 @@ namespace Swag\PayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 
 #[Package('checkout')]
 interface WebhookServiceInterface
@@ -20,5 +20,5 @@ interface WebhookServiceInterface
 
     public function deregisterWebhook(?string $salesChannelId): string;
 
-    public function executeWebhook(Webhook $webhook, Context $context): void;
+    public function executeWebhook(Event $webhook, Context $context): void;
 }

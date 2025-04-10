@@ -8,26 +8,21 @@
 namespace Swag\PayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SystemConfig\Validation\SystemConfigValidator;
-use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
-use Swag\PayPal\RestApi\V1\Service\CredentialProvider;
-use Swag\PayPal\RestApi\V1\Service\TokenValidator;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Setting\Service\SettingsSaver;
-use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
-use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 
@@ -37,6 +32,7 @@ use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 #[Package('checkout')]
 class SettingsControllerTest extends TestCase
 {
+    use GatewayTestBehaviour;
     use IntegrationTestBehaviour;
     use ServicesTrait;
 
@@ -97,29 +93,19 @@ class SettingsControllerTest extends TestCase
 
     private function createApiValidationController(): SettingsController
     {
-        $logger = new NullLogger();
         $systemConfigService = $this->createDefaultSystemConfig();
         $apiCredentialsService = new ApiCredentialService(
-            new CredentialsResource(
-                new CredentialsClientFactoryMock($logger),
-            ),
-            new TokenClientFactoryMock($logger),
-            new TokenValidator(),
-            new CredentialProvider(
-                new SettingsValidationService($systemConfigService, $logger),
-                $systemConfigService,
-                new CredentialsUtil($systemConfigService)
-            ),
-            $logger,
+            self::tokenGateway(),
+            self::customerGateway(),
         );
 
         return new SettingsController(
             $apiCredentialsService,
             new MerchantIntegrationsService(
-                new MerchantIntegrationsResource(new PayPalClientFactoryMock($logger)),
+                new MerchantIntegrationsResource(self::customerGateway(), new ApiContextFactoryMock()),
+                new TokenResource(self::tokenGateway(), new ApiContextFactoryMock()),
                 new CredentialsUtil($systemConfigService),
                 $this->getContainer()->get(PaymentMethodDataRegistry::class),
-                new PayPalClientFactoryMock($logger)
             ),
             $this->getContainer()->get(SystemConfigValidator::class),
             new SettingsSaver(

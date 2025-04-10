@@ -14,8 +14,8 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
@@ -36,7 +36,7 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
 
     public function testInvoke(): void
     {
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_CAPTURE);
         $this->assertInvoke(OrderTransactionStates::STATE_PAID, $webhook);
     }
 
@@ -47,20 +47,20 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
 
     public function testInvokeWithoutCustomId(): void
     {
-        $this->assertInvokeWithoutCustomId(Webhook::RESOURCE_TYPE_CAPTURE);
+        $this->assertInvokeWithoutCustomId(Event::RESOURCE_TYPE_CAPTURE);
     }
 
     public function testInvokeWithoutTransaction(): void
     {
         $orderTransactionId = Uuid::randomHex();
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE, $orderTransactionId);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_CAPTURE, $orderTransactionId);
         $reason = \sprintf('with custom ID "%s" (order transaction ID)', $orderTransactionId);
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_CAPTURE_COMPLETED, $webhook, $reason);
     }
 
     public function testInvokeWithSameInitialState(): void
     {
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_CAPTURE);
         $this->assertInvoke(OrderTransactionStates::STATE_PAID, $webhook, OrderTransactionStates::STATE_PAID);
     }
 
@@ -113,7 +113,7 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
             ->willReturn($transaction);
 
         $handler->invoke(
-            $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE),
+            $this->createWebhookV2(Event::RESOURCE_TYPE_CAPTURE),
             Context::createDefaultContext()
         );
     }

@@ -41,7 +41,8 @@ use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -54,6 +55,7 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class CreateOrderRouteTest extends TestCase
 {
+    use GatewayTestBehaviour;
     use IntegrationTestBehaviour;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;
@@ -122,7 +124,7 @@ class CreateOrderRouteTest extends TestCase
             $applePayOrderBuilder,
             $googlePayOrderBuilder,
             $venmoOrderBuilder,
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
             new NullLogger(),
             new PaymentTransactionStructFactory(),
         );

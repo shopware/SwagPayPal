@@ -9,10 +9,10 @@ namespace Swag\PayPal\Setting\Service;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
+use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResourceInterface;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Struct\MerchantInformationStruct;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
@@ -28,9 +28,9 @@ class MerchantIntegrationsService
      */
     public function __construct(
         private readonly MerchantIntegrationsResourceInterface $merchantIntegrationsResource,
+        private readonly TokenResource $tokenResource,
         private readonly CredentialsUtilInterface $credentialsUtil,
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
-        private readonly PayPalClientFactoryInterface $payPalClientFactory,
     ) {
     }
 
@@ -88,11 +88,11 @@ class MerchantIntegrationsService
             if ($methodData instanceof PayPalMethodData || $methodData instanceof PayLaterMethodData) {
                 try {
                     // if the PayPal client can be created, at least PayPal Wallet is active
-                    $this->payPalClientFactory->getPayPalClient($salesChannelId);
+                    $this->tokenResource->getToken($salesChannelId);
                     $capabilities[$paymentMethodId] = AbstractMethodData::CAPABILITY_ACTIVE;
 
                     continue;
-                } catch (\Throwable $e) {
+                } catch (\Throwable) {
                 }
             }
 

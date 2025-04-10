@@ -8,15 +8,15 @@
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Resource\AuthorizationResource;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 
 /**
  * @internal
@@ -24,6 +24,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 #[Package('checkout')]
 class AuthorizationResourceTest extends TestCase
 {
+    use GatewayTestBehaviour;
+
     public function testGet(): void
     {
         $authorizationId = GetAuthorization::ID;
@@ -48,6 +50,6 @@ class AuthorizationResourceTest extends TestCase
 
     private function createResource(): AuthorizationResource
     {
-        return new AuthorizationResource(new PayPalClientFactoryMock(new NullLogger()));
+        return new AuthorizationResource(self::paymentGateway(), new ApiContextFactoryMock());
     }
 }

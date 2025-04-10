@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Order\ApplicationContext;
 
 #[Package('checkout')]
 final class Settings
@@ -67,7 +67,7 @@ final class Settings
      */
     public const DEFAULT_VALUES = [
         self::SANDBOX => false,
-        self::INTENT => PaymentIntentV2::CAPTURE,
+        self::INTENT => ConstantsV2::INTENT_CAPTURE,
         self::SUBMIT_CART => true,
         self::LANDING_PAGE => ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE,
         self::SEND_ORDER_NUMBER => true,

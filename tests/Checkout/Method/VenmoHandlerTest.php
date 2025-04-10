@@ -21,6 +21,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Venmo;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -35,14 +38,11 @@ use Swag\PayPal\OrdersApi\Builder\VenmoOrderBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Venmo;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -194,8 +194,7 @@ Subscription not found');
     protected function createPaymentHandler(array $settings = []): AbstractPaymentMethodHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
-        $orderResource = new OrderResource($this->clientFactory);
+        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();
 

@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\PaymentsApi\Administration;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
@@ -17,9 +16,9 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
+use Shopware\PayPalSDK\Struct\V1\Payment\Transaction\RelatedResource;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\PaymentsApi\Administration\PayPalPaymentController;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 use Swag\PayPal\RestApi\V1\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V1\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
@@ -29,7 +28,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentSaleResponseFixtu
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceAuthorizeResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 
 /**
  * @internal
@@ -37,6 +37,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 #[Package('checkout')]
 class PayPalPaymentControllerTest extends TestCase
 {
+    use GatewayTestBehaviour;
+
     private const KEY_TO_TEST = 'keyToTest';
     private const VALUE_TO_TEST = 'valueToTest';
 
@@ -49,15 +51,14 @@ class PayPalPaymentControllerTest extends TestCase
 
     protected function setUp(): void
     {
-        $clientFactory = new PayPalClientFactoryMock(new NullLogger());
         $this->orderRepository = new StaticEntityRepository([]);
 
         $this->controller = new PayPalPaymentController(
-            new PaymentResource($clientFactory),
-            new SaleResource($clientFactory),
-            new AuthorizationResource($clientFactory),
-            new OrdersResource($clientFactory),
-            new CaptureResource($clientFactory),
+            new PaymentResource(self::paymentV1Gateway(), new ApiContextFactoryMock()),
+            new SaleResource(self::paymentV1Gateway(), new ApiContextFactoryMock()),
+            new AuthorizationResource(self::paymentV1Gateway(), new ApiContextFactoryMock()),
+            new OrdersResource(self::paymentV1Gateway(), new ApiContextFactoryMock()),
+            new CaptureResource(self::paymentV1Gateway(), new ApiContextFactoryMock()),
             $this->orderRepository,
         );
     }

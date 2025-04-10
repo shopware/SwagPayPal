@@ -15,10 +15,10 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Verification;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\GooglePay;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\Verification;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\GooglePay;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]

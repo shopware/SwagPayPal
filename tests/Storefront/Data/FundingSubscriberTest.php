@@ -15,11 +15,11 @@ use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Generator;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
@@ -77,7 +77,7 @@ class FundingSubscriberTest extends TestCase
         static::assertSame(self::TEST_CLIENT_ID, $extension->getClientId());
         static::assertSame('EUR', $extension->getCurrency());
         static::assertSame('en_GB', $extension->getLanguageIso());
-        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $extension->getIntent());
+        static::assertSame(\mb_strtolower(ConstantsV2::INTENT_CAPTURE), $extension->getIntent());
         static::assertSame('/paypal/payment-method-eligibility', $extension->getMethodEligibilityUrl());
         static::assertSame(['SEPA'], $extension->getFilteredPaymentMethods());
     }

@@ -30,7 +30,8 @@ use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -41,6 +42,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ExpressPrepareCheckoutRouteTest extends TestCase
 {
     use CheckoutRouteTrait;
+    use GatewayTestBehaviour;
     use IntegrationTestBehaviour;
 
     public const TEST_PAYMENT_ID_WITHOUT_STATE = 'testPaymentIdWithoutState';
@@ -140,7 +142,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
                 new NullLogger()
             ),
             $this->getContainer()->get(SalesChannelContextFactory::class),
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
             $cartService,
             new NullLogger()
         );

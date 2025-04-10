@@ -9,7 +9,7 @@ namespace Swag\PayPal\Checkout\Card;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Card\AuthenticationResult;
 use Swag\PayPal\Setting\Settings;
 
 #[Package('checkout')]
