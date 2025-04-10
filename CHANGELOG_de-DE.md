@@ -1,3 +1,6 @@
+# 8.7.4
+- Behebt ein Problem, bei dem Kartenfelder nicht abgeschickt werden konnten (shopware/shopware#8370)
+
 # 8.7.3
 - Behebt ein Problem, bei dem Kartenfelder im Zahlungsprozess nach einer Bestellung nicht angezeigt wurden (shopware/shopware#7643)
 
