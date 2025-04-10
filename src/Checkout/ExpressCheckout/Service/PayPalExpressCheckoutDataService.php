@@ -70,10 +70,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
 
         $fundingSources = ['paypal', 'venmo'];
 
-        if ($salesChannelContext->getExtension(ExpressCheckoutSubscriber::PAYPAL_PAYLATER_PRODUCT) !== null) {
-            /** @var SalesChannelProductEntity $product */
-            $product = $salesChannelContext->getExtension(ExpressCheckoutSubscriber::PAYPAL_PAYLATER_PRODUCT);
-
+        if ($product = $salesChannelContext->getExtensionOfType(ExpressCheckoutSubscriber::PAYPAL_PAYLATER_PRODUCT, SalesChannelProductEntity::class)) {
             $availabilityContext = AvailabilityContextBuilder::buildFromProduct(
                 $product,
                 $salesChannelContext
