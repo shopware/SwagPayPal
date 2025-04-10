@@ -18,7 +18,7 @@ use Swag\PayPal\Test\OrdersApi\Builder\Trait\VaultableOrderBuildTrait;
  * @internal
  */
 #[Package('checkout')]
-class VenmoOrderBuilderTest extends AbstractOrderBuilderTest
+class VenmoOrderBuilderTest extends AbstractOrderBuilderTestCase
 {
     use VaultableOrderBuildTrait;
 

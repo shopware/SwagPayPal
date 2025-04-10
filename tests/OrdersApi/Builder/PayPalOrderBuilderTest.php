@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @internal
  */
 #[Package('checkout')]
-class PayPalOrderBuilderTest extends AbstractOrderBuilderTest
+class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
 {
     use VaultableOrderBuildTrait;
 

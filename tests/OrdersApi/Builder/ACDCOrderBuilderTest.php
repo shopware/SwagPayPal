@@ -18,7 +18,7 @@ use Swag\PayPal\Test\OrdersApi\Builder\Trait\VaultableOrderBuildTrait;
  * @internal
  */
 #[Package('checkout')]
-class ACDCOrderBuilderTest extends AbstractOrderBuilderTest
+class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
 {
     use VaultableOrderBuildTrait;
 

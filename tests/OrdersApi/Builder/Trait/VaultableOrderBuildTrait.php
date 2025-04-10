@@ -18,13 +18,13 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
-use Swag\PayPal\Test\OrdersApi\Builder\AbstractOrderBuilderTest;
+use Swag\PayPal\Test\OrdersApi\Builder\AbstractOrderBuilderTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @internal
  *
- * @phpstan-assert-if-true AbstractOrderBuilderTest $this
+ * @phpstan-assert-if-true AbstractOrderBuilderTestCase $this
  */
 trait VaultableOrderBuildTrait
 {
@@ -90,7 +90,9 @@ trait VaultableOrderBuildTrait
             new Request([], [VaultTokenService::REQUEST_CREATE_VAULT => true]),
         );
 
-        static::assertSame('testToken', $order->getPaymentSource()?->first($this->getPaymentSourceClass())?->getVaultId());
+        $paymentSource = $order->getPaymentSource()?->first($this->getPaymentSourceClass())?->jsonSerialize();
+
+        static::assertSame('testToken', $paymentSource['vault_id'] ?? null);
     }
 
     public function testGetOrderNotUsesVaultTokenIfPreliminary(): void

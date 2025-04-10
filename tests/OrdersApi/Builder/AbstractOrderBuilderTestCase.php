@@ -64,7 +64,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @internal
  */
 #[Package('checkout')]
-abstract class AbstractOrderBuilderTest extends TestCase
+abstract class AbstractOrderBuilderTestCase extends TestCase
 {
     protected const TEST_FIRST_NAME = 'FirstName';
     protected const TEST_LAST_NAME = 'LastName';
