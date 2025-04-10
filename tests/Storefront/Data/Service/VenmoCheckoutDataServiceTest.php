@@ -7,8 +7,8 @@
 
 namespace Swag\PayPal\Test\Storefront\Data\Service;
 
-use Monolog\Test\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
