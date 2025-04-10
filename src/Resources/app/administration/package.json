@@ -14,25 +14,25 @@
     },
     "devDependencies": {
         "@babel/preset-env": "^7.26.9",
-        "@babel/preset-typescript": "^7.26.0",
-        "@eslint/js": "^9.21.0",
+        "@babel/preset-typescript": "^7.27.0",
+        "@eslint/js": "^9.24.0",
         "@shopware-ag/eslint-config-base": "^2.0.0",
         "@shopware-ag/jest-preset-sw6-admin": "^6.0.1",
         "@stylistic/eslint-plugin": "^4.2.0",
         "@types/jest": "^29.5.14",
-        "eslint": "^9.21.0",
-        "eslint-import-resolver-typescript": "^3.8.3",
+        "eslint": "^9.24.0",
+        "eslint-import-resolver-typescript": "^4.3.2",
         "eslint-plugin-import": "^2.31.0",
         "eslint-plugin-jest": "^28.9.0",
-        "eslint-plugin-vue": "^9.32.0",
+        "eslint-plugin-vue": "^10.0.0",
         "jest": "^29.7.0",
         "jest-environment-jsdom": "^29.7.0",
-        "openapi-typescript": "^6.7.6",
-        "typescript": "~5.8.2",
-        "typescript-eslint": "^8.26.0"
+        "openapi-typescript": "^7.6.1",
+        "typescript": "~5.8.3",
+        "typescript-eslint": "^8.29.1"
     },
     "dependencies": {
-        "@shopware-ag/meteor-admin-sdk": "^5.7.5"
+        "@shopware-ag/meteor-admin-sdk": "^5.8.5"
     },
     "optionalDependencies": {
         "administration": "^6.x"
