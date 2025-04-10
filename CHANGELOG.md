@@ -1,3 +1,6 @@
+# 8.7.4
+- Fixes an issue, where card fields could not be submitted (shopware/shopware#8370)
+
 # 8.7.3
 - Fixes an issue, where card fields were not displayed in the after order payment process (shopware/shopware#7643)
 
