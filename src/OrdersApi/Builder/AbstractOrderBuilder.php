@@ -37,6 +37,8 @@ use Symfony\Component\HttpFoundation\Request;
 #[Package('checkout')]
 abstract class AbstractOrderBuilder
 {
+    public const PRELIMINARY_ATTRIBUTE = 'isPayPalPreliminaryOrder';
+
     /**
      * @internal
      */
@@ -56,7 +58,7 @@ abstract class AbstractOrderBuilder
         Context $context,
         Request $request,
     ): Order {
-        $purchaseUnit = $this->createPurchaseUnitFromOrder($context, $order, $orderTransaction);
+        $purchaseUnit = $this->createPurchaseUnitFromOrder($context, $order, $orderTransaction, $request->attributes->getBoolean(self::PRELIMINARY_ATTRIBUTE));
         $payPalOrder = new Order();
         $payPalOrder->setIntent($this->getIntent($order->getSalesChannelId()));
         $payPalOrder->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
@@ -104,6 +106,7 @@ abstract class AbstractOrderBuilder
         Context $context,
         OrderEntity $order,
         OrderTransactionEntity $orderTransaction,
+        bool $isPreliminary = false,
     ): PurchaseUnit {
         $currency = $order->getCurrency();
         \assert($currency !== null);
@@ -119,7 +122,7 @@ abstract class AbstractOrderBuilder
             $context,
             $taxStatus !== CartPrice::TAX_STATE_GROSS,
             $order,
-            $orderTransaction
+            $isPreliminary ? null : $orderTransaction
         );
     }
 

@@ -53,6 +53,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         Context $context,
         Request $request,
         PaymentSource $paymentSource,
+        bool $isPreliminary = false,
     ): void {
         $paypal = new Paypal();
         $paymentSource->setPaypal($paypal);
@@ -66,7 +67,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $this->addressProvider->createAddress($billingAddress, $address);
         $paypal->setAddress($address);
 
-        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
+        if (!$request->attributes->getBoolean(self::PRELIMINARY_ATTRIBUTE) && $token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
             $paypal->setVaultId($token->getToken());
 
             return;
