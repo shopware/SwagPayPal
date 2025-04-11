@@ -51,7 +51,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class ExpressCheckoutSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID = 'payPalEcsButtonData';
-    public const PAYPAL_PAYLATER_PRODUCT = 'payPaylPayLaterProduct';
 
     /**
      * @param EntityRepository<CustomerCollection> $customerRepository

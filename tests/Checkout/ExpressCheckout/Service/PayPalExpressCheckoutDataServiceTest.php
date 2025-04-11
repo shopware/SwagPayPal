@@ -35,7 +35,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\System\Tax\TaxDefinition;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
-use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -238,8 +237,6 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             new CalculatedTaxCollection(),
             new TaxRuleCollection()
         ));
-
-        $salesChannelContext->addExtension(ExpressCheckoutSubscriber::PAYPAL_PAYLATER_PRODUCT, $product);
 
         $payLaterMethodData = $this->createMock(PayLaterMethodData::class);
         $payLaterMethodData->method('isAvailable')
