@@ -15,7 +15,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
-use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
@@ -49,6 +48,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
     public function buildExpressCheckoutButtonData(
         SalesChannelContext $salesChannelContext,
         bool $addProductToCart = false,
+        ?SalesChannelProductEntity $product = null
     ): ?ExpressCheckoutButtonData {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
@@ -70,11 +70,8 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
 
         $fundingSources = ['paypal', 'venmo'];
 
-        if ($product = $salesChannelContext->getExtensionOfType(ExpressCheckoutSubscriber::PAYPAL_PAYLATER_PRODUCT, SalesChannelProductEntity::class)) {
-            $availabilityContext = AvailabilityContextBuilder::buildFromProduct(
-                $product,
-                $salesChannelContext
-            );
+        if ($product) {
+            $availabilityContext = AvailabilityContextBuilder::buildFromProduct($product, $salesChannelContext);
         } else {
             $availabilityContext = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
         }

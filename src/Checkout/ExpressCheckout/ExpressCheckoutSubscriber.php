@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\Event\DataMappingEvent;
@@ -102,16 +103,12 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             || $event instanceof NavigationPageLoadedEvent
             || $event instanceof SearchPageLoadedEvent;
 
-        if ($event instanceof ProductPageLoadedEvent) {
-            $event->getSalesChannelContext()->addExtension(
-                self::PAYPAL_PAYLATER_PRODUCT,
-                $event->getPage()->getProduct(),
-            );
-        }
-
-        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), $event::class, $addProductToCart);
-
-        $event->getSalesChannelContext()->removeExtension(self::PAYPAL_PAYLATER_PRODUCT);
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData(
+            $event->getSalesChannelContext(),
+            $event::class,
+            $addProductToCart,
+            $event instanceof ProductPageLoadedEvent ? $event->getPage()->getProduct() : null
+        );
 
         if ($expressCheckoutButtonData === null) {
             return;
@@ -291,6 +288,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         SalesChannelContext $salesChannelContext,
         string $eventName,
         bool $addProductToCart = false,
+        ?SalesChannelProductEntity $product = null,
     ): ?ExpressCheckoutButtonData {
         if (!$this->checkSettings($salesChannelContext, $eventName)) {
             return null;
@@ -298,7 +296,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
         return $this->expressCheckoutDataService->buildExpressCheckoutButtonData(
             $salesChannelContext,
-            $addProductToCart
+            $addProductToCart,
+            $product
         );
     }
 
