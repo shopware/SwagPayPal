@@ -1,3 +1,6 @@
+# 8.7.5
+- Behebt ein Problem mit dem vorkompilierten Storefront-Javascript (shopware/shopware#8483)
+
 # 8.7.4
 - Behebt ein Problem, bei dem Kartenfelder nicht abgeschickt werden konnten (shopware/shopware#8370)
 

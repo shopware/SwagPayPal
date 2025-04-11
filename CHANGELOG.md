@@ -1,3 +1,6 @@
+# 8.7.5
+- Fixes an issue with the pre-built storefront JavaScript (shopware/shopware#8483)
+
 # 8.7.4
 - Fixes an issue, where card fields could not be submitted (shopware/shopware#8370)
 
