@@ -1,3 +1,6 @@
+# 9.7.5
+- Behebt ein Problem, bei dem der PayLater Button auf einer Produktseite nicht angezeigt wird, wenn der Warenkorb leer ist (shopware/shopware#8356)
+
 # 9.7.4
 - Behebt ein Problem, bei dem die Eingabefelder des Modals für Rückerstattungen fehlen konnten
 
