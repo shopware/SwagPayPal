@@ -109,6 +109,35 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             $event instanceof ProductPageLoadedEvent ? $event->getPage()->getProduct() : null
         );
 
+        /**
+         * if ($event instanceof ProductPageLoadedEvent
+         * || $event instanceof NavigationPageLoadedEvent
+         * || $event instanceof SearchPageLoadedEvent) {
+         * $product = $event->getPage()->getProduct();
+         * }
+         *
+         * $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), $event::class, $product !? null);
+         *
+         * ///////
+         *
+         * list($addProductToCart, $product) = $this->extractProductFromEvent($event);
+         *
+         * /**
+         * @param PageLoadedEvent $event
+         * @return array{0: bool, 1: SalesChannelProductEntity|null}
+         * /
+         * private function extractProductFromEvent(PageLoadedEvent $event): array
+         * {
+         * if ($event instanceof ProductPageLoadedEvent
+         * || $event instanceof NavigationPageLoadedEvent
+         * || $event instanceof SearchPageLoadedEvent) {
+         * return [true, $event->getPage()->getProduct()];
+         * }
+         *
+         * return [false, null];
+         * }
+         */
+
         if ($expressCheckoutButtonData === null) {
             return;
         }
