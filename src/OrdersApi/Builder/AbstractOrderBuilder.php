@@ -41,6 +41,8 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 #[Package('checkout')]
 abstract class AbstractOrderBuilder
 {
+    public const PRELIMINARY_ATTRIBUTE = 'isPayPalPreliminaryOrder';
+
     /**
      * @internal
      */

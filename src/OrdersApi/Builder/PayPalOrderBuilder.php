@@ -60,7 +60,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $this->addressProvider->createAddress($billingAddress, $address);
         $paypal->setAddress($address);
 
-        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $salesChannelContext->getContext())) {
+        if (!$requestDataBag->getBoolean(self::PRELIMINARY_ATTRIBUTE) && $token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $salesChannelContext->getContext())) {
             $paypal->setVaultId($token->getToken());
 
             return;
