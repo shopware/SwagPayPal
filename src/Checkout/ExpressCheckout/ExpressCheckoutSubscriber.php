@@ -51,6 +51,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID = 'payPalEcsButtonData';
     public const PAYPAL_PAYLATER_PRODUCT = 'payPaylPayLaterProduct';
+    public const PAYPAL_EXPRESS_CHECKOUT_EVENT_NAME = 'payPalEcsEventName';
 
     /**
      * @param EntityRepository<CustomerCollection> $customerRepository
@@ -109,9 +110,12 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             );
         }
 
+        $event->getSalesChannelContext()->addExtension(self::PAYPAL_EXPRESS_CHECKOUT_EVENT_NAME, new ArrayStruct([$event::class]));
+
         $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), $event::class, $addProductToCart);
 
         $event->getSalesChannelContext()->removeExtension(self::PAYPAL_PAYLATER_PRODUCT);
+        $event->getSalesChannelContext()->removeExtension(self::PAYPAL_EXPRESS_CHECKOUT_EVENT_NAME);
 
         if ($expressCheckoutButtonData === null) {
             return;

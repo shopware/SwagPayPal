@@ -15,7 +15,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 interface ExpressCheckoutDataServiceInterface
 {
     /**
-     * @deprecated tag:v10.0.0 - reason:new-optional-parameter - a SalesChannelProductEntity that defaults to null will be added
+     * @deprecated tag:v10.0.0 - reason:new-optional-parameter - a ShopwareSalesChannelEvent that defaults to null will be added
      */
     public function buildExpressCheckoutButtonData(SalesChannelContext $salesChannelContext, bool $addProductToCart = false): ?ExpressCheckoutButtonData;
 }
