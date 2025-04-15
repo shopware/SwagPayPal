@@ -12,10 +12,10 @@ use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\Event\DataMappingEvent;
+use Shopware\Core\Framework\Event\ShopwareSalesChannelEvent;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Validation\BuildValidationEvent;
@@ -103,40 +103,9 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             || $event instanceof SearchPageLoadedEvent;
 
         $expressCheckoutButtonData = $this->getExpressCheckoutButtonData(
-            $event->getSalesChannelContext(),
-            $event::class,
-            $addProductToCart,
-            $event instanceof ProductPageLoadedEvent ? $event->getPage()->getProduct() : null
+            $event,
+            $addProductToCart
         );
-
-        /**
-         * if ($event instanceof ProductPageLoadedEvent
-         * || $event instanceof NavigationPageLoadedEvent
-         * || $event instanceof SearchPageLoadedEvent) {
-         * $product = $event->getPage()->getProduct();
-         * }
-         *
-         * $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), $event::class, $product !? null);
-         *
-         * ///////
-         *
-         * list($addProductToCart, $product) = $this->extractProductFromEvent($event);
-         *
-         * /**
-         * @param PageLoadedEvent $event
-         * @return array{0: bool, 1: SalesChannelProductEntity|null}
-         * /
-         * private function extractProductFromEvent(PageLoadedEvent $event): array
-         * {
-         * if ($event instanceof ProductPageLoadedEvent
-         * || $event instanceof NavigationPageLoadedEvent
-         * || $event instanceof SearchPageLoadedEvent) {
-         * return [true, $event->getPage()->getProduct()];
-         * }
-         *
-         * return [false, null];
-         * }
-         */
 
         if ($expressCheckoutButtonData === null) {
             return;
@@ -161,7 +130,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     public function addExpressCheckoutDataToPagelet(PageletLoadedEvent $event): void
     {
-        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), $event::class, true);
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event, true);
 
         if ($expressCheckoutButtonData === null) {
             return;
@@ -181,7 +150,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     public function addExpressCheckoutDataToBuyBoxSwitch(SwitchBuyBoxVariantEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
-        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, $event::class, true);
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event);
 
         if ($expressCheckoutButtonData === null) {
             return;
@@ -313,19 +282,17 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     }
 
     private function getExpressCheckoutButtonData(
-        SalesChannelContext $salesChannelContext,
-        string $eventName,
+        ShopwareSalesChannelEvent $event,
         bool $addProductToCart = false,
-        ?SalesChannelProductEntity $product = null,
     ): ?ExpressCheckoutButtonData {
-        if (!$this->checkSettings($salesChannelContext, $eventName)) {
+        if (!$this->checkSettings($event->getSalesChannelContext(), $event::class)) {
             return null;
         }
 
         return $this->expressCheckoutDataService->buildExpressCheckoutButtonData(
-            $salesChannelContext,
+            $event->getSalesChannelContext(),
             $addProductToCart,
-            $product
+            $event
         );
     }
 

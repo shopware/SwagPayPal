@@ -10,9 +10,11 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\Event\ShopwareSalesChannelEvent;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -48,7 +50,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
     public function buildExpressCheckoutButtonData(
         SalesChannelContext $salesChannelContext,
         bool $addProductToCart = false,
-        ?SalesChannelProductEntity $product = null
+        ?ShopwareSalesChannelEvent $event = null
     ): ?ExpressCheckoutButtonData {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
@@ -70,13 +72,13 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
 
         $fundingSources = ['paypal', 'venmo'];
 
-        if ($product) {
+        if ($product = $this->getProductFromEvent($event)) {
             $availabilityContext = AvailabilityContextBuilder::buildFromProduct($product, $salesChannelContext);
         } else {
             $availabilityContext = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
         }
 
-        if ($this->showPayLater($salesChannelId, $availabilityContext)) {
+        if ($this->showPayLater($salesChannelId, $availabilityContext, $event)) {
             array_splice($fundingSources, 1, 0, ['paylater']);
         }
 
@@ -101,7 +103,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
             ),
             'handleErrorUrl' => $this->router->generate('frontend.paypal.handle-error'),
             'cancelRedirectUrl' => $this->router->generate($addProductToCart ? 'frontend.checkout.cart.page' : 'frontend.checkout.register.page'),
-            'showPayLater' => $this->showPayLater($salesChannelId, $availabilityContext),
+            'showPayLater' => $this->showPayLater($salesChannelId, $availabilityContext, $event),
             'fundingSources' => $fundingSources,
         ]);
     }
@@ -111,9 +113,19 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         return Settings::ECS_BUTTON_LANGUAGE_ISO;
     }
 
-    private function showPayLater(string $salesChannelId, AvailabilityContext $availabilityContext): bool
+    private function showPayLater(string $salesChannelId, AvailabilityContext $availabilityContext, ?ShopwareSalesChannelEvent $event): bool
     {
-        return $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)
+        return $event instanceof ProductPageLoadedEvent
+            && $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)
             && $this->payLaterMethodData->isAvailable($availabilityContext);
+    }
+
+    private function getProductFromEvent(?ShopwareSalesChannelEvent $event): ?SalesChannelProductEntity
+    {
+        if ($event instanceof ProductPageLoadedEvent) {
+            return $event->getPage()->getProduct();
+        }
+
+        return null;
     }
 }

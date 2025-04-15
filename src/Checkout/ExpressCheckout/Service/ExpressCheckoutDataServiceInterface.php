@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\Event\ShopwareSalesChannelEvent;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
@@ -18,6 +18,6 @@ interface ExpressCheckoutDataServiceInterface
     public function buildExpressCheckoutButtonData(
         SalesChannelContext $salesChannelContext,
         bool $addProductToCart = false,
-        ?SalesChannelProductEntity $product = null
+        ?ShopwareSalesChannelEvent $event = null
     ): ?ExpressCheckoutButtonData;
 }

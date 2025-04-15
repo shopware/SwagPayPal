@@ -34,6 +34,8 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\System\Tax\TaxDefinition;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\Storefront\Page\Product\ProductPage;
+use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
@@ -45,6 +47,7 @@ use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -167,7 +170,8 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     #[DataProvider('dataProviderTestGetExpressCheckoutButtonDataWithCredentials')]
     public function testGetExpressCheckoutButtonDataWithCredentials(bool $withSettingsLocale, bool $addToCart): void
     {
-        $taxId = $this->createTaxId(Context::createDefaultContext());
+        $context = Context::createDefaultContext();
+        $taxId = $this->createTaxId($context);
         $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
         $productId = $this->getProductId($salesChannelContext->getContext(), $taxId);
         $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
@@ -182,7 +186,19 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $this->systemConfigService->set(Settings::ECS_BUTTON_LANGUAGE_ISO, 'de_AT');
         }
 
-        $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext, $addToCart);
+        $salesChannelProductEntity = new SalesChannelProductEntity();
+        $salesChannelProductEntity->setCalculatedPrice(new CalculatedPrice(
+            2,
+            2,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection()
+        ));
+        $productPage = new ProductPage();
+        $productPage->setProduct($salesChannelProductEntity);
+
+        $event = new ProductPageLoadedEvent($productPage, $salesChannelContext, new Request());
+
+        $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext, $addToCart, $event);
 
         static::assertNotNull($expressCheckoutButtonData);
         static::assertTrue($expressCheckoutButtonData->getProductDetailEnabled());
@@ -238,6 +254,9 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             new TaxRuleCollection()
         ));
 
+        $productPage = new ProductPage();
+        $productPage->setProduct($product);
+
         $payLaterMethodData = $this->createMock(PayLaterMethodData::class);
         $payLaterMethodData->method('isAvailable')
             ->willReturn($payLaterAvailable);
@@ -253,7 +272,9 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $payLaterMethodData
         );
 
-        $expressCheckoutButtonData = $payPalExpressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext, true);
+        $event = new ProductPageLoadedEvent($productPage, $salesChannelContext, new Request());
+
+        $expressCheckoutButtonData = $payPalExpressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext, true, $event);
 
         static::assertNotNull($expressCheckoutButtonData);
         static::assertSame($expectedFundingSources, $expressCheckoutButtonData->getFundingSources());
