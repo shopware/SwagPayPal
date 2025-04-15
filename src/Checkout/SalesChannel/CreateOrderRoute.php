@@ -95,12 +95,13 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             )])
         )]
     )]
-    #[Route(path: '/store-api/paypal/create-order', name: 'store-api.paypal.create_order', methods: ['POST'])]
-    #[Route(path: '/store-api/subscription/paypal/create-order', name: 'store-api.subscription.paypal.create_order', defaults: ['_subscriptionCart' => true, '_subscriptionContext' => true], methods: ['POST'])]
+    #[Route(path: '/store-api/paypal/create-order', name: 'store-api.paypal.create_order', defaults: [AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true], methods: ['POST'])]
+    #[Route(path: '/store-api/subscription/paypal/create-order', name: 'store-api.subscription.paypal.create_order', defaults: ['_subscriptionCart' => true, '_subscriptionContext' => true, AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true], methods: ['POST'])]
     public function createPayPalOrder(SalesChannelContext $salesChannelContext, Request $request): TokenResponse
     {
         try {
             $requestDataBag = new RequestDataBag($request->request->all());
+            $requestDataBag->set(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE, true);
             $this->logger->debug('Started', ['request' => $requestDataBag->all()]);
             $customer = $salesChannelContext->getCustomer();
             if ($customer === null) {
