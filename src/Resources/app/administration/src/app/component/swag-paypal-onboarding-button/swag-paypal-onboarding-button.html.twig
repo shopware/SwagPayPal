@@ -1,15 +1,14 @@
 <a
     :href="onboardingUrl"
-    :disabled="isDisabled"
     :class="classes"
     class="swag-paypal-onboarding-button"
     target="_paypal"
     :data-paypal-onboard-complete="callbackName"
     data-paypal-button="true"
 >
-    <sw-loader
+    <mt-loader
         v-if="isLoading"
-        class="sw-button_loader"
+        class="swag-paypal-onboarding-button__loader"
         size="20px"
     />
 

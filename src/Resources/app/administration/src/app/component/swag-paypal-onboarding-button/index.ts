@@ -44,6 +44,7 @@ export default Shopware.Component.wrapComponentConfig({
             type: this.mode,
 
             callbackId: Shopware.Utils.createId(),
+            setupFunctionWaits: 0,
 
             isLoading: true,
 
@@ -91,6 +92,11 @@ export default Shopware.Component.wrapComponentConfig({
     watch: {
         mode() {
             this.type = this.mode;
+        },
+        '$route.query'(query: Record<string, unknown>) {
+            if (Object.hasOwn(query, 'ppOnboarding')) {
+                this.completeOnboarding();
+            }
         },
     },
 
@@ -204,29 +210,60 @@ export default Shopware.Component.wrapComponentConfig({
 
             if (window.PAYPAL) {
                 this.isLoading = false;
-                window.PAYPAL.apps.Signup.setup();
+                if (window.PAYPAL.apps.Signup.setup) {
+                    window.PAYPAL.apps.Signup.setup();
+                } else {
+                    window.PAYPAL.apps.Signup.render();
+                }
             } else {
-                el.addEventListener('load', this.renderPayPalButton.bind(this), false);
+                el.addEventListener('load', () => void this.renderPayPalButton(), false);
             }
         },
 
-        renderPayPalButton() {
-            this.isLoading = false;
+        async renderPayPalButton() {
+            this.isLoading = true;
 
-            // The original render function inside the partner.js is overwritten here.
-            // The function gets overwritten again, as soon as PayPals signup.js is loaded.
-            // A loop is created and the render() function is executed until the real render() function is available.
-            // PayPal does originally nearly the same, but only once and not in a loop.
-            // If the signup.js is loaded to slow the button is not rendered.
-            window.PAYPAL!.apps.Signup.render = function proxyPPrender() {
-                if (window.PAYPAL!.apps.Signup.timeout) {
-                    clearTimeout(window.PAYPAL!.apps.Signup.timeout);
+            // maybe another button instance already started loading and rendering
+            if (window.paypalScriptPromise) {
+                Shopware.Utils.debug.warn('[PayPal Onboarding] another button is already loading');
+            } else {
+                window.PAYPAL!.apps.Signup.render = function proxyPPrender() {};
+                window.paypalScriptPromise = this.waitForScriptsLoaded();
+            }
+
+            await window.paypalScriptPromise;
+
+            this.isLoading = false;
+        },
+
+        // The partner.js does not provide a stub `setup` function like the `render` function.
+        // The setup function is overriden as soon as all scripts are loaded properly.
+        // Still, just in case we should stop waiting after 30sec.
+        waitForScriptsLoaded(): Promise<void> {
+            let tries = 0;
+
+            const checkFn = (resolve: (() => void)) => {
+                if (tries > 100) {
+                    Shopware.Utils.debug.warn('[PayPal Onboarding] exceeded tries. paypal script is properly not loaded correctly');
+                    return resolve();
                 }
 
-                window.PAYPAL!.apps.Signup.timeout = setTimeout(window.PAYPAL!.apps.Signup.render, 300);
+                if (window.PAYPAL!.apps.Signup.render.name !== 'proxyPPrender') {
+                    Shopware.Utils.debug.warn('[PayPal Onboarding] found render function');
+                    window.PAYPAL!.apps.Signup.render();
+                    return resolve();
+                }
+
+                if (window.PAYPAL!.apps.Signup.setup) {
+                    Shopware.Utils.debug.warn('[PayPal Onboarding] found setup function');
+                    return resolve();
+                }
+
+                tries += 1;
+                setTimeout(checkFn.bind(this, resolve), 300);
             };
 
-            window.PAYPAL!.apps.Signup.render();
+            return new Promise<void>(checkFn.bind(this));
         },
 
         async fetchCredentials(authCode: string, sharedId: string) {
@@ -272,6 +309,7 @@ export default Shopware.Component.wrapComponentConfig({
 
         completeOnboarding() {
             const { ppOnboarding, merchantIdInPayPal } = this.$route.query;
+
             this.$router.replace({ query: {} });
 
             if (!merchantIdInPayPal || ppOnboarding !== 'sandbox' && ppOnboarding !== 'live') {
