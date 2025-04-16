@@ -80,12 +80,28 @@ class Client implements ClientInterface
             static fn (string $name) => \in_array(\mb_strtolower($name), self::HEADER_WHITELIST, true),
         );
 
-        return \array_combine(
+        $headers = \array_combine(
             $headers,
             \array_map(
                 static fn (string $name) => $message->getHeaderLine($name),
                 $headers,
             ),
         );
+
+        if ($message->getHeaderLine('paypal-auth-assertion')) {
+            $headers['paypal-auth-assertion'] = '<redacted>';
+        }
+
+        if ($authorization = \mb_strtolower($message->getHeaderLine('authorization'))) {
+            if (\str_starts_with($authorization, 'bearer')) {
+                $headers['authorization'] = 'Bearer <redacted>';
+            } elseif (\str_starts_with($authorization, 'basic')) {
+                $headers['authorization'] = 'Basic <redacted>';
+            } else {
+                $headers['authorization'] = '<redacted>';
+            }
+        }
+
+        return $headers;
     }
 }
