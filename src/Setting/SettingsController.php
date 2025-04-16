@@ -123,7 +123,11 @@ class SettingsController extends AbstractController
 
         $credentials = $this->apiCredentialService->getApiCredentials($authCode, $sharedId, $nonce, $sandboxActive);
 
-        return new JsonResponse($credentials);
+        return new JsonResponse([
+            'client_id' => $credentials->getClientId(),
+            'client_secret' => $credentials->getClientSecret(),
+            'payer_id' => $credentials->getPayerId(),
+        ]);
     }
 
     #[OA\Get(
