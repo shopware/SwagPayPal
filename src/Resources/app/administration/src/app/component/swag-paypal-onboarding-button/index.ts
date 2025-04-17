@@ -44,7 +44,6 @@ export default Shopware.Component.wrapComponentConfig({
             type: this.mode,
 
             callbackId: Shopware.Utils.createId(),
-            setupFunctionWaits: 0,
 
             isLoading: true,
 
