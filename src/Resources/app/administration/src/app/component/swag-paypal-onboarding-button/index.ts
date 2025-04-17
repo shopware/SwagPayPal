@@ -224,9 +224,7 @@ export default Shopware.Component.wrapComponentConfig({
             this.isLoading = true;
 
             // maybe another button instance already started loading and rendering
-            if (window.paypalScriptPromise) {
-                Shopware.Utils.debug.warn('[PayPal Onboarding] another button is already loading');
-            } else {
+            if (!window.paypalScriptPromise) {
                 window.PAYPAL!.apps.Signup.render = function proxyPPrender() {};
                 window.paypalScriptPromise = this.waitForScriptsLoaded();
             }
@@ -244,18 +242,15 @@ export default Shopware.Component.wrapComponentConfig({
 
             const checkFn = (resolve: (() => void)) => {
                 if (tries > 100) {
-                    Shopware.Utils.debug.warn('[PayPal Onboarding] exceeded tries. paypal script is properly not loaded correctly');
                     return resolve();
                 }
 
                 if (window.PAYPAL!.apps.Signup.render.name !== 'proxyPPrender') {
-                    Shopware.Utils.debug.warn('[PayPal Onboarding] found render function');
                     window.PAYPAL!.apps.Signup.render();
                     return resolve();
                 }
 
                 if (window.PAYPAL!.apps.Signup.setup) {
-                    Shopware.Utils.debug.warn('[PayPal Onboarding] found setup function');
                     return resolve();
                 }
 
