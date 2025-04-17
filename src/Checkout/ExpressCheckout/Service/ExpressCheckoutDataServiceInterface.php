@@ -12,6 +12,9 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 
+/**
+ * @deprecated tag:v6.8.0 - Will be removed with no replacement
+ */
 #[Package('checkout')]
 interface ExpressCheckoutDataServiceInterface
 {

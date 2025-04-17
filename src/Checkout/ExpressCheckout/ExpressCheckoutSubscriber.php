@@ -149,7 +149,6 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     public function addExpressCheckoutDataToBuyBoxSwitch(SwitchBuyBoxVariantEvent $event): void
     {
-        $salesChannelContext = $event->getSalesChannelContext();
         $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event);
 
         if ($expressCheckoutButtonData === null) {
