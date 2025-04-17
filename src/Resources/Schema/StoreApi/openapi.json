@@ -1542,7 +1542,6 @@
             "paypal_v1_merchant_integrations": {
                 "required": [
                     "merchant_id",
-                    "tracking_id",
                     "products",
                     "capabilities",
                     "oauth_integrations",
@@ -1554,9 +1553,6 @@
                 ],
                 "properties": {
                     "merchant_id": {
-                        "type": "string"
-                    },
-                    "tracking_id": {
                         "type": "string"
                     },
                     "products": {
@@ -1701,6 +1697,28 @@
                         "type": "array",
                         "items": {
                             "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v1_merchant_tracking": {
+                "required": [
+                    "merchant_id",
+                    "tracking_id",
+                    "links"
+                ],
+                "properties": {
+                    "merchant_id": {
+                        "type": "string"
+                    },
+                    "tracking_id": {
+                        "type": "string"
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     }
                 },

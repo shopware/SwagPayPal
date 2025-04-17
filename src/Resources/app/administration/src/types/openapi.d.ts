@@ -480,7 +480,6 @@ export interface components {
     };
     paypal_v1_merchant_integrations: {
       merchant_id: string;
-      tracking_id: string;
       products: components["schemas"]["paypal_v1_merchant_integrations_product"][];
       capabilities: components["schemas"]["paypal_v1_merchant_integrations_capability"][] | null;
       oauth_integrations: components["schemas"]["paypal_v1_merchant_integrations_oauth_integration"][];
@@ -516,6 +515,11 @@ export interface components {
       name: string;
       vetting_status?: string;
       capabilities?: string[];
+    };
+    paypal_v1_merchant_tracking: {
+      merchant_id: string;
+      tracking_id: string;
+      links: components["schemas"]["paypal_v1_common_link"][];
     };
     paypal_v1_patch: {
       /** @enum {string} */
