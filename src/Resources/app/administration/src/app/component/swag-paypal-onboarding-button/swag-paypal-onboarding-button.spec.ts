@@ -161,6 +161,7 @@ describe('swag-paypal-onboarding-button', () => {
     });
 
     it('should complete onboarding', async () => {
+        global.activeAclRoles = ['swag_paypal.editor'];
         const wrapper = await createWrapper();
 
         const store = Shopware.Store.get('swagPayPalSettings');

@@ -1,6 +1,7 @@
 @import "~scss/variables";
 
 .swag-paypal-onboarding-button {
+    position: relative;
     color: var(--color-text-brand-default);
     font-weight: var(--font-weight-semi-bold);
     font-size: var(--font-size-xs);
@@ -22,6 +23,7 @@
 
     &.is--disabled {
         cursor: not-allowed;
+        pointer-events: none;
         color: var(--color-text-brand-disabled);
         border-color: var(--color-text-brand-disabled);
 
