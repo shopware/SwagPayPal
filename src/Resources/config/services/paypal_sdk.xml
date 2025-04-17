@@ -17,8 +17,8 @@
 
         <!-- CONTEXT FACTORY -->
         <service id="Swag\PayPal\RestApi\ApiContextFactoryInterface" class="Swag\PayPal\RestApi\ApiContextFactory">
-            <argument id="Swag\PayPal\Setting\Service\SettingsValidationService" type="service"/>
-            <argument id="Shopware\Core\System\SystemConfig\SystemConfigService" type="service"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
         </service>
 

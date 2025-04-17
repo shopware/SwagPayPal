@@ -47,7 +47,7 @@ class AuthorizationResource
         $context = $this->apiContextFactory
             ->getApiContext($salesChannelId)
             ->withPartnerAttributionId($partnerAttributionId)
-            ->withPreferRepresentation($minimalResponse);
+            ->withPreferRepresentation(!$minimalResponse);
 
         return $this->paymentGateway->captureAuthorization($authorizationId, $capture, $context);
     }

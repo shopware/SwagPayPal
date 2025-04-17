@@ -11,7 +11,7 @@
     ],
     "require": {
         "shopware/core": "~6.7.0@dev",
-        "shopware/paypal-sdk": "dev-feat/implement-test-structure"
+        "shopware/paypal-sdk": "^1.2.0"
     },
     "require-dev": {
         "rector/rector": "^0.18.3"

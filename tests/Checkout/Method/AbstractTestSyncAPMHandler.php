@@ -185,7 +185,7 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
 
     public function assertPatchData(string $orderTransactionId, bool $isDuplicateTransaction = false): void
     {
-        $body = self::getClient()->lastWhere(static fn ($context) => $context->getRequest()->getMethod() === 'PATCH')?->getRequestBody();
+        $body = self::getClient()->getLastWhere(static fn ($context) => $context->getRequest()->getMethod() === 'PATCH')?->getRequestBody();
         static::assertIsArray($body);
         $patches = PatchCollection::createFromAssociative($body);
         static::assertCount(1, $patches);

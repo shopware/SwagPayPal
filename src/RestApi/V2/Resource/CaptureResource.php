@@ -47,7 +47,7 @@ class CaptureResource
         $context = $this->apiContextFactory
             ->getApiContext($salesChannelId)
             ->withPartnerAttributionId($partnerAttributionId)
-            ->withPreferRepresentation($minimalResponse);
+            ->withPreferRepresentation(!$minimalResponse);
 
         return $this->paymentGateway->refundCapture($captureId, $refund, $context);
     }

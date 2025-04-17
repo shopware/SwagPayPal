@@ -45,7 +45,6 @@ class ApiContextFactory implements ApiContextFactoryInterface
         return (new ApiContext(
             new CredentialsOAuthContext($clientId, $clientSecret),
             $sandbox,
-            $merchantId,
         ))->withPartnerAttributionId($merchantId ? PartnerAttributionId::PAYPAL_PPCP : $partnerAttributionId);
     }
 }

@@ -47,7 +47,6 @@ class MerchantIntegrationsServiceTest extends TestCase
 
         $integrations = $information->getMerchantIntegrations();
         static::assertNotNull($integrations);
-        static::assertSame(GetResourceMerchantIntegrations::TRACKING_ID, $integrations->getTrackingId());
         static::assertSame(GetResourceMerchantIntegrations::LEGAL_NAME, $integrations->getLegalName());
 
         $capabilities = $information->getCapabilities();

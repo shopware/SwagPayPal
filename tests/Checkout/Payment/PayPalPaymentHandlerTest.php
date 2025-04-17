@@ -125,7 +125,7 @@ class PayPalPaymentHandlerTest extends TestCase
             $this->getTransaction($transactionId, $this->getContainer(), Context::createDefaultContext())?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID)
         );
 
-        $body = self::getClient()->lastWhere(static fn ($context) => $context->getRequest()->getMethod() === 'PATCH')?->getRequestBody();
+        $body = self::getClient()->getLastWhere(static fn ($context) => $context->getRequest()->getMethod() === 'PATCH')?->getRequestBody();
         static::assertIsArray($body);
         $patches = PatchCollection::createFromAssociative($body);
         static::assertCount(1, $patches);
@@ -183,7 +183,7 @@ class PayPalPaymentHandlerTest extends TestCase
             $this->getTransaction($transactionId, $this->getContainer(), Context::createDefaultContext())?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID)
         );
 
-        $body = self::getClient()->lastWhere(static fn ($context) => $context->getRequest()->getMethod() === 'PATCH')?->getRequestBody();
+        $body = self::getClient()->getLastWhere(static fn ($context) => $context->getRequest()->getMethod() === 'PATCH')?->getRequestBody();
         static::assertIsArray($body);
         $patches = PatchCollection::createFromAssociative($body);
         static::assertCount(1, $patches);

@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\RestApi\Client;
 
-use Monolog\Level;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
@@ -25,32 +24,31 @@ class Client implements ClientInterface
         'date',
     ];
 
-    private Psr18Client $client;
-
     /**
      * @internal
      */
     public function __construct(
         private readonly LoggerInterface $logger,
+        private ClientInterface $client = new Psr18Client(),
     ) {
-        $this->client = new Psr18Client();
     }
 
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
         $response = $this->client->sendRequest($request);
 
-        $this->logger->log(
-            $response->getStatusCode() >= 400 ? Level::Error : Level::Info,
-            'Requesting PayPal: [{debugId}] {method} {target} {code}',
-            [
-                'method' => \mb_strtoupper($request->getMethod()),
-                'target' => (string) $request->getUri(),
-                'code' => $response->getStatusCode(),
-                'debugId' => $response->getHeaderLine('paypal-debug-id'),
-                'requestId' => $request->getHeaderLine('paypal-request-id') ?: null,
-            ],
-        );
+        if ($response->getStatusCode() >= 400) {
+            $this->logger->error(
+                'Requesting PayPal: [{debugId}] {method} {target} {code}',
+                [
+                    'method' => \mb_strtoupper($request->getMethod()),
+                    'target' => (string) $request->getUri(),
+                    'code' => $response->getStatusCode(),
+                    'debugId' => $response->getHeaderLine('paypal-debug-id'),
+                    'requestId' => $request->getHeaderLine('paypal-request-id') ?: null,
+                ],
+            );
+        }
 
         $this->logger->debug(
             'Requesting PayPal: [{debugId}] {method} {target} {code}',

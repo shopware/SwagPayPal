@@ -16,14 +16,12 @@ use Shopware\Core\Framework\Log\Package;
 class GetResourceMerchantIntegrations
 {
     public const MERCHANT_ID = '7GHKL78J89JKX';
-    public const TRACKING_ID = 'sb-gvyyd8675691@business.example.com';
     public const LEGAL_NAME = 'Test Store';
 
     public static function get(): array
     {
         return [
             'merchant_id' => self::MERCHANT_ID,
-            'tracking_id' => self::TRACKING_ID,
             'products' => [
                 [
                     'name' => 'PPCP_CUSTOM',

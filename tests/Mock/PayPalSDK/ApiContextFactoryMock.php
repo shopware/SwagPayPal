@@ -25,7 +25,6 @@ class ApiContextFactoryMock implements ApiContextFactoryInterface
         return new ApiContext(
             new CredentialsOAuthContext(ConstantsForTesting::VALID_CLIENT_ID, ConstantsForTesting::VALID_CLIENT_SECRET),
             true,
-            '',
         );
     }
 }

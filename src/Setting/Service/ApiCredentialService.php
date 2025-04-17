@@ -38,11 +38,10 @@ class ApiCredentialService
         $context = (new ApiContext(
             new CredentialsOAuthContext($clientId, $clientSecret),
             $sandboxActive,
-            $merchantPayerId ?? '',
         ))->withPartnerAttributionId(PartnerAttributionId::PAYPAL_PPCP);
 
         if ($merchantPayerId) {
-            $this->customerGateway->getMerchantIntegrations($sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE, $context);
+            $this->customerGateway->getMerchantIntegrations($sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE, $merchantPayerId, $context);
         } else {
             $this->tokenGateway->getToken($context);
         }

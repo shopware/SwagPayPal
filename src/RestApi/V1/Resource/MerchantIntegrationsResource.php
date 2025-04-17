@@ -33,10 +33,8 @@ class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterf
     {
         $context = $this->apiContextFactory
             ->getApiContext($salesChannelId)
-            ->withSandbox($sandboxActive)
-            ->withMerchantId($merchantId)
-            ->withThirdParty(false);
+            ->withSandbox($sandboxActive);
 
-        return $this->customerGateway->getMerchantIntegrations($context->isSandbox() ? PartnerId::SANDBOX : PartnerId::LIVE, $context);
+        return $this->customerGateway->getMerchantIntegrations($context->isSandbox() ? PartnerId::SANDBOX : PartnerId::LIVE, $merchantId, $context);
     }
 }

@@ -50,7 +50,7 @@ class OrderResource
         $context = $this->apiContextFactory
             ->getApiContext($salesChannelId)
             ->withPartnerAttributionId($partnerAttributionId)
-            ->withPreferRepresentation($minimalResponse)
+            ->withPreferRepresentation(!$minimalResponse)
             ->withRequestId($requestId)
             ->withClientMetadataId($metaDataId);
 
@@ -80,7 +80,7 @@ class OrderResource
         $context = $this->apiContextFactory
             ->getApiContext($salesChannelId)
             ->withPartnerAttributionId($partnerAttributionId)
-            ->withPreferRepresentation($minimalResponse);
+            ->withPreferRepresentation(!$minimalResponse);
 
         return $this->orderGateway->captureOrder($orderId, $context);
     }
@@ -97,7 +97,7 @@ class OrderResource
         $context = $this->apiContextFactory
             ->getApiContext($salesChannelId)
             ->withPartnerAttributionId($partnerAttributionId)
-            ->withPreferRepresentation($minimalResponse);
+            ->withPreferRepresentation(!$minimalResponse);
 
         return $this->orderGateway->authorizeOrder($orderId, $context);
     }
