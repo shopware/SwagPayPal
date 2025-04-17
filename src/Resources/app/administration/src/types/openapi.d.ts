@@ -480,6 +480,7 @@ export interface components {
     };
     paypal_v1_merchant_integrations: {
       merchant_id: string;
+      tracking_id: string;
       products: components["schemas"]["paypal_v1_merchant_integrations_product"][];
       capabilities: components["schemas"]["paypal_v1_merchant_integrations_capability"][] | null;
       oauth_integrations: components["schemas"]["paypal_v1_merchant_integrations_oauth_integration"][];

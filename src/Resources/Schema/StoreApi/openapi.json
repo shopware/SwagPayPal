@@ -1542,6 +1542,7 @@
             "paypal_v1_merchant_integrations": {
                 "required": [
                     "merchant_id",
+                    "tracking_id",
                     "products",
                     "capabilities",
                     "oauth_integrations",
@@ -1553,6 +1554,9 @@
                 ],
                 "properties": {
                     "merchant_id": {
+                        "type": "string"
+                    },
+                    "tracking_id": {
                         "type": "string"
                     },
                     "products": {
