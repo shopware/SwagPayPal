@@ -29,4 +29,11 @@
             <file>src/SwagPayPal.php</file>
         </exclude>
     </source>
+
+    <extensions>
+        <bootstrap class="Ergebnis\PHPUnit\SlowTestDetector\Extension">
+            <parameter name="maximum-count" value="20"/>
+            <parameter name="maximum-duration" value="1000"/>
+        </bootstrap>
+    </extensions>
 </phpunit>

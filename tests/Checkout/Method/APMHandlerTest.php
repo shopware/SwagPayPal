@@ -98,19 +98,17 @@ class APMHandlerTest extends TestCase
         );
     }
 
-    public static function dataProviderOrderBuilder(): array
+    public static function dataProviderOrderBuilder(): \Generator
     {
-        return [
-            [static::getContainer()->get(BancontactOrderBuilder::class)],
-            [static::getContainer()->get(BlikOrderBuilder::class)],
-            [static::getContainer()->get(EpsOrderBuilder::class)],
-            [static::getContainer()->get(IdealOrderBuilder::class)],
-            [static::getContainer()->get(MultibancoOrderBuilder::class)],
-            [static::getContainer()->get(MyBankOrderBuilder::class)],
-            [static::getContainer()->get(OxxoOrderBuilder::class)],
-            [static::getContainer()->get(P24OrderBuilder::class)],
-            [static::getContainer()->get(TrustlyOrderBuilder::class)],
-        ];
+        yield 'BancontactOrderBuilder' => [static::getContainer()->get(BancontactOrderBuilder::class)];
+        yield 'BlikOrderBuilder' => [static::getContainer()->get(BlikOrderBuilder::class)];
+        yield 'EpsOrderBuilder' => [static::getContainer()->get(EpsOrderBuilder::class)];
+        yield 'IdealOrderBuilder' => [static::getContainer()->get(IdealOrderBuilder::class)];
+        yield 'MultibancoOrderBuilder' => [static::getContainer()->get(MultibancoOrderBuilder::class)];
+        yield 'MyBankOrderBuilder' => [static::getContainer()->get(MyBankOrderBuilder::class)];
+        yield 'OxxoOrderBuilder' => [static::getContainer()->get(OxxoOrderBuilder::class)];
+        yield 'P24OrderBuilder' => [static::getContainer()->get(P24OrderBuilder::class)];
+        yield 'TrustlyOrderBuilder' => [static::getContainer()->get(TrustlyOrderBuilder::class)];
     }
 
     private function processPayment(string $orderId, Request $request, SalesChannelContext $context, APMHandler $apmHandler): RedirectResponse
