@@ -10,7 +10,7 @@ export declare type AppSignup = {
     };
 
     render: () => void;
-    setup: () => void;
+    setup: undefined | (() => void);
     timeout?: NodeJS.Timeout;
 };
 
@@ -28,6 +28,8 @@ export declare type PAYPAL = {
 declare global {
     interface Window {
         PAYPAL?: PAYPAL;
+
+        paypalScriptPromise?: Promise<void>;
 
         [key: `onboardingCallback${string}`]: undefined | ((authCode: string, sharedId: string) => void);
     }
