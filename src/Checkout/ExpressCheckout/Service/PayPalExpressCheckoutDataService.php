@@ -29,6 +29,9 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * @deprecated tag:v10.0.0 - Class won't implement ExpressCheckoutDataServiceInterface anymore
+ */
 #[Package('checkout')]
 class PayPalExpressCheckoutDataService extends AbstractScriptDataService implements ExpressCheckoutDataServiceInterface
 {

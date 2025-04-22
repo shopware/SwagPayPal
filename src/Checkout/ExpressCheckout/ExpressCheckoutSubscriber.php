@@ -34,8 +34,8 @@ use Shopware\Storefront\Pagelet\PageletLoadedEvent;
 use Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
-use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -57,7 +57,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
      * @param EntityRepository<CustomerCollection> $customerRepository
      */
     public function __construct(
-        private readonly ExpressCheckoutDataServiceInterface $expressCheckoutDataService,
+        private readonly PayPalExpressCheckoutDataService $expressCheckoutDataService,
         private readonly SettingsValidationServiceInterface $settingsValidationService,
         private readonly SystemConfigService $systemConfigService,
         private readonly PaymentMethodUtil $paymentMethodUtil,

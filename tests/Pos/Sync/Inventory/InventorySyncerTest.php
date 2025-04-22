@@ -62,7 +62,7 @@ class InventorySyncerTest extends TestCase
         $this->inventoryContext->setSalesChannel($salesChannel);
 
         $this->inventorySyncer = new InventorySyncer(
-            $this->createStub(InventoryContextFactory::class),
+            static::createStub(InventoryContextFactory::class),
             $this->localUpdater,
             $this->remoteUpdater,
             $this->inventoryRepository
