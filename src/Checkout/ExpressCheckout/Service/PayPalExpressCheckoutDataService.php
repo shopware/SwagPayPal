@@ -9,13 +9,10 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Event\ShopwareSalesChannelEvent;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
-use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
@@ -30,11 +27,8 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
-/**
- * @deprecated tag:v6.8.0 - Will not implement ExpressCheckoutDataServiceInterface anymore
- */
 #[Package('checkout')]
-class PayPalExpressCheckoutDataService extends AbstractScriptDataService implements ExpressCheckoutDataServiceInterface
+class PayPalExpressCheckoutDataService extends AbstractScriptDataService
 {
     /**
      * @internal
@@ -79,8 +73,10 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
 
         $availabilityContext = null;
         if ($addProductToCart && $event instanceof ProductPageLoadedEvent) {
-            $product = $this->getProductFromEvent($event);
-            $availabilityContext = AvailabilityContextBuilder::buildFromProduct($product, $salesChannelContext);
+            $availabilityContext = AvailabilityContextBuilder::buildFromProduct(
+                $event->getPage()->getProduct(),
+                $salesChannelContext
+            );
         } elseif (!$addProductToCart) {
             $availabilityContext = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
         }
@@ -125,21 +121,5 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         return $availabilityContext !== null
             && $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)
             && $this->payLaterMethodData->isAvailable($availabilityContext);
-    }
-
-    private function getProductFromEvent(?ShopwareSalesChannelEvent $event): ?SalesChannelProductEntity
-    {
-        if ($event instanceof ProductPageLoadedEvent) {
-            return $event->getPage()->getProduct();
-        }
-
-        return null;
-    }
-
-    private function canCheckoutFromPage(?ShopwareSalesChannelEvent $event): bool
-    {
-        return $event instanceof ProductPageLoadedEvent
-            || $event instanceof CheckoutCartPageLoadedEvent
-            || $event instanceof OffcanvasCartPageLoadedEvent;
     }
 }

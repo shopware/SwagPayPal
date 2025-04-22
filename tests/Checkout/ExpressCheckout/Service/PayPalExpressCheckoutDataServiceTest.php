@@ -37,7 +37,6 @@ use Shopware\Core\Test\TestDefaults;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
-use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
@@ -61,7 +60,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
 
     private const CLIENT_ID = 'someClientId';
 
-    private ExpressCheckoutDataServiceInterface $expressCheckoutDataService;
+    private PayPalExpressCheckoutDataService $expressCheckoutDataService;
 
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 

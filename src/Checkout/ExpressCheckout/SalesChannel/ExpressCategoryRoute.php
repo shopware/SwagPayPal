@@ -13,7 +13,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
-use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
@@ -30,7 +30,7 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
      */
     public function __construct(
         private readonly AbstractCategoryRoute $inner,
-        private readonly ExpressCheckoutDataServiceInterface $expressCheckoutDataService,
+        private readonly PayPalExpressCheckoutDataService $expressCheckoutDataService,
         private readonly SettingsValidationServiceInterface $settingsValidationService,
         private readonly SystemConfigService $systemConfigService,
         private readonly PaymentMethodUtil $paymentMethodUtil,
