@@ -9,9 +9,11 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Framework\Event\ShopwareSalesChannelEvent;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -26,7 +28,7 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
 #[Package('checkout')]
-class PayPalExpressCheckoutDataService extends AbstractScriptDataService implements ExpressCheckoutDataServiceInterface
+class PayPalExpressCheckoutDataService extends AbstractScriptDataService
 {
     /**
      * @internal
@@ -47,6 +49,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
     public function buildExpressCheckoutButtonData(
         SalesChannelContext $salesChannelContext,
         bool $addProductToCart = false,
+        ?ShopwareSalesChannelEvent $event = null
     ): ?ExpressCheckoutButtonData {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
@@ -68,7 +71,16 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
 
         $fundingSources = ['paypal', 'venmo'];
 
-        $availabilityContext = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
+        $availabilityContext = null;
+        if ($addProductToCart && $event instanceof ProductPageLoadedEvent) {
+            $availabilityContext = AvailabilityContextBuilder::buildFromProduct(
+                $event->getPage()->getProduct(),
+                $salesChannelContext
+            );
+        } elseif (!$addProductToCart) {
+            $availabilityContext = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
+        }
+
         if ($this->showPayLater($salesChannelId, $availabilityContext)) {
             array_splice($fundingSources, 1, 0, ['paylater']);
         }
@@ -104,9 +116,10 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         return Settings::ECS_BUTTON_LANGUAGE_ISO;
     }
 
-    private function showPayLater(string $salesChannelId, AvailabilityContext $availabilityContext): bool
+    private function showPayLater(string $salesChannelId, ?AvailabilityContext $availabilityContext): bool
     {
-        return $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)
+        return $availabilityContext !== null
+            && $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)
             && $this->payLaterMethodData->isAvailable($availabilityContext);
     }
 }

@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
@@ -143,6 +144,12 @@ class ExpressCheckoutSubscriberTest extends TestCase
         );
         $event->getPage()->setProduct(new SalesChannelProductEntity());
         $event->getPage()->getProduct()->setId(Uuid::randomHex());
+        $event->getPage()->getProduct()->setCalculatedPrice(new CalculatedPrice(
+            2,
+            2,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection()
+        ));
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
@@ -166,6 +173,12 @@ class ExpressCheckoutSubscriberTest extends TestCase
         );
         $event->getPage()->setProduct(new SalesChannelProductEntity());
         $event->getPage()->getProduct()->setId($productId);
+        $event->getPage()->getProduct()->setCalculatedPrice(new CalculatedPrice(
+            2,
+            2,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection()
+        ));
 
         $this->getExpressCheckoutSubscriber(true, false, false, $productId)->addExpressCheckoutDataToPage($event);
 
