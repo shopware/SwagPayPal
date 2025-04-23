@@ -242,10 +242,10 @@ class ProductConverterTest extends TestCase
 
     private function createProductConverter(): ProductConverter
     {
-        $variantConverter = $this->createStub(VariantConverter::class);
+        $variantConverter = static::createStub(VariantConverter::class);
         $variantConverter->method('convert')->willReturn(new Variant());
 
-        $categoryConverter = $this->createStub(CategoryConverter::class);
+        $categoryConverter = static::createStub(CategoryConverter::class);
         $categoryConverter->method('convert')->willReturn(new Category());
 
         return new ProductConverter(

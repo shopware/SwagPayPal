@@ -25,6 +25,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
@@ -34,9 +35,9 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\System\Tax\TaxDefinition;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
-use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
@@ -59,7 +60,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
 
     private const CLIENT_ID = 'someClientId';
 
-    private ExpressCheckoutDataServiceInterface $expressCheckoutDataService;
+    private PayPalExpressCheckoutDataService $expressCheckoutDataService;
 
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
@@ -170,6 +171,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     {
         $taxId = $this->createTaxId(Context::createDefaultContext());
         $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
+        $salesChannelContext->addExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_EVENT_NAME, new ArrayStruct([ProductPageLoadedEvent::class]));
         $productId = $this->getProductId($salesChannelContext->getContext(), $taxId);
         $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
@@ -221,6 +223,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     public function testFundingSourcesWithPayLater(bool $showPayLaterSetting, bool $payLaterAvailable, array $expectedFundingSources): void
     {
         $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
+        $salesChannelContext->addExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_EVENT_NAME, new ArrayStruct([ProductPageLoadedEvent::class]));
 
         $this->systemConfigService->set(Settings::ECS_SHOW_PAY_LATER, $showPayLaterSetting, $salesChannelContext->getSalesChannelId());
 
