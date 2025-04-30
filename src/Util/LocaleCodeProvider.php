@@ -21,7 +21,7 @@ class LocaleCodeProvider implements ResetInterface
 {
     private const SUPPORTED_LOCALE_CODE_LENGTH = 5;
 
-    private const DEFAULT_LOCALE_CODE = 'en_GB';
+    private const DEFAULT_LOCALE_CODE = 'en-GB';
 
     private EntityRepository $languageRepository;
 
@@ -79,7 +79,7 @@ class LocaleCodeProvider implements ResetInterface
             return self::DEFAULT_LOCALE_CODE;
         }
 
-        return $canonicalizedCode;
+        return \str_replace('_', '-', $canonicalizedCode);
     }
 
     public function reset(): void

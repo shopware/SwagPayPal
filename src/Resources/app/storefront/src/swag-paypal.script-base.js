@@ -108,36 +108,22 @@ export default class SwagPayPalScriptBase extends Plugin {
         userIdToken: null,
 
         /**
+         * @type string
+         */
+        pageType: 'checkout',
+
+        /**
          * This option will await the visibility of the element before continue loading the script.
          * Useful for listing pages to not load all express buttons at once.
          *
          * @type boolean
          */
         scriptAwaitVisibility: false,
-
-        /**
-         * This option toggles when the script should be loaded.
-         * If false, the script will be loaded on 'load' instead of 'DOMContentLoaded' event.
-         * See 'DOMContentLoaded' and 'load' event for more information.
-         *
-         * @type boolean
-         */
-        partOfDomContentLoading: true,
     };
 
     static scriptPromises = {};
 
     static paypal = {};
-
-    _init() {
-        if (this.options.partOfDomContentLoading || document.readyState === 'complete') {
-            super._init();
-        } else {
-            window.addEventListener('load', () => {
-                super._init();
-            });
-        }
-    }
 
     get scriptOptionsHash() {
         return JSON.stringify(this.getScriptOptions());
@@ -173,13 +159,17 @@ export default class SwagPayPalScriptBase extends Plugin {
     }
 
     async _loadScript() {
-        SwagPayPalScriptBase.paypal[this.scriptOptionsHash] = await loadScript(this.getScriptOptions());
+        const scriptTag = document.getElementById('paypal-sdk-v6');
 
-        // overwriting an existing `window.paypal` object would remove previously rendered elements
-        // therefore we remove it so other scripts can load it on their own
-        delete window.paypal;
+        if (!scriptTag) {
+            throw new Error('PayPal script is not present');
+        }
 
-        return SwagPayPalScriptBase.paypal[this.scriptOptionsHash];
+        if (!window.paypal) {
+            await new Promise((resolve) => scriptTag.addEventListener('load', resolve));
+        }
+
+        return await window.paypal.createInstance(this.getScriptOptions());
     }
 
     /**
@@ -188,43 +178,39 @@ export default class SwagPayPalScriptBase extends Plugin {
      * mess up the `scriptOptionsHash` and therefore affects script caching.
      */
     getScriptOptions() {
-        const config = {
-            components: 'buttons,messages,card-fields,funding-eligibility,applepay,googlepay',
-            'client-id': this.options.clientId,
-            commit: !!this.options.commit,
+        return {
+            clientToken: this.options.clientToken,
+            components: ['paypal-payments'],
             locale: this.options.languageIso,
-            currency: this.options.currency,
-            intent: this.options.intent,
-            'enable-funding': 'paylater,venmo',
+
+            pageType: this.options.pageType,
         };
 
-        if (this.options.disablePayLater || this.options.showPayLater === false) {
-            config['enable-funding'] = 'venmo';
-        }
+        // if (this.options.disablePayLater || this.options.showPayLater === false) {
+        //     config['enable-funding'] = 'venmo';
+        // }
 
-        if (this.options.useAlternativePaymentMethods === false) {
-            config['disable-funding'] = availableAPMs.join(',');
-        } else if (this.options.disabledAlternativePaymentMethods.length > 0) {
-            config['disable-funding'] = this.options.disabledAlternativePaymentMethods.join(',');
-        }
+        // if (this.options.useAlternativePaymentMethods === false) {
+        //     config['disable-funding'] = availableAPMs.join(',');
+        // } else if (this.options.disabledAlternativePaymentMethods.length > 0) {
+        //     config['disable-funding'] = this.options.disabledAlternativePaymentMethods.join(',');
+        // }
 
-        if (this.options.merchantPayerId) {
-            config['merchant-id'] = this.options.merchantPayerId;
-        }
+        // if (this.options.merchantPayerId) {
+        //     config['merchant-id'] = this.options.merchantPayerId;
+        // }
 
-        if (this.options.clientToken) {
-            config['data-client-token'] = this.options.clientToken;
-        }
+        // if (this.options.clientToken) {
+        //     config['data-client-token'] = this.options.clientToken;
+        // }
 
-        if (this.options.userIdToken) {
-            config['data-user-id-token'] = this.options.userIdToken;
-        }
+        // if (this.options.userIdToken) {
+        //     config['data-user-id-token'] = this.options.userIdToken;
+        // }
 
-        if (this.options.partnerAttributionId) {
-            config['data-partner-attribution-id'] = this.options.partnerAttributionId;
-        }
-
-        return config;
+        // if (this.options.partnerAttributionId) {
+        //     config['data-partner-attribution-id'] = this.options.partnerAttributionId;
+        // }
     }
 
     /**

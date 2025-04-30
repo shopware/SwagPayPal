@@ -97,14 +97,17 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         });
     }
 
-    render(paypal) {
-        const button = paypal.Buttons(this.getButtonConfig(this.getFundingSource(paypal)));
+    async render(paypal) {
+        // const paymentMethods = await paypal.findEligibleMethods();
+        // if (!paymentMethods.isEligible("paypal")) {
+        //     return void this.handleError(this.NOT_ELIGIBLE, true, `Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
+        // }
 
-        if (!button.isEligible()) {
-            return void this.handleError(this.NOT_ELIGIBLE, true, `Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
-        }
+        const session = paypal.createPayPalOneTimePaymentSession(this.getButtonConfig(this.getFundingSource(paypal)));
 
-        button.render(this.el);
+        const button = this.createPayPalButton();
+        button.addEventListener('click', this.onClick.bind(this, session));
+        this.el.append(button);
     }
 
     /**
@@ -116,19 +119,9 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
 
     getButtonConfig(fundingSource) {
         return {
-            fundingSource,
+            commit: this.options.commit,
 
-            style: {
-                size: this.options.buttonSize,
-                shape: this.options.buttonShape,
-                color: this.options.buttonColor,
-                label: 'pay',
-            },
-
-            /**
-             * Will be called if when the payment process starts
-             */
-            createOrder: this.createOrder.bind(this, this.constructor.product),
+            orderId: this.options.orderId || undefined,
 
             /**
              * Will be called if the payment process is approved by paypal
@@ -139,11 +132,6 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
              * Remove loading spinner when user comes back
              */
             onCancel: this.onCancel.bind(this),
-
-            /**
-             * Check form validity & show loading spinner on confirm click
-             */
-            onClick: this.onClick.bind(this),
 
             /**
              * Will be called if an error occurs during the payment process.
@@ -208,11 +196,15 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
      * @param {{reject: Function, resolve: Function}} actions
      * @returns {*}
      */
-    onClick(_, actions) {
+    async onClick(session, event) {
         if (!this.confirmOrderForm.checkValidity()) {
-            return actions.reject();
+            event.preventDefault();
+            return;
         }
 
-        return actions.resolve();
+        await session.start(
+            { presentationMode: 'auto' },
+            this.createOrder(this.constructor.product).then((orderId) => ({ orderId })),
+        );
     }
 }

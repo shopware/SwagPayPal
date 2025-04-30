@@ -1,3 +1,11 @@
 @import 'components/express';
 @import 'components/google-pay';
 @import 'components/pui';
+
+.swag-paypal-button {
+    width: 100%;
+
+    &.shape-sharp {
+        --paypal-button-border-radius: 0px;
+    }
+}

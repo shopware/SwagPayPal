@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -26,6 +27,7 @@ abstract class AbstractScriptDataService
         protected readonly LocaleCodeProvider $localeCodeProvider,
         protected readonly SystemConfigService $systemConfigService,
         protected readonly CredentialsUtilInterface $credentialsUtil,
+        protected readonly TokenResource $tokenResource,
     ) {
     }
 
@@ -36,6 +38,7 @@ abstract class AbstractScriptDataService
 
         return [
             'clientId' => $this->credentialsUtil->getClientId($salesChannelId),
+            'clientToken' => $this->tokenResource->getClientToken($salesChannelId)->getAccessToken(),
             'merchantPayerId' => $merchantPayerId,
             'languageIso' => $this->getButtonLanguage($context),
             'currency' => $context->getCurrency()->getIsoCode(),

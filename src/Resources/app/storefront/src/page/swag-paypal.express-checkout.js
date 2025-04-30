@@ -1,6 +1,6 @@
 import HttpClient from 'src/service/http-client.service';
 import DomAccess from 'src/helper/dom-access.helper';
-import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
+import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
@@ -93,6 +93,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          * Streamline options for listing pages, overriding the ones
          * from swag-paypal.script-loading.js
          */
+        pageType: 'checkout',
         useAlternativePaymentMethods: true,
         commit: false,
         scriptAwaitVisibility: true,
@@ -118,14 +119,24 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     }
 
     renderButton(paypal) {
-        this.options.fundingSources.forEach((fundingSource) => {
-            const button = paypal.Buttons(this.getButtonConfig(fundingSource));
+        // const paymentMethods = await paypal.findEligibleMethods();
+        // if (!paymentMethods.isEligible("paypal")) {
+        //     return void this.handleError(this.NOT_ELIGIBLE, true, `Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
+        // }
 
-            if (button.isEligible()) {
-                button.render(this.el);
-            }
-        });
+        const session = paypal.createPayPalOneTimePaymentSession(this.getButtonConfig('paypal'));
 
+        const button = this.createPayPalButton();
+        button.setAttribute('type', 'checkout');
+        button.addEventListener('click', this.onClick.bind(this, session));
+        this.el.append(button);
+    }
+
+    async onClick(session, event) {
+        await session.start(
+            { presentationMode: 'auto' },
+            this.createOrder().then((orderId) => ({ orderId })),
+        );
     }
 
     getBuyButtonState() {
@@ -166,58 +177,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     }
 
     getButtonConfig(fundingSource = 'paypal') {
-        const renderElement = this.el;
-        const { element: buyButton, disabled: isBuyButtonDisabled } = this.getBuyButtonState();
-
         return {
-            fundingSource,
-
-            onInit: (data, actions) => {
-                if (!this.options.addProductToCart) {
-                    return;
-                }
-
-                /**
-                 * Helper method which enables the paypal button
-                 * @returns void
-                 */
-                const enableButton = () => {
-                    actions.enable();
-                    renderElement.classList.remove(this.options.disabledClass);
-                };
-
-                /**
-                 * Helper method which disables the paypal button
-                 * @returns void
-                 */
-                const disableButton = () => {
-                    actions.disable();
-                    renderElement.classList.add(this.options.disabledClass);
-                };
-
-                this.observeBuyButton(buyButton, enableButton, disableButton);
-
-                // Set the initial state of the button
-                if (isBuyButtonDisabled) {
-                    disableButton();
-                    return;
-                }
-                enableButton();
-            },
-            style: {
-                size: this.options.buttonSize,
-                shape: this.options.buttonShape,
-                color: this.options.buttonColor,
-                tagline: this.options.tagline,
-                layout: 'vertical',
-                label: 'checkout',
-                height: 40,
-            },
-
-            /**
-             * Will be called if the express button is clicked
-             */
-            createOrder: this.createOrder.bind(this),
 
             /**
              * Will be called if the payment process is approved by paypal
@@ -307,21 +267,24 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         });
     }
 
-    onApprove(data, actions) {
+    onApprove(data) {
         const requestPayload = {
-            token: data.orderID,
+            token: data.orderId,
         };
 
         // Add a loading indicator to the body to prevent the user breaking the checkout process
-        ElementLoadingIndicatorUtil.create(document.body);
+        PageLoadingIndicatorUtil.create();
 
         this._client.post(
             this.options.prepareCheckoutUrl,
             JSON.stringify(requestPayload),
             (response, request) => {
                 if (request.status < 400) {
-                    return actions.redirect(this.options.checkoutConfirmUrl);
+                    window.location.href = this.options.checkoutConfirmUrl;
+                    return;
                 }
+
+                PageLoadingIndicatorUtil.remove();
 
                 return this.onError();
             },

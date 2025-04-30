@@ -23,6 +23,7 @@ use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\PayPal\Installment\Banner\BannerData;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\AbstractScriptDataService;
@@ -39,10 +40,11 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
         LocaleCodeProvider $localeCodeProvider,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
+        TokenResource $tokenResource,
         private readonly PaymentMethodUtil $paymentMethodUtil,
         private readonly EntityRepository $languageRepository,
     ) {
-        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
+        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $tokenResource);
     }
 
     /**

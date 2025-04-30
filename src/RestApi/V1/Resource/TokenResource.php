@@ -30,6 +30,17 @@ class TokenResource implements TokenResourceInterface
     ) {
     }
 
+    public function getClientToken(?string $salesChannelId): Token
+    {
+        $credentials = $this->credentialProvider->createCredentialsObject($salesChannelId);
+
+        $tokenClient = $this->tokenClientFactory->createTokenClient($credentials);
+
+        return (new Token())->assign($tokenClient->getToken([
+            'response_type' => 'client_token',
+        ]));
+    }
+
     public function getToken(?string $salesChannelId): Token
     {
         $credentials = $this->credentialProvider->createCredentialsObject($salesChannelId);

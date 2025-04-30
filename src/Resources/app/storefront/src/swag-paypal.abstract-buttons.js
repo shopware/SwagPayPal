@@ -56,6 +56,22 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
     SCRIPT_ERROR = 'SWAG_PAYPAL__SCRIPT_ERROR';
     SCRIPT_NOT_LOADED = 'SWAG_PAYPAL__SCRIPT_NOT_LOADED';
 
+    createPayPalButton() {
+        const button = document.createElement('paypal-button');
+        button.classList.add('swag-paypal-button');
+        button.setAttribute('type', 'pay');
+
+        if (this.options.buttonShape) {
+            button.classList.add(`shape-${this.options.buttonShape}`);
+        }
+
+        if (this.options.buttonColor) {
+            button.classList.add(`paypal-${this.options.buttonColor}`);
+        }
+
+        return button;
+    }
+
     /**
      * @param {String} code - The error code. Will be replaced by an extracted error code from {@link error} if available
      * @param {Boolean} [fatal=false] - A fatal error will not allow a rerender of the PayPal buttons
