@@ -4,9 +4,11 @@
     :title="$t('global.entities.sales_channel', 2)"
 >
     <template #headerRight>
-        <sw-internal-link :router-link="{ name: 'sw.settings.payment.overview' }">
-            {{ $t('sw-settings-payment.general.mainMenuItemGeneral') }}
-        </sw-internal-link>
+        <div class="swag-paypal-settings-sales-channel-switch__header-right">
+            <mt-link type="internal" :to="{ name: 'sw.settings.payment.overview' }">
+                {{ $t('sw-settings-payment.general.mainMenuItemGeneral') }}
+            </mt-link>
+        </div>
     </template>
 
     <sw-single-select
@@ -16,7 +18,7 @@
         :disabled="!acl.can('swag_paypal.editor') || isLoading || settingsStore.isLoading"
     />
 
-    <sw-container columns="2fr 1fr" gap="0px 30px">
+    <div class="swag-paypal-settings-sales-channel-switch__default">
         <p>{{ $t('swag-paypal-settings-sales-channel-switch.description') }}</p>
 
         <sw-button-process
@@ -28,5 +30,5 @@
         >
             {{ $t('swag-paypal-settings-sales-channel-switch.label') }}
         </sw-button-process>
-    </sw-container>
+    </div>
 </mt-card>
