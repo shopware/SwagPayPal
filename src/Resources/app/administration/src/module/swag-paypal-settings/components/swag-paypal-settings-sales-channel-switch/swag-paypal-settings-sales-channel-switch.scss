@@ -1,0 +1,13 @@
+.swag-paypal-settings-sales-channel-switch {
+    &__header-right {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    &__default {
+        display: flex;
+        gap: 32px;
+        font-size: var(--font-size-xs);
+    }
+}
