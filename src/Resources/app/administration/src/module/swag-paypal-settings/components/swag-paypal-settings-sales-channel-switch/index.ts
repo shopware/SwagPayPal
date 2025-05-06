@@ -1,4 +1,5 @@
 import template from './swag-paypal-settings-sales-channel-switch.html.twig';
+import './swag-paypal-settings-sales-channel-switch.scss';
 
 const { Defaults } = Shopware;
 const { Criteria } = Shopware.Data;

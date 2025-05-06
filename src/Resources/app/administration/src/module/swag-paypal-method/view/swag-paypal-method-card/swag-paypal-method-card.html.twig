@@ -30,9 +30,11 @@
     </template>
 
     <template #headerRight>
-        <sw-internal-link :router-link="{ name: 'swag.paypal.settings.index' }">
-            {{ $t('swag-paypal-method.settingsLink') }}
-        </sw-internal-link>
+        <div class="swag-paypal-method-card__header-right">
+            <mt-link type="internal" :to="{ name: 'swag.paypal.settings.index' }">
+                {{ $t('swag-paypal-method.settingsLink') }}
+            </mt-link>
+        </div>
     </template>
 
     <div class="swag-paypal-method-card__content">

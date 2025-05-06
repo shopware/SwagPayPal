@@ -24,7 +24,6 @@ async function createWrapper() {
                 },
                 stubs: {
                     'sw-container': await wrapTestComponent('sw-container', { sync: true }),
-                    'sw-internal-link': await wrapTestComponent('sw-internal-link', { sync: true }),
                     'sw-button-process': await wrapTestComponent('sw-button-process', { sync: true }),
                     'sw-loader': true,
                     'sw-single-select': {
@@ -91,8 +90,8 @@ describe('swag-paypal-settings-sales-channel-switch', () => {
     it('should have link to payment method', async () => {
         const wrapper = await createWrapper();
 
-        const link = wrapper.findComponent<VueComponent>('.sw-internal-link');
+        const link = wrapper.findComponent<VueComponent>('.mt-link');
         expect(link.exists()).toBe(true);
-        expect(link.vm.routerLink).toEqual({ name: 'sw.settings.payment.overview' });
+        expect(link.vm.to).toEqual({ name: 'sw.settings.payment.overview' });
     });
 });
