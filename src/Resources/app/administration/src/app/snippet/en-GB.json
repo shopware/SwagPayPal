@@ -125,5 +125,18 @@
         "NO_PREFERENCE": "No preference: PayPal decides which page is shown, depending on the previous interaction of the customer with PayPal."
       }
     }
+  },
+  "sw-privileges": {
+    "permissions": {
+      "parents": {
+        "swag_paypal": "PayPal"
+      },
+      "swag_paypal": {
+        "label": "PayPal settings"
+      },
+      "swag_paypal_disputes": {
+        "label": "PayPal disputes"
+      }
+    }
   }
 }
