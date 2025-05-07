@@ -11,7 +11,7 @@
     ],
     "require": {
         "shopware/core": "~6.7.0@dev",
-        "shopware/paypal-sdk": "^1.2.0"
+        "shopware/paypal-sdk": "^1.2.2"
     },
     "require-dev": {
         "rector/rector": "^0.18.3"
