@@ -113,11 +113,13 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
     renderButton(paypal) {
         this.options.fundingSources.forEach((fundingSource) => {
-            const button = paypal.Buttons(this.getButtonConfig(fundingSource));
+            try {
+                const button = paypal.Buttons(this.getButtonConfig(fundingSource));
 
-            if (button.isEligible()) {
-                button.render(this.el);
-            }
+                if (button.isEligible()) {
+                    button.render(this.el);
+                }
+            } catch {}
         });
 
     }
@@ -201,7 +203,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             style: {
                 size: this.options.buttonSize,
                 shape: this.options.buttonShape,
-                color: this.options.buttonColor,
+                color: fundingSource === 'venmo' && this.options.buttonColor === 'gold' ? 'blue' : this.options.buttonColor,
                 tagline: this.options.tagline,
                 layout: 'vertical',
                 label: 'checkout',
