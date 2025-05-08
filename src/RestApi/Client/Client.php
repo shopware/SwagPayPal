@@ -18,7 +18,7 @@ use Symfony\Component\HttpClient\Psr18Client;
 #[Package('checkout')]
 class Client implements ClientInterface
 {
-    private const HEADER_WHITELIST = [
+    private const HEADER_ALLOWLIST = [
         'paypal-request-id',
         'content-type',
         'date',
@@ -75,7 +75,7 @@ class Client implements ClientInterface
     {
         $headers = \array_filter(
             \array_keys($message->getHeaders()),
-            static fn (string $name) => \in_array(\mb_strtolower($name), self::HEADER_WHITELIST, true),
+            static fn (string $name) => \in_array(\mb_strtolower($name), self::HEADER_ALLOWLIST, true),
         );
 
         $headers = \array_combine(
