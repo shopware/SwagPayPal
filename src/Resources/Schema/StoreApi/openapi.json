@@ -229,7 +229,84 @@
     },
     "components": {
         "schemas": {
-            "swag_paypal_v1_capture": {
+            "paypal_error_detail": {
+                "required": [
+                    "field",
+                    "value",
+                    "location",
+                    "issue",
+                    "description"
+                ],
+                "properties": {
+                    "field": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "issue": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_error": {
+                "required": [
+                    "name",
+                    "message",
+                    "debug_id",
+                    "details",
+                    "links",
+                    "error",
+                    "error_description"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "debug_id": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_error_detail"
+                        },
+                        "nullable": true
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
+                        },
+                        "nullable": true
+                    },
+                    "error": {
+                        "description": "Only set if OAuth error occurs",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "error_description": {
+                        "description": "Only set if OAuth error occurs",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v1_capture": {
                 "required": [
                     "amount",
                     "is_final_capture",
@@ -244,7 +321,7 @@
                 ],
                 "properties": {
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "is_final_capture": {
                         "type": "boolean"
@@ -262,7 +339,7 @@
                         "type": "string"
                     },
                     "transaction_fee": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_capture_transaction_fee"
+                        "$ref": "#/components/schemas/paypal_v1_capture_transaction_fee"
                     },
                     "create_time": {
                         "type": "string"
@@ -273,20 +350,20 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_capture_transaction_fee": {
+            "paypal_v1_capture_transaction_fee": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_value"
+                        "$ref": "#/components/schemas/paypal_v1_common_value"
                     }
                 ]
             },
-            "swag_paypal_v1_client_token": {
+            "paypal_v1_client_token": {
                 "required": [
                     "client_token",
                     "expires_in",
@@ -308,10 +385,10 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_common_address": {
+            "paypal_v1_common_address": {
                 "required": [
-                    "line1",
-                    "line2",
+                    "line_1",
+                    "line_2",
                     "city",
                     "country_code",
                     "postal_code",
@@ -319,10 +396,10 @@
                     "phone"
                 ],
                 "properties": {
-                    "line1": {
+                    "line_1": {
                         "type": "string"
                     },
-                    "line2": {
+                    "line_2": {
                         "type": "string",
                         "nullable": true
                     },
@@ -346,7 +423,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_common_amount": {
+            "paypal_v1_common_amount": {
                 "required": [
                     "total",
                     "currency",
@@ -360,12 +437,12 @@
                         "type": "string"
                     },
                     "details": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_details"
+                        "$ref": "#/components/schemas/paypal_v1_common_details"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_common_details": {
+            "paypal_v1_common_details": {
                 "required": [
                     "subtotal",
                     "shipping",
@@ -400,7 +477,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_common_link": {
+            "paypal_v1_common_link": {
                 "required": [
                     "href",
                     "rel",
@@ -424,7 +501,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_common_money": {
+            "paypal_v1_common_money": {
                 "required": [
                     "value",
                     "currency_code"
@@ -439,7 +516,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_common_value": {
+            "paypal_v1_common_value": {
                 "required": [
                     "currency",
                     "value"
@@ -454,36 +531,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_create_webhooks": {
-                "required": [
-                    "url",
-                    "event_types"
-                ],
-                "properties": {
-                    "url": {
-                        "type": "string"
-                    },
-                    "event_types": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_create_webhooks_event_type"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "swag_paypal_v1_create_webhooks_event_type": {
-                "required": [
-                    "name"
-                ],
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    }
-                },
-                "type": "object"
-            },
-            "swag_paypal_v1_disputes": {
+            "paypal_v1_disputes": {
                 "required": [
                     "items",
                     "links"
@@ -492,20 +540,20 @@
                     "items": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item"
                         },
                         "nullable": true
                     },
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_common_buyer": {
+            "paypal_v1_disputes_common_buyer": {
                 "required": [
                     "name"
                 ],
@@ -516,7 +564,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_common_item": {
+            "paypal_v1_disputes_common_item": {
                 "required": [
                     "item_id",
                     "item_description",
@@ -543,7 +591,7 @@
                         "type": "string"
                     },
                     "dispute_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     },
                     "notes": {
                         "type": "string"
@@ -551,7 +599,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_common_product_details": {
+            "paypal_v1_disputes_common_product_details": {
                 "required": [
                     "product_received",
                     "product_received_time",
@@ -569,19 +617,19 @@
                     "sub_reasons": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_sub_reason"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_common_sub_reason"
                         }
                     },
                     "purchase_url": {
                         "type": "string"
                     },
                     "return_details": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_return_details"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_common_return_details"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_common_return_details": {
+            "paypal_v1_disputes_common_return_details": {
                 "required": [
                     "return_time",
                     "mode",
@@ -608,7 +656,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_common_seller": {
+            "paypal_v1_disputes_common_seller": {
                 "required": [
                     "email",
                     "merchant_id",
@@ -627,7 +675,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_common_service_details": {
+            "paypal_v1_disputes_common_service_details": {
                 "required": [
                     "description",
                     "service_started",
@@ -648,7 +696,7 @@
                     "sub_reasons": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_sub_reason"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_common_sub_reason"
                         }
                     },
                     "purchase_url": {
@@ -657,7 +705,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_common_sub_reason": {
+            "paypal_v1_disputes_common_sub_reason": {
                 "required": [
                     "sub_reason"
                 ],
@@ -668,7 +716,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_common_transaction": {
+            "paypal_v1_disputes_common_transaction": {
                 "required": [
                     "buyer_transaction_id",
                     "seller_transaction_id",
@@ -699,7 +747,7 @@
                         "type": "string"
                     },
                     "gross_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     },
                     "invoice_number": {
                         "type": "string"
@@ -708,21 +756,21 @@
                         "type": "string"
                     },
                     "buyer": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_buyer"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_common_buyer"
                     },
                     "seller": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_seller"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_common_seller"
                     },
                     "items": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_item"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_common_item"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item": {
+            "paypal_v1_disputes_item": {
                 "required": [
                     "dispute_id",
                     "create_time",
@@ -763,7 +811,7 @@
                     "disputed_transactions": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_disputed_transaction"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_disputed_transaction"
                         },
                         "nullable": true
                     },
@@ -786,7 +834,7 @@
                         "nullable": true
                     },
                     "dispute_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_dispute_amount"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_dispute_amount"
                     },
                     "external_reason_code": {
                         "type": "string",
@@ -795,7 +843,7 @@
                     "dispute_outcome": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_dispute_outcome"
+                                "$ref": "#/components/schemas/paypal_v1_disputes_item_dispute_outcome"
                             }
                         ],
                         "nullable": true
@@ -803,13 +851,13 @@
                     "adjudications": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_adjudication"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_adjudication"
                         }
                     },
                     "money_movements": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_money_movement"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_money_movement"
                         }
                     },
                     "dispute_life_cycle_stage": {
@@ -822,17 +870,17 @@
                     "messages": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_message"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_message"
                         },
                         "nullable": true
                     },
                     "extensions": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions"
                     },
                     "evidences": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_evidence"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_evidence"
                         },
                         "nullable": true
                     },
@@ -847,7 +895,7 @@
                     "offer": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_offer"
+                                "$ref": "#/components/schemas/paypal_v1_disputes_item_offer"
                             }
                         ],
                         "nullable": true
@@ -855,7 +903,7 @@
                     "refund_details": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_refund_details"
+                                "$ref": "#/components/schemas/paypal_v1_disputes_item_refund_details"
                             }
                         ],
                         "nullable": true
@@ -863,7 +911,7 @@
                     "communication_details": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_communication_details"
+                                "$ref": "#/components/schemas/paypal_v1_disputes_item_communication_details"
                             }
                         ],
                         "nullable": true
@@ -871,27 +919,27 @@
                     "partner_actions": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_partner_action"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_partner_action"
                         },
                         "nullable": true
                     },
                     "supporting_info": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_supporting_info"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_supporting_info"
                         },
                         "nullable": true
                     },
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_adjudication": {
+            "paypal_v1_disputes_item_adjudication": {
                 "required": [
                     "type",
                     "adjudication_time",
@@ -914,7 +962,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_communication_details": {
+            "paypal_v1_disputes_item_communication_details": {
                 "required": [
                     "email",
                     "note",
@@ -933,14 +981,14 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_dispute_amount": {
+            "paypal_v1_disputes_item_dispute_amount": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     }
                 ]
             },
-            "swag_paypal_v1_disputes_item_dispute_outcome": {
+            "paypal_v1_disputes_item_dispute_outcome": {
                 "required": [
                     "outcome_code",
                     "amount_refunded"
@@ -950,16 +998,16 @@
                         "type": "string"
                     },
                     "amount_refunded": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_disputed_transaction": {
+            "paypal_v1_disputes_item_disputed_transaction": {
                 "type": "object",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_transaction"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_common_transaction"
                     },
                     {
                         "required": [
@@ -974,7 +1022,7 @@
                     }
                 ]
             },
-            "swag_paypal_v1_disputes_item_evidence": {
+            "paypal_v1_disputes_item_evidence": {
                 "required": [
                     "evidence_type",
                     "evidence_info",
@@ -987,12 +1035,12 @@
                         "type": "string"
                     },
                     "evidence_info": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_evidence_evidence_info"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_evidence_evidence_info"
                     },
                     "documents": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_evidence_document"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_evidence_document"
                         }
                     },
                     "notes": {
@@ -1004,7 +1052,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_evidence_document": {
+            "paypal_v1_disputes_item_evidence_document": {
                 "required": [
                     "name"
                 ],
@@ -1015,7 +1063,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_evidence_evidence_info": {
+            "paypal_v1_disputes_item_evidence_evidence_info": {
                 "required": [
                     "tracking_info",
                     "refund_ids"
@@ -1024,19 +1072,19 @@
                     "tracking_info": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_evidence_evidence_info_tracking_info"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_evidence_evidence_info_tracking_info"
                         }
                     },
                     "refund_ids": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_evidence_evidence_info_refund_id"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_evidence_evidence_info_refund_id"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_evidence_evidence_info_refund_id": {
+            "paypal_v1_disputes_item_evidence_evidence_info_refund_id": {
                 "required": [
                     "refund_id"
                 ],
@@ -1047,7 +1095,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_evidence_evidence_info_tracking_info": {
+            "paypal_v1_disputes_item_evidence_evidence_info_tracking_info": {
                 "required": [
                     "carrier_name",
                     "carrier_name_other",
@@ -1070,7 +1118,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_extensions": {
+            "paypal_v1_disputes_item_extensions": {
                 "required": [
                     "merchant_contacted",
                     "merchant_contacted_outcome",
@@ -1101,15 +1149,15 @@
                         "type": "string"
                     },
                     "billing_dispute_properties": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions_billing_dispute_properties"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions_billing_dispute_properties"
                     },
                     "merchandize_dispute_properties": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions_merchandize_dispute_properties"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions_merchandize_dispute_properties"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_extensions_billing_dispute_properties": {
+            "paypal_v1_disputes_item_extensions_billing_dispute_properties": {
                 "required": [
                     "duplicate_transaction",
                     "incorrect_transaction_amount",
@@ -1119,39 +1167,39 @@
                 ],
                 "properties": {
                     "duplicate_transaction": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_duplicate_transaction"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions_billing_dispute_properties_duplicate_transaction"
                     },
                     "incorrect_transaction_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_incorrect_transaction_amount"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions_billing_dispute_properties_incorrect_transaction_amount"
                     },
                     "payment_by_other_means": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_payment_by_other_means"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions_billing_dispute_properties_payment_by_other_means"
                     },
                     "credit_not_processed": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_credit_not_processed"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions_billing_dispute_properties_credit_not_processed"
                     },
                     "canceled_recurring_billing": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_canceled_recurring_billing"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions_billing_dispute_properties_canceled_recurring_billing"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_canceled_recurring_billing": {
+            "paypal_v1_disputes_item_extensions_billing_dispute_properties_canceled_recurring_billing": {
                 "required": [
                     "expected_refund",
                     "cancellation_details"
                 ],
                 "properties": {
                     "expected_refund": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     },
                     "cancellation_details": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_common_cancellation_details"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions_billing_dispute_properties_common_cancellation_details"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_common_agreed_refund_details": {
+            "paypal_v1_disputes_item_extensions_billing_dispute_properties_common_agreed_refund_details": {
                 "required": [
                     "merchant_agreed_refund",
                     "merchant_agreed_refund_time"
@@ -1166,7 +1214,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_common_cancellation_details": {
+            "paypal_v1_disputes_item_extensions_billing_dispute_properties_common_cancellation_details": {
                 "required": [
                     "cancellation_date",
                     "cancellation_number",
@@ -1189,7 +1237,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_credit_not_processed": {
+            "paypal_v1_disputes_item_extensions_billing_dispute_properties_credit_not_processed": {
                 "required": [
                     "issue_type",
                     "expected_refund",
@@ -1203,24 +1251,24 @@
                         "type": "string"
                     },
                     "expected_refund": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     },
                     "cancellation_details": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_common_cancellation_details"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions_billing_dispute_properties_common_cancellation_details"
                     },
                     "product_details": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_product_details"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_common_product_details"
                     },
                     "service_details": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_service_details"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_common_service_details"
                     },
                     "agreed_refund_details": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_common_agreed_refund_details"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_item_extensions_billing_dispute_properties_common_agreed_refund_details"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_duplicate_transaction": {
+            "paypal_v1_disputes_item_extensions_billing_dispute_properties_duplicate_transaction": {
                 "required": [
                     "received_duplicate",
                     "original_transaction"
@@ -1230,19 +1278,19 @@
                         "type": "boolean"
                     },
                     "original_transaction": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_transaction"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_common_transaction"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_incorrect_transaction_amount": {
+            "paypal_v1_disputes_item_extensions_billing_dispute_properties_incorrect_transaction_amount": {
                 "required": [
                     "correct_transaction_amount",
                     "correct_transaction_time"
                 ],
                 "properties": {
                     "correct_transaction_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     },
                     "correct_transaction_time": {
                         "type": "string"
@@ -1250,7 +1298,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_extensions_billing_dispute_properties_payment_by_other_means": {
+            "paypal_v1_disputes_item_extensions_billing_dispute_properties_payment_by_other_means": {
                 "required": [
                     "charge_different_from_original",
                     "received_duplicate",
@@ -1273,7 +1321,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_extensions_merchandize_dispute_properties": {
+            "paypal_v1_disputes_item_extensions_merchandize_dispute_properties": {
                 "required": [
                     "issue_type",
                     "product_details",
@@ -1284,15 +1332,15 @@
                         "type": "string"
                     },
                     "product_details": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_product_details"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_common_product_details"
                     },
                     "service_details": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_disputes_common_service_details"
+                        "$ref": "#/components/schemas/paypal_v1_disputes_common_service_details"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_message": {
+            "paypal_v1_disputes_item_message": {
                 "required": [
                     "posted_by",
                     "time_posted",
@@ -1311,7 +1359,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_money_movement": {
+            "paypal_v1_disputes_item_money_movement": {
                 "required": [
                     "affected_party",
                     "amount",
@@ -1324,7 +1372,7 @@
                         "type": "string"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "initiated_time": {
                         "type": "string"
@@ -1338,7 +1386,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_offer": {
+            "paypal_v1_disputes_item_offer": {
                 "required": [
                     "buyer_requested_amount",
                     "seller_offered_amount",
@@ -1347,10 +1395,10 @@
                 ],
                 "properties": {
                     "buyer_requested_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     },
                     "seller_offered_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     },
                     "offer_type": {
                         "type": "string"
@@ -1358,14 +1406,14 @@
                     "history": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_disputes_item_offer_history"
+                            "$ref": "#/components/schemas/paypal_v1_disputes_item_offer_history"
                         },
                         "nullable": true
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_offer_history": {
+            "paypal_v1_disputes_item_offer_history": {
                 "required": [
                     "offer_time",
                     "actor",
@@ -1388,7 +1436,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_partner_action": {
+            "paypal_v1_disputes_item_partner_action": {
                 "required": [
                     "id",
                     "name",
@@ -1418,23 +1466,23 @@
                         "type": "string"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_refund_details": {
+            "paypal_v1_disputes_item_refund_details": {
                 "required": [
                     "allowed_refund_amount"
                 ],
                 "properties": {
                     "allowed_refund_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_disputes_item_supporting_info": {
+            "paypal_v1_disputes_item_supporting_info": {
                 "required": [
                     "notes",
                     "source",
@@ -1453,7 +1501,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_do_void": {
+            "paypal_v1_do_void": {
                 "required": [
                     "id",
                     "amount",
@@ -1468,7 +1516,7 @@
                         "type": "string"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "state": {
                         "type": "string"
@@ -1485,13 +1533,13 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_merchant_integrations": {
+            "paypal_v1_merchant_integrations": {
                 "required": [
                     "merchant_id",
                     "tracking_id",
@@ -1514,20 +1562,20 @@
                     "products": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_product"
+                            "$ref": "#/components/schemas/paypal_v1_merchant_integrations_product"
                         }
                     },
                     "capabilities": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_capability"
+                            "$ref": "#/components/schemas/paypal_v1_merchant_integrations_capability"
                         },
                         "nullable": true
                     },
                     "oauth_integrations": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_oauth_integration"
+                            "$ref": "#/components/schemas/paypal_v1_merchant_integrations_oauth_integration"
                         }
                     },
                     "granted_permissions": {
@@ -1551,7 +1599,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_merchant_integrations_capability": {
+            "paypal_v1_merchant_integrations_capability": {
                 "required": [
                     "name",
                     "status"
@@ -1566,7 +1614,26 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_merchant_integrations_oauth_integration": {
+            "paypal_v1_merchant_integrations_credentials": {
+                "required": [
+                    "client_id",
+                    "client_secret",
+                    "payer_id"
+                ],
+                "properties": {
+                    "client_id": {
+                        "type": "string"
+                    },
+                    "client_secret": {
+                        "type": "string"
+                    },
+                    "payer_id": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v1_merchant_integrations_oauth_integration": {
                 "required": [
                     "integrationMethod",
                     "integrationType",
@@ -1585,13 +1652,13 @@
                     "oauth_third_party": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_oauth_integration_oauth_third_party"
+                            "$ref": "#/components/schemas/paypal_v1_merchant_integrations_oauth_integration_oauth_third_party"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_merchant_integrations_oauth_integration_oauth_third_party": {
+            "paypal_v1_merchant_integrations_oauth_integration_oauth_third_party": {
                 "required": [
                     "merchantClientId",
                     "partnerClientId",
@@ -1619,7 +1686,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_merchant_integrations_product": {
+            "paypal_v1_merchant_integrations_product": {
                 "required": [
                     "name"
                 ],
@@ -1639,26 +1706,29 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_oauth_credentials": {
+            "paypal_v1_merchant_tracking": {
                 "required": [
-                    "restId",
-                    "restSecret",
-                    "url"
+                    "merchant_id",
+                    "tracking_id",
+                    "links"
                 ],
                 "properties": {
-                    "restId": {
+                    "merchant_id": {
                         "type": "string"
                     },
-                    "restSecret": {
+                    "tracking_id": {
                         "type": "string"
                     },
-                    "url": {
-                        "type": "string"
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
+                        }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_patch": {
+            "paypal_v1_patch": {
                 "required": [
                     "op",
                     "path",
@@ -1691,7 +1761,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment": {
+            "paypal_v1_payment": {
                 "required": [
                     "id",
                     "state",
@@ -1725,12 +1795,12 @@
                         "type": "string"
                     },
                     "payer": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_payment_payer"
+                        "$ref": "#/components/schemas/paypal_v1_payment_payer"
                     },
                     "transactions": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction"
+                            "$ref": "#/components/schemas/paypal_v1_payment_transaction"
                         }
                     },
                     "create_time": {
@@ -1742,19 +1812,19 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     },
                     "redirect_urls": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_payment_redirect_urls"
+                        "$ref": "#/components/schemas/paypal_v1_payment_redirect_urls"
                     },
                     "application_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_payment_application_context"
+                        "$ref": "#/components/schemas/paypal_v1_payment_application_context"
                     },
                     "payment_instruction": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_payment_payment_instruction"
+                                "$ref": "#/components/schemas/paypal_v1_payment_payment_instruction"
                             }
                         ],
                         "nullable": true
@@ -1762,7 +1832,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_application_context": {
+            "paypal_v1_payment_application_context": {
                 "required": [
                     "brand_name",
                     "locale",
@@ -1793,7 +1863,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_payer": {
+            "paypal_v1_payment_payer": {
                 "required": [
                     "payment_method",
                     "status",
@@ -1808,7 +1878,7 @@
                         "type": "string"
                     },
                     "payer_info": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_payment_payer_payer_info"
+                        "$ref": "#/components/schemas/paypal_v1_payment_payer_payer_info"
                     },
                     "external_selected_funding_instrument_type": {
                         "type": "string"
@@ -1816,7 +1886,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_payer_execute_payer_info": {
+            "paypal_v1_payment_payer_execute_payer_info": {
                 "required": [
                     "payer_id"
                 ],
@@ -1827,11 +1897,11 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_payer_payer_info": {
+            "paypal_v1_payment_payer_payer_info": {
                 "type": "object",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/swag_paypal_v1_payment_payer_execute_payer_info"
+                        "$ref": "#/components/schemas/paypal_v1_payment_payer_execute_payer_info"
                     },
                     {
                         "required": [
@@ -1856,13 +1926,13 @@
                             "billing_address": {
                                 "oneOf": [
                                     {
-                                        "$ref": "#/components/schemas/swag_paypal_v1_common_address"
+                                        "$ref": "#/components/schemas/paypal_v1_common_address"
                                     }
                                 ],
                                 "nullable": true
                             },
                             "shipping_address": {
-                                "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_item_list_shipping_address"
+                                "$ref": "#/components/schemas/paypal_v1_payment_transaction_item_list_shipping_address"
                             },
                             "phone": {
                                 "type": "string"
@@ -1875,7 +1945,7 @@
                     }
                 ]
             },
-            "swag_paypal_v1_payment_payment_instruction": {
+            "paypal_v1_payment_payment_instruction": {
                 "required": [
                     "reference_number",
                     "recipient_banking_instruction",
@@ -1889,10 +1959,10 @@
                         "type": "string"
                     },
                     "recipient_banking_instruction": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_payment_payment_instruction_recipient_banking_instruction"
+                        "$ref": "#/components/schemas/paypal_v1_payment_payment_instruction_recipient_banking_instruction"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_value"
+                        "$ref": "#/components/schemas/paypal_v1_common_value"
                     },
                     "payment_due_date": {
                         "type": "string"
@@ -1903,13 +1973,13 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_payment_instruction_recipient_banking_instruction": {
+            "paypal_v1_payment_payment_instruction_recipient_banking_instruction": {
                 "required": [
                     "bank_name",
                     "account_holder_name",
@@ -1932,7 +2002,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_redirect_urls": {
+            "paypal_v1_payment_redirect_urls": {
                 "required": [
                     "return_url",
                     "cancel_url"
@@ -1947,7 +2017,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_transaction": {
+            "paypal_v1_payment_transaction": {
                 "required": [
                     "amount",
                     "payee",
@@ -1960,15 +2030,15 @@
                 ],
                 "properties": {
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "payee": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_payee"
+                        "$ref": "#/components/schemas/paypal_v1_payment_transaction_payee"
                     },
                     "item_list": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_item_list"
+                                "$ref": "#/components/schemas/paypal_v1_payment_transaction_item_list"
                             }
                         ],
                         "nullable": true
@@ -1976,7 +2046,7 @@
                     "related_resources": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_related_resource"
+                            "$ref": "#/components/schemas/paypal_v1_payment_transaction_related_resource"
                         }
                     },
                     "invoice_number": {
@@ -1995,7 +2065,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_transaction_item_list": {
+            "paypal_v1_payment_transaction_item_list": {
                 "required": [
                     "shipping_address",
                     "items",
@@ -2004,18 +2074,18 @@
                 ],
                 "properties": {
                     "shipping_address": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_item_list_shipping_address"
+                        "$ref": "#/components/schemas/paypal_v1_payment_transaction_item_list_shipping_address"
                     },
                     "items": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_item_list_item"
+                            "$ref": "#/components/schemas/paypal_v1_payment_transaction_item_list_item"
                         }
                     },
                     "shipping_options": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_item_list_shipping_option"
+                            "$ref": "#/components/schemas/paypal_v1_payment_transaction_item_list_shipping_option"
                         }
                     },
                     "shipping_phone_number": {
@@ -2024,7 +2094,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_transaction_item_list_item": {
+            "paypal_v1_payment_transaction_item_list_item": {
                 "required": [
                     "name",
                     "currency",
@@ -2035,7 +2105,8 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 127
                     },
                     "currency": {
                         "type": "string"
@@ -2048,6 +2119,7 @@
                     },
                     "sku": {
                         "type": "string",
+                        "maxLength": 127,
                         "nullable": true
                     },
                     "tax": {
@@ -2056,11 +2128,11 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_transaction_item_list_shipping_address": {
+            "paypal_v1_payment_transaction_item_list_shipping_address": {
                 "type": "object",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_address"
+                        "$ref": "#/components/schemas/paypal_v1_common_address"
                     },
                     {
                         "required": [
@@ -2075,10 +2147,10 @@
                     }
                 ]
             },
-            "swag_paypal_v1_payment_transaction_item_list_shipping_option": {
+            "paypal_v1_payment_transaction_item_list_shipping_option": {
                 "properties": {}
             },
-            "swag_paypal_v1_payment_transaction_payee": {
+            "paypal_v1_payment_transaction_payee": {
                 "required": [
                     "merchant_id",
                     "email"
@@ -2093,7 +2165,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_transaction_related_resource": {
+            "paypal_v1_payment_transaction_related_resource": {
                 "required": [
                     "sale",
                     "authorization",
@@ -2105,7 +2177,7 @@
                     "sale": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_related_resource_sale"
+                                "$ref": "#/components/schemas/paypal_v1_payment_transaction_related_resource_sale"
                             }
                         ],
                         "nullable": true
@@ -2113,7 +2185,7 @@
                     "authorization": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_related_resource_authorization"
+                                "$ref": "#/components/schemas/paypal_v1_payment_transaction_related_resource_authorization"
                             }
                         ],
                         "nullable": true
@@ -2121,7 +2193,7 @@
                     "order": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_related_resource_order"
+                                "$ref": "#/components/schemas/paypal_v1_payment_transaction_related_resource_order"
                             }
                         ],
                         "nullable": true
@@ -2129,7 +2201,7 @@
                     "refund": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_related_resource_refund"
+                                "$ref": "#/components/schemas/paypal_v1_payment_transaction_related_resource_refund"
                             }
                         ],
                         "nullable": true
@@ -2137,7 +2209,7 @@
                     "capture": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_related_resource_capture"
+                                "$ref": "#/components/schemas/paypal_v1_payment_transaction_related_resource_capture"
                             }
                         ],
                         "nullable": true
@@ -2145,7 +2217,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_transaction_related_resource_authorization": {
+            "paypal_v1_payment_transaction_related_resource_authorization": {
                 "required": [
                     "id",
                     "state",
@@ -2169,7 +2241,7 @@
                         "type": "string"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "payment_mode": {
                         "type": "string"
@@ -2195,7 +2267,7 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     },
                     "reason_code": {
@@ -2207,7 +2279,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_transaction_related_resource_capture": {
+            "paypal_v1_payment_transaction_related_resource_capture": {
                 "required": [
                     "id",
                     "state",
@@ -2232,7 +2304,7 @@
                         "type": "string"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "payment_mode": {
                         "type": "string"
@@ -2258,14 +2330,14 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     },
                     "custom": {
                         "type": "string"
                     },
                     "transaction_fee": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_value"
+                        "$ref": "#/components/schemas/paypal_v1_common_value"
                     },
                     "invoice_number": {
                         "type": "string"
@@ -2273,7 +2345,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_transaction_related_resource_order": {
+            "paypal_v1_payment_transaction_related_resource_order": {
                 "required": [
                     "id",
                     "state",
@@ -2296,7 +2368,7 @@
                         "type": "string"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "payment_mode": {
                         "type": "string"
@@ -2322,7 +2394,7 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     },
                     "reason_code": {
@@ -2331,7 +2403,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_transaction_related_resource_refund": {
+            "paypal_v1_payment_transaction_related_resource_refund": {
                 "required": [
                     "id",
                     "state",
@@ -2355,7 +2427,7 @@
                         "type": "string"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "payment_mode": {
                         "type": "string"
@@ -2381,7 +2453,7 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     },
                     "sale_id": {
@@ -2393,7 +2465,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_payment_transaction_related_resource_sale": {
+            "paypal_v1_payment_transaction_related_resource_sale": {
                 "required": [
                     "id",
                     "state",
@@ -2416,7 +2488,7 @@
                         "type": "string"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "payment_mode": {
                         "type": "string"
@@ -2442,16 +2514,16 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     },
                     "transaction_fee": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_value"
+                        "$ref": "#/components/schemas/paypal_v1_common_value"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_plan": {
+            "paypal_v1_plan": {
                 "required": [
                     "product_id",
                     "name",
@@ -2478,19 +2550,19 @@
                     "billing_cycles": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_plan_billing_cycle"
+                            "$ref": "#/components/schemas/paypal_v1_plan_billing_cycle"
                         }
                     },
                     "payment_preferences": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_plan_payment_preferences"
+                        "$ref": "#/components/schemas/paypal_v1_plan_payment_preferences"
                     },
                     "taxes": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_plan_taxes"
+                        "$ref": "#/components/schemas/paypal_v1_plan_taxes"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_plan_billing_cycle": {
+            "paypal_v1_plan_billing_cycle": {
                 "required": [
                     "frequency",
                     "tenure_type",
@@ -2500,7 +2572,7 @@
                 ],
                 "properties": {
                     "frequency": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_plan_billing_cycle_frequency"
+                        "$ref": "#/components/schemas/paypal_v1_plan_billing_cycle_frequency"
                     },
                     "tenure_type": {
                         "type": "string"
@@ -2509,7 +2581,7 @@
                         "type": "integer"
                     },
                     "pricing_scheme": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_plan_billing_cycle_pricing_scheme"
+                        "$ref": "#/components/schemas/paypal_v1_plan_billing_cycle_pricing_scheme"
                     },
                     "total_cycles": {
                         "type": "integer"
@@ -2517,7 +2589,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_plan_billing_cycle_frequency": {
+            "paypal_v1_plan_billing_cycle_frequency": {
                 "required": [
                     "interval_unit",
                     "interval_count"
@@ -2532,18 +2604,18 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_plan_billing_cycle_pricing_scheme": {
+            "paypal_v1_plan_billing_cycle_pricing_scheme": {
                 "required": [
                     "fixed_price"
                 ],
                 "properties": {
                     "fixed_price": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_plan_payment_preferences": {
+            "paypal_v1_plan_payment_preferences": {
                 "required": [
                     "auto_bill_outstanding",
                     "payment_failure_threshold"
@@ -2558,7 +2630,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_plan_taxes": {
+            "paypal_v1_plan_taxes": {
                 "required": [
                     "percentage",
                     "inclusive"
@@ -2573,7 +2645,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_product": {
+            "paypal_v1_product": {
                 "required": [
                     "name",
                     "description",
@@ -2592,7 +2664,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_refund": {
+            "paypal_v1_refund": {
                 "required": [
                     "amount",
                     "invoice_number",
@@ -2612,7 +2684,7 @@
                 ],
                 "properties": {
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "invoice_number": {
                         "type": "string"
@@ -2636,13 +2708,13 @@
                         "type": "string"
                     },
                     "refund_from_transaction_fee": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_value"
+                        "$ref": "#/components/schemas/paypal_v1_common_value"
                     },
                     "total_refunded_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_value"
+                        "$ref": "#/components/schemas/paypal_v1_common_value"
                     },
                     "refund_from_received_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_value"
+                        "$ref": "#/components/schemas/paypal_v1_common_value"
                     },
                     "sale_id": {
                         "type": "string"
@@ -2656,13 +2728,13 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_shipping": {
+            "paypal_v1_shipping": {
                 "required": [
                     "trackers"
                 ],
@@ -2670,13 +2742,13 @@
                     "trackers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_shipping_tracker"
+                            "$ref": "#/components/schemas/paypal_v1_shipping_tracker"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_shipping_tracker": {
+            "paypal_v1_shipping_tracker": {
                 "required": [
                     "transaction_id",
                     "tracking_number",
@@ -2702,13 +2774,13 @@
                         "type": "boolean"
                     },
                     "shipment_date": {
-                        "description": "Pattern: '2022-08-15'",
-                        "type": "string"
+                        "type": "string",
+                        "format": "date-time"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_subscription": {
+            "paypal_v1_subscription": {
                 "required": [
                     "id",
                     "plan_id",
@@ -2738,21 +2810,21 @@
                         "type": "string"
                     },
                     "shipping_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     },
                     "subscriber": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_subscription_subscriber"
+                        "$ref": "#/components/schemas/paypal_v1_subscription_subscriber"
                     },
                     "billing_info": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_subscription_billing_info"
+                                "$ref": "#/components/schemas/paypal_v1_subscription_billing_info"
                             }
                         ],
                         "nullable": true
                     },
                     "application_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_subscription_application_context"
+                        "$ref": "#/components/schemas/paypal_v1_subscription_application_context"
                     },
                     "status": {
                         "type": "string"
@@ -2769,13 +2841,13 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_subscription_application_context": {
+            "paypal_v1_subscription_application_context": {
                 "required": [
                     "brand_name",
                     "locale",
@@ -2806,7 +2878,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_subscription_billing_info": {
+            "paypal_v1_subscription_billing_info": {
                 "required": [
                     "outstanding_balance",
                     "cycle_executions",
@@ -2816,16 +2888,16 @@
                 ],
                 "properties": {
                     "outstanding_balance": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_subscription_billing_info_outstanding_balance"
+                        "$ref": "#/components/schemas/paypal_v1_subscription_billing_info_outstanding_balance"
                     },
                     "cycle_executions": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_subscription_billing_info_cycle_execution"
+                            "$ref": "#/components/schemas/paypal_v1_subscription_billing_info_cycle_execution"
                         }
                     },
                     "last_payment": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_subscription_billing_info_last_payment"
+                        "$ref": "#/components/schemas/paypal_v1_subscription_billing_info_last_payment"
                     },
                     "next_billing_time": {
                         "type": "string",
@@ -2837,7 +2909,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_subscription_billing_info_cycle_execution": {
+            "paypal_v1_subscription_billing_info_cycle_execution": {
                 "required": [
                     "tenure_type",
                     "sequence",
@@ -2864,14 +2936,14 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_subscription_billing_info_last_payment": {
+            "paypal_v1_subscription_billing_info_last_payment": {
                 "required": [
                     "amount",
                     "time"
                 ],
                 "properties": {
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     },
                     "time": {
                         "type": "string"
@@ -2879,14 +2951,14 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_subscription_billing_info_outstanding_balance": {
+            "paypal_v1_subscription_billing_info_outstanding_balance": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_money"
+                        "$ref": "#/components/schemas/paypal_v1_common_money"
                     }
                 ]
             },
-            "swag_paypal_v1_subscription_subscriber": {
+            "paypal_v1_subscription_subscriber": {
                 "required": [
                     "name",
                     "email_address",
@@ -2895,7 +2967,7 @@
                 ],
                 "properties": {
                     "name": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_subscription_subscriber_name"
+                        "$ref": "#/components/schemas/paypal_v1_subscription_subscriber_name"
                     },
                     "email_address": {
                         "type": "string"
@@ -2906,7 +2978,7 @@
                     "shipping_address": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_subscription_subscriber_shipping_address"
+                                "$ref": "#/components/schemas/paypal_v1_subscription_subscriber_shipping_address"
                             }
                         ],
                         "nullable": true
@@ -2914,7 +2986,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_subscription_subscriber_name": {
+            "paypal_v1_subscription_subscriber_name": {
                 "required": [
                     "given_name",
                     "surname"
@@ -2929,7 +3001,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_subscription_subscriber_shipping_address": {
+            "paypal_v1_subscription_subscriber_shipping_address": {
                 "required": [
                     "name",
                     "address"
@@ -2938,7 +3010,7 @@
                     "name": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_subscription_subscriber_shipping_address_name"
+                                "$ref": "#/components/schemas/paypal_v1_subscription_subscriber_shipping_address_name"
                             }
                         ],
                         "nullable": true
@@ -2946,7 +3018,7 @@
                     "address": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_subscription_subscriber_shipping_address_address"
+                                "$ref": "#/components/schemas/paypal_v1_subscription_subscriber_shipping_address_address"
                             }
                         ],
                         "nullable": true
@@ -2954,7 +3026,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_subscription_subscriber_shipping_address_address": {
+            "paypal_v1_subscription_subscriber_shipping_address_address": {
                 "required": [
                     "address_line_1",
                     "address_line_2",
@@ -2990,7 +3062,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_subscription_subscriber_shipping_address_name": {
+            "paypal_v1_subscription_subscriber_shipping_address_name": {
                 "required": [
                     "full_name"
                 ],
@@ -3001,7 +3073,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_token": {
+            "paypal_v1_token": {
                 "required": [
                     "scope",
                     "nonce",
@@ -3047,7 +3119,37 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_webhook": {
+            "paypal_v1_webhook": {
+                "required": [
+                    "id",
+                    "url",
+                    "event_types",
+                    "links"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string",
+                        "maxLength": 2048
+                    },
+                    "event_types": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_webhook_event_type"
+                        }
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v1_webhook_event": {
                 "required": [
                     "id",
                     "resource_type",
@@ -3076,22 +3178,22 @@
                         "nullable": true,
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v3_payment_token"
+                                "$ref": "#/components/schemas/paypal_v3_payment_token"
                             },
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_authorization"
+                                "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_authorization"
                             },
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_capture"
+                                "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_capture"
                             },
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_refund"
+                                "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_refund"
                             },
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_webhook_resource"
+                                "$ref": "#/components/schemas/paypal_v1_webhook_resource"
                             },
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v1_subscription"
+                                "$ref": "#/components/schemas/paypal_v1_subscription"
                             }
                         ]
                     },
@@ -3101,7 +3203,7 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     },
                     "event_version": {
@@ -3113,7 +3215,30 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v1_webhook_resource": {
+            "paypal_v1_webhook_event_type": {
+                "required": [
+                    "name",
+                    "description",
+                    "status",
+                    "resource_version"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "resource_version": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v1_webhook_resource": {
                 "required": [
                     "id",
                     "parent_payment",
@@ -3157,7 +3282,7 @@
                         "type": "string"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_amount"
+                        "$ref": "#/components/schemas/paypal_v1_common_amount"
                     },
                     "payment_mode": {
                         "type": "string"
@@ -3175,7 +3300,7 @@
                         "type": "string"
                     },
                     "transaction_fee": {
-                        "$ref": "#/components/schemas/swag_paypal_v1_common_value"
+                        "$ref": "#/components/schemas/paypal_v1_common_value"
                     },
                     "invoice_number": {
                         "type": "string"
@@ -3183,7 +3308,7 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v1_common_link"
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
                         }
                     },
                     "state": {
@@ -3196,7 +3321,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_common_address": {
+            "paypal_v2_common_address": {
                 "required": [
                     "address_line_1",
                     "address_line_2",
@@ -3236,7 +3361,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_common_link": {
+            "paypal_v2_common_link": {
                 "required": [
                     "href",
                     "rel",
@@ -3260,7 +3385,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_common_money": {
+            "paypal_v2_common_money": {
                 "required": [
                     "currency_code",
                     "value"
@@ -3275,7 +3400,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_common_name": {
+            "paypal_v2_common_name": {
                 "required": [
                     "given_name",
                     "surname"
@@ -3290,7 +3415,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_common_phone_number": {
+            "paypal_v2_common_phone_number": {
                 "required": [
                     "national_number",
                     "country_code"
@@ -3305,7 +3430,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order": {
+            "paypal_v2_order": {
                 "required": [
                     "create_time",
                     "update_time",
@@ -3330,25 +3455,29 @@
                         "type": "string"
                     },
                     "intent": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "CAPTURE",
+                            "AUTHORIZE"
+                        ]
                     },
                     "payer": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payer"
+                        "$ref": "#/components/schemas/paypal_v2_order_payer"
                     },
                     "purchase_units": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit"
                         },
                         "nullable": true
                     },
                     "application_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_application_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_application_context"
                     },
                     "payment_source": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source"
                             }
                         ],
                         "nullable": true
@@ -3362,13 +3491,13 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_common_link"
+                            "$ref": "#/components/schemas/paypal_v2_common_link"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_application_context": {
+            "paypal_v2_order_application_context": {
                 "required": [
                     "brand_name",
                     "return_url",
@@ -3413,7 +3542,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payer": {
+            "paypal_v2_order_payer": {
                 "required": [
                     "name",
                     "email_address",
@@ -3423,7 +3552,7 @@
                 ],
                 "properties": {
                     "name": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_name"
+                        "$ref": "#/components/schemas/paypal_v2_common_name"
                     },
                     "email_address": {
                         "type": "string"
@@ -3434,18 +3563,18 @@
                     "phone": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_phone"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_phone"
                             }
                         ],
                         "nullable": true
                     },
                     "address": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_address"
+                        "$ref": "#/components/schemas/paypal_v2_common_address"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source": {
+            "paypal_v2_order_payment_source": {
                 "required": [
                     "apple_pay",
                     "pay_upon_invoice",
@@ -3458,7 +3587,7 @@
                     "multibanco",
                     "my_bank",
                     "oxxo",
-                    "p24",
+                    "p_2_4",
                     "paypal",
                     "token",
                     "trustly",
@@ -3467,12 +3596,12 @@
                 ],
                 "properties": {
                     "apple_pay": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_apple_pay"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_apple_pay"
                     },
                     "pay_upon_invoice": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_pay_upon_invoice"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_pay_upon_invoice"
                             }
                         ],
                         "nullable": true
@@ -3480,7 +3609,7 @@
                     "bancontact": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_bancontact"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_bancontact"
                             }
                         ],
                         "nullable": true
@@ -3488,7 +3617,7 @@
                     "blik": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_blik"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_blik"
                             }
                         ],
                         "nullable": true
@@ -3496,7 +3625,7 @@
                     "boletobancario": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_boletobancario"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_boletobancario"
                             }
                         ],
                         "nullable": true
@@ -3504,7 +3633,7 @@
                     "card": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_card"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_card"
                             }
                         ],
                         "nullable": true
@@ -3512,7 +3641,7 @@
                     "eps": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_eps"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_eps"
                             }
                         ],
                         "nullable": true
@@ -3520,7 +3649,7 @@
                     "ideal": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_ideal"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_ideal"
                             }
                         ],
                         "nullable": true
@@ -3528,7 +3657,7 @@
                     "multibanco": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_multibanco"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_multibanco"
                             }
                         ],
                         "nullable": true
@@ -3536,7 +3665,7 @@
                     "my_bank": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_my_bank"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_my_bank"
                             }
                         ],
                         "nullable": true
@@ -3544,15 +3673,15 @@
                     "oxxo": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_oxxo"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_oxxo"
                             }
                         ],
                         "nullable": true
                     },
-                    "p24": {
+                    "p_2_4": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_p24"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_p24"
                             }
                         ],
                         "nullable": true
@@ -3560,7 +3689,7 @@
                     "paypal": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_paypal"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_paypal"
                             }
                         ],
                         "nullable": true
@@ -3568,7 +3697,7 @@
                     "token": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_token"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_token"
                             }
                         ],
                         "nullable": true
@@ -3576,7 +3705,7 @@
                     "trustly": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_trustly"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_trustly"
                             }
                         ],
                         "nullable": true
@@ -3584,7 +3713,7 @@
                     "google_pay": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_google_pay"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_google_pay"
                             }
                         ],
                         "nullable": true
@@ -3592,7 +3721,7 @@
                     "venmo": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_venmo"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_venmo"
                             }
                         ],
                         "nullable": true
@@ -3600,7 +3729,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_apple_pay": {
+            "paypal_v2_order_payment_source_apple_pay": {
                 "required": [
                     "name",
                     "country_code",
@@ -3616,12 +3745,12 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "card": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_card"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_card"
                             }
                         ],
                         "nullable": true
@@ -3629,7 +3758,7 @@
                     "attributes": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes"
                             }
                         ],
                         "nullable": true
@@ -3637,7 +3766,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_bancontact": {
+            "paypal_v2_order_payment_source_bancontact": {
                 "required": [
                     "name",
                     "country_code",
@@ -3651,12 +3780,12 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_blik": {
+            "paypal_v2_order_payment_source_blik": {
                 "required": [
                     "name",
                     "country_code",
@@ -3671,7 +3800,7 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "email": {
                         "type": "string"
@@ -3679,7 +3808,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_boletobancario": {
+            "paypal_v2_order_payment_source_boletobancario": {
                 "required": [
                     "name",
                     "country_code",
@@ -3697,7 +3826,7 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "email": {
                         "type": "string"
@@ -3706,15 +3835,15 @@
                         "type": "string"
                     },
                     "tax_info": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_boletobancario_tax_info"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_boletobancario_tax_info"
                     },
                     "billing_address": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_address"
+                        "$ref": "#/components/schemas/paypal_v2_common_address"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_boletobancario_tax_info": {
+            "paypal_v2_order_payment_source_boletobancario_tax_info": {
                 "required": [
                     "tax_id",
                     "tax_id_type"
@@ -3729,7 +3858,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_card": {
+            "paypal_v2_order_payment_source_card": {
                 "required": [
                     "name",
                     "country_code",
@@ -3751,7 +3880,7 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "last_digits": {
                         "type": "string"
@@ -3768,7 +3897,7 @@
                     "billing_address": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_common_address"
+                                "$ref": "#/components/schemas/paypal_v2_common_address"
                             }
                         ],
                         "nullable": true
@@ -3776,7 +3905,7 @@
                     "authentication_result": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_card_authentication_result"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_card_authentication_result"
                             }
                         ],
                         "nullable": true
@@ -3784,7 +3913,7 @@
                     "attributes": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes"
                             }
                         ],
                         "nullable": true
@@ -3792,7 +3921,7 @@
                     "stored_credential": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_card_stored_credential"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_card_stored_credential"
                             }
                         ],
                         "nullable": true
@@ -3800,7 +3929,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_card_authentication_result": {
+            "paypal_v2_order_payment_source_card_authentication_result": {
                 "required": [
                     "liability_shift",
                     "three_d_secure"
@@ -3812,7 +3941,7 @@
                     "three_d_secure": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_card_authentication_result_3d_secure"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_card_authentication_result_3d_secure"
                             }
                         ],
                         "nullable": true
@@ -3820,7 +3949,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_card_authentication_result_3d_secure": {
+            "paypal_v2_order_payment_source_card_authentication_result_3d_secure": {
                 "required": [
                     "enrollment_status",
                     "authentication_status"
@@ -3835,7 +3964,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_card_stored_credential": {
+            "paypal_v2_order_payment_source_card_stored_credential": {
                 "required": [
                     "payment_initiator",
                     "payment_type",
@@ -3872,7 +4001,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_common_attributes": {
+            "paypal_v2_order_payment_source_common_attributes": {
                 "required": [
                     "vault",
                     "customer",
@@ -3880,18 +4009,18 @@
                 ],
                 "properties": {
                     "vault": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes_vault"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_vault"
                     },
                     "customer": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes_customer"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_customer"
                     },
                     "verification": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes_verification"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_verification"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_common_attributes_customer": {
+            "paypal_v2_order_payment_source_common_attributes_customer": {
                 "required": [
                     "id"
                 ],
@@ -3902,7 +4031,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_common_attributes_vault": {
+            "paypal_v2_order_payment_source_common_attributes_vault": {
                 "required": [
                     "id",
                     "store_in_vault",
@@ -3936,7 +4065,7 @@
                     "customer": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes_customer"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_customer"
                             }
                         ],
                         "nullable": true
@@ -3944,13 +4073,13 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_common_link"
+                            "$ref": "#/components/schemas/paypal_v2_common_link"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_common_attributes_verification": {
+            "paypal_v2_order_payment_source_common_attributes_verification": {
                 "required": [
                     "method"
                 ],
@@ -3961,7 +4090,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_common_experience_context": {
+            "paypal_v2_order_payment_source_common_experience_context": {
                 "required": [
                     "locale",
                     "brand_name",
@@ -4031,7 +4160,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_common_phone": {
+            "paypal_v2_order_payment_source_common_phone": {
                 "required": [
                     "phone_type",
                     "phone_number"
@@ -4041,12 +4170,12 @@
                         "type": "string"
                     },
                     "phone_number": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_phone_number"
+                        "$ref": "#/components/schemas/paypal_v2_common_phone_number"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_eps": {
+            "paypal_v2_order_payment_source_eps": {
                 "required": [
                     "name",
                     "country_code",
@@ -4060,12 +4189,12 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_google_pay": {
+            "paypal_v2_order_payment_source_google_pay": {
                 "required": [
                     "experience_context",
                     "card",
@@ -4073,12 +4202,12 @@
                 ],
                 "properties": {
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "card": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_card"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_card"
                             }
                         ],
                         "nullable": true
@@ -4086,7 +4215,7 @@
                     "attributes": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes"
                             }
                         ],
                         "nullable": true
@@ -4094,7 +4223,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_ideal": {
+            "paypal_v2_order_payment_source_ideal": {
                 "required": [
                     "name",
                     "country_code",
@@ -4108,12 +4237,12 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_multibanco": {
+            "paypal_v2_order_payment_source_multibanco": {
                 "required": [
                     "name",
                     "country_code",
@@ -4127,12 +4256,12 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_my_bank": {
+            "paypal_v2_order_payment_source_my_bank": {
                 "required": [
                     "name",
                     "country_code",
@@ -4146,12 +4275,12 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_oxxo": {
+            "paypal_v2_order_payment_source_oxxo": {
                 "required": [
                     "name",
                     "country_code",
@@ -4166,7 +4295,7 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "email": {
                         "type": "string"
@@ -4174,7 +4303,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_p24": {
+            "paypal_v2_order_payment_source_p24": {
                 "required": [
                     "name",
                     "country_code",
@@ -4189,7 +4318,7 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "email": {
                         "type": "string"
@@ -4197,7 +4326,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_pay_upon_invoice": {
+            "paypal_v2_order_payment_source_pay_upon_invoice": {
                 "required": [
                     "experience_context",
                     "name",
@@ -4210,10 +4339,10 @@
                 ],
                 "properties": {
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "name": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_name"
+                        "$ref": "#/components/schemas/paypal_v2_common_name"
                     },
                     "email": {
                         "type": "string"
@@ -4222,21 +4351,21 @@
                         "type": "string"
                     },
                     "phone": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_phone_number"
+                        "$ref": "#/components/schemas/paypal_v2_common_phone_number"
                     },
                     "billing_address": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_address"
+                        "$ref": "#/components/schemas/paypal_v2_common_address"
                     },
                     "payment_reference": {
                         "type": "string"
                     },
                     "deposit_bank_details": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_pay_upon_invoice_deposit_bank_details"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_pay_upon_invoice_deposit_bank_details"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_pay_upon_invoice_deposit_bank_details": {
+            "paypal_v2_order_payment_source_pay_upon_invoice_deposit_bank_details": {
                 "required": [
                     "bic",
                     "bank_name",
@@ -4259,7 +4388,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_paypal": {
+            "paypal_v2_order_payment_source_paypal": {
                 "required": [
                     "experience_context",
                     "email_address",
@@ -4275,7 +4404,7 @@
                 ],
                 "properties": {
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "email_address": {
                         "type": "string"
@@ -4290,18 +4419,18 @@
                         "type": "string"
                     },
                     "name": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_name"
+                        "$ref": "#/components/schemas/paypal_v2_common_name"
                     },
                     "phone_number": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_common_phone_number"
+                                "$ref": "#/components/schemas/paypal_v2_common_phone_number"
                             }
                         ],
                         "nullable": true
                     },
                     "address": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_address"
+                        "$ref": "#/components/schemas/paypal_v2_common_address"
                     },
                     "birth_date": {
                         "type": "string"
@@ -4312,7 +4441,7 @@
                     "attributes": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes"
                             }
                         ],
                         "nullable": true
@@ -4320,7 +4449,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_token": {
+            "paypal_v2_order_payment_source_token": {
                 "required": [
                     "experience_context",
                     "id",
@@ -4329,7 +4458,7 @@
                 ],
                 "properties": {
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "id": {
                         "type": "string"
@@ -4338,12 +4467,12 @@
                         "type": "string"
                     },
                     "stored_payment_source": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_token_stored_payment_source"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_token_stored_payment_source"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_token_stored_payment_source": {
+            "paypal_v2_order_payment_source_token_stored_payment_source": {
                 "required": [
                     "payment_initiator",
                     "payment_type",
@@ -4362,7 +4491,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_trustly": {
+            "paypal_v2_order_payment_source_trustly": {
                 "required": [
                     "name",
                     "country_code",
@@ -4376,12 +4505,12 @@
                         "type": "string"
                     },
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_payment_source_venmo": {
+            "paypal_v2_order_payment_source_venmo": {
                 "required": [
                     "experience_context",
                     "email_address",
@@ -4395,7 +4524,7 @@
                 ],
                 "properties": {
                     "experience_context": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_experience_context"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
                     },
                     "email_address": {
                         "type": "string"
@@ -4410,23 +4539,23 @@
                         "type": "string"
                     },
                     "name": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_name"
+                        "$ref": "#/components/schemas/paypal_v2_common_name"
                     },
                     "phone_number": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_common_phone_number"
+                                "$ref": "#/components/schemas/paypal_v2_common_phone_number"
                             }
                         ],
                         "nullable": true
                     },
                     "address": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_address"
+                        "$ref": "#/components/schemas/paypal_v2_common_address"
                     },
                     "attributes": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes"
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes"
                             }
                         ],
                         "nullable": true
@@ -4434,7 +4563,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit": {
+            "paypal_v2_order_purchase_unit": {
                 "required": [
                     "reference_id",
                     "amount",
@@ -4451,10 +4580,10 @@
                         "type": "string"
                     },
                     "amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_amount"
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_amount"
                     },
                     "payee": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payee"
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payee"
                     },
                     "description": {
                         "type": "string"
@@ -4470,17 +4599,17 @@
                     "items": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_item"
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_item"
                         },
                         "nullable": true
                     },
                     "shipping": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_shipping"
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_shipping"
                     },
                     "payments": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments"
+                                "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments"
                             }
                         ],
                         "nullable": true
@@ -4488,11 +4617,11 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_amount": {
+            "paypal_v2_order_purchase_unit_amount": {
                 "type": "object",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     {
                         "required": [
@@ -4502,7 +4631,7 @@
                             "breakdown": {
                                 "oneOf": [
                                     {
-                                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_amount_breakdown"
+                                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_amount_breakdown"
                                     }
                                 ],
                                 "nullable": true
@@ -4512,7 +4641,7 @@
                     }
                 ]
             },
-            "swag_paypal_v2_order_purchase_unit_amount_breakdown": {
+            "paypal_v2_order_purchase_unit_amount_breakdown": {
                 "required": [
                     "item_total",
                     "shipping",
@@ -4524,35 +4653,35 @@
                 ],
                 "properties": {
                     "item_total": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "shipping": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "handling": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "tax_total": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                                "$ref": "#/components/schemas/paypal_v2_common_money"
                             }
                         ],
                         "nullable": true
                     },
                     "insurance": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "shipping_discount": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "discount": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_item": {
+            "paypal_v2_order_purchase_unit_item": {
                 "required": [
                     "name",
                     "unit_amount",
@@ -4564,13 +4693,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 120
                     },
                     "unit_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "tax": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "tax_rate": {
                         "oneOf": [
@@ -4598,12 +4728,13 @@
                     },
                     "sku": {
                         "type": "string",
+                        "maxLength": 127,
                         "nullable": true
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payee": {
+            "paypal_v2_order_purchase_unit_payee": {
                 "required": [
                     "email_address",
                     "merchant_id",
@@ -4617,12 +4748,12 @@
                         "type": "string"
                     },
                     "display_data": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payee_display_data"
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payee_display_data"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payee_display_data": {
+            "paypal_v2_order_purchase_unit_payee_display_data": {
                 "required": [
                     "brand_name"
                 ],
@@ -4633,7 +4764,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payments": {
+            "paypal_v2_order_purchase_unit_payments": {
                 "required": [
                     "authorizations",
                     "captures",
@@ -4643,28 +4774,28 @@
                     "authorizations": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_authorization"
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_authorization"
                         },
                         "nullable": true
                     },
                     "captures": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_capture"
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_capture"
                         },
                         "nullable": true
                     },
                     "refunds": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_refund"
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_refund"
                         },
                         "nullable": true
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payments_authorization": {
+            "paypal_v2_order_purchase_unit_payments_authorization": {
                 "required": [
                     "status",
                     "id",
@@ -4686,7 +4817,7 @@
                     "amount": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                                "$ref": "#/components/schemas/paypal_v2_common_money"
                             }
                         ],
                         "nullable": true
@@ -4698,7 +4829,7 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_common_link"
+                            "$ref": "#/components/schemas/paypal_v2_common_link"
                         }
                     },
                     "create_time": {
@@ -4708,7 +4839,7 @@
                         "type": "string"
                     },
                     "seller_protection": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_common_seller_protection"
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_common_seller_protection"
                     },
                     "expiration_time": {
                         "type": "string"
@@ -4716,7 +4847,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payments_authorization_seller_protection": {
+            "paypal_v2_order_purchase_unit_payments_authorization_seller_protection": {
                 "required": [
                     "status",
                     "dispute_categories"
@@ -4734,7 +4865,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payments_capture": {
+            "paypal_v2_order_purchase_unit_payments_capture": {
                 "required": [
                     "status",
                     "id",
@@ -4761,7 +4892,7 @@
                     "amount": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                                "$ref": "#/components/schemas/paypal_v2_common_money"
                             }
                         ],
                         "nullable": true
@@ -4773,7 +4904,7 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_common_link"
+                            "$ref": "#/components/schemas/paypal_v2_common_link"
                         }
                     },
                     "create_time": {
@@ -4784,23 +4915,25 @@
                     },
                     "invoice_id": {
                         "type": "string",
+                        "maxLength": 127,
                         "nullable": true
                     },
                     "note_to_payer": {
                         "type": "string",
+                        "maxLength": 255,
                         "nullable": true
                     },
                     "seller_protection": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_common_seller_protection"
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_common_seller_protection"
                     },
                     "final_capture": {
                         "type": "boolean"
                     },
                     "seller_receivable_breakdown": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_capture_seller_receivable_breakdown"
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_capture_seller_receivable_breakdown"
                     },
                     "processor_response": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_capture_processor_response"
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_capture_processor_response"
                     },
                     "disbursement_mode": {
                         "type": "string"
@@ -4808,7 +4941,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payments_capture_processor_response": {
+            "paypal_v2_order_purchase_unit_payments_capture_processor_response": {
                 "required": [
                     "avs_code",
                     "cvv_code",
@@ -4830,7 +4963,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payments_capture_seller_receivable_breakdown": {
+            "paypal_v2_order_purchase_unit_payments_capture_seller_receivable_breakdown": {
                 "required": [
                     "gross_amount",
                     "paypal_fee",
@@ -4838,18 +4971,18 @@
                 ],
                 "properties": {
                     "gross_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "paypal_fee": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "net_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payments_common_seller_protection": {
+            "paypal_v2_order_purchase_unit_payments_common_seller_protection": {
                 "required": [
                     "status",
                     "dispute_categories"
@@ -4867,7 +5000,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payments_refund": {
+            "paypal_v2_order_purchase_unit_payments_refund": {
                 "required": [
                     "status",
                     "id",
@@ -4890,7 +5023,7 @@
                     "amount": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                                "$ref": "#/components/schemas/paypal_v2_common_money"
                             }
                         ],
                         "nullable": true
@@ -4902,7 +5035,7 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_common_link"
+                            "$ref": "#/components/schemas/paypal_v2_common_link"
                         }
                     },
                     "create_time": {
@@ -4913,19 +5046,21 @@
                     },
                     "invoice_id": {
                         "type": "string",
+                        "maxLength": 127,
                         "nullable": true
                     },
                     "note_to_payer": {
                         "type": "string",
+                        "maxLength": 255,
                         "nullable": true
                     },
                     "seller_payable_breakdown": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments_refund_seller_payable_breakdown"
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_refund_seller_payable_breakdown"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_payments_refund_seller_payable_breakdown": {
+            "paypal_v2_order_purchase_unit_payments_refund_seller_payable_breakdown": {
                 "required": [
                     "gross_amount",
                     "paypal_fee",
@@ -4934,21 +5069,21 @@
                 ],
                 "properties": {
                     "gross_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "paypal_fee": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "net_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     },
                     "total_refunded_amount": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_shipping": {
+            "paypal_v2_order_purchase_unit_shipping": {
                 "required": [
                     "name",
                     "address",
@@ -4956,22 +5091,22 @@
                 ],
                 "properties": {
                     "name": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_shipping_name"
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_shipping_name"
                     },
                     "address": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_common_address"
+                        "$ref": "#/components/schemas/paypal_v2_common_address"
                     },
                     "trackers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_shipping_tracker"
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_shipping_tracker"
                         },
                         "nullable": true
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_shipping_name": {
+            "paypal_v2_order_purchase_unit_shipping_name": {
                 "required": [
                     "full_name"
                 ],
@@ -4982,7 +5117,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_shipping_tracker": {
+            "paypal_v2_order_purchase_unit_shipping_tracker": {
                 "required": [
                     "id",
                     "status",
@@ -5003,19 +5138,19 @@
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_common_link"
+                            "$ref": "#/components/schemas/paypal_v2_common_link"
                         }
                     },
                     "items": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_item"
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_item"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_purchase_unit_shipping_tracker_item": {
+            "paypal_v2_order_purchase_unit_shipping_tracker_item": {
                 "required": [
                     "name",
                     "quantity",
@@ -5025,27 +5160,31 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 120
                     },
                     "quantity": {
                         "type": "integer"
                     },
                     "sku": {
                         "type": "string",
+                        "maxLength": 127,
                         "nullable": true
                     },
                     "url": {
                         "type": "string",
+                        "maxLength": 2048,
                         "nullable": true
                     },
                     "image_url": {
                         "type": "string",
+                        "maxLength": 2048,
                         "nullable": true
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_order_tracker": {
+            "paypal_v2_order_tracker": {
                 "required": [
                     "capture_id",
                     "tracking_number",
@@ -5058,7 +5197,8 @@
                         "type": "string"
                     },
                     "tracking_number": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 64
                     },
                     "carrier": {
                         "type": "string"
@@ -5074,13 +5214,13 @@
                     "items": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_shipping_tracker_item"
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_shipping_tracker_item"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_patch": {
+            "paypal_v2_patch": {
                 "required": [
                     "op",
                     "path",
@@ -5095,6 +5235,8 @@
                         "type": "string"
                     },
                     "value": {
+                        "type": "array",
+                        "items": {},
                         "nullable": true,
                         "oneOf": [
                             {
@@ -5123,7 +5265,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_referral": {
+            "paypal_v2_referral": {
                 "required": [
                     "business_entity",
                     "preferred_language_code",
@@ -5137,7 +5279,7 @@
                 ],
                 "properties": {
                     "business_entity": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_referral_business_entity"
+                        "$ref": "#/components/schemas/paypal_v2_referral_business_entity"
                     },
                     "preferred_language_code": {
                         "type": "string"
@@ -5146,12 +5288,12 @@
                         "type": "string"
                     },
                     "partner_config_override": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_referral_partner_config_override"
+                        "$ref": "#/components/schemas/paypal_v2_referral_partner_config_override"
                     },
                     "operations": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_referral_operation"
+                            "$ref": "#/components/schemas/paypal_v2_referral_operation"
                         }
                     },
                     "products": {
@@ -5169,19 +5311,19 @@
                     "legal_consents": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_referral_legal_consent"
+                            "$ref": "#/components/schemas/paypal_v2_referral_legal_consent"
                         }
                     },
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_common_link"
+                            "$ref": "#/components/schemas/paypal_v2_common_link"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_referral_business_entity": {
+            "paypal_v2_referral_business_entity": {
                 "required": [
                     "addresses"
                 ],
@@ -5189,13 +5331,13 @@
                     "addresses": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_referral_business_entity_address"
+                            "$ref": "#/components/schemas/paypal_v2_referral_business_entity_address"
                         }
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_referral_business_entity_address": {
+            "paypal_v2_referral_business_entity_address": {
                 "required": [
                     "country_code"
                 ],
@@ -5210,7 +5352,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_referral_legal_consent": {
+            "paypal_v2_referral_legal_consent": {
                 "required": [
                     "granted"
                 ],
@@ -5225,7 +5367,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_referral_operation": {
+            "paypal_v2_referral_operation": {
                 "required": [
                     "api_integration_preference"
                 ],
@@ -5235,23 +5377,23 @@
                         "default": "API_INTEGRATION"
                     },
                     "api_integration_preference": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_referral_operation_integration_preference"
+                        "$ref": "#/components/schemas/paypal_v2_referral_operation_api_integration_preference"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_referral_operation_integration_preference": {
+            "paypal_v2_referral_operation_api_integration_preference": {
                 "required": [
                     "rest_api_integration"
                 ],
                 "properties": {
                     "rest_api_integration": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_referral_operation_integration_preference_integration"
+                        "$ref": "#/components/schemas/paypal_v2_referral_operation_api_integration_preference_rest_api_integration"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_referral_operation_integration_preference_integration": {
+            "paypal_v2_referral_operation_api_integration_preference_rest_api_integration": {
                 "required": [
                     "third_party_details"
                 ],
@@ -5265,12 +5407,12 @@
                         "default": "THIRD_PARTY"
                     },
                     "third_party_details": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_referral_operation_integration_preference_integration_third_party_details"
+                        "$ref": "#/components/schemas/paypal_v2_referral_operation_api_integration_preference_rest_api_integration_third_party_details"
                     }
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_referral_operation_integration_preference_integration_third_party_details": {
+            "paypal_v2_referral_operation_api_integration_preference_rest_api_integration_third_party_details": {
                 "required": [
                     "features"
                 ],
@@ -5284,7 +5426,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v2_referral_partner_config_override": {
+            "paypal_v2_referral_partner_config_override": {
                 "required": [
                     "return_url",
                     "partner_logo_url"
@@ -5299,7 +5441,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v3_payment_token": {
+            "paypal_v3_payment_token": {
                 "required": [
                     "id",
                     "status",
@@ -5316,21 +5458,21 @@
                         "type": "string"
                     },
                     "customer": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes_customer"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_customer"
                     },
                     "payment_source": {
-                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source"
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source"
                     },
                     "links": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/swag_paypal_v2_common_link"
+                            "$ref": "#/components/schemas/paypal_v2_common_link"
                         }
                     },
                     "metadata": {
                         "oneOf": [
                             {
-                                "$ref": "#/components/schemas/swag_paypal_v3_payment_token_metadata"
+                                "$ref": "#/components/schemas/paypal_v3_payment_token_metadata"
                             }
                         ],
                         "nullable": true
@@ -5338,7 +5480,7 @@
                 },
                 "type": "object"
             },
-            "swag_paypal_v3_payment_token_metadata": {
+            "paypal_v3_payment_token_metadata": {
                 "required": [
                     "order_id"
                 ],

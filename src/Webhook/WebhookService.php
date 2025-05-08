@@ -11,8 +11,8 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Shopware\PayPalSDK\Struct\V1\Webhook;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
@@ -131,7 +131,7 @@ class WebhookService implements WebhookServiceInterface
         }
     }
 
-    public function executeWebhook(Webhook $webhook, Context $context): void
+    public function executeWebhook(Event $webhook, Context $context): void
     {
         $webhookHandler = $this->webhookRegistry->getWebhookHandler($webhook->getEventType());
         $webhookHandler->invoke($webhook, $context);
@@ -173,7 +173,7 @@ class WebhookService implements WebhookServiceInterface
             'event_types' => [['name' => WebhookEventTypes::ALL_EVENTS]],
         ];
 
-        $createWebhooks = new CreateWebhooks();
+        $createWebhooks = new Webhook();
         $createWebhooks->assign($requestData);
 
         try {

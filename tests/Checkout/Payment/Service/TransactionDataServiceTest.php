@@ -15,9 +15,9 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
-use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\SwagPayPal;
 
@@ -64,13 +64,13 @@ class TransactionDataServiceTest extends TestCase
 
     public static function dataProviderSetResourceIdWithMissingData(): \Generator
     {
-        yield 'intent: capture, without purchase units' => [PaymentIntentV2::CAPTURE, []];
-        yield 'intent: capture, without payments' => [PaymentIntentV2::CAPTURE, [['payments' => []]]];
-        yield 'intent: capture, without captures' => [PaymentIntentV2::CAPTURE, [['payments' => ['captures' => []]]]];
+        yield 'intent: capture, without purchase units' => [ConstantsV2::INTENT_CAPTURE, []];
+        yield 'intent: capture, without payments' => [ConstantsV2::INTENT_CAPTURE, [['payments' => []]]];
+        yield 'intent: capture, without captures' => [ConstantsV2::INTENT_CAPTURE, [['payments' => ['captures' => []]]]];
 
-        yield 'intent: authorize, without purchase units' => [PaymentIntentV2::AUTHORIZE, []];
-        yield 'intent: authorize, without payments' => [PaymentIntentV2::AUTHORIZE, [['payments' => []]]];
-        yield 'intent: authorize, without authorizations' => [PaymentIntentV2::AUTHORIZE, [['payments' => ['authorizations' => []]]]];
+        yield 'intent: authorize, without purchase units' => [ConstantsV2::INTENT_AUTHORIZE, []];
+        yield 'intent: authorize, without payments' => [ConstantsV2::INTENT_AUTHORIZE, [['payments' => []]]];
+        yield 'intent: authorize, without authorizations' => [ConstantsV2::INTENT_AUTHORIZE, [['payments' => ['authorizations' => []]]]];
     }
 
     public function testSetResourceId(): void
@@ -78,7 +78,7 @@ class TransactionDataServiceTest extends TestCase
         $context = Context::createDefaultContext();
 
         $payPalOrder = (new PayPalOrder())->assign([
-            'intent' => PaymentIntentV2::CAPTURE,
+            'intent' => ConstantsV2::INTENT_CAPTURE,
             'purchaseUnits' => [[
                 'payments' => [
                     'captures' => [['id' => 'capture-id']],

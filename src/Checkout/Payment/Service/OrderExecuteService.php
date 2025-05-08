@@ -11,13 +11,12 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments;
 use Swag\PayPal\Checkout\Exception\OrderFailedException;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
-use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -82,20 +81,20 @@ class OrderExecuteService
 
     public function checkFinalizedStatus(PayPalOrder $order, string $salesChannelId, string $transactionId, Context $context, bool $refetch = true): bool
     {
-        if ($order->getIntent() === PaymentIntentV2::CAPTURE) {
+        if ($order->getIntent() === ConstantsV2::INTENT_CAPTURE) {
             $capture = $this->getPayments($order, $salesChannelId, $refetch)?->getCaptures()?->first();
             if ($capture === null) {
                 return false;
             }
 
-            if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_COMPLETED) {
+            if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_COMPLETED) {
                 $this->orderTransactionStateHandler->paid($transactionId, $context);
 
                 return true;
             }
 
-            if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_DECLINED
-                || $capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_FAILED) {
+            if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_DECLINED
+                || $capture->getStatus() === ConstantsV2::ORDER_CAPTURE_FAILED) {
                 throw new OrderFailedException($order->getId());
             }
 
@@ -107,14 +106,14 @@ class OrderExecuteService
             return false;
         }
 
-        if ($authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_CREATED) {
+        if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_CREATED) {
             $this->orderTransactionStateHandler->authorize($transactionId, $context);
 
             return true;
         }
 
-        if ($authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_DENIED
-            || $authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_VOIDED) {
+        if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_DENIED
+            || $authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_VOIDED) {
             throw new OrderFailedException($order->getId());
         }
 
@@ -127,7 +126,7 @@ class OrderExecuteService
             return $paypalOrder;
         }
 
-        if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
+        if ($paypalOrder->getIntent() === ConstantsV2::INTENT_CAPTURE) {
             $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
         } else {
             $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);

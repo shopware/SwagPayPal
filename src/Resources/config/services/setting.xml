@@ -16,12 +16,8 @@
         </service>
 
         <service id="Swag\PayPal\Setting\Service\ApiCredentialService">
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\CredentialsResource"/>
-
-            <argument type="service" id="Swag\PayPal\RestApi\Client\TokenClientFactory"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Service\TokenValidator"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Service\CredentialProvider"/>
-            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface"/>
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\CustomerGateway"/>
         </service>
 
         <service id="Swag\PayPal\Setting\Service\CredentialsUtil">
@@ -30,9 +26,9 @@
 
         <service id="Swag\PayPal\Setting\Service\MerchantIntegrationsService">
             <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\TokenResource"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
-            <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
         </service>
 
         <service id="Swag\PayPal\Setting\Service\SettingsValidationService">

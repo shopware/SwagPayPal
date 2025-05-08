@@ -34,11 +34,11 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\System\Tax\TaxDefinition;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -214,7 +214,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         }
         static::assertSame(self::CLIENT_ID, $expressCheckoutButtonData->getClientId());
         static::assertSame('EUR', $expressCheckoutButtonData->getCurrency());
-        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $expressCheckoutButtonData->getIntent());
+        static::assertSame(\mb_strtolower(ConstantsV2::INTENT_CAPTURE), $expressCheckoutButtonData->getIntent());
         static::assertSame($addToCart, $expressCheckoutButtonData->getAddProductToCart());
         static::assertSame('/paypal/express/create-order', $expressCheckoutButtonData->getCreateOrderUrl());
         static::assertSame('/paypal/express/prepare-checkout', $expressCheckoutButtonData->getPrepareCheckoutUrl());

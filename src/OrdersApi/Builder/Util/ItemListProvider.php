@@ -17,12 +17,12 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Product\State;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\PayPalSDK\Struct\V2\Common\Money;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Amount;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Item;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromCartEvent;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromOrderEvent;
-use Swag\PayPal\RestApi\V2\Api\Common\Money;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 

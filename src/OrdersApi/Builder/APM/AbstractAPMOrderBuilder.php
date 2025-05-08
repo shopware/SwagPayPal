@@ -16,12 +16,12 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\AbstractAPMPaymentSource;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Exception\OrderBuildException;
-use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractAPMPaymentSource;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
@@ -35,7 +35,7 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
         Request $request,
     ): Order {
         $order = parent::getOrder($paymentTransaction, $orderTransaction, $order, $context, $request);
-        $order->setIntent(PaymentIntentV2::CAPTURE);
+        $order->setIntent(ConstantsV2::INTENT_CAPTURE);
         $order->setProcessingInstruction(Order::PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL);
 
         return $order;

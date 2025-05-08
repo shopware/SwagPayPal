@@ -19,6 +19,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\PayPalSDK\Struct\V2\PatchCollection;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -31,7 +32,6 @@ use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder as OrderNumberPatchBuilderV2;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
-use Swag\PayPal\RestApi\V2\Api\Patch as PatchV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
@@ -47,7 +47,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -58,6 +59,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 #[Package('checkout')]
 class PayPalPaymentHandlerTest extends TestCase
 {
+    use GatewayTestBehaviour;
     use IntegrationTestBehaviour;
     use OrderTransactionTrait;
     use PaymentTransactionTrait;
@@ -78,8 +80,6 @@ class PayPalPaymentHandlerTest extends TestCase
     private EntityRepository $orderTransactionRepo;
 
     private StateMachineRegistry $stateMachineRegistry;
-
-    private PayPalClientFactoryMock $clientFactory;
 
     protected function setUp(): void
     {
@@ -125,10 +125,12 @@ class PayPalPaymentHandlerTest extends TestCase
             $this->getTransaction($transactionId, $this->getContainer(), Context::createDefaultContext())?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID)
         );
 
-        $patchData = $this->clientFactory->getClient()->getData();
-        static::assertCount(1, $patchData);
-        $patch = \current($patchData);
-        static::assertInstanceOf(PatchV2::class, $patch);
+        $body = self::getClient()->getLastWhere(static fn ($context) => $context->getRequest()->getMethod() === 'PATCH')?->getRequestBody();
+        static::assertIsArray($body);
+        $patches = PatchCollection::createFromAssociative($body);
+        static::assertCount(1, $patches);
+        $patch = $patches->getAt(0);
+        static::assertNotNull($patch);
         static::assertSame('/purchase_units/@reference_id==\'default\'', $patch->getPath());
         $patchValue = $patch->getValue();
         static::assertIsArray($patchValue);
@@ -181,10 +183,12 @@ class PayPalPaymentHandlerTest extends TestCase
             $this->getTransaction($transactionId, $this->getContainer(), Context::createDefaultContext())?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID)
         );
 
-        $patchData = $this->clientFactory->getClient()->getData();
-        static::assertCount(1, $patchData);
-        $patch = \current($patchData);
-        static::assertInstanceOf(PatchV2::class, $patch);
+        $body = self::getClient()->getLastWhere(static fn ($context) => $context->getRequest()->getMethod() === 'PATCH')?->getRequestBody();
+        static::assertIsArray($body);
+        $patches = PatchCollection::createFromAssociative($body);
+        static::assertCount(1, $patches);
+        $patch = $patches->getAt(0);
+        static::assertNotNull($patch);
         static::assertSame('/purchase_units/@reference_id==\'default\'', $patch->getPath());
         $patchValue = $patch->getValue();
         static::assertIsArray($patchValue);
@@ -229,7 +233,7 @@ class PayPalPaymentHandlerTest extends TestCase
     public function testFinalizePayPalOrderCaptureWithException(): void
     {
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. The instrument presented  was either declined by the processor or bank, or it can\'t be used for this payment. INSTRUMENT_DECLINED ');
+        $this->expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. | [INSTRUMENT_DECLINED] The instrument presented was either declined by the processor or bank, or it can\'t be used for this payment.');
 
         $this->assertFinalizeRequest(self::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED);
     }
@@ -248,8 +252,7 @@ class PayPalPaymentHandlerTest extends TestCase
     private function createPayPalPaymentHandler(array $settings = []): PayPalPaymentHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
-        $orderResource = new OrderResource($this->clientFactory);
+        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();
 

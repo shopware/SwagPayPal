@@ -8,14 +8,14 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\RestApi\V1\PaymentStatusV1;
+use Shopware\PayPalSDK\Struct\ConstantsV1;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 
 /**
  * @internal
@@ -23,6 +23,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 #[Package('checkout')]
 class PaymentResourceTest extends TestCase
 {
+    use GatewayTestBehaviour;
     use PaymentTransactionTrait;
     use ServicesTrait;
 
@@ -43,7 +44,7 @@ class PaymentResourceTest extends TestCase
 
         $sale = $transaction?->getRelatedResources()->first()?->getSale();
         static::assertNotNull($sale);
-        static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $sale->getState());
+        static::assertSame(ConstantsV1::STATUS_COMPLETED, $sale->getState());
     }
 
     public function testGetSaleWithRefund(): void
@@ -55,11 +56,11 @@ class PaymentResourceTest extends TestCase
 
         $sale = $transaction?->getRelatedResources()->first()?->getSale();
         static::assertNotNull($sale);
-        static::assertSame(PaymentStatusV1::PAYMENT_PARTIALLY_REFUNDED, $sale->getState());
+        static::assertSame(ConstantsV1::STATUS_PARTIALLY_REFUNDED, $sale->getState());
 
         $refund = $transaction?->getRelatedResources()->getAt(1)?->getRefund();
         static::assertNotNull($refund);
-        static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $refund->getState());
+        static::assertSame(ConstantsV1::STATUS_COMPLETED, $refund->getState());
     }
 
     public function testGetOrder(): void
@@ -71,7 +72,7 @@ class PaymentResourceTest extends TestCase
         $order = $transaction?->getRelatedResources()->first()?->getOrder();
 
         static::assertNotNull($order);
-        static::assertSame(PaymentStatusV1::PAYMENT_PENDING, $order->getState());
+        static::assertSame(ConstantsV1::STATUS_PENDING, $order->getState());
     }
 
     public function testGetCapturedAuthorizeWithRefunds(): void
@@ -83,15 +84,15 @@ class PaymentResourceTest extends TestCase
         $authorization = $transaction?->getRelatedResources()->first()?->getAuthorization();
 
         static::assertNotNull($authorization);
-        static::assertSame(PaymentStatusV1::PAYMENT_CAPTURED, $authorization->getState());
+        static::assertSame(ConstantsV1::STATUS_CAPTURED, $authorization->getState());
 
         $capture = $transaction?->getRelatedResources()->getAt(1)?->getCapture();
         static::assertNotNull($capture);
-        static::assertSame(PaymentStatusV1::PAYMENT_PARTIALLY_REFUNDED, $capture->getState());
+        static::assertSame(ConstantsV1::STATUS_PARTIALLY_REFUNDED, $capture->getState());
 
         $refund = $transaction?->getRelatedResources()->getAt(2)?->getRefund();
         static::assertNotNull($refund);
-        static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $refund->getState());
+        static::assertSame(ConstantsV1::STATUS_COMPLETED, $refund->getState());
     }
 
     public function testGetCapturedOrder(): void
@@ -103,15 +104,15 @@ class PaymentResourceTest extends TestCase
 
         $order = $transaction?->getRelatedResources()->first()?->getOrder();
         static::assertNotNull($order);
-        static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $order->getState());
+        static::assertSame(ConstantsV1::STATUS_COMPLETED, $order->getState());
 
         $capture = $transaction?->getRelatedResources()->getAt(1)?->getCapture();
         static::assertNotNull($capture);
-        static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $capture->getState());
+        static::assertSame(ConstantsV1::STATUS_COMPLETED, $capture->getState());
     }
 
     private function createPaymentResource(): PaymentResource
     {
-        return new PaymentResource(new PayPalClientFactoryMock(new NullLogger()));
+        return new PaymentResource(self::paymentV1Gateway(), new ApiContextFactoryMock());
     }
 }

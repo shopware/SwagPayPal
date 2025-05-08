@@ -6,19 +6,23 @@
 
     <services>
         <service id="Swag\PayPal\RestApi\V2\Resource\AuthorizationResource">
-            <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\PaymentGateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
         </service>
 
         <service id="Swag\PayPal\RestApi\V2\Resource\CaptureResource">
-            <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\PaymentGateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
         </service>
 
         <service id="Swag\PayPal\RestApi\V2\Resource\OrderResource">
-            <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\OrderGateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
         </service>
 
         <service id="Swag\PayPal\RestApi\V2\Resource\RefundResource">
-            <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\PaymentGateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
         </service>
     </services>
 </container>

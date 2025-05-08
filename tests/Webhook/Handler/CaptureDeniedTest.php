@@ -11,7 +11,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\Webhook\Handler\CaptureDenied;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -28,7 +28,7 @@ class CaptureDeniedTest extends AbstractWebhookHandlerTestCase
 
     public function testInvoke(): void
     {
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_CAPTURE);
         $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook);
     }
 
@@ -39,20 +39,20 @@ class CaptureDeniedTest extends AbstractWebhookHandlerTestCase
 
     public function testInvokeWithoutCustomId(): void
     {
-        $this->assertInvokeWithoutCustomId(Webhook::RESOURCE_TYPE_CAPTURE);
+        $this->assertInvokeWithoutCustomId(Event::RESOURCE_TYPE_CAPTURE);
     }
 
     public function testInvokeWithoutTransaction(): void
     {
         $orderTransactionId = Uuid::randomHex();
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE, $orderTransactionId);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_CAPTURE, $orderTransactionId);
         $reason = \sprintf('with custom ID "%s" (order transaction ID)', $orderTransactionId);
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_CAPTURE_DENIED, $webhook, $reason);
     }
 
     public function testInvokeWithSameInitialState(): void
     {
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_CAPTURE);
         $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook, OrderTransactionStates::STATE_CANCELLED);
     }
 

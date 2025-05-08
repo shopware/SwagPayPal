@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -34,6 +33,11 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTyp
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\PayPalSDK\Struct\ConstantsV1;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V1\Payment\ApplicationContext as ApplicationContextV1;
+use Shopware\PayPalSDK\Struct\V2\Order\ApplicationContext as ApplicationContextV2;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -43,17 +47,13 @@ use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
 use Swag\PayPal\Pos\Webhook\WebhookRegistry as PosWebhookRegistry;
 use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
-use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV1;
-use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
-use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
+use Swag\PayPal\Test\Mock\PayPalSDK\MockRequestHandler;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
@@ -78,6 +78,7 @@ use Symfony\Component\Routing\RouterInterface;
 #[Package('checkout')]
 class UpdateTest extends TestCase
 {
+    use GatewayTestBehaviour;
     use IntegrationTestBehaviour;
     use PosSalesChannelTrait;
     use SalesChannelTrait;
@@ -166,7 +167,7 @@ class UpdateTest extends TestCase
         $updateContext = $this->createUpdateContext('1.6.9', '1.7.0');
         $update = $this->createUpdateService($systemConfigService, $this->createWebhookService($systemConfigService));
         $update->update($updateContext);
-        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $systemConfigService->get(Settings::WEBHOOK_ID));
+        static::assertSame(MockRequestHandler::TEST_WEBHOOK_ID, $systemConfigService->get(Settings::WEBHOOK_ID));
     }
 
     public function testUpdateTo172(): void
@@ -232,8 +233,8 @@ class UpdateTest extends TestCase
         $updateContext = $this->createUpdateContext('1.9.1', '2.0.0');
         $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
 
-        $systemConfig->set(Settings::INTENT, PaymentIntentV1::SALE);
-        $systemConfig->set(Settings::INTENT, PaymentIntentV1::ORDER, TestDefaults::SALES_CHANNEL);
+        $systemConfig->set(Settings::INTENT, ConstantsV1::INTENT_SALE);
+        $systemConfig->set(Settings::INTENT, ConstantsV1::INTENT_ORDER, TestDefaults::SALES_CHANNEL);
 
         $systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV1::LANDING_PAGE_TYPE_LOGIN);
         $systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV1::LANDING_PAGE_TYPE_BILLING, TestDefaults::SALES_CHANNEL);
@@ -241,8 +242,8 @@ class UpdateTest extends TestCase
         $updater = $this->createUpdateService($systemConfig);
         $updater->update($updateContext);
 
-        static::assertSame(PaymentIntentV2::CAPTURE, $systemConfig->get(Settings::INTENT, null, false));
-        static::assertSame(PaymentIntentV2::AUTHORIZE, $systemConfig->get(Settings::INTENT, TestDefaults::SALES_CHANNEL, false));
+        static::assertSame(ConstantsV2::INTENT_CAPTURE, $systemConfig->get(Settings::INTENT, null, false));
+        static::assertSame(ConstantsV2::INTENT_AUTHORIZE, $systemConfig->get(Settings::INTENT, TestDefaults::SALES_CHANNEL, false));
         static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_LOGIN, $systemConfig->get(Settings::LANDING_PAGE, null, false));
         static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
     }
@@ -296,7 +297,7 @@ class UpdateTest extends TestCase
         $systemConfigService->set('core.basicInformation.email', 'some@one.com', $salesChannel->getId());
 
         $update->update($updateContext);
-        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $systemConfigService->get(Settings::WEBHOOK_ID));
+        static::assertSame(MockRequestHandler::TEST_WEBHOOK_ID, $systemConfigService->get(Settings::WEBHOOK_ID));
         static::assertTrue(WebhookUpdateFixture::$sent);
     }
 
@@ -466,7 +467,7 @@ class UpdateTest extends TestCase
     private function createWebhookService(SystemConfigService $systemConfigService): WebhookService
     {
         return new WebhookService(
-            new WebhookResource(new PayPalClientFactoryMock(new NullLogger())),
+            new WebhookResource(self::webhookGateway(), new ApiContextFactoryMock()),
             new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]),
             $systemConfigService,
             $this->createMock(RouterInterface::class),

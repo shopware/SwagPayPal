@@ -11,9 +11,9 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
@@ -41,7 +41,7 @@ class CaptureCompleted extends AbstractWebhookHandler
         return WebhookEventTypes::PAYMENT_CAPTURE_COMPLETED;
     }
 
-    public function invoke(Webhook $webhook, Context $context): void
+    public function invoke(Event $webhook, Context $context): void
     {
         $capture = $webhook->getResource();
         if (!$capture instanceof Capture) {

@@ -7,20 +7,16 @@
 
 namespace Swag\PayPal\Setting\Service;
 
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\BaseURL;
-use Swag\PayPal\RestApi\Client\PayPalClient;
-use Swag\PayPal\RestApi\Client\TokenClientFactoryInterface;
+use Shopware\PayPalSDK\Context\ApiContext;
+use Shopware\PayPalSDK\Context\AuthorizationCodeOAuthContext;
+use Shopware\PayPalSDK\Context\CredentialsOAuthContext;
+use Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface;
+use Shopware\PayPalSDK\Gateway\CustomerGateway;
+use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations\Credentials;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\PartnerId;
-use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
-use Swag\PayPal\RestApi\V1\Api\Token;
-use Swag\PayPal\RestApi\V1\RequestUriV1;
-use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
-use Swag\PayPal\RestApi\V1\Service\CredentialProviderInterface;
-use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 
 #[Package('checkout')]
 class ApiCredentialService
@@ -29,11 +25,8 @@ class ApiCredentialService
      * @internal
      */
     public function __construct(
-        private readonly CredentialsResource $credentialsResource,
-        private readonly TokenClientFactoryInterface $tokenClientFactory,
-        private readonly TokenValidator $tokenValidator,
-        private readonly CredentialProviderInterface $credentialProvider,
-        private readonly LoggerInterface $logger,
+        private readonly TokenGatewayInterface $tokenGateway,
+        private readonly CustomerGateway $customerGateway,
     ) {
     }
 
@@ -42,42 +35,27 @@ class ApiCredentialService
      */
     public function testApiCredentials(string $clientId, string $clientSecret, bool $sandboxActive, ?string $merchantPayerId): bool
     {
-        $credentials = new OAuthCredentials();
-        $credentials->setRestId($clientId);
-        $credentials->setRestSecret($clientSecret);
-        $credentials->setUrl($sandboxActive ? BaseURL::SANDBOX : BaseURL::LIVE);
+        $context = (new ApiContext(
+            new CredentialsOAuthContext($clientId, $clientSecret),
+            $sandboxActive,
+        ))->withPartnerAttributionId(PartnerAttributionId::PAYPAL_PPCP);
 
-        $tokenClient = $this->tokenClientFactory->createTokenClient($credentials);
-        $token = new Token();
-        $token->assign($tokenClient->getToken());
-
-        if (!$this->tokenValidator->isTokenValid($token)) {
-            return false;
+        if ($merchantPayerId) {
+            $this->customerGateway->getMerchantIntegrations($sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE, $merchantPayerId, $context);
+        } else {
+            $this->tokenGateway->getToken($context);
         }
-
-        if ($merchantPayerId === null) {
-            return true;
-        }
-
-        $client = new PayPalClient(
-            $this->credentialProvider->createAuthorizationHeaders($token, null),
-            $credentials->getUrl(),
-            $this->logger,
-            PartnerAttributionId::PAYPAL_PPCP
-        );
-
-        $client->sendGetRequest(
-            \sprintf(RequestUriV1::MERCHANT_INTEGRATIONS_RESOURCE, $sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE, $merchantPayerId)
-        );
 
         return true;
     }
 
-    public function getApiCredentials(string $authCode, string $sharedId, string $nonce, bool $sandboxActive): array
+    public function getApiCredentials(string $authCode, string $sharedId, string $nonce, bool $sandboxActive): Credentials
     {
-        $url = $sandboxActive ? BaseURL::SANDBOX : BaseURL::LIVE;
-        $partnerId = $sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE;
+        $context = (new ApiContext(
+            new AuthorizationCodeOAuthContext($authCode, $sharedId, $nonce),
+            $sandboxActive,
+        ))->withPartnerAttributionId(PartnerAttributionId::PAYPAL_PPCP);
 
-        return $this->credentialsResource->getClientCredentials($authCode, $sharedId, $nonce, $url, $partnerId);
+        return $this->customerGateway->getCredentials($sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE, $context);
     }
 }

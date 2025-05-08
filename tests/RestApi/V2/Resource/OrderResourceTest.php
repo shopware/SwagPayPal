@@ -8,12 +8,11 @@
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
@@ -21,7 +20,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 
 /**
  * @internal
@@ -29,13 +29,15 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 #[Package('checkout')]
 class OrderResourceTest extends TestCase
 {
+    use GatewayTestBehaviour;
+
     public function testGetCreated(): void
     {
         $orderId = GetOrderCapture::ID;
         $order = $this->createResource()->get($orderId, TestDefaults::SALES_CHANNEL);
 
         static::assertSame($orderId, $order->getId());
-        static::assertSame(PaymentIntentV2::CAPTURE, $order->getIntent());
+        static::assertSame(ConstantsV2::INTENT_CAPTURE, $order->getIntent());
         static::assertSame('APPROVED', $order->getStatus());
     }
 
@@ -45,7 +47,7 @@ class OrderResourceTest extends TestCase
         $order = $this->createResource()->get($orderId, TestDefaults::SALES_CHANNEL);
 
         static::assertSame($orderId, $order->getId());
-        static::assertSame(PaymentIntentV2::CAPTURE, $order->getIntent());
+        static::assertSame(ConstantsV2::INTENT_CAPTURE, $order->getIntent());
         static::assertSame('COMPLETED', $order->getStatus());
     }
 
@@ -55,7 +57,7 @@ class OrderResourceTest extends TestCase
         $order = $this->createResource()->get($orderId, TestDefaults::SALES_CHANNEL);
 
         static::assertSame($orderId, $order->getId());
-        static::assertSame(PaymentIntentV2::CAPTURE, $order->getIntent());
+        static::assertSame(ConstantsV2::INTENT_CAPTURE, $order->getIntent());
         static::assertSame('COMPLETED', $order->getStatus());
     }
 
@@ -99,6 +101,6 @@ class OrderResourceTest extends TestCase
 
     private function createResource(): OrderResource
     {
-        return new OrderResource(new PayPalClientFactoryMock(new NullLogger()));
+        return new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
     }
 }

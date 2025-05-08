@@ -15,7 +15,6 @@ return static function (ContainerBuilder $container): void {
     $loader->load('administration.xml');
     $loader->load('apm.xml');
     $loader->load('checkout.xml');
-    $loader->load('client.xml');
     $loader->load('dal.xml');
     $loader->load('dev_ops.xml');
     $loader->load('dispute.xml');
@@ -23,6 +22,7 @@ return static function (ContainerBuilder $container): void {
     $loader->load('installment.xml');
     $loader->load('orders_api.xml');
     $loader->load('payments_api.xml');
+    $loader->load('paypal_sdk.xml');
     $loader->load('pui.xml');
     $loader->load('reporting.xml');
     $loader->load('resource_v1.xml');

@@ -9,7 +9,7 @@ namespace Swag\PayPal\OrdersApi\Builder\Event;
 
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Item;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**

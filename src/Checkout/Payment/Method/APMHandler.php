@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Order;
+use Shopware\PayPalSDK\Struct\V2\Order;
 
 #[Package('checkout')]
 class APMHandler extends AbstractPaymentMethodHandler

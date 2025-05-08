@@ -10,9 +10,9 @@ namespace Swag\PayPal\Webhook\Handler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
-use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Resource;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Authorization;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -24,7 +24,7 @@ class AuthorizationVoided extends AbstractWebhookHandler
         return WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED;
     }
 
-    public function invoke(Webhook $webhook, Context $context): void
+    public function invoke(Event $webhook, Context $context): void
     {
         $resource = $webhook->getResource();
         $orderTransaction = match (true) {

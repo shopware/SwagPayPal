@@ -8,7 +8,7 @@
 namespace Swag\PayPal\OrdersApi\Patch;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Patch;
+use Shopware\PayPalSDK\Struct\V2\Patch;
 
 #[Package('checkout')]
 class OrderNumberPatchBuilder

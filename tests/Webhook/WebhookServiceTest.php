@@ -9,16 +9,16 @@ namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
+use Swag\PayPal\Test\Mock\PayPalSDK\MockRequestHandler;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
@@ -33,6 +33,7 @@ use Symfony\Component\Routing\RouterInterface;
 #[Package('checkout')]
 class WebhookServiceTest extends TestCase
 {
+    use GatewayTestBehaviour;
     use ServicesTrait;
 
     public const THROW_WEBHOOK_ID_INVALID = 'webhookIdInvalid';
@@ -57,7 +58,7 @@ class WebhookServiceTest extends TestCase
         $this->router = $this->createMock(RouterInterface::class);
 
         $this->webhookService = new WebhookService(
-            new WebhookResource(new PayPalClientFactoryMock(new NullLogger())),
+            new WebhookResource(self::webhookGateway(), new ApiContextFactoryMock()),
             new WebhookRegistry([new DummyWebhook($this->orderTransactionRepo)]),
             $this->systemConfig,
             $this->router,
@@ -88,7 +89,7 @@ class WebhookServiceTest extends TestCase
             ->expects(static::once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
-            ->willReturn(GuzzleClientMock::GET_WEBHOOK_URL);
+            ->willReturn(MockRequestHandler::GET_WEBHOOK_URL);
 
         $result = $this->webhookService->getStatus(null);
 
@@ -104,7 +105,7 @@ class WebhookServiceTest extends TestCase
             ->expects(static::once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
-            ->willReturn(GuzzleClientMock::GET_WEBHOOK_URL . 'Invalid');
+            ->willReturn(MockRequestHandler::GET_WEBHOOK_URL . 'Invalid');
 
         $result = $this->webhookService->getStatus(null);
 
@@ -117,7 +118,7 @@ class WebhookServiceTest extends TestCase
             ->expects(static::once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
-            ->willReturn(GuzzleClientMock::GET_WEBHOOK_URL);
+            ->willReturn(MockRequestHandler::GET_WEBHOOK_URL);
 
         $this->systemConfig->set(Settings::WEBHOOK_ID, 'someId');
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, 'someToken');
@@ -141,7 +142,7 @@ class WebhookServiceTest extends TestCase
 
         static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
 
-        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $this->systemConfig->getString(Settings::WEBHOOK_ID));
+        static::assertSame(MockRequestHandler::TEST_WEBHOOK_ID, $this->systemConfig->getString(Settings::WEBHOOK_ID));
         static::assertSame(WebhookService::PAYPAL_WEBHOOK_TOKEN_LENGTH, \mb_strlen($this->systemConfig->getString(Settings::WEBHOOK_EXECUTE_TOKEN)));
     }
 
@@ -180,7 +181,7 @@ class WebhookServiceTest extends TestCase
     {
         $context = Context::createDefaultContext();
 
-        $webhook = new Webhook();
+        $webhook = new Event();
         $webhook->assign(['event_type' => DummyWebhook::EVENT_TYPE]);
 
         $this->webhookService->executeWebhook($webhook, $context);

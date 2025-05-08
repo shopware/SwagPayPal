@@ -7,80 +7,50 @@
 
 namespace Swag\PayPal\RestApi\V1\Resource;
 
-use Psr\Cache\CacheItemPoolInterface;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Util\Hasher;
-use Swag\PayPal\RestApi\Client\TokenClientFactoryInterface;
-use Swag\PayPal\RestApi\V1\Api\Token;
-use Swag\PayPal\RestApi\V1\Service\CredentialProviderInterface;
-use Swag\PayPal\RestApi\V1\Service\TokenValidator;
+use Shopware\PayPalSDK\Context\CredentialsOAuthContext;
+use Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface;
+use Shopware\PayPalSDK\Exception\ApiException;
+use Shopware\PayPalSDK\Struct\V1\Token;
+use Swag\PayPal\RestApi\ApiContextFactoryInterface;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 
 #[Package('checkout')]
 class TokenResource implements TokenResourceInterface
 {
-    private const CACHE_ID = 'paypal_auth_';
-
     /**
      * @internal
      */
     public function __construct(
-        private readonly CacheItemPoolInterface $cache,
-        private readonly TokenClientFactoryInterface $tokenClientFactory,
-        private readonly CredentialProviderInterface $credentialProvider,
-        private readonly TokenValidator $tokenValidator,
+        private readonly TokenGatewayInterface $tokenGateway,
+        private readonly ApiContextFactoryInterface $apiContextFactory,
     ) {
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function getToken(?string $salesChannelId): Token
     {
-        $credentials = $this->credentialProvider->createCredentialsObject($salesChannelId);
-
-        $cacheId = Hasher::hash((string) $credentials);
-
-        $token = $this->getTokenFromCache($cacheId);
-        if ($token !== null && $this->tokenValidator->isTokenValid($token)) {
-            return $token;
+        try {
+            return $this->tokenGateway->getToken($this->apiContextFactory->getApiContext($salesChannelId));
+        } catch (ApiException $e) {
+            throw PayPalApiException::from($e);
         }
-
-        $tokenClient = $this->tokenClientFactory->createTokenClient($credentials);
-
-        $token = new Token();
-        $token->assign($tokenClient->getToken());
-        $this->setToken($token, $cacheId);
-
-        return $token;
     }
 
+    /**
+     * @throws PayPalApiException
+     * @throws \InvalidArgumentException
+     */
     public function getUserIdToken(?string $salesChannelId, ?string $targetCustomerId = null): Token
     {
-        $credentials = $this->credentialProvider->createCredentialsObject($salesChannelId);
-        $tokenClient = $this->tokenClientFactory->createTokenClient($credentials);
+        $context = $this->apiContextFactory->getApiContext($salesChannelId);
 
-        $tokenData = ['response_type' => 'id_token'];
-        if ($targetCustomerId) {
-            $tokenData['target_customer_id'] = $targetCustomerId;
+        if (!($oauthContext = $context->getOAuthContext()) instanceof CredentialsOAuthContext) {
+            throw new \InvalidArgumentException($this->apiContextFactory::class . ' should have returned a context including ' . CredentialsOAuthContext::class);
         }
 
-        $token = new Token();
-        $token->assign($tokenClient->getToken($tokenData));
-
-        return $token;
-    }
-
-    private function getTokenFromCache(string $cacheId): ?Token
-    {
-        $token = $this->cache->getItem(\sprintf('%s%s', self::CACHE_ID, $cacheId))->get();
-        if ($token === null) {
-            return null;
-        }
-
-        return \unserialize($token, ['allowed_classes' => [Token::class, \DateTime::class]]);
-    }
-
-    private function setToken(Token $token, string $cacheId): void
-    {
-        $item = $this->cache->getItem(self::CACHE_ID . $cacheId);
-        $item->set(\serialize($token));
-        $this->cache->save($item);
+        return $this->tokenGateway->getToken($context->withOAuthContext($oauthContext->intoUserIdContext($targetCustomerId)));
     }
 }

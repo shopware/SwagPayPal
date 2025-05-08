@@ -8,12 +8,12 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 
 /**
  * @internal
@@ -21,6 +21,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 #[Package('checkout')]
 class SaleResourceTest extends TestCase
 {
+    use GatewayTestBehaviour;
+
     public function testGet(): void
     {
         $saleResponse = $this->createSaleResource()->get(
@@ -38,6 +40,6 @@ class SaleResourceTest extends TestCase
 
     private function createSaleResource(): SaleResource
     {
-        return new SaleResource(new PayPalClientFactoryMock(new NullLogger()));
+        return new SaleResource(self::paymentV1Gateway(), new ApiContextFactoryMock());
     }
 }

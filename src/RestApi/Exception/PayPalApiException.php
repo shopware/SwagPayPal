@@ -9,6 +9,8 @@ namespace Swag\PayPal\RestApi\Exception;
 
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Exception\ApiException;
+use Shopware\PayPalSDK\Exception\ErrorApiException;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
@@ -71,5 +73,24 @@ class PayPalApiException extends PaymentException
         return \in_array($this->errorCode, $codes, true)
             || \in_array($this->issue, $codes, true)
             || \in_array($this->name, $codes, true);
+    }
+
+    public static function from(ApiException $e): self
+    {
+        $message = $e->getReason();
+        $issue = null;
+
+        if ($e instanceof ErrorApiException && ($detailMessage = (string) $e->getDetails())) {
+            $message .= ApiException::MESSAGE_DELIMITER . $detailMessage;
+
+            $issue = \array_slice($e->getDetails()->getIssues(), -1)[0] ?? null;
+        }
+
+        return new self(
+            $e->getErrorCode(),
+            $message,
+            $e->getStatusCode(),
+            $issue,
+        );
     }
 }

@@ -15,9 +15,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
-use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Resource;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Payment;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\Exception\ParentPaymentNotFoundException;
 use Swag\PayPal\Webhook\Exception\WebhookException;
@@ -40,7 +40,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 
     abstract public function getEventType(): string;
 
-    abstract public function invoke(Webhook $webhook, Context $context): void;
+    abstract public function invoke(Event $webhook, Context $context): void;
 
     /**
      * @throws ParentPaymentNotFoundException

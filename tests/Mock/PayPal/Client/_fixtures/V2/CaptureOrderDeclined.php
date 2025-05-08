@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
 
 /**
  * @internal
@@ -36,7 +36,7 @@ class CaptureOrderDeclined
         return [
             'id' => self::ID,
             'status' => 'COMPLETED',
-            'intent' => PaymentIntentV2::CAPTURE,
+            'intent' => ConstantsV2::INTENT_CAPTURE,
             'purchase_units' => [
                 0 => [
                     'reference_id' => 'default',

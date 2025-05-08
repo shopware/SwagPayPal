@@ -23,12 +23,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\StateMachineException;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessage;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessageHandler;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\PaymentIntentV2;
-use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 
 /**
@@ -112,19 +111,19 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     public static function dataProviderInvokeWithAllMatchingStatus(): \Generator
     {
-        yield 'intent: capture, status: completed' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_COMPLETED, 'paid'];
-        yield 'intent: capture, status: declined' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_DECLINED, 'fail'];
-        yield 'intent: capture, status: failed' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_FAILED, 'fail'];
-        yield 'intent: capture, status: partially refunded' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_PARTIALLY_REFUNDED, null];
-        yield 'intent: capture, status: pending' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_PENDING, null];
-        yield 'intent: capture, status: refunded' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_REFUNDED, null];
+        yield 'intent: capture, status: completed' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_COMPLETED, 'paid'];
+        yield 'intent: capture, status: declined' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_DECLINED, 'fail'];
+        yield 'intent: capture, status: failed' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_FAILED, 'fail'];
+        yield 'intent: capture, status: partially refunded' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_PARTIALLY_REFUNDED, null];
+        yield 'intent: capture, status: pending' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_PENDING, null];
+        yield 'intent: capture, status: refunded' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_REFUNDED, null];
 
-        yield 'intent: authorize, status: captured' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_CAPTURED, 'paid'];
-        yield 'intent: authorize, status: created' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_CREATED, 'authorize'];
-        yield 'intent: authorize, status: voided' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_VOIDED, 'cancel'];
-        yield 'intent: authorize, status: denied' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_DENIED, 'fail'];
-        yield 'intent: authorize, status: partially captured' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_PARTIALLY_CAPTURED, null];
-        yield 'intent: authorize, status: pending' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_PENDING, null];
+        yield 'intent: authorize, status: captured' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_CAPTURED, 'paid'];
+        yield 'intent: authorize, status: created' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_CREATED, 'authorize'];
+        yield 'intent: authorize, status: voided' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_VOIDED, 'cancel'];
+        yield 'intent: authorize, status: denied' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_DENIED, 'fail'];
+        yield 'intent: authorize, status: partially captured' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_PARTIALLY_CAPTURED, null];
+        yield 'intent: authorize, status: pending' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_PENDING, null];
     }
 
     public function testInvokeThrowsStateMachineExceptionException(): void
@@ -142,11 +141,11 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             );
 
         $payPalOrder = (new Order())->assign([
-            'intent' => PaymentIntentV2::CAPTURE,
+            'intent' => ConstantsV2::INTENT_CAPTURE,
             'purchaseUnits' => [[
                 'payments' => [
                     'captures' => [
-                        ['status' => PaymentStatusV2::ORDER_CAPTURE_COMPLETED],
+                        ['status' => ConstantsV2::ORDER_CAPTURE_COMPLETED],
                     ],
                 ],
             ]],
@@ -326,10 +325,10 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             );
 
         $payPalOrder = (new Order())->assign([
-            'intent' => PaymentIntentV2::AUTHORIZE,
+            'intent' => ConstantsV2::INTENT_AUTHORIZE,
             'purchaseUnits' => [[
                 'payments' => [
-                    'authorizations' => [['status' => PaymentIntentV2::AUTHORIZE]],
+                    'authorizations' => [['status' => ConstantsV2::INTENT_AUTHORIZE]],
                 ],
             ]],
         ]);

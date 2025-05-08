@@ -10,8 +10,8 @@ namespace Swag\PayPal\Webhook\Handler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
-use Swag\PayPal\RestApi\V1\Api\Webhook\Resource;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Resource;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -23,7 +23,7 @@ class SaleDenied extends AbstractWebhookHandler
         return WebhookEventTypes::PAYMENT_SALE_DENIED;
     }
 
-    public function invoke(Webhook $webhook, Context $context): void
+    public function invoke(Event $webhook, Context $context): void
     {
         if (!$webhook->getResource() instanceof Resource) {
             throw new WebhookException($this->getEventType(), 'Given webhook does not have needed resource data');

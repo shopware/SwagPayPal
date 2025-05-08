@@ -8,16 +8,16 @@
 namespace Swag\PayPal\Test\Dispute\Administration;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RoutingException;
+use Shopware\PayPalSDK\Struct\V1\Disputes\Item;
 use Swag\PayPal\Dispute\Administration\DisputeController;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use Swag\PayPal\RestApi\V1\Resource\DisputeResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDispute;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -27,6 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class DisputeControllerTest extends TestCase
 {
+    use GatewayTestBehaviour;
     use ServicesTrait;
 
     public function testDisputeList(): void
@@ -87,6 +88,6 @@ class DisputeControllerTest extends TestCase
 
     private function createController(): DisputeController
     {
-        return new DisputeController(new DisputeResource(new PayPalClientFactoryMock(new NullLogger())));
+        return new DisputeController(new DisputeResource(self::customerGateway(), new ApiContextFactoryMock()));
     }
 }

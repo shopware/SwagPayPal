@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Handler\AuthorizationVoided;
 use Swag\PayPal\Webhook\WebhookEventTypes;
@@ -30,7 +30,7 @@ class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
 
     public function testInvoke(): void
     {
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_AUTHORIZATION);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_AUTHORIZATION);
         $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook);
     }
 
@@ -46,20 +46,20 @@ class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
 
     public function testInvokeWithoutCustomId(): void
     {
-        $this->assertInvokeWithoutCustomId(Webhook::RESOURCE_TYPE_AUTHORIZATION);
+        $this->assertInvokeWithoutCustomId(Event::RESOURCE_TYPE_AUTHORIZATION);
     }
 
     public function testInvokeWithoutTransaction(): void
     {
         $orderTransactionId = Uuid::randomHex();
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_AUTHORIZATION, $orderTransactionId);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_AUTHORIZATION, $orderTransactionId);
         $reason = \sprintf('with custom ID "%s" (order transaction ID)', $orderTransactionId);
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED, $webhook, $reason);
     }
 
     public function testInvokeWithSameInitialState(): void
     {
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_AUTHORIZATION);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_AUTHORIZATION);
         $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook, OrderTransactionStates::STATE_CANCELLED);
     }
 

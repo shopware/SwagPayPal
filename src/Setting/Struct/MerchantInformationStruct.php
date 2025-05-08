@@ -10,7 +10,7 @@ namespace Swag\PayPal\Setting\Struct;
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
+use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
 
 #[OA\Schema(schema: 'swag_paypal_setting_merchant_information')]
 #[Package('checkout')]

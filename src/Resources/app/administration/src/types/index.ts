@@ -13,11 +13,11 @@ type Traverse<T, P extends string> = AsKey<P> extends keyof T
 
 type PartialKey<T, K extends string> = T extends `${K}${infer U}` ? U : never;
 
-export type V1<T extends PartialKey<keyof components['schemas'], 'swag_paypal_v1_'>> = components['schemas'][`swag_paypal_v1_${T}`];
+export type V1<T extends PartialKey<keyof components['schemas'], 'paypal_v1_'>> = components['schemas'][`paypal_v1_${T}`];
 
-export type V2<T extends PartialKey<keyof components['schemas'], 'swag_paypal_v2_'>> = components['schemas'][`swag_paypal_v2_${T}`];
+export type V2<T extends PartialKey<keyof components['schemas'], 'paypal_v2_'>> = components['schemas'][`paypal_v2_${T}`];
 
-export type V3<T extends PartialKey<keyof components['schemas'], 'swag_paypal_v3_'>> = components['schemas'][`swag_paypal_v3_${T}`];
+export type V3<T extends PartialKey<keyof components['schemas'], 'paypal_v3_'>> = components['schemas'][`paypal_v3_${T}`];
 
 export type Setting<T extends PartialKey<keyof components['schemas'], 'swag_paypal_setting_'>> = components['schemas'][`swag_paypal_setting_${T}`];
 

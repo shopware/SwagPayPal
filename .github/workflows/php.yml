@@ -74,10 +74,9 @@ jobs:
         with:
           install-admin: true
           install-storefront: true
-          shopware-version: ${{ matrix.PLATFORM_BRANCH }}
       - working-directory: custom/plugins/${{ github.event.repository.name }}
         run: |
-          ${GITHUB_WORKSPACE}/bin/console bundle:dump
+          composer install
           composer init:admin
           composer openapi:generate
           git update-index --refresh || printf ''

@@ -20,14 +20,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultablePaymentSourceInterface;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\Vault;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Token;
 use Swag\PayPal\Checkout\Exception\SubscriptionTypeNotSupportedException;
 use Swag\PayPal\DataAbstractionLayer\Extension\CustomerExtension;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Vault;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Token;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\VaultablePaymentSourceInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 #[Package('checkout')]

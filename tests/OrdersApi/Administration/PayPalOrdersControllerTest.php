@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\OrdersApi\Administration;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -29,7 +28,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Util\PriceFormatter;
@@ -43,6 +43,7 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class PayPalOrdersControllerTest extends TestCase
 {
+    use GatewayTestBehaviour;
     use ServicesTrait;
 
     private const AMOUNT = 12.34;
@@ -178,7 +179,7 @@ class PayPalOrdersControllerTest extends TestCase
         $request = $this->createCaptureRefundRequest(self::AMOUNT, self::TOO_LONG_INVOICE_NUMBER);
         $this->expectException(RequestParameterInvalidException::class);
         $this->expectExceptionMessage('Parameter "invoiceNumber" is invalid.
-Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must not be longer than 127 characters');
+Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must not be longer than 127 characters');
         $this->executeRefund($request)->getContent();
     }
 
@@ -197,7 +198,7 @@ Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must n
         $request = $this->createCaptureRefundRequest(self::AMOUNT, '', self::TOO_LONG_NOTE_TO_PAYER);
         $this->expectException(RequestParameterInvalidException::class);
         $this->expectExceptionMessage('Parameter "noteToPayer" is invalid.
-Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must not be longer than 255 characters');
+Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must not be longer than 255 characters');
         $this->executeRefund($request)->getContent();
     }
 
@@ -236,14 +237,15 @@ Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must n
 
     private function createController(): PayPalOrdersController
     {
-        $clientFactory = new PayPalClientFactoryMock(new NullLogger());
         $orderTransactionRepo = new OrderTransactionRepoMock();
 
+        $paymentGateway = self::paymentGateway();
+
         return new PayPalOrdersController(
-            new OrderResource($clientFactory),
-            new AuthorizationResource($clientFactory),
-            new CaptureResource($clientFactory),
-            new RefundResource($clientFactory),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            new AuthorizationResource($paymentGateway, new ApiContextFactoryMock()),
+            new CaptureResource($paymentGateway, new ApiContextFactoryMock()),
+            new RefundResource($paymentGateway, new ApiContextFactoryMock()),
             $orderTransactionRepo,
             $this->createMock(PaymentStatusUtilV2::class),
             new CaptureRefundCreator(

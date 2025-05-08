@@ -17,11 +17,11 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\RestApi\V2\Api\Common\Address;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Name as ShippingName;
+use Shopware\PayPalSDK\Struct\V2\Common\Address;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\ItemCollection;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Shipping;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Shipping\Name as ShippingName;
 use Swag\PayPal\Setting\Settings;
 
 #[Package('checkout')]

@@ -7,15 +7,15 @@
 
 namespace Swag\PayPal\Test\Webhook\Handler;
 
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Webhook\Handler\CaptureRefunded;
 use Swag\PayPal\Webhook\WebhookEventTypes;
@@ -26,11 +26,12 @@ use Swag\PayPal\Webhook\WebhookEventTypes;
 #[Package('checkout')]
 class CaptureRefundedTest extends AbstractWebhookHandlerTestCase
 {
+    use GatewayTestBehaviour;
     use ServicesTrait;
 
     public function testInvoke(): void
     {
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_REFUND);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_REFUND);
         $this->assertInvoke(OrderTransactionStates::STATE_PARTIALLY_REFUNDED, $webhook, OrderTransactionStates::STATE_PAID);
     }
 
@@ -41,20 +42,20 @@ class CaptureRefundedTest extends AbstractWebhookHandlerTestCase
 
     public function testInvokeWithoutCustomId(): void
     {
-        $this->assertInvokeWithoutCustomId(Webhook::RESOURCE_TYPE_REFUND);
+        $this->assertInvokeWithoutCustomId(Event::RESOURCE_TYPE_REFUND);
     }
 
     public function testInvokeWithoutTransaction(): void
     {
         $orderTransactionId = Uuid::randomHex();
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_REFUND, $orderTransactionId);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_REFUND, $orderTransactionId);
         $reason = \sprintf('with custom ID "%s" (order transaction ID)', $orderTransactionId);
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_CAPTURE_REFUNDED, $webhook, $reason);
     }
 
     public function testInvokeWithSameInitialState(): void
     {
-        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_REFUND);
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_REFUND);
         $this->assertInvoke(OrderTransactionStates::STATE_PARTIALLY_REFUNDED, $webhook, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
     }
 
@@ -64,7 +65,7 @@ class CaptureRefundedTest extends AbstractWebhookHandlerTestCase
             $this->orderTransactionRepository,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
             $this->getContainer()->get(PaymentStatusUtilV2::class),
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
         );
     }
 }

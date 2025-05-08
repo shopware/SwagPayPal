@@ -8,15 +8,15 @@
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\Resource\CaptureResource;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
-use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 
 /**
  * @internal
@@ -24,6 +24,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 #[Package('checkout')]
 class CaptureResourceTest extends TestCase
 {
+    use GatewayTestBehaviour;
+
     public function testGet(): void
     {
         $captureId = GetCapture::ID;
@@ -49,6 +51,6 @@ class CaptureResourceTest extends TestCase
 
     private function createResource(): CaptureResource
     {
-        return new CaptureResource(new PayPalClientFactoryMock(new NullLogger()));
+        return new CaptureResource(self::paymentGateway(), new ApiContextFactoryMock());
     }
 }

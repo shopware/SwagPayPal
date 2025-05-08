@@ -10,8 +10,8 @@ namespace Swag\PayPal\Test\Mock\Webhook;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Webhook\WebhookControllerTest;
@@ -66,7 +66,7 @@ class WebhookServiceMock implements WebhookServiceInterface
         return WebhookService::WEBHOOK_DELETED;
     }
 
-    public function executeWebhook(Webhook $webhook, Context $context): void
+    public function executeWebhook(Event $webhook, Context $context): void
     {
         if ($context->hasExtension(WebhookControllerTest::THROW_PAYPAL_API_EXCEPTION)) {
             throw new PayPalApiException('testPayPalApiExceptionMessage', 'testPayPalApiExceptionMessage');

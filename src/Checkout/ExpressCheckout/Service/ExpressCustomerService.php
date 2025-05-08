@@ -26,8 +26,8 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
-use Swag\PayPal\RestApi\V2\Api\Order;
 
 #[Package('checkout')]
 class ExpressCustomerService

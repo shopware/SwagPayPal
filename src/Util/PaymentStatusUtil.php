@@ -20,9 +20,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
-use Swag\PayPal\RestApi\V1\Api\Capture;
-use Swag\PayPal\RestApi\V1\Api\Payment;
-use Swag\PayPal\RestApi\V1\Api\Refund;
+use Shopware\PayPalSDK\Struct\V1\Capture;
+use Shopware\PayPalSDK\Struct\V1\Payment;
+use Shopware\PayPalSDK\Struct\V1\Refund;
 
 #[Package('checkout')]
 class PaymentStatusUtil
@@ -62,7 +62,7 @@ class PaymentStatusUtil
             throw PaymentException::invalidTransaction($transactionId);
         }
 
-        if ($captureResponse->isIsFinalCapture()) {
+        if ($captureResponse->isFinalCapture()) {
             $this->reopenTransaction($stateMachineState, $transactionId, $context);
             // If the previous state is "paid_partially", "paid" is currently not allowed as direct transition
             if ($stateMachineState->getTechnicalName() === OrderTransactionStates::STATE_PARTIALLY_PAID) {
