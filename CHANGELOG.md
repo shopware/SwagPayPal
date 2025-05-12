@@ -1,3 +1,6 @@
+# 9.7.6
+- Fixes a problem where the Venmo Express button was not shown
+
 # 9.7.5
 - Fixes an issue, where the PayLater button is not displayed on a product Page when the cart is empty (shopware/shopware#8356)
 - Fixes an issue, where vaulted payments could not be processed in the after order payment process in certain situations

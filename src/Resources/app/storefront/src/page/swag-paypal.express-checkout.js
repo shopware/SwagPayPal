@@ -113,10 +113,14 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
     renderButton(paypal) {
         this.options.fundingSources.forEach((fundingSource) => {
-            const button = paypal.Buttons(this.getButtonConfig(fundingSource));
+            try {
+                const button = paypal.Buttons(this.getButtonConfig(fundingSource));
 
-            if (button.isEligible()) {
-                button.render(this.el);
+                if (button.isEligible()) {
+                    button.render(this.el);
+                }
+            } catch (e) {
+                this.handleError(this.SCRIPT_ERROR, true, `Error while rendering express button for "${fundingSource}": ${e}`);
             }
         });
 
@@ -201,7 +205,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             style: {
                 size: this.options.buttonSize,
                 shape: this.options.buttonShape,
-                color: this.options.buttonColor,
+                color: fundingSource === 'venmo' && this.options.buttonColor === 'gold' ? 'blue' : this.options.buttonColor,
                 tagline: this.options.tagline,
                 layout: 'vertical',
                 label: 'checkout',
@@ -322,12 +326,10 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         );
     }
 
-    onErrorHandled(code, fatal, error) {
-        if (code === this.GENERIC_ERROR || code === this.USER_CANCELLED) {
+    onErrorHandled(code) {
+        if (code === this.USER_CANCELLED) {
             window.scrollTo(0, 0);
             window.location = this.options.cancelRedirectUrl;
-        } else {
-            super.onErrorHandled(code, fatal, error);
         }
     }
 }
