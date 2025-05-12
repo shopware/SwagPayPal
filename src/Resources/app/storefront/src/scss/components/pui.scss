@@ -8,22 +8,17 @@
 
     .instruction-title {
         @extend .col-sm-5;
-    }
-
-    .instruction-description {
-        @extend .col-sm-7;
-    }
-
-    dt:nth-of-type(#{$table-striped-order}), dd:nth-of-type(#{$table-striped-order}) {
-        background-color: $gray-100;
-    }
-
-    .instruction-title {
         font-weight: normal;
     }
 
     .instruction-description {
+        @extend .col-sm-7;
         font-weight: bold;
+    }
+
+    dt:nth-of-type(#{$table-striped-order}),
+    dd:nth-of-type(#{$table-striped-order}) {
+        background-color: $gray-100;
     }
 }
 
