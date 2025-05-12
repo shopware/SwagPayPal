@@ -49,6 +49,11 @@
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\PosStateService"/>
         </service>
 
+        <service id="Swag\PayPal\Util\Lifecycle\PluginLifecycleSubscriber">
+            <argument type="string">%kernel.project_dir%</argument>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService" public="true">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
             <argument type="service" id="payment_method.repository"/>

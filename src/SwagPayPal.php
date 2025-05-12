@@ -112,7 +112,8 @@ class SwagPayPal extends Plugin
 
     public function update(UpdateContext $updateContext): void
     {
-        $this->patchAutoloader();
+        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
+        $this->patchAutoloader($this->container->getParameter('kernel.project_dir'));
 
         /** @var WebhookService|null $webhookService */
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
@@ -165,7 +166,8 @@ class SwagPayPal extends Plugin
 
     public function activate(ActivateContext $activateContext): void
     {
-        $this->patchAutoloader();
+        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
+        $this->patchAutoloader($this->container->getParameter('kernel.project_dir'));
 
         $this->activateDeactivate->activate($activateContext->getContext());
 
@@ -174,7 +176,8 @@ class SwagPayPal extends Plugin
 
     public function deactivate(DeactivateContext $deactivateContext): void
     {
-        $this->patchAutoloader();
+        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
+        $this->patchAutoloader($this->container->getParameter('kernel.project_dir'));
 
         $this->activateDeactivate->deactivate($deactivateContext->getContext());
 
@@ -228,9 +231,40 @@ class SwagPayPal extends Plugin
         $configLoader->load($confDir . '/{packages}/*.yaml', 'glob');
     }
 
+    /**
+     * @internal
+     */
+    public static function patchAutoloader(string $projectDir): void
+    {
+        if (!\file_exists($projectDir . '/vendor/autoload.php')) {
+            return;
+        }
+
+        $classLoader = require $projectDir . '/vendor/autoload.php';
+
+        if (!$classLoader instanceof ClassLoader) {
+            return;
+        }
+
+        if (!\in_array('Shopware\\PayPalSDK\\', $classLoader->getPrefixesPsr4(), true)) {
+            $classLoader->addPsr4('Shopware\\PayPalSDK\\', [
+                $projectDir . '/vendor/shopware/paypal-sdk/src',
+                __DIR__ . '/../vendor/shopware/paypal-sdk/src',
+            ]);
+        }
+
+        if (!\in_array('Http\\Discovery\\', $classLoader->getPrefixesPsr4(), true)) {
+            $classLoader->addPsr4('Http\\Discovery\\', [
+                $projectDir . '/vendor/php-http/discovery/src',
+                __DIR__ . '/../vendor/php-http/discovery/src',
+            ]);
+        }
+    }
+
     private function getInstaller(): InstallUninstall
     {
-        $this->patchAutoloader();
+        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
+        $this->patchAutoloader($this->container->getParameter('kernel.project_dir'));
 
         return new InstallUninstall(
             new PaymentMethodInstaller(
@@ -265,39 +299,5 @@ class SwagPayPal extends Plugin
         }
 
         return $repository;
-    }
-
-    /**
-     * @phpstan-assert ContainerInterface $this->container
-     */
-    private function patchAutoloader(): void
-    {
-        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
-
-        $projectDir = $this->container->getParameter('kernel.project_dir');
-
-        if (!\file_exists($projectDir . '/vendor/autoload.php')) {
-            return;
-        }
-
-        $classLoader = require $projectDir . '/vendor/autoload.php';
-
-        if (!$classLoader instanceof ClassLoader) {
-            return;
-        }
-
-        if (!\in_array('Shopware\\PayPalSDK\\', $classLoader->getPrefixesPsr4(), true)) {
-            $classLoader->addPsr4('Shopware\\PayPalSDK\\', [
-                $projectDir . '/vendor/shopware/paypal-sdk/src',
-                __DIR__ . '/../vendor/shopware/paypal-sdk/src',
-            ]);
-        }
-
-        if (!\in_array('Http\\Discovery\\', $classLoader->getPrefixesPsr4(), true)) {
-            $classLoader->addPsr4('Http\\Discovery\\', [
-                $projectDir . '/vendor/php-http/discovery/src',
-                __DIR__ . '/../vendor/php-http/discovery/src',
-            ]);
-        }
     }
 }
