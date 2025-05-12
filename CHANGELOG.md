@@ -1,5 +1,6 @@
 # 8.7.6
 - Fixes an issue, where vaulted payments could not be processed in the after order payment process in certain situations
+- Fixes a problem where the Venmo Express button was not shown
 
 # 8.7.5
 - Fixes an issue with the pre-built storefront JavaScript (shopware/shopware#8483)
