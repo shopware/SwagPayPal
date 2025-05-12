@@ -1,11 +1,11 @@
-name: Epic 
+name: Epic
 description: A request of substantial size or complexity.
 type: Epic
 body:
     - type: markdown
       attributes:
           value: |
-              Thanks for taking the time to share your idea with us! If your request relates to enhancing or improving the Shopware product, please file it in [UserVoice](https://feedback.shopware.com/forums/942607-shopware-6-product-feedback-ideas). Also, please check our issues backlog to ensure that no one else has suggested your idea yet. 
+              Thanks for taking the time to share your idea with us! If your request relates to enhancing or improving the Shopware product, please file it in [UserVoice](https://feedback.shopware.com/forums/942607-shopware-6-product-feedback-ideas). Also, please check our issues backlog to ensure that no one else has suggested your idea yet.
     - type: textarea
       id: problem
       attributes:
@@ -24,7 +24,7 @@ body:
       id: solution
       attributes:
         label: Solution to the problem
-        description: If you have ideas for how we can solve the problem, please add them below. If there's already a related [Discussion](https://github.com/shopware/shopware/discussions) about planned or potential implementation, please link to it here.
+        description: If you have ideas for how we can solve the problem, please add them below. If there's already a related [Discussion](https://github.com/shopware/SwagPayPal/discussions) about planned or potential implementation, please link to it here.
       validations:
         required: false
     - type: textarea
