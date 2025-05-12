@@ -119,7 +119,9 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                 if (button.isEligible()) {
                     button.render(this.el);
                 }
-            } catch {}
+            } catch (e) {
+                this.handleError(this.SCRIPT_ERROR, true, `Error while rendering express button for "${fundingSource}": ${e}`);
+            }
         });
 
     }
@@ -324,12 +326,10 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         );
     }
 
-    onErrorHandled(code, fatal, error) {
-        if (code === this.GENERIC_ERROR || code === this.USER_CANCELLED) {
+    onErrorHandled(code) {
+        if (code === this.USER_CANCELLED) {
             window.scrollTo(0, 0);
             window.location = this.options.cancelRedirectUrl;
-        } else {
-            super.onErrorHandled(code, fatal, error);
         }
     }
 }
