@@ -1,9 +1,12 @@
-# 9.7.6
-- Fixes a problem where the Venmo Express button was not shown
+# 10.0.0
+- Added compatibility with Shopware 6.7 and new payment handlers
+- Separated communication with PayPal API into new SDK (https://github.com/shopware/paypal-sdk)
+- Reworked technical foundation of the settings in the Administration
 
 # 9.7.5
 - Fixes an issue, where the PayLater button is not displayed on a product Page when the cart is empty (shopware/shopware#8356)
 - Fixes an issue, where vaulted payments could not be processed in the after order payment process in certain situations
+- Fixes a problem where the Venmo Express button was not shown
 - Fixes an issue, where duplicate orders could be created in certain edge cases (shopware/shopware#8359)
 
 # 9.7.4
