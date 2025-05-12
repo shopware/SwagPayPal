@@ -191,6 +191,11 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
      * @param {String} data.orderID PayPal order id
      */
     onApprove(data) {
+        const existingInput = this.confirmOrderForm.querySelector('[name="paypalOrderId"]');
+        if (existingInput) {
+            return;
+        }
+
         PageLoadingIndicatorUtil.create();
 
         const input = document.createElement('input');
