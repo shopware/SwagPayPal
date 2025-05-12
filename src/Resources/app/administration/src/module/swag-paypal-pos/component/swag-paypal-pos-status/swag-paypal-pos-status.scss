@@ -7,17 +7,13 @@
     }
 
     .swag-paypal-pos-status__icon-base {
-        display: inline-block;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
         width: 80px;
         height: 80px;
         border-radius: 40px;
         background-color: $color-gray-50;
-    }
-
-    .swag-paypal-pos-status__icon {
-        margin-top: 24px;
-        width: 36px;
-        height: 36px;
     }
 
     .swag-paypal-pos-status__icon-animated {
