@@ -50,7 +50,7 @@
         </service>
 
         <service id="Swag\PayPal\Util\Lifecycle\PluginLifecycleSubscriber">
-            <argument type="string">%kernel.project_dir%</argument>
+            <argument type="service" id="Swag\PayPal\SwagPayPal"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

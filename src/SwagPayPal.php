@@ -112,8 +112,7 @@ class SwagPayPal extends Plugin
 
     public function update(UpdateContext $updateContext): void
     {
-        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
-        $this->patchAutoloader($this->container->getParameter('kernel.project_dir'));
+        $this->patchAutoloader();
 
         /** @var WebhookService|null $webhookService */
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
@@ -166,8 +165,7 @@ class SwagPayPal extends Plugin
 
     public function activate(ActivateContext $activateContext): void
     {
-        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
-        $this->patchAutoloader($this->container->getParameter('kernel.project_dir'));
+        $this->patchAutoloader();
 
         $this->activateDeactivate->activate($activateContext->getContext());
 
@@ -176,8 +174,7 @@ class SwagPayPal extends Plugin
 
     public function deactivate(DeactivateContext $deactivateContext): void
     {
-        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
-        $this->patchAutoloader($this->container->getParameter('kernel.project_dir'));
+        $this->patchAutoloader();
 
         $this->activateDeactivate->deactivate($deactivateContext->getContext());
 
@@ -233,9 +230,15 @@ class SwagPayPal extends Plugin
 
     /**
      * @internal
+     *
+     * @phpstan-assert ContainerInterface $this->container
      */
-    public static function patchAutoloader(string $projectDir): void
+    public function patchAutoloader(): void
     {
+        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
+
+        $projectDir = $this->container->getParameter('kernel.project_dir');
+
         if (!\file_exists($projectDir . '/vendor/autoload.php')) {
             return;
         }
@@ -263,8 +266,7 @@ class SwagPayPal extends Plugin
 
     private function getInstaller(): InstallUninstall
     {
-        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
-        $this->patchAutoloader($this->container->getParameter('kernel.project_dir'));
+        $this->patchAutoloader();
 
         return new InstallUninstall(
             new PaymentMethodInstaller(

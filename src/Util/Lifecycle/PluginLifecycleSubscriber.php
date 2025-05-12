@@ -19,7 +19,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class PluginLifecycleSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly string $projectDir,
+        private readonly SwagPayPal $plugin,
     ) {
     }
 
@@ -33,7 +33,7 @@ class PluginLifecycleSubscriber implements EventSubscriberInterface
     public function pluginUpdate(PluginPreUpdateEvent $event): void
     {
         if ($event->getPlugin()->getName() === 'SwagPayPal') {
-            SwagPayPal::patchAutoloader($this->projectDir);
+            $this->plugin->patchAutoloader();
         }
     }
 }
