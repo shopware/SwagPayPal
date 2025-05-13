@@ -1,0 +1,47 @@
+{
+  "base": "/bundles/swagpaypal/administration/",
+  "entryPoints": {
+    "swag-pay-pal": {
+      "css": [
+        "/bundles/swagpaypal/administration/assets/swag-pay-pal-1l_g8Cki.css"
+      ],
+      "dynamic": [
+        "/bundles/swagpaypal/administration/assets/index-BziGdwzm.js",
+        "/bundles/swagpaypal/administration/assets/index-BAJrQTQy.js",
+        "/bundles/swagpaypal/administration/assets/index-DpI6-qKf.js",
+        "/bundles/swagpaypal/administration/assets/index-BIzmK4Dn.js",
+        "/bundles/swagpaypal/administration/assets/index-Bhbk4a-X.js",
+        "/bundles/swagpaypal/administration/assets/index-BsFzNe0C.js",
+        "/bundles/swagpaypal/administration/assets/index-DT6hpUCH.js",
+        "/bundles/swagpaypal/administration/assets/index-NSbpapJx.js",
+        "/bundles/swagpaypal/administration/assets/index-DnLidD0f.js",
+        "/bundles/swagpaypal/administration/assets/index-FZMr6DU-.js",
+        "/bundles/swagpaypal/administration/assets/index-D8Q_Oavj.js",
+        "/bundles/swagpaypal/administration/assets/index-BBkcGhI0.js",
+        "/bundles/swagpaypal/administration/assets/index-CHr3nRe0.js",
+        "/bundles/swagpaypal/administration/assets/index-DruaxD0u.js",
+        "/bundles/swagpaypal/administration/assets/index--u8pWelW.js",
+        "/bundles/swagpaypal/administration/assets/index-CjRcIrtF.js",
+        "/bundles/swagpaypal/administration/assets/index-8wR70pcV.js",
+        "/bundles/swagpaypal/administration/assets/index-D5gYQ7Vb.js",
+        "/bundles/swagpaypal/administration/assets/index-BUtGqtya.js",
+        "/bundles/swagpaypal/administration/assets/index-DOE3gRvp.js",
+        "/bundles/swagpaypal/administration/assets/index-D_per5zP.js"
+      ],
+      "js": [
+        "/bundles/swagpaypal/administration/assets/swag-pay-pal-CeXowqCP.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}
