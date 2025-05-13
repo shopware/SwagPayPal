@@ -3,6 +3,7 @@
 - Fixes an issue, where vaulted payments could not be processed in the after order payment process in certain situations
 - Fixes a problem where the Venmo Express button was not shown
 - Fixes an issue, where duplicate orders could be created in certain edge cases (shopware/shopware#8359)
+- Added a quick link for reporting issues to the context menu of the extension list
 
 # 9.7.4
 - Fixes an issue, where input fields of the refund modal could be missing
