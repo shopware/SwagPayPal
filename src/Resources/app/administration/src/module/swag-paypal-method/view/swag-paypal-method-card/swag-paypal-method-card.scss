@@ -19,8 +19,9 @@
         height: 100%;
     }
 
-    &__status  {
+    & &__status {
         margin: 0;
+        border: 0;
 
         .sw-color-badge {
             margin: 0;

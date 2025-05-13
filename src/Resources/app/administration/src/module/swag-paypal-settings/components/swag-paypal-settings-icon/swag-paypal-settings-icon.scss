@@ -1,11 +1,12 @@
 @import "~scss/mixins";
 
 .swag-paypal-settings-icon {
-    @include size(24px);
+    @include size(18px);
 
     display: inline-block;
     vertical-align: middle;
     line-height: 0;
+    shape-rendering: geometricPrecision;
 
     > svg {
         width: 100%;
