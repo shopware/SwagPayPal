@@ -144,7 +144,7 @@ Component.register('swag-paypal-pos-detail-settings', {
                     this.updateButtons();
 
                     this.$emit('load-sales-channel');
-                    this.$root.$emit('sales-channel-change');
+                    Shopware.Utils.EventBus.emit('sw-sales-channel-detail-sales-channel-change');
 
                     if (this.cloneSalesChannelId !== null) {
                         this.SwagPayPalPosSettingApiService.cloneProductVisibility(
@@ -221,7 +221,7 @@ Component.register('swag-paypal-pos-detail-settings', {
         deleteSalesChannel(salesChannelId) {
             return this.SwagPayPalPosWebhookRegisterService.unregisterWebhook(salesChannelId).finally(() => {
                 return this.salesChannelRepository.delete(salesChannelId, Shopware.Context.api).then(() => {
-                    this.$root.$emit('sales-channel-change');
+                    Shopware.Utils.EventBus.emit('sw-sales-channel-detail-sales-channel-change');
                 });
             });
         },

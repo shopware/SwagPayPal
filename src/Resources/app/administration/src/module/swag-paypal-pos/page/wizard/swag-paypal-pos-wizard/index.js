@@ -206,7 +206,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
                 this.isSaveSuccessful = true;
                 this.isNewEntity = false;
 
-                this.$root.$emit('sales-channel-change');
+                Shopware.Utils.EventBus.emit('sw-sales-channel-detail-sales-channel-change');
                 await this.loadSalesChannel();
 
                 this.cloneProductVisibility();
