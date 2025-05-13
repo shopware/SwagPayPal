@@ -11,6 +11,7 @@ use Monolog\Level;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
+use Shopware\Core\Checkout\Order\SalesChannel\OrderService;
 use Shopware\Core\Framework\Api\EventListener\ErrorResponseFactory;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -21,7 +22,6 @@ use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
-use Shopware\Storefront\Framework\AffiliateTracking\AffiliateTrackingListener;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
@@ -87,15 +87,15 @@ class PayPalController extends StorefrontController
     #[Route(path: '/paypal/express/prepare-checkout', name: 'frontend.paypal.express.prepare_checkout', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function expressPrepareCheckout(Request $request, SalesChannelContext $context): ContextTokenResponse
     {
-        $affiliateCode = $request->getSession()->get(AffiliateTrackingListener::AFFILIATE_CODE_KEY);
-        $campaignCode = $request->getSession()->get(AffiliateTrackingListener::CAMPAIGN_CODE_KEY);
+        $affiliateCode = $request->getSession()->get(OrderService::AFFILIATE_CODE_KEY);
+        $campaignCode = $request->getSession()->get(OrderService::CAMPAIGN_CODE_KEY);
 
         if ($affiliateCode !== null) {
-            $request->request->set(AffiliateTrackingListener::AFFILIATE_CODE_KEY, $affiliateCode);
+            $request->request->set(OrderService::AFFILIATE_CODE_KEY, $affiliateCode);
         }
 
         if ($campaignCode !== null) {
-            $request->request->set(AffiliateTrackingListener::CAMPAIGN_CODE_KEY, $campaignCode);
+            $request->request->set(OrderService::CAMPAIGN_CODE_KEY, $campaignCode);
         }
 
         return $this->expressPrepareCheckoutRoute->prepareCheckout($context, $request);
@@ -111,7 +111,7 @@ class PayPalController extends StorefrontController
     public function expressPrepareCart(Request $request, SalesChannelContext $context): Response
     {
         $this->contextSwitchRoute->switchContext(new RequestDataBag([
-            SalesChannelContextService::PAYMENT_METHOD_ID => $request->get('paymentMethodId'),
+            SalesChannelContextService::PAYMENT_METHOD_ID => $request->request->getAlnum('paymentMethodId') ?: $request->query->getAlnum('paymentMethodId'),
         ]), $context);
 
         if ($request->request->getBoolean('deleteCart')) {

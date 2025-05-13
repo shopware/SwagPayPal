@@ -30,7 +30,7 @@ class Migration1706111604AddCustomerIdToVault extends MigrationStep
 
         $connection->executeStatement('
             ALTER TABLE `swag_paypal_vault_token`
-            ADD COLUMN `token_customer` VARCHAR(255) NULL AFTER `token`;
+            ADD COLUMN `token_customer` VARCHAR(255) NULL;
         ');
     }
 

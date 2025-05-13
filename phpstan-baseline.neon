@@ -1,186 +1,241 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Provide more specific return type \"Swag\\\\PayPal\\\\Checkout\\\\Card\\\\Exception\\\\CardValidationFailedException\" over abstract one$#"
+			message: '#^Provide more specific return type "Swag\\PayPal\\Checkout\\Card\\Exception\\CardValidationFailedException" over abstract one$#'
+			identifier: typePerfect.narrowReturnObjectType
 			count: 1
 			path: src/Checkout/Card/Exception/CardValidationFailedException.php
 
 		-
-			message: "#^Usage of ALTER TABLE \\.\\. AFTER is disallowed in migrations to avoid implicit temporary table usage\\.$#"
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			identifier: staticMethod.internal
 			count: 1
-			path: src/Migration/Migration1706111604AddCustomerIdToVault.php
+			path: src/Checkout/Order/Shipping/MessageQueue/ShippingInformationMessageHandler.php
 
 		-
-			message: "#^Provide more specific return type \"Swag\\\\PayPal\\\\OrdersApi\\\\Builder\\\\Exception\\\\OrderBuildException\" over abstract one$#"
+			message: '#^Call to method getEntityName\(\) of internal class Shopware\\Core\\Framework\\DataAbstractionLayer\\Write\\Command\\WriteCommand from outside its root namespace Shopware\.$#'
+			identifier: method.internalClass
+			count: 1
+			path: src/Checkout/Order/Shipping/ShippingSubscriber.php
+
+		-
+			message: '#^Call to method getPayload\(\) of internal class Shopware\\Core\\Framework\\DataAbstractionLayer\\Write\\Command\\WriteCommand from outside its root namespace Shopware\.$#'
+			identifier: method.internalClass
+			count: 1
+			path: src/Checkout/Order/Shipping/ShippingSubscriber.php
+
+		-
+			message: '#^Call to method requestChangeSet\(\) of internal interface Shopware\\Core\\Framework\\DataAbstractionLayer\\Write\\Command\\ChangeSetAware from outside its root namespace Shopware\.$#'
+			identifier: method.internalInterface
+			count: 1
+			path: src/Checkout/Order/Shipping/ShippingSubscriber.php
+
+		-
+			message: '#^Instanceof references internal interface Shopware\\Core\\Framework\\DataAbstractionLayer\\Write\\Command\\ChangeSetAware\.$#'
+			identifier: instanceof.internalInterface
+			count: 1
+			path: src/Checkout/Order/Shipping/ShippingSubscriber.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			identifier: staticMethod.internal
+			count: 1
+			path: src/Checkout/PUI/MessageQueue/PUIInstructionsFetchMessageHandler.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			identifier: staticMethod.internal
+			count: 1
+			path: src/Checkout/Payment/MessageQueue/TransactionStatusSyncMessageHandler.php
+
+		-
+			message: '#^Provide more specific return type "Swag\\PayPal\\OrdersApi\\Builder\\Exception\\OrderBuildException" over abstract one$#'
+			identifier: typePerfect.narrowReturnObjectType
 			count: 1
 			path: src/OrdersApi/Builder/Exception/OrderBuildException.php
 
 		-
-			message: "#^Use explicit names over dynamic ones$#"
+			message: '#^Use explicit names over dynamic ones$#'
+			identifier: symplify.noDynamicName
 			count: 5
 			path: src/Pos/Api/Common/PosStruct.php
 
 		-
-			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			identifier: staticMethod.internal
 			count: 1
-			path: src/Pos/MessageQueue/Handler/CloneVisibilityHandler.php
+			path: src/Pos/MessageQueue/Message/AbstractSyncMessage.php
 
 		-
-			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			identifier: staticMethod.internal
 			count: 1
-			path: src/Pos/MessageQueue/Handler/Sync/ImageSyncHandler.php
+			path: src/Pos/MessageQueue/Message/InventoryUpdateMessage.php
 
 		-
-			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			identifier: staticMethod.internal
 			count: 1
-			path: src/Pos/MessageQueue/Handler/Sync/InventorySyncHandler.php
+			path: src/Pos/MessageQueue/MessageHydrator.php
 
 		-
-			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			message: '#^Call to method get\(\) of internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface from outside its root namespace Shopware\.$#'
+			identifier: method.internalInterface
 			count: 1
-			path: src/Pos/MessageQueue/Handler/Sync/ProductCleanupSyncHandler.php
+			path: src/Pos/MessageQueue/MessageHydrator.php
 
 		-
-			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			message: '#^Parameter \$salesChannelContextService of method Swag\\PayPal\\Pos\\MessageQueue\\MessageHydrator\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			identifier: parameter.internalInterface
 			count: 1
-			path: src/Pos/MessageQueue/Handler/Sync/ProductSingleSyncHandler.php
+			path: src/Pos/MessageQueue/MessageHydrator.php
 
 		-
-			message: "#^Change \"sync\\(\\)\" method visibility to \"protected\" to respect parent method visibility\\.$#"
+			message: '#^Property \$salesChannelContextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
+			identifier: property.internalInterface
 			count: 1
-			path: src/Pos/MessageQueue/Handler/Sync/ProductVariantSyncHandler.php
+			path: src/Pos/MessageQueue/MessageHydrator.php
 
 		-
-			message: "#^Provide more specific return type \"Symfony\\\\Component\\\\HttpFoundation\\\\JsonResponse\" over abstract one$#"
+			message: '#^Provide more specific return type "Symfony\\Component\\HttpFoundation\\JsonResponse" over abstract one$#'
+			identifier: typePerfect.narrowReturnObjectType
 			count: 5
 			path: src/Pos/PosSyncController.php
 
 		-
-			message: "#^Array method calls \\[\\$this, \"method\"\\] are not allowed\\. Use explicit method instead to help PhpStorm, PHPStan and Rector understand your code$#"
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			identifier: staticMethod.internal
+			count: 1
+			path: src/Pos/Sync/Context/InventoryContext.php
+
+		-
+			message: '#^Array method calls \[\$this, "method"\] are not allowed\. Use explicit method instead to help PhpStorm, PHPStan and Rector understand your code$#'
+			identifier: symplify.forbiddenArrayMethodCall
 			count: 2
 			path: src/Pos/Sync/Context/InventoryContextFactory.php
 
 		-
-			message: "#^Array method calls \\[\\$this, \"method\"\\] are not allowed\\. Use explicit method instead to help PhpStorm, PHPStan and Rector understand your code$#"
+			message: '#^Array method calls \[\$this, "method"\] are not allowed\. Use explicit method instead to help PhpStorm, PHPStan and Rector understand your code$#'
+			identifier: symplify.forbiddenArrayMethodCall
 			count: 1
 			path: src/Pos/Sync/Product/DeletedUpdater.php
 
 		-
-			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\System\\\\SalesChannel\\\\NoContentResponse\" over abstract one$#"
+			message: '#^Call to method validate\(\) of internal class Shopware\\Core\\System\\SystemConfig\\Validation\\SystemConfigValidator from outside its root namespace Shopware\.$#'
+			identifier: method.internalClass
+			count: 1
+			path: src/Setting/SettingsController.php
+
+		-
+			message: '#^Parameter \$systemConfigValidator of method Swag\\PayPal\\Setting\\SettingsController\:\:__construct\(\) has typehint with internal class Shopware\\Core\\System\\SystemConfig\\Validation\\SystemConfigValidator\.$#'
+			identifier: parameter.internalClass
+			count: 1
+			path: src/Setting/SettingsController.php
+
+		-
+			message: '#^Property \$systemConfigValidator references internal class Shopware\\Core\\System\\SystemConfig\\Validation\\SystemConfigValidator in its type\.$#'
+			identifier: property.internalClass
+			count: 1
+			path: src/Setting/SettingsController.php
+
+		-
+			message: '#^Provide more specific return type "Shopware\\Core\\System\\SalesChannel\\NoContentResponse" over abstract one$#'
+			identifier: typePerfect.narrowReturnObjectType
 			count: 2
 			path: src/Storefront/Controller/PayPalController.php
 
 		-
-			message: "#^Mixed variable in a `\\$checkoutMethod\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			message: '#^Mixed variable in a `\$checkoutMethod\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
+			identifier: typePerfect.noMixedMethodCaller
 			count: 2
 			path: src/Storefront/Data/CheckoutDataSubscriber.php
 
 		-
-			message: "#^Mixed variable in a `\\$criteria\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			identifier: staticMethod.internal
+			count: 1
+			path: src/Storefront/Framework/Cookie/GooglePayCookieProvider.php
+
+		-
+			message: '#^Mixed variable in a `\$criteria\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
+			identifier: typePerfect.noMixedMethodCaller
 			count: 1
 			path: tests/Checkout/PUI/SalesChannel/PUIPaymentInstructionsRouteTest.php
 
 		-
-			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Payment\\\\ScheduledTask\" does not follow PSR\\-4 configuration in composer\\.json$#"
-			count: 1
-			path: tests/Checkout/PUI/ScheduledTask/PUIInstructionsFetchTaskHandlerTest.php
-
-		-
-			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Checkout\\\\PUI\\\\SalesChannel\" does not follow PSR\\-4 configuration in composer\\.json$#"
-			count: 1
-			path: tests/Checkout/PUI/Service/PUIInstructionsFetchServiceTest.php
-
-		-
-			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Checkout\\\\Payment\\\\ScheduledTask\" does not follow PSR\\-4 configuration in composer\\.json$#"
-			count: 1
-			path: tests/Checkout/Payment/MessageQueue/TransactionStatusSyncMessageHandlerTest.php
-
-		-
-			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Installment\\\\Banner\" does not follow PSR\\-4 configuration in composer\\.json$#"
-			count: 1
-			path: tests/Installment/Banner/Service/BannerDataServiceTest.php
-
-		-
-			message: "#^Mixed variable in a `\\$struct\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			message: '#^Mixed variable in a `\$struct\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
+			identifier: typePerfect.noMixedMethodCaller
 			count: 1
 			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
 
 		-
-			message: "#^Mixed variable in a `\\$struct\\?\\-\\>getExperienceContext\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			message: '#^Mixed variable in a `\$struct\?\-\>getExperienceContext\(\)\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
+			identifier: typePerfect.noMixedMethodCaller
 			count: 1
 			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
 
 		-
-			message: "#^Use explicit names over dynamic ones$#"
+			message: '#^Use explicit names over dynamic ones$#'
+			identifier: symplify.noDynamicName
 			count: 2
 			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
 
 		-
-			message: "#^Provide more specific return type \"GuzzleHttp\\\\Psr7\\\\Response\" over abstract one$#"
+			message: '#^Provide more specific return type "GuzzleHttp\\Psr7\\Response" over abstract one$#'
+			identifier: typePerfect.narrowReturnObjectType
 			count: 1
 			path: tests/Pos/Mock/Client/GuzzleClientMock.php
 
 		-
-			message: "#^Use explicit names over dynamic ones$#"
-			count: 1
-			path: tests/Pos/Mock/MessageBusMock.php
-
-		-
-			message: "#^Parameter \\#1 \\$entity of method Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityCollection\\<Shopware\\\\Core\\\\Content\\\\Product\\\\ProductEntity\\>\\:\\:add\\(\\) expects Shopware\\\\Core\\\\Content\\\\Product\\\\ProductEntity, Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Entity given\\.$#"
+			message: '#^Parameter \#1 \$entity of method Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\<Shopware\\Core\\Content\\Product\\ProductEntity\>\:\:add\(\) expects Shopware\\Core\\Content\\Product\\ProductEntity, Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity given\.$#'
+			identifier: argument.type
 			count: 2
 			path: tests/Pos/Mock/Repositories/SalesChannelProductRepoMock.php
 
 		-
-			message: "#^Return type \\(Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Search\\\\EntitySearchResult\\<Shopware\\\\Core\\\\Content\\\\Product\\\\SalesChannel\\\\SalesChannelProductCollection\\>\\) of method Swag\\\\PayPal\\\\Test\\\\Pos\\\\Mock\\\\Repositories\\\\SalesChannelProductRepoMock\\:\\:search\\(\\) should be compatible with return type \\(Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Search\\\\EntitySearchResult\\<Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityCollection\\>\\) of method Shopware\\\\Core\\\\System\\\\SalesChannel\\\\Entity\\\\SalesChannelRepository\\<Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityCollection\\>\\:\\:search\\(\\)$#"
+			message: '#^Return type \(Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult\<Shopware\\Core\\Content\\Product\\SalesChannel\\SalesChannelProductCollection\>\) of method Swag\\PayPal\\Test\\Pos\\Mock\\Repositories\\SalesChannelProductRepoMock\:\:search\(\) should be compatible with return type \(Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult\<Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\>\) of method Shopware\\Core\\System\\SalesChannel\\Entity\\SalesChannelRepository\<Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\>\:\:search\(\)$#'
+			identifier: method.childReturnType
 			count: 1
 			path: tests/Pos/Mock/Repositories/SalesChannelProductRepoMock.php
 
 		-
-			message: "#^Use explicit names over dynamic ones$#"
+			message: '#^Use explicit names over dynamic ones$#'
+			identifier: symplify.noDynamicName
 			count: 2
 			path: tests/Pos/Run/PosSyncControllerTest.php
 
 		-
-			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Pos\\\\Util\" does not follow PSR\\-4 configuration in composer\\.json$#"
-			count: 1
-			path: tests/Pos/Webhook/InventoryChangedTest.php
-
-		-
-			message: "#^Mixed variable in a `\\$entry\\['request'\\]\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			message: '#^Mixed variable in a `\$entry\[''request''\]\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
+			identifier: typePerfect.noMixedMethodCaller
 			count: 1
 			path: tests/Reporting/ScheduledTask/TurnoverReportingTaskHandlerTest.php
 
 		-
-			message: "#^Mixed variable in a `\\$entry\\['request'\\]\\-\\>getBody\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			message: '#^Mixed variable in a `\$entry\[''request''\]\-\>getBody\(\)\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
+			identifier: typePerfect.noMixedMethodCaller
 			count: 1
 			path: tests/Reporting/ScheduledTask/TurnoverReportingTaskHandlerTest.php
 
 		-
-			message: "#^Class like namespace \"\" does not follow PSR\\-4 configuration in composer\\.json$#"
-			count: 1
-			path: tests/ShopwarePluginClassTest.php
-
-		-
-			message: "#^Use explicit names over dynamic ones$#"
+			message: '#^Use explicit names over dynamic ones$#'
+			identifier: symplify.noDynamicName
 			count: 2
 			path: tests/Storefront/Controller/ApplePayControllerTest.php
 
 		-
-			message: "#^Use explicit names over dynamic ones$#"
+			message: '#^Use explicit names over dynamic ones$#'
+			identifier: symplify.noDynamicName
 			count: 4
 			path: tests/Storefront/Data/CheckoutSubscriberTest.php
 
 		-
-			message: "#^Class like namespace \"Shopware\\\\Core\" does not follow PSR\\-4 configuration in composer\\.json$#"
+			message: '#^Provide more specific return type "Shopware\\Core\\Kernel" over abstract one$#'
+			identifier: typePerfect.narrowReturnObjectType
 			count: 1
 			path: tests/TestBootstrapper.php
 
 		-
-			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\Kernel\" over abstract one$#"
-			count: 1
-			path: tests/TestBootstrapper.php
-
-		-
-			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\TestBootstrapper\" over abstract one$#"
+			message: '#^Provide more specific return type "Shopware\\Core\\TestBootstrapper" over abstract one$#'
+			identifier: typePerfect.narrowReturnObjectType
 			count: 11
 			path: tests/TestBootstrapper.php

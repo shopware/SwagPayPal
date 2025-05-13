@@ -66,7 +66,7 @@ abstract class AbstractSyncHandler
         }
     }
 
-    abstract protected function sync(AbstractSyncMessage $message): void;
+    abstract public function sync(AbstractSyncMessage $message): void;
 
     private function checkRunStep(AbstractSyncMessage $message): void
     {

@@ -8,7 +8,8 @@
 namespace Swag\PayPal\Pos\Payment;
 
 use Shopware\Core\Checkout\Order\OrderException;
-use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\DefaultPayment;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AbstractPaymentHandler;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerType;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -17,10 +18,15 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
-class PosPayment extends DefaultPayment
+class PosPayment extends AbstractPaymentHandler
 {
     public function pay(Request $request, PaymentTransactionStruct $transaction, Context $context, ?Struct $validateStruct): ?RedirectResponse
     {
         throw OrderException::paymentMethodNotAvailable(self::class);
+    }
+
+    public function supports(PaymentHandlerType $type, string $paymentMethodId, Context $context): bool
+    {
+        return false;
     }
 }
