@@ -125,7 +125,7 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
             // ToDo PPI-22 - The module should go into a disconnected state instead of deleting the whole saleschannel.
             this.salesChannelRepository.delete(this.salesChannel.id, Context.api).then(() => {
                 // Forces the sw-admin-menu component to refresh the SalesChannel list
-                this.$root.$emit('sales-channel-change');
+                Shopware.Utils.EventBus.emit('sw-sales-channel-detail-sales-channel-change');
 
                 this.$emit('recreate-sales-channel');
                 this.forceUpdate();
