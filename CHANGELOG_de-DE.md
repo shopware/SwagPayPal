@@ -3,6 +3,7 @@
 - Behebt ein Problem, bei dem Vaulting-Zahlungen in bestimmten Fällen im Zahlungsprozess nach einer Bestellung nicht ausgeführt werden konnten
 - Behebt ein Problem, bei dem der Venmo Express-Button nicht angezeigt wurde
 - Behebt ein Problem, bei dem Bestellungen in Randfällen doppelt angelegt werden konnten (shopware/shopware#8359)
+- Fügt einen Link zum Melden von Bugs zu dem Kontextmenü der Erweiterungsliste hinzu
 
 # 9.7.4
 - Behebt ein Problem, bei dem die Eingabefelder des Modals für Rückerstattungen fehlen konnten

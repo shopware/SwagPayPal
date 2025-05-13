@@ -11,5 +11,17 @@
         {{ $tc('sw-extension-store.component.sw-extension-card-base.contextMenu.config') }}
     </sw-context-menu-item>
 
+    <sw-context-menu-item
+        v-if="extension?.name === 'SwagPayPal'"
+    >
+        <sw-external-link
+            as="a"
+            target="_blank"
+            href="https://github.com/shopware/SwagPayPal/issues"
+        >
+            {{ $t('swag-paypal.extension-card-base.reportIssue') }}
+        </sw-external-link>
+    </sw-context-menu-item>
+
     {% parent %}
 {% endblock %}
