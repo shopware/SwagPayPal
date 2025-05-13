@@ -10,7 +10,6 @@ namespace Swag\PayPal\Test\Checkout\Order\Shipping\MessageQueue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\MockObject\Rule\InvokedCount;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
@@ -86,7 +85,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             ->willReturn($payPalOrder);
 
         $this->orderResource
-            ->expects(self::exactlyIf($hasCapture && $isDataComplete, \count($addedTrackers)))
+            ->expects($hasCapture && $isDataComplete ? static::exactly(\count($addedTrackers)) : static::never())
             ->method('addTracker')
             ->with(
                 static::callback(static function (Tracker $tracker) use (&$addedTrackers, &$carrier, $hasLineItems): bool {
@@ -103,7 +102,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             );
 
         $this->orderResource
-            ->expects(self::exactlyIf($hasCapture && $isDataComplete, \count($removedTrackers)))
+            ->expects($hasCapture && $isDataComplete ? static::exactly(\count($removedTrackers)) : static::never())
             ->method('removeTracker')
             ->with(
                 static::callback(static function (Tracker $tracker) use (&$removedTrackers, &$carrier, $hasLineItems): bool {
@@ -124,7 +123,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             );
 
         $this->logger
-            ->expects(self::exactlyIf($hasCapture && $isDataComplete, ((int) !empty($addedTrackers)) + ((int) !empty($removedTrackers))))
+            ->expects($hasCapture && $isDataComplete ? static::exactly(((int) !empty($addedTrackers)) + ((int) !empty($removedTrackers))) : static::never())
             ->method('info');
 
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
@@ -507,10 +506,5 @@ class ShippingInformationMessageHandlerTest extends TestCase
             new Criteria(),
             Context::createDefaultContext(),
         );
-    }
-
-    private function exactlyIf(bool $condition, int $count): InvokedCount
-    {
-        return $condition ? static::exactly($count) : static::never();
     }
 }

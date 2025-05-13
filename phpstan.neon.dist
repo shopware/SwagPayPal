@@ -56,13 +56,45 @@ parameters:
             message: '#.*extends @final class (\w|\\)*(SalesChannel|Entity)Repository#'
             path: tests/**/*.php
 
-        - # ignore own deprecations
-            message: '#.*tag:v11.0.0 -#'
+        - # in tests, we can use internal methods
+            identifier: staticMethod.internal
+            path: tests/*.php
 
-        - # ignore shopware v6.7 deprecations in tests
-            message: '#.*tag:v6.8.0 -#'
-            paths:
-                - tests/**/*.php
+        - # in tests, we can instantiate internal classes
+            identifier: new.internalClass
+            path: tests/*.php
+
+        - # in tests, we can use internal classes and its static methods
+            identifier: staticMethod.internalClass
+            path: tests/*.php
+
+        - # in tests, we can use internal classes and its methods
+            identifier: method.internalClass
+            path: tests/*.php
+
+        - # in tests, we can use internal interfaces
+            identifier: method.internalInterface
+            path: tests/*.php
+
+        - # in tests, we can use internal methods
+            identifier: method.internal
+            path: tests/*.php
+
+        - # in tests, we can use constants of internal classes
+            identifier: classConstant.internalClass
+            path: tests/*.php
+
+        - # in tests, we can use constants of internal interfaces
+            identifier: classConstant.internalInterface
+            path: tests/*.php
+
+        - # in tests, we can use instanceof of internal interfaces
+            identifier: instanceof.internalInterface
+            path: tests/*.php
+
+        - # package attributes are fine
+            identifier: attribute.internalClass
+            message: '#.*Shopware\\Core\\Framework\\Log\\Package#'
 
 services:
     -   # register the class, so we can decorate it, but don't tag it as a rule, so only our decorator is used by PHPStan
