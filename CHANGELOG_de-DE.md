@@ -2,6 +2,7 @@
 - Behebt ein Problem, bei dem Vaulting-Zahlungen in bestimmten Fällen im Zahlungsprozess nach einer Bestellung nicht ausgeführt werden konnten
 - Behebt ein Problem, bei dem der Venmo Express-Button nicht angezeigt wurde
 - Behebt ein Problem, bei dem Bestellungen in Randfällen doppelt angelegt werden konnten (shopware/shopware#8359)
+- Fügt einen Link zum Melden von Bugs zu dem Kontextmenü der Erweiterungsliste hinzu
 
 # 8.7.5
 - Behebt ein Problem mit dem vorkompilierten Storefront-Javascript (shopware/shopware#8483)
