@@ -117,7 +117,7 @@ class PUIInstructionsFetchMessageHandlerTest extends TestCase
 
     private function assertCriteria(Criteria $criteria): void
     {
-        static::assertEquals(1, $criteria->getLimit());
+        static::assertSame(1, $criteria->getLimit());
         static::assertTrue($criteria->hasAssociation('order'));
 
         $filters = $criteria->getFilters();

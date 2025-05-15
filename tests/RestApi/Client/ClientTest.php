@@ -71,7 +71,7 @@ class ClientTest extends TestCase
 
         $logs = $this->logger->getRecords();
         static::assertCount(1, $logs);
-        static::assertEquals('Requesting PayPal: [{debugId}] {method} {target} {code}', $logs[0]->message);
+        static::assertSame('Requesting PayPal: [{debugId}] {method} {target} {code}', $logs[0]->message);
         static::assertEquals([
             'method' => 'POST',
             'target' => 'http://example.com/some/endpoint',
@@ -123,7 +123,7 @@ class ClientTest extends TestCase
 
         $logs = $this->logger->getRecords();
         static::assertCount(2, $logs);
-        static::assertEquals('Requesting PayPal: [{debugId}] {method} {target} {code}', $logs[0]->message);
+        static::assertSame('Requesting PayPal: [{debugId}] {method} {target} {code}', $logs[0]->message);
         static::assertEquals([
             'method' => 'POST',
             'target' => 'http://example.com/some/endpoint',

@@ -55,9 +55,9 @@ class AvailabilityContextBuilderTest extends TestCase
 
         $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
 
-        static::assertEquals('US', $context->getBillingCountryCode());
-        static::assertEquals('USD', $context->getCurrencyCode());
-        static::assertEquals(275.00, $context->getTotalAmount());
+        static::assertSame('US', $context->getBillingCountryCode());
+        static::assertSame('USD', $context->getCurrencyCode());
+        static::assertSame(275.00, $context->getTotalAmount());
         static::assertFalse($context->hasDigitalProducts());
     }
 
@@ -83,9 +83,9 @@ class AvailabilityContextBuilderTest extends TestCase
 
         $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
 
-        static::assertEquals('US', $context->getBillingCountryCode());
-        static::assertEquals('USD', $context->getCurrencyCode());
-        static::assertEquals(275.00, $context->getTotalAmount());
+        static::assertSame('US', $context->getBillingCountryCode());
+        static::assertSame('USD', $context->getCurrencyCode());
+        static::assertSame(275.00, $context->getTotalAmount());
         static::assertFalse($context->hasDigitalProducts());
     }
 
@@ -114,9 +114,9 @@ class AvailabilityContextBuilderTest extends TestCase
 
         $context = AvailabilityContextBuilder::buildFromProduct($product, $salesChannelContext);
 
-        static::assertEquals('US', $context->getBillingCountryCode());
-        static::assertEquals('USD', $context->getCurrencyCode());
-        static::assertEquals(275.00, $context->getTotalAmount());
+        static::assertSame('US', $context->getBillingCountryCode());
+        static::assertSame('USD', $context->getCurrencyCode());
+        static::assertSame(275.00, $context->getTotalAmount());
         static::assertFalse($context->hasDigitalProducts());
     }
 
@@ -143,9 +143,9 @@ class AvailabilityContextBuilderTest extends TestCase
 
         $context = AvailabilityContextBuilder::buildFromProduct($product, $salesChannelContext);
 
-        static::assertEquals('US', $context->getBillingCountryCode());
-        static::assertEquals('USD', $context->getCurrencyCode());
-        static::assertEquals(275.00, $context->getTotalAmount());
+        static::assertSame('US', $context->getBillingCountryCode());
+        static::assertSame('USD', $context->getCurrencyCode());
+        static::assertSame(275.00, $context->getTotalAmount());
         static::assertFalse($context->hasDigitalProducts());
     }
 
@@ -174,9 +174,9 @@ class AvailabilityContextBuilderTest extends TestCase
 
         $context = AvailabilityContextBuilder::buildFromOrder($order, $salesChannelContext);
 
-        static::assertEquals('US', $context->getBillingCountryCode());
-        static::assertEquals('USD', $context->getCurrencyCode());
-        static::assertEquals(275.00, $context->getTotalAmount());
+        static::assertSame('US', $context->getBillingCountryCode());
+        static::assertSame('USD', $context->getCurrencyCode());
+        static::assertSame(275.00, $context->getTotalAmount());
         static::assertFalse($context->hasDigitalProducts());
     }
 
@@ -209,9 +209,9 @@ class AvailabilityContextBuilderTest extends TestCase
 
         $context = AvailabilityContextBuilder::buildFromOrder($order, $salesChannelContext);
 
-        static::assertEquals('US', $context->getBillingCountryCode());
-        static::assertEquals('USD', $context->getCurrencyCode());
-        static::assertEquals(275.00, $context->getTotalAmount());
+        static::assertSame('US', $context->getBillingCountryCode());
+        static::assertSame('USD', $context->getCurrencyCode());
+        static::assertSame(275.00, $context->getTotalAmount());
         static::assertFalse($context->hasDigitalProducts());
     }
 }

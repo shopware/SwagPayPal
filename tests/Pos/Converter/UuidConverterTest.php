@@ -50,7 +50,7 @@ class UuidConverterTest extends TestCase
         if ($expectedUuid === '') {
             $this->expectException(InvalidUuidException::class);
         }
-        static::assertEquals($expectedUuid, $this->createUuidConverter()->convertUuidToV4($originalUuid));
+        static::assertSame($expectedUuid, $this->createUuidConverter()->convertUuidToV4($originalUuid));
     }
 
     public static function dataProviderUuidIncrementation(): array
@@ -68,7 +68,7 @@ class UuidConverterTest extends TestCase
         if ($expectedUuid === '') {
             $this->expectException(InvalidUuidException::class);
         }
-        static::assertEquals($expectedUuid, $this->createUuidConverter()->incrementUuid($originalUuid));
+        static::assertSame($expectedUuid, $this->createUuidConverter()->incrementUuid($originalUuid));
     }
 
     private function createUuidConverter(): UuidConverter
