@@ -202,7 +202,7 @@ class UpdateTest extends TestCase
         $update = $this->createUpdateService(SystemConfigServiceMock::createWithoutCredentials());
         $update->update($updateContext);
 
-        static::assertEquals(0, $customFieldRepository->searchIds($criteria, $context)->getTotal());
+        static::assertSame(0, $customFieldRepository->searchIds($criteria, $context)->getTotal());
     }
 
     public function testUpdateTo200ChangePaymentHandlerIdentifier(): void

@@ -80,7 +80,7 @@ class ApplePayCheckoutDataServiceTest extends TestCase
         );
 
         static::assertInstanceOf(ApplePayCheckoutData::class, $checkoutDataMock);
-        static::assertEquals(20.00, $checkoutDataMock->getTotalPrice());
+        static::assertSame('20.00', $checkoutDataMock->getTotalPrice());
         static::assertSame('Test Name', $checkoutDataMock->getBrandName());
         static::assertArrayHasKey('addressLines', $checkoutDataMock->getBillingAddress());
         static::assertSame('Test street', $checkoutDataMock->getBillingAddress()['addressLines']);
@@ -109,7 +109,7 @@ class ApplePayCheckoutDataServiceTest extends TestCase
         );
 
         static::assertInstanceOf(ApplePayCheckoutData::class, $checkoutDataMock);
-        static::assertEquals(20.00, $checkoutDataMock->getTotalPrice());
+        static::assertSame('20.00', $checkoutDataMock->getTotalPrice());
         static::assertSame('Test Name', $checkoutDataMock->getBrandName());
         static::assertArrayHasKey('addressLines', $checkoutDataMock->getBillingAddress());
         static::assertSame('Test Street', $checkoutDataMock->getBillingAddress()['addressLines']);

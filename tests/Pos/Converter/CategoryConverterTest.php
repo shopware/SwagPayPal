@@ -33,7 +33,7 @@ class CategoryConverterTest extends TestCase
         }
         $category = $this->createCategoryConverter()->convert($shopwareCategory);
         static::assertEquals($shopwareCategory->getTranslation('name'), $category->getName());
-        static::assertEquals((new UuidConverter())->convertUuidToV1($shopwareCategory->getId()), $category->getUuid());
+        static::assertSame((new UuidConverter())->convertUuidToV1($shopwareCategory->getId()), $category->getUuid());
     }
 
     private function createCategoryConverter(): CategoryConverter

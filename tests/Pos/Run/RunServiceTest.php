@@ -83,9 +83,9 @@ class RunServiceTest extends TestCase
         $logEntry = $this->logRepository->search($criteria, $context)->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
-        static::assertEquals(Level::Info, Level::from($logEntry->getLevel()));
-        static::assertEquals(self::TEST_MESSAGE, $logEntry->getMessage());
-        static::assertEquals($runId, $logEntry->getRunId());
+        static::assertSame(Level::Info, Level::from($logEntry->getLevel()));
+        static::assertSame(self::TEST_MESSAGE, $logEntry->getMessage());
+        static::assertSame($runId, $logEntry->getRunId());
         static::assertNull($logEntry->getProductId());
         static::assertNull($logEntry->getProductVersionId());
     }
@@ -114,10 +114,10 @@ class RunServiceTest extends TestCase
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
         static::assertSame(Level::Info, Level::from($logEntry->getLevel()));
-        static::assertEquals(self::TEST_MESSAGE, $logEntry->getMessage());
-        static::assertEquals($runId, $logEntry->getRunId());
-        static::assertEquals($product->getParentId(), $logEntry->getProductId());
-        static::assertEquals($product->getVersionId(), $logEntry->getProductVersionId());
+        static::assertSame(self::TEST_MESSAGE, $logEntry->getMessage());
+        static::assertSame($runId, $logEntry->getRunId());
+        static::assertSame($product->getParentId(), $logEntry->getProductId());
+        static::assertSame($product->getVersionId(), $logEntry->getProductVersionId());
     }
 
     public function testAbortRun(): void

@@ -1,21 +1,16 @@
 includes:
     - phpstan-baseline.neon
-    - phar://phpstan.phar/conf/bleedingEdge.neon
-    - %ShopwareRoot%/src/Core/DevOps/StaticAnalyze/PHPStan/extension.neon
-    - %ShopwareRoot%/src/Core/DevOps/StaticAnalyze/PHPStan/rules.neon
+    - %ShopwareRoot%/src/Core/DevOps/StaticAnalyze/PHPStan/common.neon
 
 parameters:
-    phpVersion: 80200
-    level: 8
     tmpDir: var/cache/phpstan
-    treatPhpDocTypesAsCertain: false
-    checkFunctionNameCase: true
-    checkInternalClassCaseSensitivity: true
-    reportUnmatchedIgnoredErrors: true
+    featureToggles:
+        internalTag: true
 
     paths:
         - src
         - tests
+
     excludePaths:
         - src/Resources
         - src/DevOps/Rector
@@ -29,11 +24,6 @@ parameters:
         constantHassers: false
         # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
         containerXmlPath: '../../..%ShopwareHashedCacheDir%/%ShopwareKernelClass%DevDebugContainer.xml'
-
-    type_perfect:
-        narrow_return: true
-        no_mixed: true
-        null_over_false: true
 
     ignoreErrors:
         # We won't type all arrays/iterables for now
@@ -60,9 +50,9 @@ parameters:
             identifier: staticMethod.internal
             path: tests/*.php
 
-        - # in tests, we can instantiate internal classes
-            identifier: new.internalClass
-            path: tests/*.php
+        # - # in tests, we can instantiate internal classes
+        #     identifier: new.internalClass
+        #     path: tests/*.php
 
         - # in tests, we can use internal classes and its static methods
             identifier: staticMethod.internalClass
@@ -96,10 +86,6 @@ parameters:
             identifier: attribute.internalClass
             message: '#.*Shopware\\Core\\Framework\\Log\\Package#'
 
-services:
-    -   # register the class, so we can decorate it, but don't tag it as a rule, so only our decorator is used by PHPStan
-        class: Symplify\PHPStanRules\Rules\NoReturnSetterMethodRule
-
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
@@ -112,19 +98,3 @@ rules:
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Migration\NoAfterStatementRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\NoNewRequestInStorefrontRule
 
-    # rules from https://github.com/symplify/phpstan-rules
-    # domain
-    - Symplify\PHPStanRules\Rules\Enum\RequireUniqueEnumConstantRule
-    - Symplify\PHPStanRules\Rules\PreventParentMethodVisibilityOverrideRule
-
-    # explicit naming
-    - Symplify\PHPStanRules\Rules\ForbiddenMultipleClassLikeInOneFileRule
-
-    - Symplify\PHPStanRules\Rules\Complexity\ForbiddenArrayMethodCallRule
-
-    # complexity rules
-    - Symplify\PHPStanRules\Rules\NoDynamicNameRule
-
-    # naming rules
-    - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Symplify\NoReturnSetterMethodWithFluentSettersRule
-    - Symplify\PHPStanRules\Rules\UppercaseConstantRule

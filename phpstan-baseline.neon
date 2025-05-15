@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Provide more specific return type "Swag\\PayPal\\Checkout\\Card\\Exception\\CardValidationFailedException" over abstract one$#'
-			identifier: typePerfect.narrowReturnObjectType
-			count: 1
-			path: src/Checkout/Card/Exception/CardValidationFailedException.php
-
-		-
 			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
 			identifier: staticMethod.internal
 			count: 1
@@ -47,12 +41,6 @@ parameters:
 			identifier: staticMethod.internal
 			count: 1
 			path: src/Checkout/Payment/MessageQueue/TransactionStatusSyncMessageHandler.php
-
-		-
-			message: '#^Provide more specific return type "Swag\\PayPal\\OrdersApi\\Builder\\Exception\\OrderBuildException" over abstract one$#'
-			identifier: typePerfect.narrowReturnObjectType
-			count: 1
-			path: src/OrdersApi/Builder/Exception/OrderBuildException.php
 
 		-
 			message: '#^Use explicit names over dynamic ones$#'
@@ -97,12 +85,6 @@ parameters:
 			path: src/Pos/MessageQueue/MessageHydrator.php
 
 		-
-			message: '#^Provide more specific return type "Symfony\\Component\\HttpFoundation\\JsonResponse" over abstract one$#'
-			identifier: typePerfect.narrowReturnObjectType
-			count: 5
-			path: src/Pos/PosSyncController.php
-
-		-
 			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
 			identifier: staticMethod.internal
 			count: 1
@@ -139,12 +121,6 @@ parameters:
 			path: src/Setting/SettingsController.php
 
 		-
-			message: '#^Provide more specific return type "Shopware\\Core\\System\\SalesChannel\\NoContentResponse" over abstract one$#'
-			identifier: typePerfect.narrowReturnObjectType
-			count: 2
-			path: src/Storefront/Controller/PayPalController.php
-
-		-
 			message: '#^Mixed variable in a `\$checkoutMethod\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
 			identifier: typePerfect.noMixedMethodCaller
 			count: 2
@@ -179,12 +155,6 @@ parameters:
 			identifier: symplify.noDynamicName
 			count: 2
 			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
-
-		-
-			message: '#^Provide more specific return type "GuzzleHttp\\Psr7\\Response" over abstract one$#'
-			identifier: typePerfect.narrowReturnObjectType
-			count: 1
-			path: tests/Pos/Mock/Client/GuzzleClientMock.php
 
 		-
 			message: '#^Parameter \#1 \$entity of method Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\<Shopware\\Core\\Content\\Product\\ProductEntity\>\:\:add\(\) expects Shopware\\Core\\Content\\Product\\ProductEntity, Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity given\.$#'
@@ -227,15 +197,3 @@ parameters:
 			identifier: symplify.noDynamicName
 			count: 4
 			path: tests/Storefront/Data/CheckoutSubscriberTest.php
-
-		-
-			message: '#^Provide more specific return type "Shopware\\Core\\Kernel" over abstract one$#'
-			identifier: typePerfect.narrowReturnObjectType
-			count: 1
-			path: tests/TestBootstrapper.php
-
-		-
-			message: '#^Provide more specific return type "Shopware\\Core\\TestBootstrapper" over abstract one$#'
-			identifier: typePerfect.narrowReturnObjectType
-			count: 11
-			path: tests/TestBootstrapper.php

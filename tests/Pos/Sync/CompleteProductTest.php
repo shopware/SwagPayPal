@@ -274,8 +274,8 @@ class CompleteProductTest extends TestCase
         static::assertCount(5, $posProductRepository->getCollection());
         static::assertFalse($posProductRepository->getCollection()->has($productStateF->getUniqueIdentifier()));
         static::assertSame($convertedGroupingA->getProduct()->generateChecksum(), $productStateA->getChecksum());
-        static::assertNotEquals((new Product())->generateChecksum(), $productStateD->getChecksum());
-        static::assertNotEquals((new Product())->generateChecksum(), $productStateE->getChecksum());
+        static::assertNotSame((new Product())->generateChecksum(), $productStateD->getChecksum());
+        static::assertNotSame((new Product())->generateChecksum(), $productStateE->getChecksum());
 
         static::assertEqualsCanonicalizing(
             [ConstantsForTesting::PRODUCT_F_ID_CONVERTED, ConstantsForTesting::PRODUCT_G_ID_CONVERTED],
