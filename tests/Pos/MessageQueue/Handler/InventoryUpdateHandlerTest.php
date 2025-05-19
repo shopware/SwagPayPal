@@ -55,7 +55,7 @@ class InventoryUpdateHandlerTest extends TestCase
         $mockResult = [
             'random',
             'AbstractSyncMessage',
-            'values'
+            'values',
         ];
 
         $inventorySyncMock = $this->createMock(InventorySyncManager::class);

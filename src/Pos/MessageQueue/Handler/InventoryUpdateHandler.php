@@ -10,6 +10,7 @@ namespace Swag\PayPal\Pos\MessageQueue\Handler;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
@@ -69,13 +70,13 @@ class InventoryUpdateHandler
         }
     }
 
-    private function getSalesChannels(Context $context): SalesChannelCollection
+    private function getSalesChannels(Context $context): EntitySearchResult
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
 
-        return $this->salesChannelRepository->search($criteria, $context)->getEntities();
+        return $this->salesChannelRepository->search($criteria, $context);
     }
 }

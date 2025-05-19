@@ -27,7 +27,7 @@ class StockSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly MessageBusInterface $messageBus,
-        private readonly EntityRepository    $salesChannelRepository,
+        private readonly EntityRepository $salesChannelRepository,
     ) {
     }
 
