@@ -36,6 +36,9 @@ class InventoryUpdateHandler
 
     private MessageDispatcher $messageBus;
 
+    /**
+     * @param EntityRepository<SalesChannelCollection> $salesChannelRepository
+     */
     public function __construct(
         RunService $runService,
         EntityRepository $salesChannelRepository,
@@ -73,9 +76,6 @@ class InventoryUpdateHandler
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
 
-        /** @var SalesChannelCollection $salesChannels */
-        $salesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
-
-        return $salesChannels;
+        return $this->salesChannelRepository->search($criteria, $context)->getEntities();
     }
 }

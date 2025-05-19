@@ -22,7 +22,7 @@ class InventoryUpdateMessage implements AsyncMessageInterface, \JsonSerializable
     /**
      * @var string[]
      */
-    private array $ids;
+    private array $ids = [];
 
     private ?Context $context = null;
 
