@@ -266,6 +266,49 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame($payLaterAvailable && $showPayLaterSetting, $expressCheckoutButtonData->isShowPayLater());
     }
 
+    public function testGetExpressCheckoutButtonDataWithoutEventNameExtension(): void
+    {
+        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
+
+        $this->systemConfigService->set(Settings::ECS_SHOW_PAY_LATER, true, $salesChannelContext->getSalesChannelId());
+
+        $context = Context::createDefaultContext();
+        $taxId = $this->createTaxId($context);
+        $productId = $this->getProductId($context, $taxId);
+        $product = new SalesChannelProductEntity();
+        $product->setId($productId);
+        $product->setPrice(new PriceCollection([
+            new Price(Defaults::CURRENCY, 2, 5, false),
+        ]));
+        $product->setCalculatedPrice(new CalculatedPrice(
+            2,
+            2,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection()
+        ));
+
+        $salesChannelContext->addExtension(ExpressCheckoutSubscriber::PAYPAL_PAYLATER_PRODUCT, $product);
+
+        $payLaterMethodData = $this->createMock(PayLaterMethodData::class);
+        $payLaterMethodData->method('isAvailable')
+            ->willReturn(true);
+
+        $payPalExpressCheckoutDataService = new PayPalExpressCheckoutDataService(
+            $this->getContainer()->get(CartService::class),
+            $this->getContainer()->get(LocaleCodeProvider::class),
+            $this->getContainer()->get('router'),
+            $this->paymentMethodUtil,
+            $this->systemConfigService,
+            new CredentialsUtil($this->systemConfigService),
+            $this->getContainer()->get(CartPriceService::class),
+            $payLaterMethodData
+        );
+
+        $expressCheckoutButtonData = $payPalExpressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext, true);
+
+        static::assertNotNull($expressCheckoutButtonData);
+    }
+
     public static function dataProviderTestFundingSourcesWithPayLater(): array
     {
         return [
