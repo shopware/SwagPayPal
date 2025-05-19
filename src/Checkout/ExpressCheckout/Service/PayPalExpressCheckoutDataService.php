@@ -76,9 +76,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         $context = $salesChannelContext->getContext();
         $salesChannelId = $salesChannelContext->getSalesChannelId();
         $eventName = $salesChannelContext->getExtensionOfType(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_EVENT_NAME, ArrayStruct::class);
-        if ($eventName === null) {
-            $eventName = new ArrayStruct();
-        }
+        $eventName ??= new ArrayStruct();
 
         $fundingSources = ['paypal', 'venmo'];
 
@@ -139,7 +137,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
      */
     private function showPayLater(string $salesChannelId, AvailabilityContext $availabilityContext, ArrayStruct $eventName): bool
     {
-        return $eventName->all()[0] === ProductPageLoadedEvent::class
+        return $eventName->get(0) === ProductPageLoadedEvent::class
             && $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId)
             && $this->payLaterMethodData->isAvailable($availabilityContext);
     }

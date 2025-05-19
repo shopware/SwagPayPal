@@ -1,3 +1,6 @@
+# 9.7.6
+- Behebt ein Problem, bei dem der Express Checkout auf bestimmten Seiten nicht korrekt angezeigt wurde (shopware/SwagPayPal#234)
+
 # 9.7.5
 - Behebt ein Problem, bei dem der PayLater Button auf einer Produktseite nicht angezeigt wird, wenn der Warenkorb leer ist (shopware/shopware#8356)
 - Behebt ein Problem, bei dem Vaulting-Zahlungen in bestimmten Fällen im Zahlungsprozess nach einer Bestellung nicht ausgeführt werden konnten
