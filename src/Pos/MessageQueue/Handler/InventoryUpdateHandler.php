@@ -8,9 +8,9 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
@@ -29,27 +29,15 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class InventoryUpdateHandler
 {
-    private RunService $runService;
-
-    private EntityRepository $salesChannelRepository;
-
-    private InventorySyncManager $inventorySyncManager;
-
-    private MessageDispatcher $messageBus;
-
     /**
      * @param EntityRepository<SalesChannelCollection> $salesChannelRepository
      */
     public function __construct(
-        RunService $runService,
-        EntityRepository $salesChannelRepository,
-        InventorySyncManager $inventorySyncManager,
-        MessageDispatcher $messageBus,
+        private readonly RunService $runService,
+        private readonly EntityRepository $salesChannelRepository,
+        private readonly InventorySyncManager $inventorySyncManager,
+        private readonly MessageDispatcher $messageBus,
     ) {
-        $this->runService = $runService;
-        $this->salesChannelRepository = $salesChannelRepository;
-        $this->inventorySyncManager = $inventorySyncManager;
-        $this->messageBus = $messageBus;
     }
 
     public function __invoke(InventoryUpdateMessage $message): void
@@ -70,13 +58,16 @@ class InventoryUpdateHandler
         }
     }
 
-    private function getSalesChannels(Context $context): EntitySearchResult
+    /**
+     * @return SalesChannelCollection
+     */
+    private function getSalesChannels(Context $context): EntityCollection
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
 
-        return $this->salesChannelRepository->search($criteria, $context);
+        return $this->salesChannelRepository->search($criteria, $context)->getEntities();
     }
 }
