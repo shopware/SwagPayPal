@@ -99,6 +99,7 @@ runs:
         install-storefront: ${{ inputs.install-storefront }}
         dependencies: ${{ steps.dependency-list.outputs.deps }}
         extraRepositories: ${{ steps.dependency-list.outputs.repos }}
+        keep-composer-tools: true
     - name: Prepare Administration
       shell: bash
       if: ${{ inputs.install-admin == 'true' }}
