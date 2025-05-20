@@ -6841,6 +6841,44 @@
                     }
                 },
                 "type": "object"
+            },
+            "error": {
+                "required": [
+                    "code",
+                    "status",
+                    "title",
+                    "detail",
+                    "meta"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "detail": {
+                        "type": "string"
+                    },
+                    "meta": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "parameters": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "mixed"
+                                    }
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
             }
         }
     },
