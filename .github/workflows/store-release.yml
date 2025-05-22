@@ -1,3 +1,5 @@
+name: store-release
+
 on:
   workflow_dispatch:
 

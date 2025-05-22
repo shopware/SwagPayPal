@@ -1,3 +1,5 @@
+name: admin
+
 on:
   push:
     branches:
