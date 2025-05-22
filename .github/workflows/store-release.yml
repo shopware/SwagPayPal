@@ -1,6 +1,6 @@
-name: Release to Store
 on:
   workflow_dispatch:
+
 jobs:
   build:
     uses: shopware/github-actions/.github/workflows/store-release.yml@main
