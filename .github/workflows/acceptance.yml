@@ -20,6 +20,18 @@ jobs:
         with:
           extensionName: ${{ github.event.repository.name }}
 
+      - name: Checkout SwagPayPal
+        if: (!contains(github.event.pull_request.labels.*.name, 'run/acceptance'))
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+
+      - name: Test install zip
+        if: (!contains(github.event.pull_request.labels.*.name, 'run/acceptance'))
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          extension-zip: ${{ steps.upload.outputs.artifact-url }}
+
   eslint:
     runs-on: ubuntu-latest
     steps:
