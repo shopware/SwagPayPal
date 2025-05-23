@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -58,10 +57,7 @@ class InventoryUpdateHandler
         }
     }
 
-    /**
-     * @return SalesChannelCollection
-     */
-    private function getSalesChannels(Context $context): EntityCollection
+    private function getSalesChannels(Context $context): SalesChannelCollection
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
