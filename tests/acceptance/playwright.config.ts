@@ -64,6 +64,7 @@ export default defineConfig({
             testMatch: /.*\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
+                channel: 'chromium',
             },
             dependencies: ['PayPal Setup'],
         },

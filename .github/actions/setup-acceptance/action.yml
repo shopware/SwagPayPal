@@ -1,0 +1,42 @@
+name: Setup Acceptance
+description: Setup Acceptance with caching
+
+inputs:
+  path:
+    description: The working directory
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Get playwright version
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: echo "PLAYWRIGHT_VERSION=$(jq -r '.dependencies["@playwright/test"]' package.json)" >> $GITHUB_ENV
+
+    - name: Cache playwright browsers
+      id: playwright-browsers-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-browsers-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}
+
+    - name: Install playwright browsers
+      if: steps.playwright-browsers-cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: npx playwright install --with-deps chromium
+
+    - name: Cache acceptance node_modules
+      id: acceptance-node-cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.path }}/node_modules
+        key: acceptance-node-modules-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', inputs.path)) }}
+
+    - name: Install acceptance dependencies
+      if: steps.acceptance-node-cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: npm ci --no-audit --prefer-offline

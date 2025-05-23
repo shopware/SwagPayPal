@@ -97,6 +97,11 @@ jobs:
         with:
           path: ${{ env.PLUGIN_PATH }}
 
+      - name: Setup acceptance
+        uses: ./paypal/.github/actions/setup-acceptance
+        with:
+          path: ${{ env.PLUGIN_PATH }}/tests/acceptance
+
       - name: Prepare environment variables
         run: |
           symfony console cache:clear --env="${APP_ENV}" || true
@@ -106,24 +111,7 @@ jobs:
       - name: Prepare logging
         run: echo "$MONOLOG_CONFIG" > ./config/packages/monolog.yaml
 
-      - name: Extract Playwright version
-        working-directory: ${{ env.PLUGIN_PATH }}/tests/acceptance
-        run: echo "PLAYWRIGHT_VERSION=$(jq -r '.dependencies["@playwright/test"]' package.json)" >> $GITHUB_ENV
-
-      - name: Cache Playwright
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}
-
-      - name: Install playwright
-        working-directory: ${{ env.PLUGIN_PATH }}/tests/acceptance
-        run: |
-          npm ci
-          npx playwright install --with-deps
-
-      - name: Run Playwright
+      - name: Run playwright
         working-directory: ${{ env.PLUGIN_PATH }}/tests/acceptance
         run: npx playwright test --reporter=${{ github.event.act && 'line' || 'github' }} --trace=on-first-retry
 

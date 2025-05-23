@@ -15,7 +15,7 @@ npm install
 Install Playwright.
 
 ```
-npx playwright install
+npx playwright install chromium
 npx playwright install-deps
 ```
 
