@@ -27,6 +27,7 @@
       "@page-objects/*": ["page-objects/*"],
       "@tasks/*": ["tasks/*"],
       "@data/*": ["test-data/*"],
+      "@services/*": ["services/*"],
       "SwagPayPal/*": ["../../src/Resources/app/administration/src/*"],
     }
   }

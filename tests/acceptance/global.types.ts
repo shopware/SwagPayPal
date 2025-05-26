@@ -4,8 +4,9 @@ import type { StorefrontPageTypes } from '@page-objects/StorefrontPages';
 import type { DataFixtureTypes } from 'data-fixtures/DataFixtures';
 import type { ShopAdminTasks } from '@tasks/ShopAdminTasks';
 import type { ShopCustomerTasks } from '@tasks/ShopCustomerTasks';
+import type { ServicesTypes } from '@services/Services';
 
-interface TestFixtureTypes extends AdminPageTypes, StorefrontPageTypes, DataFixtureTypes, ShopAdminTasks, ShopCustomerTasks {
+interface TestFixtureTypes extends AdminPageTypes, StorefrontPageTypes, DataFixtureTypes, ShopAdminTasks, ShopCustomerTasks, ServicesTypes {
 }
 
 declare global {

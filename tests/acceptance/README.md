@@ -45,3 +45,12 @@ Navigate to `[paypal-repo]/tests/acceptance` and run:
 ```
 npx playwright test
 ```
+
+## Secrets
+
+Any environment variable prefixed with `PAYPAL_` will be added to the [PayPalDataProvider](./services/PayPalDataProvider.ts) with the key stripped and converted to kebab-case:
+
+- `PAYPAL_CLIENT_ID => client-id`
+- `PAYPAL_SOME_ODDLY_LONG_KEY => some-oddly-long-key`
+
+To add new secrets typesafe, add them to the `DataDefinition` variable of the [`PayPalDataProvider`](./services/PayPalDataProvider.ts).

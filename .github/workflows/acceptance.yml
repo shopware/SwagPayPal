@@ -59,6 +59,7 @@ jobs:
     needs: build-zip
     if: (needs.build-zip.result == 'success' && contains(github.event.pull_request.labels.*.name, 'run/acceptance')) || github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    environment: acceptance-production
     services:
       redis:
         image: redis:7.0
@@ -74,10 +75,6 @@ jobs:
       APP_DEBUG: '1'
       MAILER_DSN: smtp://localhost:1025
       PLUGIN_PATH: ./paypal
-      PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
-      PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
-      PAYPAL_MERCHANT_ID: ${{ secrets.PAYPAL_MERCHANT_ID }}
-      PAYPAL_SANDBOX: ${{ secrets.PAYPAL_SANDBOX }}
       MONOLOG_CONFIG: |
         monolog:
           handlers:

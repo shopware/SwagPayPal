@@ -3,6 +3,7 @@ import { test as shopCustomerTasks } from '@tasks/ShopCustomerTasks';
 import { test as shopAdminTasks } from '@tasks/ShopAdminTasks';
 import { test as adminPages } from '@page-objects/AdministrationPages';
 import { test as storefrontPages } from '@page-objects/StorefrontPages';
+import { test as services } from '@services/Services';
 
 export const test = mergeTests(
     ShopwareTestSuite,
@@ -10,4 +11,5 @@ export const test = mergeTests(
     shopAdminTasks,
     adminPages,
     storefrontPages,
+    services,
 );
