@@ -17,7 +17,6 @@ parameters:
         -   tests
     excludePaths:
         -   src/Resources
-        -   src/DevOps/Rector
 
     symfony:
         constant_hassers: false
