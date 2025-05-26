@@ -111,14 +111,17 @@ jobs:
         with:
           path: ${{ env.PLUGIN_PATH }}/tests/acceptance
 
+      - name: Prepare logging
+        run: echo "$MONOLOG_CONFIG" > ./config/packages/monolog.yaml
+
       - name: Prepare environment variables
         run: |
           symfony console cache:clear --env="${APP_ENV}" || true
           echo "APP_URL=${APP_URL}" >> "${PLUGIN_PATH}/tests/acceptance/.env"
+          echo "$PAYPAL_SECRETS" | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]' >> "${PLUGIN_PATH}/tests/acceptance/.env"
           symfony console integration:create AcceptanceTest --admin >> "${PLUGIN_PATH}/tests/acceptance/.env"
-
-      - name: Prepare logging
-        run: echo "$MONOLOG_CONFIG" > ./config/packages/monolog.yaml
+        env:
+          PAYPAL_SECRETS: ${{ toJson(secrets) }}
 
       - name: Run playwright
         working-directory: ${{ env.PLUGIN_PATH }}/tests/acceptance
