@@ -28,24 +28,15 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class InventoryUpdateHandler
 {
-    private RunService $runService;
-
-    private EntityRepository $salesChannelRepository;
-
-    private InventorySyncManager $inventorySyncManager;
-
-    private MessageDispatcher $messageBus;
-
+    /**
+     * @param EntityRepository<SalesChannelCollection> $salesChannelRepository
+     */
     public function __construct(
-        RunService $runService,
-        EntityRepository $salesChannelRepository,
-        InventorySyncManager $inventorySyncManager,
-        MessageDispatcher $messageBus,
+        private readonly RunService $runService,
+        private readonly EntityRepository $salesChannelRepository,
+        private readonly InventorySyncManager $inventorySyncManager,
+        private readonly MessageDispatcher $messageBus,
     ) {
-        $this->runService = $runService;
-        $this->salesChannelRepository = $salesChannelRepository;
-        $this->inventorySyncManager = $inventorySyncManager;
-        $this->messageBus = $messageBus;
     }
 
     public function __invoke(InventoryUpdateMessage $message): void
@@ -73,9 +64,6 @@ class InventoryUpdateHandler
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
 
-        /** @var SalesChannelCollection $salesChannels */
-        $salesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
-
-        return $salesChannels;
+        return $this->salesChannelRepository->search($criteria, $context)->getEntities();
     }
 }

@@ -7,225 +7,110 @@
 
 namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
-use Doctrine\DBAL\Connection;
-use Monolog\Logger;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
-use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
-use Shopware\Core\Checkout\Cart\Price\Struct\QuantityPriceDefinition;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
-use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemDefinition;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
-use Shopware\Core\Checkout\Order\OrderDefinition;
-use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Order\OrderStates;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
-use Shopware\Core\Defaults;
+use Shopware\Core\Content\Product\Events\ProductStockAlteredEvent;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Write\Command\ChangeSet;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
-use Shopware\Core\System\StateMachine\Event\StateMachineTransitionEvent;
-use Shopware\Core\System\StateMachine\Loader\InitialStateIdLoader;
 use Shopware\Core\Test\Generator;
-use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
-use Swag\PayPal\Pos\MessageQueue\Handler\InventoryUpdateHandler;
-use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\InventorySyncMessage;
-use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
-use Swag\PayPal\Pos\Resource\InventoryResource;
-use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
+use Swag\PayPal\Pos\MessageQueue\Message\InventoryUpdateMessage;
 use Swag\PayPal\Pos\Sync\Inventory\StockSubscriber;
-use Swag\PayPal\Pos\Sync\ProductSelection;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
-use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
 use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
-use Swag\PayPal\Test\Pos\Mock\Repositories\OrderLineItemRepoMock;
-use Swag\PayPal\Test\Pos\Mock\Repositories\PosInventoryRepoMock;
-use Swag\PayPal\Test\Pos\Mock\Repositories\ProductRepoMock;
-use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
-use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
-use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
-use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
-use Symfony\Component\Messenger\MessageBus;
 
 /**
  * @internal
  */
 #[Package('checkout')]
+#[CoversClass(StockSubscriber::class)]
 class StockSubscriberTest extends TestCase
 {
-    use BasicTestDataBehaviour;
     use KernelTestBehaviour;
     use SalesChannelTrait;
 
-    public function testStateChanged(): void
-    {
-        $this->process(function (StockSubscriber $stockSubscriber, OrderEntity $order, SalesChannelContext $context): void {
-            $event = $this->createStateMachineTransitionEvent($order->getId(), $context->getContext());
+    private MockObject&EntityRepository $repositoryMock;
 
-            $stockSubscriber->stateChanged($event);
+    public function testAddInventoryMessage(): void
+    {
+        $this->process(function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
+            $event = new ProductStockAlteredEvent([
+                ConstantsForTesting::PRODUCT_A_ID,
+                ConstantsForTesting::PRODUCT_B_ID,
+                ConstantsForTesting::PRODUCT_C_ID,
+            ], $context->getContext());
+
+            $stockSubscriber->updateInventory($event);
         });
     }
 
-    public function testStateChangedWithoutPosSalesChannel(): void
+    public function testEmptyProductIds(): void
     {
-        $event = $this->createStateMachineTransitionEvent(Uuid::randomHex(), Context::createDefaultContext());
-
-        $orderLineItemRepo = $this->getMockBuilder(EntityRepository::class)->disableOriginalConstructor()->getMock();
-        $orderLineItemRepo->expects(static::never())->method('search');
-        $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
-
-        $stockSubscriber = new StockSubscriber(
-            $orderLineItemRepo,
-            new MessageBusMock(),
-            $salesChannelRepository
-        );
-
-        $stockSubscriber->stateChanged($event);
+        $this->process(function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
+            $stockSubscriber->updateInventory(new ProductStockAlteredEvent([], $context->getContext()));
+        }, false);
     }
 
-    public function testLineItemWritten(): void
+    public function testNoPosSalesChannel(): void
     {
-        $this->process(function (StockSubscriber $stockSubscriber, OrderEntity $order, SalesChannelContext $context): void {
-            $event = $this->createEntityWrittenEvent($order, $context->getContext());
+        $this->repositoryMock = $this->createMock(EntityRepository::class);
+        $this->repositoryMock
+            ->method('searchIds')
+            ->willReturn(new IdSearchResult(0, [], new Criteria(), Context::createDefaultContext()));
 
-            $stockSubscriber->lineItemWritten($event);
-        });
+        $this->process(function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
+            $event = new ProductStockAlteredEvent([
+                ConstantsForTesting::PRODUCT_A_ID,
+                ConstantsForTesting::PRODUCT_B_ID,
+                ConstantsForTesting::PRODUCT_C_ID,
+            ], $context->getContext());
+
+            $stockSubscriber->updateInventory($event);
+        }, false);
     }
 
-    public function testLineItemWrittenWithoutPosSalesChannel(): void
+    public function testNotLiveContext(): void
     {
-        $context = Context::createDefaultContext();
-        $order = $this->createOrder($context);
-        $event = $this->createEntityWrittenEvent($order, $context);
+        $this->process(function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
+            $event = new ProductStockAlteredEvent([
+                ConstantsForTesting::PRODUCT_A_ID,
+                ConstantsForTesting::PRODUCT_B_ID,
+                ConstantsForTesting::PRODUCT_C_ID,
+            ], $context->getContext()->createWithVersionId(Uuid::randomHex()));
 
-        $this->createStockSubscriber()->lineItemWritten($event);
-    }
-
-    public function testOrderPlaced(): void
-    {
-        $this->process(function (StockSubscriber $stockSubscriber, OrderEntity $order, SalesChannelContext $context): void {
-            $event = $this->createCheckoutOrderPlacedEvent($context, $order);
-
-            $stockSubscriber->orderPlaced($event);
-        });
-    }
-
-    public function testOrderPlacedWithoutPosSalesChannel(): void
-    {
-        $salesChannelContext = Generator::generateSalesChannelContext();
-        $order = $this->createOrder($salesChannelContext->getContext());
-        $event = $this->createCheckoutOrderPlacedEvent($salesChannelContext, $order);
-
-        $this->createStockSubscriber()->orderPlaced($event);
+            $stockSubscriber->updateInventory($event);
+        }, false);
     }
 
     private function process(callable $callback, bool $shouldWork = true): void
     {
         $salesChannelContext = Generator::generateSalesChannelContext();
 
-        $inventoryResource = new InventoryResource(new PosClientFactoryMock());
-        $inventoryRepository = new PosInventoryRepoMock();
-        $productRepository = new ProductRepoMock();
-        $salesChannelProductRepository = new SalesChannelProductRepoMock();
-        $salesChannel = $this->getSalesChannel($salesChannelContext->getContext());
-        $salesChannelRepository = new SalesChannelRepoMock();
-        $salesChannelRepository->getCollection()->clear();
-        $salesChannelRepository->addMockEntity($salesChannel);
+        if (!isset($this->repositoryMock)) {
+            $salesChannel = $this->getSalesChannel($salesChannelContext->getContext());
 
-        $inventoryContextFactory = new InventoryContextFactory(
-            $inventoryResource,
-            new UuidConverter(),
-            $inventoryRepository
-        );
+            $salesChannelRepository = new SalesChannelRepoMock();
+            $salesChannelRepository->getCollection()->clear();
+            $salesChannelRepository->addMockEntity($salesChannel);
+        } else {
+            $salesChannelRepository = $this->repositoryMock;
+        }
 
         $messageBus = new MessageBusMock();
-        $messageDispatcher = new MessageDispatcher($messageBus, $this->createMock(Connection::class));
-
-        $inventorySyncManager = new InventorySyncManager(
-            $messageDispatcher,
-            new ProductSelection(
-                $salesChannelProductRepository,
-                $this->createMock(ProductStreamBuilder::class),
-                $this->getContainer()->get(SalesChannelContextFactory::class),
-            ),
-            $salesChannelProductRepository,
-            $inventoryContextFactory,
-            true,
-        );
-
-        $runService = new RunServiceMock(
-            new RunRepoMock(),
-            new RunLogRepoMock(),
-            $this->createMock(Connection::class),
-            new Logger('test')
-        );
-
-        $inventoryUpdateHandler = new InventoryUpdateHandler(
-            $runService,
-            $salesChannelRepository,
-            $inventorySyncManager,
-            $messageDispatcher
-        );
-
-        $orderLineItemRepository = new OrderLineItemRepoMock();
-
-        $stockSubscriber = new StockSubscriber(
-            $orderLineItemRepository,
-            $messageBus,
-            $salesChannelRepository
-        );
-
-        /*
-         * A - unchanged
-         * B - increased stock
-         * C - decreased stock
-         */
-        $productA = $productRepository->createMockEntity('productA', 2, 1, ConstantsForTesting::PRODUCT_A_ID);
-        $productA = SalesChannelProductEntity::createFrom($productA);
-        $salesChannelProductRepository->addMockEntity($productA);
-        $productB = $productRepository->createMockEntity('productB', 2, 2, ConstantsForTesting::PRODUCT_B_ID);
-        $productB = SalesChannelProductEntity::createFrom($productB);
-        $salesChannelProductRepository->addMockEntity($productB);
-        $productC = $productRepository->createMockEntity('productC', 2, 0, ConstantsForTesting::PRODUCT_C_ID);
-        $productC = SalesChannelProductEntity::createFrom($productC);
-        $salesChannelProductRepository->addMockEntity($productC);
-
-        $inventoryRepository->createMockEntity($productA, TestDefaults::SALES_CHANNEL, 1);
-        $inventoryRepository->createMockEntity($productB, TestDefaults::SALES_CHANNEL, 1);
-        $inventoryRepository->createMockEntity($productC, TestDefaults::SALES_CHANNEL, 1);
-
-        $order = $this->createOrder($salesChannelContext->getContext());
-        $lineItems = $order->getLineItems();
-        static::assertNotNull($lineItems);
-
-        $repoCollection = $orderLineItemRepository->getCollection();
-        $repoCollection->merge($lineItems);
-
-        $callback($stockSubscriber, $order, $salesChannelContext);
-        $messageBus->execute([$inventoryUpdateHandler]);
+        $callback(new StockSubscriber($messageBus, $salesChannelRepository), $salesChannelContext);
 
         $inventoryMessageCreated = false;
         foreach ($messageBus->getEnvelopes() as $envelope) {
             $message = $envelope->getMessage();
-            if ($message instanceof InventorySyncMessage) {
+            if ($message instanceof InventoryUpdateMessage) {
                 $inventoryMessageCreated = true;
                 static::assertEqualsCanonicalizing(
                     [
@@ -233,146 +118,11 @@ class StockSubscriberTest extends TestCase
                         ConstantsForTesting::PRODUCT_B_ID,
                         ConstantsForTesting::PRODUCT_C_ID,
                     ],
-                    $message->getInventoryContext()->getProductIds()
+                    $message->getIds()
                 );
             }
         }
 
         static::assertSame($shouldWork, $inventoryMessageCreated);
-    }
-
-    private function createStockSubscriber(): StockSubscriber
-    {
-        $messageBus = $this->getMockBuilder(MessageBus::class)->disableOriginalConstructor()->getMock();
-        $messageBus->expects(static::never())->method('dispatch');
-        $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
-
-        return new StockSubscriber(
-            new OrderLineItemRepoMock(),
-            $messageBus,
-            $salesChannelRepository
-        );
-    }
-
-    private function createEntityWrittenEvent(OrderEntity $order, Context $context): EntityWrittenEvent
-    {
-        return new EntityWrittenEvent(OrderLineItemDefinition::ENTITY_NAME, [
-            new EntityWriteResult(
-                Uuid::randomHex(),
-                [
-                    'orderId' => $order->getId(),
-                    'type' => LineItem::PRODUCT_LINE_ITEM_TYPE,
-                    'referencedId' => ConstantsForTesting::PRODUCT_A_ID,
-                    'quantity' => 1,
-                ],
-                OrderLineItemDefinition::ENTITY_NAME,
-                EntityWriteResult::OPERATION_INSERT
-            ),
-            new EntityWriteResult(
-                Uuid::randomHex(),
-                [],
-                OrderLineItemDefinition::ENTITY_NAME,
-                EntityWriteResult::OPERATION_UPDATE,
-                null,
-                new ChangeSet(
-                    [
-                        'order_id' => $order->getId(),
-                        'type' => LineItem::PRODUCT_LINE_ITEM_TYPE,
-                        'referenced_id' => ConstantsForTesting::PRODUCT_C_ID,
-                        'quantity' => 2,
-                    ],
-                    [
-                        'order_id' => $order->getId(),
-                        'type' => LineItem::PRODUCT_LINE_ITEM_TYPE,
-                        'referenced_id' => ConstantsForTesting::PRODUCT_C_ID,
-                        'quantity' => 1,
-                    ],
-                    false
-                )
-            ),
-            new EntityWriteResult(
-                Uuid::randomHex(),
-                [],
-                OrderLineItemDefinition::ENTITY_NAME,
-                EntityWriteResult::OPERATION_UPDATE,
-                null,
-                new ChangeSet(
-                    [
-                        'order_id' => $order->getId(),
-                        'type' => LineItem::PRODUCT_LINE_ITEM_TYPE,
-                        'referenced_id' => ConstantsForTesting::PRODUCT_B_ID,
-                    ],
-                    [
-                        'order_id' => $order->getId(),
-                        'type' => LineItem::PRODUCT_LINE_ITEM_TYPE,
-                        'referenced_id' => ConstantsForTesting::PRODUCT_C_ID,
-                    ],
-                    false
-                )
-            ),
-        ], $context);
-    }
-
-    private function createOrder(Context $context): OrderEntity
-    {
-        $order = new OrderEntity();
-        $order->assign([
-            'id' => Uuid::randomHex(),
-            'price' => new CartPrice(10, 10, 10, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_NET),
-            'shippingCosts' => new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()),
-            'stateId' => $this->getContainer()->get(InitialStateIdLoader::class)->get(OrderStates::STATE_MACHINE),
-            'paymentMethodId' => $this->getValidPaymentMethodId(),
-            'currencyId' => Defaults::CURRENCY,
-            'currencyFactor' => 1,
-            'salesChannelId' => TestDefaults::SALES_CHANNEL,
-            'orderDateTime' => '2019-04-01 08:36:43.267',
-        ]);
-
-        $productIds = [
-            ConstantsForTesting::PRODUCT_A_ID,
-            ConstantsForTesting::PRODUCT_B_ID,
-            ConstantsForTesting::PRODUCT_C_ID,
-        ];
-
-        $lineItems = new OrderLineItemCollection();
-        foreach ($productIds as $productId) {
-            $lineItem = new OrderLineItemEntity();
-            $lineItem->assign([
-                'id' => Uuid::randomHex(),
-                'versionId' => Uuid::randomHex(),
-                'identifier' => 'test',
-                'quantity' => 1,
-                'type' => LineItem::PRODUCT_LINE_ITEM_TYPE,
-                'label' => 'test',
-                'price' => new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()),
-                'priceDefinition' => new QuantityPriceDefinition(10, new TaxRuleCollection(), 2),
-                'priority' => 100,
-                'good' => true,
-                'referencedId' => $productId,
-            ]);
-            $lineItems->add($lineItem);
-        }
-
-        $order->setLineItems($lineItems);
-
-        return $order;
-    }
-
-    private function createStateMachineTransitionEvent(string $orderId, Context $context): StateMachineTransitionEvent
-    {
-        $from = new StateMachineStateEntity();
-        $from->setTechnicalName(OrderStates::STATE_OPEN);
-        $to = new StateMachineStateEntity();
-        $to->setTechnicalName(OrderStates::STATE_CANCELLED);
-
-        return new StateMachineTransitionEvent(OrderDefinition::ENTITY_NAME, $orderId, $from, $to, $context);
-    }
-
-    private function createCheckoutOrderPlacedEvent(SalesChannelContext $context, OrderEntity $order): CheckoutOrderPlacedEvent
-    {
-        return new CheckoutOrderPlacedEvent(
-            $context,
-            $order,
-        );
     }
 }
