@@ -75,7 +75,6 @@
             "@putenv TMPDIR=./..",
             "../../../vendor/bin/roave-backward-compatibility-check"
         ]
-
     },
     "autoload": {
         "psr-4": {
