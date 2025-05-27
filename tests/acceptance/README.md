@@ -48,9 +48,9 @@ npx playwright test
 
 ## Secrets
 
-Any environment variable prefixed with `PAYPAL_` will be added to the [PayPalDataProvider](./services/PayPalDataProvider.ts) with the key stripped and converted to kebab-case:
+Any environment variable prefixed with `PAYPAL_` will be added to the [PayPalDataProvider](./services/PayPalDataProvider.ts) with the prefix stripped:
 
-- `PAYPAL_CLIENT_ID => client-id`
-- `PAYPAL_SOME_ODDLY_LONG_KEY => some-oddly-long-key`
+- `PAYPAL_CLIENT_ID => CLIENT_ID`
+- `PAYPAL_SOME_ODDLY_LONG_KEY => SOME_ODDLY_LONG_KEY`
 
 To add new secrets typesafe, add them to the `DataDefinition` variable of the [`PayPalDataProvider`](./services/PayPalDataProvider.ts).

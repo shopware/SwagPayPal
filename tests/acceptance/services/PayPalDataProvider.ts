@@ -1,7 +1,7 @@
 const DataDefinition = {
-    'client-id': String,
-    'client-secret': String,
-    sandbox: Boolean,
+    CLIENT_ID: String,
+    CLIENT_SECRET: String,
+    SANDBOX: Boolean,
 };
 
 export type Data = Record<string, string> & {
@@ -17,7 +17,7 @@ export class PayPalDataProvider {
                 continue;
             }
 
-            const key = String(env).toLowerCase().replace('_', '-').replace(/^paypal-/, '') as keyof typeof DataDefinition;
+            const key = String(env).replace(/^PAYPAL_/, '') as keyof typeof DataDefinition;
             const preprocessor = DataDefinition[key] ?? String;
 
             this.data[key] = preprocessor(process.env[env]);
@@ -30,8 +30,7 @@ export class PayPalDataProvider {
 
     public get<T extends keyof Data>(key: T, defaultValue: Data[T] | undefined = undefined): Data[T] {
         if (!this.has(key) && defaultValue === undefined) {
-            const env = `PAYPAL_${String(key).toUpperCase().replace('-', '_')}`;
-            throw new Error(`Env ${env} for data value ${key} is not set.`);
+            throw new Error(`Env PAYPAL_${key} for data value ${key} is not set.`);
         }
 
         return this.data[key] ?? (defaultValue!);

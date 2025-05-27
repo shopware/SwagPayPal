@@ -19,16 +19,16 @@ test('PayPal Account setup', {}, async ({ AdminApiContext, PayPalDataProvider })
 
     expect(resetResponse.ok()).toBeTruthy();
 
-    const isSandbox = PayPalDataProvider.get('sandbox');
+    const isSandbox = PayPalDataProvider.get('SANDBOX');
     // eslint-disable-next-line playwright/no-conditional-in-test
     const prefix = isSandbox ? 'Sandbox' : '';
 
     const response = await AdminApiContext.post('./_action/paypal/save-settings', {
         data: {
             null: {
-                [`SwagPayPal.settings.clientId${prefix}`]: PayPalDataProvider.get('client-id'),
-                [`SwagPayPal.settings.clientSecret${prefix}`]: PayPalDataProvider.get('client-secret'),
-                [`SwagPayPal.settings.merchantPayerId${prefix}`]: PayPalDataProvider.get('merchant-id'),
+                [`SwagPayPal.settings.clientId${prefix}`]: PayPalDataProvider.get('CLIENT_ID'),
+                [`SwagPayPal.settings.clientSecret${prefix}`]: PayPalDataProvider.get('CLIENT_SECRET'),
+                [`SwagPayPal.settings.merchantPayerId${prefix}`]: PayPalDataProvider.get('MERCHANT_ID'),
                 'SwagPayPal.settings.sandbox': isSandbox,
             },
         },
