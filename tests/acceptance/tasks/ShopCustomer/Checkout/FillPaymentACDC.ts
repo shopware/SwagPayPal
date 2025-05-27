@@ -3,7 +3,7 @@ import { test as base } from '@playwright/test';
 type FillPaymentACDCOptions = {
     holderName?: string
     number?: string
-    experationDate?: string
+    expirationDate?: string
     cvv?: string
 };
 
@@ -19,8 +19,8 @@ export const FillPaymentACDC = base.extend<FixtureTypes>({
                 if (options.number) {
                     await StorefrontCheckoutConfirm.page.getByPlaceholder('Card number').fill(options.number);
                 }
-                if (options.experationDate) {
-                    await StorefrontCheckoutConfirm.page.getByPlaceholder('Expiration date').fill(options.experationDate);
+                if (options.expirationDate) {
+                    await StorefrontCheckoutConfirm.page.getByPlaceholder('Expiration date').fill(options.expirationDate);
                 }
                 if (options.cvv) {
                     await StorefrontCheckoutConfirm.page.getByPlaceholder('Security code').fill(options.cvv);
