@@ -31,7 +31,7 @@ export class PayPalDataProvider {
     public get<T extends keyof Data>(key: T, defaultValue: Data[T] | undefined = undefined): Data[T] {
         if (!this.has(key) && defaultValue === undefined) {
             const env = `PAYPAL_${String(key).toUpperCase().replace('-', '_')}`;
-            throw new Error(`PayPal data value for ${key} (${env}) is not set.`);
+            throw new Error(`Env ${env} for data value ${key} is not set.`);
         }
 
         return this.data[key] ?? (defaultValue!);

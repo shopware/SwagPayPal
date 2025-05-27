@@ -5,14 +5,6 @@ import * as process from 'node:process';
 // Read from default ".env" file.
 dotenv.config();
 
-// Required environment variables
-['PAYPAL_CLIENT_ID', 'PAYPAL_CLIENT_SECRET', 'PAYPAL_MERCHANT_ID'].forEach((env) => {
-    if (!process.env[env]) {
-        console.error(`Missing environment variable ${env}`);
-        process.exit(1);
-    }
-});
-
 process.env['SHOPWARE_ADMIN_USERNAME'] = process.env['SHOPWARE_ADMIN_USERNAME'] || 'admin';
 process.env['SHOPWARE_ADMIN_PASSWORD'] = process.env['SHOPWARE_ADMIN_PASSWORD'] || 'shopware';
 process.env['MAILPIT_BASE_URL'] = process.env['MAILPIT_BASE_URL'] || process.env['MAILER_DSN'] || 'http://localhost:8025';
