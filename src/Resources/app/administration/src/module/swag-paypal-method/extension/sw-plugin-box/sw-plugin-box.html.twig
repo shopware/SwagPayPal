@@ -1,0 +1,16 @@
+{% block sw_plugin_box_container_button %}
+<mt-button
+    v-if="isPayPalMethod"
+    ghost
+    size="small"
+    class="sw-plugin-box__button"
+    variant="secondary"
+    @click="$router.push({ name: 'swag.paypal.settings.index' })"
+>
+    {{ $t('sw-plugin-box.buttonPluginSettings') }}
+</mt-button>
+
+<template v-else>
+  {% parent %}
+</template>
+{% endblock %}
