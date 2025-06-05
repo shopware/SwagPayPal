@@ -64,5 +64,9 @@
     & .sw-skeleton-bar {
         height: 24px;
         margin: 0;
+
+        &:not(:last-child) {
+        	margin: 0;
+        }
     }
 }
