@@ -6,6 +6,7 @@ Shopware.Component.register('swag-paypal-payment-method', () => import('./compon
 
 Shopware.Component.register('swag-paypal-method-card', () => import('./view/swag-paypal-method-card'));
 
+Shopware.Component.override('sw-plugin-box', () => import('./extension/sw-plugin-box'));
 Shopware.Component.override('sw-settings-payment-detail', () => import('./extension/sw-settings-payment/sw-settings-payment-detail'));
 
 ui.module.payment.overviewCard.add({

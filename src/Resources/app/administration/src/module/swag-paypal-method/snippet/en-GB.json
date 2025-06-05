@@ -61,6 +61,7 @@
       "onboardingNeeded": "Re-onboarding needed",
       "connected": "Connected",
       "notConnected": "Not connected"
-    }
+    },
+    "paymentActivateSwitchTooltip": "Go to the <a class=\"swag-paypal-go-to-settings-link\" href=\"#/swag/paypal/index\">PayPal extension settings →</a> and activate PayPal Commerce Platform to activate this payment method."
   }
 }

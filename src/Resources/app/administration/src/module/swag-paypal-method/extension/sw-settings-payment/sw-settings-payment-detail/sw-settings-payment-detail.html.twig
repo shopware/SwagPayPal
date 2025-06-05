@@ -1,27 +1,10 @@
-{% block sw_settings_payment_detail_content_field_plugin %}
-<mt-button
-    v-if="needsOnboarding && !!paymentMethod?.pluginId"
-    ghost
-    size="small"
-    class="sw-plugin-box__button"
-    variant="secondary"
-    @click="$router.push({ name: 'swag.paypal.settings.index' })"
->
-    {{ $t('sw-plugin-box.buttonPluginSettings') }}
-</mt-button>
-
-<template v-else>
-    {% parent %}
-</template>
-{% endblock %}
-
 {% block sw_settings_payment_detail_content_field_active %}
 <mt-switch
     v-if="!acl.can('payment.editor') || paymentMethod && needsOnboarding"
     v-model="paymentMethod.active"
-    v-tooltip.left="{ message: $t('sw-settings-payment-detail.tooltip') }"
+    v-tooltip.left="{ message: $t('swag-paypal-method.paymentActivateSwitchTooltip') }"
     class="sw-settings-payment-detail__field-active"
-    :disabled="!acl.can('payment.editor') || paymentMethod && needsOnboarding"
+    :disabled="!paymentMethod.active"
     :label="$t('sw-settings-payment.detail.labelActive')"
 />
 
