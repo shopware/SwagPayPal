@@ -30,10 +30,6 @@
         font-size: $font-size-xs;
     }
 
-    .swag-paypal-pos-wizard-connection__link-icon {
-        margin: 2px;
-    }
-
     .swag-paypal-pos-wizard-connection__new-customer-headline {
         margin-bottom: 16px;
     }
@@ -45,8 +41,9 @@
         width: auto;
     }
 
-    .swag-paypal-pos-wizard-connection__pos-link {
+    &__new-customer-container {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
+        align-items: center;
     }
 }
