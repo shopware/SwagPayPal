@@ -1,3 +1,6 @@
+# 10.0.1
+- Verbesserte Kompatibilität mit Shopware 6.7
+
 # 10.0.0
 - Kompatibilität mit Shopware 6.7 und neuen PaymentHandlern hinzugefügt
 - Kommunikation mit PayPal-API in neues SDK abgesplittet (https://github.com/shopware/paypal-sdk)
