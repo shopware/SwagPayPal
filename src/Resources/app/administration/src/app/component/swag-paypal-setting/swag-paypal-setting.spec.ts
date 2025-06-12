@@ -271,7 +271,7 @@ describe('swag-paypal-setting', () => {
         await icon.trigger('click');
 
         expect(inheritSwitch.vm.isInherited).toBe(true);
-        expect(wrapper.vm.value).toBeUndefined();
+        expect(wrapper.vm.value).toBeNull();
         expect(wrapper.vm.inheritedValue).toBe('some-client-id');
         expect(input.attributes().disabled).toBe('');
         expect(input.attributes().value).toBe('some-client-id');
@@ -325,7 +325,7 @@ describe('swag-paypal-setting', () => {
         await icon.trigger('click');
 
         expect(inheritSwitch.vm.isInherited).toBe(true);
-        expect(wrapper.vm.value).toBeUndefined();
+        expect(wrapper.vm.value).toBeNull();
         expect(wrapper.vm.inheritedValue).toBe('CAPTURE');
         expect(field.vm.$attrs.disabled).toBe(true);
         expect(field.vm.value).toBe('CAPTURE');
@@ -372,7 +372,7 @@ describe('swag-paypal-setting', () => {
         await icon.trigger('click');
 
         expect(inheritSwitch.vm.isInherited).toBe(true);
-        expect(wrapper.vm.value).toBeUndefined();
+        expect(wrapper.vm.value).toBeNull();
         expect(wrapper.vm.inheritedValue).toBe(false);
         expect(input.attributes().disabled).toBe('');
         expect(input.attributes().checked).toBeUndefined();
