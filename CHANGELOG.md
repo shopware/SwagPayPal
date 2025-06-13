@@ -1,3 +1,6 @@
+# 10.0.2
+- Fixed an issue, where some admin settings are not saved correctly
+
 # 10.0.1
 - Enhanced compatibility with Shopware 6.7
 
@@ -36,7 +39,7 @@
 
 # 9.6.5
 - PPI-1025 - Improves the performance of the installment banner in the Storefront
-- PPI-1043 - Fixes an issue, where a payment method is toggled twice in the Administration 
+- PPI-1043 - Fixes an issue, where a payment method is toggled twice in the Administration
 - PPI-1045 - Fixes an issue, where a payment was not refundable in some cases
 
 # 9.6.4
