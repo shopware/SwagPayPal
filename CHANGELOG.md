@@ -1,5 +1,5 @@
 # 10.0.2
-- Fixed an issue, where some admin settings are not saved correctly
+- Fixes an issue, where some admin settings are not saved correctly
 
 # 10.0.1
 - Enhanced compatibility with Shopware 6.7
