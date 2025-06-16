@@ -1,5 +1,6 @@
 # 10.0.2
 - Behebt ein Problem, bei dem einige Admin-Einstellungen nicht korrekt gespeichert wurden
+- Behebt ein Problem, bei dem teilweise Zahlungseinzüge im Admin nicht funktionierten
 
 # 10.0.1
 - Verbesserte Kompatibilität mit Shopware 6.7

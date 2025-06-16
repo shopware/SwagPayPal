@@ -1,5 +1,6 @@
 # 10.0.2
 - Fixes an issue, where some admin settings are not saved correctly
+- Fixes an issue, where partial captures within the admin were not working
 
 # 10.0.1
 - Enhanced compatibility with Shopware 6.7
