@@ -1,3 +1,6 @@
+# 10.0.3
+- Fixes an issue, where the spacing between Express Checkout button and PayLater banner was too small (shopware/SwagPayPal#245)
+
 # 10.0.2
 - Fixes an issue, where some admin settings are not saved correctly
 - Fixes an issue, where partial captures within the admin were not working
