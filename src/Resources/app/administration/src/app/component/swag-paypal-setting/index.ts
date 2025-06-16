@@ -142,7 +142,7 @@ export default Shopware.Component.wrapComponentConfig({
         setValue(value: PayPal.SystemConfig[keyof PayPal.SystemConfig]) {
             if (value !== this.value) {
                 this.settingsStore.set(this.path, value);
-                this.$emit('update:value', value ?? undefined);
+                this.$emit('update:value', value);
             }
         },
     },
