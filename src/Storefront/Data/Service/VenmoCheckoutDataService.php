@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Exception\MissingCustomerVaultTokenException;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Storefront\Data\Struct\VenmoCheckoutData;
@@ -43,7 +44,10 @@ class VenmoCheckoutDataService extends AbstractCheckoutDataService
 
         $userIdToken = null;
         if ($this->methodData->isVaultable($context)) {
-            $userIdToken = $this->customerVaultTokenRoute->getVaultToken($context)->getToken();
+            try {
+                $userIdToken = $this->customerVaultTokenRoute->getVaultToken($context)->getToken();
+            } catch (MissingCustomerVaultTokenException) {
+            }
         }
 
         return (new VenmoCheckoutData())->assign(\array_merge($data, [
