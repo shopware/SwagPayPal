@@ -19,7 +19,7 @@
 
     {% block swag_paypal_payment_action_capture_v2_amount %}
     <mt-number-field
-        v-model:value="captureAmount"
+        v-model="captureAmount"
         :max="captureableAmount"
         :min="0"
         :label="$t('swag-paypal-payment.captureAction.currentAmount')"
