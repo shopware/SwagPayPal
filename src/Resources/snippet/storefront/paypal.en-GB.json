@@ -3,7 +3,9 @@
         "general": {
             "paymentCancel": "The payment process has been cancelled. Please try again or choose another payment method.",
             "paymentError": "An error occurred during the payment process. Please try again later or choose another payment method.",
-            "browserUnsupported": "Your current Browser is unsupported by the selected payment method. Please try another Browser or choose another payment method."
+            "browserUnsupported": "Your current Browser is unsupported by the selected payment method. Please try another Browser or choose another payment method.",
+            "paymentMethod": "Paypal - \"%paymentMethod%\"",
+            "transactionInformation": "Order: %orderId%, Partner: %partner%"
         },
         "error": {
             "SWAG_PAYPAL__EXPRESS_USER_CANCELLED": "The PayPal order process has been cancelled. Please try again or use the regular checkout.",
