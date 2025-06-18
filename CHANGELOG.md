@@ -1,3 +1,6 @@
+# 10.0.3
+- Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 2 minutes
+
 # 10.0.2
 - Fixes an issue, where some admin settings are not saved correctly
 - Fixes an issue, where partial captures within the admin were not working
