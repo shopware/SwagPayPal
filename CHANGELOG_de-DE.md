@@ -1,3 +1,6 @@
+# 9.7.7
+- Behebt ein Problem, bei dem Anfragen an PayPal unendlich lange warten konnten. Die Anfragen sind jetzt auf 2 Minuten begrenzt
+
 # 9.7.6
 - Behebt ein Problem, bei dem der Express Checkout auf bestimmten Seiten nicht korrekt angezeigt wurde (shopware/SwagPayPal#234)
 
