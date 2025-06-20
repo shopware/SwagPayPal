@@ -1,3 +1,6 @@
+# 9.7.7
+- Behebt ein Problem, bei dem der Abstand zwischen Express Checkout Button und "Später bezahlen" Banner zu klein war (shopware/SwagPayPal#245)
+
 # 9.7.6
 - Behebt ein Problem, bei dem der Express Checkout auf bestimmten Seiten nicht korrekt angezeigt wurde (shopware/SwagPayPal#234)
 
