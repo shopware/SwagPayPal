@@ -1,3 +1,6 @@
+# 9.7.7
+- Fixes an issue, where the spacing between Express Checkout button and PayLater banner was too small (shopware/SwagPayPal#245)
+
 # 9.7.6
 - Fixes an issue, where the Express Checkout was not displayed correctly on certain pages (shopware/SwagPayPal#234)
 
@@ -31,7 +34,7 @@
 
 # 9.6.5
 - PPI-1025 - Improves the performance of the installment banner in the Storefront
-- PPI-1043 - Fixes an issue, where a payment method is toggled twice in the Administration 
+- PPI-1043 - Fixes an issue, where a payment method is toggled twice in the Administration
 - PPI-1045 - Fixes an issue, where a payment was not refundable in some cases
 
 # 9.6.4
