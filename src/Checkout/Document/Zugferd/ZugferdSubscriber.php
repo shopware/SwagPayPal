@@ -32,31 +32,23 @@ class ZugferdSubscriber implements EventSubscriberInterface
 
     public function generateInvoice(ZugferdInvoiceGeneratedEvent $event): void
     {
-        // TODO: only needed for the backport 6.6 version
-        // Method will be added >=6.6.10.6
-        if (!method_exists($event->document, 'getBuilder')) {
-            return;
-        }
-
         $transaction = $event->order->getTransactions()?->last();
         $paymentMethod = $transaction?->getPaymentMethod();
         if ($paymentMethod === null || !str_starts_with($paymentMethod->getTechnicalName(), 'swag_paypal_')) {
             return;
         }
 
+        $locale = $event->order->getLanguage()?->getLocale()?->getCode();
         if ($paymentMethod->getTechnicalName() === 'swag_paypal_pui') {
-            $paymentMeans = $this->pui($transaction, $event);
+            $paymentMeans = $this->pui($transaction, $locale, $event->config->getCompanyName());
         } else {
-            $locale = $event->order->getLanguage()?->getLocale()?->getCode();
-            $basic = $this->translator->trans('paypal.general.paymentMethod', ['%paymentMethod%' => $transaction->getPaymentMethod()?->getName()], locale: $locale);
-            $transactionInformation = $this->translator->trans('paypal.general.transactionInformation', [
-                '%orderId%' => $transaction->getCustomFieldsValue('swag_paypal_order_id'),
-                '%partner%' => $transaction->getCustomFieldsValue('swag_paypal_partner_attribution_id'),
-            ], locale: $locale);
+            $paymentSnippet = $this->translator->trans('paypal.e-invoice.paymentMethod', ['%paymentMethod%' => $transaction->getPaymentMethod()?->getName()], locale: $locale);
+            $orderId = $this->translator->trans('paypal.e-invoice.orderId', ['%orderId%' => $transaction->getCustomFieldsValue('swag_paypal_order_id')], locale: $locale);
+            $merchantId = $this->translator->trans('paypal.e-invoice.merchantId', ['%merchantId%' => $this->credentials->getMerchantPayerId($event->order->getSalesChannelId())], locale: $locale);
 
             $paymentMeans = [
                 'typeCode' => ZugferdPaymentMeans::UNTDID_4461_ZZZ,
-                'information' => $basic . ' | ' . $transactionInformation,
+                'information' => implode(' | ', [$paymentSnippet, $orderId, $merchantId]),
             ];
         }
 
@@ -64,17 +56,16 @@ class ZugferdSubscriber implements EventSubscriberInterface
             ->addDocumentPaymentMean(...$paymentMeans);
     }
 
-    private function pui(OrderTransactionEntity $transaction, ZugferdInvoiceGeneratedEvent $event): array
+    private function pui(OrderTransactionEntity $transaction, ?string $locale, ?string $companyName): array
     {
         $values = $transaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION)['deposit_bank_details'] ?? [];
 
-        $locale = $event->order->getLanguage()?->getLocale()?->getCode();
-        $basic = $this->translator->trans('paypal.general.paymentMethod', ['%paymentMethod%' => $transaction->getPaymentMethod()?->getName()], locale: $locale);
-        $ratePay = $this->translator->trans('paypal.payUponInvoice.document.paymentNoteRatepay', ['%companyName%' => $event->config->getCompanyName()], locale: $locale);
+        $paymentSnippet = $this->translator->trans('paypal.e-invoice.paymentMethod', ['%paymentMethod%' => $transaction->getPaymentMethod()?->getName()], locale: $locale);
+        $ratePay = $this->translator->trans('paypal.payUponInvoice.document.paymentNoteRatepay', ['%companyName%' => $companyName], locale: $locale);
 
         return [
             'typeCode' => ZugferdPaymentMeans::UNTDID_4461_42,
-            'information' => $basic . ' | ' . $ratePay,
+            'information' => $paymentSnippet . ' | ' . $ratePay,
             'payeeIban' => $values['iban'] ?? null,
             'payeeAccountName' => $values['account_holder_name'] ?? null,
             'payeeBic' => $values['bic'] ?? null,
