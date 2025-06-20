@@ -1,5 +1,6 @@
 # 10.0.3
-- Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 2 minutes
+- Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 2 minutes (shopware/SwagPayPal#262)
+- Fixes an issue, where the spacing between Express Checkout button and PayLater banner was too small (shopware/SwagPayPal#245)
 
 # 10.0.2
 - Fixes an issue, where some admin settings are not saved correctly
