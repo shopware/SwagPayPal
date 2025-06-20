@@ -10,11 +10,16 @@ namespace Swag\PayPal\Checkout\Document\Zugferd;
 use horstoeko\zugferd\codelists\ZugferdPaymentMeans;
 use Shopware\Core\Checkout\Document\Zugferd\ZugferdInvoiceGeneratedEvent;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @internal
+ */
+#[Package('checkout')]
 class ZugferdSubscriber implements EventSubscriberInterface
 {
     public function __construct(
