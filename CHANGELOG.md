@@ -1,5 +1,6 @@
 # 9.7.7
-- Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 2 minutes
+- Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 2 minutes (shopware/SwagPayPal#262)
+- Fixes an issue, where the spacing between Express Checkout button and PayLater banner was too small (shopware/SwagPayPal#245)
 
 # 9.7.6
 - Fixes an issue, where the Express Checkout was not displayed correctly on certain pages (shopware/SwagPayPal#234)
