@@ -38,9 +38,10 @@ class ZugferdSubscriber implements EventSubscriberInterface
 
     public function generateInvoice(ZugferdInvoiceGeneratedEvent $event): void
     {
-        $transaction = $event->order->getPrimaryOrderTransaction();
-        if (!Feature::isActive('v6.8.0.0')) {
-            $transaction = $event->order->getTransactions()?->last();
+        $transaction = $event->order->getTransactions()?->last();
+        // Method is not available for version 6.7.0.0
+        if (Feature::isActive('v6.8.0.0') && method_exists($event->order, 'getPrimaryOrderTransaction')) {
+            $transaction = $event->order->getPrimaryOrderTransaction();
         }
 
         $paymentMethod = $transaction?->getPaymentMethod();
