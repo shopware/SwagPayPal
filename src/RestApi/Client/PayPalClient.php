@@ -28,7 +28,7 @@ class PayPalClient extends AbstractClient implements PayPalClientInterface
                 'PayPal-Partner-Attribution-Id' => $partnerAttributionId,
                 ...$credentials,
             ],
-            'timeout' => 120,
+            'timeout' => 30,
         ]);
 
         parent::__construct($client, $logger);

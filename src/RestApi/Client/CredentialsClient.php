@@ -21,7 +21,7 @@ class CredentialsClient extends AbstractClient
     ) {
         $client = new Client([
             'base_uri' => $url,
-            'timeout' => 120,
+            'timeout' => 30,
         ]);
 
         parent::__construct($client, $logger);

@@ -27,7 +27,7 @@ class TokenClient extends AbstractClient implements TokenClientInterface
                 'PayPal-Partner-Attribution-Id' => PartnerAttributionId::PAYPAL_PPCP,
                 'Authorization' => (string) $credentials,
             ],
-            'timeout' => 120,
+            'timeout' => 30,
         ]);
 
         parent::__construct($client, $logger);
