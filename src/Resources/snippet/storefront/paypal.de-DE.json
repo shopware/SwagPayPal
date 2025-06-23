@@ -81,9 +81,8 @@
           }
         },
         "e-invoice":{
-          "paymentMethod": "Paypal - \"%paymentMethod%\"",
-          "orderId": "Auftragsnummer: %orderId%",
-          "merchantId": "PayPal-Händler-ID: %merchantId%"
+          "paymentMethod": "Zahlungsart: \"%paymentMethod%\"",
+          "orderId": "Auftragsnummer: %orderId%"
         }
     }
 }

@@ -81,9 +81,8 @@
           }
         },
         "e-invoice":{
-          "paymentMethod": "Paypal - \"%paymentMethod%\"",
-          "orderId": "Order ID: %orderId%",
-          "merchantId": "PayPal-Merchant-ID: %merchantId%"
+          "paymentMethod": "Payment method: \"%paymentMethod%\"",
+          "orderId": "Order ID: %orderId%"
         }
     }
 }

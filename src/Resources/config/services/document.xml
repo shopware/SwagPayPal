@@ -6,7 +6,6 @@
 
     <services>
         <service id="Swag\PayPal\Checkout\Document\Zugferd\ZugferdSubscriber">
-            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
             <argument type="service" id="translator"/>
 
             <tag name="kernel.event_subscriber" />
