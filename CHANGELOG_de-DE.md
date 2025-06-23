@@ -1,5 +1,5 @@
 # 9.7.7
-- Behebt ein Problem, bei dem Anfragen an PayPal unendlich lange warten konnten. Die Anfragen sind jetzt auf 2 Minuten begrenzt (shopware/SwagPayPal#262)
+- Behebt ein Problem, bei dem Anfragen an PayPal unendlich lange warten konnten. Die Anfragen sind jetzt auf 30 Sekunden begrenzt (shopware/SwagPayPal#262)
 - Behebt ein Problem, bei dem der Abstand zwischen Express Checkout Button und "Später bezahlen" Banner zu klein war (shopware/SwagPayPal#245)
 
 # 9.7.6
