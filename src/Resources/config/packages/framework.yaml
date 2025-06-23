@@ -17,4 +17,4 @@ framework:
     scoped_clients:
       paypal.base-client:
         scope: https\://api\-m\.(sandbox\.)?paypal\.com/
-        max_duration: 120
+        max_duration: 30
