@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\Document\Zugferd;
 use horstoeko\zugferd\codelists\ZugferdPaymentMeans;
 use Shopware\Core\Checkout\Document\Zugferd\ZugferdInvoiceGeneratedEvent;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\SwagPayPal;
@@ -37,7 +38,11 @@ class ZugferdSubscriber implements EventSubscriberInterface
 
     public function generateInvoice(ZugferdInvoiceGeneratedEvent $event): void
     {
-        $transaction = $event->order->getTransactions()?->last();
+        $transaction = $event->order->getPrimaryOrderTransaction();
+        if (!Feature::isActive('v6.8.0.0')) {
+            $transaction = $event->order->getTransactions()?->last();
+        }
+
         $paymentMethod = $transaction?->getPaymentMethod();
         if ($paymentMethod === null || !str_starts_with($paymentMethod->getTechnicalName(), 'swag_paypal_')) {
             return;
@@ -47,7 +52,7 @@ class ZugferdSubscriber implements EventSubscriberInterface
         if ($paymentMethod->getTechnicalName() === 'swag_paypal_pui') {
             $paymentMeans = $this->pui($transaction, $locale, $event->config->getCompanyName());
         } else {
-            $paymentSnippet = $this->translator->trans('paypal.e-invoice.paymentMethod', ['%paymentMethod%' => $transaction->getPaymentMethod()?->getName()], locale: $locale);
+            $paymentSnippet = $this->translator->trans('paypal.e-invoice.paymentMethod', ['%paymentMethod%' => $paymentMethod->getName()], locale: $locale);
             $orderId = $this->translator->trans('paypal.e-invoice.orderId', ['%orderId%' => $transaction->getCustomFieldsValue('swag_paypal_order_id')], locale: $locale);
             $merchantId = $this->translator->trans('paypal.e-invoice.merchantId', ['%merchantId%' => $this->credentials->getMerchantPayerId($event->order->getSalesChannelId())], locale: $locale);
 
