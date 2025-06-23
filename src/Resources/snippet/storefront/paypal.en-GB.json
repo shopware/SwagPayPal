@@ -79,6 +79,10 @@
             "clear": "Remove card",
             "create": "Remember card for future purchases"
           }
+        },
+        "e-invoice":{
+          "paymentMethod": "Payment method: \"%paymentMethod%\"",
+          "orderId": "Order ID: %orderId%"
         }
     }
 }
