@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\Document\Zugferd;
 
-use horstoeko\zugferd\codelists\ZugferdPaymentMeans;
 use Shopware\Core\Checkout\Document\Zugferd\ZugferdInvoiceGeneratedEvent;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\SwagPayPal;
@@ -27,6 +26,10 @@ class ZugferdSubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
+        if (!class_exists(ZugferdInvoiceGeneratedEvent::class)) {
+            return [];
+        }
+
         return [
             ZugferdInvoiceGeneratedEvent::class => 'generateInvoice',
         ];
@@ -49,7 +52,7 @@ class ZugferdSubscriber implements EventSubscriberInterface
 
         $locale = $event->order->getLanguage()?->getLocale()?->getCode();
         $paymentMeans = [
-            'typeCode' => ZugferdPaymentMeans::UNTDID_4461_ZZZ,
+            'typeCode' => 'ZZZ',
             'information' => $this->translator->trans('paypal.e-invoice.paymentMethod', ['%paymentMethod%' => $paymentMethod->getTranslation('name')], locale: $locale),
         ];
 
@@ -59,7 +62,7 @@ class ZugferdSubscriber implements EventSubscriberInterface
             $ratePay = $this->translator->trans('paypal.payUponInvoice.document.paymentNoteRatepay', ['%companyName%' => $event->config->getCompanyName()], locale: $locale);
 
             $paymentMeans['information'] .= ' | ' . $ratePay;
-            $paymentMeans['typeCode'] = ZugferdPaymentMeans::UNTDID_4461_42;
+            $paymentMeans['typeCode'] = '42';
             $paymentMeans['payeeIban'] = $values['iban'] ?? null;
             $paymentMeans['payeeAccountName'] = $values['account_holder_name'] ?? null;
             $paymentMeans['payeeBic'] = $values['bic'] ?? null;
