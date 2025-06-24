@@ -1,6 +1,7 @@
 # 10.0.3
 - Behebt ein Problem, bei dem Anfragen an PayPal unendlich lange warten konnten. Die Anfragen sind jetzt auf 30 Sekunden begrenzt (shopware/SwagPayPal#262)
 - Behebt ein Problem, bei dem der Abstand zwischen Express Checkout Button und "Später bezahlen" Banner zu klein war (shopware/SwagPayPal#245)
+- Behebt ein Problem, bei dem der Ersteinrichtungs-Assistent nicht korrekt dargestellt wurde
 
 # 10.0.2
 - Behebt ein Problem, bei dem einige Admin-Einstellungen nicht korrekt gespeichert wurden
