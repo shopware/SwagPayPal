@@ -1,3 +1,6 @@
+# 8.7.7
+- Behebt ein Problem, bei dem Anfragen an PayPal unendlich lange warten konnten. Die Anfragen sind jetzt auf 30 Sekunden begrenzt (shopware/SwagPayPal#262)
+
 # 8.7.6
 - Behebt ein Problem, bei dem Vaulting-Zahlungen in bestimmten Fällen im Zahlungsprozess nach einer Bestellung nicht ausgeführt werden konnten
 - Behebt ein Problem, bei dem der Venmo Express-Button nicht angezeigt wurde

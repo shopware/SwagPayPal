@@ -1,3 +1,6 @@
+# 8.7.7
+- Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 30 seconds (shopware/SwagPayPal#262)
+
 # 8.7.6
 - Fixes an issue, where vaulted payments could not be processed in the after order payment process in certain situations
 - Fixes a problem where the Venmo Express button was not shown
