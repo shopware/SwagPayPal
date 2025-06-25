@@ -19,6 +19,16 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Package('checkout')]
 class ZugferdSubscriber implements EventSubscriberInterface
 {
+    /**
+     * Payment to bank account
+     */
+    private const UNTDID_4461_42 = '42';
+
+    /**
+     * Mutually defined
+     */
+    private const UNTDID_4461_ZZZ = 'ZZZ';
+
     public function __construct(
         private readonly TranslatorInterface $translator
     ) {
@@ -52,7 +62,7 @@ class ZugferdSubscriber implements EventSubscriberInterface
 
         $locale = $event->order->getLanguage()?->getLocale()?->getCode();
         $paymentMeans = [
-            'typeCode' => 'ZZZ',
+            'typeCode' => self::UNTDID_4461_ZZZ,
             'information' => $this->translator->trans('paypal.e-invoice.paymentMethod', ['%paymentMethod%' => $paymentMethod->getTranslation('name')], locale: $locale),
         ];
 
@@ -62,7 +72,7 @@ class ZugferdSubscriber implements EventSubscriberInterface
             $ratePay = $this->translator->trans('paypal.payUponInvoice.document.paymentNoteRatepay', ['%companyName%' => $event->config->getCompanyName()], locale: $locale);
 
             $paymentMeans['information'] .= ' | ' . $ratePay;
-            $paymentMeans['typeCode'] = '42';
+            $paymentMeans['typeCode'] = self::UNTDID_4461_42;
             $paymentMeans['payeeIban'] = $values['iban'] ?? null;
             $paymentMeans['payeeAccountName'] = $values['account_holder_name'] ?? null;
             $paymentMeans['payeeBic'] = $values['bic'] ?? null;
