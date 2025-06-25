@@ -36,7 +36,7 @@ class ZugferdSubscriberTest extends TestCase
         if (
             !\class_exists(ZugferdInvoiceGeneratedEvent::class)
             || !\class_exists(ZugferdDocumentBuilder::class)
-            || !\method_exists(ZugferdDocument::class, 'getBuilder') // @phpstan-ignore function.alreadyNarrowedType
+            || !\method_exists(ZugferdDocument::class, 'getBuilder') // @phpstan-ignore-line
         ) {
             static::markTestSkipped('Class and method will be available for >=v6.6.10.6');
         }
@@ -65,7 +65,7 @@ class ZugferdSubscriberTest extends TestCase
         }
 
         $event = new ZugferdInvoiceGeneratedEvent(
-            new ZugferdDocument($builderMock),
+            new ZugferdDocument($builderMock), // @phpstan-ignore-line
             $order,
             new DocumentConfiguration(),
             Context::createDefaultContext()

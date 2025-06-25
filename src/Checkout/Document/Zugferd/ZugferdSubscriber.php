@@ -38,14 +38,14 @@ class ZugferdSubscriber implements EventSubscriberInterface
     public function generateInvoice(ZugferdInvoiceGeneratedEvent $event): void
     {
         // Method added with v6.6.10.6
-        // @phpstan-ignore function.alreadyNarrowedType
+        // @phpstan-ignore-next-line
         if (!method_exists($event->document, 'getBuilder')) {
             return;
         }
 
         $transaction = $event->order->getTransactions()?->last();
         $paymentMethod = $transaction?->getPaymentMethod();
-        // @phpstan-ignore method.deprecated
+        // @phpstan-ignore-next-line
         if ($paymentMethod === null || !str_starts_with($paymentMethod->getTechnicalName() ?? '', 'swag_paypal_')) {
             return;
         }
@@ -56,7 +56,7 @@ class ZugferdSubscriber implements EventSubscriberInterface
             'information' => $this->translator->trans('paypal.e-invoice.paymentMethod', ['%paymentMethod%' => $paymentMethod->getTranslation('name')], locale: $locale),
         ];
 
-        // @phpstan-ignore method.deprecated
+        // @phpstan-ignore-next-line
         if ($paymentMethod->getTechnicalName() === 'swag_paypal_pui') {
             $values = $transaction->getTranslatedCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION)['deposit_bank_details'] ?? [];
             $ratePay = $this->translator->trans('paypal.payUponInvoice.document.paymentNoteRatepay', ['%companyName%' => $event->config->getCompanyName()], locale: $locale);
