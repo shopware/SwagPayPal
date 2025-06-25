@@ -1,3 +1,6 @@
+# 9.7.8
+- Fügt notwenige Zahlungsmittelinformationen zu E-Rechnungen hinzu (shopware/SwagPayPal#255)
+
 # 9.7.7
 - Behebt ein Problem, bei dem der Abstand zwischen Express Checkout Button und "Später bezahlen" Banner zu klein war (shopware/SwagPayPal#245)
 

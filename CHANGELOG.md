@@ -1,3 +1,6 @@
+# 9.7.8
+- Added necessary payment means for e-invoice generation (shopware/SwagPayPal#255)
+
 # 9.7.7
 - Fixes an issue, where the spacing between Express Checkout button and PayLater banner was too small (shopware/SwagPayPal#245)
 
