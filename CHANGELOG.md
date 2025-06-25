@@ -1,3 +1,6 @@
+# 10.1.0
+- Added necessary payment means for e-invoice generation (shopware/SwagPayPal#255)
+
 # 10.0.3
 - Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 30 seconds (shopware/SwagPayPal#262)
 - Fixes an issue, where the spacing between Express Checkout button and PayLater banner was too small (shopware/SwagPayPal#245)
