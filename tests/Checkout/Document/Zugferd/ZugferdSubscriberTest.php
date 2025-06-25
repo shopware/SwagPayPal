@@ -33,6 +33,10 @@ class ZugferdSubscriberTest extends TestCase
     #[DataProvider('dataProviderTransaction')]
     public function testTest(?OrderTransactionEntity $transaction, array $expected): void
     {
+        if (!\class_exists(ZugferdInvoiceGeneratedEvent::class) || !\method_exists(ZugferdDocument::class, 'getBuilder')) {
+            static::markTestSkipped('Class and method will be available for >=v6.6.10.6');
+        }
+
         // return last snippet path
         $translator = $this->createMock(TranslatorInterface::class);
         $translator
