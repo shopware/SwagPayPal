@@ -1,4 +1,4 @@
-# 9.7.8
+# 9.8.0
 - Fügt notwenige Zahlungsmittelinformationen zu E-Rechnungen hinzu (shopware/SwagPayPal#255)
 
 # 9.7.7

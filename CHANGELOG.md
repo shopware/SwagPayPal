@@ -1,4 +1,4 @@
-# 9.7.8
+# 9.8.0
 - Added necessary payment means for e-invoice generation (shopware/SwagPayPal#255)
 
 # 9.7.7
