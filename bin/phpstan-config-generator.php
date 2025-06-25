@@ -61,6 +61,11 @@ $phpStanConfig = str_replace(
     $phpStanConfigDist
 );
 
+$shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
+if ($shopwareVersion === '6.7.0.0') {
+    $phpStanConfig = str_replace(['featureToggles:', 'internalTag: true'], ['', ''], $phpStanConfig);
+}
+
 file_put_contents(__DIR__ . '/../phpstan.neon', $phpStanConfig);
 
 return $classLoader;
