@@ -1,3 +1,6 @@
+# 10.1.0
+- Fügt notwenige Zahlungsmittelinformationen zu E-Rechnungen hinzu (shopware/SwagPayPal#255)
+
 # 10.0.3
 - Behebt ein Problem, bei dem Anfragen an PayPal unendlich lange warten konnten. Die Anfragen sind jetzt auf 30 Sekunden begrenzt (shopware/SwagPayPal#262)
 - Behebt ein Problem, bei dem der Abstand zwischen Express Checkout Button und "Später bezahlen" Banner zu klein war (shopware/SwagPayPal#245)
