@@ -146,6 +146,12 @@ parameters:
 			path: src/Storefront/Data/CheckoutDataSubscriber.php
 
 		-
+			message: "#^Trying to mock an undefined method addDocumentPaymentMean\\(\\) on class horstoeko\\\\zugferd\\\\ZugferdDocumentBuilder\\.$#"
+			count: 1
+			path: tests/Checkout/Document/Zugferd/ZugferdSubscriberTest.php
+
+
+		-
 			message: "#^Mixed variable in a `\\$criteria\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
 			count: 1
 			path: tests/Checkout/PUI/SalesChannel/PUIPaymentInstructionsRouteTest.php

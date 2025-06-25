@@ -33,7 +33,11 @@ class ZugferdSubscriberTest extends TestCase
     #[DataProvider('dataProviderTransaction')]
     public function testTest(?OrderTransactionEntity $transaction, array $expected): void
     {
-        if (!\class_exists(ZugferdInvoiceGeneratedEvent::class) || !\method_exists(ZugferdDocument::class, 'getBuilder')) {
+        if (
+            !\class_exists(ZugferdInvoiceGeneratedEvent::class)
+            || !\class_exists(ZugferdDocumentBuilder::class)
+            || !\method_exists(ZugferdDocument::class, 'getBuilder') // @phpstan-ignore function.alreadyNarrowedType
+        ) {
             static::markTestSkipped('Class and method will be available for >=v6.6.10.6');
         }
 
@@ -47,7 +51,7 @@ class ZugferdSubscriberTest extends TestCase
         $builderMock
             ->expects(empty($expected) ? static::never() : static::once())
             ->method('addDocumentPaymentMean')
-            ->willReturnCallback(static function (...$arguments) use ($expected, $builderMock): ZugferdDocumentBuilder {
+            ->willReturnCallback(static function (...$arguments) use ($expected, $builderMock) {
                 foreach ($expected as $value) {
                     static::assertContains($value, $arguments);
                 }
@@ -57,7 +61,6 @@ class ZugferdSubscriberTest extends TestCase
 
         $order = new OrderEntity();
         if ($transaction !== null) {
-            $order->setPrimaryOrderTransaction($transaction);
             $order->setTransactions(new OrderTransactionCollection([$transaction]));
         }
 
