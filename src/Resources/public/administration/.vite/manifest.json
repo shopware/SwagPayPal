@@ -1,0 +1,11 @@
+{
+  "main.js": {
+    "file": "js/swag-pay-pal.js",
+    "name": "swag-pay-pal",
+    "src": "main.js",
+    "isEntry": true,
+    "css": [
+      "css/swag-pay-pal.css"
+    ]
+  }
+}
