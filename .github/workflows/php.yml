@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        PLATFORM_BRANCH: ["trunk"]
+        PLATFORM_BRANCH: ["6.7.0.0", "trunk"]
       fail-fast: false
     steps:
       - name: Checkout SwagPayPal

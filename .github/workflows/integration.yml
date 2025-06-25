@@ -13,6 +13,9 @@ permissions:
 jobs:
   build-zip:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PLATFORM_BRANCH: ["6.7.0.0", "trunk"]
     steps:
       - name: Build and validate zip
         uses: shopware/github-actions/build-zip@main
@@ -26,13 +29,14 @@ jobs:
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
         with:
           extension-zip: ${{ steps.upload.outputs.artifact-url }}
+          shopware-version: ${{ matrix.PLATFORM_BRANCH }}
 
   phpunit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         MYSQL_IMAGE: ["mysql:8.0", "mariadb:10.11"]
-        PLATFORM_BRANCH: ["trunk"]
+        PLATFORM_BRANCH: ["6.7.0.0", "trunk"]
         PHP_VERSION: ["8.2", "8.3"]
         WITH_COMMERCIAL: [true, false]
     env:
