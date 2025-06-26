@@ -24,7 +24,7 @@ $pluginLoader = new StaticKernelPluginLoader($classLoader, null, [[
     'active' => true,
     'version' => $composer['version'],
     'baseClass' => SwagPayPal::class,
-    'managedByComposer' => false,
+    'managedByComposer' => true,
     'autoload' => $composer['autoload'],
     'path' => $pluginRootPath,
 ]]);
@@ -46,7 +46,7 @@ $phpstanConfig = [
 $shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
 echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
 
-if ($shopwareVersion === 'v6.7.0.0') {
+if ($shopwareVersion === '6.7.0.0') {
     unset($phpstanConfig['parameters']['featureToggles']);
 }
 
