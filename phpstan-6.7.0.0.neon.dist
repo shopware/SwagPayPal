@@ -1,9 +1,6 @@
 # Polyfill of trunk's common.neon
 
 parameters:
-    featureToggles:
-        internalTag: false
-
     reportMaybesInMethodSignatures: false
     reportWrongPhpDocTypeInVarTag: false
 

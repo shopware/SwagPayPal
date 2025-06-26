@@ -40,6 +40,7 @@ $phpstanConfig = [
     'parameters' => [
         'symfony' => ['containerXmlPath' => \sprintf('%s/%sDevDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class))],
     ],
+    'featureToggles' => ['internalTag' => true],
 ];
 
 $shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
