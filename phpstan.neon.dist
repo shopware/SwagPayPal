@@ -17,6 +17,9 @@ parameters:
     bootstrapFiles:
         - bin/static-analyze-autoloader.php
 
+    featureToggles:
+        internalTag: true
+
     symfony:
         constantHassers: false
 

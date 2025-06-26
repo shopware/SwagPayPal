@@ -43,7 +43,7 @@ jobs:
           shopware-version: ${{ matrix.PLATFORM_BRANCH }}
       - name: Install dependencies
         if: matrix.PLATFORM_BRANCH == 'v6.7.0.0'
-        run: composer -d custom/plugins/${{ github.event.repository.name }} require --dev phpstan/phpstan-strict-rules
+        run: composer require --dev phpstan/phpstan-strict-rules phpstan/phpstan:2.1.16
       - name: Prepare phpstan
         working-directory: custom/plugins/${{ github.event.repository.name }}
         run: |

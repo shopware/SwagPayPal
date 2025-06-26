@@ -40,7 +40,6 @@ $phpstanConfig = [
     'parameters' => [
         'symfony' => ['containerXmlPath' => \sprintf('%s/%sDevDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class))],
     ],
-    'featureToggles' => ['internalTag' => true],
 ];
 
 $shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
@@ -49,10 +48,6 @@ echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
 $versionedConfig = \sprintf('%s/phpstan-%s.neon.dist', $pluginRootPath, $shopwareVersion);
 if (\file_exists($versionedConfig)) {
     $phpstanConfig['includes'][] = $versionedConfig;
-}
-
-if ($shopwareVersion === '6.7.0.0') {
-    unset($phpstanConfig['parameters']['featureToggles']);
 }
 
 $encoded = \json_encode($phpstanConfig, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT);
