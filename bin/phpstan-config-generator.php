@@ -48,9 +48,15 @@ $phpstanConfig = [
 $shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
 echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
 
-$phpstanConfig = \sprintf('%s/phpstan-baseline-%s.neon.dist', $pluginRootPath, $shopwareVersion);
-if (\file_exists($phpstanConfig)) {
-    $phpstanConfig['includes'][] = $phpstanConfig;
+$versionedConfig = \sprintf('%s/phpstan-baseline-%s.neon.dist', $pluginRootPath, $shopwareVersion);
+if (\file_exists($versionedConfig)) {
+    $phpstanConfig['includes'][] = $versionedConfig;
 }
 
-file_put_contents(__DIR__ . '/../phpstan.dynamic.neon', \json_encode($phpstanConfig, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT));
+$encoded = \json_encode($phpstanConfig, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT);
+
+if ((bool) $_SERVER['CI']) { // Print config for clearity in workflow
+    echo 'Generated config:' . \PHP_EOL . $encoded . \PHP_EOL;
+}
+
+file_put_contents(__DIR__ . '/../phpstan.dynamic.neon', $encoded);
