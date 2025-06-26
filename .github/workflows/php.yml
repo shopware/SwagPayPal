@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        PLATFORM_BRANCH: ["6.7.0.0", "trunk"]
+        PLATFORM_BRANCH: ["v6.7.0.0", "trunk"]
       fail-fast: false
     steps:
       - name: Checkout SwagPayPal
@@ -49,6 +49,8 @@ jobs:
           sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist
       - run: |
           composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
+        env:
+          PLATFORM_BRANCH: ${{ matrix.PLATFORM_BRANCH }}
 
   php-cs-fixer:
     runs-on: ubuntu-latest

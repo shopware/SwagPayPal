@@ -16,7 +16,7 @@ jobs:
     strategy:
       max-parallel: 1 # to avoid artifact conflicts
       matrix:
-        PLATFORM_BRANCH: ["6.7.0.0", "trunk"]
+        PLATFORM_BRANCH: ["v6.7.0.0", "trunk"]
     steps:
       - name: Attempt to download the artifact
         id: artifact-download
@@ -48,7 +48,7 @@ jobs:
     strategy:
       matrix:
         MYSQL_IMAGE: ["mysql:8.0", "mariadb:10.11"]
-        PLATFORM_BRANCH: ["6.7.0.0", "trunk"]
+        PLATFORM_BRANCH: ["v6.7.0.0", "trunk"]
         PHP_VERSION: ["8.2", "8.3"]
         WITH_COMMERCIAL: [true, false]
     env:
