@@ -41,17 +41,16 @@ jobs:
           install-admin: true
           install-storefront: true
           shopware-version: ${{ matrix.PLATFORM_BRANCH }}
+      - name: Install dependencies
+        if: matrix.PLATFORM_BRANCH == 'v6.7.0.0'
+        run: composer require --dev phpstan/phpstan-strict-rules
       - name: Prepare phpstan
         working-directory: custom/plugins/${{ github.event.repository.name }}
         run: |
           composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCmsExtensions"
           composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCommercial"
-          jq -e '.["require-dev"] | has("phpstan/phpstan-strict-rules")' composer.json || composer require --dev phpstan/phpstan-strict-rules
           sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist
-      - run: |
-          composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
-        env:
-          PLATFORM_BRANCH: ${{ matrix.PLATFORM_BRANCH }}
+      - run: composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
 
   php-cs-fixer:
     runs-on: ubuntu-latest
