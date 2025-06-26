@@ -43,7 +43,10 @@ $phpstanConfig = [
     ],
 ];
 
-if ($_SERVER['PLATFORM_BRANCH'] === 'v6.7.0.0') {
+$shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
+echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
+
+if ($shopwareVersion === 'v6.7.0.0') {
     unset($phpstanConfig['parameters']['featureToggles']);
 }
 
