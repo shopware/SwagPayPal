@@ -39,7 +39,6 @@ $phpstanConfig = [
     'includes' => [$kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/common.neon'],
     'parameters' => [
         'symfony' => ['containerXmlPath' => \sprintf('%s/%sDevDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class))],
-        'featureToggles' => ['internalTag' => true],
     ],
 ];
 
@@ -55,4 +54,10 @@ if ($shopwareVersion === '6.7.0.0') {
     unset($phpstanConfig['parameters']['featureToggles']);
 }
 
-file_put_contents(__DIR__ . '/../phpstan.dynamic.neon', \json_encode($phpstanConfig, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT));
+$encoded = \json_encode($phpstanConfig, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT);
+
+if ((bool) $_SERVER['CI']) { // Print config for clearity in workflow
+    echo 'Generated config:' . \PHP_EOL . $encoded . \PHP_EOL;
+}
+
+file_put_contents(__DIR__ . '/../phpstan.dynamic.neon', $encoded);
