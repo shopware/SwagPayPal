@@ -48,7 +48,7 @@ $phpstanConfig = [
 $shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
 echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
 
-$versionedConfig = \sprintf('%s/phpstan-baseline-%s.neon.dist', $pluginRootPath, $shopwareVersion);
+$versionedConfig = \sprintf('%s/phpstan-%s.neon.dist', $pluginRootPath, $shopwareVersion);
 if (\file_exists($versionedConfig)) {
     $phpstanConfig['includes'][] = $versionedConfig;
 }
