@@ -83,6 +83,10 @@
             "clear": "Karte entfernen",
             "create": "Karte für zukünftige Käufe speichern"
           }
+        },
+        "e-invoice":{
+          "paymentMethod": "Zahlungsart: \"%paymentMethod%\"",
+          "orderId": "Auftragsnummer: %orderId%"
         }
     }
 }
