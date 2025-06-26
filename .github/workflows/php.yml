@@ -46,6 +46,7 @@ jobs:
         run: |
           composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCmsExtensions"
           composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCommercial"
+          jq -e '.["require-dev"] | has("phpstan/phpstan-strict-rules")' composer.json || composer require --dev phpstan/phpstan-strict-rules
           sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist
       - run: |
           composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
