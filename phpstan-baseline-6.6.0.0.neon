@@ -1,0 +1,61 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Access to property \\$config on an unknown class Shopware\\\\Core\\\\Checkout\\\\Document\\\\Zugferd\\\\ZugferdInvoiceGeneratedEvent\\.$#"
+			count: 1
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Access to property \\$document on an unknown class Shopware\\\\Core\\\\Checkout\\\\Document\\\\Zugferd\\\\ZugferdInvoiceGeneratedEvent\\.$#"
+			count: 1
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Access to property \\$order on an unknown class Shopware\\\\Core\\\\Checkout\\\\Document\\\\Zugferd\\\\ZugferdInvoiceGeneratedEvent\\.$#"
+			count: 2
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Cannot call method getBuilder\\(\\) on class\\-string\\|object\\.$#"
+			count: 1
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Mixed variable in a `\\$event\\-\\>document\\-\\>getBuilder\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Mixed variable in a `\\$event\\-\\>order\\-\\>getLanguage\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Mixed variable in a `\\$event\\-\\>order\\-\\>getLanguage\\(\\)\\?\\-\\>getLocale\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Mixed variable in a `\\$event\\-\\>order\\-\\>getTransactions\\(\\)\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Mixed variable in a `\\$paymentMethod\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 1
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Mixed variable in a `\\$transaction\\-\\>\\.\\.\\.\\(\\)` can skip important errors\\. Make sure the type is known$#"
+			count: 3
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Parameter \\$event of method Swag\\\\PayPal\\\\Checkout\\\\Document\\\\Zugferd\\\\ZugferdSubscriber\\:\\:generateInvoice\\(\\) has invalid type Shopware\\\\Core\\\\Checkout\\\\Document\\\\Zugferd\\\\ZugferdInvoiceGeneratedEvent\\.$#"
+			count: 1
+			path: src/Checkout/Document/Zugferd/ZugferdSubscriber.php
+
+		-
+			message: "#^Trying to mock an undefined method addDocumentPaymentMean\\(\\) on class horstoeko\\\\zugferd\\\\ZugferdDocumentBuilder\\.$#"
+			count: 1
+			path: tests/Checkout/Document/Zugferd/ZugferdSubscriberTest.php
