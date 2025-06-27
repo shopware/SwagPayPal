@@ -11,6 +11,9 @@ use Shopware\Core\Framework\Adapter\Kernel\KernelFactory;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Swag\PayPal\SwagPayPal;
 
+// SETUP
+
+$_SERVER['CI'] ??= false;
 $projectRoot = $_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4);
 $pluginRootPath = dirname(__DIR__);
 
@@ -35,28 +38,36 @@ KernelFactory::$kernelClass = StaticAnalyzeKernel::class;
 $kernel = KernelFactory::create('dev', true, $classLoader, $pluginLoader);
 $kernel->boot();
 
-$phpstanConfig = [
-    'includes' => [
-        $kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/extension.neon',
-        $kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/rules.neon',
-    ],
-    'parameters' => [
-        'symfony' => ['containerXmlPath' => \sprintf('%s/%sDevDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class))],
-    ],
-];
+// GENERATE CONFIG
 
 $shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
 echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
 
 $versionedConfig = \sprintf('%s/phpstan-%s.neon.dist', $pluginRootPath, $shopwareVersion);
-if (\file_exists($versionedConfig)) {
-    $phpstanConfig['includes'][] = $versionedConfig;
+
+$phpstanConfig = [
+    'includes' => \array_merge(
+        [$kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/extension.neon'],
+        [$kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/rules.neon'],
+        \file_exists($versionedConfig) ? [$versionedConfig] : [],
+    ),
+    'parameters' => [
+        'symfony' => ['containerXmlPath' => \sprintf('%s/%sDevDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class))],
+        'reportUnmatchedIgnoredErrors' => !((bool) $_SERVER['CI']),
+    ],
+];
+
+if ($shopwareVersion !== '6.6.0.0') {
+    $phpstanConfig['parameters']['type_perfect'] = [
+        'narrow_return' => true,
+        'no_mixed' => true,
+        'null_over_false' => true,
+    ];
 }
 
 $encoded = \json_encode($phpstanConfig, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT);
+file_put_contents(__DIR__ . '/../phpstan.dynamic.neon', $encoded);
 
 if ((bool) $_SERVER['CI']) { // Print config for clearity in workflow
     echo 'Generated config:' . \PHP_EOL . $encoded . \PHP_EOL;
 }
-
-file_put_contents(__DIR__ . '/../phpstan.dynamic.neon', $encoded);

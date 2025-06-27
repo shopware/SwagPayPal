@@ -26,11 +26,6 @@ parameters:
     symfony:
         constant_hassers: false
 
-    type_perfect:
-        narrow_return: true
-        no_mixed: true
-        null_over_false: true
-
     ignoreErrors:
         # Will be fixed in v6.7
         - '#Do not use md5 function, use class Shopware\\Core\\Framework\\Util\\Hasher instead.#'
