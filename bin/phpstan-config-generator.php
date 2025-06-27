@@ -46,7 +46,7 @@ echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
 $versionedConfig = \sprintf('%s/phpstan-%s.neon.dist', $pluginRootPath, $shopwareVersion);
 
 $phpstanConfig = [
-    'includes' => \array_merge(#
+    'includes' => \array_merge(
         [$kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/common.neon'],
         \file_exists($versionedConfig) ? [$versionedConfig] : [],
     ),
