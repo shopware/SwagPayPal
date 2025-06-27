@@ -7,13 +7,14 @@
 
 namespace Swag\PayPal\Checkout\Document\Zugferd;
 
-use horstoeko\zugferd\codelists\ZugferdPaymentMeans;
-use Shopware\Core\Checkout\Document\Zugferd\ZugferdInvoiceGeneratedEvent;
+use Swag\PayPal\SwagPayPal;
 use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\SwagPayPal;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use horstoeko\zugferd\codelists\ZugferdPaymentMeans;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Shopware\Core\Checkout\Document\Zugferd\ZugferdInvoiceGeneratedEvent;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 
 /**
  * @internal
@@ -39,7 +40,7 @@ class ZugferdSubscriber implements EventSubscriberInterface
         // Method is not available for version 6.7.0.0
         /** @phpstan-ignore function.alreadyNarrowedType */
         if (Feature::isActive('v6.8.0.0') && \method_exists($event->order, 'getPrimaryOrderTransaction')) {
-            /** @var OrderTransaction|null $transaction - silence 6.7.0.0 type errors */
+            /** @var OrderTransactionEntity|null $transaction - silence 6.7.0.0 type errors */
             $transaction = $event->order->getPrimaryOrderTransaction();
         }
 

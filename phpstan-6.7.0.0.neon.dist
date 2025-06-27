@@ -29,3 +29,6 @@ parameters:
         - message: '#.* method_exists\(\) with Shopware\\Core\\Checkout\\Order\\OrderEntity .*#'
           identifier: function.impossibleType
           path: tests/Checkout/Document/Zugferd/ZugferdSubscriberTest.php
+
+        - identifier: symplify.noDynamicName
+          path: tests/Pos/Mock/MessageBusMock.php
