@@ -49,7 +49,6 @@ jobs:
         run: |
           composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCmsExtensions"
           composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCommercial"
-          sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist
       - run: composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
 
   php-cs-fixer:

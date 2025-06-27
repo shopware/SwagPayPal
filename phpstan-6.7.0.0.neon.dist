@@ -24,3 +24,8 @@ parameters:
         noVariableVariables: false
         strictArrayFilter: false
         illegalConstructorMethodCall: false
+
+    ignoreErrors:
+        - message: '#.* method_exists\(\) with Shopware\\Core\\Checkout\\Order\\OrderEntity .*#'
+          identifier: function.impossibleType
+          path: tests/Checkout/Document/Zugferd/ZugferdSubscriberTest.php

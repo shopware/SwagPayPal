@@ -38,7 +38,8 @@ class ZugferdSubscriber implements EventSubscriberInterface
         $transaction = $event->order->getTransactions()?->last();
         // Method is not available for version 6.7.0.0
         /** @phpstan-ignore function.alreadyNarrowedType */
-        if (Feature::isActive('v6.8.0.0') && method_exists($event->order, 'getPrimaryOrderTransaction')) {
+        if (Feature::isActive('v6.8.0.0') && \method_exists($event->order, 'getPrimaryOrderTransaction')) {
+            /** @var OrderTransaction|null $transaction - silence 6.7.0.0 type errors */
             $transaction = $event->order->getPrimaryOrderTransaction();
         }
 
