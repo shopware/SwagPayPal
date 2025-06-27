@@ -7,14 +7,14 @@
 
 namespace Swag\PayPal\Checkout\Document\Zugferd;
 
-use Swag\PayPal\SwagPayPal;
-use Shopware\Core\Framework\Feature;
-use Shopware\Core\Framework\Log\Package;
 use horstoeko\zugferd\codelists\ZugferdPaymentMeans;
-use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\Checkout\Document\Zugferd\ZugferdInvoiceGeneratedEvent;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Framework\Feature;
+use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\SwagPayPal;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @internal
