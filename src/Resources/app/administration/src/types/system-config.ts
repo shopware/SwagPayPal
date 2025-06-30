@@ -56,11 +56,11 @@ export declare type SystemConfig = {
 /**
  * @private
  */
-export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'boolean' | 'array'> = {
+export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'password' | 'boolean' | 'array'> = {
     'SwagPayPal.settings.clientId': 'string',
-    'SwagPayPal.settings.clientSecret': 'string',
+    'SwagPayPal.settings.clientSecret': 'password',
     'SwagPayPal.settings.clientIdSandbox': 'string',
-    'SwagPayPal.settings.clientSecretSandbox': 'string',
+    'SwagPayPal.settings.clientSecretSandbox': 'password',
     'SwagPayPal.settings.merchantPayerId': 'string',
     'SwagPayPal.settings.merchantPayerIdSandbox': 'string',
     'SwagPayPal.settings.sandbox': 'boolean',
