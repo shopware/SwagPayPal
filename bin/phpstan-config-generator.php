@@ -10,30 +10,27 @@ use Shopware\Core\DevOps\StaticAnalyze\StaticAnalyzeKernel;
 use Shopware\Core\Framework\Adapter\Kernel\KernelFactory;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Swag\PayPal\SwagPayPal;
-use Symfony\Component\Dotenv\Dotenv;
 
-$projectRoot = dirname(__DIR__, 4);
+// SETUP
+
+$_SERVER['CI'] ??= false;
+$projectRoot = $_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4);
 $pluginRootPath = dirname(__DIR__);
 
 $classLoader = require $projectRoot . '/vendor/autoload.php';
-if (file_exists($projectRoot . '/.env')) {
-    (new Dotenv())->usePutEnv()->bootEnv($projectRoot . '/.env');
-}
 
 /** @var array{'autoload': array{}} $composer */
 $composer = json_decode((string) file_get_contents($pluginRootPath . '/composer.json'), true);
 
-$pluginLoader = new StaticKernelPluginLoader($classLoader, null, [
-    [
-        'name' => 'SwagPayPal',
-        'active' => true,
-        'version' => $composer['version'],
-        'baseClass' => SwagPayPal::class,
-        'managedByComposer' => false,
-        'autoload' => $composer['autoload'],
-        'path' => $pluginRootPath,
-    ],
-]);
+$pluginLoader = new StaticKernelPluginLoader($classLoader, null, [[
+    'name' => 'SwagPayPal',
+    'active' => true,
+    'version' => $composer['version'],
+    'baseClass' => SwagPayPal::class,
+    'managedByComposer' => true,
+    'autoload' => $composer['autoload'],
+    'path' => $pluginRootPath,
+]]);
 
 KernelFactory::$kernelClass = StaticAnalyzeKernel::class;
 
@@ -41,26 +38,36 @@ KernelFactory::$kernelClass = StaticAnalyzeKernel::class;
 $kernel = KernelFactory::create('dev', true, $classLoader, $pluginLoader);
 $kernel->boot();
 
-$phpStanConfigDist = file_get_contents($pluginRootPath . '/phpstan.neon.dist');
-if ($phpStanConfigDist === false) {
-    throw new RuntimeException('phpstan.neon.dist file not found');
+// GENERATE CONFIG
+
+$shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
+echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
+
+$versionedConfig = \sprintf('%s/phpstan-%s.neon.dist', $pluginRootPath, $shopwareVersion);
+
+$phpstanConfig = [
+    'includes' => \array_merge(
+        [$kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/extension.neon'],
+        [$kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/rules.neon'],
+        \file_exists($versionedConfig) ? [$versionedConfig] : [],
+    ),
+    'parameters' => [
+        'symfony' => ['containerXmlPath' => \sprintf('%s/%sDevDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class))],
+        'reportUnmatchedIgnoredErrors' => !((bool) $_SERVER['CI']),
+    ],
+];
+
+if ($shopwareVersion !== '6.6.0.0') {
+    $phpstanConfig['parameters']['type_perfect'] = [
+        'narrow_return' => true,
+        'no_mixed' => true,
+        'null_over_false' => true,
+    ];
 }
 
-// because the cache dir is hashed by Shopware, we need to set the PHPStan config dynamically
-$phpStanConfig = str_replace(
-    [
-        '%ShopwareHashedCacheDir%',
-        '%ShopwareRoot%',
-        '%ShopwareKernelClass%',
-    ],
-    [
-        str_replace($kernel->getProjectDir(), '', $kernel->getCacheDir()),
-        $projectRoot . (is_dir($projectRoot . '/platform') ? '/platform' : ''),
-        str_replace('\\', '_', $kernel::class),
-    ],
-    $phpStanConfigDist
-);
+$encoded = \json_encode($phpstanConfig, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT);
+file_put_contents(__DIR__ . '/../phpstan.dynamic.neon', $encoded);
 
-file_put_contents(__DIR__ . '/../phpstan.neon', $phpStanConfig);
-
-return $classLoader;
+if ((bool) $_SERVER['CI']) { // Print config for clearity in workflow
+    echo 'Generated config:' . \PHP_EOL . $encoded . \PHP_EOL;
+}

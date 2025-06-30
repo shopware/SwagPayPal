@@ -1,8 +1,7 @@
 includes:
     - phpstan-baseline.neon
+    - phpstan.dynamic.neon
     - phar://phpstan.phar/conf/bleedingEdge.neon
-    - %ShopwareRoot%/src/Core/DevOps/StaticAnalyze/PHPStan/extension.neon
-    - %ShopwareRoot%/src/Core/DevOps/StaticAnalyze/PHPStan/rules.neon
 
 parameters:
     phpVersion: 80200
@@ -26,13 +25,6 @@ parameters:
 
     symfony:
         constant_hassers: false
-        # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
-        container_xml_path: '../../..%ShopwareHashedCacheDir%/%ShopwareKernelClass%DevDebugContainer.xml'
-
-    type_perfect:
-        narrow_return: true
-        no_mixed: true
-        null_over_false: true
 
     ignoreErrors:
         # Will be fixed in v6.7
