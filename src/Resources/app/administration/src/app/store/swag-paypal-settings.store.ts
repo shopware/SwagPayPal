@@ -24,19 +24,19 @@ const store = Shopware.Store.register({
         },
 
         set<K extends keyof PayPal.SystemConfig>(key: K, value: PayPal.SystemConfig[K]) {
-            this.allConfigs[String(this.salesChannel)][key] = value ?? undefined;
+            this.allConfigs[String(this.salesChannel)][key] = value;
         },
 
         get<K extends keyof PayPal.SystemConfig>(key: K): PayPal.SystemConfig[K] {
-            return this.actual[key] ?? this.root[key] ?? undefined;
+            return this.actual[key] ?? this.root[key];
         },
 
         getRoot<K extends keyof PayPal.SystemConfig>(key: K): PayPal.SystemConfig[K] {
-            return this.root[key] ?? undefined;
+            return this.root[key];
         },
 
         getActual<K extends keyof PayPal.SystemConfig>(key: K): PayPal.SystemConfig[K] {
-            return this.actual[key] ?? undefined;
+            return this.actual[key];
         },
     },
 

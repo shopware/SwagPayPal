@@ -44,6 +44,10 @@
         font-weight: 600;
     }
 
+    .swag-paypal-pos-wizard-connection-success__user-disconnect {
+        place-self: center end;
+    }
+
     .swag-paypal-pos-wizard-connection-success__disclaimer {
         color: $color-gray-500;
         font-size: $font-size-xs;

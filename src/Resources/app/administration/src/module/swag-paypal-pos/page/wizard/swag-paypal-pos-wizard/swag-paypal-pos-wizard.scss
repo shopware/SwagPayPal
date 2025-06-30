@@ -15,7 +15,7 @@
         padding: 0;
     }
 
-    .sw-modal__footer {
+    &.sw-modal .sw-modal__footer {
         display: flex;
 
         .footer-left .mt-button {

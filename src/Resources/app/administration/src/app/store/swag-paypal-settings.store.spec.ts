@@ -76,10 +76,10 @@ describe('swag-paypal-settings.store', () => {
         expect(store.getRoot(key)).toBe('CAPTURE');
         expect(store.getActual(key)).toBeUndefined();
 
-        store.set(key, 'AUTORIZE');
-        expect(store.get(key)).toBe('AUTORIZE');
+        store.set(key, 'AUTHORIZE');
+        expect(store.get(key)).toBe('AUTHORIZE');
         expect(store.getRoot(key)).toBe('CAPTURE');
-        expect(store.getActual(key)).toBe('AUTORIZE');
+        expect(store.getActual(key)).toBe('AUTHORIZE');
     });
 
     it('should have inherit correctly without root value', () => {
@@ -106,13 +106,13 @@ describe('swag-paypal-settings.store', () => {
 
         const key = 'SwagPayPal.settings.crossBorderBuyerCountry';
 
-        expect(store.get(key)).toBeUndefined();
-        expect(store.getRoot(key)).toBeUndefined();
+        expect(store.get(key)).toBeNull();
+        expect(store.getRoot(key)).toBeNull();
         expect(store.getActual(key)).toBeUndefined();
 
         store.set(key, 'de-DE');
         expect(store.get(key)).toBe('de-DE');
-        expect(store.getRoot(key)).toBeUndefined();
+        expect(store.getRoot(key)).toBeNull();
         expect(store.getActual(key)).toBe('de-DE');
     });
 });

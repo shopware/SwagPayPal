@@ -13,6 +13,7 @@
         <!-- HTTP CLIENT -->
         <service id="paypal-sdk.client" class="Swag\PayPal\RestApi\Client\Client">
             <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="psr18.paypal.base-client"/>
         </service>
 
         <!-- CONTEXT FACTORY -->

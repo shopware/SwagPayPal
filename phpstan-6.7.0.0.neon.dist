@@ -1,0 +1,34 @@
+# Polyfill of trunk's common.neon
+
+parameters:
+    reportMaybesInMethodSignatures: false
+    reportWrongPhpDocTypeInVarTag: false
+
+    strictRules:
+        disallowedLooseComparison: false
+        booleansInConditions: false
+        booleansInLoopConditions: false
+        uselessCast: false
+        requireParentConstructorCall: false
+        disallowedBacktick: false
+        disallowedEmpty: false
+        disallowedImplicitArrayCreation: false
+        disallowedShortTernary: false
+        overwriteVariablesWithLoop: false
+        closureUsesThis: false
+        matchingInheritedMethodNames: false
+        numericOperandsInArithmeticOperators: false
+        strictFunctionCalls: false
+        dynamicCallOnStaticMethod: false
+        switchConditionsMatchingType: false
+        noVariableVariables: false
+        strictArrayFilter: false
+        illegalConstructorMethodCall: false
+
+    ignoreErrors:
+        - message: '#.* method_exists\(\) with Shopware\\Core\\Checkout\\Order\\OrderEntity .*#'
+          identifier: function.impossibleType
+          path: tests/Checkout/Document/Zugferd/ZugferdSubscriberTest.php
+
+        - identifier: symplify.noDynamicName
+          path: tests/Pos/Mock/MessageBusMock.php

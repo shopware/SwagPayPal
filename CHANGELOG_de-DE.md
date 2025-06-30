@@ -1,3 +1,18 @@
+# 10.1.0
+- Fügt notwenige Zahlungsmittelinformationen zu E-Rechnungen hinzu (shopware/SwagPayPal#255)
+
+# 10.0.3
+- Behebt ein Problem, bei dem Anfragen an PayPal unendlich lange warten konnten. Die Anfragen sind jetzt auf 30 Sekunden begrenzt (shopware/SwagPayPal#262)
+- Behebt ein Problem, bei dem der Abstand zwischen Express Checkout Button und "Später bezahlen" Banner zu klein war (shopware/SwagPayPal#245)
+- Behebt ein Problem, bei dem der Ersteinrichtungs-Assistent nicht korrekt dargestellt wurde
+
+# 10.0.2
+- Behebt ein Problem, bei dem einige Admin-Einstellungen nicht korrekt gespeichert wurden
+- Behebt ein Problem, bei dem teilweise Zahlungseinzüge im Admin nicht funktionierten
+
+# 10.0.1
+- Verbesserte Kompatibilität mit Shopware 6.7
+
 # 10.0.0
 - Kompatibilität mit Shopware 6.7 und neuen PaymentHandlern hinzugefügt
 - Kommunikation mit PayPal-API in neues SDK abgesplittet (https://github.com/shopware/paypal-sdk)

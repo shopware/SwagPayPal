@@ -1,3 +1,18 @@
+# 10.1.0
+- Added necessary payment means for e-invoice generation (shopware/SwagPayPal#255)
+
+# 10.0.3
+- Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 30 seconds (shopware/SwagPayPal#262)
+- Fixes an issue, where the spacing between Express Checkout button and PayLater banner was too small (shopware/SwagPayPal#245)
+- Fixes an issue, where the First Run Wizard was not shown correctly
+
+# 10.0.2
+- Fixes an issue, where some admin settings are not saved correctly
+- Fixes an issue, where partial captures within the admin were not working
+
+# 10.0.1
+- Enhanced compatibility with Shopware 6.7
+
 # 10.0.0
 - Added compatibility with Shopware 6.7 and new payment handlers
 - Separated communication with PayPal API into new SDK (https://github.com/shopware/paypal-sdk)
@@ -33,7 +48,7 @@
 
 # 9.6.5
 - PPI-1025 - Improves the performance of the installment banner in the Storefront
-- PPI-1043 - Fixes an issue, where a payment method is toggled twice in the Administration 
+- PPI-1043 - Fixes an issue, where a payment method is toggled twice in the Administration
 - PPI-1045 - Fixes an issue, where a payment was not refundable in some cases
 
 # 9.6.4

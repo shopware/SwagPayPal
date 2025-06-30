@@ -11,12 +11,44 @@ permissions:
   id-token: write
 
 jobs:
+  build-zip:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1 # to avoid artifact conflicts
+      matrix:
+        PLATFORM_BRANCH: ["v6.7.0.0", "trunk"]
+    steps:
+      - name: Attempt to download the artifact
+        id: artifact-download
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: ${{ format('{0}.zip', github.event.repository.name) }}
+          path: /tmp/existing-artifact
+
+      - name: Build and validate zip
+        if: steps.artifact-download.outcome != 'success'
+        uses: shopware/github-actions/build-zip@main
+        with:
+          extensionName: ${{ github.event.repository.name }}
+
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+
+      - name: Test install zip
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          extension-zip: ${{ steps.upload.outputs.artifact-url }}
+          shopware-version: ${{ matrix.PLATFORM_BRANCH }}
+
   phpunit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         MYSQL_IMAGE: ["mysql:8.0", "mariadb:10.11"]
-        PLATFORM_BRANCH: ["trunk"]
+        PLATFORM_BRANCH: ["v6.7.0.0", "trunk"]
         PHP_VERSION: ["8.2", "8.3"]
         WITH_COMMERCIAL: [true, false]
     env:

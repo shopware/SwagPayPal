@@ -19,9 +19,9 @@ export default Shopware.Component.wrapComponentConfig({
 
     computed: {
         needsOnboarding(): boolean {
-            // @ts-expect-error - paymentMethod is from extended component
-            if (!this.paymentMethod || !this.capabilities) {
-                return true;
+            // no capabilities, no paypal payment method
+            if (!this.capabilities) {
+                return false;
             }
 
             // @ts-expect-error - paymentMethod is from extended component
@@ -30,13 +30,16 @@ export default Shopware.Component.wrapComponentConfig({
         },
     },
 
-    methods: {
-        createdComponent() {
-            this.$super('createdComponent');
-
-            this.fetchMerchantCapabilities();
+    watch: {
+        paymentMethod(paymentMethod) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            if (paymentMethod?.technicalName && paymentMethod.technicalName.startsWith('swag_paypal_')) {
+                this.fetchMerchantCapabilities();
+            }
         },
+    },
 
+    methods: {
         async fetchMerchantCapabilities() {
             const merchantInformation = await this.SwagPayPalSettingsService.getMerchantInformation();
             this.capabilities = merchantInformation.capabilities ?? {};

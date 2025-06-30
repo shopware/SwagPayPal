@@ -76,20 +76,19 @@ class InventorySyncManager extends AbstractSyncManager
             $accumulatedIds[] = $id;
 
             if (\count($accumulatedIds) >= self::CHUNK_SIZE) {
-                $messages[] = $this->createMessage($context, $inventoryContext, $salesChannel, $runId, $accumulatedIds, $parentIds);
+                $messages[] = $this->createMessage($inventoryContext, $salesChannel, $runId, $accumulatedIds, $parentIds);
                 $accumulatedIds = [];
             }
         }
 
         if (\count($accumulatedIds) > 0) {
-            $messages[] = $this->createMessage($context, $inventoryContext, $salesChannel, $runId, $accumulatedIds, $parentIds);
+            $messages[] = $this->createMessage($inventoryContext, $salesChannel, $runId, $accumulatedIds, $parentIds);
         }
 
         return $messages;
     }
 
     private function createMessage(
-        Context $context,
         InventoryContext $inventoryContext,
         SalesChannelEntity $salesChannel,
         string $runId,

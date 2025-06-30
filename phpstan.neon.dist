@@ -1,11 +1,9 @@
 includes:
     - phpstan-baseline.neon
-    - %ShopwareRoot%/src/Core/DevOps/StaticAnalyze/PHPStan/common.neon
+    - phpstan.dynamic.neon
 
 parameters:
     tmpDir: var/cache/phpstan
-    featureToggles:
-        internalTag: true
 
     paths:
         - src
@@ -13,17 +11,17 @@ parameters:
 
     excludePaths:
         - src/Resources
-        - src/DevOps/Rector
         - tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
         - tests/DeprecatedTagTest.php
 
     bootstrapFiles:
         - bin/static-analyze-autoloader.php
 
+    featureToggles:
+        internalTag: true
+
     symfony:
         constantHassers: false
-        # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
-        containerXmlPath: '../../..%ShopwareHashedCacheDir%/%ShopwareKernelClass%DevDebugContainer.xml'
 
     ignoreErrors:
         # We won't type all arrays/iterables for now
