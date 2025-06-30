@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        PLATFORM_BRANCH: ["trunk"]
+        PLATFORM_BRANCH: ["v6.7.0.0", "trunk"]
       fail-fast: false
     steps:
       - name: Checkout SwagPayPal
@@ -41,14 +41,15 @@ jobs:
           install-admin: true
           install-storefront: true
           shopware-version: ${{ matrix.PLATFORM_BRANCH }}
+      - name: Install dependencies
+        if: matrix.PLATFORM_BRANCH == 'v6.7.0.0'
+        run: composer require --dev phpstan/phpstan-strict-rules phpstan/phpstan:2.1.16
       - name: Prepare phpstan
         working-directory: custom/plugins/${{ github.event.repository.name }}
         run: |
           composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCmsExtensions"
           composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCommercial"
-          sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist
-      - run: |
-          composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
+      - run: composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
 
   php-cs-fixer:
     runs-on: ubuntu-latest

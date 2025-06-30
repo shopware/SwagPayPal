@@ -53,7 +53,10 @@ class ZugferdSubscriberTest extends TestCase
 
         $order = new OrderEntity();
         if ($transaction !== null) {
-            $order->setPrimaryOrderTransaction($transaction);
+            /** @phpstan-ignore function.alreadyNarrowedType */
+            if (\method_exists($order, 'setPrimaryOrderTransaction')) {
+                $order->setPrimaryOrderTransaction($transaction);
+            }
             $order->setTransactions(new OrderTransactionCollection([$transaction]));
         }
 
