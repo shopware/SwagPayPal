@@ -10,6 +10,9 @@ updates:
       all:
         patterns:
           - '*'
+    ignore:
+      - dependency-name: '*jest*'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: npm
     directory: '/src/Resources/app/storefront'
