@@ -46,7 +46,7 @@ Component.register('swag-paypal-payment-detail', {
         },
 
         stateFailedCancelled() {
-            return this.orderTransaction.stateMachineState.technicalName in ['cancelled', 'failed'];
+            return ['cancelled', 'failed'].includes(this.orderTransaction.stateMachineState.technicalName);
         },
 
         hasPayPalDetails() {
