@@ -191,7 +191,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
      * @returns {*}
      */
     onClick(_, actions) {
-        if (!this.confirmOrderForm.checkValidity()) {
+        if (!this.confirmOrderForm.reportValidity()) {
             return actions.reject();
         }
 
