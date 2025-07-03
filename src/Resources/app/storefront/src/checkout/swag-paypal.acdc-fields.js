@@ -1,6 +1,5 @@
 import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
-import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
 import SwagPaypalAbstractStandalone from './swag-paypal.abstract-standalone';
 
 export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
@@ -188,10 +187,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
                 return;
             }
 
-            const buttonLoadingIndicator = new ButtonLoadingIndicator(
-                DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector),
-            );
-            buttonLoadingIndicator.remove();
+            this.confirmOrderForm.dispatchEvent(new CustomEvent('removeLoader'));
 
             const firstInvalidFieldKey = Object.keys(state.fields).find((key) => !state.fields[key].isValid);
             this.fields[firstInvalidFieldKey]?.focus();

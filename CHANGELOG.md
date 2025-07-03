@@ -1,6 +1,6 @@
 # 10.1.0
 - Added necessary payment means for e-invoice generation (shopware/SwagPayPal#255)
-- Fixes an issue where the form validation on the order confirmation page does not refer to the corresponding input field (shopware/SwagPayPal#267)
+- Fixes an issue, where the loading spinner is not correctly hidden on invalid confirm order forms (shopware/SwagPayPal#286)
 
 # 10.0.3
 - Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 30 seconds (shopware/SwagPayPal#262)
