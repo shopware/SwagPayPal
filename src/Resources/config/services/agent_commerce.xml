@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\AgentCommerce\Routing\PayPalAgentRouteScope">
+            <tag name="shopware.route_scope"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\Routing\PayPalAgentRequestContextResolver">
+            <argument type="service" id="Shopware\Core\Framework\JWT\JWTDecoder"/>
+            <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\Routing\PayPalAgentContextResolverListener">
+            <argument type="service" id="Swag\PayPal\AgentCommerce\Routing\PayPalAgentRequestContextResolver"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\SalesChannel\Response\PayPalAgentResponseExceptionSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\SalesChannel\CreateCartRoute"/>
+    </services>
+</container>
