@@ -15,7 +15,7 @@ use Shopware\Core\System\SalesChannel\StoreApiResponse;
  * @extends StoreApiResponse<ArrayStruct<array{id: string}>>
  */
 #[Package('checkout')]
-final class PayPalAgentCartResponse extends StoreApiResponse
+final class AgentCartResponse extends StoreApiResponse
 {
     public function __construct(
         string $token

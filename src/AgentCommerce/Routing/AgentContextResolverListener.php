@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * @internal
  */
 #[Package('checkout')]
-class PayPalAgentContextResolverListener implements EventSubscriberInterface
+class AgentContextResolverListener implements EventSubscriberInterface
 {
     /**
      * @internal

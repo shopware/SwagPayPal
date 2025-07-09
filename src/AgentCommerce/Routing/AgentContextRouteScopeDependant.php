@@ -9,7 +9,10 @@ namespace Swag\PayPal\AgentCommerce\Routing;
 
 use Shopware\Core\Framework\Log\Package;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
-interface PayPalAgentContextRouteScopeDependant
+interface AgentContextRouteScopeDependant
 {
 }

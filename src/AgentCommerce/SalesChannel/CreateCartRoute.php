@@ -10,15 +10,13 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Swag\PayPal\AgentCommerce\Exception\PayPalAgentException;
-use Swag\PayPal\AgentCommerce\Routing\PayPalAgentSource;
-use Swag\PayPal\AgentCommerce\Routing\PayPalAgentSourceGuard;
-use Swag\PayPal\AgentCommerce\SalesChannel\Response\PayPalAgentCartResponse;
+use Swag\PayPal\AgentCommerce\Routing\AgentSource;
+use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Package('checkout')]
-#[Route(defaults: ['_routeScope' => ['paypal-agent']])]
+#[Route(defaults: ['_routeScope' => ['paypal-agent'], '_agentScope' => [AgentSource::SCOPE_CART]])]
 class CreateCartRoute extends AbstractCreateCartRoute
 {
     public function getDecorated(): AbstractCreateCartRoute
@@ -27,12 +25,8 @@ class CreateCartRoute extends AbstractCreateCartRoute
     }
 
     #[Route('/api/paypal/v1/merchant-cart', name: 'api.paypal.merchant-cart', methods: [Request::METHOD_POST])]
-    public function createCart(Request $request, Context $context): PayPalAgentCartResponse
+    public function createCart(Request $request, Context $context): AgentCartResponse
     {
-        if (!PayPalAgentSourceGuard::validForScopes([PayPalAgentSource::SCOPE_CART], $context->getSource())) {
-            throw PayPalAgentException::unauthorized('Unauthorized JWT token');
-        }
-
-        return new PayPalAgentCartResponse('new-cart-token');
+        return new AgentCartResponse('new-cart-token');
     }
 }

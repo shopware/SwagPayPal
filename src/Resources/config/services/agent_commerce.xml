@@ -5,21 +5,21 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\AgentCommerce\Routing\PayPalAgentRouteScope">
+        <service id="Swag\PayPal\AgentCommerce\Routing\AgentRouteScope">
             <tag name="shopware.route_scope"/>
         </service>
 
-        <service id="Swag\PayPal\AgentCommerce\Routing\PayPalAgentRequestContextResolver">
+        <service id="Swag\PayPal\AgentCommerce\Routing\AgentRequestContextResolver">
             <argument type="service" id="Shopware\Core\Framework\JWT\JWTDecoder"/>
             <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry"/>
         </service>
 
-        <service id="Swag\PayPal\AgentCommerce\Routing\PayPalAgentContextResolverListener">
-            <argument type="service" id="Swag\PayPal\AgentCommerce\Routing\PayPalAgentRequestContextResolver"/>
+        <service id="Swag\PayPal\AgentCommerce\Routing\AgentContextResolverListener">
+            <argument type="service" id="Swag\PayPal\AgentCommerce\Routing\AgentRequestContextResolver"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="Swag\PayPal\AgentCommerce\SalesChannel\Response\PayPalAgentResponseExceptionSubscriber">
+        <service id="Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentResponseExceptionSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
 

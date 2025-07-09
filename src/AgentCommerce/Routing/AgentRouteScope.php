@@ -13,20 +13,24 @@ use Shopware\Core\Framework\Routing\AbstractRouteScope;
 use Shopware\Core\PlatformRequest;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
-class PayPalAgentRouteScope extends AbstractRouteScope implements PayPalAgentContextRouteScopeDependant
+class AgentRouteScope extends AbstractRouteScope implements AgentContextRouteScopeDependant
 {
+    final public const ATTRIBUTE_PAYPAL_AGENT_SCOPE = '_agentScope';
     final public const ID = 'paypal-agent';
 
     protected array $allowedPaths = ['api'];
 
     public function isAllowed(Request $request): bool
     {
-        if ($request->headers->get('Content-Type') !== 'application/json') {
+        if (!$request->headers->has('Authorization') || !$request->headers->has('Content-Type')) {
             return false;
         }
 
-        if (!$request->headers->has('Authorization') || !$request->headers->has('Content-Type')) {
+        if ($request->headers->get('Content-Type') !== 'application/json') {
             return false;
         }
 
@@ -38,7 +42,7 @@ class PayPalAgentRouteScope extends AbstractRouteScope implements PayPalAgentCon
 
         $source = $context->getSource();
 
-        if (!$source instanceof PayPalAgentSource) {
+        if (!$source instanceof AgentSource) {
             return false;
         }
 

@@ -9,7 +9,7 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\AgentCommerce\SalesChannel\Response\PayPalAgentCartResponse;
+use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
@@ -17,5 +17,5 @@ abstract class AbstractCheckoutRoute
 {
     abstract public function getDecorated(): AbstractCheckoutRoute;
 
-    abstract public function checkout(string $token, Request $request, Context $context): PayPalAgentCartResponse;
+    abstract public function checkout(string $token, Request $request, Context $context): AgentCartResponse;
 }

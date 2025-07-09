@@ -11,15 +11,18 @@ use Shopware\Core\Framework\Api\Context\ContextSource;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\JsonSerializableTrait;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
-class PayPalAgentSource implements ContextSource, \JsonSerializable
+class AgentSource implements ContextSource, \JsonSerializable
 {
     use JsonSerializableTrait;
 
     final public const SCOPE_CART = 'cart';
     final public const SCOPE_CHECKOUT = 'checkout';
 
-    public string $type = PayPalAgentRouteScope::ID;
+    public string $type = AgentRouteScope::ID;
 
     /**
      * @param string[] $scope

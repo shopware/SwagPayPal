@@ -8,15 +8,17 @@
 namespace Swag\PayPal\AgentCommerce\Exception;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\AgenticCommerceV1\AgentErrorDetail;
+use Shopware\PayPalSDK\Struct\AgenticCommerceV1\AgentErrorDetailCollection;
+use Shopware\PayPalSDK\Struct\Struct;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
-class PayPalAgentException extends PayPalAgentHttpException
+class AgentException extends AgentHttpException
 {
     public const INVALID_REQUEST = 'INVALID_REQUEST';
     public const CART_NOT_FOUND = 'CART_NOT_FOUND';
     public const INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR';
-
     public const SERVICE_UNAVAILABLE = 'SERVICE_UNAVAILABLE';
     public const PAYMENT_PROCESSOR_UNAVAILABLE = 'PAYMENT_PROCESSOR_UNAVAILABLE';
     public const PAYMENT_CAPTURE_FAILED = 'PAYMENT_CAPTURE_FAILED';
@@ -27,14 +29,16 @@ class PayPalAgentException extends PayPalAgentHttpException
     {
         $message = 'Required field \'{{ fields }}\' is missing';
         $parameters = ['fields' => implode(', ', $fields)];
-        $details = [];
+        $details = new AgentErrorDetailCollection();
 
         foreach ($fields as $field) {
-            $details[] = new PayPalAgentErrorResponseDetail(
-                $field,
-                'MISSING_REQUIRED_FIELD',
-                \sprintf('The field \'%s\' is required and cannot be empty', $field)
-            );
+            $detail = Struct::from(AgentErrorDetail::class, [
+                'field' => $field,
+                'issue' => 'MISSING_REQUIRED_FIELD',
+                'description' => \sprintf('The field \'%s\' is required and cannot be empty', $field),
+            ]);
+
+            $details->add($detail);
         }
 
         return new self(
@@ -103,13 +107,13 @@ class PayPalAgentException extends PayPalAgentHttpException
 
     public static function paymentCaptureFailed(string $message): self
     {
-        $details = [
-            new PayPalAgentErrorResponseDetail(
-                'payment_method',
-                'CAPTURE_FAILED',
-                $message
-            ),
-        ];
+        $details = new AgentErrorDetailCollection([
+            Struct::from(AgentErrorDetail::class, [
+                'field' => 'payment_method',
+                'issue' => 'CAPTURE_FAILED',
+                'description' => $message,
+            ]),
+        ]);
 
         return new self(
             Response::HTTP_INTERNAL_SERVER_ERROR,
