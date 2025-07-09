@@ -114,11 +114,11 @@ class AgentResponseExceptionSubscriberTest extends TestCase
         static::assertContainsOnlyInstancesOf(AgentErrorDetail::class, $details);
         static::assertCount(2, $details);
 
-        static::assertSame('foo', $details->first()->getField());
+        static::assertSame('foo', $details->first()?->getField());
         static::assertSame('MISSING_REQUIRED_FIELD', $details->first()->getIssue());
         static::assertSame('The field \'foo\' is required and cannot be empty', $details->first()->getDescription());
 
-        static::assertSame('bar', $details->last()->getField());
+        static::assertSame('bar', $details->last()?->getField());
         static::assertSame('MISSING_REQUIRED_FIELD', $details->last()->getIssue());
         static::assertSame('The field \'bar\' is required and cannot be empty', $details->last()->getDescription());
     }
@@ -145,7 +145,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
 
         static::assertInstanceOf(AgentError::class, $error);
         static::assertSame('PREPARED_ORDER_REQUIRED', $error->getName());
-        static::assertSame('PayPal Order ID does not exist in the request. The payment method FOO requires a prepared PayPal order.', $error->getMessage());
+        static::assertSame('PayPal Order ID does not exist in the request. The payment method Shopware\Core\Test\Integration\PaymentHandler\TestPaymentHandler requires a prepared PayPal order.', $error->getMessage());
         static::assertSame(400, $error->getCode());
         static::assertSame('debug-id', $error->getDebugId());
     }
