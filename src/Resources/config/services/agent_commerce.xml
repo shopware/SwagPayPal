@@ -5,6 +5,16 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="monolog.processor.paypal.agent-debug-id" class="Swag\PayPal\AgentCommerce\Util\AgentDebugIDProcessor">
+            <tag name="monolog.processor" channel="paypal" />
+            <call method="setRequestStack">
+                <argument type="service" id="request_stack" />
+            </call>
+            <call method="setRouteScopeRegistry">
+                <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry" />
+            </call>
+        </service>
+
         <service id="Swag\PayPal\AgentCommerce\Routing\AgentRouteScope">
             <tag name="shopware.route_scope"/>
         </service>
