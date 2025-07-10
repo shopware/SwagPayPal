@@ -10,8 +10,8 @@ namespace Swag\PayPal\Tests\AgentCommerce\Exception;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\PayPalSDK\Struct\AgenticCommerceV1\AgentErrorDetail;
-use Shopware\PayPalSDK\Struct\AgenticCommerceV1\AgentErrorDetailCollection;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetail;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetailCollection;
 use Shopware\PayPalSDK\Struct\Struct;
 use Swag\PayPal\AgentCommerce\Exception\AgentHttpException;
 

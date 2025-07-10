@@ -110,7 +110,11 @@ mwIDAQAB
 
     private function resolveContextSource(string $token): AgentSource
     {
-        $decoded = $this->JWTDecoder->decode($token);
+        try {
+            $decoded = $this->JWTDecoder->decode($token);
+        } catch (JWTException $e) {
+            throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
+        }
 
         if (!isset($decoded['sub'], $decoded['iat'], $decoded['exp'], $decoded['scope'])) {
             throw AgentException::unauthorized('Invalid JWT token');

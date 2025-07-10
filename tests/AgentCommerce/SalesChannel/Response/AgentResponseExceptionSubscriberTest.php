@@ -7,18 +7,21 @@
 
 namespace Swag\PayPal\Tests\AgentCommerce\SalesChannel\Response;
 
+use Monolog\Logger;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Routing\RouteScopeRegistry;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\Test\Integration\PaymentHandler\TestPaymentHandler;
 use Shopware\Core\Test\Stub\Symfony\StubKernel;
-use Shopware\PayPalSDK\Struct\AgenticCommerceV1\AgentError;
-use Shopware\PayPalSDK\Struct\AgenticCommerceV1\AgentErrorDetail;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentError;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetail;
 use Shopware\PayPalSDK\Struct\Struct;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgentCommerce\Routing\AgentRouteScope;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentResponseExceptionSubscriber;
 use Swag\PayPal\Checkout\CheckoutException;
@@ -49,24 +52,42 @@ class AgentResponseExceptionSubscriberTest extends TestCase
     public function testOnKernelExceptionWithoutContext(): void
     {
         $request = new Request();
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $event = self::createEvent($request, new \Exception('Test exception'));
 
-        $subscriber = new AgentResponseExceptionSubscriber();
+        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
-        static::assertNull($event->getResponse());
+        static::assertNotNull($event->getResponse());
+
+        $response = $event->getResponse();
+        static::assertNotFalse($response->getContent());
+
+        $content = \json_decode($response->getContent(), true, flags: \JSON_THROW_ON_ERROR);
+        $error = Struct::from(AgentError::class, $content);
+
+        static::assertNull($error->getDebugId());
     }
 
     public function testOnKernelExceptionWithNonContextObject(): void
     {
         $request = new Request();
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, new \stdClass());
         $event = self::createEvent($request, new \Exception('Test exception'));
 
-        $subscriber = new AgentResponseExceptionSubscriber();
+        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
-        static::assertNull($event->getResponse());
+        static::assertNotNull($event->getResponse());
+
+        $response = $event->getResponse();
+        static::assertNotFalse($response->getContent());
+
+        $content = \json_decode($response->getContent(), true, flags: \JSON_THROW_ON_ERROR);
+        $error = Struct::from(AgentError::class, $content);
+
+        static::assertNull($error->getDebugId());
     }
 
     public function testOnKernelExceptionWithNonPayPalAgentSource(): void
@@ -76,7 +97,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $event = self::createEvent($request, new \Exception('Test exception'));
 
-        $subscriber = new AgentResponseExceptionSubscriber();
+        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
         static::assertNull($event->getResponse());
@@ -88,10 +109,11 @@ class AgentResponseExceptionSubscriberTest extends TestCase
 
         $request = new Request();
         $context = Context::createDefaultContext($source);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $event = self::createEvent($request, AgentException::requiredFieldsMissing('foo', 'bar'));
 
-        $subscriber = new AgentResponseExceptionSubscriber();
+        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
         static::assertNotNull($event->getResponse());
@@ -129,10 +151,11 @@ class AgentResponseExceptionSubscriberTest extends TestCase
 
         $request = new Request();
         $context = Context::createDefaultContext($source);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $event = self::createEvent($request, CheckoutException::preparedOrderRequired(TestPaymentHandler::class));
 
-        $subscriber = new AgentResponseExceptionSubscriber();
+        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
         static::assertNotNull($event->getResponse());
@@ -156,10 +179,11 @@ class AgentResponseExceptionSubscriberTest extends TestCase
 
         $request = new Request();
         $context = Context::createDefaultContext($source);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $event = self::createEvent($request, new \Exception('Generic error'));
 
-        $subscriber = new AgentResponseExceptionSubscriber();
+        $subscriber = new AgentResponseExceptionSubscriber(new Logger('test'), new RouteScopeRegistry([new AgentRouteScope()]));
         $subscriber->onKernelException($event);
 
         static::assertNotNull($event->getResponse());
