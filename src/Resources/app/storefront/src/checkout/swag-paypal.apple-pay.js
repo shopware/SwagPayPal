@@ -40,7 +40,7 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
         button.setAttribute('type', 'buy');
         button.style.width = '100%';
         button.addEventListener('click',() => {
-            if (this.confirmOrderForm.checkValidity()){
+            if (this.confirmOrderForm.reportValidity()){
                 this.handleApplePayButtonSubmit(config, paypal)
                     .catch(this.onError.bind(this));
             }

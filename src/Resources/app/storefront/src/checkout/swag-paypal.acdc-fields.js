@@ -173,7 +173,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
             return;
         }
 
-        if (!this.confirmOrderForm.checkValidity()) {
+        if (!this.confirmOrderForm.reportValidity()) {
             return;
         }
 

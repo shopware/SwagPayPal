@@ -83,7 +83,7 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
         const button = gpClient.createButton({
             allowedPaymentMethods,
             onClick: () => {
-                if (this.confirmOrderForm.checkValidity())
+                if (this.confirmOrderForm.reportValidity())
                     gpClient.loadPaymentData(paymentDataRequest).catch();
             },
         });
