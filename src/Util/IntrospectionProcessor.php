@@ -56,7 +56,7 @@ class IntrospectionProcessor implements ProcessorInterface
         /** @var Trace[] $traces */
         $traces = $this->getBacktrace();
 
-        $context = [];
+        $extra = [];
         $index = 1;
         for (; $index < \count($traces); ++$index) {
             $trace = $traces[$index];
@@ -74,25 +74,25 @@ class IntrospectionProcessor implements ProcessorInterface
             }
 
             if ($this->isClient($trace)) {
-                $context['client'] ??= $this->traceToClassString($trace);
+                $extra['client'] ??= $this->traceToClassString($trace);
 
                 continue;
             }
 
             if ($this->isGateway($trace)) {
-                $context['gateway'] ??= $this->traceToClassString($trace);
+                $extra['gateway'] ??= $this->traceToClassString($trace);
 
                 continue;
             }
 
             if ($this->isResource($trace)) {
-                $context['resource'] ??= $this->traceToClassString($trace);
+                $extra['resource'] ??= $this->traceToClassString($trace);
 
                 continue;
             }
 
             if ($this->isController($trace)) {
-                $context['controller'] ??= $this->traceToClassString($trace);
+                $extra['controller'] ??= $this->traceToClassString($trace);
 
                 continue;
             }
@@ -102,30 +102,34 @@ class IntrospectionProcessor implements ProcessorInterface
 
         // Try finding any controller
         foreach (\array_slice($traces, $index) as $trace) {
-            if (isset($context['controller'])) {
+            if (isset($extra['controller'])) {
                 break;
             }
 
             if ($this->isController($trace)) {
-                $context['controller'] = $this->traceToClassString($trace);
+                $extra['controller'] = $this->traceToClassString($trace);
             }
         }
 
-        $exception = $record->context['exception'] ?? $record->context['error'] ?? null;
-        if ($exception instanceof \Throwable) {
-            $context['exception'] = $this->exceptionToContext($exception);
+        $context = [];
+
+        foreach (['exception', 'error'] as $prop) {
+            if (isset($record->context[$prop]) && $record->context[$prop] instanceof \Throwable) {
+                $context[$prop] = $this->exceptionToContext($record->context[$prop]);
+            }
         }
 
-        $record->extra = [
-            ...$record->extra,
-            ...$context,
-            'file' => $traces[$index - 1]['file'] ?? null,
-            'line' => $traces[$index - 1]['line'] ?? null,
-            'class' => $traces[$index]['class'] ?? null,
-            'function' => $traces[$index]['function'] ?? null,
-        ];
-
-        return $record;
+        return $record->with(...[
+            'context' => [...$record->context, ...$context],
+            'extra' => [
+                ...$record->extra,
+                ...$extra,
+                'file' => $traces[$index - 1]['file'] ?? null,
+                'line' => $traces[$index - 1]['line'] ?? null,
+                'class' => $traces[$index]['class'] ?? null,
+                'function' => $traces[$index]['function'] ?? null,
+            ],
+        ]);
     }
 
     /**
