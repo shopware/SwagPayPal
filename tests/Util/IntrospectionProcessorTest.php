@@ -95,7 +95,7 @@ class IntrospectionProcessorTest extends TestCase
             ->method('getBacktrace')
             ->willReturn(\array_merge([self::TRACE_MONOLOG], $backtrace));
 
-        $processor->__invoke($logRecord);
+        $logRecord = $processor->__invoke($logRecord);
 
         static::assertEquals($expected, $logRecord->extra);
     }
@@ -213,6 +213,20 @@ class IntrospectionProcessorTest extends TestCase
     {
         $logRecord = new LogRecord(new \DateTimeImmutable(), 'paypal', Level::Error, 'test', $context);
 
+        $staticExcepted = [];
+
+        foreach (['exception', 'error'] as $prop) {
+            if (!$logRecord->context[$prop] instanceof \Throwable) {
+                continue;
+            }
+
+            $staticExcepted[$prop] = [
+                'file' => __FILE__,
+                'class' => self::class . '::invokeWithExceptionDataProvider',
+                'line' => $logRecord->context[$prop]->getLine(),
+            ];
+        }
+
         $processor = $this->getMockBuilder(IntrospectionProcessor::class)
             ->setConstructorArgs([Level::Error])
             ->onlyMethods(['getBacktrace'])
@@ -223,20 +237,11 @@ class IntrospectionProcessorTest extends TestCase
             ->method('getBacktrace')
             ->willReturn(\array_merge([self::TRACE_MONOLOG], []));
 
-        $processor->__invoke($logRecord);
-
-        $staticExcepted = ['file' => null, 'line' => 1, 'class' => null, 'function' => null];
-        if (isset($logRecord->extra['exception'])) {
-            $staticExcepted['exception'] = [
-                'file' => __FILE__,
-                'class' => self::class . '::invokeWithExceptionDataProvider',
-                'line' => $logRecord->extra['exception']['line'],
-            ];
-        }
+        $logRecord = $processor->__invoke($logRecord);
 
         static::assertEquals(
             \array_merge_recursive($expected, $staticExcepted),
-            $logRecord->extra,
+            $logRecord->context,
         );
     }
 
@@ -244,16 +249,16 @@ class IntrospectionProcessorTest extends TestCase
     {
         yield 'not a throwable' => [
             ['error' => ['some-key' => 'some-value']],
-            [],
+            ['error' => ['some-key' => 'some-value']],
         ];
 
         yield 'throwable' => [
-            ['error' => new \Exception('test-message')],
-            ['exception' => ['message' => 'test-message']],
+            ['exception' => new \Exception('test-message'), 'error' => new \Exception('test-message')],
+            ['exception' => ['message' => 'test-message'], 'error' => ['message' => 'test-message']],
         ];
 
         yield 'PayPalApiException' => [
-            ['error' => new PayPalApiException('test-name', 'test-message', issue: 'test-issue')],
+            ['exception' => new PayPalApiException('test-name', 'test-message', issue: 'test-issue')],
             ['exception' => [
                 'message' => 'The error "test-name" occurred with the following message: test-message',
                 'parameters' => ['name' => 'test-name', 'message' => 'test-message', 'issue' => 'test-issue'],
@@ -262,7 +267,7 @@ class IntrospectionProcessorTest extends TestCase
         ];
 
         yield 'PosException' => [
-            ['error' => new PosException('test-name', 'test-message')],
+            ['exception' => new PosException('test-name', 'test-message')],
             ['exception' => [
                 'message' => 'The error "test-name" occurred with the following message: test-message',
                 'parameters' => ['name' => 'test-name', 'message' => 'test-message'],
