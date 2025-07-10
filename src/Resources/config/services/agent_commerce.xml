@@ -20,6 +20,8 @@
         </service>
 
         <service id="Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentResponseExceptionSubscriber">
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

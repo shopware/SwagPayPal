@@ -8,8 +8,8 @@
 namespace Swag\PayPal\AgentCommerce\Exception;
 
 use Shopware\Core\Framework\Log\Package;
-use Shopware\PayPalSDK\Struct\AgenticCommerceV1\AgentErrorDetail;
-use Shopware\PayPalSDK\Struct\AgenticCommerceV1\AgentErrorDetailCollection;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetail;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetailCollection;
 use Shopware\PayPalSDK\Struct\Struct;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -59,12 +59,13 @@ class AgentException extends AgentHttpException
         );
     }
 
-    public static function unauthorized(string $message): self
+    public static function unauthorized(string $message, ?\Throwable $previous = null): self
     {
         return new self(
             Response::HTTP_UNAUTHORIZED,
             self::INVALID_REQUEST,
             $message,
+            previous: $previous,
         );
     }
 
@@ -133,12 +134,13 @@ class AgentException extends AgentHttpException
         );
     }
 
-    public static function orderSystemError(): self
+    public static function orderSystemError(?\Throwable $previous = null): self
     {
         return new self(
             Response::HTTP_INTERNAL_SERVER_ERROR,
             self::ORDER_SYSTEM_ERROR,
-            'Order could not be created due to system error'
+            'Order could not be created due to system error',
+            previous: $previous,
         );
     }
 }

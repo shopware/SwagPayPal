@@ -167,6 +167,33 @@ mwIDAQAB
         $resolver->resolve($request);
     }
 
+    public function testResolveWithExpiredToken(): void
+    {
+        $iat = new \DateTimeImmutable('-2 hours');
+        $exp = new \DateTimeImmutable('-1 hour');
+
+        $jwt = self::encodeJWT(
+            'MERCHANT_ID',
+            $iat,
+            $exp,
+            ['cart', 'checkout']
+        );
+
+        $request = new Request();
+        $request->headers->set('Authorization', $jwt);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
+        $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
+
+        $resolver = new AgentRequestContextResolver(
+            new JWTDecoder(),
+            new RouteScopeRegistry([new AgentRouteScope()])
+        );
+
+        $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
+
+        $resolver->resolve($request);
+    }
+
     public function testResolveWithWrongJWTHeader(): void
     {
         $request = new Request();

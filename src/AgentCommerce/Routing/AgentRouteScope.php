@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @internal
  */
 #[Package('checkout')]
-class AgentRouteScope extends AbstractRouteScope implements AgentContextRouteScopeDependant
+class AgentRouteScope extends AbstractRouteScope
 {
     final public const ATTRIBUTE_PAYPAL_AGENT_SCOPE = '_agentScope';
     final public const ID = 'paypal-agent';
@@ -26,11 +26,7 @@ class AgentRouteScope extends AbstractRouteScope implements AgentContextRouteSco
 
     public function isAllowed(Request $request): bool
     {
-        if (!$request->headers->has('Authorization') || !$request->headers->has('Content-Type')) {
-            return false;
-        }
-
-        if ($request->headers->get('Content-Type') !== 'application/json') {
+        if (!$request->headers->has('Authorization')) {
             return false;
         }
 

@@ -9,6 +9,8 @@ namespace Swag\PayPal\AgentCommerce\Routing;
 
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha512;
+use Lcobucci\JWT\Validation\Constraint\HasClaimWithValue;
+use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\JWT\JWTDecoder;
@@ -19,6 +21,7 @@ use Shopware\Core\Framework\Routing\RouteScopeCheckTrait;
 use Shopware\Core\Framework\Routing\RouteScopeRegistry;
 use Shopware\Core\PlatformRequest;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -60,7 +63,7 @@ mwIDAQAB
             return;
         }
 
-        if (!$this->isRequestScoped($request, AgentContextRouteScopeDependant::class)) {
+        if (!$this->isRequestScoped($request, AgentRouteScope::class)) {
             return;
         }
 
@@ -70,12 +73,10 @@ mwIDAQAB
             throw AgentException::unauthorized('Missing Authorization header');
         }
 
-        $this->validateJWT($token);
         $source = $this->resolveContextSource($token);
-
-        $this->validateAgentScopes($request, $source);
-
         $context = new Context($source);
+
+        $this->validateJWT($request, $token);
 
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
     }
@@ -85,16 +86,25 @@ mwIDAQAB
         return $this->routeScopeRegistry;
     }
 
-    private function validateJWT(string $jwt): void
+    private function validateJWT(Request $request, string $jwt): void
     {
+        /** @var list<string> $scopes */
+        $scopes = $request->attributes->get(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, []);
+
+        if ($scopes === []) {
+            throw AgentException::unauthorized('Invalid JWT token');
+        }
+
         $constraints = [
+            new HasClaimWithValue('scope', $scopes),
+            new LooseValidAt(new NativeClock()),
             new SignedWith(new Sha512(), InMemory::plainText(self::$PAYPAL_JWT)),
         ];
 
         try {
             $this->JWTDecoder->validate($jwt, ...$constraints);
-        } catch (JWTException) {
-            throw AgentException::unauthorized('Invalid JWT token');
+        } catch (JWTException $e) {
+            throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
         }
     }
 
@@ -118,21 +128,5 @@ mwIDAQAB
         }
 
         return new AgentSource($decoded['sub'], $iat, $exp, $decoded['scope']);
-    }
-
-    private function validateAgentScopes(Request $request, AgentSource $source): void
-    {
-        /** @var list<string> $scopes */
-        $scopes = $request->attributes->get(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, []);
-
-        if ($scopes === []) {
-            throw AgentException::unauthorized('Invalid JWT token');
-        }
-
-        foreach ($scopes as $scope) {
-            if (!$source->hasScope($scope)) {
-                throw AgentException::unauthorized('Invalid JWT token');
-            }
-        }
     }
 }

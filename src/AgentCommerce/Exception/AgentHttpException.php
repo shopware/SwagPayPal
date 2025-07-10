@@ -9,23 +9,20 @@ namespace Swag\PayPal\AgentCommerce\Exception;
 
 use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\PayPalSDK\Struct\AgenticCommerceV1\AgentErrorDetailCollection;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetailCollection;
 
 #[Package('checkout')]
 abstract class AgentHttpException extends HttpException
 {
-    private AgentErrorDetailCollection $details;
-
     public function __construct(
         int $statusCode,
         string $errorCode,
         string $message,
         array $parameters = [],
-        AgentErrorDetailCollection $details = new AgentErrorDetailCollection(),
+        protected AgentErrorDetailCollection $details = new AgentErrorDetailCollection(),
+        ?\Throwable $previous = null
     ) {
-        $this->details = $details;
-
-        parent::__construct($statusCode, $errorCode, $message, $parameters);
+        parent::__construct($statusCode, $errorCode, $message, $parameters, $previous);
     }
 
     public function getDetails(): AgentErrorDetailCollection

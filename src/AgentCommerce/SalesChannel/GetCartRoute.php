@@ -9,21 +9,18 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
-#[Route(defaults: ['_routeScope' => ['paypal-agent'], '_agentScope' => [AgentSource::SCOPE_CHECKOUT]])]
-class GetCartRoute extends AbstractGetCartRoute
+#[Route(defaults: ['_routeScope' => ['paypal-agent'], '_agentScope' => [AgentSource::SCOPE_CART]])]
+class GetCartRoute
 {
-    public function getDecorated(): AbstractGetCartRoute
-    {
-        throw new DecorationPatternException(self::class);
-    }
-
     #[Route('/api/paypal/v1/merchant-cart/{token}', name: 'api.paypal.merchant-cart.get', methods: [Request::METHOD_GET])]
     public function getCart(string $token, Request $request, Context $context): AgentCartResponse
     {
