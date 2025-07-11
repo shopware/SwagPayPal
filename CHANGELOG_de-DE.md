@@ -1,5 +1,6 @@
 # 10.1.0
 - Fügt notwenige Zahlungsmittelinformationen zu E-Rechnungen hinzu (shopware/SwagPayPal#255)
+- Behebt ein Problem, bei dem die Formularvalidierung auf der Bestellbestätigungsseite nicht auf das entsprechende Eingabefeld verweist (shopware/SwagPayPal#267)
 - Behebt ein Problem, bei dem der Ladespinner bei ungültigen Bestellformularen nicht korrekt ausgeblendet wird (shopware/SwagPayPal#286)
 
 # 10.0.3

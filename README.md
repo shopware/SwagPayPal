@@ -8,6 +8,10 @@
 
 SwagPayPal is an integration for [Shopware 6]([https://github.com/shopware/shopware](https://github.com/shopware/shopware)) for many PayPal products. 
 
+## Reporting issues
+
+**Please raise any issues in the [Issue tab](https://github.com/shopware/SwagPayPal/issues)**.
+
 ## Listing and Installation
 
 This plugin is listed in the Shopware store as [PayPal for Shopware 6](https://store.shopware.com/en/swag588949310744f/paypal-for-shopware-6.html). It comes bundled with Shopware 6 and preinstalled in Shopware's SaaS solution. 
@@ -15,10 +19,6 @@ This plugin is listed in the Shopware store as [PayPal for Shopware 6](https://s
 ## Documentation
 
 Documentation can be found as part of the Shopware extensions docs: [Shopware Docs > PayPal](https://docs.shopware.com/en/shopware-6-en/extensions/paypal)
-
-## Reporting issues
-
-**Please use the [shopware repository](https://github.com/shopware/shopware/issues) to raise any issues.
 
 ##  Contributing
 
