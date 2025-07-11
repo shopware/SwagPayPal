@@ -20,7 +20,6 @@ abstract class AgentHttpException extends HttpException
         string $message,
         array $parameters = [],
         protected AgentErrorDetailCollection $details = new AgentErrorDetailCollection(),
-        protected ?string $debugId = null,
         ?\Throwable $previous = null
     ) {
         parent::__construct($statusCode, $errorCode, $message, $parameters, $previous);

@@ -159,7 +159,7 @@ class IntrospectionProcessor implements ProcessorInterface
         ];
 
         if ($exception instanceof AgentHttpException) {
-            $context['details'] = $exception->getDetails();
+            $context['details'] = $exception->getDetails()->jsonSerialize();
         }
 
         if ($exception instanceof ShopwareHttpException) {
