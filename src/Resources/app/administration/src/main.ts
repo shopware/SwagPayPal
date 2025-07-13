@@ -7,6 +7,7 @@ import './mixin/swag-paypal-settings.mixin';
 import './mixin/swag-paypal-merchant-information.mixin';
 
 import './module/extension';
+import './module/swag-paypal-agent-commerce';
 import './module/swag-paypal-disputes';
 import './module/swag-paypal-method';
 import './module/swag-paypal-payment';

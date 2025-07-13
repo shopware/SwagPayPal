@@ -1,0 +1,1 @@
+id,item_group_id,title,link,mpn,brand,gtin,upc,ean,sale_price,price,availability,google_product_category,product_type,image_link,additional_image_link,description

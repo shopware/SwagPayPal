@@ -1,0 +1,23 @@
+{% set price = product.calculatedPrice %}
+
+{{ product.productNumber }},
+{{ product.parentId ?? '' }},
+{{ product.translated.name|escape }},
+{{ seoUrl('frontend.detail.page', { productId: product.id }) }},
+{{ product.manufacturerNumber ?? '' }},
+{{ product.manufacturer.translated.name ?? '' }},
+{{ product.ean ?? '' }},
+{{ product.upc ?? '' }},
+{{ product.ean ?? '' }},
+{{ '' }}, {# sale price #}
+{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }} {{ context.currency.isoCode }},
+{{ product.available ? 'in stock' : 'out of stock' }},
+{{ product.categories.first.translated.name ?? '' }},
+{{ product.productType ?? '' }},
+{%- if product.cover.media is defined -%}
+{{ product.cover.media.url }},
+{%- else -%}
+{{ '' }},
+{%- endif -%}
+{{ '' }}, {# Additional images can be added here if available #}
+{{ product.translated.description|striptags|trim|escape }}
