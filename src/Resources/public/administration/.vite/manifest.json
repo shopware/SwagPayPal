@@ -1,0 +1,246 @@
+{
+  "_swag-paypal-settings.constant-7pNPSBTU.js": {
+    "file": "assets/swag-paypal-settings.constant-7pNPSBTU.js",
+    "name": "swag-paypal-settings.constant"
+  },
+  "app/component/swag-paypal-onboarding-button/index.ts": {
+    "file": "assets/index-BziGdwzm.js",
+    "name": "index",
+    "src": "app/component/swag-paypal-onboarding-button/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-CU9ICRvn.css"
+    ]
+  },
+  "app/component/swag-paypal-setting/index.ts": {
+    "file": "assets/index-D0jEOmQE.js",
+    "name": "index",
+    "src": "app/component/swag-paypal-setting/index.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "_swag-paypal-settings.constant-7pNPSBTU.js"
+    ],
+    "css": [
+      "assets/index-HymAk-nV.css"
+    ]
+  },
+  "main.ts": {
+    "file": "assets/swag-pay-pal-DSSyqKJQ.js",
+    "name": "swag-pay-pal",
+    "src": "main.ts",
+    "isEntry": true,
+    "dynamicImports": [
+      "app/component/swag-paypal-onboarding-button/index.ts",
+      "app/component/swag-paypal-setting/index.ts",
+      "module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials/index.ts",
+      "module/extension/sw-sales-channel-modal-detail/index.ts",
+      "module/extension/sw-sales-channel-modal-grid/index.ts",
+      "module/extension/sw-settings-shipping/sw-settings-shipping-detail/index.ts",
+      "module/extension/sw-extension-card-base/index.ts",
+      "module/swag-paypal-disputes/page/swag-paypal-disputes-detail/index.ts",
+      "module/swag-paypal-method/component/swag-paypal-method-domain-association/index.ts",
+      "module/swag-paypal-method/component/swag-paypal-method-merchant-information/index.ts",
+      "module/swag-paypal-method/component/swag-paypal-payment-method/index.ts",
+      "module/swag-paypal-method/view/swag-paypal-method-card/index.ts",
+      "module/swag-paypal-method/extension/sw-plugin-box/index.ts",
+      "module/swag-paypal-method/extension/sw-settings-payment/sw-settings-payment-detail/index.ts",
+      "module/swag-paypal-settings/components/swag-paypal-settings-icon/index.ts",
+      "module/swag-paypal-settings/components/swag-paypal-settings-locale-select/index.ts",
+      "module/swag-paypal-settings/components/swag-paypal-settings-sales-channel-switch/index.ts",
+      "module/swag-paypal-settings/components/swag-paypal-settings-webhook/index.ts",
+      "module/swag-paypal-settings/view/swag-paypal-settings-advanced/index.ts",
+      "module/swag-paypal-settings/view/swag-paypal-settings-general/index.ts",
+      "module/swag-paypal-settings/view/swag-paypal-settings-storefront/index.ts",
+      "module/swag-paypal-settings/page/swag-paypal-settings/index.ts"
+    ],
+    "css": [
+      "assets/swag-pay-pal-Bl65a9xJ.css"
+    ]
+  },
+  "module/extension/sw-extension-card-base/index.ts": {
+    "file": "assets/index-DT6hpUCH.js",
+    "name": "index",
+    "src": "module/extension/sw-extension-card-base/index.ts",
+    "isDynamicEntry": true
+  },
+  "module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials/index.ts": {
+    "file": "assets/index-DVkGKjlB.js",
+    "name": "index",
+    "src": "module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-BmAyTjXj.css"
+    ]
+  },
+  "module/extension/sw-sales-channel-modal-detail/index.ts": {
+    "file": "assets/index-DZAc4QfQ.js",
+    "name": "index",
+    "src": "module/extension/sw-sales-channel-modal-detail/index.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "main.ts"
+    ],
+    "css": [
+      "assets/index-Byf0Bk_y.css"
+    ]
+  },
+  "module/extension/sw-sales-channel-modal-grid/index.ts": {
+    "file": "assets/index-DIz7wwu_.js",
+    "name": "index",
+    "src": "module/extension/sw-sales-channel-modal-grid/index.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "main.ts"
+    ],
+    "css": [
+      "assets/index-DBZ497D4.css"
+    ]
+  },
+  "module/extension/sw-settings-shipping/sw-settings-shipping-detail/index.ts": {
+    "file": "assets/index-BsFzNe0C.js",
+    "name": "index",
+    "src": "module/extension/sw-settings-shipping/sw-settings-shipping-detail/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-VgY7miCV.css"
+    ]
+  },
+  "module/swag-paypal-disputes/page/swag-paypal-disputes-detail/index.ts": {
+    "file": "assets/index-NSbpapJx.js",
+    "name": "index",
+    "src": "module/swag-paypal-disputes/page/swag-paypal-disputes-detail/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-DxjX7zqQ.css"
+    ]
+  },
+  "module/swag-paypal-method/component/swag-paypal-method-domain-association/index.ts": {
+    "file": "assets/index-DnLidD0f.js",
+    "name": "index",
+    "src": "module/swag-paypal-method/component/swag-paypal-method-domain-association/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-Br_Ysh01.css"
+    ]
+  },
+  "module/swag-paypal-method/component/swag-paypal-method-merchant-information/index.ts": {
+    "file": "assets/index-FZMr6DU-.js",
+    "name": "index",
+    "src": "module/swag-paypal-method/component/swag-paypal-method-merchant-information/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-NbytPWh9.css"
+    ]
+  },
+  "module/swag-paypal-method/component/swag-paypal-payment-method/index.ts": {
+    "file": "assets/index-D8Q_Oavj.js",
+    "name": "index",
+    "src": "module/swag-paypal-method/component/swag-paypal-payment-method/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-CLP-xInC.css"
+    ]
+  },
+  "module/swag-paypal-method/extension/sw-plugin-box/index.ts": {
+    "file": "assets/index-QD0Oy9I0.js",
+    "name": "index",
+    "src": "module/swag-paypal-method/extension/sw-plugin-box/index.ts",
+    "isDynamicEntry": true
+  },
+  "module/swag-paypal-method/extension/sw-settings-payment/sw-settings-payment-detail/index.ts": {
+    "file": "assets/index-COETuq5G.js",
+    "name": "index",
+    "src": "module/swag-paypal-method/extension/sw-settings-payment/sw-settings-payment-detail/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-CN4ZE8zI.css"
+    ]
+  },
+  "module/swag-paypal-method/view/swag-paypal-method-card/index.ts": {
+    "file": "assets/index-BBIxhann.js",
+    "name": "index",
+    "src": "module/swag-paypal-method/view/swag-paypal-method-card/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-Dap6VQOd.css"
+    ]
+  },
+  "module/swag-paypal-settings/components/swag-paypal-settings-icon/index.ts": {
+    "file": "assets/index-DruaxD0u.js",
+    "name": "index",
+    "src": "module/swag-paypal-settings/components/swag-paypal-settings-icon/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-C7Fc4ciV.css"
+    ]
+  },
+  "module/swag-paypal-settings/components/swag-paypal-settings-locale-select/index.ts": {
+    "file": "assets/index--u8pWelW.js",
+    "name": "index",
+    "src": "module/swag-paypal-settings/components/swag-paypal-settings-locale-select/index.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "_swag-paypal-settings.constant-7pNPSBTU.js"
+    ],
+    "css": [
+      "assets/index-CiLDMmBW.css"
+    ]
+  },
+  "module/swag-paypal-settings/components/swag-paypal-settings-sales-channel-switch/index.ts": {
+    "file": "assets/index-CjRcIrtF.js",
+    "name": "index",
+    "src": "module/swag-paypal-settings/components/swag-paypal-settings-sales-channel-switch/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-BVeiQxSF.css"
+    ]
+  },
+  "module/swag-paypal-settings/components/swag-paypal-settings-webhook/index.ts": {
+    "file": "assets/index-8wR70pcV.js",
+    "name": "index",
+    "src": "module/swag-paypal-settings/components/swag-paypal-settings-webhook/index.ts",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-BG2n8H6c.css"
+    ]
+  },
+  "module/swag-paypal-settings/page/swag-paypal-settings/index.ts": {
+    "file": "assets/index-CnMEVSY-.js",
+    "name": "index",
+    "src": "module/swag-paypal-settings/page/swag-paypal-settings/index.ts",
+    "isDynamicEntry": true
+  },
+  "module/swag-paypal-settings/view/swag-paypal-settings-advanced/index.ts": {
+    "file": "assets/index-D5gYQ7Vb.js",
+    "name": "index",
+    "src": "module/swag-paypal-settings/view/swag-paypal-settings-advanced/index.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "_swag-paypal-settings.constant-7pNPSBTU.js"
+    ],
+    "css": [
+      "assets/index-_UKqtJSz.css"
+    ]
+  },
+  "module/swag-paypal-settings/view/swag-paypal-settings-general/index.ts": {
+    "file": "assets/index-BUtGqtya.js",
+    "name": "index",
+    "src": "module/swag-paypal-settings/view/swag-paypal-settings-general/index.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "_swag-paypal-settings.constant-7pNPSBTU.js"
+    ],
+    "css": [
+      "assets/index-c5j1S4M2.css"
+    ]
+  },
+  "module/swag-paypal-settings/view/swag-paypal-settings-storefront/index.ts": {
+    "file": "assets/index-DOE3gRvp.js",
+    "name": "index",
+    "src": "module/swag-paypal-settings/view/swag-paypal-settings-storefront/index.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "_swag-paypal-settings.constant-7pNPSBTU.js"
+    ]
+  }
+}
