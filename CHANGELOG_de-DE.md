@@ -1,3 +1,6 @@
+# 9.8.1
+- Behebt ein Problem, bei dem der PayLater Button im Warenkorb nicht angezeigt wird (shopware/SwagPayPal#304)
+
 # 9.8.0
 - Fügt notwenige Zahlungsmittelinformationen zu E-Rechnungen hinzu (shopware/SwagPayPal#255)
 

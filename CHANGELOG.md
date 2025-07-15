@@ -1,3 +1,6 @@
+# 9.8.1
+- Fixes an issue, where the PayLater button is not displayed on the OffCanvas and the cart (shopware/SwagPayPal#304)
+
 # 9.8.0
 - Added necessary payment means for e-invoice generation (shopware/SwagPayPal#255)
 
