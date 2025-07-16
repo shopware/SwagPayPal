@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="monolog.processor.paypal.agent-debug-id" class="Swag\PayPal\AgentCommerce\Util\AgentDebugIDProcessor">
+            <tag name="monolog.processor" channel="paypal" />
+            <call method="setRequestStack">
+                <argument type="service" id="request_stack" />
+            </call>
+            <call method="setRouteScopeRegistry">
+                <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry" />
+            </call>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\Routing\AgentRouteScope">
+            <tag name="shopware.route_scope"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\Routing\AgentRequestContextResolver">
+            <argument type="service" id="Shopware\Core\Framework\JWT\JWTDecoder"/>
+            <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\Routing\AgentContextResolverListener">
+            <argument type="service" id="Swag\PayPal\AgentCommerce\Routing\AgentRequestContextResolver"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentResponseExceptionSubscriber">
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\SalesChannel\CreateCartRoute"/>
+    </services>
+</container>
