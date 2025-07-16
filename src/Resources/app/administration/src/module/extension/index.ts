@@ -1,3 +1,5 @@
+import './sw-sales-channel/product-export-templates/paypal-agentic-commerce';
+
 Shopware.Component.override('sw-first-run-wizard-paypal-credentials', () => import('./sw-first-run-wizard/sw-first-run-wizard-paypal-credentials'));
 
 Shopware.Component.override('sw-sales-channel-modal-detail', () => import('./sw-sales-channel-modal-detail'));
