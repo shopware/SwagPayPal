@@ -239,7 +239,7 @@ class SwagPayPal extends Plugin
 
         $projectDir = $this->container->getParameter('kernel.project_dir');
 
-        if (!\file_exists($projectDir . '/vendor/autoload.php')) {
+        if (!\is_dir($projectDir . '/vendor') || !\is_file($projectDir . '/vendor/autoload.php')) {
             return;
         }
 
