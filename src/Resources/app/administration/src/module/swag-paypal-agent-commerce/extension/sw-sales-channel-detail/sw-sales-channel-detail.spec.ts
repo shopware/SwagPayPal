@@ -10,7 +10,15 @@ Shopware.Component.register('sw-sales-channel-detail', Promise.resolve({
 Shopware.Component.extend('swag-paypal-agent-commerce-sales-channel-detail', 'sw-sales-channel-detail', Promise.resolve(SwSalesChannelDetailExtension));
 
 async function createWrapper() {
-    return mount(await Shopware.Component.build('swag-paypal-agent-commerce-sales-channel-detail') as typeof SwSalesChannelDetailExtension);
+    return mount(await Shopware.Component.build('swag-paypal-agent-commerce-sales-channel-detail') as typeof SwSalesChannelDetailExtension, {
+        global: {
+            provide: {
+                exportTemplateService: {
+                    getProductExportTemplateRegistry: () => { return {}; },
+                },
+            },
+        },
+    });
 }
 
 describe('sw-sales-channel-detail', () => {
