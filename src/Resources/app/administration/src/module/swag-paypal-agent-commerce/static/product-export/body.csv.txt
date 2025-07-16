@@ -1,23 +1,30 @@
-{% set price = product.calculatedPrice %}
+{% set unitPrice = product.calculatedPrice.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') %}
+{% set categories = product.categories|default([]) %}
 
-{{ product.productNumber }},
-{{ product.parentId ?? '' }},
-{{ product.translated.name|escape }},
-{{ seoUrl('frontend.detail.page', { productId: product.id }) }},
-{{ product.manufacturerNumber ?? '' }},
-{{ product.manufacturer.translated.name ?? '' }},
-{{ product.ean ?? '' }},
-{{ product.upc ?? '' }},
-{{ product.ean ?? '' }},
-{{ '' }}, {# sale price #}
-{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }} {{ context.currency.isoCode }},
-{{ product.available ? 'in stock' : 'out of stock' }},
-{{ product.categories.first.translated.name ?? '' }},
-{{ product.productType ?? '' }},
-{%- if product.cover.media is defined -%}
-{{ product.cover.media.url }},
-{%- else -%}
-{{ '' }},
-{%- endif -%}
-{{ '' }}, {# Additional images can be added here if available #}
-{{ product.translated.description|striptags|trim|escape }}
+"{{ product.productNumber }}",
+"{{ product.translated.name|escape }}",
+"{{ product.translated.description|striptags|trim|escape }}",
+"{{ seoUrl('frontend.detail.page', { productId: product.id }) }}",
+"{%- if product.cover.media is defined -%}{{ product.cover.media.url }}{%- else -%}{{ '' }}{%- endif -%}",
+"{{ '' }}",{# Additional images can be added here if available #}
+"{{ unitPrice }} {{ context.currency.isoCode }}",
+"{{ '' }}",{# sale price #}
+"{{ product.available ? 'in stock' : 'out of stock' }}",
+"{{ 'new' }}",{# condition #}
+"{{ product.manufacturer.translated.name|default('') }}",
+"{{ product.ean|default('') }}",
+"{{ product.manufacturerNumber|default('') }}",
+"{{ '' }}",{# google_product_category #}
+"{{ '' }}",{# product category tree #}
+"{{ context.shippingLocation.country.iso }}:{{ context.shippingMethod.translated.name }}:{{ 0|number_format(context.currency.itemRounding.decimals, '.', '') }} {{ context.currency.isoCode }}",
+"{{ product.weight|default(0) }} kg",{# shipping_weight #}
+"{{ '' }}",{# shipping_label #}
+"{{ product.parentId|default('') }}",{# item_group_id #}
+"{{ '' }}",{# color #}
+"{{ '' }}",{# size (L, XL, etc.) #}
+"{{ '' }}",{# material #}
+"{{ '' }}",{# pattern #}
+"{{ '' }}",{# gender #]
+"{{ '' }}",{# age_group #}
+"{{ '' }}",{# size_type #}
+"{{ '' }}" {# size_system #}
