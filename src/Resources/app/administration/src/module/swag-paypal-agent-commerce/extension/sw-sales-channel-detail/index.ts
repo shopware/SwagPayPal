@@ -4,7 +4,7 @@ export default Shopware.Component.wrapComponentConfig({
     template,
 
     computed: {
-        isProductComparison() {
+        isProductComparison(): true {
             return true;
         },
     },

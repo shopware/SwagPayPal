@@ -1,11 +1,13 @@
-export default Shopware.Component.wrapComponentConfig({
+import { SwagPayPalDefaults } from "SwagPayPal/defaults";
+
+export default Shopware.Component.wrapComponentConfig<{ onCloseModal: () => void }>({
     methods: {
-        onAddChannel(id) {
+        onAddChannel(id: string | null) {
             if (!id) {
                 this.$super('onAddChannel', id);
             }
 
-            if (id === 'e3f8c9b2f1a44d4db0f793542e31d2c9') {
+            if (id === SwagPayPalDefaults.agentCommerceTypeId) {
                 this.onCloseModal();
 
                 if (id) {

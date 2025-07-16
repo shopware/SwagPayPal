@@ -1,5 +1,7 @@
-const insertIdIntoRoute = (to, from, next) => {
-    if (to.name.includes('swag.paypal.agent.commerce.create') && !to.params.id) {
+import type { RouteLocationNormalized, NavigationGuardNext, Router } from 'vue-router';
+
+const insertIdIntoRoute = (to: RouteLocationNormalized, _: RouteLocationNormalized, next: NavigationGuardNext) => {
+    if (to.name?.toString().includes('swag.paypal.agent.commerce.create') && !to.params.id) {
         to.params.id = Shopware.Utils.createId();
     }
 
@@ -7,7 +9,7 @@ const insertIdIntoRoute = (to, from, next) => {
 };
 
 
-export default Shopware.Component.wrapComponentConfig<{ salesChannel: TEntity<'sales_channel'>; isSaveSuccessful: boolean }>({
+export default Shopware.Component.wrapComponentConfig({
     beforeRouteEnter: insertIdIntoRoute,
 
     beforeRouteUpdate: insertIdIntoRoute,
@@ -19,7 +21,7 @@ export default Shopware.Component.wrapComponentConfig<{ salesChannel: TEntity<'s
     },
 
     methods: {
-        saveFinish() {
+        saveFinish(this: { isSaveSuccessful: boolean; $router: Router; salesChannel: { id: string } }) {
             this.isSaveSuccessful = false;
             this.$router.push({
                 name: 'swag.paypal.agent.commerce.detail',
