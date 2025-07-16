@@ -81,13 +81,11 @@ mwIDAQAB
 
         try {
             $this->validateJWT($request, $token);
-        } catch (JWTException|RequiredConstraintsViolated $e) {
+        } catch (RequiredConstraintsViolated $e) {
             /** @deprecated tag:v11.0.0 - Remove RequiredConstraintViolated from caught Exceptions, it is a fix for 6.7.0.0 specifically */
-            if ($e instanceof RequiredConstraintsViolated) {
-                // this is a workaround for the JWTDecoder which does not catch RequiredConstraintsViolated exceptions in 6.7.0.0
-                $e = JWTException::invalidJwt($e->getMessage(), $e);
-            }
-
+            // this is a workaround for the JWTDecoder which does not catch RequiredConstraintsViolated exceptions in 6.7.0.0
+            throw AgentException::unauthorized('Invalid JWT token', $e);
+        } catch (JWTException $e) {
             throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
         }
     }

@@ -10,7 +10,6 @@ namespace Swag\PayPal\AgentCommerce\Exception;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetail;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetailCollection;
-use Shopware\PayPalSDK\Struct\Struct;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
@@ -32,11 +31,10 @@ class AgentException extends AgentHttpException
         $details = new AgentErrorDetailCollection();
 
         foreach ($fields as $field) {
-            $detail = Struct::from(AgentErrorDetail::class, [
-                'field' => $field,
-                'issue' => 'MISSING_REQUIRED_FIELD',
-                'description' => \sprintf('The field \'%s\' is required and cannot be empty', $field),
-            ]);
+            $detail = (new AgentErrorDetail());
+            $detail->setField($field);
+            $detail->setIssue('MISSING_REQUIRED_FIELD');
+            $detail->setDescription(\sprintf('The field \'%s\' is required and cannot be empty', $field));
 
             $details->add($detail);
         }
@@ -108,13 +106,12 @@ class AgentException extends AgentHttpException
 
     public static function paymentCaptureFailed(string $message): self
     {
-        $details = new AgentErrorDetailCollection([
-            Struct::from(AgentErrorDetail::class, [
-                'field' => 'payment_method',
-                'issue' => 'CAPTURE_FAILED',
-                'description' => $message,
-            ]),
-        ]);
+        $detail = (new AgentErrorDetail());
+        $detail->setField('payment_method');
+        $detail->setIssue('CAPTURE_FAILED');
+        $detail->setDescription($message);
+
+        $details = new AgentErrorDetailCollection([$detail]);
 
         return new self(
             Response::HTTP_INTERNAL_SERVER_ERROR,
