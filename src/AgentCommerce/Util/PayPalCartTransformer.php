@@ -11,7 +11,6 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryDate;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryTime;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute;
@@ -26,6 +25,8 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Country\CountryCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Address;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AppliedCoupon;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AppliedCouponCollection;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\BillingAddress;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartItem;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartItemCollection;
@@ -73,7 +74,8 @@ class PayPalCartTransformer
         $billingAddress = $this->convertAddress($customer?->getDefaultBillingAddress(), BillingAddress::class, $context->getContext());
 
         $payPalCart->setId('CART-' . $cart->getToken());
-        $payPalCart->setItems($this->convertToCartItems($cart->getLineItems(), $context));
+        $payPalCart->setItems($this->convertToCartItems($cart->getLineItems()->filterFlatByType(LineItem::PRODUCT_LINE_ITEM_TYPE), $context));
+        $payPalCart->setAppliedCoupons($this->convertToAppliedCoupons($cart->getLineItems()->filterFlatByType(LineItem::PROMOTION_LINE_ITEM_TYPE), $context));
         $payPalCart->setAvailableShippingOptions($this->convertToAvailableShippingMethods($cart, $context));
         $payPalCart->setValidationIssues($issues);
         $payPalCart->setValidationStatus($status);
@@ -86,16 +88,14 @@ class PayPalCartTransformer
         return $payPalCart;
     }
 
-    public function convertToCartItems(LineItemCollection $lineItems, SalesChannelContext $context): CartItemCollection
+    /**
+     * @param LineItem[] $lineItems
+     */
+    public function convertToCartItems(array $lineItems, SalesChannelContext $context): CartItemCollection
     {
         $items = new CartItemCollection();
 
         foreach ($lineItems as $lineItem) {
-            if ($lineItem->getType() !== LineItem::PRODUCT_LINE_ITEM_TYPE) {
-                // TODO: ERROR?
-                continue;
-            }
-
             $itemPrice = new Money();
             $itemPrice->setValue((string) $lineItem->getPrice()?->getUnitPrice());
             $itemPrice->setCurrencyCode($context->getCurrency()->getIsoCode());
@@ -281,5 +281,31 @@ class PayPalCartTransformer
         $totals->setTotal($total);
 
         return $totals;
+    }
+
+    /**
+     * @param LineItem[] $lineItems
+     */
+    public function convertToAppliedCoupons(array $lineItems, SalesChannelContext $context): ?AppliedCouponCollection
+    {
+        if (empty($lineItems)) {
+            return null;
+        }
+
+        $appliedCoupons = new AppliedCouponCollection();
+        foreach ($lineItems as $lineItem) {
+            $discount = new Money();
+            $discount->setValue((string) $lineItem->getPrice()?->getTotalPrice());
+            $discount->setCurrencyCode($context->getCurrency()->getIsoCode());
+
+            $coupon = new AppliedCoupon();
+            $coupon->setCode($lineItem->getPayloadValue('code')); // @phpstan-ignore method.deprecated
+            $coupon->setDescription($lineItem->getDescription());
+            $coupon->setDiscountAmount($discount);
+
+            $appliedCoupons->add($coupon);
+        }
+
+        return $appliedCoupons;
     }
 }
