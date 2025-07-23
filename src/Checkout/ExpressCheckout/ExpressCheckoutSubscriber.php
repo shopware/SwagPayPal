@@ -110,12 +110,9 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             );
         }
 
-        $event->getSalesChannelContext()->addExtension(self::PAYPAL_EXPRESS_CHECKOUT_EVENT_NAME, new ArrayStruct([$event::class]));
-
         $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), $event::class, $addProductToCart);
 
         $event->getSalesChannelContext()->removeExtension(self::PAYPAL_PAYLATER_PRODUCT);
-        $event->getSalesChannelContext()->removeExtension(self::PAYPAL_EXPRESS_CHECKOUT_EVENT_NAME);
 
         if ($expressCheckoutButtonData === null) {
             return;

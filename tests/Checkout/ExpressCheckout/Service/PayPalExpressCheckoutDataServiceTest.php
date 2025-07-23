@@ -171,7 +171,6 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     {
         $taxId = $this->createTaxId(Context::createDefaultContext());
         $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
-        $salesChannelContext->addExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_EVENT_NAME, new ArrayStruct([ProductPageLoadedEvent::class]));
         $productId = $this->getProductId($salesChannelContext->getContext(), $taxId);
         $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
@@ -184,6 +183,24 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         if ($withSettingsLocale) {
             $this->systemConfigService->set(Settings::ECS_BUTTON_LANGUAGE_ISO, 'zz_ZZ');
         }
+
+        $context = Context::createDefaultContext();
+        $taxId = $this->createTaxId($context);
+
+        $productId = $this->getProductId($context, $taxId);
+        $product = new SalesChannelProductEntity();
+        $product->setId($productId);
+        $product->setPrice(new PriceCollection([
+            new Price(Defaults::CURRENCY, 2, 5, false),
+        ]));
+        $product->setCalculatedPrice(new CalculatedPrice(
+            2,
+            2,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection()
+        ));
+
+        $salesChannelContext->addExtension(ExpressCheckoutSubscriber::PAYPAL_PAYLATER_PRODUCT, $product);
 
         $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext, $addToCart);
 
