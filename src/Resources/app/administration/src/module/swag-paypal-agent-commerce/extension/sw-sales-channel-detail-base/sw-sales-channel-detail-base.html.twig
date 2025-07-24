@@ -1,23 +1,61 @@
-{% block sw_sales_channel_detail_base_general_input_product_comparison_template %}{% endblock %}
-
-{% block sw_sales_channel_detail_base_general_input_product_comparison_filename %}{% endblock %}
-
-{% block sw_sales_channel_detail_base_general_input_product_comparison_encoding %}{% endblock %}
-
-{% block sw_sales_channel_detail_base_general_input_product_comparison_file_format %}{% endblock %}
-
-{% block sw_sales_channel_detail_base_options_status_description %}
-    <div class="sw-sales-channel-detail-base__description-text">
-        Das Deaktivieren macht diesen Verkaufskanal für die PayPal AI unbrauchbar
-    </div>
+{% block sw_sales_channel_detail_base_general_input_product_comparison_template %}
+    <template v-if="!isAgentCommerceType">
+        {% parent %}
+    </template>
 {% endblock %}
 
-{% block sw_sales_channel_detail_base_options_api %}{% endblock %}
+{% block sw_sales_channel_detail_base_general_input_product_comparison_filename %}
+    <template v-if="!isAgentCommerceType">
+        {% parent %}
+    </template>
+{% endblock %}
 
-{% block sw_sales_channel_detail_base_options_maintenance_header %}{% endblock %}
+{% block sw_sales_channel_detail_base_general_input_product_comparison_encoding %}
+    <template v-if="!isAgentCommerceType">
+        {% parent %}
+    </template>
+{% endblock %}
 
-{% block sw_sales_channel_detail_base_maintenance_input_active %}{% endblock %}
+{% block sw_sales_channel_detail_base_general_input_product_comparison_file_format %}
+    <template v-if="!isAgentCommerceType">
+        {% parent %}
+    </template>
+{% endblock %}
 
-{% block sw_sales_channel_detail_base_maintenance_ipwhitelist %}{% endblock %}
+{% block sw_sales_channel_detail_base_options_status_description %}
+    <template v-if="isAgentCommerceType">
+        <div class="sw-sales-channel-detail-base__description-text">
+            Das Deaktivieren macht diesen Verkaufskanal für die PayPal AI unbrauchbar
+        </div>
+    </template>
+{% endblock %}
 
-{% block sw_sales_channel_detail_base_settings_link %}{% endblock %}
+{% block sw_sales_channel_detail_base_options_api %}
+    <template v-if="!isAgentCommerceType">
+        {% parent %}
+    </template>
+{% endblock %}
+
+{% block sw_sales_channel_detail_base_options_maintenance_header %}
+    <template v-if="!isAgentCommerceType">
+        {% parent %}
+    </template>
+{% endblock %}
+
+{% block sw_sales_channel_detail_base_maintenance_input_active %}
+    <template v-if="!isAgentCommerceType">
+        {% parent %}
+    </template>
+{% endblock %}
+
+{% block sw_sales_channel_detail_base_maintenance_ipwhitelist %}
+    <template v-if="!isAgentCommerceType">
+        {% parent %}
+    </template>
+{% endblock %}
+
+{% block sw_sales_channel_detail_base_settings_link %}
+    <template v-if="!isAgentCommerceType">
+        {% parent %}
+    </template>
+{% endblock %}

@@ -1,30 +1,27 @@
-{% set unitPrice = product.calculatedPrice.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') %}
-{% set categories = product.categories|default([]) %}
+{%- set preOrder = product.releaseDate and product.releaseDate|date('U') > 'now'|date('U') -%}
+{%- set price = product.calculatedPrice -%}
+{%- if product.calculatedPrices.count > 0 -%}
+    {%- set price = product.calculatedPrices.last -%}
+{%- endif -%}
+{%- set priceValue = price.unitPrice -%}
 
 "{{ product.productNumber }}",
-"{{ product.translated.name|escape }}",
-"{{ product.translated.description|striptags|trim|escape }}",
-"{{ seoUrl('frontend.detail.page', { productId: product.id }) }}",
-"{%- if product.cover.media is defined -%}{{ product.cover.media.url }}{%- else -%}{{ '' }}{%- endif -%}",
-"{{ '' }}",{# Additional images can be added here if available #}
-"{{ unitPrice }} {{ context.currency.isoCode }}",
-"{{ '' }}",{# sale price #}
-"{{ product.available ? 'in stock' : 'out of stock' }}",
-"{{ 'new' }}",{# condition #}
+"{{ product.parentId }}",
+"{{ product.translated.name }}",
+"{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}",
+"{{ product.manufacturerNumber }}",
 "{{ product.manufacturer.translated.name|default('') }}",
-"{{ product.ean|default('') }}",
-"{{ product.manufacturerNumber|default('') }}",
-"{{ '' }}",{# google_product_category #}
-"{{ '' }}",{# product category tree #}
-"{{ context.shippingLocation.country.iso }}:{{ context.shippingMethod.translated.name }}:{{ 0|number_format(context.currency.itemRounding.decimals, '.', '') }} {{ context.currency.isoCode }}",
-"{{ product.weight|default(0) }} kg",{# shipping_weight #}
-"{{ '' }}",{# shipping_label #}
-"{{ product.parentId|default('') }}",{# item_group_id #}
-"{{ '' }}",{# color #}
-"{{ '' }}",{# size (L, XL, etc.) #}
-"{{ '' }}",{# material #}
-"{{ '' }}",{# pattern #}
-"{{ '' }}",{# gender #]
-"{{ '' }}",{# age_group #}
-"{{ '' }}",{# size_type #}
-"{{ '' }}" {# size_system #}
+"{{ product.ean }}",
+"{{ priceValue|number_format(context.currency.itemRounding.decimals, '.', '') }} {{ context.currency.isoCode }}",
+"{{ priceValue|number_format(context.currency.itemRounding.decimals, '.', '') }} {{ context.currency.isoCode }}",
+"{%- if preOrder -%}preorder{%- elseif product.availableStock >= product.minPurchase -%}in_stock{%- else -%}out_of_stock{%- endif -%}",
+"{%- if preOrder -%}{{ product.releaseDate|date(constant('\DateTimeInterface::ISO8601'), product.releaseDate.timezone) }}{%- endif -%}",
+"{%- if product.categories.count > 0 -%}
+    {{ product.categories.first.getBreadCrumb|slice(1)|join(' > ')|raw }}
+{%- endif -%}",
+"{%- if product.categories.count > 0 -%}
+    {{ product.categories.first.getBreadCrumb|slice(1)|join(' > ')|raw }}
+{%- endif -%}",
+"{% if product.cover is not null %}{{ product.cover.media.url }}{% endif %}",
+"{% if product.media.first is not null %}{{ product.media.first.media.url }}{% endif %}",
+"{{ product.translated.description|striptags|raw|length > 300 ? product.translated.description|striptags|raw|slice(0,300) ~ '...' : product.translated.description|striptags|raw }}"

@@ -1,1 +1,6 @@
-{% block sw_sales_channel_detail_content_tabs %}{% endblock %}
+{% block sw_sales_channel_detail_content_tabs %}
+    <template v-if="!isAgentCommerceType">
+        {% parent %}
+    </template>
+{% endblock %}
+
