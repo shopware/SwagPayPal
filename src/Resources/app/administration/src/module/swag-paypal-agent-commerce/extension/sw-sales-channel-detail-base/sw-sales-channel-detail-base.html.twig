@@ -25,7 +25,7 @@
 {% block sw_sales_channel_detail_base_options_status_description %}
     <template v-if="isAgentCommerceType">
         <div class="sw-sales-channel-detail-base__description-text">
-            Das Deaktivieren macht diesen Verkaufskanal für die PayPal AI unbrauchbar
+            {{ $t('swag-paypal-agent-commerce.sales-channel.detail.textActiveDescription') }}
         </div>
     </template>
 {% endblock %}

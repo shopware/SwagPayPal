@@ -7,8 +7,8 @@ export default Shopware.Component.wrapComponentConfig({
     computed: {
         isAgentCommerceType(): boolean {
             // @ts-expect-error - salesChannel is defined in the parent component
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
-            return this.salesChannel && this.salesChannel.typeId === PAYPAL_AGENT_COMMERCE_SALES_CHANNEL_TYPE_ID;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            return this.salesChannel?.typeId === PAYPAL_AGENT_COMMERCE_SALES_CHANNEL_TYPE_ID;
         },
 
         isProductComparison(): boolean {
