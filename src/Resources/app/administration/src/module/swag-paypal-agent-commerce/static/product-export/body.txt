@@ -24,4 +24,4 @@
 {%- endif -%}",
 "{% if product.cover is not null %}{{ product.cover.media.url }}{% endif %}",
 "{% if product.media.first is not null %}{{ product.media.first.media.url }}{% endif %}",
-"{{ product.translated.description|striptags|raw|length > 300 ? product.translated.description|striptags|raw|slice(0,300) ~ '...' : product.translated.description|striptags|raw }}"
+"{{ product.translated.description|striptags|raw|length > 300 ? product.translated.description|striptags|raw|slice(0,297) ~ '...' : product.translated.description|striptags|raw }}"
