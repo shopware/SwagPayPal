@@ -1,0 +1,12 @@
+{
+    "swag-paypal-agent-commerce": {
+        "sales-channel": {
+            "detail": {
+                "textActiveDescription": "Deactivates the PayPal Agent Commerce Integration for this Sales Channel"
+            }
+        },
+        "product-export": {
+            "name": "PayPal Agent Commerce Export"
+        }
+    }
+}

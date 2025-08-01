@@ -1,5 +1,5 @@
 import template from './sw-sales-channel-detail-base.html.twig';
-import {SwagPayPalDefaults} from "SwagPayPal/defaults";
+import { PAYPAL_AGENT_COMMERCE_SALES_CHANNEL_TYPE_ID } from "SwagPayPal/constant/swag-paypal.constant";
 
 export default Shopware.Component.wrapComponentConfig({
     template,
@@ -7,7 +7,8 @@ export default Shopware.Component.wrapComponentConfig({
     computed: {
         isAgentCommerceType(): boolean {
             // @ts-expect-error - salesChannel is defined in the parent component
-            return this.salesChannel && this.salesChannel.typeId === SwagPayPalDefaults.agentCommerceTypeId;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
+            return this.salesChannel && this.salesChannel.typeId === PAYPAL_AGENT_COMMERCE_SALES_CHANNEL_TYPE_ID;
         },
 
         isProductComparison(): boolean {

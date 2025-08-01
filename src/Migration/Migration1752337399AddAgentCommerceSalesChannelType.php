@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Migration\Traits\ImportTranslationsTrait;
 use Shopware\Core\Migration\Traits\Translations;
-use Swag\PayPal\AgentCommerce\SalesChannel\Type\AgentCommerceSalesChannelType;
+use Swag\PayPal\SwagPayPal;
 
 /**
  * @internal
@@ -39,7 +39,7 @@ class Migration1752337399AddAgentCommerceSalesChannelType extends MigrationStep
     {
         $type = $connection->fetchOne(
             'SELECT `id` FROM `sales_channel_type` WHERE `id` = :id',
-            ['id' => Uuid::fromHexToBytes(AgentCommerceSalesChannelType::SALES_CHANNEL_TYPE)]
+            ['id' => Uuid::fromHexToBytes(SwagPayPal::SALES_CHANNEL_TYPE_AGENT_COMMERCE)]
         );
 
         if ($type) {
@@ -49,7 +49,7 @@ class Migration1752337399AddAgentCommerceSalesChannelType extends MigrationStep
         $connection->executeStatement(
             'INSERT INTO `sales_channel_type` (`id`, `cover_url`, `icon_name`, `screenshot_urls`, `created_at`) VALUES (:id, :coverUrl, :iconName, :screenshotUrls, :createdAt)',
             [
-                'id' => Uuid::fromHexToBytes(AgentCommerceSalesChannelType::SALES_CHANNEL_TYPE),
+                'id' => Uuid::fromHexToBytes(SwagPayPal::SALES_CHANNEL_TYPE_AGENT_COMMERCE),
                 'coverUrl' => null,
                 'iconName' => 'regular-artificial-intelligence',
                 'screenshotUrls' => null,
@@ -62,14 +62,14 @@ class Migration1752337399AddAgentCommerceSalesChannelType extends MigrationStep
     {
         $translations = new Translations(
             [
-                'sales_channel_type_id' => Uuid::fromHexToBytes(AgentCommerceSalesChannelType::SALES_CHANNEL_TYPE),
+                'sales_channel_type_id' => Uuid::fromHexToBytes(SwagPayPal::SALES_CHANNEL_TYPE_AGENT_COMMERCE),
                 'name' => 'Agent Commerce',
                 'manufacturer' => 'shopware AG',
                 'description' => 'PayPal Agent Commerce Sales Channel',
                 'description_long' => 'Der PayPal Agent Commerce ist eine KI Lösung, die es Kunden ermöglicht, Produkte im Chat mit einem KI Agenten zu kaufen. Ordne Produkte zu, die der Agent verkaufen soll, um das Einkaufserlebnis zu verbessern.',
             ],
             [
-                'sales_channel_type_id' => Uuid::fromHexToBytes(AgentCommerceSalesChannelType::SALES_CHANNEL_TYPE),
+                'sales_channel_type_id' => Uuid::fromHexToBytes(SwagPayPal::SALES_CHANNEL_TYPE_AGENT_COMMERCE),
                 'name' => 'Agent Commerce',
                 'manufacturer' => 'PayPal',
                 'description' => 'PayPal Agent Commerce Sales Channel',

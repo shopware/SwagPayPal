@@ -1,5 +1,3 @@
-import './defaults';
-
 import './app';
 
 import './mixin/swag-paypal-notification.mixin';
