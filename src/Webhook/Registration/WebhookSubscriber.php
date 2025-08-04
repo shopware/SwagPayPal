@@ -96,7 +96,7 @@ class WebhookSubscriber implements EventSubscriberInterface
      */
     private function getConfigToCheck(BeforeSystemConfigMultipleChangedEvent|SystemConfigMultipleChangedEvent $event): ?array
     {
-        /** @var array<string, mixed> $config */
+        /** @var array<string, array|bool|float|int|string|null> $config */
         $config = $event->getConfig();
         $routeName = (string) $this->requestStack->getMainRequest()?->attributes->getString('_route');
 

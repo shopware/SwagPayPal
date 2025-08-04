@@ -111,6 +111,7 @@ class CheckoutSubscriberTest extends TestCase
         if ($extensionId === PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID) {
             static::assertFalse($event->getPage()->hasExtension($extensionId));
         } else {
+            // @phpstan-ignore method.dynamicName
             $this->{$assertionMethod}($event, $paymentMethodId, $extensionId);
         }
     }
@@ -147,6 +148,8 @@ class CheckoutSubscriberTest extends TestCase
         $subscriber = $this->createSubscriber();
         $event = $this->createEditOrderPageLoadedEvent($paymentMethodId);
         $subscriber->onAccountOrderEditLoaded($event);
+
+        // @phpstan-ignore method.dynamicName
         $this->{$assertionMethod}($event, $paymentMethodId, $extensionId);
     }
 
@@ -164,6 +167,7 @@ class CheckoutSubscriberTest extends TestCase
         if ($extensionId === PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID) {
             static::assertFalse($event->getPage()->hasExtension($extensionId));
         } else {
+            // @phpstan-ignore method.dynamicName
             $this->{$assertionMethod}($event, $paymentMethodId, $extensionId);
         }
     }
@@ -201,6 +205,7 @@ class CheckoutSubscriberTest extends TestCase
         $event = $this->createConfirmPageLoadedEvent($paymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
+        // @phpstan-ignore method.dynamicName
         $this->{$assertionMethod}($event, $paymentMethodId, $extensionId);
     }
 
@@ -291,7 +296,7 @@ class CheckoutSubscriberTest extends TestCase
      */
     private function createSubscriber(array $settingsOverride = []): CheckoutDataSubscriber
     {
-        $settings = $this->createSystemConfigServiceMock(\array_merge([
+        $settings = self::createSystemConfigServiceMock(\array_merge([
             Settings::CLIENT_ID => self::TEST_CLIENT_ID,
             Settings::CLIENT_SECRET => 'testClientSecret',
             Settings::SPB_CHECKOUT_ENABLED => true,
@@ -301,8 +306,9 @@ class CheckoutSubscriberTest extends TestCase
         $credentialsUtil = new CredentialsUtil($settings);
 
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
-        /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
+        static::assertInstanceOf(RouterInterface::class, $router);
+
         $sepaDataService = new SEPACheckoutDataService(
             $this->paymentMethodDataRegistry,
             $localeCodeProvider,

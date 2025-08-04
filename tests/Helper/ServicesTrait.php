@@ -71,7 +71,7 @@ trait ServicesTrait
 
     protected function createOrderBuilder(?SystemConfigService $systemConfig = null): PayPalOrderBuilder
     {
-        $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
+        $systemConfig = $systemConfig ?? self::createDefaultSystemConfig();
 
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);

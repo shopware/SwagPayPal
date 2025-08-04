@@ -75,6 +75,7 @@ final class Settings
     public const VAULTING_ENABLED_ACDC = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledACDC';
 
     public const VAULTING_ENABLED_VENMO = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledVenmo';
+    public const AGENT_COMMERCE_ONBOARDED = self::SYSTEM_CONFIG_DOMAIN . 'agentCommerceOnboarded';
 
     /**
      * @internal these may change at any time

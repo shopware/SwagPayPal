@@ -1651,6 +1651,46 @@
                     }
                 }
             }
+        },
+        "/_action/paypal/honey/webhook/register/{salesChannelId}": {
+            "post": {
+                "tags": [
+                    "Admin Api",
+                    "SwagPayPalWebhook"
+                ],
+                "operationId": "registerHoneyWebhook",
+                "parameters": [
+                    {
+                        "parameter": "salesChannelId",
+                        "name": "salesChannelId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{32}$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the action taken for the webhook registration",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
