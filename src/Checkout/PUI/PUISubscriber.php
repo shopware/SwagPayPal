@@ -106,6 +106,13 @@ class PUISubscriber implements EventSubscriberInterface
         }
 
         $event->getPage()->addExtension(self::PAYPAL_PUI_PAYMENT_INSTRUCTIONS_PAGE_EXTENSION_ID, $puiPaymentInstructionData);
+
+        // @deprecated tag:v11.0.0 - remove early return with min-version of 6.7.2.0
+        if (method_exists($event->getPage(), 'setLogoutCustomer')) {
+            return;
+        }
+
+        $event->getPage()->setLogoutCustomer(false);
     }
 
     private function checkSettings(SalesChannelContext $salesChannelContext, bool $checkPaymentMethod = true): bool
