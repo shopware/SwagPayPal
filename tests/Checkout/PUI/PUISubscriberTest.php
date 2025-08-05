@@ -222,6 +222,7 @@ class PUISubscriberTest extends TestCase
         $page->setOrder($order);
 
         // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.2.0, keep content
+        // @phpstan-ignore-next-line method may or may not exist depending on Shopware version
         if (method_exists($page, 'setLogoutCustomer')) {
             $page->setLogoutCustomer(true);
         }
@@ -232,6 +233,7 @@ class PUISubscriberTest extends TestCase
         static::assertSame($paymentInstructionData, $extension);
 
         // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.2.0, keep content
+        // @phpstan-ignore-next-line method may or may not exist depending on Shopware version
         if (method_exists($page, 'isLogoutCustomer')) {
             static::assertFalse($page->isLogoutCustomer());
         }

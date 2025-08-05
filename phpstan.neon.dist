@@ -84,6 +84,10 @@ parameters:
             identifier: attribute.internalClass
             message: '#.*Shopware\\Core\\Framework\\Log\\Package#'
 
+        - # 6.8 deprecation
+            identifier: method.deprecated
+            message: '#__construct.*Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition.*#'
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
