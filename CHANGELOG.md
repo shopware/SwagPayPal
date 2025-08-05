@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where PUI payment details were not shown, if the "logout guest customer after order" setting was enabled (shopware/SwagPayPal#315, requires Shopware 6.7.2.0 or higher)
+
 # 10.1.0
 - Added necessary payment means for e-invoice generation (shopware/SwagPayPal#255)
 - Fixes an issue where the form validation on the order confirmation page does not refer to the corresponding input field (shopware/SwagPayPal#267)
