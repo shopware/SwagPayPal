@@ -31,7 +31,8 @@ class AgentSource implements ContextSource, \JsonSerializable
         public readonly string $merchantId,
         public readonly \DateTimeInterface $issuedAt,
         public readonly \DateTimeInterface $expiresAt,
-        public readonly array $scope = [],
+        public readonly array $scope,
+        public readonly string $salesChannelId,
         public readonly ?string $debugId = null,
     ) {
     }
