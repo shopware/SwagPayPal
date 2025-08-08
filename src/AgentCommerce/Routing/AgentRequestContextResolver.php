@@ -102,7 +102,7 @@ mwIDAQAB
             throw AgentException::unauthorized('Sales channel not found');
         }
 
-        preg_match('/CART-([a-zA-Z0-9]{32})/', $request->getPathInfo(), $matches);
+        preg_match('/CART-(\w+)/', $request->getPathInfo(), $matches);
 
         $salesChannelContext = $this->contextService->get(new SalesChannelContextServiceParameters(
             salesChannelId: $productExport->getStorefrontSalesChannelId(),
