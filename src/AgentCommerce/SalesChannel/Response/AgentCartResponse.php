@@ -10,20 +10,19 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel\Response;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\StoreApiResponse;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 
 /**
- * @extends StoreApiResponse<ArrayStruct<array{id: string}>>
+ * @extends StoreApiResponse<ArrayStruct<array<string, mixed>>>
  */
 #[Package('checkout')]
 final class AgentCartResponse extends StoreApiResponse
 {
     public function __construct(
-        string $token
+        protected PayPalCart $cart,
     ) {
         parent::__construct(
-            new ArrayStruct([
-                'id' => $token,
-            ])
+            new ArrayStruct($this->cart->jsonSerialize())
         );
     }
 }

@@ -9,6 +9,7 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,6 @@ class UpdateCartRoute
     #[Route('/api/paypal/v1/merchant-cart/{token}', name: 'api.paypal.merchant-cart.update', methods: [Request::METHOD_PUT])]
     public function updateCart(string $token, Request $request, Context $context): AgentCartResponse
     {
-        return new AgentCartResponse($token);
+        return new AgentCartResponse(new PayPalCart());
     }
 }

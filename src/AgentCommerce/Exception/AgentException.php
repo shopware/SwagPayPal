@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AgentException extends AgentHttpException
 {
     public const INVALID_REQUEST = 'INVALID_REQUEST';
+    public const INVALID_CART_ID = 'INVALID_CART_ID';
     public const CART_NOT_FOUND = 'CART_NOT_FOUND';
     public const INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR';
     public const SERVICE_UNAVAILABLE = 'SERVICE_UNAVAILABLE';
@@ -64,6 +65,15 @@ class AgentException extends AgentHttpException
             self::INVALID_REQUEST,
             $message,
             previous: $previous,
+        );
+    }
+
+    public static function invalidCartId(): self
+    {
+        return new self(
+            Response::HTTP_BAD_REQUEST,
+            self::INVALID_CART_ID,
+            'Cart ID format is invalid. Expected format: CART-[a-zA-Z0-9]{32}'
         );
     }
 
