@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\AgentCommerce\Routing\AgentRouteScope;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Symfony\Component\HttpFoundation\Request;
@@ -95,14 +96,18 @@ class AgentRouteScopeTest extends TestCase
     public function testIsAllowed(): void
     {
         $scope = new AgentRouteScope();
-        $source = new AgentSource('MERCHANT_ID', new \DateTimeImmutable(), new \DateTimeImmutable('+1 hour'), ['cart'], 'debug-id');
+        $source = new AgentSource('MERCHANT_ID', new \DateTimeImmutable(), new \DateTimeImmutable('+1 hour'), ['cart'], 'sales-channel-id', 'debug-id');
 
-        $context = Context::createDefaultContext($source);
+        $salesChannelContext = $this->createMock(SalesChannelContext::class);
+        $salesChannelContext
+            ->expects(static::once())
+            ->method('getContext')
+            ->willReturn(Context::createDefaultContext($source));
 
         $request = new Request();
         $request->headers->set('Authorization', 'ey.jwt.token');
         $request->headers->set('Content-Type', 'application/json');
-        $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, $salesChannelContext);
 
         static::assertTrue($scope->isAllowed($request));
     }

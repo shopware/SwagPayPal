@@ -105,7 +105,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
 
     public function testOnKernelExceptionPayPalAgentException(): void
     {
-        $source = new AgentSource('MERCHANT_ID', new \DateTimeImmutable(), new \DateTimeImmutable('+1 hour'), ['cart'], 'debug-id');
+        $source = new AgentSource('MERCHANT_ID', new \DateTimeImmutable(), new \DateTimeImmutable('+1 hour'), ['cart'], 'sales-channel-id', 'debug-id');
 
         $request = new Request();
         $context = Context::createDefaultContext($source);
@@ -147,7 +147,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
 
     public function testOnKernelExceptionHttpException(): void
     {
-        $source = new AgentSource('MERCHANT_ID', new \DateTimeImmutable(), new \DateTimeImmutable('+1 hour'), ['cart'], 'debug-id');
+        $source = new AgentSource('MERCHANT_ID', new \DateTimeImmutable(), new \DateTimeImmutable('+1 hour'), ['cart'], 'sales-channel-id', 'debug-id');
 
         $request = new Request();
         $context = Context::createDefaultContext($source);
@@ -175,7 +175,7 @@ class AgentResponseExceptionSubscriberTest extends TestCase
 
     public function testOnKernelExceptionGenericThrowable(): void
     {
-        $source = new AgentSource('MERCHANT_ID', new \DateTimeImmutable(), new \DateTimeImmutable('+1 hour'), ['cart'], 'debug-id');
+        $source = new AgentSource('MERCHANT_ID', new \DateTimeImmutable(), new \DateTimeImmutable('+1 hour'), ['cart'], 'sales-channel-id', 'debug-id');
 
         $request = new Request();
         $context = Context::createDefaultContext($source);
