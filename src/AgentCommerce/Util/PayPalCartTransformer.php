@@ -33,6 +33,7 @@ use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartTotals;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Customer;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Money;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Phone;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\CustomerName;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingAddress;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOption;
@@ -95,17 +96,20 @@ class PayPalCartTransformer
                 continue;
             }
 
-            $options = [
-                'itemId' => $lineItem->getPayloadValue('productNumber'), // @phpstan-ignore method.deprecated
-                'quantity' => $lineItem->getQuantity(),
-                'name' => $lineItem->getLabel(),
-                'price' => (new Money())->assign([
-                    'value' => (string) $lineItem->getPrice()?->getUnitPrice(),
-                    'currency' => $context->getCurrency()->getIsoCode(),
-                ]),
-            ];
+            $itemPrice = new Money();
+            $itemPrice->setValue((string) $lineItem->getPrice()?->getUnitPrice());
+            $itemPrice->setCurrencyCode($context->getCurrency()->getIsoCode());
 
-            $items->add((new CartItem())->assign($options));
+            $cartItem = new CartItem();
+            // itemId will be removed in the future.
+            $cartItem->setItemId($lineItem->getReferencedId());
+            $cartItem->setVariantId($lineItem->getReferencedId());
+            $cartItem->setParentId($lineItem->getPayloadValue('parentId')); // @phpstan-ignore method.deprecated
+            $cartItem->setQuantity($lineItem->getQuantity());
+            $cartItem->setName($lineItem->getLabel());
+            $cartItem->setPrice($itemPrice);
+
+            $items->add($cartItem);
         }
 
         return $items;
@@ -126,28 +130,28 @@ class PayPalCartTransformer
         $shippingCriteria->addAssociations(['appShippingMethod.app', 'deliveryTime']);
         $shippingMethods = $this->shippingMethodRoute->load(new Request(), $context, $shippingCriteria)->getShippingMethods();
         foreach ($shippingMethods as $shippingMethod) {
-            $options = [
-                'id' => $shippingMethod->getId(),
-                'name' => \sprintf('%s (%s)', $shippingMethod->getName(), $shippingMethod->getDeliveryTime()?->getName()),
-                'description' => $shippingMethod->getDescription(),
-                'isSelected' => false,
-            ];
+            $shippingOption = new ShippingOption();
+            $shippingOption->setId($shippingMethod->getId());
+            $shippingOption->setName(\sprintf('%s (%s)', $shippingMethod->getTranslation('name'), $shippingMethod->getDeliveryTime()?->getTranslation('name')));
+            $shippingOption->setDescription($shippingMethod->getTranslation('description'));
+            $shippingOption->setIsSelected(false);
 
             if ($shippingMethod->getDeliveryTime()) {
                 $deliveryTime = DeliveryDate::createFromDeliveryTime(DeliveryTime::createFromEntity($shippingMethod->getDeliveryTime()));
 
-                $options['estimatedDelivery'] = $deliveryTime->getLatest()->format('Y-m-d');
+                $shippingOption->setEstimatedDelivery($deliveryTime->getLatest()->format('Y-m-d'));
             }
 
             if (\array_key_exists($shippingMethod->getId(), $selectedMethods)) {
-                $options['selected'] = true;
-                $options['price'] = (new Money())->assign([
-                    'value' => (string) $selectedMethods[$shippingMethod->getId()],
-                    'currency' => $context->getCurrency()->getIsoCode(),
-                ]);
+                $price = new Money();
+                $price->setValue((string) $selectedMethods[$shippingMethod->getId()]);
+                $price->setCurrencyCode($context->getCurrency()->getIsoCode());
+
+                $shippingOption->setIsSelected(true);
+                $shippingOption->setPrice($price);
             }
 
-            $availableShippingMethods->add((new ShippingOption())->assign($options));
+            $availableShippingMethods->add($shippingOption);
         }
 
         return $availableShippingMethods;
@@ -210,6 +214,13 @@ class PayPalCartTransformer
 
         $customer->setName($name);
         $customer->setEmailAddress($customerEntity->getEmail());
+
+        $phoneNumber = $customerEntity->getDefaultShippingAddress()?->getPhoneNumber();
+        if ($phoneNumber) {
+            $phone = new Phone();
+            $phone->setPhoneNumber($phoneNumber);
+            $customer->setPhone($phone);
+        }
 
         return $customer;
     }

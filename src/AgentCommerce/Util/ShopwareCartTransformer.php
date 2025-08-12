@@ -110,7 +110,7 @@ class ShopwareCartTransformer
             'zipcode' => $address->getPostalCode(),
             'city' => $address->getAddressLine2(),
             'street' => $address->getAddressLine1(),
-            // 'phoneNumber' => $cart->getCustomer()->getPhone()
+            'phoneNumber' => $phone?->getFullPhoneNumber(),
         ];
     }
 }
