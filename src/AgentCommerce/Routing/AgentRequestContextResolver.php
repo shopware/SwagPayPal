@@ -24,7 +24,7 @@ use Shopware\Core\Framework\Routing\RequestContextResolverInterface;
 use Shopware\Core\Framework\Routing\RouteScopeCheckTrait;
 use Shopware\Core\Framework\Routing\RouteScopeRegistry;
 use Shopware\Core\Framework\Util\Random;
-use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Framework\Validation\Constraint\Uuid;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
 use Shopware\Core\Framework\Validation\DataValidator;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
@@ -169,7 +169,7 @@ mwIDAQAB
         $definition = new DataValidationDefinition('paypal.agent_source');
         $definition
             ->add('paypalMerchantId', new NotBlank(), new Type('string'))
-            ->add('shopwareMerchantId', new NotBlank(), new Type('string'))
+            ->add('shopwareMerchantId', new NotBlank(), new Type('string'), new Uuid())
             ->add('iat', new NotBlank(), new Type(\DateTimeInterface::class))
             ->add('exp', new NotBlank(), new Type(\DateTimeInterface::class))
             ->add('scope', new Count(min: 1), new All([new Type('string'), new NotBlank()]))
