@@ -30,20 +30,17 @@ use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\BillingAddress;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartItem;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartItemCollection;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartTotals;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Context\InventoryIssueContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Customer;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Money;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\CustomerName;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\MetaData;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ResolutionOption;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ResolutionOptionCollection;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingAddress;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOption;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOptionCollection;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssue;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssueCollection;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgentCommerce\Validation\ValidationIssues;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -60,6 +57,7 @@ class PayPalCartTransformer
         private readonly EntityRepository $productRepository,
         private readonly EntityRepository $countryRepository,
         private readonly AbstractShippingMethodRoute $shippingMethodRoute,
+        private readonly ValidationIssues $validationIssues,
     ) {
     }
 
@@ -184,41 +182,10 @@ class PayPalCartTransformer
         foreach ($cart->getLineItems() as $lineItem) {
             $stock = $lineItem->getPayloadValue('stock'); // @phpstan-ignore method.deprecated
             if ($stock < $lineItem->getQuantity()) {
-                $errors->add($validationIssue = new ValidationIssue());
-                $validationIssue->setCode(ValidationIssue::CODE__INVENTORY_ISSUE);
-                $validationIssue->setType(ValidationIssue::TYPE__BUSINESS_RULE);
-                $validationIssue->setMessage('Product is no longer available'); // TODO: Snippet
-                $validationIssue->setUserMessage(\sprintf('%s are temporarily out of stock.', $lineItem->getLabel())); // TODO: Snippet
-                $validationIssue->setItemId($lineItem->getPayloadValue('productNumber')); // @phpstan-ignore method.deprecated
-                $validationIssue->setContext($inventoryContext = new InventoryIssueContext());
-                $validationIssue->setResolutionOptions(
-                    new ResolutionOptionCollection([
-                        $wait = new ResolutionOption(),
-                        $remove = new ResolutionOption(),
-                    ])
-                );
+                $restockProduct = $restockProducts[(string) $lineItem->getReferencedId()] ?? null;
+                $issue = $this->validationIssues->outOfStock($lineItem, $restockProduct);
 
-                $inventoryContext->setSpecificIssue($stock > 0 ? InventoryIssueContext::ISSUE__INSUFFICIENT_INVENTORY : InventoryIssueContext::ISSUE__ITEM_OUT_OF_STOCK);
-                $inventoryContext->setAvailableQuantity($stock);
-                $inventoryContext->setRequestedQuantity($lineItem->getQuantity());
-
-                $remove->setAction(ResolutionOption::ACTION__REMOVE_ITEM);
-                $remove->setLabel('Remove from Cart'); // TODO: Snippet
-                $remove->setMetadata($metaData = new MetaData());
-
-                $metaData->setCostImpact((string) (-1 * $lineItem->getPrice()?->getTotalPrice())); // TODO: add currency?
-                // $metaData->setPriority() // TODO: Add property?
-
-                $wait->setAction(ResolutionOption::ACTION__WAIT_FOR_RESTOCK);
-                $wait->setLabel(\sprintf('Notify when %s is back in stock', $lineItem->getLabel())); // TODO: Snippet
-
-                if ($product = $restockProducts[(string) $lineItem->getReferencedId()] ?? null) {
-                    // TODO: might not be final
-                    $inventoryContext->setRestockDate(date('Y-m-d\T00:00:00', (int) strtotime('+' . $product->getRestockTime() . ' days')));
-
-                    $wait->setMetadata($metaData = new MetaData());
-                    $metaData->setEstimatedTime($product->getRestockTime() . ' Days'); // TODO: Snippet
-                }
+                $errors->add($issue);
             }
         }
 

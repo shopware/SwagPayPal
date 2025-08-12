@@ -37,10 +37,15 @@
 
         <service id="Swag\PayPal\AgentCommerce\SalesChannel\CreateCartRoute"/>
 
+        <service id="Swag\PayPal\AgentCommerce\Validation\ValidationIssues">
+            <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
+        </service>
+
         <service id="Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer">
             <argument type="service" id="product.repository"/>
             <argument type="service" id="country.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Shipping\SalesChannel\ShippingMethodRoute"/>
+            <argument type="service" id="Swag\PayPal\AgentCommerce\Validation\ValidationIssues"/>
         </service>
 
         <service id="Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer">
