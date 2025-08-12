@@ -24,6 +24,9 @@ use Shopware\Core\Framework\Routing\RequestContextResolverInterface;
 use Shopware\Core\Framework\Routing\RouteScopeCheckTrait;
 use Shopware\Core\Framework\Routing\RouteScopeRegistry;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Framework\Validation\DataValidationDefinition;
+use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
@@ -32,6 +35,11 @@ use Swag\PayPal\AgentCommerce\Validation\HasScopes;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Count;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Optional;
+use Symfony\Component\Validator\Constraints\Type;
 
 /**
  * @internal
@@ -63,9 +71,10 @@ mwIDAQAB
      * @param EntityRepository<ProductExportCollection> $productExportRepository
      */
     public function __construct(
+        private readonly DataValidator $validator,
+        private readonly EntityRepository $productExportRepository,
         private readonly JWTDecoder $JWTDecoder,
         private readonly RouteScopeRegistry $routeScopeRegistry,
-        private readonly EntityRepository $productExportRepository,
         private readonly SalesChannelContextService $contextService,
     ) {
     }
@@ -150,36 +159,27 @@ mwIDAQAB
     private function resolveContextSource(string $token): AgentSource
     {
         try {
+            /** @var array{paypalMerchantId: string, shopwareMerchantId: string, iat: \DateTimeInterface, exp: \DateTimeInterface, scope: list<string>, debug_id?: string} $decoded */
             $decoded = $this->JWTDecoder->decode($token);
         } catch (JWTException $e) {
             throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
         }
 
-        if (!isset($decoded['paypalMerchantId'], $decoded['iat'], $decoded['exp'], $decoded['shopwareMerchantId'])) {
+        $definition = new DataValidationDefinition('paypal.agent_source');
+        $definition
+            ->add('paypalMerchantId', new NotBlank(), new Type('string'))
+            ->add('shopwareMerchantId', new NotBlank(), new Type('string'))
+            ->add('iat', new NotBlank(), new Type(\DateTimeInterface::class))
+            ->add('exp', new NotBlank(), new Type(\DateTimeInterface::class))
+            ->add('scope', new Count(min: 1), new All([new Type('string'), new NotBlank()]))
+            ->add('debug_id', new Optional([new Type('string')]));
+
+        try {
+            $this->validator->validate($decoded, $definition);
+        } catch (ConstraintViolationException) {
             throw AgentException::unauthorized('Invalid JWT token');
         }
 
-        if (
-            !\is_string($decoded['paypalMerchantId']) || empty($decoded['paypalMerchantId'])
-            || !\is_string($decoded['shopwareMerchantId']) || empty($decoded['shopwareMerchantId'])
-            || !\is_array($decoded['scope']) || empty($decoded['scope'])
-        ) {
-            throw AgentException::unauthorized('Invalid JWT token');
-        }
-
-        $iat = $decoded['iat'];
-        $exp = $decoded['exp'];
-
-        if (!$iat instanceof \DateTimeInterface || !$exp instanceof \DateTimeInterface) {
-            throw AgentException::unauthorized('Invalid JWT token');
-        }
-
-        $debugId = null;
-
-        if (isset($decoded['debug_id']) && \is_string($decoded['debug_id'])) {
-            $debugId = $decoded['debug_id'];
-        }
-
-        return new AgentSource($decoded['paypalMerchantId'], $iat, $exp, $decoded['scope'], $decoded['shopwareMerchantId'], $debugId);
+        return new AgentSource($decoded['paypalMerchantId'], $decoded['iat'], $decoded['exp'], $decoded['scope'], $decoded['shopwareMerchantId'], $decoded['debug_id'] ?? null);
     }
 }
