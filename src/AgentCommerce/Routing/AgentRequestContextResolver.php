@@ -23,6 +23,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RequestContextResolverInterface;
 use Shopware\Core\Framework\Routing\RouteScopeCheckTrait;
 use Shopware\Core\Framework\Routing\RouteScopeRegistry;
+use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
 use Shopware\Core\Framework\Validation\DataValidator;
@@ -115,8 +116,8 @@ mwIDAQAB
 
         $salesChannelContext = $this->contextService->get(new SalesChannelContextServiceParameters(
             salesChannelId: $productExport->getStorefrontSalesChannelId(),
-            token: $matches[1] ?? Uuid::randomHex(),
-            originalContext: $context
+            token: $matches[1] ?? Random::getAlphanumericString(32),
+            originalContext: $context,
         ));
         $salesChannelContext->getSalesChannel()->setProductExports(new ProductExportCollection([$productExport]));
 

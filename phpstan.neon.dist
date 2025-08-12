@@ -108,6 +108,11 @@ parameters:
             identifier: classConstant.internalClass
             message: '#.*Shopware\\PayPalSDK\\.*#'
 
+        - # Has to be fixed upstream, but we can ignore it for now
+            message: '#Call to deprecated method __construct\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition#'
+            identifier: method.deprecated
+            path: 'tests/*'
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
