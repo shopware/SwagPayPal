@@ -242,7 +242,7 @@ class PayPalCartTransformer
 
         $iso = $this->countryRepository->search($criteria, $context)->first()?->get('iso');
         if (!$iso) {
-            throw AgentException::requiredFieldsMissing('countryCode');
+            throw AgentException::requiredFieldsMissing('cart.address.countryCode');
         }
 
         $address = new $className();
