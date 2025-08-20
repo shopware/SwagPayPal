@@ -7,12 +7,28 @@
 
 namespace Swag\PayPal\AgentCommerce\SalesChannel;
 
-use Shopware\Core\Framework\Context;
+use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
+use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
+use Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer;
+use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -20,11 +36,81 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 #[Package('checkout')]
 #[Route(defaults: ['_routeScope' => ['paypal-agent'], '_agentScope' => [AgentSource::SCOPE_CART]])]
-class CreateCartRoute
+class CreateCartRoute extends AbstractAgentCommerceRoute
 {
-    #[Route('/api/paypal/v1/merchant-cart', name: 'api.paypal.merchant-cart', methods: [Request::METHOD_POST])]
-    public function createCart(Request $request, Context $context): AgentCartResponse
+    /**
+     * @param EntityRepository<ProductCollection> $productRepository
+     */
+    public function __construct(
+        protected SalesChannelContextService $contextService,
+        private readonly EntityRepository $productRepository,
+        private readonly CartService $cartService,
+        private readonly PayPalCartTransformer $payPalCartTransformer,
+        private readonly ShopwareCartTransformer $shopwareCartTransformer,
+        private readonly RegisterRoute $registerRoute,
+        private readonly ProductLineItemFactory $lineItemFactory
+    ) {
+    }
+
+    #[Route('/api/paypal/v1/merchant-cart', name: 'api.paypal.merchant-cart', defaults: ['auth_required' => false], methods: [Request::METHOD_POST])]
+    public function createCart(Request $request, SalesChannelContext $salesChannelContext): AgentCartResponse
     {
-        return new AgentCartResponse(new PayPalCart());
+        if (!$productExport = $salesChannelContext->getSalesChannel()->getProductExports()?->first()) {
+            throw AgentException::requiredFieldsMissing('product export');
+        }
+
+        $payPalCart = (new PayPalCart())->assign($request->getPayload()->all());
+
+        if (!$payPalCart->isset('items') || !$payPalCart->getItems()->count()) {
+            throw AgentException::requiredFieldsMissing('items');
+        }
+
+        if ($payPalCart->getCustomer() && !$salesChannelContext->getCustomer()) {
+            $salesChannelContext = $this->loginCustomer($payPalCart, $salesChannelContext);
+        }
+
+        $mapped = [];
+        foreach ($payPalCart->getItems() as $item) {
+            if (Uuid::isValid($item->getVariantId())) {
+                $mapped[$item->getVariantId()] = $item->getQuantity();
+            }
+        }
+
+        $criteria = new Criteria(array_keys($mapped));
+        $criteria->addFilter(
+            new EqualsFilter('streams.id', $productExport->getProductStreamId()),
+            new ProductAvailableFilter($salesChannelContext->getSalesChannelId(), ProductVisibilityDefinition::VISIBILITY_LINK)
+        );
+        $productIds = $this->productRepository->searchIds($criteria, $salesChannelContext->getContext());
+        if (!$productIds->getTotal()) {
+            throw AgentException::requiredFieldsMissing('items');
+        }
+
+        $lineItems = [];
+        foreach ($productIds->getIds() as $productId) {
+            $lineItems[] = $this->lineItemFactory->create(['id' => $productId, 'quantity' => $mapped[$productId] ?? 0], $salesChannelContext);
+        }
+
+        $swCart = $this->cartService->createNew($salesChannelContext->getToken());
+        $swCart = $this->cartService->add($swCart, $lineItems, $salesChannelContext);
+
+        $createdPayPalCart = $this->payPalCartTransformer->convertToPayPalCart($swCart, $salesChannelContext);
+        $createdPayPalCart->setStatus($createdPayPalCart->getValidationStatus() === PayPalCart::VALIDATION_STATUS__VALID ? PayPalCart::STATUS__CREATED : PayPalCart::STATUS__INCOMPLETE);
+
+        $response = new AgentCartResponse($createdPayPalCart);
+        if ($createdPayPalCart->getStatus() === PayPalCart::STATUS__CREATED) {
+            $response->setStatusCode(Response::HTTP_CREATED);
+        }
+
+        return $response;
+    }
+
+    private function loginCustomer(PayPalCart $payPalCart, SalesChannelContext $salesChannelContext): SalesChannelContext
+    {
+        $customerData = $this->shopwareCartTransformer->extractCustomerData($payPalCart, $salesChannelContext->getSalesChannelId(), $salesChannelContext->getContext());
+
+        $this->registerRoute->register(new RequestDataBag($customerData), $salesChannelContext, false);
+
+        return $this->createSalesChannelContext($salesChannelContext->getToken(), $salesChannelContext->getSalesChannelId(), $salesChannelContext->getContext());
     }
 }

@@ -5,7 +5,7 @@
 {%- endif -%}
 {%- set priceValue = price.unitPrice -%}
 
-"{{ product.productNumber }}",
+"{{ product.id }}",
 "{{ product.parentId }}",
 "{{ product.translated.name }}",
 "{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}",

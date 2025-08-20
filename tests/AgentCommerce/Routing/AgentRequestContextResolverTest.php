@@ -13,16 +13,34 @@ use Lcobucci\JWT\Signer\Rsa\Sha512;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Content\ProductExport\ProductExportCollection;
+use Shopware\Core\Content\ProductExport\ProductExportDefinition;
+use Shopware\Core\Content\ProductExport\ProductExportEntity;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\JWT\JWTDecoder;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RouteScope;
 use Shopware\Core\Framework\Routing\RouteScopeRegistry;
+use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Framework\Validation\DataValidator;
 use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Test\Generator;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Routing\AgentRequestContextResolver;
 use Swag\PayPal\AgentCommerce\Routing\AgentRouteScope;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -32,6 +50,11 @@ use Symfony\Component\HttpFoundation\Request;
 #[CoversClass(AgentRequestContextResolver::class)]
 class AgentRequestContextResolverTest extends TestCase
 {
+    use BasicTestDataBehaviour;
+    use DatabaseTransactionBehaviour;
+    use KernelTestBehaviour;
+    use SalesChannelApiTestBehaviour;
+
     private const JWT_PUBLIC = '-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu1SU1LfVLPHCozMxH2Mo
 4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0/IzW7yWR7QkrmBL7jTKEn5u
@@ -85,8 +108,11 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
 
         $resolver = new AgentRequestContextResolver(
+            $this->createMock(DataValidator::class),
+            $this->createMock(EntityRepository::class),
             new JWTDecoder(),
-            new RouteScopeRegistry([])
+            new RouteScopeRegistry([]),
+            $this->createMock(SalesChannelContextService::class),
         );
 
         $resolver->resolve($request);
@@ -106,8 +132,11 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             ->willReturn('wrong-scope');
 
         $resolver = new AgentRequestContextResolver(
+            $this->createMock(DataValidator::class),
+            $this->createMock(EntityRepository::class),
             new JWTDecoder(),
-            new RouteScopeRegistry([new AgentRouteScope(), $wrongScope])
+            new RouteScopeRegistry([new AgentRouteScope(), $wrongScope]),
+            $this->createMock(SalesChannelContextService::class),
         );
 
         $resolver->resolve($request);
@@ -122,8 +151,11 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
         $resolver = new AgentRequestContextResolver(
+            $this->createMock(DataValidator::class),
+            $this->createMock(EntityRepository::class),
             new JWTDecoder(),
-            new RouteScopeRegistry([new AgentRouteScope()])
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $this->createMock(SalesChannelContextService::class),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Missing Authorization header'));
@@ -137,7 +169,8 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             'MERCHANT_ID',
             new \DateTimeImmutable(),
             new \DateTimeImmutable('+1 hour'),
-            ['cart', 'checkout']
+            ['cart', 'checkout'],
+            'SALES_CHANNEL_ID'
         );
 
         $request = new Request();
@@ -157,9 +190,21 @@ cKWTjpBP2dPwVZ4WWC+9aGVd+Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbc
 mwIDAQAB
 -----END PUBLIC KEY-----';
 
+        $export = new ProductExportEntity();
+        $export->setId(Uuid::randomHex());
+        $export->setStorefrontSalesChannelId(Uuid::randomHex());
+        $entityRepository = $this->createMock(EntityRepository::class);
+        $entityRepository
+            ->expects(static::once())
+            ->method('search')
+            ->willReturn(self::createSearchResult($export));
+
         $resolver = new AgentRequestContextResolver(
+            $this->createMock(DataValidator::class),
+            $entityRepository,
             new JWTDecoder(),
-            new RouteScopeRegistry([new AgentRouteScope()])
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $this->createMock(SalesChannelContextService::class),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT'));
@@ -169,6 +214,8 @@ mwIDAQAB
 
     public function testResolveWithExpiredToken(): void
     {
+        $salesChannelId = $this->createSalesChannelWithExport();
+
         $iat = new \DateTimeImmutable('-2 hours');
         $exp = new \DateTimeImmutable('-1 hour');
 
@@ -176,7 +223,8 @@ mwIDAQAB
             'MERCHANT_ID',
             $iat,
             $exp,
-            ['cart', 'checkout']
+            ['cart', 'checkout'],
+            $salesChannelId,
         );
 
         $request = new Request();
@@ -184,13 +232,9 @@ mwIDAQAB
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
-        $resolver = new AgentRequestContextResolver(
-            new JWTDecoder(),
-            new RouteScopeRegistry([new AgentRouteScope()])
-        );
-
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
 
+        $resolver = $this->getContainer()->get(AgentRequestContextResolver::class);
         $resolver->resolve($request);
     }
 
@@ -202,8 +246,11 @@ mwIDAQAB
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
         $resolver = new AgentRequestContextResolver(
+            $this->createMock(DataValidator::class),
+            $this->createMock(EntityRepository::class),
             new JWTDecoder(),
-            new RouteScopeRegistry([new AgentRouteScope()])
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $this->createMock(SalesChannelContextService::class),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -217,11 +264,14 @@ mwIDAQAB
     #[DataProvider('malformedJWTProvider')]
     public function testResolveWithMalformedJWTClaims(array $claims): void
     {
+        $this->createSalesChannelWithExport();
+
         $token = self::encodeJWT(
-            $claims['sub'] ?? null,
+            $claims['paypalMerchantId'] ?? null,
             $claims['iat'] ?? null,
             $claims['exp'] ?? null,
-            $claims['scope'] ?? null
+            $claims['scope'] ?? null,
+            $claims['shopwareMerchantId'] ?? null
         );
 
         $request = new Request();
@@ -229,12 +279,9 @@ mwIDAQAB
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
-        $resolver = new AgentRequestContextResolver(
-            new JWTDecoder(),
-            new RouteScopeRegistry([new AgentRouteScope()])
-        );
-
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
+
+        $resolver = $this->getContainer()->get(AgentRequestContextResolver::class);
 
         $resolver->resolve($request);
     }
@@ -243,13 +290,12 @@ mwIDAQAB
     {
         yield 'Missing all' => [[]];
 
-        yield 'Missing sub' => [['iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout']]];
-        yield 'Missing iat' => [['sub' => 'MERCHANT_ID', 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout']]];
-        yield 'Missing exp' => [['sub' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'scope' => ['cart', 'checkout']]];
-        yield 'Missing scope' => [['sub' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour')]];
+        yield 'Missing paypalMerchantId' => [['iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
+        yield 'Missing iat' => [['paypalMerchantId' => 'MERCHANT_ID', 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
+        yield 'Missing exp' => [['paypalMerchantId' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
 
-        yield 'Empty sub' => [['sub' => '', 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout']]];
-        yield 'Empty scope' => [['sub' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => []]];
+        yield 'Empty paypalMerchantId' => [['paypalMerchantId' => '', 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
+        yield 'Empty salesChannelId' => [['paypalMerchantId' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => []]];
     }
 
     public function testResolveWithWrongAgentScopeInRoute(): void
@@ -258,7 +304,8 @@ mwIDAQAB
             'MERCHANT_ID',
             new \DateTimeImmutable(),
             new \DateTimeImmutable('+1 hour'),
-            ['cart', 'checkout']
+            ['cart', 'checkout'],
+            'SALES_CHANNEL_ID'
         );
 
         $request = new Request();
@@ -266,9 +313,21 @@ mwIDAQAB
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['wrong-scope']);
 
+        $export = new ProductExportEntity();
+        $export->setId(Uuid::randomHex());
+        $export->setStorefrontSalesChannelId(Uuid::randomHex());
+        $entityRepository = $this->createMock(EntityRepository::class);
+        $entityRepository
+            ->expects(static::once())
+            ->method('search')
+            ->willReturn(self::createSearchResult($export));
+
         $resolver = new AgentRequestContextResolver(
+            $this->createMock(DataValidator::class),
+            $entityRepository,
             new JWTDecoder(),
-            new RouteScopeRegistry([new AgentRouteScope()])
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $this->createMock(SalesChannelContextService::class),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -278,21 +337,74 @@ mwIDAQAB
 
     public function testResolveWithWrongAgentScopeInRequest(): void
     {
+        $iat = new \DateTimeImmutable();
+        $exp = new \DateTimeImmutable('+1 hour');
+
         $jwt = self::encodeJWT(
             'MERCHANT_ID',
-            new \DateTimeImmutable(),
-            new \DateTimeImmutable('+1 hour'),
-            ['these', 'are', 'wrong', 'scopes']
+            $iat,
+            $exp,
+            ['these', 'are', 'wrong', 'scopes'],
+            'SALES_CHANNEL_ID'
         );
 
-        $request = new Request();
+        $request = Request::create('/CART-12345678912345678912345678912345/foo-bar');
         $request->headers->set('Authorization', $jwt);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['wrong-scope']);
 
+        $expectedSource = new AgentSource(
+            'MERCHANT_ID',
+            $iat,
+            $exp,
+            ['these', 'are', 'wrong', 'scopes'],
+            'SALES_CHANNEL_ID',
+        );
+
+        $expectedContext = new Context($expectedSource);
+
+        $productExport = new ProductExportEntity();
+        $productExport->setId(Uuid::randomHex());
+        $productExport->setSalesChannelId('SALES_CHANNEL_ID');
+        $productExport->setStorefrontSalesChannelId('SALES_CHANNEL_ID');
+
+        $productExportResult = new EntitySearchResult(
+            ProductExportDefinition::ENTITY_NAME,
+            1,
+            new ProductExportCollection([$productExport]),
+            null,
+            new Criteria(),
+            $expectedContext
+        );
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo
+            ->expects(static::once())
+            ->method('search')
+            ->with(static::isInstanceOf(Criteria::class), $expectedContext)
+            ->willReturn($productExportResult);
+
+        $expectedSalesChannelContextParameters = new SalesChannelContextServiceParameters(
+            salesChannelId: 'SALES_CHANNEL_ID',
+            token: '12345678912345678912345678912345',
+            originalContext: $expectedContext,
+        );
+
+        $contextService = $this->createMock(SalesChannelContextService::class);
+        $contextService
+            ->expects(static::once())
+            ->method('get')
+            ->with($expectedSalesChannelContextParameters)
+            ->willReturn(
+                Generator::generateSalesChannelContext($expectedContext)
+            );
+
         $resolver = new AgentRequestContextResolver(
+            $this->createMock(DataValidator::class),
+            $repo,
             new JWTDecoder(),
-            new RouteScopeRegistry([new AgentRouteScope()])
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $contextService,
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -305,45 +417,53 @@ mwIDAQAB
         $iat = new \DateTimeImmutable();
         $exp = new \DateTimeImmutable('+1 hour');
 
-        $jwt = self::encodeJWT('MERCHANT_ID', $iat, $exp, ['cart', 'checkout']);
+        $jwt = self::encodeJWT('MERCHANT_ID', $iat, $exp, ['cart', 'checkout'], 'SALES_CHANNEL_ID');
 
         $request = new Request();
         $request->headers->set('Authorization', $jwt);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
+        $export = new ProductExportEntity();
+        $export->setId(Uuid::randomHex());
+        $export->setStorefrontSalesChannelId(Uuid::randomHex());
+        $entityRepository = $this->createMock(EntityRepository::class);
+        $entityRepository
+            ->expects(static::once())
+            ->method('search')
+            ->willReturn(self::createSearchResult($export));
+
+        $salesChannelContext = Generator::generateSalesChannelContext();
+
+        $salesChannelMock = $this->createMock(SalesChannelContextService::class);
+        $salesChannelMock
+            ->expects(static::once())
+            ->method('get')
+            ->willReturn($salesChannelContext);
+
         $resolver = new AgentRequestContextResolver(
+            $this->createMock(DataValidator::class),
+            $entityRepository,
             new JWTDecoder(),
-            new RouteScopeRegistry([new AgentRouteScope()])
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $salesChannelMock,
         );
 
         $resolver->resolve($request);
 
-        static::assertTrue($request->attributes->has(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT));
+        static::assertTrue($request->attributes->has(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT));
 
-        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT);
+        $resultedSalesChannelContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
 
-        static::assertInstanceOf(Context::class, $context);
-
-        $source = $context->getSource();
-
-        static::assertInstanceOf(AgentSource::class, $source);
-
-        static::assertSame('MERCHANT_ID', $source->merchantId);
-        static::assertTrue($source->hasScope('cart'));
-        static::assertTrue($source->hasScope('checkout'));
-        static::assertFalse($source->hasScope('wrong-scope'));
-
-        static::assertEquals($iat, $source->issuedAt);
-        static::assertEquals($exp, $source->expiresAt);
-        static::assertFalse($source->isExpired());
+        static::assertInstanceOf(SalesChannelContext::class, $resultedSalesChannelContext);
+        static::assertSame($salesChannelContext, $resultedSalesChannelContext);
     }
 
     /**
      * @param non-empty-string|null $sub
      * @param list<string>|null $scopes
      */
-    private static function encodeJWT(?string $sub = null, ?\DateTimeImmutable $iat = null, ?\DateTimeImmutable $exp = null, ?array $scopes = null): string
+    private static function encodeJWT(?string $sub = null, ?\DateTimeImmutable $iat = null, ?\DateTimeImmutable $exp = null, ?array $scopes = null, ?string $salesChannelId = null): string
     {
         $configuration = Configuration::forAsymmetricSigner(
             new Sha512(),
@@ -354,7 +474,7 @@ mwIDAQAB
         $builder = $configuration->builder();
 
         if ($sub !== null) {
-            $builder = $builder->relatedTo($sub);
+            $builder = $builder->withClaim('paypalMerchantId', $sub);
         }
 
         if ($scopes !== null) {
@@ -369,8 +489,66 @@ mwIDAQAB
             $builder = $builder->expiresAt($exp);
         }
 
+        if ($salesChannelId !== null) {
+            $builder = $builder->withClaim('shopwareMerchantId', $salesChannelId);
+        }
+
         return $builder
             ->getToken($configuration->signer(), $configuration->signingKey())
             ->toString();
+    }
+
+    private static function createSearchResult(?ProductExportEntity $productExport): EntitySearchResult
+    {
+        return new EntitySearchResult(
+            ProductExportDefinition::ENTITY_NAME,
+            $productExport ? 0 : 1,
+            new ProductExportCollection($productExport ? [$productExport] : []),
+            null,
+            new Criteria(),
+            Context::createDefaultContext(),
+        );
+    }
+
+    private function createSalesChannelWithExport(): string
+    {
+        $salesChannelId = Uuid::randomHex();
+        $salesChannelDomainId = Uuid::randomHex();
+
+        $this->createSalesChannel([
+            'id' => $salesChannelId,
+            'typeId' => SwagPayPal::SALES_CHANNEL_TYPE_AGENT_COMMERCE,
+            'active' => true,
+            'domains' => [
+                [
+                    'id' => $salesChannelDomainId,
+                    'languageId' => Defaults::LANGUAGE_SYSTEM,
+                    'currencyId' => Defaults::CURRENCY,
+                    'snippetSetId' => $this->getSnippetSetIdForLocale('en-GB'),
+                    'url' => 'http://hatoken.de',
+                ],
+            ],
+            'productExports' => [
+                [
+                    'productStream' => [
+                        'name' => 'Test Product Stream',
+                        'active' => true,
+                        'type' => '{}',
+                    ],
+                    'generateByCronjob' => false,
+                    'salesChannelDomainId' => $salesChannelDomainId,
+                    'salesChannelId' => $salesChannelId,
+                    'storefrontSalesChannelId' => $salesChannelId,
+                    'currencyId' => $this->getCurrencyIdByIso(),
+                    'fileName' => 'foo',
+                    'accessKey' => '123',
+                    'encoding' => 'UTF-8',
+                    'fileFormat' => 'csv',
+                    'interval' => 0,
+                ],
+            ],
+        ]);
+
+        return $salesChannelId;
     }
 }
