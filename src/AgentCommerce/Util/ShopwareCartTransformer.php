@@ -22,6 +22,7 @@ use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Customer;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Phone;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\CustomerName;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingAddress;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 
 /**
@@ -47,23 +48,10 @@ class ShopwareCartTransformer
      */
     public function extractCustomerData(PayPalCart $cart, string $salesChannelId, Context $context): array
     {
+        /** @var Customer $customer */
         $customer = $cart->getCustomer();
-        if (!$customer instanceof Customer) {
-            throw AgentException::requiredFieldsMissing('customer');
-        }
-
-        if (!$customer->getEmailAddress()) {
-            throw AgentException::requiredFieldsMissing('customer email');
-        }
-
-        if (!$customer->isset('name') || !$customer->getName()->isset('givenName') || !$customer->getName()->isset('surname')) {
-            throw AgentException::requiredFieldsMissing('customer name');
-        }
-
+        /** @var ShippingAddress $shippingAddress */
         $shippingAddress = $cart->getShippingAddress();
-        if (!$shippingAddress instanceof Address) {
-            throw AgentException::requiredFieldsMissing('shipping address');
-        }
 
         $groupCriteria = new Criteria();
         $groupCriteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelId));
@@ -91,15 +79,11 @@ class ShopwareCartTransformer
         $countryId = $this->countryRepository->searchIds($criteria, $context)->firstId();
 
         if (!$countryId) {
-            throw AgentException::requiredFieldsMissing('country');
+            throw AgentException::requiredFieldsMissing('country not found');
         }
 
         $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', SalutationDefinition::NOT_SPECIFIED));
         $salutationId = $this->salutationRepository->searchIds($criteria, $context)->firstId();
-
-        if (!$address->getAddressLine1() || !$address->getAddressLine2()) {
-            throw AgentException::requiredFieldsMissing('address_line_1', 'address_line_2');
-        }
 
         return [
             'id' => Uuid::randomHex(),
