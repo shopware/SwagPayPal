@@ -121,9 +121,8 @@ class PayPalCartTransformer
 
         $selectedMethods = [];
         foreach ($cart->getDeliveries() as $delivery) {
-            $cost = ($selectedMethods[$delivery->getShippingMethod()->getId()] ?? 0) + $delivery->getShippingCosts()->getTotalPrice();
-
-            $selectedMethods[$delivery->getShippingMethod()->getId()] = $cost;
+            $selectedMethods[$delivery->getShippingMethod()->getId()] ??= 0;
+            $selectedMethods[$delivery->getShippingMethod()->getId()] += $delivery->getShippingCosts()->getTotalPrice();
         }
 
         $shippingCriteria = new Criteria();
