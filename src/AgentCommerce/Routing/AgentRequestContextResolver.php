@@ -177,8 +177,8 @@ mwIDAQAB
 
         try {
             $this->validator->validate($decoded, $definition);
-        } catch (ConstraintViolationException) {
-            throw AgentException::unauthorized('Invalid JWT token');
+        } catch (ConstraintViolationException $e) {
+            throw AgentException::unauthorized('Invalid JWT token', $e);
         }
 
         return new AgentSource($decoded['paypalMerchantId'], $decoded['iat'], $decoded['exp'], $decoded['scope'], $decoded['shopwareMerchantId'], $decoded['debug_id'] ?? null);
