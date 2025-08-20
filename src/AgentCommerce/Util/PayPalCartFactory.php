@@ -43,7 +43,7 @@ class PayPalCartFactory
         }
 
         if (!$customer->getEmailAddress()) {
-            throw AgentException::requiredFieldsMissing('customer email');
+            throw AgentException::requiredFieldsMissing('cart.customer.emailAddress');
         }
 
         if (!$customer->isset('name') || !$customer->getName()->isset('givenName') || !$customer->getName()->isset('surname')) {
