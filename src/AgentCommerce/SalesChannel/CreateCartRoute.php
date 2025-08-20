@@ -25,6 +25,7 @@ use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
+use Swag\PayPal\AgentCommerce\Util\PayPalCartFactory;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,12 +60,7 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
             throw AgentException::requiredFieldsMissing('product export');
         }
 
-        $payPalCart = (new PayPalCart())->assign($request->getPayload()->all());
-
-        if (!$payPalCart->isset('items') || !$payPalCart->getItems()->count()) {
-            throw AgentException::requiredFieldsMissing('items');
-        }
-
+        $payPalCart = (new PayPalCartFactory())->create($request->getPayload()->all());
         if ($payPalCart->getCustomer() && !$salesChannelContext->getCustomer()) {
             $salesChannelContext = $this->loginCustomer($payPalCart, $salesChannelContext);
         }
