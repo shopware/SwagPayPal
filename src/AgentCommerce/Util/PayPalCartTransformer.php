@@ -233,7 +233,7 @@ class PayPalCartTransformer
      */
     public function convertAddress(?CustomerAddressEntity $addressEntity, string $className, Context $context): ?Address
     {
-        if (!$addressEntity || !is_subclass_of($className, Address::class)) {
+        if (!$addressEntity) {
             return null;
         }
 
@@ -242,7 +242,7 @@ class PayPalCartTransformer
 
         $iso = $this->countryRepository->search($criteria, $context)->first()?->get('iso');
         if (!$iso) {
-            throw AgentException::requiredFieldsMissing('cart.address.countryCode');
+            throw AgentException::requiredFieldsMissing('countryCode');
         }
 
         $address = new $className();

@@ -47,12 +47,12 @@ class PayPalCartFactory
         }
 
         if (!$customer->isset('name') || !$customer->getName()->isset('givenName') || !$customer->getName()->isset('surname')) {
-            throw AgentException::requiredFieldsMissing('customer name');
+            throw AgentException::requiredFieldsMissing('cart.customer.name');
         }
 
         $shippingAddress = $cart->getShippingAddress();
         if (!$shippingAddress instanceof Address) {
-            throw AgentException::requiredFieldsMissing('shipping address');
+            throw AgentException::requiredFieldsMissing('cart.shippingAddress');
         }
 
         $this->validateAddress($shippingAddress);
@@ -65,31 +65,31 @@ class PayPalCartFactory
     private function validateAddress(Address $address): void
     {
         if (!$address->getAddressLine1()) {
-            throw AgentException::requiredFieldsMissing('address_line_1');
+            throw AgentException::requiredFieldsMissing('addressLine1');
         }
 
         if (!$address->getAddressLine2()) {
-            throw AgentException::requiredFieldsMissing('address_line_2');
+            throw AgentException::requiredFieldsMissing('addressLine2');
         }
 
         if (!$address->getCountryCode()) {
-            throw AgentException::requiredFieldsMissing('country_code');
+            throw AgentException::requiredFieldsMissing('countryCode');
         }
     }
 
     private function validateItems(CartItemCollection $items): void
     {
-        foreach ($items as $item) {
+        foreach ($items as $key => $item) {
             if (!$item->isset('variantId')) {
-                throw AgentException::requiredFieldsMissing('variant_id');
+                throw AgentException::requiredFieldsMissing(sprintf('cart.items.%s.variantId', $key));
             }
 
             if (!Uuid::isValid($item->getVariantId() ?? '')) {
-                throw AgentException::requiredFieldsMissing('variant_id not valid uuid');
+                throw AgentException::requiredFieldsMissing(sprintf('cart.items.%s.variantId  not valid uuid', $key));
             }
 
             if (!$item->isset('quantity')) {
-                throw AgentException::requiredFieldsMissing('quantity');
+                throw AgentException::requiredFieldsMissing(sprintf('cart.items.%s.quantity  not valid uuid', $key));
             }
         }
     }
