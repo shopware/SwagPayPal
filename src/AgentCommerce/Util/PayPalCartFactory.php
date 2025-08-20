@@ -7,12 +7,17 @@
 
 namespace Swag\PayPal\AgentCommerce\Util;
 
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Address;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartItemCollection;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 
+/**
+ * @internal
+ */
+#[Package('checkout')]
 class PayPalCartFactory
 {
     public function create(array $data): PayPalCart
@@ -72,7 +77,7 @@ class PayPalCartFactory
         }
     }
 
-    private function validateItems(?CartItemCollection $items): void
+    private function validateItems(CartItemCollection $items): void
     {
         foreach ($items as $item) {
             if (!$item->isset('variantId')) {
