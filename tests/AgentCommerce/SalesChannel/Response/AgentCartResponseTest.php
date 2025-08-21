@@ -10,6 +10,7 @@ namespace Swag\PayPal\Tests\AgentCommerce\SalesChannel\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 
 /**
@@ -21,7 +22,10 @@ class AgentCartResponseTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $response = new AgentCartResponse('test-token');
+        $cart = new PayPalCart();
+        $cart->setId('test-token');
+
+        $response = new AgentCartResponse($cart);
 
         static::assertSame(['id' => 'test-token'], $response->getObject()->all());
     }

@@ -11,7 +11,7 @@
     ],
     "require": {
         "shopware/core": "~6.7.0@dev",
-        "shopware/paypal-sdk": "dev-feat/paypal-commerce-agent"
+        "shopware/paypal-sdk": "dev-feat/paypal-commerce-agent-validation-issue-builder"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
