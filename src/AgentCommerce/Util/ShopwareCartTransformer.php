@@ -79,7 +79,7 @@ class ShopwareCartTransformer
         $countryId = $this->countryRepository->searchIds($criteria, $context)->firstId();
 
         if (!$countryId) {
-            throw AgentException::requiredFieldsMissing('country not found');
+            throw AgentException::requiredFieldInvalid('address.countryCode', 'Country not found');
         }
 
         $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', SalutationDefinition::NOT_SPECIFIED));

@@ -27,7 +27,7 @@ class PayPalCartFactory
         $this->validateCustomerData($payPalCart);
 
         if (!$payPalCart->isset('items') || !$payPalCart->getItems()->count()) {
-            throw AgentException::requiredFieldsMissing('items');
+            throw AgentException::requiredFieldsMissing('cart.items');
         }
 
         $this->validateItems($payPalCart->getItems());
@@ -65,15 +65,15 @@ class PayPalCartFactory
     private function validateAddress(Address $address): void
     {
         if (!$address->getAddressLine1()) {
-            throw AgentException::requiredFieldsMissing('addressLine1');
+            throw AgentException::requiredFieldsMissing('address.addressLine1');
         }
 
         if (!$address->getAddressLine2()) {
-            throw AgentException::requiredFieldsMissing('addressLine2');
+            throw AgentException::requiredFieldsMissing('address.addressLine2');
         }
 
         if (!$address->getCountryCode()) {
-            throw AgentException::requiredFieldsMissing('countryCode');
+            throw AgentException::requiredFieldsMissing('address.countryCode');
         }
     }
 
@@ -85,11 +85,11 @@ class PayPalCartFactory
             }
 
             if (!Uuid::isValid($item->getVariantId() ?? '')) {
-                throw AgentException::requiredFieldsMissing(\sprintf('cart.items.%s.variantId  not valid uuid', $key));
+                throw AgentException::requiredFieldInvalid(\sprintf('cart.items.%s.variantId', $key), 'Not a valid UUID');
             }
 
             if (!$item->isset('quantity')) {
-                throw AgentException::requiredFieldsMissing(\sprintf('cart.items.%s.quantity  not valid uuid', $key));
+                throw AgentException::requiredFieldInvalid(\sprintf('cart.items.%s.quantity', $key), 'Not a valid UUID');
             }
         }
     }

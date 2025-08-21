@@ -49,6 +49,25 @@ class AgentException extends AgentHttpException
         );
     }
 
+    public static function requiredFieldInvalid(string $field, string $reason): self
+    {
+        $message = 'Required field \'{{ field }}\' is invalid: \'{{ reason }}\'';
+        $parameters = ['field' => $field, 'reason' => $reason];
+
+        $detail = new AgentErrorDetail();
+        $detail->setField($field);
+        $detail->setIssue('MISSING_REQUIRED_FIELD');
+        $detail->setDescription(\sprintf('The field \'%s\' is invalid: %s', $field, $reason));
+
+        return new self(
+            Response::HTTP_BAD_REQUEST,
+            self::INVALID_REQUEST,
+            $message,
+            $parameters,
+            new AgentErrorDetailCollection([$detail])
+        );
+    }
+
     public static function invalidJSONFormat(): self
     {
         return new self(
