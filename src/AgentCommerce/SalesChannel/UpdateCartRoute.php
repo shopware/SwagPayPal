@@ -20,6 +20,7 @@ use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
 use Swag\PayPal\AgentCommerce\Validation\CartTokenValidator;
+use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -89,6 +90,9 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
         $salesChannelContext->getSalesChannel()->setProductExports($productExports);
 
         $this->cartService->deleteCart($salesChannelContext);
+
+        $body = \json_decode($request->getContent(), true, flags: \JSON_THROW_ON_ERROR);
+        $request->attributes->set(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME, $body['payment_method']['token'] ?? null);
 
         $response = $this->createCartRoute->createCart($request, $salesChannelContext);
 
