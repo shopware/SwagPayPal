@@ -81,15 +81,15 @@ class PayPalCartFactory
     {
         foreach ($items as $key => $item) {
             if (!$item->isset('variantId')) {
-                throw AgentException::requiredFieldsMissing(sprintf('cart.items.%s.variantId', $key));
+                throw AgentException::requiredFieldsMissing(\sprintf('cart.items.%s.variantId', $key));
             }
 
             if (!Uuid::isValid($item->getVariantId() ?? '')) {
-                throw AgentException::requiredFieldsMissing(sprintf('cart.items.%s.variantId  not valid uuid', $key));
+                throw AgentException::requiredFieldsMissing(\sprintf('cart.items.%s.variantId  not valid uuid', $key));
             }
 
             if (!$item->isset('quantity')) {
-                throw AgentException::requiredFieldsMissing(sprintf('cart.items.%s.quantity  not valid uuid', $key));
+                throw AgentException::requiredFieldsMissing(\sprintf('cart.items.%s.quantity  not valid uuid', $key));
             }
         }
     }

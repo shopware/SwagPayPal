@@ -38,11 +38,11 @@ class ValidationIssues
             ->withUserMessage($this->translator->trans('swag_paypal.agent_commerce.validation_issue.out_of_stock.user_message'))
             ->withItemId($item->getPayloadValue('productNumber')) // @phpstan-ignore method.deprecated
             ->addResolutionOption()
-            ->withAction(ResolutionOption::ACTION__REMOVE_ITEM)
-            ->withLabel('swag_paypal.agent_commerce.validation_issue.out_of_stock.resolution_option.remove.label')
-            ->withMetadata()
-            ->withCostImpact((string) (-1 * $item->getPrice()?->getTotalPrice()))
-            ->end()
+                ->withAction(ResolutionOption::ACTION__REMOVE_ITEM)
+                ->withLabel('swag_paypal.agent_commerce.validation_issue.out_of_stock.resolution_option.remove.label')
+                ->withMetadata()
+                ->withCostImpact((string) (-1 * $item->getPrice()?->getTotalPrice()))
+                ->end()
             ->end();
 
         $stock = $item->getPayloadValue('stock'); // @phpstan-ignore method.deprecated
