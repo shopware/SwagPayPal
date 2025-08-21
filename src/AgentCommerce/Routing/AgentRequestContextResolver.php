@@ -97,6 +97,7 @@ mwIDAQAB
         }
 
         $source = $this->resolveContextSource($token);
+        $context = new Context($source);
 
         $criteria = new Criteria();
         $criteria->addFilter(
@@ -106,11 +107,12 @@ mwIDAQAB
             new EqualsFilter('salesChannel.id', $source->salesChannelId),
         );
 
-        $context = new Context($source);
         $productExport = $this->productExportRepository->search($criteria, $context)->first();
         if (!$productExport) {
             throw AgentException::unauthorized('Sales channel not found');
         }
+
+        $source->setStreamId($productExport->getProductStreamId());
 
         preg_match('/CART-(\w+)/', $request->getPathInfo(), $matches);
 
@@ -119,7 +121,6 @@ mwIDAQAB
             token: $matches[1] ?? Random::getAlphanumericString(32),
             originalContext: $context,
         ));
-        $salesChannelContext->getSalesChannel()->setProductExports(new ProductExportCollection([$productExport]));
 
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, $salesChannelContext);
