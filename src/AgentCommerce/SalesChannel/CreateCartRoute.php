@@ -10,7 +10,7 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
+use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
@@ -30,6 +30,9 @@ use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartFactory;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
+use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
+use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -50,8 +53,10 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         private readonly CartService $cartService,
         private readonly PayPalCartTransformer $payPalCartTransformer,
         private readonly ShopwareCartTransformer $shopwareCartTransformer,
-        private readonly RegisterRoute $registerRoute,
-        private readonly ProductLineItemFactory $lineItemFactory
+        private readonly AbstractRegisterRoute $registerRoute,
+        private readonly ProductLineItemFactory $lineItemFactory,
+        private readonly AbstractOrderBuilder $orderBuilder,
+        private readonly OrderResource $orderResource,
     ) {
     }
 
@@ -97,8 +102,12 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         $swCart = $this->cartService->createNew($salesChannelContext->getToken());
         $swCart = $this->cartService->add($swCart, $lineItems, $salesChannelContext);
 
+        $order = $this->orderBuilder->getOrderFromCart($swCart, $salesChannelContext, new RequestDataBag($request->request->all()));
+        $order = $this->orderResource->create($order, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP);
+
         $createdPayPalCart = $this->payPalCartTransformer->convertToPayPalCart($swCart, $salesChannelContext);
         $createdPayPalCart->setStatus($createdPayPalCart->getValidationStatus() === PayPalCart::VALIDATION_STATUS__VALID ? PayPalCart::STATUS__CREATED : PayPalCart::STATUS__INCOMPLETE);
+        $createdPayPalCart->setPaymentMethod($this->createPaymentMethod($order->getId()));
 
         $response = new AgentCartResponse($createdPayPalCart);
         if ($createdPayPalCart->getStatus() === PayPalCart::STATUS__CREATED) {

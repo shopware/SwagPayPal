@@ -46,6 +46,16 @@
             <argument type="service" id="Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\SalesChannel\CheckoutRoute" public="true">
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRoute"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\PayPalPaymentHandler"/>
+            <argument type="service" id="Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer"/>
         </service>
 
         <service id="Swag\PayPal\AgentCommerce\SalesChannel\GetCartRoute" public="true">

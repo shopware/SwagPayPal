@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PaymentMethod;
 
 /**
  * @internal
@@ -34,5 +35,17 @@ abstract class AbstractAgentCommerceRoute
             token: $token,
             originalContext: $context
         ));
+    }
+
+    protected function createPaymentMethod(string $token, ?string $payerId = null): PaymentMethod
+    {
+        $method = new PaymentMethod();
+        $method->setToken($token);
+
+        if ($payerId) {
+            $method->setPayerId($payerId);
+        }
+
+        return $method;
     }
 }
