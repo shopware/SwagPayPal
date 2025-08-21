@@ -192,6 +192,7 @@ mwIDAQAB
 
         $export = new ProductExportEntity();
         $export->setId(Uuid::randomHex());
+        $export->setProductStreamId(Uuid::randomHex());
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
@@ -315,6 +316,7 @@ mwIDAQAB
 
         $export = new ProductExportEntity();
         $export->setId(Uuid::randomHex());
+        $export->setProductStreamId(Uuid::randomHex());
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
@@ -337,6 +339,7 @@ mwIDAQAB
 
     public function testResolveWithWrongAgentScopeInRequest(): void
     {
+        $streamId = Uuid::randomHex();
         $iat = new \DateTimeImmutable();
         $exp = new \DateTimeImmutable('+1 hour');
 
@@ -360,11 +363,13 @@ mwIDAQAB
             ['these', 'are', 'wrong', 'scopes'],
             'SALES_CHANNEL_ID',
         );
+        $expectedSource->setStreamId($streamId);
 
         $expectedContext = new Context($expectedSource);
 
         $productExport = new ProductExportEntity();
         $productExport->setId(Uuid::randomHex());
+        $productExport->setProductStreamId($streamId);
         $productExport->setSalesChannelId('SALES_CHANNEL_ID');
         $productExport->setStorefrontSalesChannelId('SALES_CHANNEL_ID');
 
@@ -426,6 +431,7 @@ mwIDAQAB
 
         $export = new ProductExportEntity();
         $export->setId(Uuid::randomHex());
+        $export->setProductStreamId(Uuid::randomHex());
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
