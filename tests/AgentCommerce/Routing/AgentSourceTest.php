@@ -26,14 +26,16 @@ class AgentSourceTest extends TestCase
         $issuedAt = new \DateTimeImmutable();
         $expiresAt = new \DateTimeImmutable('+1 hour');
         $scope = [AgentSource::SCOPE_CART, AgentSource::SCOPE_CHECKOUT];
+        $salesChannelId = 'sales-channel-id';
         $debugId = 'test-debug-id';
 
-        $source = new AgentSource($merchantId, $issuedAt, $expiresAt, $scope, $debugId);
+        $source = new AgentSource($merchantId, $issuedAt, $expiresAt, $scope, $salesChannelId, $debugId);
 
         static::assertSame($merchantId, $source->merchantId);
         static::assertSame($issuedAt, $source->issuedAt);
         static::assertSame($expiresAt, $source->expiresAt);
         static::assertSame($scope, $source->scope);
+        static::assertSame($salesChannelId, $source->salesChannelId);
         static::assertSame($debugId, $source->debugId);
 
         static::assertSame(AgentRouteScope::ID, $source->type);

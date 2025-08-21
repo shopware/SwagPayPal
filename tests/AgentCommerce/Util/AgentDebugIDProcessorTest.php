@@ -113,7 +113,7 @@ class AgentDebugIDProcessorTest extends TestCase
 
     public function testInvokeWithoutDebugId(): void
     {
-        $source = new AgentSource('test-agent', new \DateTimeImmutable(), new \DateTimeImmutable(), ['test']);
+        $source = new AgentSource('test-agent', new \DateTimeImmutable(), new \DateTimeImmutable(), ['test'], 'sales-channel-id');
 
         $context = Context::createDefaultContext($source);
 
@@ -131,7 +131,7 @@ class AgentDebugIDProcessorTest extends TestCase
 
     public function testInvoke(): void
     {
-        $source = new AgentSource('test-agent', new \DateTimeImmutable(), new \DateTimeImmutable(), ['test'], 'debug-id-123');
+        $source = new AgentSource('test-agent', new \DateTimeImmutable(), new \DateTimeImmutable(), ['test'], 'sales-channel-id', 'debug-id-123');
 
         $context = Context::createDefaultContext($source);
 

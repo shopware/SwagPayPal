@@ -7,10 +7,11 @@
 
 namespace Swag\PayPal\AgentCommerce\Routing;
 
-use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Api\Context\AdminSalesChannelApiSource;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\AbstractRouteScope;
 use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -30,19 +31,23 @@ class AgentRouteScope extends AbstractRouteScope
             return false;
         }
 
-        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT);
+        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
 
-        if (!$context instanceof Context) {
+        if (!$context instanceof SalesChannelContext) {
             return false;
         }
 
-        $source = $context->getSource();
+        $source = $context->getContext()->getSource();
 
-        if (!$source instanceof AgentSource) {
-            return false;
+        if ($source instanceof AgentSource) {
+            return true;
         }
 
-        return true;
+        if ($source instanceof AdminSalesChannelApiSource && $source->getOriginalContext()->getSource() instanceof AgentSource) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getId(): string

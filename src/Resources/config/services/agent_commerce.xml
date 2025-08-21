@@ -20,8 +20,11 @@
         </service>
 
         <service id="Swag\PayPal\AgentCommerce\Routing\AgentRequestContextResolver">
+            <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+            <argument type="service" id="product_export.repository"/>
             <argument type="service" id="Shopware\Core\Framework\JWT\JWTDecoder"/>
             <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
         </service>
 
         <service id="Swag\PayPal\AgentCommerce\Routing\AgentContextResolverListener">
