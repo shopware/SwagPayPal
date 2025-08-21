@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem Apple Pay aufgrund nicht unterstützte Zeichen im Anzeigenamen abbrechen konnte (shopware/SwagPayPal#331)
+
 # 9.8.1
 - Behebt ein Problem, bei dem der PayLater Button im Warenkorb nicht angezeigt wird (shopware/SwagPayPal#304)
 
