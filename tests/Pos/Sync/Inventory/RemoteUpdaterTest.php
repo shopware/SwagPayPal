@@ -74,12 +74,12 @@ class RemoteUpdaterTest extends TestCase
         $bulkChanges->addProductChange($productChange);
         $bulkChanges->setReturnBalanceForLocationUuid($this->locations['STORE']);
 
-        $this->inventoryResource->expects($change === 0 ? static::never() : static::once())
+        $this->inventoryResource->expects($change === 0 ? $this->never() : $this->once())
             ->method('changeInventoryBulk')
             ->with(static::anything(), $bulkChanges)
             ->willReturn($this->createStatus($variantChange->getProductUuid(), $variantChange->getVariantUuid()));
 
-        $this->logger->expects($change === 0 ? static::never() : static::once())
+        $this->logger->expects($change === 0 ? $this->never() : $this->once())
             ->method('info');
 
         $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
@@ -109,7 +109,7 @@ class RemoteUpdaterTest extends TestCase
         $bulkChanges->addProductChange($productChange);
         $bulkChanges->setReturnBalanceForLocationUuid($this->locations['STORE']);
 
-        $this->inventoryResource->expects($change === 0 ? static::never() : static::once())
+        $this->inventoryResource->expects($change === 0 ? $this->never() : $this->once())
             ->method('changeInventoryBulk')
             ->with(static::anything(), $bulkChanges);
 
@@ -122,7 +122,7 @@ class RemoteUpdaterTest extends TestCase
 
         $inventoryContext = $this->createInventoryContext($product, 5, 0);
 
-        $this->inventoryResource->expects(static::never())->method('changeInventoryBulk');
+        $this->inventoryResource->expects($this->never())->method('changeInventoryBulk');
 
         $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
@@ -142,7 +142,7 @@ class RemoteUpdaterTest extends TestCase
             new PosApiException($error)
         );
 
-        $this->logger->expects(static::once())->method('error');
+        $this->logger->expects($this->once())->method('error');
         $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
 

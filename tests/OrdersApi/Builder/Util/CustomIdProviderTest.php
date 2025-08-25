@@ -35,7 +35,7 @@ class CustomIdProviderTest extends TestCase
         $plugin->setId(Uuid::randomHex());
         $plugin->setVersion('7.1.0');
         $plugin->setBaseClass(SwagPayPal::class);
-        $pluginRepository->expects(static::once())
+        $pluginRepository->expects($this->once())
             ->method('search')
             ->willReturn(new EntitySearchResult(
                 PaymentMethodDefinition::ENTITY_NAME,
@@ -71,7 +71,7 @@ class CustomIdProviderTest extends TestCase
         $commercial->setVersion('6.6.0');
         $commercial->setBaseClass(SwagCommercial::class);
         $commercial->setActive(true);
-        $pluginRepository->expects(static::once())
+        $pluginRepository->expects($this->once())
             ->method('search')
             ->willReturn(new EntitySearchResult(
                 PaymentMethodDefinition::ENTITY_NAME,
@@ -102,7 +102,7 @@ class CustomIdProviderTest extends TestCase
         $plugin->setId(Uuid::randomHex());
         $plugin->setVersion('this-may-be-a-custom-branch-name');
         $plugin->setBaseClass(SwagPayPal::class);
-        $pluginRepository->expects(static::once())
+        $pluginRepository->expects($this->once())
             ->method('search')
             ->willReturn(new EntitySearchResult(
                 PaymentMethodDefinition::ENTITY_NAME,
@@ -129,7 +129,7 @@ class CustomIdProviderTest extends TestCase
     public function testCustomIdWithoutPlugin(): void
     {
         $pluginRepository = $this->createMock(EntityRepository::class);
-        $pluginRepository->expects(static::once())
+        $pluginRepository->expects($this->once())
             ->method('search')
             ->willReturn(new EntitySearchResult(
                 PaymentMethodDefinition::ENTITY_NAME,

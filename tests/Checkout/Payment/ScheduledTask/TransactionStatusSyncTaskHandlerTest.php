@@ -64,7 +64,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
     public function testRun(): void
     {
         $this->paymentMethodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentHandlers')
             ->willReturn([]);
 
@@ -85,7 +85,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
         $collection = new OrderTransactionCollection([$firstTransaction, $secondTransaction]);
 
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturnCallback(function (Criteria $criteria, Context $context) use ($collection) {
                 static::assertCount(3, $criteria->getFilters());
@@ -126,7 +126,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
                 );
             });
 
-        $matcher = static::exactly(2);
+        $matcher = $this->exactly(2);
         $this->bus
             ->expects($matcher)
             ->method('dispatch')
@@ -153,7 +153,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
     public function testRunWithMalformedPayPalOrderId(): void
     {
         $this->paymentMethodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentHandlers')
             ->willReturn([]);
 
@@ -166,7 +166,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
         $collection = new OrderTransactionCollection([$transaction]);
 
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturnCallback(function (Criteria $criteria, Context $context) use ($collection) {
                 static::assertCount(3, $criteria->getFilters());
@@ -208,7 +208,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
             });
 
         $this->bus
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('dispatch')
             ->willReturnCallback(function (TransactionStatusSyncMessage $message) {
                 static::assertNull($message->getPayPalOrderId());

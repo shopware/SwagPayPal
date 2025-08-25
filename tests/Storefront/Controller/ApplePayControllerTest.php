@@ -40,7 +40,7 @@ class ApplePayControllerTest extends TestCase
     public function testLiveDomainAssociation(): void
     {
         $this->credentialsUtil
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('isSandbox')
             ->with($this->context->getSalesChannelId())
             ->willReturn(false);
@@ -56,7 +56,7 @@ class ApplePayControllerTest extends TestCase
     public function testSandboxDomainAssociation(): void
     {
         $this->credentialsUtil
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('isSandbox')
             ->with($this->context->getSalesChannelId())
             ->willReturn(true);

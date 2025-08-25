@@ -24,7 +24,7 @@ class ClearVaultRouteTest extends TestCase
     {
         $salesChannelContext = Generator::generateSalesChannelContext();
         $repo = $this->createMock(EntityRepository::class);
-        $repo->expects(static::once())
+        $repo->expects($this->once())
             ->method('delete')
             ->with(
                 [[

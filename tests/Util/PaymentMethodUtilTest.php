@@ -50,7 +50,7 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testGetPayPalPaymentMethodId(): void
     {
-        $this->connectionMock->expects(static::once())
+        $this->connectionMock->expects($this->once())
             ->method('fetchAllKeyValue')
             ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
 
@@ -61,7 +61,7 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testGetPayPalPaymentMethodIdWithWrongHandler(): void
     {
-        $this->connectionMock->expects(static::once())
+        $this->connectionMock->expects($this->once())
             ->method('fetchAllKeyValue')
             ->willReturn([]);
 
@@ -72,11 +72,11 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testGetPaypalPaymentMethodInSalesChannel(): void
     {
-        $this->connectionMock->expects(static::once())
+        $this->connectionMock->expects($this->once())
             ->method('fetchAllKeyValue')
             ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
 
-        $this->connectionMock->expects(static::once())
+        $this->connectionMock->expects($this->once())
             ->method('fetchFirstColumn')
             ->willReturn([TestDefaults::SALES_CHANNEL]);
 
@@ -90,11 +90,11 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testGetPaypalPaymentMethodInSalesChannelWithoutPayPalPaymentMethodId(): void
     {
-        $this->connectionMock->expects(static::once())
+        $this->connectionMock->expects($this->once())
             ->method('fetchAllKeyValue')
             ->willReturn([]);
 
-        $this->connectionMock->expects(static::never())->method('fetchFirstColumn');
+        $this->connectionMock->expects($this->never())->method('fetchFirstColumn');
 
         $salesChannel = new SalesChannelEntity();
         $salesChannel->setId(TestDefaults::SALES_CHANNEL);
@@ -106,11 +106,11 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testGetPaypalPaymentMethodInSalesChannelWithoutAssignment(): void
     {
-        $this->connectionMock->expects(static::once())
+        $this->connectionMock->expects($this->once())
             ->method('fetchAllKeyValue')
             ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
 
-        $this->connectionMock->expects(static::once())
+        $this->connectionMock->expects($this->once())
             ->method('fetchFirstColumn')
             ->willReturn([]);
 
@@ -124,7 +124,7 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testSetPayPalAsDefaultPaymentMethodForASpecificSalesChannel(): void
     {
-        $this->connectionMock->expects(static::once())
+        $this->connectionMock->expects($this->once())
             ->method('fetchAllKeyValue')
             ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
 
@@ -135,7 +135,7 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testSetPayPalAsDefaultPaymentMethodForAllCompatibleSalesChannels(): void
     {
-        $this->connectionMock->expects(static::once())
+        $this->connectionMock->expects($this->once())
             ->method('fetchAllKeyValue')
             ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
 
@@ -146,7 +146,7 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testSetPayPalAsDefaultPaymentWithoutBeingPresentForTheRequestedSalesChannel(): void
     {
-        $this->connectionMock->expects(static::once())
+        $this->connectionMock->expects($this->once())
             ->method('fetchAllKeyValue')
             ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
 

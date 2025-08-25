@@ -40,11 +40,11 @@ class OrderExecuteServiceTest extends TestCase
         $captureDataWithMissingPayment = CaptureOrderCapture::get();
         $captureDataWithMissingPayment['purchase_units'][0]['payments'] = null;
 
-        $orderResource->expects(static::once())
+        $orderResource->expects($this->once())
             ->method('capture')
             ->willReturn((new Order())->assign($captureDataWithMissingPayment));
 
-        $orderResource->expects(static::once())
+        $orderResource->expects($this->once())
             ->method('get')
             ->willReturn((new Order())->assign(GetCapturedOrderCapture::get()));
 

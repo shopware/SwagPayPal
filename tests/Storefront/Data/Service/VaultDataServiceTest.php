@@ -34,12 +34,12 @@ class VaultDataServiceTest extends TestCase
 
         $method = $this->createMock(AbstractMethodData::class);
         $method
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('isVaultable')
             ->willReturn(false);
         $paymentMethodDataRegistry = $this->createMock(PaymentMethodDataRegistry::class);
         $paymentMethodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentMethodByHandler')
             ->with($salesChannelContext->getPaymentMethod()->getHandlerIdentifier())
             ->willReturn($method);
@@ -88,12 +88,12 @@ class VaultDataServiceTest extends TestCase
 
         $method = $this->createMock(AbstractMethodData::class);
         $method
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('isVaultable')
             ->willReturn(true);
         $paymentMethodDataRegistry = $this->createMock(PaymentMethodDataRegistry::class);
         $paymentMethodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentMethodByHandler')
             ->with($salesChannelContext->getPaymentMethod()->getHandlerIdentifier())
             ->willReturn($method);
@@ -116,12 +116,12 @@ class VaultDataServiceTest extends TestCase
 
         $method = $this->createMock(ACDCMethodData::class);
         $method
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('isVaultable')
             ->willReturn(true);
         $paymentMethodDataRegistry = $this->createMock(PaymentMethodDataRegistry::class);
         $paymentMethodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentMethodByHandler')
             ->with($salesChannelContext->getPaymentMethod()->getHandlerIdentifier())
             ->willReturn($method);

@@ -95,7 +95,7 @@ class IntrospectionProcessorTest extends TestCase
             ->getMock();
 
         $processor
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getBacktrace')
             ->willReturn(\array_merge([self::TRACE_MONOLOG], $backtrace));
 
@@ -237,7 +237,7 @@ class IntrospectionProcessorTest extends TestCase
             ->getMock();
 
         $processor
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getBacktrace')
             ->willReturn(\array_merge([self::TRACE_MONOLOG], []));
 

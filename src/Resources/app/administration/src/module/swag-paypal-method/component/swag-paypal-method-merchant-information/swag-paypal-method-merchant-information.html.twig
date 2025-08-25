@@ -5,6 +5,7 @@
         {{ merchantInformationStore.actual.merchantIntegrations.legal_name }}
     </p>
 
+    {% block swag_paypal_method_merchant_information_sandbox %}
     <swag-paypal-setting
         v-tooltip.left="{
             message: tooltipSandbox,
@@ -16,6 +17,7 @@
         :bordered="false"
         @update:value="onSandboxToggle"
     />
+    {% endblock %}
 
     <div class="swag-paypal-merchant-information__buttons">
         <slot />

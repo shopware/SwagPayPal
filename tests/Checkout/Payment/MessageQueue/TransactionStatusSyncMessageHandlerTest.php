@@ -66,7 +66,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     public function testInvokeWithAllMatchingStatus(string $intent, string $status, ?string $stateHandlerMethod): void
     {
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturnCallback(
                 function (Criteria $criteria, Context $context): EntitySearchResult {
@@ -88,17 +88,17 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         ]);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willReturn($payPalOrder);
 
         $this->orderTransactionStateHandler
-            ->expects($stateHandlerMethod ? static::once() : static::never())
+            ->expects($stateHandlerMethod ? $this->once() : $this->never())
             ->method($stateHandlerMethod ?? static::anything())
             ->with('transaction-id');
 
-        $this->logger->expects(static::never())->method(static::anything());
+        $this->logger->expects($this->never())->method(static::anything());
 
         $message = new TransactionStatusSyncMessage(
             'transaction-id',
@@ -129,7 +129,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     public function testInvokeThrowsStateMachineExceptionException(): void
     {
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturnCallback(
                 function (Criteria $criteria, Context $context): EntitySearchResult {
@@ -152,7 +152,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         ]);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willReturn($payPalOrder);
@@ -164,13 +164,13 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         );
 
         $this->orderTransactionStateHandler
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('paid')
             ->with('transaction-id')
             ->willThrowException($exception);
 
         $this->logger
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('log')
             ->with(
                 Level::Error,
@@ -190,7 +190,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     public function testInvokeThrowsPayPalApiException(): void
     {
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturnCallback(
                 function (Criteria $criteria, Context $context): EntitySearchResult {
@@ -204,13 +204,13 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         $exception = new PayPalApiException('General error', '404 Not found');
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willThrowException($exception);
 
         $this->logger
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('log')
             ->with(
                 Level::Warning,
@@ -218,7 +218,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 ['error' => $exception]
             );
 
-        $this->orderTransactionStateHandler->expects(static::never())->method(static::anything());
+        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
 
         $message = new TransactionStatusSyncMessage(
             'transaction-id',
@@ -232,7 +232,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     public function testInvokeThrowsPayPalApiExceptionResourceNotFound(): void
     {
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturnCallback(
                 function (Criteria $criteria, Context $context): EntitySearchResult {
@@ -246,15 +246,15 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         $exception = new PayPalApiException(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND, '404 Not found', issue: PayPalApiException::ISSUE_INVALID_RESOURCE_ID);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willThrowException($exception);
 
-        $this->logger->expects(static::never())->method(static::anything());
+        $this->logger->expects($this->never())->method(static::anything());
 
         $this->orderTransactionStateHandler
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('fail')
             ->with('transaction-id');
 
@@ -270,15 +270,15 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     public function testInvokeWithoutUnconfirmedTransaction(): void
     {
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturnCallback(
                 fn (Criteria $criteria, Context $context) => new EntitySearchResult('order_transaction', 0, new EntityCollection(), null, $criteria, $context)
             );
 
-        $this->orderResource->expects(static::never())->method('get');
-        $this->logger->expects(static::never())->method(static::anything());
-        $this->orderTransactionStateHandler->expects(static::never())->method(static::anything());
+        $this->orderResource->expects($this->never())->method('get');
+        $this->logger->expects($this->never())->method(static::anything());
+        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
 
         $message = new TransactionStatusSyncMessage(
             'transaction-id',
@@ -291,12 +291,12 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     public function testInvokeWithMissingPayPalOrderId(): void
     {
-        $this->orderTransactionRepository->expects(static::never())->method(static::anything());
-        $this->orderResource->expects(static::never())->method('get');
-        $this->logger->expects(static::never())->method(static::anything());
+        $this->orderTransactionRepository->expects($this->never())->method(static::anything());
+        $this->orderResource->expects($this->never())->method('get');
+        $this->logger->expects($this->never())->method(static::anything());
 
         $this->orderTransactionStateHandler
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('cancel')
             ->with('transaction-id');
 
@@ -312,7 +312,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     public function testInvokeWithAuthorizedTransactionAndOrderWillSkip(): void
     {
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturnCallback(
                 function (Criteria $criteria, Context $context): EntitySearchResult {
@@ -334,17 +334,17 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         ]);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willReturn($payPalOrder);
 
         $this->orderTransactionStateHandler
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('authorize')
             ->with('transaction-id');
 
-        $this->logger->expects(static::never())->method(static::anything());
+        $this->logger->expects($this->never())->method(static::anything());
 
         $message = new TransactionStatusSyncMessage(
             'transaction-id',

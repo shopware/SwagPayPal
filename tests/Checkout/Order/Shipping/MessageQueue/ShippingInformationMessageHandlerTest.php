@@ -75,17 +75,17 @@ class ShippingInformationMessageHandlerTest extends TestCase
         $hasLineItems = $orderDelivery?->getOrder()?->getLineItems() !== null;
 
         $this->orderDeliveryRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturn(self::createSearchResult($orderDelivery));
 
         $this->orderResource
-            ->expects(static::exactly((int) $isDataComplete))
+            ->expects($this->exactly((int) $isDataComplete))
             ->method('get')
             ->willReturn($payPalOrder);
 
         $this->orderResource
-            ->expects($hasCapture && $isDataComplete ? static::exactly(\count($addedTrackers)) : static::never())
+            ->expects($hasCapture && $isDataComplete ? $this->exactly(\count($addedTrackers)) : $this->never())
             ->method('addTracker')
             ->with(
                 static::callback(static function (Tracker $tracker) use (&$addedTrackers, &$carrier, $hasLineItems): bool {
@@ -102,7 +102,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             );
 
         $this->orderResource
-            ->expects($hasCapture && $isDataComplete ? static::exactly(\count($removedTrackers)) : static::never())
+            ->expects($hasCapture && $isDataComplete ? $this->exactly(\count($removedTrackers)) : $this->never())
             ->method('removeTracker')
             ->with(
                 static::callback(static function (Tracker $tracker) use (&$removedTrackers, &$carrier, $hasLineItems): bool {
@@ -123,7 +123,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             );
 
         $this->logger
-            ->expects($hasCapture && $isDataComplete ? static::exactly(((int) !empty($addedTrackers)) + ((int) !empty($removedTrackers))) : static::never())
+            ->expects($hasCapture && $isDataComplete ? $this->exactly(((int) !empty($addedTrackers)) + ((int) !empty($removedTrackers))) : $this->never())
             ->method('info');
 
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
@@ -255,16 +255,16 @@ class ShippingInformationMessageHandlerTest extends TestCase
         $payPalException = new PayPalApiException('', '(/carrier)', issue: PayPalApiException::ISSUE_INVALID_PARAMETER_VALUE);
 
         $this->orderDeliveryRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturn(self::createSearchResult($orderDelivery));
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->willReturn($payPalOrder);
 
-        $matcher = static::exactly(2);
+        $matcher = $this->exactly(2);
         $this->orderResource
             ->expects($matcher)
             ->method('addTracker')
@@ -288,7 +288,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             );
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('removeTracker')
             ->with(
                 static::callback(static function (Tracker $tracker): bool {
@@ -302,7 +302,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             );
 
         $this->logger
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('error');
 
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
@@ -315,17 +315,17 @@ class ShippingInformationMessageHandlerTest extends TestCase
         $payPalException = new PayPalApiException('', '(/carrier)', issue: PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND);
 
         $this->orderDeliveryRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturn(self::createSearchResult($orderDelivery));
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->willReturn($payPalOrder);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('addTracker')
             ->with(
                 static::callback(static function (Tracker $tracker): bool {
@@ -340,11 +340,11 @@ class ShippingInformationMessageHandlerTest extends TestCase
             ->willThrowException($payPalException);
 
         $this->orderResource
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('removeTracker');
 
         $this->logger
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('error');
 
         static::expectExceptionObject($payPalException);
@@ -358,25 +358,25 @@ class ShippingInformationMessageHandlerTest extends TestCase
         $payPalException = new PayPalApiException('', 'NOT FOUND', issue: PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND);
 
         $this->orderDeliveryRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturn(self::createSearchResult($orderDelivery));
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->willThrowException($payPalException);
 
         $this->orderResource
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('removeTracker');
 
         $this->orderResource
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('addTracker');
 
         $this->logger
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('warning');
 
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));

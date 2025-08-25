@@ -23,7 +23,7 @@ class PayPalCookieProviderTest extends TestCase
     {
         $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
         $cookies = [];
-        $cookieProviderMock->expects(static::once())
+        $cookieProviderMock->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
@@ -38,7 +38,7 @@ class PayPalCookieProviderTest extends TestCase
             'snippet_name' => 'cookie.example.name',
             'cookie' => 'example-cookie-key',
         ];
-        $cookieProviderMock->expects(static::once())
+        $cookieProviderMock->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
@@ -50,7 +50,7 @@ class PayPalCookieProviderTest extends TestCase
     public function testGetCookieGroupsWithRequiredCookieGroup(array $cookies, bool $payPalCookieAdded): void
     {
         $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
-        $cookieProviderMock->expects(static::once())
+        $cookieProviderMock->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 

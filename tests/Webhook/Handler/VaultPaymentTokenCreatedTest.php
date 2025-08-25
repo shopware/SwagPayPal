@@ -67,20 +67,20 @@ class VaultPaymentTokenCreatedTest extends TestCase
 
         $vaultTokenService = $this->createMock(VaultTokenService::class);
         $vaultTokenService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('saveToken')
             ->with($struct, $orderTransaction, $card, 'customerId', $context);
         /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
         $orderTransactionRepo = new StaticEntityRepository([new OrderTransactionCollection([$orderTransaction])]);
         $paymentTransactionStructFactory = $this->createMock(PaymentTransactionStructFactory::class);
         $paymentTransactionStructFactory
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('build')
             ->with($orderTransaction->getId(), $context)
             ->willReturn($struct);
         $orderResource = $this->createMock(OrderResource::class);
         $orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->with('00D91479YH268914P', 'salesChannelId')
             ->willReturn($payPalOrder);
@@ -108,7 +108,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
 
         $vaultTokenService = $this->createMock(VaultTokenService::class);
         $vaultTokenService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('saveToken');
 
         $webhook = new Event();
@@ -137,7 +137,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
 
         $vaultTokenService = $this->createMock(VaultTokenService::class);
         $vaultTokenService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('saveToken');
 
         $webhook = new Event();
@@ -163,7 +163,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
 
         $vaultTokenService = $this->createMock(VaultTokenService::class);
         $vaultTokenService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('saveToken');
 
         $order = new OrderEntity();
@@ -196,7 +196,7 @@ class VaultPaymentTokenCreatedTest extends TestCase
 
         $vaultTokenService = $this->createMock(VaultTokenService::class);
         $vaultTokenService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('saveToken');
 
         $order = new OrderEntity();
@@ -214,13 +214,13 @@ class VaultPaymentTokenCreatedTest extends TestCase
 
         $paymentTransactionStructFactory = $this->createMock(PaymentTransactionStructFactory::class);
         $paymentTransactionStructFactory
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('build')
             ->with($orderTransaction->getId(), $context)
             ->willReturn($struct);
         $orderResource = $this->createMock(OrderResource::class);
         $orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->with('00D91479YH268914P', 'salesChannelId')
             ->willReturn(new Order());

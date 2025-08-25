@@ -90,7 +90,7 @@ class FundingSubscriberTest extends TestCase
         $localeCodeProvider->method('getFormattedLocaleCode')->willReturn('en_GB');
 
         $router = $this->createMock(RouterInterface::class);
-        $router->expects(static::atMost(1))->method('generate')->willReturn('/paypal/payment-method-eligibility');
+        $router->expects($this->atMost(1))->method('generate')->willReturn('/paypal/payment-method-eligibility');
 
         $this->session = new Session(new MockArraySessionStorage());
         $this->session->set(MethodEligibilityRoute::SESSION_KEY, [SEPAHandler::class]);
