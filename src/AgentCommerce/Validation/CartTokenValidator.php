@@ -20,7 +20,7 @@ class CartTokenValidator
 
     public static function validateCartToken(string $cartToken): string
     {
-        if (!\preg_match(sprintf('/^%s$/', self::REGEX), $cartToken, $matches)) {
+        if (!\preg_match(\sprintf('/^%s$/', self::REGEX), $cartToken, $matches)) {
             throw AgentException::invalidCartId();
         }
 

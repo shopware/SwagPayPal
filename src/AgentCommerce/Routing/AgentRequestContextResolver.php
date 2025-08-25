@@ -115,7 +115,7 @@ mwIDAQAB
 
         $source->setStreamId($productExport->getProductStreamId());
 
-        preg_match(sprintf('/%s/', CartTokenValidator::REGEX), $request->getPathInfo(), $matches);
+        preg_match(\sprintf('/%s/', CartTokenValidator::REGEX), $request->getPathInfo(), $matches);
 
         $salesChannelContext = $this->contextService->get(new SalesChannelContextServiceParameters(
             salesChannelId: $productExport->getStorefrontSalesChannelId(),
