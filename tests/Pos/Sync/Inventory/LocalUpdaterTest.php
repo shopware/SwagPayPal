@@ -51,7 +51,7 @@ class LocalUpdaterTest extends TestCase
 
         $inventoryContext = $this->createInventoryContext($product, $localInventory, $posInventory);
 
-        $this->productRepository->expects($change === 0 ? static::never() : static::once())
+        $this->productRepository->expects($change === 0 ? $this->never() : $this->once())
             ->method('update')
             ->with([[
                 'id' => $product->getId(),
@@ -59,7 +59,7 @@ class LocalUpdaterTest extends TestCase
                 'stock' => $product->getStock() + $change,
             ]]);
 
-        $this->logger->expects($change === 0 ? static::never() : static::once())
+        $this->logger->expects($change === 0 ? $this->never() : $this->once())
             ->method('info');
 
         $this->localUpdater->updateLocal(new ProductCollection([$product]), $inventoryContext);
@@ -71,7 +71,7 @@ class LocalUpdaterTest extends TestCase
 
         $inventoryContext = $this->createInventoryContext($product, 1, 2);
 
-        $this->productRepository->expects(static::never())->method('update');
+        $this->productRepository->expects($this->never())->method('update');
 
         $this->localUpdater->updateLocal(new ProductCollection([$product]), $inventoryContext);
     }

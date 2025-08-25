@@ -71,7 +71,7 @@ class PayPalControllerTest extends TestCase
         $exception = new PayPalApiException('test', 'message', issue: 'issue');
 
         $this->createOrderRoute
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('createPayPalOrder')
             ->willThrowException($exception);
 
@@ -90,7 +90,7 @@ class PayPalControllerTest extends TestCase
     {
         $request = new Request(request: ['code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE']);
 
-        $matcher = static::exactly(2);
+        $matcher = $this->exactly(2);
         $this->controller
             ->expects($matcher)
             ->method('trans')
@@ -105,7 +105,7 @@ class PayPalControllerTest extends TestCase
             });
 
         $this->controller
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('addFlash')
             ->with('danger', 'Translated error message');
 
@@ -122,12 +122,12 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: ['code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE']);
 
         $this->controller
-            ->expects(static::exactly(3))
+            ->expects($this->exactly(3))
             ->method('trans')
             ->willReturnCallback(fn (string $key) => $key);
 
         $this->controller
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('addFlash')
             ->with('danger', 'paypal.error.SWAG_PAYPAL__GENERIC_ERROR');
 

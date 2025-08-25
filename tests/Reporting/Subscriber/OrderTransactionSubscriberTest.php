@@ -66,12 +66,12 @@ class OrderTransactionSubscriberTest extends TestCase
         $event = new OrderStateMachineStateChangeEvent('paid', $order, Context::createDefaultContext());
 
         $this->methodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentHandlers')
             ->willReturn([PayPalPaymentHandler::class]);
 
         $this->transactionReportRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('upsert')
             ->with([[
                 'orderTransactionId' => 'transaction-id',
@@ -102,8 +102,8 @@ class OrderTransactionSubscriberTest extends TestCase
 
         $event = new OrderStateMachineStateChangeEvent('paid', $order, $context);
 
-        $this->transactionReportRepository->expects(static::never())->method(static::anything());
-        $this->methodDataRegistry->expects(static::never())->method(static::anything());
+        $this->transactionReportRepository->expects($this->never())->method(static::anything());
+        $this->methodDataRegistry->expects($this->never())->method(static::anything());
 
         $this->subscriber->onPaidStateTransition($event);
     }
@@ -123,10 +123,10 @@ class OrderTransactionSubscriberTest extends TestCase
 
         $event = new OrderStateMachineStateChangeEvent('paid', $order, Context::createDefaultContext());
 
-        $this->transactionReportRepository->expects(static::never())->method(static::anything());
+        $this->transactionReportRepository->expects($this->never())->method(static::anything());
 
         $this->methodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentHandlers')
             ->willReturn([PayPalPaymentHandler::class]);
 
@@ -149,8 +149,8 @@ class OrderTransactionSubscriberTest extends TestCase
 
         $event = new OrderStateMachineStateChangeEvent('paid', $order, Context::createDefaultContext());
 
-        $this->transactionReportRepository->expects(static::never())->method(static::anything());
-        $this->methodDataRegistry->expects(static::never())->method(static::anything());
+        $this->transactionReportRepository->expects($this->never())->method(static::anything());
+        $this->methodDataRegistry->expects($this->never())->method(static::anything());
 
         $this->subscriber->onPaidStateTransition($event);
     }

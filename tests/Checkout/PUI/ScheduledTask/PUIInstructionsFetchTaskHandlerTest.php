@@ -64,7 +64,7 @@ class PUIInstructionsFetchTaskHandlerTest extends TestCase
             ->getMock();
 
         $this->paymentMethodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentMethod')
             ->willReturn($puiMethodData);
 
@@ -78,7 +78,7 @@ class PUIInstructionsFetchTaskHandlerTest extends TestCase
         );
 
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('searchIds')
             ->willReturnCallback(function ($newCriteria) use (&$criteria, $searchResult) {
                 $criteria = $newCriteria;
@@ -86,7 +86,7 @@ class PUIInstructionsFetchTaskHandlerTest extends TestCase
                 return $searchResult;
             });
 
-        $this->bus->expects(static::once())
+        $this->bus->expects($this->once())
             ->method('dispatch')
             ->willReturnCallback(function (PUIInstructionsFetchMessage $message) {
                 static::assertSame('test-id', $message->getTransactionId());

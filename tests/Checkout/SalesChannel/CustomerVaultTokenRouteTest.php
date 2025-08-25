@@ -66,13 +66,13 @@ class CustomerVaultTokenRouteTest extends TestCase
         $salesChannelContext->getCustomer()?->setGuest(false);
 
         $entitySearchResult = $this->createMock(EntitySearchResult::class);
-        $this->repository->expects(static::once())->method('search')->willReturn($entitySearchResult);
-        $entitySearchResult->expects(static::once())->method('first')->willReturn(new VaultTokenEntity());
+        $this->repository->expects($this->once())->method('search')->willReturn($entitySearchResult);
+        $entitySearchResult->expects($this->once())->method('first')->willReturn(new VaultTokenEntity());
 
         $token = new Token();
         $token->assign(['idToken' => 'dummy-token', 'expiresIn' => 45000]);
 
-        $this->tokenResource->expects(static::once())->method('getUserIdToken')->willReturn($token);
+        $this->tokenResource->expects($this->once())->method('getUserIdToken')->willReturn($token);
 
         $response = $this->route->getVaultToken($salesChannelContext);
 
@@ -88,13 +88,13 @@ class CustomerVaultTokenRouteTest extends TestCase
         $salesChannelContext->getCustomer()?->setGuest(false);
 
         $entitySearchResult = $this->createMock(EntitySearchResult::class);
-        $this->repository->expects(static::once())->method('search')->willReturn($entitySearchResult);
-        $entitySearchResult->expects(static::once())->method('first')->willReturn(new VaultTokenEntity());
+        $this->repository->expects($this->once())->method('search')->willReturn($entitySearchResult);
+        $entitySearchResult->expects($this->once())->method('first')->willReturn(new VaultTokenEntity());
 
         $token = new Token();
         $token->assign(['idToken' => null, 'expiresIn' => 45000]);
 
-        $this->tokenResource->expects(static::once())->method('getUserIdToken')->willReturn($token);
+        $this->tokenResource->expects($this->once())->method('getUserIdToken')->willReturn($token);
 
         $this->expectException(MissingCustomerVaultTokenException::class);
 

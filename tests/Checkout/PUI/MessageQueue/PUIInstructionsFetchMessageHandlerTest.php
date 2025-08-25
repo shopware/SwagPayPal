@@ -72,7 +72,7 @@ class PUIInstructionsFetchMessageHandlerTest extends TestCase
         );
 
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturnCallback(function ($newCriteria) use (&$criteria, $searchResult) {
                 $criteria = $newCriteria;
@@ -81,7 +81,7 @@ class PUIInstructionsFetchMessageHandlerTest extends TestCase
             });
 
         $this->instructionsService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('fetchPUIInstructions')
             ->with($orderTransaction, 'sales-channel-id');
 
@@ -104,12 +104,12 @@ class PUIInstructionsFetchMessageHandlerTest extends TestCase
         );
 
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturn($searchResult);
 
         $this->instructionsService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('fetchPUIInstructions');
 
         ($this->handler)($message);

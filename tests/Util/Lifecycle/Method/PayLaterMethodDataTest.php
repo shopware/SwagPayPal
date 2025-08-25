@@ -92,7 +92,7 @@ class PayLaterMethodDataTest extends TestCase
     public function testGetCheckoutDataService(): void
     {
         $payLaterCheckoutDataService = $this->createMock(PayLaterCheckoutDataService::class);
-        $this->container->expects(static::once())
+        $this->container->expects($this->once())
             ->method('get')
             ->with(PayLaterCheckoutDataService::class)
             ->willReturn($payLaterCheckoutDataService);

@@ -99,7 +99,7 @@ class MerchantIntegrationsServiceTest extends TestCase
 
         $dataRegistry = $this->createMock(PaymentMethodDataRegistry::class);
         $dataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentMethods')
             ->willReturn([
                 new ACDCMethodData($container),
@@ -109,7 +109,7 @@ class MerchantIntegrationsServiceTest extends TestCase
             ]);
 
         $dataRegistry
-            ->expects(static::exactly(4))
+            ->expects($this->exactly(4))
             ->method('getEntityIdFromData')
             ->willReturnCallback(static function (AbstractMethodData $methodData) {
                 if ($methodData instanceof ACDCMethodData) {

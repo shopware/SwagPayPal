@@ -43,13 +43,13 @@ class VaultPaymentTokenDeletedTest extends TestCase
 
         $vaultRepo = $this->createMock(EntityRepository::class);
         $vaultRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo((new Criteria())->addFilter(new EqualsFilter('token', 'hatoken'))))
             ->willReturn(new IdSearchResult(1, [['primaryKey' => 'token-id', 'data' => []]], new Criteria(), $context));
 
         $vaultRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('delete')
             ->with([['id' => 'token-id']], $context);
 
@@ -71,13 +71,13 @@ class VaultPaymentTokenDeletedTest extends TestCase
 
         $vaultRepo = $this->createMock(EntityRepository::class);
         $vaultRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo((new Criteria())->addFilter(new EqualsFilter('token', 'hatoken'))))
             ->willReturn(new IdSearchResult(0, [], new Criteria(), $context));
 
         $vaultRepo
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('delete');
 
         $webhook = new Event();
@@ -97,8 +97,8 @@ class VaultPaymentTokenDeletedTest extends TestCase
         $context = Context::createDefaultContext();
 
         $vaultRepo = $this->createMock(EntityRepository::class);
-        $vaultRepo->expects(static::never())->method('searchIds');
-        $vaultRepo->expects(static::never())->method('delete');
+        $vaultRepo->expects($this->never())->method('searchIds');
+        $vaultRepo->expects($this->never())->method('delete');
 
         $webhook = new Event();
         $handler = new VaultPaymentTokenDeleted(

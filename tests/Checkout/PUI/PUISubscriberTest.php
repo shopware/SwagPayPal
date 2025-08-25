@@ -97,7 +97,7 @@ class PUISubscriberTest extends TestCase
     {
         $paymentMethod = $this->salesChannelContext->getPaymentMethod();
         $paymentMethod->setHandlerIdentifier(PUIHandler::class);
-        $this->settingsValidationService->expects(static::once())->method('validate');
+        $this->settingsValidationService->expects($this->once())->method('validate');
         $fraudNetData = new PUIFraudNetData();
         $this->puiFraudNetDataService->method('buildCheckoutData')->willReturn($fraudNetData);
 
@@ -113,7 +113,7 @@ class PUISubscriberTest extends TestCase
     {
         $paymentMethod = $this->salesChannelContext->getPaymentMethod();
         $paymentMethod->setHandlerIdentifier('InvalidHandler');
-        $this->puiFraudNetDataService->expects(static::never())->method('buildCheckoutData');
+        $this->puiFraudNetDataService->expects($this->never())->method('buildCheckoutData');
 
         $page = new AccountEditOrderPage();
         $event = new AccountEditOrderPageLoadedEvent($page, $this->salesChannelContext, new Request());
@@ -127,7 +127,7 @@ class PUISubscriberTest extends TestCase
         $paymentMethod = $this->salesChannelContext->getPaymentMethod();
         $paymentMethod->setHandlerIdentifier(PUIHandler::class);
         $this->settingsValidationService->method('validate')->willThrowException(new PayPalSettingsInvalidException('Invalid settings'));
-        $this->puiFraudNetDataService->expects(static::never())->method('buildCheckoutData');
+        $this->puiFraudNetDataService->expects($this->never())->method('buildCheckoutData');
 
         $page = new AccountEditOrderPage();
         $event = new AccountEditOrderPageLoadedEvent($page, $this->salesChannelContext, new Request());
@@ -140,7 +140,7 @@ class PUISubscriberTest extends TestCase
     {
         $paymentMethod = $this->salesChannelContext->getPaymentMethod();
         $paymentMethod->setHandlerIdentifier(PUIHandler::class);
-        $this->settingsValidationService->expects(static::once())->method('validate');
+        $this->settingsValidationService->expects($this->once())->method('validate');
         $fraudNetData = new PUIFraudNetData();
         $this->puiFraudNetDataService->method('buildCheckoutData')->willReturn($fraudNetData);
 
@@ -159,7 +159,7 @@ class PUISubscriberTest extends TestCase
     {
         $paymentMethod = $this->salesChannelContext->getPaymentMethod();
         $paymentMethod->setHandlerIdentifier('InvalidHandler');
-        $this->puiFraudNetDataService->expects(static::never())->method('buildCheckoutData');
+        $this->puiFraudNetDataService->expects($this->never())->method('buildCheckoutData');
 
         $cart = new Cart('test');
         $cart->setErrors(new ErrorCollection());
@@ -176,7 +176,7 @@ class PUISubscriberTest extends TestCase
         $paymentMethod = $this->salesChannelContext->getPaymentMethod();
         $paymentMethod->setHandlerIdentifier(PUIHandler::class);
         $this->settingsValidationService->method('validate')->willThrowException(new PayPalSettingsInvalidException('Invalid settings'));
-        $this->puiFraudNetDataService->expects(static::never())->method('buildCheckoutData');
+        $this->puiFraudNetDataService->expects($this->never())->method('buildCheckoutData');
 
         $cart = new Cart('test');
         $cart->setErrors(new ErrorCollection());
@@ -192,8 +192,8 @@ class PUISubscriberTest extends TestCase
     {
         $paymentMethod = $this->salesChannelContext->getPaymentMethod();
         $paymentMethod->setHandlerIdentifier(PUIHandler::class);
-        $this->settingsValidationService->expects(static::once())->method('validate');
-        $this->puiFraudNetDataService->expects(static::never())->method('buildCheckoutData');
+        $this->settingsValidationService->expects($this->once())->method('validate');
+        $this->puiFraudNetDataService->expects($this->never())->method('buildCheckoutData');
 
         $cart = new Cart('test');
         $errors = new ErrorCollection();
@@ -209,7 +209,7 @@ class PUISubscriberTest extends TestCase
 
     public function testOnCheckoutFinishLoadedWithValidSettings(): void
     {
-        $this->settingsValidationService->expects(static::once())->method('validate');
+        $this->settingsValidationService->expects($this->once())->method('validate');
         $paymentInstructionData = new PUIPaymentInstructionData();
         $this->puiPaymentInstructionDataService->method('buildFinishData')->willReturn($paymentInstructionData);
 
@@ -242,7 +242,7 @@ class PUISubscriberTest extends TestCase
     public function testOnCheckoutFinishLoadedWithInvalidSettings(): void
     {
         $this->settingsValidationService->method('validate')->willThrowException(new PayPalSettingsInvalidException('Invalid settings'));
-        $this->puiPaymentInstructionDataService->expects(static::never())->method('buildFinishData');
+        $this->puiPaymentInstructionDataService->expects($this->never())->method('buildFinishData');
 
         $transaction = new OrderTransactionEntity();
         $transaction->setId('test-id');
@@ -259,8 +259,8 @@ class PUISubscriberTest extends TestCase
 
     public function testOnCheckoutFinishLoadedWithNoTransactions(): void
     {
-        $this->settingsValidationService->expects(static::once())->method('validate');
-        $this->puiPaymentInstructionDataService->expects(static::never())->method('buildFinishData');
+        $this->settingsValidationService->expects($this->once())->method('validate');
+        $this->puiPaymentInstructionDataService->expects($this->never())->method('buildFinishData');
 
         $order = new OrderEntity();
         $page = new CheckoutFinishPage();
@@ -273,8 +273,8 @@ class PUISubscriberTest extends TestCase
 
     public function testOnCheckoutFinishLoadedWithEmptyTransactions(): void
     {
-        $this->settingsValidationService->expects(static::once())->method('validate');
-        $this->puiPaymentInstructionDataService->expects(static::never())->method('buildFinishData');
+        $this->settingsValidationService->expects($this->once())->method('validate');
+        $this->puiPaymentInstructionDataService->expects($this->never())->method('buildFinishData');
 
         $transactions = new OrderTransactionCollection([]);
         $order = new OrderEntity();
@@ -289,7 +289,7 @@ class PUISubscriberTest extends TestCase
 
     public function testOnCheckoutFinishLoadedWithNoPaymentInstructionData(): void
     {
-        $this->settingsValidationService->expects(static::once())->method('validate');
+        $this->settingsValidationService->expects($this->once())->method('validate');
         $this->puiPaymentInstructionDataService->method('buildFinishData')->willReturn(null);
 
         $transaction = new OrderTransactionEntity();

@@ -75,7 +75,7 @@ class InventorySyncerTest extends TestCase
         $this->localUpdater->method('updateLocal')->willReturn(new ProductCollection([$product]));
         $this->remoteUpdater->method('updateRemote')->willReturn(new ProductCollection());
 
-        $this->inventoryRepository->expects(static::once())->method('upsert');
+        $this->inventoryRepository->expects($this->once())->method('upsert');
 
         $this->inventorySyncer->sync(
             new ProductCollection([$product]),
@@ -89,7 +89,7 @@ class InventorySyncerTest extends TestCase
         $this->localUpdater->method('updateLocal')->willReturn(new ProductCollection());
         $this->remoteUpdater->method('updateRemote')->willReturn(new ProductCollection([$product]));
 
-        $this->inventoryRepository->expects(static::once())->method('upsert');
+        $this->inventoryRepository->expects($this->once())->method('upsert');
 
         $this->inventorySyncer->sync(
             new ProductCollection([$product]),
@@ -103,7 +103,7 @@ class InventorySyncerTest extends TestCase
         $this->localUpdater->method('updateLocal')->willReturn(new ProductCollection([$product]));
         $this->remoteUpdater->method('updateRemote')->willReturn(new ProductCollection([$product]));
 
-        $this->inventoryRepository->expects(static::exactly(2))->method('upsert');
+        $this->inventoryRepository->expects($this->exactly(2))->method('upsert');
 
         $this->inventorySyncer->sync(
             new ProductCollection([$product]),
@@ -117,7 +117,7 @@ class InventorySyncerTest extends TestCase
         $this->localUpdater->method('updateLocal')->willReturn(new ProductCollection());
         $this->remoteUpdater->method('updateRemote')->willReturn(new ProductCollection());
 
-        $this->inventoryRepository->expects(static::never())->method('upsert');
+        $this->inventoryRepository->expects($this->never())->method('upsert');
 
         $this->inventorySyncer->sync(
             new ProductCollection([$product]),
