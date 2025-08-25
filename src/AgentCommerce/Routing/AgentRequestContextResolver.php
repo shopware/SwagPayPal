@@ -32,6 +32,7 @@ use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgentCommerce\Validation\CartTokenValidator;
 use Swag\PayPal\AgentCommerce\Validation\HasScopes;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Clock\NativeClock;
@@ -97,6 +98,7 @@ mwIDAQAB
         }
 
         $source = $this->resolveContextSource($token);
+        $context = new Context($source);
 
         $criteria = new Criteria();
         $criteria->addFilter(
@@ -106,20 +108,20 @@ mwIDAQAB
             new EqualsFilter('salesChannel.id', $source->salesChannelId),
         );
 
-        $context = new Context($source);
         $productExport = $this->productExportRepository->search($criteria, $context)->first();
         if (!$productExport) {
             throw AgentException::unauthorized('Sales channel not found');
         }
 
-        preg_match('/CART-(\w+)/', $request->getPathInfo(), $matches);
+        $source->setStreamId($productExport->getProductStreamId());
+
+        preg_match(\sprintf('/%s/', CartTokenValidator::REGEX), $request->getPathInfo(), $matches);
 
         $salesChannelContext = $this->contextService->get(new SalesChannelContextServiceParameters(
             salesChannelId: $productExport->getStorefrontSalesChannelId(),
             token: $matches[1] ?? Random::getAlphanumericString(32),
             originalContext: $context,
         ));
-        $salesChannelContext->getSalesChannel()->setProductExports(new ProductExportCollection([$productExport]));
 
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, $salesChannelContext);

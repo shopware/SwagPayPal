@@ -24,6 +24,8 @@ class AgentSource implements ContextSource, \JsonSerializable
 
     public string $type = AgentRouteScope::ID;
 
+    private ?string $streamId = null;
+
     /**
      * @param string[] $scope
      */
@@ -45,5 +47,15 @@ class AgentSource implements ContextSource, \JsonSerializable
     public function isExpired(): bool
     {
         return $this->expiresAt < new \DateTimeImmutable();
+    }
+
+    public function getStreamId(): ?string
+    {
+        return $this->streamId;
+    }
+
+    public function setStreamId(?string $streamId): void
+    {
+        $this->streamId = $streamId;
     }
 }

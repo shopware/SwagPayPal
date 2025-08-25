@@ -38,7 +38,27 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="Swag\PayPal\AgentCommerce\SalesChannel\CreateCartRoute"/>
+        <service id="Swag\PayPal\AgentCommerce\SalesChannel\CreateCartRoute" public="true">
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer"/>
+            <argument type="service" id="Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer"/>
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\SalesChannel\GetCartRoute" public="true">
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\SalesChannel\UpdateCartRoute" public="true">
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+            <argument type="service" id="Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer"/>
+            <argument type="service" id="Swag\PayPal\AgentCommerce\SalesChannel\CreateCartRoute"/>
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+        </service>
 
         <service id="Swag\PayPal\AgentCommerce\Validation\ValidationIssues">
             <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
@@ -57,5 +77,8 @@
             <argument type="service" id="customer_group.repository"/>
         </service>
 
+        <service id="Swag\PayPal\AgentCommerce\Subscriber\ProductFilterSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 </container>
