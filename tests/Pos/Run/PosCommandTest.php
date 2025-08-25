@@ -161,7 +161,7 @@ class PosCommandTest extends TestCase
 
     public function testLogCleanup(): void
     {
-        $this->logCleaner->expects(static::exactly($this->salesChannelRepoMock->getCollection()->count()))->method('cleanUpLog');
+        $this->logCleaner->expects($this->exactly($this->salesChannelRepoMock->getCollection()->count()))->method('cleanUpLog');
         $input = new ArrayInput([]);
 
         static::assertSame(0, $this->commands[PosLogCleanupCommand::class]->run($input, new NullOutput()));
@@ -169,7 +169,7 @@ class PosCommandTest extends TestCase
 
     public function testSyncReset(): void
     {
-        $this->syncResetter->expects(static::exactly($this->salesChannelRepoMock->getCollection()->count()))->method('resetSync');
+        $this->syncResetter->expects($this->exactly($this->salesChannelRepoMock->getCollection()->count()))->method('resetSync');
         $input = new ArrayInput([]);
 
         static::assertSame(0, $this->commands[PosSyncResetCommand::class]->run($input, new NullOutput()));

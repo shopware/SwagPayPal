@@ -43,7 +43,7 @@ class LocaleCodeProviderTest extends TestCase
 
     public function testGetFormattedLocaleCodeWithSupportedLocale(): void
     {
-        $this->logger->expects(static::never())->method('notice');
+        $this->logger->expects($this->never())->method('notice');
 
         $locale = $this->provider->getFormattedLocaleCode('en_US');
 
@@ -52,7 +52,7 @@ class LocaleCodeProviderTest extends TestCase
 
     public function testGetFormattedLocaleCodeWithUnsupportedLocale(): void
     {
-        $this->logger->expects(static::once())
+        $this->logger->expects($this->once())
             ->method('notice')
             ->with('PayPal does not support locale code cch-ZZ. Switched to default en_GB.');
 
@@ -63,7 +63,7 @@ class LocaleCodeProviderTest extends TestCase
 
     public function testGetFormattedLocaleCodeWithFallbackLocale(): void
     {
-        $this->logger->expects(static::once())
+        $this->logger->expects($this->once())
             ->method('notice')
             ->with('PayPal does not support locale code en_ZA. Switched to en_US.');
 

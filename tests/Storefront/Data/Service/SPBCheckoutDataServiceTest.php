@@ -72,7 +72,7 @@ class SPBCheckoutDataServiceTest extends TestCase
             });
 
         $this->paymentMethodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentMethod')
             ->with(PayPalMethodData::class)
             ->willReturn(new PayPalMethodData($container));
@@ -93,7 +93,7 @@ class SPBCheckoutDataServiceTest extends TestCase
         $this->systemConfigService->set(Settings::VAULTING_ENABLED_WALLET, $enabled);
         $context = Generator::generateSalesChannelContext(currency: $this->createCurrency(), customer: $this->createCustomer($guest));
         $this->customerVaultTokenRoute
-            ->expects(static::exactly((int) (!$guest && $enabled)))
+            ->expects($this->exactly((int) (!$guest && $enabled)))
             ->method('getVaultToken')
             ->willReturn(new TokenResponse('user-id-token'));
 

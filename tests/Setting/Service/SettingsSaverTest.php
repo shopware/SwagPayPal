@@ -83,31 +83,31 @@ class SettingsSaverTest extends TestCase
         ?bool $sandboxValid,
     ): void {
         $this->webhookSystemConfigHelper
-            ->expects(static::exactly((int) ($liveValid || $sandboxValid)))
+            ->expects($this->exactly((int) ($liveValid || $sandboxValid)))
             ->method('checkWebhookBefore')
             ->with([$salesChannelId => $newSettings])
             ->willReturn([]);
 
         $this->webhookSystemConfigHelper
-            ->expects($liveValid || $sandboxValid ? static::once() : static::never())
+            ->expects($liveValid || $sandboxValid ? $this->once() : $this->never())
             ->method('checkWebhookAfter')
             ->with([$salesChannelId])
             ->willReturn([]);
 
         $this->systemConfigService
-            ->expects(static::atLeast(6))
+            ->expects($this->atLeast(6))
             ->method('get')
             ->willReturnCallback(static function (string $key, ?string $salesChannelId) use ($oldSettings) {
                 return $oldSettings[$salesChannelId][$key] ?? null;
             });
 
         $this->systemConfigService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setMultiple')
             ->with($newSettings, $salesChannelId);
 
         $this->apiCredentialService
-            ->expects(static::exactly((int) $liveChanged + (int) $sandboxChanged))
+            ->expects($this->exactly((int) $liveChanged + (int) $sandboxChanged))
             ->method('testApiCredentials')
             ->willReturnCallback(static function (string $clientId, string $clientSecret, bool $sandbox, string $merchantId) use ($liveValid, $sandboxValid) {
                 $validExpected = $sandbox ? $sandboxValid : $liveValid;
@@ -360,13 +360,13 @@ class SettingsSaverTest extends TestCase
         $errorsAfter = [new \RuntimeException('error-after')];
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('checkWebhookBefore')
             ->with([$salesChannelId => $newSettings])
             ->willReturn($errorsBefore);
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('checkWebhookAfter')
             ->with([$salesChannelId])
             ->willReturn($errorsAfter);
@@ -376,12 +376,12 @@ class SettingsSaverTest extends TestCase
             ->willReturn(null);
 
         $this->systemConfigService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setMultiple')
             ->with($newSettings, $salesChannelId);
 
         $this->apiCredentialService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('testApiCredentials')
             ->willReturn(true);
 
@@ -398,13 +398,13 @@ class SettingsSaverTest extends TestCase
         $newSettings = self::VALID_LIVE_CREDENTIALS_1;
 
         $this->webhookSystemConfigHelper
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('checkWebhookBefore')
             ->with([$salesChannelId => $newSettings])
             ->willReturn([]);
 
         $this->webhookSystemConfigHelper
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('checkWebhookAfter')
             ->with([$salesChannelId])
             ->willReturn([]);
@@ -414,12 +414,12 @@ class SettingsSaverTest extends TestCase
             ->willReturn(null);
 
         $this->systemConfigService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setMultiple')
             ->with($newSettings, $salesChannelId);
 
         $this->apiCredentialService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('testApiCredentials')
             ->willThrowException(new \RuntimeException('error'));
 

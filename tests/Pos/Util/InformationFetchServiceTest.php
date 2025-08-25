@@ -114,7 +114,7 @@ class InformationFetchServiceTest extends TestCase
         string $languageCode = self::LANGUAGE_CODE,
     ): UserResource {
         $client = $this->createMock(PosClient::class);
-        $client->expects(static::once())->method('sendGetRequest')
+        $client->expects($this->once())->method('sendGetRequest')
             ->with(PosRequestUri::MERCHANT_INFORMATION)
             ->willReturn([
                 'uuid' => '0497dde4-e04e-11e9-81af-0fbace9c2068',

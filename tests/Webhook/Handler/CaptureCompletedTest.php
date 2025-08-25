@@ -75,25 +75,25 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
         $methodDataRegistry = $this->createMock(PaymentMethodDataRegistry::class);
 
         $methodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getPaymentMethod')
             ->with(PUIMethodData::class)
             ->willReturn($this->createMock(AbstractMethodData::class));
 
         $methodDataRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getEntityIdFromData')
             ->willReturn('test-payment-method-id');
 
         $instructionsFetchService = $this->createMock(PUIInstructionsFetchService::class);
         $instructionsFetchService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('fetchPUIInstructions')
             ->with($transaction, 'test-sales-channel-id');
 
         $paymentStatusUtil = $this->createMock(PaymentStatusUtilV2::class);
         $paymentStatusUtil
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('applyCaptureState');
 
         $handler = $this->getMockBuilder(CaptureCompleted::class)
@@ -108,7 +108,7 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
             ->getMock();
 
         $handler
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getOrderTransactionV2')
             ->willReturn($transaction);
 
