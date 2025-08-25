@@ -16,9 +16,11 @@ use Swag\PayPal\AgentCommerce\Exception\AgentException;
 #[Package('checkout')]
 class CartTokenValidator
 {
+    public const REGEX = 'CART-(\w+)';
+
     public static function validateCartToken(string $cartToken): string
     {
-        if (!\preg_match('/^CART-(\w+)$/', $cartToken, $matches)) {
+        if (!\preg_match(sprintf('/^%s$/', self::REGEX), $cartToken, $matches)) {
             throw AgentException::invalidCartId();
         }
 

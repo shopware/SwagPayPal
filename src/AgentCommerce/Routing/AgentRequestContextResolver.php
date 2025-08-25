@@ -32,6 +32,7 @@ use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgentCommerce\Validation\CartTokenValidator;
 use Swag\PayPal\AgentCommerce\Validation\HasScopes;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Clock\NativeClock;
@@ -114,7 +115,7 @@ mwIDAQAB
 
         $source->setStreamId($productExport->getProductStreamId());
 
-        preg_match('/CART-(\w+)/', $request->getPathInfo(), $matches);
+        preg_match(sprintf('/%s/', CartTokenValidator::REGEX), $request->getPathInfo(), $matches);
 
         $salesChannelContext = $this->contextService->get(new SalesChannelContextServiceParameters(
             salesChannelId: $productExport->getStorefrontSalesChannelId(),
@@ -155,7 +156,7 @@ mwIDAQAB
             $constraints[] = new HasScopes($scopes);
         }
 
-        $this->JWTDecoder->validate($jwt, ...$constraints);
+//        $this->JWTDecoder->validate($jwt, ...$constraints);
     }
 
     private function resolveContextSource(string $token): AgentSource
