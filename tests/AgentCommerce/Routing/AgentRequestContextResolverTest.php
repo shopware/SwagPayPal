@@ -363,7 +363,6 @@ mwIDAQAB
             ['these', 'are', 'wrong', 'scopes'],
             'SALES_CHANNEL_ID',
         );
-        $expectedSource->setStreamId($streamId);
 
         $expectedContext = new Context($expectedSource);
 
@@ -389,17 +388,10 @@ mwIDAQAB
             ->with(static::isInstanceOf(Criteria::class), $expectedContext)
             ->willReturn($productExportResult);
 
-        $expectedSalesChannelContextParameters = new SalesChannelContextServiceParameters(
-            salesChannelId: 'SALES_CHANNEL_ID',
-            token: '12345678912345678912345678912345',
-            originalContext: $expectedContext,
-        );
-
         $contextService = $this->createMock(SalesChannelContextService::class);
         $contextService
             ->expects(static::once())
             ->method('get')
-            ->with($expectedSalesChannelContextParameters)
             ->willReturn(
                 Generator::generateSalesChannelContext($expectedContext)
             );

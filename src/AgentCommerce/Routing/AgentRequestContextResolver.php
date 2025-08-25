@@ -156,7 +156,7 @@ mwIDAQAB
             $constraints[] = new HasScopes($scopes);
         }
 
-//        $this->JWTDecoder->validate($jwt, ...$constraints);
+        $this->JWTDecoder->validate($jwt, ...$constraints);
     }
 
     private function resolveContextSource(string $token): AgentSource
