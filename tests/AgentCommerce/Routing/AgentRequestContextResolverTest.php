@@ -195,7 +195,7 @@ mwIDAQAB
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
@@ -319,7 +319,7 @@ mwIDAQAB
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
@@ -382,14 +382,14 @@ mwIDAQAB
 
         $repo = $this->createMock(EntityRepository::class);
         $repo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->with(static::isInstanceOf(Criteria::class), $expectedContext)
             ->willReturn($productExportResult);
 
         $contextService = $this->createMock(SalesChannelContextService::class);
         $contextService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->willReturn(
                 Generator::generateSalesChannelContext($expectedContext)
@@ -426,7 +426,7 @@ mwIDAQAB
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
@@ -434,7 +434,7 @@ mwIDAQAB
 
         $salesChannelMock = $this->createMock(SalesChannelContextService::class);
         $salesChannelMock
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->willReturn($salesChannelContext);
 
