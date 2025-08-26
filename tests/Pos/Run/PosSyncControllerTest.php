@@ -153,14 +153,14 @@ class PosSyncControllerTest extends TestCase
 
     public function testAbortSync(): void
     {
-        $this->runService->expects(static::once())->method('abortRun');
+        $this->runService->expects($this->once())->method('abortRun');
         $this->posSyncController->abortSync(Uuid::randomHex(), Context::createDefaultContext());
     }
 
     public function testCleanUpLog(): void
     {
         $context = Context::createDefaultContext();
-        $this->logCleaner->expects(static::atLeastOnce())->method('clearLog');
+        $this->logCleaner->expects($this->atLeastOnce())->method('clearLog');
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
         $this->posSyncController->cleanUpLog($salesChannelId->getId(), $context);
     }
@@ -168,7 +168,7 @@ class PosSyncControllerTest extends TestCase
     public function testResetSync(): void
     {
         $context = Context::createDefaultContext();
-        $this->syncResetter->expects(static::atLeastOnce())->method('resetSync');
+        $this->syncResetter->expects($this->atLeastOnce())->method('resetSync');
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
         $this->posSyncController->resetSync($salesChannelId->getId(), $context);
     }
@@ -176,7 +176,7 @@ class PosSyncControllerTest extends TestCase
     public function testProductLog(): void
     {
         $context = Context::createDefaultContext();
-        $this->productSelection->expects(static::once())->method('getProductLogCollection')->with(
+        $this->productSelection->expects($this->once())->method('getProductLogCollection')->with(
             static::isInstanceOf(SalesChannelEntity::class),
             0,
             10
@@ -188,7 +188,7 @@ class PosSyncControllerTest extends TestCase
     public function testProductLogPaginated(): void
     {
         $context = Context::createDefaultContext();
-        $this->productSelection->expects(static::once())->method('getProductLogCollection')->with(
+        $this->productSelection->expects($this->once())->method('getProductLogCollection')->with(
             static::isInstanceOf(SalesChannelEntity::class),
             40,
             20

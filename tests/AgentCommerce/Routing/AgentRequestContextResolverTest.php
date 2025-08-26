@@ -33,7 +33,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataValidator;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
@@ -192,6 +191,7 @@ mwIDAQAB
 
         $export = new ProductExportEntity();
         $export->setId(Uuid::randomHex());
+        $export->setProductStreamId(Uuid::randomHex());
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
@@ -315,6 +315,7 @@ mwIDAQAB
 
         $export = new ProductExportEntity();
         $export->setId(Uuid::randomHex());
+        $export->setProductStreamId(Uuid::randomHex());
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
@@ -337,6 +338,7 @@ mwIDAQAB
 
     public function testResolveWithWrongAgentScopeInRequest(): void
     {
+        $streamId = Uuid::randomHex();
         $iat = new \DateTimeImmutable();
         $exp = new \DateTimeImmutable('+1 hour');
 
@@ -365,6 +367,7 @@ mwIDAQAB
 
         $productExport = new ProductExportEntity();
         $productExport->setId(Uuid::randomHex());
+        $productExport->setProductStreamId($streamId);
         $productExport->setSalesChannelId('SALES_CHANNEL_ID');
         $productExport->setStorefrontSalesChannelId('SALES_CHANNEL_ID');
 
@@ -384,17 +387,10 @@ mwIDAQAB
             ->with(static::isInstanceOf(Criteria::class), $expectedContext)
             ->willReturn($productExportResult);
 
-        $expectedSalesChannelContextParameters = new SalesChannelContextServiceParameters(
-            salesChannelId: 'SALES_CHANNEL_ID',
-            token: '12345678912345678912345678912345',
-            originalContext: $expectedContext,
-        );
-
         $contextService = $this->createMock(SalesChannelContextService::class);
         $contextService
             ->expects(static::once())
             ->method('get')
-            ->with($expectedSalesChannelContextParameters)
             ->willReturn(
                 Generator::generateSalesChannelContext($expectedContext)
             );
@@ -426,6 +422,7 @@ mwIDAQAB
 
         $export = new ProductExportEntity();
         $export->setId(Uuid::randomHex());
+        $export->setProductStreamId(Uuid::randomHex());
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository

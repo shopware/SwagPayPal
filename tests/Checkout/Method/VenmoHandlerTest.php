@@ -106,13 +106,13 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
         $paypalOrder = $this->createOrderObject();
 
         $this->vaultTokenService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getSubscription')
             ->with($paymentTransaction)
             ->willReturn($subscription);
 
         $this->transactionDataService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setOrderId')
             ->with(
                 $paymentTransaction->getOrderTransactionId(),
@@ -122,33 +122,33 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
                 $context
             );
         $this->transactionDataService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setResourceId')
             ->with($paypalOrder, $paymentTransaction->getOrderTransactionId(), $context);
 
         $this->orderPatchService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('patchOrder');
 
         $this->settingsValidationService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('validate')
             ->with(TestDefaults::SALES_CHANNEL);
 
         $this->orderBuilder
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getOrder')
             ->with($paymentTransaction, static::isInstanceOf(OrderTransactionEntity::class), static::isInstanceOf(OrderEntity::class), $context, new Request())
             ->willReturn($paypalOrder);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('create')
             ->with($paypalOrder)
             ->willReturn($paypalOrder);
 
         $this->orderExecuteService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('captureOrAuthorizeOrder')
             ->with($paymentTransaction->getOrderTransactionId(), $paypalOrder)
             ->willReturn($paypalOrder);
@@ -172,7 +172,7 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
         );
 
         $this->vaultTokenService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getSubscription')
             ->with($paymentTransaction)
             ->willReturn(null);
@@ -193,7 +193,7 @@ Subscription not found');
 
     protected function createPaymentHandler(array $settings = []): AbstractPaymentMethodHandler
     {
-        $systemConfig = $this->createSystemConfigServiceMock($settings);
+        $systemConfig = self::createSystemConfigServiceMock($settings);
         $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();

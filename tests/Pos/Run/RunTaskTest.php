@@ -127,7 +127,7 @@ class RunTaskTest extends TestCase
 
         $task = $this->tasks[$taskName];
 
-        $this->runService->expects(static::once())->method('startRun');
+        $this->runService->expects($this->once())->method('startRun');
 
         $task->execute($salesChannel, $context);
 

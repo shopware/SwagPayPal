@@ -15,7 +15,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
-use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
@@ -48,10 +47,6 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
     public function updateCart(string $token, Request $request, SalesChannelContext $salesChannelContext): AgentCartResponse
     {
         CartTokenValidator::validateCartToken($token);
-
-        if (!$productExports = $salesChannelContext->getSalesChannel()->getProductExports()) {
-            throw AgentException::requiredFieldsMissing('product exports');
-        }
 
         $customer = $salesChannelContext->getCustomer();
         $payPalCart = (new PayPalCart())->assign($request->getPayload()->all());
@@ -86,8 +81,6 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
                 $salesChannelContext->getContext()
             );
         }
-
-        $salesChannelContext->getSalesChannel()->setProductExports($productExports);
 
         $this->cartService->deleteCart($salesChannelContext);
 

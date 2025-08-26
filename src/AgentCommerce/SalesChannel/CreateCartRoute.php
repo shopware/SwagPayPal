@@ -9,24 +9,17 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel;
 
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory;
-use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
-use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Coupon;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Shopware\PayPalSDK\Struct\V2\Patch;
-use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartFactory;
@@ -70,36 +63,14 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
     #[Route('/api/paypal/v1/merchant-cart', name: 'api.paypal.merchant-cart', methods: [Request::METHOD_POST])]
     public function createCart(Request $request, SalesChannelContext $salesChannelContext): AgentCartResponse
     {
-        if (!$productExport = $salesChannelContext->getSalesChannel()->getProductExports()?->first()) {
-            throw AgentException::requiredFieldsMissing('product export');
-        }
-
         $payPalCart = (new PayPalCartFactory())->create($request->getPayload()->all());
         if ($payPalCart->getCustomer() && !$salesChannelContext->getCustomer()) {
-            $salesChannelContext = $this->loginCustomer($payPalCart, $salesChannelContext);
-        }
-
-        $mapped = [];
-        foreach ($payPalCart->getItems() as $item) {
-            if (Uuid::isValid($item->getVariantId() ?? '')) {
-                $mapped[$item->getVariantId()] = $item->getQuantity();
-            }
-        }
-
-        $criteria = new Criteria(array_keys($mapped));
-        $criteria->addFilter(
-            new EqualsFilter('streams.id', $productExport->getProductStreamId()),
-            new ProductAvailableFilter($salesChannelContext->getSalesChannelId(), ProductVisibilityDefinition::VISIBILITY_LINK)
-        );
-        $productIds = $this->productRepository->searchIds($criteria, $salesChannelContext->getContext());
-        if (!$productIds->getTotal()) {
-            throw AgentException::requiredFieldsMissing('items');
+            $salesChannelContext = $this->registerAndLoginCustomer($payPalCart, $salesChannelContext);
         }
 
         $lineItems = [];
-        /** @var string $productId */
-        foreach ($productIds->getIds() as $productId) {
-            $lineItems[] = $this->lineItemFactory->create(['id' => $productId, 'quantity' => $mapped[$productId] ?? 0], $salesChannelContext);
+        foreach ($payPalCart->getItems() as $item) {
+            $lineItems[] = $this->lineItemFactory->create(['id' => $item->getVariantId(), 'quantity' => $item->getQuantity()], $salesChannelContext);
         }
 
         if ($payPalCart->isset('coupons')) {
@@ -155,7 +126,7 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         return $response;
     }
 
-    private function loginCustomer(PayPalCart $payPalCart, SalesChannelContext $salesChannelContext): SalesChannelContext
+    private function registerAndLoginCustomer(PayPalCart $payPalCart, SalesChannelContext $salesChannelContext): SalesChannelContext
     {
         $customerData = $this->shopwareCartTransformer->extractCustomerData($payPalCart, $salesChannelContext->getSalesChannelId(), $salesChannelContext->getContext());
 

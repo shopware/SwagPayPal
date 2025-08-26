@@ -145,19 +145,19 @@ class InventoryChangedTest extends TestCase
         $context = Context::createDefaultContext();
 
         $apiKeyDecoder = $this->createMock(ApiKeyDecoder::class);
-        $apiKeyDecoder->expects(static::never())->method('decode');
+        $apiKeyDecoder->expects($this->never())->method('decode');
 
         $inventoryContextFactory = $this->createMock(InventoryContextFactory::class);
-        $inventoryContextFactory->expects(static::never())->method('getContext');
+        $inventoryContextFactory->expects($this->never())->method('getContext');
 
         $localUpdater = $this->createMock(LocalUpdater::class);
-        $localUpdater->expects(static::never())->method('updateLocal');
+        $localUpdater->expects($this->never())->method('updateLocal');
 
         $inventorySyncer = $this->createMock(InventorySyncer::class);
-        $inventorySyncer->expects(static::never())->method('updateLocalChanges');
+        $inventorySyncer->expects($this->never())->method('updateLocalChanges');
 
         $productRepository = $this->createMock(EntityRepository::class);
-        $productRepository->expects(static::never())->method('search');
+        $productRepository->expects($this->never())->method('search');
 
         $inventoryChangedHandler = new InventoryChangedHandler(
             $apiKeyDecoder,

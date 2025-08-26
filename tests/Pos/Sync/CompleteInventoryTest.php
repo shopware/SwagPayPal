@@ -219,13 +219,13 @@ class CompleteInventoryTest extends TestCase
         $messageDispatcher = new MessageDispatcher(new MessageBusMock(), $this->createMock(Connection::class));
 
         $productSelection = $this->createMock(ProductSelection::class);
-        $productSelection->expects(static::never())->method('getSalesChannelContext');
+        $productSelection->expects($this->never())->method('getSalesChannelContext');
 
         $salesChannelProductRepository = $this->createMock(SalesChannelRepository::class);
-        $salesChannelProductRepository->expects(static::never())->method('searchIds');
+        $salesChannelProductRepository->expects($this->never())->method('searchIds');
 
         $inventoryContextFactory = $this->createMock(InventoryContextFactory::class);
-        $inventoryContextFactory->expects(static::never())->method('getContext');
+        $inventoryContextFactory->expects($this->never())->method('getContext');
 
         $inventorySyncManager = new InventorySyncManager(
             $messageDispatcher,
