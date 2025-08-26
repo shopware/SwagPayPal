@@ -42,12 +42,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(defaults: ['_routeScope' => ['paypal-agent'], '_agentScope' => [AgentSource::SCOPE_CART]])]
 class CreateCartRoute extends AbstractAgentCommerceRoute
 {
-    /**
-     * @param EntityRepository<ProductCollection> $productRepository
-     */
     public function __construct(
         protected SalesChannelContextService $contextService,
-        private readonly EntityRepository $productRepository,
         private readonly CartService $cartService,
         private readonly PayPalCartTransformer $payPalCartTransformer,
         private readonly ShopwareCartTransformer $shopwareCartTransformer,

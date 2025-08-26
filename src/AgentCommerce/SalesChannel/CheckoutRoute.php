@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\AgentCommerce\SalesChannel;
 
-use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
