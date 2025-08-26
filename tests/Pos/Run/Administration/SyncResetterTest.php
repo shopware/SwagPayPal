@@ -36,45 +36,45 @@ class SyncResetterTest extends TestCase
 
         $productRepo = $this->createMock(EntityRepository::class);
         $productRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo($criteria), $context)
             ->willReturn(new IdSearchResult(1, [['primaryKey' => ['salesChannelId' => $salesChannelId, 'productId' => $entityId], 'data' => []]], $criteria, $context));
         $productRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('delete')
             ->with([['salesChannelId' => $salesChannelId, 'productId' => $entityId]], $context);
 
         $inventoryRepo = $this->createMock(EntityRepository::class);
         $inventoryRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo($criteria), $context)
             ->willReturn(new IdSearchResult(1, [['primaryKey' => ['salesChannelId' => $salesChannelId, 'productId' => $entityId], 'data' => []]], $criteria, $context));
         $inventoryRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('delete')
             ->with([['salesChannelId' => $salesChannelId, 'productId' => $entityId]], $context);
 
         $mediaRepo = $this->createMock(EntityRepository::class);
         $mediaRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo($criteria), $context)
             ->willReturn(new IdSearchResult(1, [['primaryKey' => ['salesChannelId' => $salesChannelId, 'mediaId' => $entityId], 'data' => []]], $criteria, $context));
         $mediaRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('delete')
             ->with([['salesChannelId' => $salesChannelId, 'mediaId' => $entityId]], $context);
 
         $runRepo = $this->createMock(EntityRepository::class);
         $runRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo($criteria), $context)
             ->willReturn(new IdSearchResult(1, [['primaryKey' => $entityId, 'data' => []]], $criteria, $context));
         $runRepo
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('delete')
             ->with([['id' => $entityId]], $context);
 

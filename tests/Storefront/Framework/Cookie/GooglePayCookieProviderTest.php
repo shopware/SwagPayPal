@@ -35,7 +35,7 @@ class GooglePayCookieProviderTest extends TestCase
     {
         $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
         $cookies = [];
-        $cookieProviderMock->expects(static::once())
+        $cookieProviderMock->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
@@ -50,7 +50,7 @@ class GooglePayCookieProviderTest extends TestCase
             'snippet_name' => 'cookie.example.name',
             'cookie' => 'example-cookie-key',
         ];
-        $cookieProviderMock->expects(static::once())
+        $cookieProviderMock->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
@@ -62,13 +62,13 @@ class GooglePayCookieProviderTest extends TestCase
     public function testGetCookieGroupsWithRequiredCookieGroup(array $cookies, bool $cookieAdded): void
     {
         $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
-        $cookieProviderMock->expects(static::once())
+        $cookieProviderMock->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
         $searchResult = new IdSearchResult(0, [['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext());
 
-        $this->paymentMethodRepository->expects($cookieAdded ? static::once() : static::never())
+        $this->paymentMethodRepository->expects($cookieAdded ? $this->once() : $this->never())
             ->method('searchIds')
             ->willReturn($searchResult);
 

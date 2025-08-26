@@ -56,7 +56,7 @@ class PaymentMethodStateServiceTest extends TestCase
         $service = $this->createStateService();
 
         $this->paymentMethodRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('searchIds')
             ->with(static::callback(function (Criteria $criteria): bool {
                 static::assertCount(1, $criteria->getFilters());
@@ -68,7 +68,7 @@ class PaymentMethodStateServiceTest extends TestCase
             }), static::isInstanceOf(Context::class))
             ->willReturn(new IdSearchResult(1, [['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext()));
 
-        $this->paymentMethodRepository->expects(static::once())
+        $this->paymentMethodRepository->expects($this->once())
             ->method('update')
             ->with([['id' => 'test-id', 'active' => true]], static::isInstanceOf(Context::class));
 
@@ -80,7 +80,7 @@ class PaymentMethodStateServiceTest extends TestCase
         $service = $this->createStateService();
 
         $this->paymentMethodRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('searchIds')
             ->with(static::callback(function (Criteria $criteria): bool {
                 static::assertCount(1, $criteria->getFilters());
@@ -92,7 +92,7 @@ class PaymentMethodStateServiceTest extends TestCase
             }), static::isInstanceOf(Context::class))
             ->willReturn(new IdSearchResult(0, [], new Criteria(), Context::createDefaultContext()));
 
-        $this->paymentMethodRepository->expects(static::never())->method('update');
+        $this->paymentMethodRepository->expects($this->never())->method('update');
 
         $service->setAllPaymentMethodsState(true, Context::createDefaultContext());
     }
@@ -102,7 +102,7 @@ class PaymentMethodStateServiceTest extends TestCase
         $service = $this->createStateService();
 
         $this->paymentMethodRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('searchIds')
             ->with(static::callback(function (Criteria $criteria): bool {
                 static::assertCount(1, $criteria->getFilters());
@@ -114,7 +114,7 @@ class PaymentMethodStateServiceTest extends TestCase
             }), static::isInstanceOf(Context::class))
             ->willReturn(new IdSearchResult(1, [['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext()));
 
-        $this->paymentMethodRepository->expects(static::once())
+        $this->paymentMethodRepository->expects($this->once())
             ->method('update')
             ->with([['id' => 'test-id', 'active' => false]], static::isInstanceOf(Context::class));
 

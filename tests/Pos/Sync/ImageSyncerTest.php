@@ -195,7 +195,7 @@ class ImageSyncerTest extends TestCase
         $salesChannelId = Uuid::randomHex();
         $mediaId = Uuid::randomHex();
 
-        $mediaRepo->expects(static::once())->method('searchIds')->willReturn(
+        $mediaRepo->expects($this->once())->method('searchIds')->willReturn(
             new IdSearchResult(
                 1,
                 [
@@ -208,7 +208,7 @@ class ImageSyncerTest extends TestCase
                 $context
             ),
         );
-        $mediaRepo->expects(static::once())->method('delete')->with(
+        $mediaRepo->expects($this->once())->method('delete')->with(
             [
                 ['salesChannelId' => $salesChannelId, 'mediaId' => $mediaId],
             ],
@@ -240,11 +240,11 @@ class ImageSyncerTest extends TestCase
     private function createLogger(): LoggerInterface
     {
         $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects(static::once())->method('info')->with(
+        $logger->expects($this->once())->method('info')->with(
             'Successfully uploaded {count} images.',
             ['count' => 2]
         );
-        $matcher = static::exactly(3);
+        $matcher = $this->exactly(3);
         $logger->expects($matcher)->method('warning')->willReturnCallback(function (string $message, array $context) use ($matcher): void {
             switch ($matcher->numberOfInvocations()) {
                 case 1:
@@ -274,7 +274,7 @@ class ImageSyncerTest extends TestCase
     private function createImageResource(): ImageResource
     {
         $client = $this->createMock(PosClient::class);
-        $client->expects(static::once())->method('sendPostRequest')->with(
+        $client->expects($this->once())->method('sendPostRequest')->with(
             PosRequestUri::IMAGE_RESOURCE_BULK,
             (new BulkImageUpload())->assign(['imageUploads' => [
                 [

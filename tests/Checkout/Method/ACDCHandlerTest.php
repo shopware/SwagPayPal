@@ -113,13 +113,13 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->vaultTokenService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getAvailableToken')
             ->with($paymentTransaction, static::isInstanceOf(OrderTransactionEntity::class), static::isInstanceOf(OrderEntity::class))
             ->willReturn(null);
 
         $this->transactionDataService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setOrderId')
             ->with(
                 'orderTransactionId',
@@ -130,7 +130,7 @@ class ACDCHandlerTest extends TestCase
             );
 
         $this->orderPatchService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('patchOrder')
             ->with(
                 $order,
@@ -141,13 +141,13 @@ class ACDCHandlerTest extends TestCase
             );
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->with('paypalOrderId', $order->getSalesChannelId())
             ->willReturn($paypalOrder);
 
         $this->stateMachineRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('transition')
             ->with(static::equalTo(new Transition(
                 OrderTransactionDefinition::ENTITY_NAME,
@@ -157,12 +157,12 @@ class ACDCHandlerTest extends TestCase
             )), $context);
 
         $this->settingsValidationService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('validate')
             ->with($order->getSalesChannelId());
 
         $this->acdcValidator
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('validate')
             ->with($paypalOrder, $transaction, $context)
             ->willReturn(true);
@@ -196,13 +196,13 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->vaultTokenService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getAvailableToken')
             ->with($paymentTransaction, $transaction, $order, $context)
             ->willReturn(new VaultTokenEntity());
 
         $this->transactionDataService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setOrderId')
             ->with(
                 $paymentTransaction->getOrderTransactionId(),
@@ -213,11 +213,11 @@ class ACDCHandlerTest extends TestCase
             );
 
         $this->orderPatchService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('patchOrder');
 
         $this->stateMachineRegistry
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('transition')
             ->with(static::equalTo(new Transition(
                 OrderTransactionDefinition::ENTITY_NAME,
@@ -227,18 +227,18 @@ class ACDCHandlerTest extends TestCase
             )), $context);
 
         $this->settingsValidationService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('validate')
             ->with($order->getSalesChannelId());
 
         $this->orderBuilder
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getOrder')
             ->with($paymentTransaction, $transaction, $order, $context, $request)
             ->willReturn($payPalOrder);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('create')
             ->with($payPalOrder)
             ->willReturn($payPalOrder);
@@ -267,11 +267,11 @@ class ACDCHandlerTest extends TestCase
         $transaction->setOrder($order);
 
         $this->transactionDataService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('setOrderId');
 
         $this->orderPatchService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('patchOrder');
 
         $this->orderTransactionRepository->addSearch(
@@ -279,7 +279,7 @@ class ACDCHandlerTest extends TestCase
         );
 
         $this->settingsValidationService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('validate')
             ->with($order->getSalesChannelId())
             ->willThrowException(new PayPalSettingsInvalidException('clientId'));
@@ -299,11 +299,11 @@ class ACDCHandlerTest extends TestCase
         $context = Context::createDefaultContext();
 
         $this->transactionDataService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('setOrderId');
 
         $this->orderPatchService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('patchOrder');
 
         $transaction = new OrderTransactionEntity();
@@ -333,12 +333,12 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->willReturn($paypalOrder);
 
         $this->acdcValidator
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('validate')
             ->with($paypalOrder, $transaction, $context)
             ->willReturn(false);
@@ -383,18 +383,18 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->willReturn($payPalOrder);
 
         $this->acdcValidator
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('validate')
             ->with($payPalOrder, $transaction, $context)
             ->willReturn(true);
 
         $this->orderExecuteService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('captureOrAuthorizeOrder')
             ->with(
                 $transaction->getId(),
@@ -406,12 +406,12 @@ class ACDCHandlerTest extends TestCase
             ->willReturn($payPalOrder);
 
         $this->transactionDataService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setResourceId')
             ->with($payPalOrder, $transaction->getId(), $context);
 
         $this->vaultTokenService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('saveToken')
             ->with($paymentTransaction, $transaction, $payPalOrder->getPaymentSource()?->getCard(), $orderCustomer->getCustomerId(), $context);
 
@@ -442,16 +442,16 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('get')
             ->willReturn($payPalOrder);
 
         $this->acdcValidator
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('validate');
 
         $this->orderExecuteService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('captureOrAuthorizeOrder')
             ->with(
                 $transaction->getId(),
@@ -463,12 +463,12 @@ class ACDCHandlerTest extends TestCase
             ->willReturn($payPalOrder);
 
         $this->transactionDataService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setResourceId')
             ->with($payPalOrder, $transaction->getId(), $context);
 
         $this->vaultTokenService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('saveToken')
             ->with($paymentTransaction, $transaction, $payPalOrder->getPaymentSource()?->getPaypal(), $orderCustomer->getCustomerId(), $context);
 
@@ -502,13 +502,13 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->vaultTokenService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getSubscription')
             ->with($paymentTransaction)
             ->willReturn($subscription);
 
         $this->transactionDataService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setOrderId')
             ->with(
                 'orderTransactionId',
@@ -518,33 +518,33 @@ class ACDCHandlerTest extends TestCase
                 $context
             );
         $this->transactionDataService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('setResourceId')
             ->with($payPalOrder, 'orderTransactionId', $context);
 
         $this->orderPatchService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('patchOrder');
 
         $this->settingsValidationService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('validate')
             ->with($order->getSalesChannelId());
 
         $this->orderBuilder
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getOrder')
             ->with($paymentTransaction, $transaction, $order, $context, new Request())
             ->willReturn($payPalOrder);
 
         $this->orderResource
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('create')
             ->with($payPalOrder)
             ->willReturn($payPalOrder);
 
         $this->orderExecuteService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('captureOrAuthorizeOrder')
             ->with(
                 $transaction->getId(),
@@ -569,7 +569,7 @@ class ACDCHandlerTest extends TestCase
         );
 
         $this->vaultTokenService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getSubscription')
             ->with($paymentTransaction)
             ->willReturn(null);

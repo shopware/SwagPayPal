@@ -143,7 +143,7 @@ class ShippingSubscriberTest extends TestCase
         );
 
         $this->bus
-            ->expects($expectedAfter === null ? static::never() : static::once())
+            ->expects($expectedAfter === null ? $this->never() : $this->once())
             ->method('dispatch')
             ->willReturnCallback(function (ShippingInformationMessage $message) use (&$result): Envelope {
                 static::assertSame($result->getPrimaryKey(), $message->getOrderDeliveryId());
@@ -167,7 +167,7 @@ class ShippingSubscriberTest extends TestCase
         );
 
         $this->bus
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('dispatch');
 
         $this->subscriber->onOrderDeliveryWritten($event);

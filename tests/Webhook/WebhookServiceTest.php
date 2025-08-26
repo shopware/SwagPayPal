@@ -86,7 +86,7 @@ class WebhookServiceTest extends TestCase
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, 'someToken');
 
         $this->router
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
             ->willReturn(MockRequestHandler::GET_WEBHOOK_URL);
@@ -102,7 +102,7 @@ class WebhookServiceTest extends TestCase
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, 'someToken');
 
         $this->router
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
             ->willReturn(MockRequestHandler::GET_WEBHOOK_URL . 'Invalid');
@@ -115,7 +115,7 @@ class WebhookServiceTest extends TestCase
     public function testRegisterWebhookWithAlreadyExistingTokenAndId(): void
     {
         $this->router
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
             ->willReturn(MockRequestHandler::GET_WEBHOOK_URL);

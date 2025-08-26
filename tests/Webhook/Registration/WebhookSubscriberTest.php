@@ -88,12 +88,12 @@ class WebhookSubscriberTest extends TestCase
         $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], null);
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('checkWebhookBefore')
             ->with(['' => ['some-key' => 'some-value']]);
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('needsCheck')
             ->with(['some-key' => 'some-value'])
             ->willReturn(true);
@@ -107,12 +107,12 @@ class WebhookSubscriberTest extends TestCase
         $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('checkWebhookBefore')
             ->with(['some-sales-channel-id' => ['some-key' => 'some-value']]);
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('needsCheck')
             ->with(['some-key' => 'some-value'])
             ->willReturn(true);
@@ -129,11 +129,11 @@ class WebhookSubscriberTest extends TestCase
         $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('checkWebhookBefore');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('needsCheck');
 
         $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
@@ -145,11 +145,11 @@ class WebhookSubscriberTest extends TestCase
         $event = new BeforeSystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('checkWebhookBefore');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('needsCheck')
             ->with(['some-key' => 'some-value'])
             ->willReturn(false);
@@ -163,12 +163,12 @@ class WebhookSubscriberTest extends TestCase
         $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], null);
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('checkWebhookAfter')
             ->with(['']);
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('needsCheck')
             ->with(['some-key' => 'some-value'])
             ->willReturn(true);
@@ -182,12 +182,12 @@ class WebhookSubscriberTest extends TestCase
         $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('checkWebhookAfter')
             ->with(['some-sales-channel-id']);
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('needsCheck')
             ->with(['some-key' => 'some-value'])
             ->willReturn(true);
@@ -204,11 +204,11 @@ class WebhookSubscriberTest extends TestCase
         $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('checkWebhookAfter');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('needsCheck');
 
         $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
@@ -220,11 +220,11 @@ class WebhookSubscriberTest extends TestCase
         $event = new SystemConfigMultipleChangedEvent(['some-key' => 'some-value'], 'some-sales-channel-id');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('checkWebhookAfter');
 
         $this->webhookSystemConfigHelper
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('needsCheck')
             ->with(['some-key' => 'some-value'])
             ->willReturn(false);

@@ -32,7 +32,7 @@ class PayPalPaymentMethodControllerTest extends TestCase
         $salesChannelRepoMock = new SalesChannelRepoMock();
 
         $connection = $this->createMock(Connection::class);
-        $connection->expects(static::once())
+        $connection->expects($this->once())
             ->method('fetchAllKeyValue')
             ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
         $paymentMethodUtil = new PaymentMethodUtil($connection, $salesChannelRepoMock);

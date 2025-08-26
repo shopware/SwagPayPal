@@ -60,7 +60,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         );
 
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturnCallback(function ($criteria) use ($searchResult) {
                 static::assertEquals(['test-id'], $criteria->getIds());
@@ -69,7 +69,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
             });
 
         $this->instructionsService
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('fetchPUIInstructions')
             ->with($orderTransaction);
 
@@ -88,12 +88,12 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         );
 
         $this->orderTransactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('search')
             ->willReturn($searchResult);
 
         $this->instructionsService
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('fetchPUIInstructions');
 
         static::expectException(OrderException::class);
