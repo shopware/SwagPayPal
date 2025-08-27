@@ -100,7 +100,7 @@ class AgentRouteScopeTest extends TestCase
 
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
         $salesChannelContext
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('getContext')
             ->willReturn(Context::createDefaultContext($source));
 
