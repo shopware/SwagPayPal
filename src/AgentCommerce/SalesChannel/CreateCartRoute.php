@@ -63,7 +63,7 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         $swCart = $this->cartService->createNew($salesChannelContext->getToken());
         $swCart = $this->cartService->add($swCart, $lineItems, $salesChannelContext);
 
-        $createdPayPalCart = $this->payPalCartTransformer->convertToPayPalCart($swCart, $salesChannelContext);
+        $createdPayPalCart = $this->payPalCartTransformer->convertToPayPalCart($swCart, $salesChannelContext, $payPalCart);
         $createdPayPalCart->setStatus($createdPayPalCart->getValidationStatus() === PayPalCart::VALIDATION_STATUS__VALID ? PayPalCart::STATUS__CREATED : PayPalCart::STATUS__INCOMPLETE);
 
         $response = new AgentCartResponse($createdPayPalCart);
