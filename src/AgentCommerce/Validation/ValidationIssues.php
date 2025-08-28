@@ -78,7 +78,7 @@ class ValidationIssues
     public function changedPrice(LineItem $lineItem, string $initPrice, CurrencyEntity $currency): ValidationIssue
     {
         $unitPrice = (string) $lineItem->getPrice()?->getUnitPrice();
-        $priceDiff = (string) ((float)$unitPrice - (float)$initPrice);
+        $priceDiff = (string) ((float) $unitPrice - (float) $initPrice);
 
         $context = new PricingErrorContext();
         $context->setOriginalPrice($initPrice);
