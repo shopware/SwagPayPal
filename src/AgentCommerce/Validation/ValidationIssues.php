@@ -11,8 +11,11 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\PayPalSDK\Builder\AgenticCommerce\V1\ValidationIssueBuilder;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Context\InventoryIssueContext;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Context\PricingErrorContext;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\MetaData;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ResolutionOption;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssue;
 
@@ -27,7 +30,7 @@ class ValidationIssues
     ) {
     }
 
-    public function outOfStock(LineItem $item, ?ProductEntity $restockProduct): ValidationIssue
+    public function outOfStock(LineItem $item, ?ProductEntity $restockProduct, CurrencyEntity $currency): ValidationIssue
     {
         $builder = new ValidationIssueBuilder();
 
@@ -39,9 +42,10 @@ class ValidationIssues
             ->withItemId($item->getReferencedId() ?? '')
             ->addResolutionOption()
                 ->withAction(ResolutionOption::ACTION__REMOVE_ITEM)
-                ->withLabel('swag_paypal.agent_commerce.validation_issue.out_of_stock.resolution_option.remove.label')
+                ->withLabel($this->translator->trans('swag_paypal.agent_commerce.validation_issue.out_of_stock.resolution_option.remove.label'))
                 ->withMetadata()
-                ->withCostImpact((string) (-1 * $item->getPrice()?->getTotalPrice()))
+                ->withCostImpact('-' . $currency->getSymbol() . $item->getPrice()?->getTotalPrice())
+                ->withPriority(MetaData::PRIORITY__LOW)
                 ->end()
             ->end();
 
@@ -54,14 +58,57 @@ class ValidationIssues
 
         $wait = $builder->addResolutionOption()
             ->withAction(ResolutionOption::ACTION__WAIT_FOR_RESTOCK)
-            ->withLabel('swag_paypal.agent_commerce.validation_issue.out_of_stock.resolution_option.wait.label');
+            ->withLabel($this->translator->trans('swag_paypal.agent_commerce.validation_issue.out_of_stock.resolution_option.wait.label'));
 
         if ($restockProduct) {
-            $wait->withMetadata()->withEstimatedTime($restockProduct->getRestockTime() . ' Days');
+            $wait->withMetadata()
+                ->withEstimatedTime($restockProduct->getRestockTime() . ' Days')
+                ->withPriority(MetaData::PRIORITY__MEDIUM);
             $inventoryContext->setRestockDate(\date('Y-m-d\T00:00:00', (int) strtotime('+' . $restockProduct->getRestockTime() . ' days')));
         }
 
         $builder->withContext($inventoryContext);
+
+        return $builder->build();
+    }
+
+    /**
+     * @param numeric-string $initPrice
+     */
+    public function changedPrice(LineItem $lineItem, string $initPrice, CurrencyEntity $currency): ValidationIssue
+    {
+        $unitPrice = (string) $lineItem->getPrice()?->getUnitPrice();
+        $priceDiff = (string) ((float)$unitPrice - (float)$initPrice);
+
+        $context = new PricingErrorContext();
+        $context->setOriginalPrice($initPrice);
+        $context->setCurrentPrice($unitPrice);
+        $context->setCurrencyCode($currency->getIsoCode());
+        $context->setPriceChangeReason(PricingErrorContext::PRICE_CHANGE_REASON__COMPONENT_COST_INCREASE);
+        $context->setPriceIncrease($priceDiff);
+
+        $builder = new ValidationIssueBuilder();
+        $builder
+            ->withCode(ValidationIssue::CODE__PRICING_ERROR)
+            ->withType(ValidationIssue::TYPE__BUSINESS_RULE)
+            ->withMessage($this->translator->trans('swag_paypal.agent_commerce.validation_issue.price_changed.message'))
+            ->withUserMessage($this->translator->trans('swag_paypal.agent_commerce.validation_issue.price_changed.user_message', ['label' => $lineItem->getLabel(), 'oldPrice' => $initPrice, 'newPrice' => $unitPrice]))
+            ->withItemId($lineItem->getReferencedId() ?? '')
+            ->withContext($context);
+
+        $builder->addResolutionOption()
+            ->withAction(ResolutionOption::ACTION__ACCEPT_NEW_PRICE)
+            ->withLabel($this->translator->trans('swag_paypal.agent_commerce.validation_issue.price_changed.resolution_option.accept.label'))
+            ->withMetadata()
+                ->withCostImpact('+' . $currency->getSymbol() . $priceDiff)
+                ->withPriority(MetaData::PRIORITY__HIGH);
+
+        $builder->addResolutionOption()
+            ->withAction(ResolutionOption::ACTION__REMOVE_ITEM)
+            ->withLabel($this->translator->trans('swag_paypal.agent_commerce.validation_issue.price_changed.resolution_option.remove.label'))
+            ->withMetadata()
+                ->withCostImpact('-' . $currency->getSymbol() . $initPrice)
+                ->withPriority(MetaData::PRIORITY__MEDIUM);
 
         return $builder->build();
     }
