@@ -15,12 +15,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Resource;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Payment;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\Exception\ParentPaymentNotFoundException;
-use Swag\PayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionInvalidIdException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Swag\PayPal\Webhook\WebhookHandler;
 
@@ -86,7 +87,14 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         }
 
         if ($orderTransactionId === null) {
-            throw new WebhookException($this->getEventType(), 'Given webhook resource data does not contain needed custom ID');
+            throw new WebhookOrderTransactionInvalidIdException('Given webhook resource data does not contain needed custom ID', $this->getEventType());
+        }
+
+        if (!Uuid::isValid($orderTransactionId)) {
+            throw new WebhookOrderTransactionInvalidIdException(
+                \sprintf('Given custom ID "%s" is not a valid UUID', $orderTransactionId),
+                $this->getEventType()
+            );
         }
 
         $criteria = new Criteria([$orderTransactionId]);
