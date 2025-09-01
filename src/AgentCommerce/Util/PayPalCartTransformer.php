@@ -39,7 +39,6 @@ use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\CustomerName;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingAddress;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOption;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOptionCollection;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssue;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssueCollection;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Validation\ValidationIssues;
@@ -169,10 +168,7 @@ class PayPalCartTransformer
         $errors = new ValidationIssueCollection();
 
         foreach ($cart->getErrors() as $error) {
-            $validationIssue = new ValidationIssue();
-            // TODO: Add some properties
-
-            $errors->add($validationIssue);
+            $errors->add($this->validationIssues->cartError($error));
         }
 
         $restockProducts = [];
