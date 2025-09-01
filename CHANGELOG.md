@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where Apple Pay could not handle unsupported characters (shopware/SwagPayPal#331)
+
 # 8.7.7
 - Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 30 seconds (shopware/SwagPayPal#262)
 
