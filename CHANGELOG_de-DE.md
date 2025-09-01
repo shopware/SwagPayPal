@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 8.7.8
 - Behebt ein Problem, bei dem Apple Pay aufgrund nicht unterstützte Zeichen im Anzeigenamen abbrechen konnte (shopware/SwagPayPal#331)
 
 # 8.7.7
