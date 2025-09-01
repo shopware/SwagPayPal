@@ -31,8 +31,8 @@ class OpenAPISchemaTest extends TestCase
     ];
 
     public const CONVERSION_EXCEPTIONS = [
-        'RestApi' => null,
-        'Api' => null,
+        'RestApi' => '',
+        'Api' => '',
         'PayPal' => 'paypal',
         'OAuth' => 'oauth',
         'ThreeDSecure' => '3d_secure',
