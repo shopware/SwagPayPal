@@ -7,7 +7,14 @@
 
 namespace Swag\PayPal\AgentCommerce\Validation;
 
+use Shopware\Core\Checkout\Cart\Address\Error\AddressValidationError;
+use Shopware\Core\Checkout\Cart\Address\Error\BillingAddressBlockedError;
+use Shopware\Core\Checkout\Cart\Address\Error\ShippingAddressBlockedError;
+use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Content\Product\Cart\MinOrderQuantityError;
+use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
+use Shopware\Core\Content\Product\Cart\PurchaseStepsError;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
 use Shopware\Core\Framework\Log\Package;
@@ -111,5 +118,36 @@ class ValidationIssues
                 ->withPriority(MetaData::PRIORITY__MEDIUM);
 
         return $builder->build();
+    }
+
+    public function cartError(Error $error): ValidationIssue
+    {
+        $parameters = [];
+        foreach ($error->getParameters() as $key => $value) {
+            $parameters['%' . $key . '%'] = $value;
+        }
+
+        $validationIssue = new ValidationIssue();
+        $validationIssue->setMessage($error->getId());
+        $validationIssue->setMessage($this->translator->trans(\sprintf('swag_paypal.agent_commerce.validation_issue.error.%s.message', $error->getMessageKey()), $parameters));
+        $validationIssue->setUserMessage($this->translator->trans(\sprintf('swag_paypal.agent_commerce.validation_issue.error.%s.user_message', $error->getMessageKey()), $parameters));
+        $validationIssue->setType(ValidationIssue::TYPE__BUSINESS_RULE);
+        $validationIssue->setCode(ValidationIssue::CODE__BUSINESS_RULE_ERROR);
+
+        switch ($error::class) {
+            case ProductNotFoundError::class:
+            case PurchaseStepsError::class:
+            case MinOrderQuantityError::class:
+                $validationIssue->setCode(ValidationIssue::CODE__INVENTORY_ISSUE);
+                $validationIssue->setItemId(str_replace($error->getMessageKey(), '', $error->getId()));
+
+                break;
+            case ShippingAddressBlockedError::class:
+            case BillingAddressBlockedError::class:
+            case AddressValidationError::class:
+                $validationIssue->setCode(ValidationIssue::CODE__SHIPPING_ERROR);
+        }
+
+        return $validationIssue;
     }
 }
