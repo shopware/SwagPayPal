@@ -20,6 +20,7 @@ use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
+use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionInvalidIdException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -191,7 +192,7 @@ class WebhookController extends AbstractController
         try {
             $this->webhookService->executeWebhook($webhook, $context);
             $this->logger->info('[PayPal Webhook] Webhook successfully executed', $logContext);
-        } catch (WebhookHandlerNotFoundException $exception) {
+        } catch (WebhookHandlerNotFoundException|WebhookOrderTransactionInvalidIdException $exception) {
             $this->logger->info(\sprintf('[PayPal Webhook] %s', $exception->getMessage()), $logContext);
         } catch (WebhookException $webhookException) {
             $this->logger->error(\sprintf('[PayPal Webhook] %s', $webhookException->getMessage()), $logContext);
