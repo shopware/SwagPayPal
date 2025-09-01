@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Storefront\Data\Service;
 
+use Cocur\Slugify\Slugify;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Log\Package;
@@ -23,6 +24,7 @@ class ApplePayCheckoutDataService extends AbstractCheckoutDataService
         return (new ApplePayCheckoutData())->assign($this->getBaseData($context, $order))->assign([
             'totalPrice' => $this->formatPrice($order?->getPrice()->getTotalPrice() ?? $cart?->getPrice()->getTotalPrice() ?? 0),
             'brandName' => $this->getBrandName($context),
+            'displayName' => $this->getDisplayName($context),
             'billingAddress' => $this->getBillingAddress($order, $context),
         ]);
     }
@@ -41,6 +43,17 @@ class ApplePayCheckoutDataService extends AbstractCheckoutDataService
         }
 
         return $brandName;
+    }
+
+    private function getDisplayName(SalesChannelContext $salesChannelContext): string
+    {
+        $slugify = new Slugify();
+
+        return (string) \mb_convert_encoding(
+            \mb_substr($slugify->slugify($this->getBrandName($salesChannelContext), ' '), 0, 64),
+            'ASCII',
+            'UTF-8'
+        );
     }
 
     private function formatPrice(float $price): string
