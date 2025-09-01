@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.1.1
 - Fixes an issue, where PUI payment details were not shown, if the "logout guest customer after order" setting was enabled (shopware/SwagPayPal#315, requires Shopware 6.7.2.0 or higher)
 - Fixes an issue, where Apple Pay could not handle unsupported characters (shopware/SwagPayPal#331)
 
