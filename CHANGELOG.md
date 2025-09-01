@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where Apple Pay could not handle unsupported characters (shopware/SwagPayPal#331)
+
 # 9.8.1
 - Fixes an issue, where the PayLater button is not displayed on the OffCanvas and the cart (shopware/SwagPayPal#304)
 

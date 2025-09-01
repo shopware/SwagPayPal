@@ -15,6 +15,11 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
         brandName: undefined,
 
         /**
+         * @type string
+         */
+        displayName: undefined,
+
+        /**
          * @type array
          */
         billingAddress: undefined,
@@ -83,6 +88,7 @@ export default class SwagPaypalApplePay extends SwagPaypalAbstractStandalone {
         try {
             const { merchantSession } = await paypal.Applepay().validateMerchant({
                 validationUrl: event.validationURL,
+                displayName: this.options.displayName,
             });
 
             session.completeMerchantValidation(merchantSession);
