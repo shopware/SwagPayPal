@@ -24,7 +24,7 @@ parameters:
         - bin/static-analyze-autoloader.php
 
     symfony:
-        constant_hassers: false
+        constantHassers: false
 
     ignoreErrors:
         # Will be fixed in v6.7
