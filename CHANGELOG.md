@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 8.7.8
 - Fixes an issue, where Apple Pay could not handle unsupported characters (shopware/SwagPayPal#331)
 
 # 8.7.7
