@@ -73,7 +73,7 @@ class ShippingSubscriber implements EventSubscriberInterface
             }
 
             $changeSet = $writeResult->getChangeSet();
-            if ($changeSet && !$changeSet->hasChanged('tracking_codes')) {
+            if ((!$changeSet && !isset($writeResult->getPayload()['trackingCodes'])) || ($changeSet && !$changeSet->hasChanged('tracking_codes'))) {
                 continue;
             }
 
