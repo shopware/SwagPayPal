@@ -39,7 +39,6 @@ use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\CustomerName;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingAddress;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOption;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOptionCollection;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssue;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssueCollection;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Validation\ValidationIssues;
@@ -63,11 +62,11 @@ class PayPalCartTransformer
     ) {
     }
 
-    public function convertToPayPalCart(Cart $cart, SalesChannelContext $context): PayPalCart
+    public function convertToPayPalCart(Cart $cart, SalesChannelContext $context, ?PayPalCart $initialCart = null): PayPalCart
     {
         $payPalCart = new PayPalCart();
 
-        ['validationIssues' => $issues, 'status' => $status] = $this->convertToValidationIssues($cart, $context->getContext());
+        ['validationIssues' => $issues, 'status' => $status] = $this->convertToValidationIssues($cart, $initialCart?->getItems() ?? new CartItemCollection(), $context);
 
         $customer = $context->getCustomer();
         $shippingAddress = $this->convertAddress($customer?->getDefaultShippingAddress(), ShippingAddress::class, $context->getContext());
@@ -96,8 +95,12 @@ class PayPalCartTransformer
         $items = new CartItemCollection();
 
         foreach ($lineItems as $lineItem) {
+            if (!$lineItem->getPrice()) {
+                continue;
+            }
+
             $itemPrice = new Money();
-            $itemPrice->setValue((string) $lineItem->getPrice()?->getUnitPrice());
+            $itemPrice->setValue((string) $lineItem->getPrice()->getUnitPrice());
             $itemPrice->setCurrencyCode($context->getCurrency()->getIsoCode());
 
             $cartItem = new CartItem();
@@ -159,16 +162,13 @@ class PayPalCartTransformer
     /**
      * @return array{validationIssues: ValidationIssueCollection, status: string}
      */
-    public function convertToValidationIssues(Cart $cart, Context $context): array
+    public function convertToValidationIssues(Cart $cart, CartItemCollection $cartItems, SalesChannelContext $context): array
     {
         $status = PayPalCart::VALIDATION_STATUS__VALID;
         $errors = new ValidationIssueCollection();
 
         foreach ($cart->getErrors() as $error) {
-            $validationIssue = new ValidationIssue();
-            // TODO: Add some properties
-
-            $errors->add($validationIssue);
+            $errors->add($this->validationIssues->cartError($error));
         }
 
         $restockProducts = [];
@@ -179,16 +179,28 @@ class PayPalCartTransformer
                 new RangeFilter('stock', [RangeFilter::LTE => 0]),
                 new NotFilter('AND', [new EqualsFilter('restockTime', null)])
             );
-            $restockProducts = $this->productRepository->search($criteria, $context)->getElements();
+            $restockProducts = $this->productRepository->search($criteria, $context->getContext())->getElements();
+        }
+
+        $mapped = [];
+        foreach ($cartItems as $cartItem) {
+            $mapped[$cartItem->getVariantId()] = $cartItem;
         }
 
         foreach ($cart->getLineItems() as $lineItem) {
             $stock = $lineItem->getPayloadValue('stock'); // @phpstan-ignore method.deprecated
             if ($stock < $lineItem->getQuantity()) {
                 $restockProduct = $restockProducts[(string) $lineItem->getReferencedId()] ?? null;
-                $issue = $this->validationIssues->outOfStock($lineItem, $restockProduct);
+                $issue = $this->validationIssues->outOfStock($lineItem, $restockProduct, $context->getCurrency());
 
                 $errors->add($issue);
+            }
+
+            $realPrice = (string) $lineItem->getPrice()?->getUnitPrice();
+            $initItem = $mapped[$lineItem->getReferencedId()] ?? null;
+            $initPrice = $initItem?->getPrice()->getValue();
+            if ($initPrice !== null && $initPrice < $realPrice) {
+                $errors->add($this->validationIssues->changedPrice($lineItem, $initPrice, $context->getCurrency()));
             }
         }
 
@@ -294,8 +306,12 @@ class PayPalCartTransformer
 
         $appliedCoupons = new AppliedCouponCollection();
         foreach ($lineItems as $lineItem) {
+            if (!$lineItem->getPrice()) {
+                continue;
+            }
+
             $discount = new Money();
-            $discount->setValue((string) $lineItem->getPrice()?->getTotalPrice());
+            $discount->setValue((string) $lineItem->getPrice()->getTotalPrice());
             $discount->setCurrencyCode($context->getCurrency()->getIsoCode());
 
             $coupon = new AppliedCoupon();

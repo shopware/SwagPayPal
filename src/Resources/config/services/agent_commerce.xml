@@ -61,6 +61,7 @@
             <argument type="service" id="Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer"/>
             <argument type="service" id="Swag\PayPal\AgentCommerce\SalesChannel\CreateCartRoute"/>
             <argument type="service" id="customer.repository"/>
+            <argument type="service" id="customer_address.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
         </service>
 

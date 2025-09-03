@@ -8,6 +8,7 @@
 namespace Swag\PayPal\AgentCommerce\SalesChannel;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressCollection;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -33,12 +34,14 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
 {
     /**
      * @param EntityRepository<CustomerCollection> $customerRepository
+     * @param EntityRepository<CustomerAddressCollection> $customerAddressRepository
      */
     public function __construct(
         protected SalesChannelContextService $contextService,
         private readonly ShopwareCartTransformer $shopwareCartTransformer,
         private readonly CreateCartRoute $createCartRoute,
         private readonly EntityRepository $customerRepository,
+        private readonly EntityRepository $customerAddressRepository,
         private readonly CartService $cartService
     ) {
     }
@@ -48,6 +51,7 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
     {
         CartTokenValidator::validateCartToken($token);
 
+        $toDeleteAddress = null;
         $customer = $salesChannelContext->getCustomer();
         $payPalCart = (new PayPalCart())->assign($request->getPayload()->all());
         if ($customer && $payPalCart->getCustomer()) {
@@ -56,16 +60,22 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
             $customerData['shippingAddress']['id'] = $customer->getDefaultShippingAddress()?->getId();
             $customerData['defaultShippingAddress'] = $customerData['shippingAddress'];
 
-            if (!isset($customerData['billingAddress']) && $customer->getDefaultBillingAddress()) {
-                // TODO: TBD
-            } elseif (isset($customerData['billingAddress'])) {
+            if (isset($customerData['billingAddress'])) {
                 $customerData['billingAddress']['id'] = $customer->getDefaultBillingAddress()?->getId() ?? Uuid::randomHex();
                 $customerData['defaultBillingAddress'] = $customerData['billingAddress'];
+            } elseif ($customer->getDefaultShippingAddressId() !== $customer->getDefaultBillingAddressId()) {
+                $toDeleteAddress = [['id' => $customer->getDefaultBillingAddressId()]];
+
+                $customerData['defaultBillingAddressId'] = $customer->getDefaultShippingAddressId();
             }
 
             unset($customerData['shippingAddress'], $customerData['billingAddress']);
 
             $this->customerRepository->update([$customerData], $salesChannelContext->getContext());
+
+            if (!empty($toDeleteAddress)) {
+                $this->customerAddressRepository->delete($toDeleteAddress, $salesChannelContext->getContext());
+            }
 
             $salesChannelContext = $this->createSalesChannelContext(
                 $salesChannelContext->getToken(),

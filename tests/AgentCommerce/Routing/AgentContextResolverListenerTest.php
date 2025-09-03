@@ -45,7 +45,7 @@ class AgentContextResolverListenerTest extends TestCase
 
         $resolver = $this->createMock(RequestContextResolverInterface::class);
         $resolver
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('resolve')
             ->with($request);
 
