@@ -508,6 +508,9 @@ mwIDAQAB
         );
     }
 
+    /**
+     * @return non-empty-string
+     */
     private function createSalesChannelWithExport(): string
     {
         $salesChannelId = Uuid::randomHex();
