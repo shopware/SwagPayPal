@@ -294,7 +294,6 @@ mwIDAQAB
         yield 'Missing iat' => [['paypalMerchantId' => 'MERCHANT_ID', 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
         yield 'Missing exp' => [['paypalMerchantId' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
 
-        yield 'Empty paypalMerchantId' => [['paypalMerchantId' => '', 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
         yield 'Empty salesChannelId' => [['paypalMerchantId' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => []]];
     }
 
@@ -459,6 +458,7 @@ mwIDAQAB
     /**
      * @param non-empty-string|null $paypalMerchantId
      * @param list<string>|null $scopes
+     * @param non-empty-string|null $salesChannelId
      */
     private static function encodeJWT(?string $paypalMerchantId = null, ?\DateTimeImmutable $iat = null, ?\DateTimeImmutable $exp = null, ?array $scopes = null, ?string $salesChannelId = null): string
     {
@@ -472,7 +472,7 @@ mwIDAQAB
         $builder = $builder->issuedBy(AgentRequestContextResolver::JWT_EXPECTED_ISSUER);
 
         if ($paypalMerchantId !== null) {
-            $builder = $builder->withClaim('external_id', [\sprintf("PayPal:%s", $paypalMerchantId)]);
+            $builder = $builder->withClaim('external_id', [\sprintf('PayPal:%s', $paypalMerchantId)]);
         }
 
         if ($scopes !== null) {

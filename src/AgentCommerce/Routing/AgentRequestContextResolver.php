@@ -194,6 +194,7 @@ kQIDAQAB
     private static function extractPayPalMerchantId(string $externalId): string
     {
         \preg_match('/^PayPal:\s*(.+)$/', $externalId, $matches);
+
         return $matches[1];
     }
 }
