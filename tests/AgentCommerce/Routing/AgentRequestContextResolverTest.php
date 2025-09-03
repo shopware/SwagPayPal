@@ -93,10 +93,17 @@ TQrKhArgLXX4v3CddjfTRJkFWDbE/CkvKZNOrcf1nhaGCPspRJj2KUkj1Fhl9Cnc
 dn/RsYEONbwQSjIfMPkvxF+8HQ==
 -----END PRIVATE KEY-----';
 
+    protected function setUp(): void
+    {
+        // TODO: Remove this when we have a way to retrieve the public key dynamically from PayPal
+        // Override this, as we use our own private key to sign JWTs during tests
+        AgentRequestContextResolver::$PAYPAL_JWT = self::JWT_PUBLIC;
+    }
+
     protected function tearDown(): void
     {
         // TODO: Remove this when we have a way to retrieve the public key dynamically from PayPal
-        // Reset the static variable to the original value
+        // Reset the static variable to the original value, if it was changed during tests
         AgentRequestContextResolver::$PAYPAL_JWT = self::JWT_PUBLIC;
     }
 
@@ -294,7 +301,6 @@ mwIDAQAB
         yield 'Missing iat' => [['paypalMerchantId' => 'MERCHANT_ID', 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
         yield 'Missing exp' => [['paypalMerchantId' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
 
-        yield 'Empty paypalMerchantId' => [['paypalMerchantId' => '', 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
         yield 'Empty salesChannelId' => [['paypalMerchantId' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => []]];
     }
 
@@ -457,10 +463,11 @@ mwIDAQAB
     }
 
     /**
-     * @param non-empty-string|null $sub
+     * @param non-empty-string|null $paypalMerchantId
      * @param list<string>|null $scopes
+     * @param non-empty-string|null $salesChannelId
      */
-    private static function encodeJWT(?string $sub = null, ?\DateTimeImmutable $iat = null, ?\DateTimeImmutable $exp = null, ?array $scopes = null, ?string $salesChannelId = null): string
+    private static function encodeJWT(?string $paypalMerchantId = null, ?\DateTimeImmutable $iat = null, ?\DateTimeImmutable $exp = null, ?array $scopes = null, ?string $salesChannelId = null): string
     {
         $configuration = Configuration::forAsymmetricSigner(
             new Sha512(),
@@ -469,9 +476,10 @@ mwIDAQAB
         );
 
         $builder = $configuration->builder();
+        $builder = $builder->issuedBy(AgentRequestContextResolver::JWT_EXPECTED_ISSUER);
 
-        if ($sub !== null) {
-            $builder = $builder->withClaim('paypalMerchantId', $sub);
+        if ($paypalMerchantId !== null) {
+            $builder = $builder->withClaim('external_id', [\sprintf('PayPal:%s', $paypalMerchantId)]);
         }
 
         if ($scopes !== null) {
@@ -487,7 +495,7 @@ mwIDAQAB
         }
 
         if ($salesChannelId !== null) {
-            $builder = $builder->withClaim('shopwareMerchantId', $salesChannelId);
+            $builder = $builder->relatedTo($salesChannelId);
         }
 
         return $builder
@@ -507,6 +515,9 @@ mwIDAQAB
         );
     }
 
+    /**
+     * @return non-empty-string
+     */
     private function createSalesChannelWithExport(): string
     {
         $salesChannelId = Uuid::randomHex();
