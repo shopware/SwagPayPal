@@ -457,10 +457,10 @@ mwIDAQAB
     }
 
     /**
-     * @param non-empty-string|null $sub
+     * @param non-empty-string|null $paypalMerchantId
      * @param list<string>|null $scopes
      */
-    private static function encodeJWT(?string $sub = null, ?\DateTimeImmutable $iat = null, ?\DateTimeImmutable $exp = null, ?array $scopes = null, ?string $salesChannelId = null): string
+    private static function encodeJWT(?string $paypalMerchantId = null, ?\DateTimeImmutable $iat = null, ?\DateTimeImmutable $exp = null, ?array $scopes = null, ?string $salesChannelId = null): string
     {
         $configuration = Configuration::forAsymmetricSigner(
             new Sha512(),
@@ -469,9 +469,10 @@ mwIDAQAB
         );
 
         $builder = $configuration->builder();
+        $builder = $builder->issuedBy(AgentRequestContextResolver::JWT_EXPECTED_ISSUER);
 
-        if ($sub !== null) {
-            $builder = $builder->withClaim('paypalMerchantId', $sub);
+        if ($paypalMerchantId !== null) {
+            $builder = $builder->withClaim('external_id', [\sprintf("PayPal:%s", $paypalMerchantId)]);
         }
 
         if ($scopes !== null) {
@@ -487,7 +488,7 @@ mwIDAQAB
         }
 
         if ($salesChannelId !== null) {
-            $builder = $builder->withClaim('shopwareMerchantId', $salesChannelId);
+            $builder = $builder->relatedTo($salesChannelId);
         }
 
         return $builder
