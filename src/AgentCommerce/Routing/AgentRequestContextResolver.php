@@ -39,7 +39,6 @@ use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\All;
-use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Constraints\Regex;
@@ -175,11 +174,11 @@ kQIDAQAB
 
         $definition = new DataValidationDefinition('paypal.agent_source');
         $definition
-            ->add('external_id', new NotBlank(), new Type('array'), new Count(exactly: 1), new All([new NotBlank(), new Type('string'), new Regex('/^PayPal:.+$/')]))
+            ->add('external_id', new NotBlank(), new Type('array'), new All([new NotBlank(), new Type('string'), new Regex('/^PayPal:.+$/')]))
             ->add('sub', new NotBlank(), new Type('string'), new Uuid())
             ->add('iat', new NotBlank(), new Type(\DateTimeInterface::class))
             ->add('exp', new NotBlank(), new Type(\DateTimeInterface::class))
-            ->add('scope', new Type('array'), new Count(min: 1), new All([new Type('string'), new NotBlank()]))
+            ->add('scope', new Type('array'), new All([new Type('string'), new NotBlank()]))
             ->add('debug_id', new Optional([new Type('string')]));
 
         try {

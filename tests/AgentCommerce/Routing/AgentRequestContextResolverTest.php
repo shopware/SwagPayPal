@@ -93,10 +93,17 @@ TQrKhArgLXX4v3CddjfTRJkFWDbE/CkvKZNOrcf1nhaGCPspRJj2KUkj1Fhl9Cnc
 dn/RsYEONbwQSjIfMPkvxF+8HQ==
 -----END PRIVATE KEY-----';
 
+    protected function setUp(): void
+    {
+        // TODO: Remove this when we have a way to retrieve the public key dynamically from PayPal
+        // Override this, as we use our own private key to sign JWTs during tests
+        AgentRequestContextResolver::$PAYPAL_JWT = self::JWT_PUBLIC;
+    }
+
     protected function tearDown(): void
     {
         // TODO: Remove this when we have a way to retrieve the public key dynamically from PayPal
-        // Reset the static variable to the original value
+        // Reset the static variable to the original value, if it was changed during tests
         AgentRequestContextResolver::$PAYPAL_JWT = self::JWT_PUBLIC;
     }
 
