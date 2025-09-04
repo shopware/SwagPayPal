@@ -58,12 +58,14 @@ class WebhookSubscriber implements EventSubscriberInterface
     {
         $mapped = [];
         foreach ($event->getWriteResults() as $writeResult) {
+            /** @var string $id */
+            $id = $writeResult->getPrimaryKey();
             $active = $writeResult->getProperty('active');
             if ($active === null || $writeResult->getOperation() === EntityWriteResult::OPERATION_DELETE) {
                 continue;
             }
 
-            $mapped[$writeResult->getPrimaryKey()] = $active;
+            $mapped[$id] = $active;
         }
 
         $criteria = new Criteria(array_keys($mapped));
@@ -90,14 +92,14 @@ class WebhookSubscriber implements EventSubscriberInterface
     private function onboard(SalesChannelEntity $salesChannel, Context $context): void
     {
         $productExport = $salesChannel->getProductExports()?->first();
-        $storefront = $productExport->getStorefrontSalesChannel();
+        $storefront = $productExport?->getStorefrontSalesChannel();
         if (!$storefront) {
-            throw new \RuntimeException('Storefront not found');
+            return;
         }
 
         $url = $storefront->getHreflangDefaultDomain()?->getUrl() ?? $storefront->getDomains()?->first()?->getUrl();
 
-        $tokenBuilder = (new Builder(new JoseEncoder(), ChainedFormatter::default()));
+        $tokenBuilder = Builder::new(new JoseEncoder(), ChainedFormatter::default());
         $token = $tokenBuilder
             ->withClaim('storeName', $salesChannel->getName())
             ->withClaim('storeUrl', $url)
@@ -107,7 +109,7 @@ class WebhookSubscriber implements EventSubscriberInterface
             ->withClaim('shippingCountries', $salesChannel->getCountries()?->map(fn (CountryEntity $country) => $country->getIso()))
             ->withClaim('paypalMerchantId', $this->credentialsUtil->getMerchantPayerId($storefront->getId()))
             ->withClaim('shopwareMerchantId', $salesChannel->getId())
-            ->withClaim('catalogDownloadUrl', sprintf('/%s/store-api/product-export/%s/%s', rtrim($url, '/'), $productExport->getAccessKey(), $productExport->getFileName()))
+            ->withClaim('catalogDownloadUrl', \sprintf('/%s/store-api/product-export/%s/%s', rtrim($url ?? '', '/'), $productExport->getAccessKey(), $productExport->getFileName()))
             ->getToken(new Sha256(), InMemory::plainText(random_bytes(32)))
             ->toString();
 
