@@ -7,27 +7,14 @@
 
 namespace Swag\PayPal\AgentCommerce\Subscriber;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use Lcobucci\JWT\Encoding\ChainedFormatter;
-use Lcobucci\JWT\Encoding\JoseEncoder;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Token\Builder;
-use Shopware\Core\Framework\Api\Context\AdminApiSource;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Notification\NotificationService;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\Setting\Service\CredentialsUtil;
+use Swag\PayPal\AgentCommerce\Webhook;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -42,8 +29,7 @@ class WebhookSubscriber implements EventSubscriberInterface
      */
     public function __construct(
         private readonly EntityRepository $salesChannelRepository,
-        private readonly NotificationService $notificationService,
-        private readonly CredentialsUtil $credentialsUtil,
+        private readonly Webhook $webhook,
     ) {
     }
 
@@ -60,8 +46,14 @@ class WebhookSubscriber implements EventSubscriberInterface
         foreach ($event->getWriteResults() as $writeResult) {
             /** @var string $id */
             $id = $writeResult->getPrimaryKey();
+            if ($writeResult->getOperation() === EntityWriteResult::OPERATION_DELETE) {
+                $mapped[$id] = false;
+
+                continue;
+            }
+
             $active = $writeResult->getProperty('active');
-            if ($active === null || $writeResult->getOperation() === EntityWriteResult::OPERATION_DELETE) {
+            if ($active === null) {
                 continue;
             }
 
@@ -82,69 +74,10 @@ class WebhookSubscriber implements EventSubscriberInterface
         $result = $this->salesChannelRepository->search($criteria, $event->getContext());
         foreach ($result as $salesChannel) {
             if ($mapped[$salesChannel->getId()]) {
-                $this->onboard($salesChannel, $event->getContext());
+                $this->webhook->register($salesChannel, $event->getContext());
             } else {
-                $this->unregister($salesChannel, $event->getContext());
+                $this->webhook->unregister($salesChannel, $event->getContext());
             }
         }
-    }
-
-    private function onboard(SalesChannelEntity $salesChannel, Context $context): void
-    {
-        $productExport = $salesChannel->getProductExports()?->first();
-        $storefront = $productExport?->getStorefrontSalesChannel();
-        if (!$storefront) {
-            return;
-        }
-
-        $url = $storefront->getHreflangDefaultDomain()?->getUrl() ?? $storefront->getDomains()?->first()?->getUrl();
-
-        $tokenBuilder = Builder::new(new JoseEncoder(), ChainedFormatter::default());
-        $token = $tokenBuilder
-            ->withClaim('storeName', $salesChannel->getName())
-            ->withClaim('storeUrl', $url)
-            ->withClaim('country', $salesChannel->getCountry()?->getIso())
-            ->withClaim('currency', $salesChannel->getCurrency()?->getIsoCode())
-            ->withClaim('favIcon', 'https://localhost/favicon.ico') // TODO: Need to be load
-            ->withClaim('shippingCountries', $salesChannel->getCountries()?->map(fn (CountryEntity $country) => $country->getIso()))
-            ->withClaim('paypalMerchantId', $this->credentialsUtil->getMerchantPayerId($storefront->getId()))
-            ->withClaim('shopwareMerchantId', $salesChannel->getId())
-            ->withClaim('catalogDownloadUrl', \sprintf('/%s/store-api/product-export/%s/%s', rtrim($url ?? '', '/'), $productExport->getAccessKey(), $productExport->getFileName()))
-            ->getToken(new Sha256(), InMemory::plainText(random_bytes(32)))
-            ->toString();
-
-        try {
-            $response = (new Client([
-                'base_uri' => 'https://d.joinhoney.com/',
-                'headers' => [
-                    'Content-Type' => 'text/plain',
-                ],
-            ]))->post('webhooks/sw/install', ['body' => $token]);
-        } catch (ClientException $e) {
-            $response = $e->getResponse();
-        }
-
-        $source = $context->getSource();
-        if (!$source instanceof AdminApiSource) {
-            return;
-        }
-
-        $content = json_decode($response->getBody()->getContents(), true);
-
-        $this->notificationService->createNotification(
-            [
-                'id' => Uuid::randomHex(),
-                'status' => $content['success'] ? 'info' : 'error',
-                'message' => 'PayPal agent commerce: ' . ($content['message'] ?? ''),
-                'requiredPrivileges' => [],
-                'createdByUserId' => $source->getUserId(),
-            ],
-            $context
-        );
-    }
-
-    private function unregister(SalesChannelEntity $salesChannel, Context $context): void
-    {
-        // TODO: coming soon
     }
 }
