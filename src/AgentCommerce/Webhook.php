@@ -16,8 +16,9 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\Builder;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Notification\NotificationService;
+use Shopware\Core\Framework\Notification\NotificationCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -32,8 +33,11 @@ class Webhook
 {
     private Client $client;
 
+    /**
+     * @param EntityRepository<NotificationCollection> $notificationRepository
+     */
     public function __construct(
-        private readonly NotificationService $notificationService, // @phpstan-ignore parameter.internalClass, property.internalClass
+        private readonly EntityRepository $notificationRepository, // @phpstan-ignore parameter.deprecatedClass, property.deprecatedClass
         private readonly CredentialsUtil $credentialsUtil,
         private readonly RouterInterface $router,
     ) {
@@ -92,18 +96,17 @@ class Webhook
         }
 
         $content = json_decode($response->getBody()->getContents(), true);
+        $data = [
+            'id' => Uuid::randomHex(),
+            'status' => $content['success'] ? 'success' : 'error',
+            'message' => 'PayPal agent commerce: ' . ($content['message'] ?? ''),
+            'requiredPrivileges' => [],
+            'createdByUserId' => $source->getUserId(),
+        ];
 
-        // @phpstan-ignore method.internalClass
-        $this->notificationService->createNotification(
-            [
-                'id' => Uuid::randomHex(),
-                'status' => $content['success'] ? 'success' : 'error',
-                'message' => 'PayPal agent commerce: ' . ($content['message'] ?? ''),
-                'requiredPrivileges' => [],
-                'createdByUserId' => $source->getUserId(),
-            ],
-            $context
-        );
+        $context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($data): void {
+            $this->notificationRepository->create([$data], $context);
+        });
     }
 
     public function unregister(SalesChannelEntity $salesChannel, Context $context): void

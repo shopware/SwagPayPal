@@ -90,7 +90,7 @@
         </service>
 
         <service id="Swag\PayPal\AgentCommerce\Webhook">
-            <argument type="service" id="Shopware\Core\Framework\Notification\NotificationService"/>
+            <argument type="service" id="notification.repository"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
             <argument type="service" id="router" />
         </service>
