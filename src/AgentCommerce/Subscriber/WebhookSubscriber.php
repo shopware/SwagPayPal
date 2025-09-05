@@ -14,7 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
-use Swag\PayPal\AgentCommerce\Webhook;
+use Swag\PayPal\AgentCommerce\WebhookService;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -29,18 +29,18 @@ class WebhookSubscriber implements EventSubscriberInterface
      */
     public function __construct(
         private readonly EntityRepository $salesChannelRepository,
-        private readonly Webhook $webhook,
+        private readonly WebhookService $webhook,
     ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            'sales_channel.written' => 'webhook',
+            'sales_channel.written' => 'handleWebhookLifecycle',
         ];
     }
 
-    public function webhook(EntityWrittenEvent $event): void
+    public function handleWebhookLifecycle(EntityWrittenEvent $event): void
     {
         $mapped = [];
         foreach ($event->getWriteResults() as $writeResult) {

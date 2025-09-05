@@ -29,7 +29,7 @@ use Symfony\Component\Routing\RouterInterface;
  * @internal
  */
 #[Package('checkout')]
-class Webhook
+class WebhookService
 {
     private Client $client;
 
