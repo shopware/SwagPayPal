@@ -60,6 +60,10 @@ class WebhookSubscriber implements EventSubscriberInterface
             $mapped[$id] = $active;
         }
 
+        if (empty($mapped)) {
+            return;
+        }
+
         $criteria = new Criteria(array_keys($mapped));
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_AGENT_COMMERCE));
         $criteria->addAssociations([
