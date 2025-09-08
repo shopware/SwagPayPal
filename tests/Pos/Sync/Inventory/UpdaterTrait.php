@@ -67,7 +67,7 @@ trait UpdaterTrait
         ]]);
         $variant = new Variant();
         $variant->assign([
-            'productUuid' => $product->getParentId() ? $uuidConverter->convertUuidToV1((string) $product->getParentId()) : '',
+            'productUuid' => $product->getParentId() ? $uuidConverter->convertUuidToV1($product->getParentId()) : '',
             'variantUuid' => $uuidConverter->convertUuidToV1($product->getId()),
             'balance' => (string) $posStock,
         ]);
