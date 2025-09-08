@@ -53,7 +53,6 @@ class IntrospectionProcessor implements ProcessorInterface
             return $record;
         }
 
-        /** @var Trace[] $traces */
         $traces = $this->getBacktrace();
 
         $extra = [];
@@ -133,7 +132,7 @@ class IntrospectionProcessor implements ProcessorInterface
     }
 
     /**
-     * @return Trace
+     * @return Trace[]
      */
     protected function getBacktrace(): array
     {

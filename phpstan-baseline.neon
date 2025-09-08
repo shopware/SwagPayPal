@@ -43,12 +43,6 @@ parameters:
 			path: src/Checkout/Payment/MessageQueue/TransactionStatusSyncMessageHandler.php
 
 		-
-			message: '#^Use explicit names over dynamic ones$#'
-			identifier: symplify.noDynamicName
-			count: 5
-			path: src/Pos/Api/Common/PosStruct.php
-
-		-
 			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
 			identifier: staticMethod.internal
 			count: 1
@@ -151,12 +145,6 @@ parameters:
 			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
 
 		-
-			message: '#^Use explicit names over dynamic ones$#'
-			identifier: symplify.noDynamicName
-			count: 2
-			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
-
-		-
 			message: '#^Parameter \#1 \$entity of method Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\<Shopware\\Core\\Content\\Product\\ProductEntity\>\:\:add\(\) expects Shopware\\Core\\Content\\Product\\ProductEntity, Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity given\.$#'
 			identifier: argument.type
 			count: 2
@@ -169,12 +157,6 @@ parameters:
 			path: tests/Pos/Mock/Repositories/SalesChannelProductRepoMock.php
 
 		-
-			message: '#^Use explicit names over dynamic ones$#'
-			identifier: symplify.noDynamicName
-			count: 2
-			path: tests/Pos/Run/PosSyncControllerTest.php
-
-		-
 			message: '#^Mixed variable in a `\$entry\[''request''\]\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
 			identifier: typePerfect.noMixedMethodCaller
 			count: 1
@@ -185,15 +167,3 @@ parameters:
 			identifier: typePerfect.noMixedMethodCaller
 			count: 1
 			path: tests/Reporting/ScheduledTask/TurnoverReportingTaskHandlerTest.php
-
-		-
-			message: '#^Use explicit names over dynamic ones$#'
-			identifier: symplify.noDynamicName
-			count: 2
-			path: tests/Storefront/Controller/ApplePayControllerTest.php
-
-		-
-			message: '#^Use explicit names over dynamic ones$#'
-			identifier: symplify.noDynamicName
-			count: 4
-			path: tests/Storefront/Data/CheckoutSubscriberTest.php

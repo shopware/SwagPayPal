@@ -114,17 +114,17 @@ class SwagPayPal extends Plugin
     {
         $this->patchAutoloader();
 
-        /** @var WebhookService|null $webhookService */
+        /** @var WebhookService $webhookService */
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var InformationDefaultService|null $informationDefaultService */
+        /** @var InformationDefaultService $informationDefaultService */
         $informationDefaultService = $this->container->get(InformationDefaultService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var PosWebhookService|null $posWebhookService */
+        /** @var PosWebhookService $posWebhookService */
         $posWebhookService = $this->container->get(PosWebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var PaymentMethodInstaller|null $paymentMethodInstaller */
+        /** @var PaymentMethodInstaller $paymentMethodInstaller */
         $paymentMethodInstaller = $this->container->get(PaymentMethodInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var PaymentMethodStateService|null $paymentMethodStateService */
+        /** @var PaymentMethodStateService $paymentMethodStateService */
         $paymentMethodStateService = $this->container->get(PaymentMethodStateService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var MediaInstaller|null $mediaInstaller */
+        /** @var MediaInstaller $mediaInstaller */
         $mediaInstaller = $this->container->get(MediaInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry(
             $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
