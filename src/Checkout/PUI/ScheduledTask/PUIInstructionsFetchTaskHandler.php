@@ -60,7 +60,7 @@ class PUIInstructionsFetchTaskHandler extends ScheduledTaskHandler
                 new RangeFilter('updatedAt', $rangeFilter),
             ]));
 
-        /** @var string[] $transactionIds */
+        /** @var list<string> $transactionIds */
         $transactionIds = $this->orderTransactionRepository->searchIds($criteria, Context::createCLIContext())->getIds();
 
         foreach ($transactionIds as $transactionId) {

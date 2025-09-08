@@ -80,7 +80,7 @@ class PaymentMethodStateService
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('handlerIdentifier', $handlers));
-        /** @var string[] $ids */
+        /** @var list<string> $ids */
         $ids = $this->paymentMethodRepository->searchIds($criteria, $context)->getIds();
 
         if (!$ids) {

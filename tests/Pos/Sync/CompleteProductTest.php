@@ -23,7 +23,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Product;
@@ -97,8 +97,8 @@ class CompleteProductTest extends TestCase
         $productRepository = new ProductRepoMock();
         $salesChannelProductRepository = new SalesChannelProductRepoMock();
 
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get('Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory');
+        $salesChannelContextFactory = static::getContainer()->get('Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory');
+        static::assertInstanceOf(AbstractSalesChannelContextFactory::class, $salesChannelContextFactory);
 
         $productConverter = new ProductConverter(
             new UuidConverter(),
@@ -315,7 +315,7 @@ class CompleteProductTest extends TestCase
         $criteria->setLimit(1);
 
         /** @var EntityRepository $categoryRepository */
-        $categoryRepository = $this->getContainer()->get('category.repository');
+        $categoryRepository = static::getContainer()->get('category.repository');
         /** @var CategoryEntity|null $category */
         $category = $categoryRepository->search($criteria, Context::createDefaultContext())->first();
 

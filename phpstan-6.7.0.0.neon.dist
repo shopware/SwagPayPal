@@ -32,3 +32,11 @@ parameters:
 
         - identifier: symplify.noDynamicName
           path: tests/Pos/Mock/MessageBusMock.php
+
+        - identifier: symplify.noDynamicName
+          paths:
+            - src/Pos/Api/Common/PosStruct.php
+            - tests/OrdersApi/Builder/APMOrderBuilderTest.php
+            - tests/Pos/Run/PosSyncControllerTest.php
+            - tests/Storefront/Controller/ApplePayControllerTest.php
+            - tests/Storefront/Data/CheckoutSubscriberTest.php
