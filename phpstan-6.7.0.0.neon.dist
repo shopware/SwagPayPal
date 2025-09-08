@@ -33,27 +33,27 @@ parameters:
         - identifier: symplify.noDynamicName
           path: tests/Pos/Mock/MessageBusMock.php
 
-		- message: '#^Use explicit names over dynamic ones$#'
+        - message: '#^Use explicit names over dynamic ones$#'
           identifier: symplify.noDynamicName
           count: 5
           path: src/Pos/Api/Common/PosStruct.php
 
-		- message: '#^Use explicit names over dynamic ones$#'
-	      identifier: symplify.noDynamicName
-		  count: 2
-		  path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
+        - message: '#^Use explicit names over dynamic ones$#'
+          identifier: symplify.noDynamicName
+          count: 2
+          path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
 
-		- message: '#^Use explicit names over dynamic ones$#'
-		  identifier: symplify.noDynamicName
-		  count: 2
-		  path: tests/Pos/Run/PosSyncControllerTest.php
+        - message: '#^Use explicit names over dynamic ones$#'
+          identifier: symplify.noDynamicName
+          count: 2
+          path: tests/Pos/Run/PosSyncControllerTest.php
 
-		- message: '#^Use explicit names over dynamic ones$#'
-		  identifier: symplify.noDynamicName
-		  count: 2
-		  path: tests/Storefront/Controller/ApplePayControllerTest.php
+        - message: '#^Use explicit names over dynamic ones$#'
+          identifier: symplify.noDynamicName
+          count: 2
+          path: tests/Storefront/Controller/ApplePayControllerTest.php
 
-		- message: '#^Use explicit names over dynamic ones$#'
-		  identifier: symplify.noDynamicName
-		  count: 4
-		  path: tests/Storefront/Data/CheckoutSubscriberTest.php
+        - message: '#^Use explicit names over dynamic ones$#'
+          identifier: symplify.noDynamicName
+          count: 4
+          path: tests/Storefront/Data/CheckoutSubscriberTest.php
