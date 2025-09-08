@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.1.1
 - Behebt ein Problem, bei dem Rechnungskauf-Details dem Kunden nicht angezeigt wurden, wenn die Einstellung "Gastkunde nach Bestellung ausloggen" aktiviert ist (shopware/SwagPayPal#315, benötigt Shopware 6.7.2.0 oder höher)
+- Behebt ein Problem, bei dem Apple Pay aufgrund nicht unterstützte Zeichen im Anzeigenamen abbrechen konnte (shopware/SwagPayPal#331)
 
 # 10.1.0
 - Fügt notwenige Zahlungsmittelinformationen zu E-Rechnungen hinzu (shopware/SwagPayPal#255)
