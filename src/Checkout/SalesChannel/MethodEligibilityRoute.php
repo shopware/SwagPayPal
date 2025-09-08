@@ -70,7 +70,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
     #[Route(path: '/store-api/paypal/payment-method-eligibility', name: 'store-api.paypal.payment-method-eligibility', defaults: ['XmlHttpRequest' => true], methods: ['POST'])]
     public function setPaymentMethodEligibility(Request $request, Context $context): Response
     {
-        /** @var array|bool|float|int|string|null $paymentMethods */
+        /** @var array $paymentMethods */
         $paymentMethods = $request->request->all()['paymentMethods'] ?? null;
         if (!\is_array($paymentMethods)) {
             RoutingException::invalidRequestParameter('paymentMethods');

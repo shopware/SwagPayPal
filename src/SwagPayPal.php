@@ -114,17 +114,11 @@ class SwagPayPal extends Plugin
     {
         $this->patchAutoloader();
 
-        /** @var WebhookService $webhookService */
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var InformationDefaultService $informationDefaultService */
         $informationDefaultService = $this->container->get(InformationDefaultService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var PosWebhookService $posWebhookService */
         $posWebhookService = $this->container->get(PosWebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var PaymentMethodInstaller $paymentMethodInstaller */
         $paymentMethodInstaller = $this->container->get(PaymentMethodInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var PaymentMethodStateService $paymentMethodStateService */
         $paymentMethodStateService = $this->container->get(PaymentMethodStateService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var MediaInstaller $mediaInstaller */
         $mediaInstaller = $this->container->get(MediaInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry(
             $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),

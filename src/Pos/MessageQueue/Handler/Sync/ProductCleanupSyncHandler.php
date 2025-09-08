@@ -69,7 +69,7 @@ class ProductCleanupSyncHandler extends AbstractSyncHandler
 
         $salesChannelContext = $message->getSalesChannelContext();
 
-        /** @var string[] $productIds */
+        /** @var list<string> $productIds */
         $productIds = $this->productRepository->searchIds($criteria, $salesChannelContext)->getIds();
 
         $this->productSyncer->cleanUp($productIds, $message->getSalesChannel(), $message->getContext());
