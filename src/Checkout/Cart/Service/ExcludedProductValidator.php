@@ -119,7 +119,7 @@ class ExcludedProductValidator
         $criteria = new Criteria($productIds);
         $criteria->addAssociation('streams');
         $criteria->addFilter(new EqualsAnyFilter('streams.id', $excludedProductStreamIds));
-        /** @var string[] $excludedByProductStream */
+        /** @var list<string> $excludedByProductStream */
         $excludedByProductStream = $this->productRepository->searchIds($criteria, $salesChannelContext)->getIds();
 
         return \array_unique(\array_merge($excludedByProductIds, $excludedByProductStream));

@@ -134,6 +134,8 @@ class PosSyncControllerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $this->expectException(InvalidSalesChannelIdException::class);
+
+        // @phpstan-ignore method.dynamicName
         $this->posSyncController->{$syncFunction}(self::INVALID_CHANNEL_ID, $context);
     }
 
@@ -142,6 +144,8 @@ class PosSyncControllerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
+
+        // @phpstan-ignore method.dynamicName
         $this->posSyncController->{$syncFunction}($salesChannelId->getId(), $context);
 
         $envelope = \current($this->messageBus->getEnvelopes());

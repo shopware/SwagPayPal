@@ -9,7 +9,6 @@ namespace Swag\PayPal\Installment\Banner\Service;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageEntity;
@@ -34,6 +33,8 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
 {
     /**
      * @internal
+     *
+     * @param EntityRepository<LanguageCollection> $languageRepository
      */
     public function __construct(
         LocaleCodeProvider $localeCodeProvider,
@@ -97,7 +98,6 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
 
     private function determineBuyerCountry(SalesChannelContext $salesChannelContext): ?string
     {
-        /** @var EntitySearchResult<LanguageCollection> $languages */
         $languages = $this->languageRepository->search(
             (new Criteria($salesChannelContext->getLanguageIdChain()))->addAssociation('locale'),
             $salesChannelContext->getContext()

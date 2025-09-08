@@ -86,10 +86,10 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         $this->cartService = $container->get(CartService::class);
         $this->payLaterMethodData = $container->get(PayLaterMethodData::class);
 
-        /** @var RouterInterface $router */
         $router = $container->get('router');
+        static::assertInstanceOf(RouterInterface::class, $router);
 
-        $this->systemConfigService = $this->createDefaultSystemConfig();
+        $this->systemConfigService = self::createDefaultSystemConfig();
 
         $this->expressCheckoutDataService = new PayPalExpressCheckoutDataService(
             $this->cartService,
