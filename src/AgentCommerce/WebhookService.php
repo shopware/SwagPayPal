@@ -14,6 +14,7 @@ use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\Builder;
+use Psr\Log\LoggerInterface;
 use Shopware\Administration\Notification\NotificationCollection;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
@@ -40,6 +41,7 @@ class WebhookService
         private readonly EntityRepository $notificationRepository, // @phpstan-ignore parameter.deprecatedClass, property.deprecatedClass
         private readonly CredentialsUtil $credentialsUtil,
         private readonly RouterInterface $router,
+        private readonly LoggerInterface $logger,
     ) {
         $this->client = new Client([
             'base_uri' => 'https://d.joinhoney.com/',
@@ -86,8 +88,20 @@ class WebhookService
                 'timeout' => 20,
                 'connect_timeout' => 20,
             ]);
+            $content = json_decode($response->getBody()->getContents(), true);
+
+            $this->logger->info('PayPal agent commerce onboarding successful', [
+                'salesChannelId' => $salesChannel->getId(),
+                'message' => $content['message'],
+            ]);
         } catch (ClientException $e) {
             $response = $e->getResponse();
+            $content = json_decode($response->getBody()->getContents(), true);
+
+            $this->logger->error('PayPal agent commerce onboarding failed', [
+                'salesChannelId' => $salesChannel->getId(),
+                'message' => $content['message'],
+            ]);
         }
 
         $source = $context->getSource();
@@ -95,7 +109,6 @@ class WebhookService
             return;
         }
 
-        $content = json_decode($response->getBody()->getContents(), true);
         $data = [
             'id' => Uuid::randomHex(),
             'status' => $content['success'] ? 'success' : 'error',

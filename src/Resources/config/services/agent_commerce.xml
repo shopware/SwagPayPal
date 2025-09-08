@@ -93,6 +93,7 @@
             <argument type="service" id="notification.repository"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
             <argument type="service" id="router" />
+            <argument type="service" id="logger"/>
         </service>
     </services>
 </container>
