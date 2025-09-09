@@ -81,5 +81,19 @@
         <service id="Swag\PayPal\AgentCommerce\Subscriber\ProductFilterSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Swag\PayPal\AgentCommerce\Subscriber\WebhookSubscriber">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\AgentCommerce\WebhookService"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\WebhookService">
+            <argument type="service" id="notification.repository"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
+            <argument type="service" id="router" />
+            <argument type="service" id="logger"/>
+        </service>
     </services>
 </container>
