@@ -84,16 +84,26 @@
 
         <service id="Swag\PayPal\AgentCommerce\Subscriber\WebhookSubscriber">
             <argument type="service" id="sales_channel.repository"/>
-            <argument type="service" id="Swag\PayPal\AgentCommerce\WebhookService"/>
+            <argument type="service" id="Swag\PayPal\AgentCommerce\HoneyWebhookService"/>
 
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="Swag\PayPal\AgentCommerce\WebhookService">
+        <service id="Swag\PayPal\AgentCommerce\HoneyWebhookService">
+            <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="notification.repository"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
             <argument type="service" id="router" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="logger"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\HoneyWebhookController" public="true">
+            <argument type="service" id="Swag\PayPal\AgentCommerce\HoneyWebhookService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
     </services>
 </container>

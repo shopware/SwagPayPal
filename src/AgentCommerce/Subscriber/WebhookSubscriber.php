@@ -14,7 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
-use Swag\PayPal\AgentCommerce\WebhookService;
+use Swag\PayPal\AgentCommerce\HoneyWebhookService;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -29,7 +29,7 @@ class WebhookSubscriber implements EventSubscriberInterface
      */
     public function __construct(
         private readonly EntityRepository $salesChannelRepository,
-        private readonly WebhookService $webhook,
+        private readonly HoneyWebhookService $webhookService,
     ) {
     }
 
@@ -66,21 +66,14 @@ class WebhookSubscriber implements EventSubscriberInterface
 
         $criteria = new Criteria(array_keys($mapped));
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_AGENT_COMMERCE));
-        $criteria->addAssociations([
-            'country',
-            'countries',
-            'currency',
-            'domains',
-            'productExports.storefrontSalesChannel.domains',
-            'productExports.storefrontSalesChannel.hreflangDefaultDomain',
-        ]);
 
-        $result = $this->salesChannelRepository->search($criteria, $event->getContext());
-        foreach ($result as $salesChannel) {
-            if ($mapped[$salesChannel->getId()]) {
-                $this->webhook->register($salesChannel, $event->getContext());
+        /** @var list<string> $salesChannelIds */
+        $salesChannelIds = $this->salesChannelRepository->searchIds($criteria, $event->getContext())->getIds();
+        foreach ($salesChannelIds as $salesChannelId) {
+            if ($mapped[$salesChannelId]) {
+                $this->webhookService->register($salesChannelId, $event->getContext());
             } else {
-                $this->webhook->unregister($salesChannel, $event->getContext());
+                $this->webhookService->unregister($salesChannelId, $event->getContext());
             }
         }
     }
