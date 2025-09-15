@@ -13,6 +13,10 @@ updates:
     ignore:
       - dependency-name: '*jest*'
         update-types: ['version-update:semver-major']
+    labels:
+      - 'dependencies'
+      - 'javascript'
+      - 'run/acceptance'
 
   - package-ecosystem: npm
     directory: '/src/Resources/app/storefront'
@@ -24,6 +28,10 @@ updates:
       all:
         patterns:
           - '*'
+    labels:
+      - 'dependencies'
+      - 'javascript'
+      - 'run/acceptance'
 
   - package-ecosystem: npm
     directory: '/tests/acceptance'
@@ -35,3 +43,7 @@ updates:
       all:
         patterns:
           - '*'
+    labels:
+      - 'dependencies'
+      - 'javascript'
+      - 'run/acceptance'
