@@ -40,7 +40,7 @@ class RemoteCalculator
             $previousStock = $inventoryContext->getSingleRemoteInventory($productEntity, true);
         }
 
-        $difference = (int) $currentStock - $previousStock;
+        $difference = (int) $currentStock - (int) $previousStock;
 
         if ($difference === 0 && $isTracked) {
             return null;
