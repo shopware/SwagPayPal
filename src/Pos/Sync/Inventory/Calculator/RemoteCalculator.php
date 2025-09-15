@@ -31,8 +31,8 @@ class RemoteCalculator
         ProductEntity $productEntity,
         InventoryContext $inventoryContext,
     ): ?ProductChange {
-        $currentStock = $productEntity->getAvailableStock();
-        $previousStock = $inventoryContext->getLocalInventory($productEntity);
+        $currentStock = (int) $productEntity->getAvailableStock();
+        $previousStock = (int) $inventoryContext->getLocalInventory($productEntity);
 
         $isTracked = $inventoryContext->isTracked($productEntity);
 
