@@ -132,13 +132,13 @@ class InventoryContextFactoryTest extends TestCase
         $singleProduct = $this->getSingleProduct();
         $this->inventoryRepository->createMockEntity($singleProduct, TestDefaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
         $variantProduct = $this->getVariantProduct();
-        $this->inventoryRepository->createMockEntity($variantProduct, TestDefaults::SALES_CHANNEL, $variantProduct->getAvailableStock() + 2);
+        $this->inventoryRepository->createMockEntity($variantProduct, TestDefaults::SALES_CHANNEL, (int) $variantProduct->getAvailableStock() + 2);
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
         $this->inventoryContextFactory->updateLocal($inventoryContext);
 
         static::assertSame($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
-        static::assertSame($variantProduct->getAvailableStock() + 2, $inventoryContext->getLocalInventory($variantProduct));
+        static::assertSame((int) $variantProduct->getAvailableStock() + 2, $inventoryContext->getLocalInventory($variantProduct));
     }
 
     public function testLocalInventoryEmpty(): void
