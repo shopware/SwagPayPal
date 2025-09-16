@@ -22,7 +22,7 @@ class LocalCalculator implements LocalCalculatorInterface
             return 0;
         }
 
-        $currentPosStock = $inventoryContext->getSingleRemoteInventory($productEntity);
+        $currentPosStock = (int) $inventoryContext->getSingleRemoteInventory($productEntity);
 
         return $currentPosStock - $previousStock;
     }
