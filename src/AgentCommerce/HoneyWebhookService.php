@@ -63,11 +63,11 @@ class HoneyWebhookService
     public function register(string $salesChannelId, Context $context): bool
     {
         $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
-        if (!$salesChannel) {
+        if (!$salesChannel || !$salesChannel->getActive()) {
             return false;
         }
 
-        $productExport = $salesChannel?->getProductExports()?->first();
+        $productExport = $salesChannel->getProductExports()?->first();
         $storefront = $productExport?->getStorefrontSalesChannel();
         if (!$storefront) {
             return false;
