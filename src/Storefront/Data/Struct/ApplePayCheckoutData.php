@@ -18,6 +18,8 @@ class ApplePayCheckoutData extends AbstractCheckoutData
 
     protected array $billingAddress;
 
+    protected string $displayName;
+
     public function getTotalPrice(): string
     {
         return $this->totalPrice;
@@ -46,5 +48,15 @@ class ApplePayCheckoutData extends AbstractCheckoutData
     public function setBillingAddress(array $billingAddress): void
     {
         $this->billingAddress = $billingAddress;
+    }
+
+    public function getDisplayName(): string
+    {
+        return $this->displayName;
+    }
+
+    public function setDisplayName(string $displayName): void
+    {
+        $this->displayName = $displayName;
     }
 }

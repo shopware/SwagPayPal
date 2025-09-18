@@ -76,7 +76,7 @@ class InventorySyncer
                 'salesChannelId' => $inventoryContext->getSalesChannel()->getId(),
                 'productId' => $productEntity->getId(),
                 'productVersionId' => $productEntity->getVersionId(),
-                'stock' => $inventoryContext->getLocalInventory($productEntity) + $stockChange->getStockChange(),
+                'stock' => (int) $inventoryContext->getLocalInventory($productEntity) + $stockChange->getStockChange(),
             ];
 
             $productEntity->removeExtension(StockChange::STOCK_CHANGE_EXTENSION);

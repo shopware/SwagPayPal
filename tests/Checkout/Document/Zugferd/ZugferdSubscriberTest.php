@@ -37,7 +37,7 @@ class ZugferdSubscriberTest extends TestCase
         $translator = $this->createMock(TranslatorInterface::class);
         $translator
             ->method('trans')
-            ->willReturnCallback(static fn (string $message): string => substr($message, strrpos($message, '.') + 1));
+            ->willReturnCallback(static fn (string $message): string => substr($message, (int) strrpos($message, '.') + 1));
 
         $builderMock = $this->createMock(ZugferdDocumentBuilder::class);
         $builderMock

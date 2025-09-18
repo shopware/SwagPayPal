@@ -69,7 +69,7 @@ class ValidationIssues
 
         if ($restockProduct) {
             $wait->withMetadata()
-                ->withEstimatedTime($restockProduct->getRestockTime() . ' Days')
+                ->withEstimatedTime($restockProduct->getRestockTime() . ' Days') // TODO: need to be a snippet
                 ->withPriority(MetaData::PRIORITY__MEDIUM);
             $inventoryContext->setRestockDate(\date('Y-m-d\T00:00:00', (int) strtotime('+' . $restockProduct->getRestockTime() . ' days')));
         }
@@ -85,14 +85,18 @@ class ValidationIssues
     public function changedPrice(LineItem $lineItem, string $initPrice, CurrencyEntity $currency): ValidationIssue
     {
         $unitPrice = (string) $lineItem->getPrice()?->getUnitPrice();
-        $priceDiff = (string) ((float) $unitPrice - (float) $initPrice);
+        $priceDiff = (float) $unitPrice - (float) $initPrice;
+
+        if ($priceDiff <= 0) {
+            throw new \RuntimeException('Init price need to be lower then actual price');
+        }
 
         $context = new PricingErrorContext();
         $context->setOriginalPrice($initPrice);
         $context->setCurrentPrice($unitPrice);
         $context->setCurrencyCode($currency->getIsoCode());
         $context->setPriceChangeReason(PricingErrorContext::PRICE_CHANGE_REASON__COMPONENT_COST_INCREASE);
-        $context->setPriceIncrease($priceDiff);
+        $context->setPriceIncrease((string) $priceDiff);
 
         $builder = new ValidationIssueBuilder();
         $builder

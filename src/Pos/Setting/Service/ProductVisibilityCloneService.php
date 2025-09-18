@@ -59,7 +59,7 @@ class ProductVisibilityCloneService
         $deletionCriteria = new Criteria();
         $deletionCriteria->addFilter(new EqualsFilter('salesChannelId', $toSalesChannelId));
 
-        /** @var string[] $formerVisibilityIds */
+        /** @var list<string> $formerVisibilityIds */
         $formerVisibilityIds = $this->productVisibilityRepository->searchIds($deletionCriteria, $context)->getIds();
         if (\count($formerVisibilityIds) > 0) {
             $formerVisibilityIds = \array_map(static function (string $id) {
