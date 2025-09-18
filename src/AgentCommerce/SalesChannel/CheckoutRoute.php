@@ -64,7 +64,6 @@ class CheckoutRoute extends AbstractAgentCommerceRoute
         }
 
         $body = \json_decode($request->getContent(), true, flags: \JSON_THROW_ON_ERROR);
-
         $payPalOrder = $this->orderResource->get($body['payment_method']['token'], $context->getSalesChannelId());
 
         $request->request->set(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME, $payPalOrder->getId());
@@ -78,7 +77,7 @@ class CheckoutRoute extends AbstractAgentCommerceRoute
         if ($response instanceof RedirectResponse) {
             $payPalCart->setStatus(PayPalCart::STATUS__INCOMPLETE);
             $payPalCart->setValidationStatus(PayPalCart::VALIDATION_STATUS__INVALID);
-            $payPalCart->getPaymentMethod()->setApprovalUrl($response->getTargetUrl());
+            $payPalCart->getPaymentMethod()?->setApprovalUrl($response->getTargetUrl());
         }
 
         return new AgentCartResponse($payPalCart);

@@ -25,8 +25,6 @@ use Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
-use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
-use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,8 +47,6 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         private readonly ProductLineItemFactory $lineItemFactory,
         private readonly AbstractOrderBuilder $orderBuilder,
         private readonly OrderResource $orderResource,
-        private readonly PurchaseUnitProvider $purchaseUnitProvider,
-        private readonly ItemListProvider $itemListProvider,
     ) {
     }
 
@@ -78,40 +74,24 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         $orderId = $request->attributes->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
 
         if ($orderId) {
-            $itemList = $this->itemListProvider->getItemListFromCart($salesChannelContext->getCurrency(), $swCart);
-
-            $purchaseUnit = $this->purchaseUnitProvider->createPurchaseUnit(
-                $swCart->getTransactions()->first()->getAmount(),
-                $swCart->getShippingCosts(),
-                $salesChannelContext->getCustomer(),
-                $itemList,
-                $salesChannelContext->getCurrency(),
-                $salesChannelContext->getContext(),
-                $swCart->getPrice()->hasNetPrices(),
-            );
-
             $purchaseUnit = $order->getPurchaseUnits()->first();
-
             $purchaseUnitArray = \json_decode((string) \json_encode($purchaseUnit), true);
 
             $purchaseUnitPatch = new Patch();
-            $purchaseUnitPatch->assign([
-                'op' => Patch::OPERATION_REPLACE,
-                'path' => '/purchase_units/@reference_id==\'default\'',
-            ]);
-
+            $purchaseUnitPatch->setOp(Patch::OPERATION_REPLACE);
+            $purchaseUnitPatch->setPath('/purchase_units/@reference_id==\'default\'');
             $purchaseUnitPatch->setValue($purchaseUnitArray);
 
             $this->orderResource->update([$purchaseUnitPatch], $orderId, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP);
-            $order = $this->orderResource->get($orderId, $salesChannelContext->getSalesChannelId());
+            $orderId = $this->orderResource->get($orderId, $salesChannelContext->getSalesChannelId())->getId();
         } else {
-            $order = $this->orderResource->create($order, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP);
+            $orderId = $this->orderResource->create($order, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP)->getId();
         }
 
         $createdPayPalCart = $this->payPalCartTransformer->convertToPayPalCart($swCart, $salesChannelContext, $payPalCart);
 
         $createdPayPalCart->setStatus($createdPayPalCart->getValidationStatus() === PayPalCart::VALIDATION_STATUS__VALID ? PayPalCart::STATUS__CREATED : PayPalCart::STATUS__INCOMPLETE);
-        $createdPayPalCart->setPaymentMethod($this->createPaymentMethod($order->getId()));
+        $createdPayPalCart->setPaymentMethod($this->createPaymentMethod($orderId));
 
         $response = new AgentCartResponse($createdPayPalCart);
         if ($createdPayPalCart->getStatus() === PayPalCart::STATUS__CREATED) {

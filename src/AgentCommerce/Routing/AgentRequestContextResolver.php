@@ -167,7 +167,7 @@ kQIDAQAB
     {
         try {
             /** @var array{external_id: array{0: string}, sub: string, iat: \DateTimeInterface, exp: \DateTimeInterface, scope: list<string>, debug_id?: string} $decoded */
-            $decoded = $this->JWTDecoder->decode($token); // @phpstan-ignore varTag.type
+            $decoded = $this->JWTDecoder->decode($token);
         } catch (JWTException $e) {
             throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
         }
