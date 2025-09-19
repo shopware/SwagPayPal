@@ -198,7 +198,7 @@ class PayPalCartTransformer
 
             $realPrice = (string) $lineItem->getPrice()?->getUnitPrice();
             $initItem = $mapped[$lineItem->getReferencedId()] ?? null;
-            $initPrice = $initItem?->getPrice()->getValue();
+            $initPrice = $initItem?->getPrice()?->getValue();
             if ($initPrice !== null && $initPrice < $realPrice) {
                 $errors->add($this->validationIssues->changedPrice($lineItem, $initPrice, $context->getCurrency()));
             }

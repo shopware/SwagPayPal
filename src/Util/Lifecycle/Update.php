@@ -176,7 +176,7 @@ class Update
     private function updateTo170(): void
     {
         if ($this->webhookService === null) {
-            // If the HoneyWebhookService is `null`, the plugin is deactivated.
+            // If the WebhookService is `null`, the plugin is deactivated.
             return;
         }
 
@@ -281,7 +281,7 @@ class Update
         ]], $context);
 
         if ($this->webhookService === null || $this->posWebhookService === null) {
-            // If the HoneyWebhookService is `null`, the plugin is deactivated.
+            // If the WebhookService is `null`, the plugin is deactivated.
             return;
         }
 

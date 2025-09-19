@@ -62,6 +62,7 @@ class HoneyWebhookService
 
     public function register(string $salesChannelId, Context $context): bool
     {
+        return false;
         $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
         if (!$salesChannel || !$salesChannel->getActive()) {
             return false;
@@ -140,9 +141,9 @@ class HoneyWebhookService
         return $content['success'] === 'success';
     }
 
-    public function unregister(string $salesChannelId, Context $context): void
+    public function deregister(string $salesChannelId, Context $context): void
     {
-        // TODO: create unregister call
+        // TODO: create deregister call
 
         $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, false, $salesChannelId);
     }

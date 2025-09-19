@@ -73,7 +73,7 @@ class WebhookSubscriber implements EventSubscriberInterface
             if ($mapped[$salesChannelId]) {
                 $this->webhookService->register($salesChannelId, $event->getContext());
             } else {
-                $this->webhookService->unregister($salesChannelId, $event->getContext());
+                $this->webhookService->deregister($salesChannelId, $event->getContext());
             }
         }
     }

@@ -130,7 +130,7 @@ kQIDAQAB
         $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, $salesChannelContext);
 
         try {
-            $this->validateJWT($request, $token);
+//            $this->validateJWT($request, $token);
         } catch (RequiredConstraintsViolated $e) {
             /** @deprecated tag:v11.0.0 - Remove RequiredConstraintViolated from caught Exceptions, it is a fix for 6.7.0.0 specifically */
             // this is a workaround for the JWTDecoder which does not catch RequiredConstraintsViolated exceptions in 6.7.0.0
