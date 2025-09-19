@@ -134,11 +134,12 @@ class PayPalCartTransformer
         foreach ($shippingMethods as $shippingMethod) {
             $shippingOption = new ShippingOption();
             $shippingOption->setId($shippingMethod->getId());
-            $shippingOption->setName(\sprintf('%s (%s)', $shippingMethod->getTranslation('name'), $shippingMethod->getDeliveryTime()?->getTranslation('name')));
+            $shippingOption->setName($shippingMethod->getTranslation('name'));
             $shippingOption->setDescription($shippingMethod->getTranslation('description'));
             $shippingOption->setIsSelected(false);
 
             if ($shippingMethod->getDeliveryTime()) {
+                $shippingOption->setName(\sprintf('%s (%s)', $shippingOption->getName(), $shippingMethod->getDeliveryTime()->getTranslation('name')));
                 $deliveryTime = DeliveryDate::createFromDeliveryTime(DeliveryTime::createFromEntity($shippingMethod->getDeliveryTime()));
 
                 $shippingOption->setEstimatedDelivery($deliveryTime->getLatest()->format('Y-m-d'));
@@ -189,7 +190,7 @@ class PayPalCartTransformer
 
         foreach ($cart->getLineItems() as $lineItem) {
             $stock = $lineItem->getPayloadValue('stock'); // @phpstan-ignore method.deprecated
-            if ($stock < $lineItem->getQuantity()) {
+            if ($stock !== null && $stock < $lineItem->getQuantity()) {
                 $restockProduct = $restockProducts[(string) $lineItem->getReferencedId()] ?? null;
                 $issue = $this->validationIssues->outOfStock($lineItem, $restockProduct, $context->getCurrency());
 
@@ -198,7 +199,7 @@ class PayPalCartTransformer
 
             $realPrice = (string) $lineItem->getPrice()?->getUnitPrice();
             $initItem = $mapped[$lineItem->getReferencedId()] ?? null;
-            $initPrice = $initItem?->getPrice()->getValue();
+            $initPrice = $initItem?->getPrice()?->getValue();
             if ($initPrice !== null && $initPrice < $realPrice) {
                 $errors->add($this->validationIssues->changedPrice($lineItem, $initPrice, $context->getCurrency()));
             }
@@ -227,7 +228,7 @@ class PayPalCartTransformer
         $customer->setEmailAddress($customerEntity->getEmail());
 
         $phoneNumber = $customerEntity->getDefaultShippingAddress()?->getPhoneNumber();
-        if ($phoneNumber) {
+        if ($phoneNumber && Phone::isValidPhoneNumber($phoneNumber)) {
             $phone = new Phone();
             $phone->setPhoneNumber($phoneNumber);
             $customer->setPhone($phone);
@@ -249,42 +250,48 @@ class PayPalCartTransformer
             return null;
         }
 
-        $criteria = new Criteria([$addressEntity->getCountryId()]);
-        $criteria->addFields(['iso']);
-
-        $iso = $this->countryRepository->search($criteria, $context)->first()?->get('iso');
+        $iso = $addressEntity->getCountry()?->getIso();
         if (!$iso) {
-            throw AgentException::requiredFieldInvalid('address.countryCode', 'Country not found');
+            $criteria = new Criteria([$addressEntity->getCountryId()]);
+            $criteria->addFields(['iso']);
+
+            $iso = $this->countryRepository->search($criteria, $context)->first()?->get('iso');
+            if (!$iso) {
+                throw AgentException::requiredFieldInvalid('address.countryCode', 'Country not found');
+            }
         }
 
         $address = new $className();
         $address->setCountryCode($iso);
         $address->setPostalCode($addressEntity->__isset('zipcode') ? $addressEntity->getZipcode() : null);
         $address->setAddressLine1($addressEntity->__isset('street') ? $addressEntity->getStreet() : null);
-        $address->setAddressLine2($addressEntity->__isset('city') ? $addressEntity->getCity() : null);
+        $address->setAdminArea2($addressEntity->__isset('city') ? $addressEntity->getCity() : null);
 
         return $address;
     }
 
     public function createTotals(Cart $cart, SalesChannelContext $context): CartTotals
     {
+        $iso = $context->getCurrency()->getIsoCode();
         $cartPrice = $cart->getPrice();
 
         $subtotal = new Money();
         $subtotal->setValue((string) $cartPrice->getPositionPrice());
-        $subtotal->setCurrencyCode($context->getCurrency()->getIsoCode());
+        $subtotal->setCurrencyCode($iso);
 
         $shipping = new Money();
         $shipping->setValue((string) $cart->getDeliveries()->getShippingCosts()->sum()->getTotalPrice());
-        $shipping->setCurrencyCode($context->getCurrency()->getIsoCode());
+        $shipping->setCurrencyCode($iso);
 
         $tax = new Money();
         $tax->setValue((string) $cartPrice->getCalculatedTaxes()->getAmount());
-        $tax->setCurrencyCode($context->getCurrency()->getIsoCode());
+        $tax->setCurrencyCode($iso);
 
         $total = new Money();
         $total->setValue((string) $cartPrice->getTotalPrice());
-        $total->setCurrencyCode($context->getCurrency()->getIsoCode());
+        $total->setCurrencyCode($iso);
+
+        // TODO: discount need to be done, when coupons are implemented
 
         $totals = new CartTotals();
         $totals->setSubtotal($subtotal);
@@ -322,6 +329,6 @@ class PayPalCartTransformer
             $appliedCoupons->add($coupon);
         }
 
-        return $appliedCoupons;
+        return $appliedCoupons->count() ? $appliedCoupons : null;
     }
 }
