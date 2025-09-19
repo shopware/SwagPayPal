@@ -161,14 +161,14 @@ class PayPalCartTransformerTest extends TestCase
         static::assertSame($noParentId, $noParentItem->getVariantId());
         static::assertSame(10, $noParentItem->getQuantity());
         static::assertNull($noParentItem->getParentId());
-        static::assertSame('100', $noParentItem->getPrice()->getValue());
+        static::assertSame('100', $noParentItem->getPrice()?->getValue());
         static::assertSame('EUR', $noParentItem->getPrice()->getCurrencyCode());
 
         static::assertSame('Item Label', $withParentItem->getName());
         static::assertSame($withParentId, $withParentItem->getVariantId());
         static::assertSame(10, $withParentItem->getQuantity());
         static::assertSame('someParentId', $withParentItem->getParentId());
-        static::assertSame('100', $withParentItem->getPrice()->getValue());
+        static::assertSame('100', $withParentItem->getPrice()?->getValue());
         static::assertSame('EUR', $withParentItem->getPrice()->getCurrencyCode());
     }
 
@@ -519,6 +519,7 @@ class PayPalCartTransformerTest extends TestCase
         $priceChangedId = Uuid::randomHex();
         $validItemId = Uuid::randomHex();
         $validItemWithInitPriceId = Uuid::randomHex();
+        $validItemNoInitPriceId = Uuid::randomHex();
 
         $outOfStock = new LineItem($outOfStockId, 'product', $outOfStockId, 10);
         $outOfStock->setPrice(new CalculatedPrice(100, 1000, new CalculatedTaxCollection(), new TaxRuleCollection()));
@@ -535,8 +536,12 @@ class PayPalCartTransformerTest extends TestCase
         $validItemWithInitPrice->setPrice(new CalculatedPrice(100, 1000, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $validItemWithInitPrice->setPayloadValue('stock', 50);
 
+        $validItemNoInitPrice = new LineItem($validItemNoInitPriceId, 'product', $validItemNoInitPriceId, 10);
+        $validItemNoInitPrice->setPrice(new CalculatedPrice(100, 1000, new CalculatedTaxCollection(), new TaxRuleCollection()));
+        $validItemNoInitPrice->setPayloadValue('stock', 50);
+
         $cart = new Cart(Uuid::randomHex());
-        $cart->addLineItems(new LineItemCollection([$outOfStock, $priceChanged, $validItem, $validItemWithInitPrice]));
+        $cart->addLineItems(new LineItemCollection([$outOfStock, $priceChanged, $validItem, $validItemWithInitPrice, $validItemNoInitPrice]));
         $cart->addErrors(
             new ProductNotFoundError(Uuid::randomHex()),
             new PurchaseStepsError(Uuid::randomHex(), 'Name', 2),
@@ -554,7 +559,10 @@ class PayPalCartTransformerTest extends TestCase
         $cartItem2->setVariantId($priceChangedId);
         $cartItem2->setPrice($money2);
 
-        $cartItems = new CartItemCollection([$cartItem1, $cartItem2]);
+        $cartItem3 = new CartItem();
+        $cartItem3->setVariantId($validItemNoInitPriceId);
+
+        $cartItems = new CartItemCollection([$cartItem1, $cartItem2, $cartItem3]);
 
         ['validationIssues' => $issues, 'status' => $status] = $transformer->convertToValidationIssues($cart, $cartItems, $context);
 
