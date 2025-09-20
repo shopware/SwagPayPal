@@ -53,7 +53,7 @@ class HoneyWebhookController extends AbstractController
         )]
     )]
     #[Route(path: '/api/_action/paypal/honey/webhook/register/{salesChannelId}', name: 'api.action.paypal.honey.webhook.register', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
-    public function registerWebhook(string $salesChannelId, Context $context): Response
+    public function registerWebhook(string $salesChannelId, Context $context): JsonResponse
     {
         return new JsonResponse($this->webhookService->register($salesChannelId, $context), Response::HTTP_OK);
     }
