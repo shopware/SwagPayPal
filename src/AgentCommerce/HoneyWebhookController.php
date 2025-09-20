@@ -11,6 +11,7 @@ use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -39,19 +40,21 @@ class HoneyWebhookController extends AbstractController
         responses: [new OA\Response(
             response: Response::HTTP_OK,
             description: 'Returns the action taken for the webhook registration',
-            content: new OA\JsonContent(properties: [new OA\Property(
-                property: 'result',
-                type: 'string',
-            )])
+            content: new OA\JsonContent(properties: [
+                new OA\Property(
+                    property: 'success',
+                    type: 'boolean',
+                ),
+                new OA\Property(
+                    property: 'message',
+                    type: 'string',
+                ),
+            ])
         )]
     )]
     #[Route(path: '/api/_action/paypal/honey/webhook/register/{salesChannelId}', name: 'api.action.paypal.honey.webhook.register', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
     public function registerWebhook(string $salesChannelId, Context $context): Response
     {
-        $success = $this->webhookService->register($salesChannelId, $context);
-
-        $status = $success ? Response::HTTP_NO_CONTENT : Response::HTTP_BAD_REQUEST;
-
-        return new Response(status: $status);
+        return new JsonResponse($this->webhookService->register($salesChannelId, $context), Response::HTTP_OK);
     }
 }

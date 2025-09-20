@@ -15,14 +15,11 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\Builder;
 use Psr\Log\LoggerInterface;
-use Shopware\Administration\Notification\NotificationCollection;
-use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -42,11 +39,9 @@ class HoneyWebhookService
 
     /**
      * @param EntityRepository<SalesChannelCollection> $salesChannelRepository
-     * @param EntityRepository<NotificationCollection> $notificationRepository
      */
     public function __construct(
         private readonly EntityRepository $salesChannelRepository,
-        private readonly EntityRepository $notificationRepository, // @phpstan-ignore parameter.deprecatedClass, property.deprecatedClass
         private readonly CredentialsUtil $credentialsUtil,
         private readonly RouterInterface $router,
         private readonly SystemConfigService $systemConfigService,
@@ -60,31 +55,104 @@ class HoneyWebhookService
         ]);
     }
 
-    public function register(string $salesChannelId, Context $context): bool
+    /**
+     * @return array{success: bool, message: string, error?: string}
+     */
+    public function register(string $salesChannelId, Context $context): array
     {
-        return false;
+        $token = $this->createToken($salesChannelId, $context);
+        if (!$token) {
+            return [
+                'success' => false,
+                'message' => 'could not create token',
+            ];
+        }
+
+        try {
+            $response = $this->client->post('webhooks/sw/install', [
+                'body' => $token,
+                'timeout' => 20,
+                'connect_timeout' => 20,
+            ]);
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+        }
+
+        $content = json_decode($response->getBody()->getContents(), true);
+        $content['success'] ??= true;
+
+        $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, $content['success'], $salesChannelId);
+        $this->logger->info('PayPal agent commerce onboarding successful', [
+            'salesChannelId' => $salesChannelId,
+            'success' => $content['success'],
+            'message' => $content['message'],
+        ]);
+
+        return $content;
+    }
+
+    /**
+     * @return array{success: bool, message: string, error?: string}
+     */
+    public function deregister(string $salesChannelId, Context $context): array
+    {
+        $token = $this->createToken($salesChannelId, $context);
+        if (!$token) {
+            return [
+                'success' => false,
+                'message' => 'could not create token',
+            ];
+        }
+
+        try {
+            $response = $this->client->post('webhooks/sw/uninstall', [
+                'body' => $token,
+                'timeout' => 20,
+                'connect_timeout' => 20,
+            ]);
+
+            $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, false, $salesChannelId);
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+        }
+
+        $content = json_decode($response->getBody()->getContents(), true);
+        $content['success'] ??= true;
+
+        $this->logger->info('PayPal agent commerce offboarding successful', [
+            'salesChannelId' => $salesChannelId,
+            'success' => $content['success'],
+            'message' => $content['message'],
+        ]);
+
+        return $content;
+    }
+
+    private function createToken(string $salesChannelId, Context $context): ?string
+    {
         $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
         if (!$salesChannel || !$salesChannel->getActive()) {
-            return false;
+            return null;
         }
 
         $productExport = $salesChannel->getProductExports()?->first();
         $storefront = $productExport?->getStorefrontSalesChannel();
         if (!$storefront) {
-            return false;
+            return null;
         }
 
         $url = $storefront->getHreflangDefaultDomain()?->getUrl() ?? $storefront->getDomains()?->first()?->getUrl();
 
         $routes = $this->router->getRouteCollection()->get('store-api.product.export');
         if (!$routes) {
-            return false;
+            return null;
         }
 
         $path = str_replace(['{accessKey}', '{fileName}'], [$productExport->getAccessKey(), $productExport->getFileName()], $routes->getPath());
 
         $tokenBuilder = Builder::new(new JoseEncoder(), ChainedFormatter::default());
-        $token = $tokenBuilder
+
+        return $tokenBuilder
             ->withClaim('storeName', $salesChannel->getName())
             ->withClaim('storeUrl', $url)
             ->withClaim('country', $salesChannel->getCountry()?->getIso())
@@ -96,56 +164,6 @@ class HoneyWebhookService
             ->withClaim('catalogDownloadUrl', rtrim($url ?? '', '/') . $path)
             ->getToken(new Sha256(), InMemory::plainText(random_bytes(32)))
             ->toString();
-
-        try {
-            $response = $this->client->post('webhooks/sw/install', [
-                'body' => $token,
-                'timeout' => 20,
-                'connect_timeout' => 20,
-            ]);
-            $content = json_decode($response->getBody()->getContents(), true);
-
-            $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, true, $salesChannel->getId());
-            $this->logger->info('PayPal agent commerce onboarding successful', [
-                'salesChannelId' => $salesChannel->getId(),
-                'message' => $content['message'] ?? 'Some message',
-            ]);
-        } catch (ClientException $e) {
-            $response = $e->getResponse();
-            $content = json_decode($response->getBody()->getContents(), true);
-
-            $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, false, $salesChannel->getId());
-            $this->logger->error('PayPal agent commerce onboarding failed', [
-                'salesChannelId' => $salesChannel->getId(),
-                'message' => $content['message'],
-            ]);
-        }
-
-        $source = $context->getSource();
-        if (!$source instanceof AdminApiSource) {
-            return $content['success'] === 'success';
-        }
-
-        $data = [
-            'id' => Uuid::randomHex(),
-            'status' => $content['success'] ? 'success' : 'error',
-            'message' => 'PayPal agent commerce: ' . ($content['message'] ?? ''),
-            'requiredPrivileges' => [],
-            'createdByUserId' => $source->getUserId(),
-        ];
-
-        $context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($data): void {
-            $this->notificationRepository->create([$data], $context);
-        });
-
-        return $content['success'] === 'success';
-    }
-
-    public function deregister(string $salesChannelId, Context $context): void
-    {
-        // TODO: create deregister call
-
-        $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, false, $salesChannelId);
     }
 
     private function loadSalesChannel(string $salesChannelId, Context $context): ?SalesChannelEntity

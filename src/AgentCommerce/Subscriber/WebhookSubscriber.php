@@ -7,12 +7,16 @@
 
 namespace Swag\PayPal\AgentCommerce\Subscriber;
 
+use Shopware\Administration\Notification\NotificationCollection;
+use Shopware\Core\Framework\Api\Context\AdminApiSource;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Swag\PayPal\AgentCommerce\HoneyWebhookService;
 use Swag\PayPal\SwagPayPal;
@@ -26,10 +30,12 @@ class WebhookSubscriber implements EventSubscriberInterface
 {
     /**
      * @param EntityRepository<SalesChannelCollection> $salesChannelRepository
+     * @param EntityRepository<NotificationCollection> $notificationRepository
      */
     public function __construct(
         private readonly EntityRepository $salesChannelRepository,
         private readonly HoneyWebhookService $webhookService,
+        private readonly EntityRepository $notificationRepository, // @phpstan-ignore parameter.deprecatedClass, property.deprecatedClass
     ) {
     }
 
@@ -71,10 +77,27 @@ class WebhookSubscriber implements EventSubscriberInterface
         $salesChannelIds = $this->salesChannelRepository->searchIds($criteria, $event->getContext())->getIds();
         foreach ($salesChannelIds as $salesChannelId) {
             if ($mapped[$salesChannelId]) {
-                $this->webhookService->register($salesChannelId, $event->getContext());
+                $response = $this->webhookService->register($salesChannelId, $event->getContext());
             } else {
-                $this->webhookService->deregister($salesChannelId, $event->getContext());
+                $response = $this->webhookService->deregister($salesChannelId, $event->getContext());
             }
+
+            $source = $event->getContext()->getSource();
+            if (!$source instanceof AdminApiSource) {
+                continue;
+            }
+
+            $data = [
+                'id' => Uuid::randomHex(),
+                'status' => $response['success'] ? 'success' : 'error',
+                'message' => 'PayPal agent commerce: ' . ($response['message'] ?? ''),
+                'requiredPrivileges' => [],
+                'createdByUserId' => $source->getUserId(),
+            ];
+
+            $event->getContext()->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($data): void {
+                $this->notificationRepository->create([$data], $context);
+            });
         }
     }
 }
