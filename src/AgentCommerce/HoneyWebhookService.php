@@ -60,35 +60,11 @@ class HoneyWebhookService
      */
     public function register(string $salesChannelId, Context $context): array
     {
-        $token = $this->createToken($salesChannelId, $context);
-        if (!$token) {
-            return [
-                'success' => false,
-                'message' => 'could not create token',
-            ];
-        }
+        $result = $this->webhookCall($salesChannelId, 'install', $context);
 
-        try {
-            $response = $this->client->post('webhooks/sw/install', [
-                'body' => $token,
-                'timeout' => 20,
-                'connect_timeout' => 20,
-            ]);
-        } catch (ClientException $e) {
-            $response = $e->getResponse();
-        }
+        $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, $result['success'], $salesChannelId);
 
-        $content = json_decode($response->getBody()->getContents(), true);
-        $content['success'] ??= true;
-
-        $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, $content['success'], $salesChannelId);
-        $this->logger->info('PayPal agent commerce onboarding successful', [
-            'salesChannelId' => $salesChannelId,
-            'success' => $content['success'],
-            'message' => $content['message'],
-        ]);
-
-        return $content;
+        return $result;
     }
 
     /**
@@ -96,36 +72,13 @@ class HoneyWebhookService
      */
     public function deregister(string $salesChannelId, Context $context): array
     {
-        $token = $this->createToken($salesChannelId, $context);
-        if (!$token) {
-            return [
-                'success' => false,
-                'message' => 'could not create token',
-            ];
-        }
+        $result = $this->webhookCall($salesChannelId, 'uninstall', $context);
 
-        try {
-            $response = $this->client->post('webhooks/sw/uninstall', [
-                'body' => $token,
-                'timeout' => 20,
-                'connect_timeout' => 20,
-            ]);
-
+        if ($result['success']) {
             $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, false, $salesChannelId);
-        } catch (ClientException $e) {
-            $response = $e->getResponse();
         }
 
-        $content = json_decode($response->getBody()->getContents(), true);
-        $content['success'] ??= true;
-
-        $this->logger->info('PayPal agent commerce offboarding successful', [
-            'salesChannelId' => $salesChannelId,
-            'success' => $content['success'],
-            'message' => $content['message'],
-        ]);
-
-        return $content;
+        return $result;
     }
 
     private function createToken(string $salesChannelId, Context $context): ?string
@@ -180,5 +133,46 @@ class HoneyWebhookService
         ]);
 
         return $this->salesChannelRepository->search($criteria, $context)->first();
+    }
+
+    /**
+     * @return array{success: bool, message: string, error?: string}
+     */
+    private function webhookCall(string $salesChannelId, string $endpoint, Context $context): array
+    {
+        $token = $this->createToken($salesChannelId, $context);
+        if (!$token) {
+            return [
+                'success' => false,
+                'message' => 'could not create token',
+                'error' => 'SWAG_PAYPAL__HONEY_WEBHOOK_NO_TOKEN',
+            ];
+        }
+
+        try {
+            $response = $this->client->post('webhooks/sw/' . $endpoint, [
+                'body' => $token,
+                'timeout' => 20,
+                'connect_timeout' => 20,
+            ]);
+        } catch (ClientException $e) {
+            if (!$e->hasResponse()) {
+                throw $e;
+            }
+
+            $response = $e->getResponse();
+        }
+
+        $content = json_decode($response->getBody()->getContents(), true);
+        $content['success'] ??= !isset($content['error']);
+
+        $this->logger->info('PayPal agent commerce webhook ' . $endpoint, [
+            'salesChannelId' => $salesChannelId,
+            'success' => $content['success'],
+            'message' => $content['message'],
+            'error' => $content['error'] ?? null,
+        ]);
+
+        return $content;
     }
 }
