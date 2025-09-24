@@ -2823,7 +2823,8 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        result?: string;
+                        success?: boolean;
+                        message?: string;
                     };
                 };
             };

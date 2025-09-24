@@ -1456,7 +1456,10 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "result": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
                                             "type": "string"
                                         }
                                     },
