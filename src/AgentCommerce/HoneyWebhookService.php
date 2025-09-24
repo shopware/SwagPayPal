@@ -165,6 +165,10 @@ class HoneyWebhookService
             ]);
         } catch (ClientException $e) {
             $response = $e->getResponse();
+        } catch (HoneyWebhookExceptions $e) {
+            $this->logger->error('PayPal agent commerce webhook livecycle: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
+
+            throw $e;
         }
 
         /** @var StreamInterface $body */
@@ -181,11 +185,7 @@ class HoneyWebhookService
             'error' => $content['error'] ?? null,
         ];
 
-        if ($content['success']) {
-            $this->logger->info('PayPal agent commerce webhook ' . $endpoint, $data);
-        } else {
-            $this->logger->error('PayPal agent commerce webhook ' . $endpoint, $data);
-        }
+        $this->logger->log($content['success'] ? 'info' : 'error', 'PayPal agent commerce webhook ' . $endpoint, $data);
 
         return $response;
     }

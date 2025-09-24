@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\AgentCommerce;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
@@ -59,7 +58,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('search')
             ->willReturn(new EntitySearchResult('sales_channel', 1, new SalesChannelCollection([$salesChannel]), null, new Criteria(), $context));
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects($this->once())
             ->method('request')
@@ -109,8 +108,8 @@ class HoneyWebhookServiceTest extends TestCase
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock
             ->expects($this->once())
-            ->method('info')
-            ->with('PayPal agent commerce webhook install', [
+            ->method('log')
+            ->with('info', 'PayPal agent commerce webhook install', [
                 'salesChannelId' => $salesChannel->getId(),
                 'success' => true,
                 'message' => 'Merchant onboarded successfully',
@@ -143,7 +142,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('search')
             ->willReturn(new EntitySearchResult('sales_channel', 1, new SalesChannelCollection([$salesChannel]), null, new Criteria(), $context));
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects($this->once())
             ->method('request')
@@ -193,8 +192,8 @@ class HoneyWebhookServiceTest extends TestCase
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock
             ->expects($this->once())
-            ->method('info')
-            ->with('PayPal agent commerce webhook uninstall', [
+            ->method('log')
+            ->with('info', 'PayPal agent commerce webhook uninstall', [
                 'salesChannelId' => $salesChannel->getId(),
                 'success' => true,
                 'message' => 'Merchant onboarded successfully',
@@ -227,7 +226,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('search')
             ->willReturn(new EntitySearchResult('sales_channel', 1, new SalesChannelCollection([$salesChannel]), null, new Criteria(), $context));
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects($this->exactly(2))
             ->method('request')
@@ -273,7 +272,7 @@ class HoneyWebhookServiceTest extends TestCase
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock
             ->expects($this->exactly(2))
-            ->method('info');
+            ->method('log');
 
         $service = HoneyWebhookServiceMock::create(
             $salesChannelRepository,
@@ -304,7 +303,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('search')
             ->willReturn(new EntitySearchResult('sales_channel', 1, new SalesChannelCollection([$salesChannel]), null, new Criteria(), $context));
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects($this->once())
             ->method('request')
@@ -340,7 +339,7 @@ class HoneyWebhookServiceTest extends TestCase
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock
             ->expects($this->once())
-            ->method('error');
+            ->method('log');
 
         $service = HoneyWebhookServiceMock::create(
             $salesChannelRepository,
@@ -359,7 +358,7 @@ class HoneyWebhookServiceTest extends TestCase
         $this->expectException(HoneyWebhookExceptions::class);
         $this->expectExceptionMessage('Sales channel is not registered and can\'t be deregistered');
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects($this->never())
             ->method('request');
@@ -417,7 +416,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->with(Settings::AGENT_COMMERCE_ONBOARDED)
             ->willReturn(false);
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects($this->never())
             ->method('request');
@@ -464,7 +463,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->with(Settings::AGENT_COMMERCE_ONBOARDED)
             ->willReturn(true);
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects($this->never())
             ->method('request');
@@ -527,7 +526,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('search')
             ->willReturn(new EntitySearchResult('sales_channel', 1, new SalesChannelCollection([$salesChannel]), null, new Criteria(), $context));
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects($this->once())
             ->method('request')
@@ -566,8 +565,8 @@ class HoneyWebhookServiceTest extends TestCase
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock
             ->expects($this->once())
-            ->method('error')
-            ->with('PayPal agent commerce webhook install', [
+            ->method('log')
+            ->with('error', 'PayPal agent commerce webhook install', [
                 'salesChannelId' => $salesChannel->getId(),
                 'success' => false,
                 'message' => 'JWT signature verification failed',
@@ -606,7 +605,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('search')
             ->willReturn(new EntitySearchResult('sales_channel', 1, new SalesChannelCollection([$salesChannel]), null, new Criteria(), $context));
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects($this->once())
             ->method('request')
@@ -644,8 +643,8 @@ class HoneyWebhookServiceTest extends TestCase
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock
             ->expects($this->once())
-            ->method('error')
-            ->with('PayPal agent commerce webhook uninstall', [
+            ->method('log')
+            ->with('error', 'PayPal agent commerce webhook uninstall', [
                 'salesChannelId' => $salesChannel->getId(),
                 'success' => false,
                 'message' => 'JWT signature verification failed',
@@ -687,7 +686,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->method('search')
             ->willReturn(new EntitySearchResult('sales_channel', 1, new SalesChannelCollection([$salesChannel]), null, new Criteria(), $context));
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createMock(HoneyClientMock::class);
         $client
             ->expects($this->once())
             ->method('request')

@@ -97,7 +97,7 @@ class WebhookSubscriber implements EventSubscriberInterface
                 }
 
                 $content = json_decode($response->getBody()->getContents(), true);
-                $data = [
+                $notification = [
                     'id' => Uuid::randomHex(),
                     'status' => $response->getStatusCode() === Response::HTTP_OK ? 'success' : 'error',
                     'message' => 'PayPal agent commerce: ' . ($content['message'] ?? ''),
@@ -105,7 +105,7 @@ class WebhookSubscriber implements EventSubscriberInterface
                     'createdByUserId' => $userId,
                 ];
             } catch (HoneyWebhookExceptions $e) {
-                $data = [
+                $notification = [
                     'id' => Uuid::randomHex(),
                     'status' => 'error',
                     'message' => 'PayPal agent commerce: ' . $e->getErrorCode(),
@@ -114,8 +114,8 @@ class WebhookSubscriber implements EventSubscriberInterface
                 ];
             }
 
-            $context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($data): void {
-                $this->notificationRepository->create([$data], $context);
+            $context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($notification): void {
+                $this->notificationRepository->create([$notification], $context);
             });
         }
     }
