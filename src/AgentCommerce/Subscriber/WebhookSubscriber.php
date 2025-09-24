@@ -18,9 +18,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
+use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookExceptions;
 use Swag\PayPal\AgentCommerce\HoneyWebhookService;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @internal
@@ -73,29 +75,46 @@ class WebhookSubscriber implements EventSubscriberInterface
         $criteria = new Criteria(array_keys($mapped));
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_AGENT_COMMERCE));
 
+        $userId = null;
+        $context = $event->getContext();
+        $source = $context->getSource();
+        if ($source instanceof AdminApiSource) {
+            $userId = $source->getUserId();
+        }
+
         /** @var list<string> $salesChannelIds */
-        $salesChannelIds = $this->salesChannelRepository->searchIds($criteria, $event->getContext())->getIds();
+        $salesChannelIds = $this->salesChannelRepository->searchIds($criteria, $context)->getIds();
         foreach ($salesChannelIds as $salesChannelId) {
-            if ($mapped[$salesChannelId]) {
-                $response = $this->webhookService->register($salesChannelId, $event->getContext());
-            } else {
-                $response = $this->webhookService->deregister($salesChannelId, $event->getContext());
+            try {
+                if ($mapped[$salesChannelId]) {
+                    $response = $this->webhookService->register($salesChannelId, $context);
+                } else {
+                    $response = $this->webhookService->deregister($salesChannelId, $context);
+                }
+
+                if (!$userId) {
+                    continue;
+                }
+
+                $content = json_decode($response->getBody()->getContents(), true);
+                $data = [
+                    'id' => Uuid::randomHex(),
+                    'status' => $response->getStatusCode() === Response::HTTP_OK ? 'success' : 'error',
+                    'message' => 'PayPal agent commerce: ' . ($content['message'] ?? ''),
+                    'requiredPrivileges' => [],
+                    'createdByUserId' => $userId,
+                ];
+            } catch (HoneyWebhookExceptions $e) {
+                $data = [
+                    'id' => Uuid::randomHex(),
+                    'status' => 'error',
+                    'message' => 'PayPal agent commerce: ' . $e->getErrorCode(),
+                    'requiredPrivileges' => [],
+                    'createdByUserId' => $userId,
+                ];
             }
 
-            $source = $event->getContext()->getSource();
-            if (!$source instanceof AdminApiSource) {
-                continue;
-            }
-
-            $data = [
-                'id' => Uuid::randomHex(),
-                'status' => $response['success'] ? 'success' : 'error',
-                'message' => 'PayPal agent commerce: ' . ($response['message'] ?? ''),
-                'requiredPrivileges' => [],
-                'createdByUserId' => $source->getUserId(),
-            ];
-
-            $event->getContext()->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($data): void {
+            $context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($data): void {
                 $this->notificationRepository->create([$data], $context);
             });
         }

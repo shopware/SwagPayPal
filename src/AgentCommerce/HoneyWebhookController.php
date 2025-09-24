@@ -8,10 +8,10 @@
 namespace Swag\PayPal\AgentCommerce;
 
 use OpenApi\Attributes as OA;
+use Psr\Http\Message\ResponseInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -53,8 +53,8 @@ class HoneyWebhookController extends AbstractController
         )]
     )]
     #[Route(path: '/api/_action/paypal/honey/webhook/register/{salesChannelId}', name: 'api.action.paypal.honey.webhook.register', methods: ['POST'], defaults: ['_acl' => ['swag_paypal.editor']])]
-    public function registerWebhook(string $salesChannelId, Context $context): JsonResponse
+    public function registerWebhook(string $salesChannelId, Context $context): ResponseInterface
     {
-        return new JsonResponse($this->webhookService->register($salesChannelId, $context), Response::HTTP_OK);
+        return $this->webhookService->register($salesChannelId, $context);
     }
 }
