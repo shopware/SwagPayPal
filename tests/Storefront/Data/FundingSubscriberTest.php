@@ -16,6 +16,8 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Generator;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\Storefront\Page\GenericPageLoadedEvent;
+use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
@@ -48,8 +50,9 @@ class FundingSubscriberTest extends TestCase
     {
         $events = FundingSubscriber::getSubscribedEvents();
 
-        static::assertCount(1, $events);
-        static::assertSame('addFundingAvailabilityData', $events[FooterPageletLoadedEvent::class]);
+        static::assertCount(2, $events);
+        static::assertSame('addFundingAvailabilityDataToFooter', $events[FooterPageletLoadedEvent::class]);
+        static::assertSame('addFundingAvailabilityDataToPage', $events[GenericPageLoadedEvent::class]);
     }
 
     public function testAddNoSettings(): void
@@ -57,21 +60,51 @@ class FundingSubscriberTest extends TestCase
         $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
         $subscriber = $this->createSubscriber($systemConfigService);
         $event = $this->createFooterPageletLoadedEvent();
-        $subscriber->addFundingAvailabilityData($event);
+        $subscriber->addFundingAvailabilityDataToFooter($event);
 
         static::assertFalse($event->getPagelet()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
     }
 
-    public function testAdd(): void
+    public function testAddFundingAvailabilityDataToFooter(): void
     {
         $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
         $systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
         $systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
         $subscriber = $this->createSubscriber($systemConfigService);
         $event = $this->createFooterPageletLoadedEvent();
-        $subscriber->addFundingAvailabilityData($event);
+        $subscriber->addFundingAvailabilityDataToFooter($event);
 
         $extension = $event->getPagelet()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION);
+
+        static::assertInstanceOf(FundingEligibilityData::class, $extension);
+        static::assertSame(self::TEST_CLIENT_ID, $extension->getClientId());
+        static::assertSame('EUR', $extension->getCurrency());
+        static::assertSame('en_GB', $extension->getLanguageIso());
+        static::assertSame(\mb_strtolower(ConstantsV2::INTENT_CAPTURE), $extension->getIntent());
+        static::assertSame('/paypal/payment-method-eligibility', $extension->getMethodEligibilityUrl());
+        static::assertSame(['SEPA'], $extension->getFilteredPaymentMethods());
+    }
+
+    public function testAddFundingAvailabilityDataToPageNoSettings(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $subscriber = $this->createSubscriber($systemConfigService);
+        $event = $this->createGenericPageLoadedEvent();
+        $subscriber->addFundingAvailabilityDataToPage($event);
+
+        static::assertFalse($event->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+    }
+
+    public function testAddFundingAvailabilityDataToPage(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
+        $subscriber = $this->createSubscriber($systemConfigService);
+        $event = $this->createGenericPageLoadedEvent();
+        $subscriber->addFundingAvailabilityDataToPage($event);
+
+        $extension = $event->getPage()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION);
 
         static::assertInstanceOf(FundingEligibilityData::class, $extension);
         static::assertSame(self::TEST_CLIENT_ID, $extension->getClientId());
@@ -118,6 +151,20 @@ class FundingSubscriberTest extends TestCase
 
         return new FooterPageletLoadedEvent(
             new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()),
+            $salesChannelContext,
+            new Request()
+        );
+    }
+
+    private function createGenericPageLoadedEvent(): GenericPageLoadedEvent
+    {
+        $salesChannelContext = Generator::generateSalesChannelContext();
+        $salesChannelContext->getCurrency()->setIsoCode('EUR');
+
+        $page = new Page();
+
+        return new GenericPageLoadedEvent(
+            $page,
             $salesChannelContext,
             new Request()
         );

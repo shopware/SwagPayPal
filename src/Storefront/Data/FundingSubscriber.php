@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -8,6 +10,7 @@
 namespace Swag\PayPal\Storefront\Data;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -37,11 +40,12 @@ class FundingSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            FooterPageletLoadedEvent::class => 'addFundingAvailabilityData',
+            FooterPageletLoadedEvent::class => 'addFundingAvailabilityDataToFooter',  // for backward compability
+            GenericPageLoadedEvent::class => 'addFundingAvailabilityDataToPage',
         ];
     }
 
-    public function addFundingAvailabilityData(FooterPageletLoadedEvent $event): void
+    public function addFundingAvailabilityDataToFooter(FooterPageletLoadedEvent $event): void
     {
         try {
             $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannelId());
@@ -55,5 +59,21 @@ class FundingSubscriber implements EventSubscriberInterface
         }
 
         $event->getPagelet()->addExtension(self::FUNDING_ELIGIBILITY_EXTENSION, $data);
+    }
+
+    public function addFundingAvailabilityDataToPage(GenericPageLoadedEvent $event): void
+    {
+        try {
+            $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannelId());
+        } catch (PayPalSettingsInvalidException $e) {
+            return;
+        }
+
+        $data = $this->fundingEligibilityDataService->buildData($event->getSalesChannelContext());
+        if ($data === null) {
+            return;
+        }
+
+        $event->getPage()->addExtension(self::FUNDING_ELIGIBILITY_EXTENSION, $data);
     }
 }
