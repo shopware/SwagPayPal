@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\AgentCommerce\Exception;
 
+use GuzzleHttp\Exception\ClientException;
 use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 #[Package('checkout')]
 class HoneyWebhookExceptions extends HttpException
 {
+    public const INVALID_REQUEST = 'INVALID_REQUEST';
     public const FAILED_DEREGISTER = 'FAILED_DEREGISTER';
     public const NOT_REGISTERED = 'NOT_REGISTERED';
     public const SALES_CHANNEL_NOT_FOUND = 'SALES_CHANNEL_NOT_FOUND';
@@ -75,6 +77,16 @@ class HoneyWebhookExceptions extends HttpException
             Response::HTTP_BAD_REQUEST,
             self::INVALID_PRODUCT_EXPORT_ROUTE,
             'Invalid product export route'
+        );
+    }
+
+    public static function invalidRequest(?ClientException $exception): self
+    {
+        return new self(
+            Response::HTTP_BAD_REQUEST,
+            self::INVALID_REQUEST,
+            'Invalid request',
+            previous: $exception,
         );
     }
 }

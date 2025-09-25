@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\AgentCommerce;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
@@ -15,8 +14,6 @@ use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\Builder;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -31,7 +28,6 @@ use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookExceptions;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -40,61 +36,67 @@ use Symfony\Component\Routing\RouterInterface;
 #[Package('checkout')]
 class HoneyWebhookService
 {
-    protected ClientInterface $client;
-
     /**
      * @param EntityRepository<SalesChannelCollection> $salesChannelRepository
      */
     public function __construct(
+        private readonly ClientInterface $client,
         private readonly EntityRepository $salesChannelRepository,
         private readonly CredentialsUtil $credentialsUtil,
         private readonly RouterInterface $router,
         private readonly SystemConfigService $systemConfigService,
         private readonly LoggerInterface $logger,
     ) {
-        $this->client = new Client([
-            'base_uri' => 'https://d.joinhoney.com/',
-            'headers' => [
-                'Content-Type' => 'text/plain',
-            ],
-        ]);
     }
 
-    public function register(string $salesChannelId, Context $context): ResponseInterface
+    public function register(string $salesChannelId, Context $context): HoneyWebhookResult
     {
-        $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
-        if (!$salesChannel || !$salesChannel->getActive()) {
-            throw HoneyWebhookExceptions::invalidSalesChannel();
-        }
-
-        if ($this->systemConfigService->getBool(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId)) {
-            $deregisterResult = $this->webhookCall($salesChannel, 'uninstall');
-
-            if ($deregisterResult->getStatusCode() !== Response::HTTP_OK) {
-                throw HoneyWebhookExceptions::failedDeregisterWebhook();
+        try {
+            $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
+            if (!$salesChannel || !$salesChannel->getActive()) {
+                throw HoneyWebhookExceptions::invalidSalesChannel();
             }
+
+            $oldToken = $this->systemConfigService->get(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
+            if (is_string($oldToken)) {
+                $deregisterResult = $this->webhookCall($oldToken, 'uninstall');
+
+                if (!$deregisterResult->success) {
+                    throw HoneyWebhookExceptions::failedDeregisterWebhook();
+                }
+            }
+
+            $token = $this->createToken($salesChannel);
+        } catch (HoneyWebhookExceptions $e) {
+            $this->logger->error('PayPal agent commerce webhook livecycle: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
+
+            throw $e;
         }
 
-        $result = $this->webhookCall($salesChannel, 'install');
-        $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, $result->getStatusCode() === Response::HTTP_OK, $salesChannelId);
+        $result = $this->webhookCall($token, 'install');
+        if ($result->success) {
+            $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, $token, $salesChannelId);
+        } else {
+            $this->systemConfigService->delete(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
+
+            throw HoneyWebhookExceptions::invalidRequest($result->exception);
+        }
 
         return $result;
     }
 
-    public function deregister(string $salesChannelId, Context $context): ResponseInterface
+    public function deregister(string $salesChannelId): HoneyWebhookResult
     {
-        if (!$this->systemConfigService->getBool(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId)) {
+        $oldToken = $this->systemConfigService->get(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
+        if (!is_string($oldToken)) {
             throw HoneyWebhookExceptions::salesChannelNotRegistered();
         }
 
-        $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
-        if (!$salesChannel) {
-            throw HoneyWebhookExceptions::invalidSalesChannel();
-        }
-
-        $result = $this->webhookCall($salesChannel, 'uninstall');
-        if ($result->getStatusCode() === Response::HTTP_OK) {
-            $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, false, $salesChannelId);
+        $result = $this->webhookCall($oldToken, 'uninstall');
+        if ($result->success) {
+            $this->systemConfigService->delete(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
+        } else {
+            throw HoneyWebhookExceptions::invalidRequest($result->exception);
         }
 
         return $result;
@@ -155,38 +157,19 @@ class HoneyWebhookService
     /**
      * @throws HoneyWebhookExceptions
      */
-    private function webhookCall(SalesChannelEntity $salesChannel, string $endpoint): ResponseInterface
+    private function webhookCall(string $token, string $endpoint): HoneyWebhookResult
     {
         try {
-            $response = $this->client->request('POST', 'webhooks/sw/' . $endpoint, [
-                'body' => $this->createToken($salesChannel),
-                'timeout' => 20,
-                'connect_timeout' => 20,
-            ]);
+            $response = $this->client->request('POST', 'webhooks/sw/' . $endpoint, ['body' => $token]);
         } catch (ClientException $e) {
             $response = $e->getResponse();
-        } catch (HoneyWebhookExceptions $e) {
-            $this->logger->error('PayPal agent commerce webhook livecycle: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
-
-            throw $e;
         }
 
-        /** @var StreamInterface $body */
-        $body = $response->getBody();
-        $content = json_decode($body->getContents(), true);
-        // So that the caller can also read the content
-        $body->rewind();
+        $content = json_decode($response->getBody()->getContents(), true);
+        $result = new HoneyWebhookResult($content['success'] ?? !isset($content['error']), $content['message'], $content['error'] ?? null, $e ?? null);
 
-        $content['success'] ??= !isset($content['error']);
-        $data = [
-            'salesChannelId' => $salesChannel->getId(),
-            'success' => $content['success'],
-            'message' => $content['message'],
-            'error' => $content['error'] ?? null,
-        ];
+        $this->logger->log($result->success ? 'info' : 'error', 'PayPal agent commerce webhook ' . $endpoint, $result->jsonSerialize());
 
-        $this->logger->log($content['success'] ? 'info' : 'error', 'PayPal agent commerce webhook ' . $endpoint, $data);
-
-        return $response;
+        return $result;
     }
 }

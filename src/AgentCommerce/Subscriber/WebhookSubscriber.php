@@ -22,7 +22,6 @@ use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookExceptions;
 use Swag\PayPal\AgentCommerce\HoneyWebhookService;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @internal
@@ -87,20 +86,19 @@ class WebhookSubscriber implements EventSubscriberInterface
         foreach ($salesChannelIds as $salesChannelId) {
             try {
                 if ($mapped[$salesChannelId]) {
-                    $response = $this->webhookService->register($salesChannelId, $context);
+                    $result = $this->webhookService->register($salesChannelId, $context);
                 } else {
-                    $response = $this->webhookService->deregister($salesChannelId, $context);
+                    $result = $this->webhookService->deregister($salesChannelId);
                 }
 
                 if (!$userId) {
                     continue;
                 }
 
-                $content = json_decode($response->getBody()->getContents(), true);
                 $notification = [
                     'id' => Uuid::randomHex(),
-                    'status' => $response->getStatusCode() === Response::HTTP_OK ? 'success' : 'error',
-                    'message' => 'PayPal agent commerce: ' . ($content['message'] ?? ''),
+                    'status' => $result->success ? 'success' : 'error',
+                    'message' => 'PayPal agent commerce: ' . $result->message,
                     'requiredPrivileges' => [],
                     'createdByUserId' => $userId,
                 ];
