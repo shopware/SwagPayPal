@@ -10,6 +10,9 @@ namespace Swag\PayPal\Storefront\Framework\Cookie;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 
+/**
+ * @deprecated tag:v6.8.0 - Will be removed in 6.8.0. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
+ */
 #[Package('checkout')]
 class PayPalCookieProvider implements CookieProviderInterface
 {
@@ -17,12 +20,17 @@ class PayPalCookieProvider implements CookieProviderInterface
 
     /**
      * @internal
+     *
+     * @deprecated tag:v6.8.0 - Will be removed in 6.8.0. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
      */
     public function __construct(CookieProviderInterface $cookieProvider)
     {
         $this->original = $cookieProvider;
     }
 
+    /**
+     * @deprecated tag:v6.8.0 - Will be removed in 6.8.0. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
+     */
     public function getCookieGroups(): array
     {
         $cookies = $this->original->getCookieGroups();
