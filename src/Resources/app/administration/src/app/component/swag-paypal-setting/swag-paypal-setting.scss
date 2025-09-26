@@ -41,14 +41,16 @@
     }
 
     &:nth-last-child(1 of :not(.sw-loader)) {
-        margin-bottom: 0;
-
-        .mt-field {
+        :not(.sw-container) > & {
             margin-bottom: 0;
-        }
 
-        .sw-field {
-            margin-bottom: 0;
+            .mt-field {
+                margin-bottom: 0;
+            }
+
+            .sw-field {
+                margin-bottom: 0;
+            }
         }
     }
 }
