@@ -14,4 +14,8 @@
     {% endblock %}
 
     {{ parent() }}
+
+    {# @deprecated tag:v11.0.0 - `layout_footer_payment_logos_paypal_funding_eligibility` will be removed, use block `base_body_script` instead #}
+    {% block layout_footer_payment_logos_paypal_funding_eligibility %}
+    {% endblock %}
 {% endblock %}

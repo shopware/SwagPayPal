@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -45,6 +43,9 @@ class FundingSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed in 11.0.0.
+     */
     public function addFundingAvailabilityDataToFooter(FooterPageletLoadedEvent $event): void
     {
         try {
