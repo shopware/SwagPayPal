@@ -58,7 +58,7 @@ class HoneyWebhookService
             }
 
             $oldToken = $this->systemConfigService->get(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
-            if (is_string($oldToken)) {
+            if (\is_string($oldToken)) {
                 $deregisterResult = $this->webhookCall($oldToken, 'uninstall');
 
                 if (!$deregisterResult->success) {
@@ -88,7 +88,7 @@ class HoneyWebhookService
     public function deregister(string $salesChannelId): HoneyWebhookResult
     {
         $oldToken = $this->systemConfigService->get(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
-        if (!is_string($oldToken)) {
+        if (!\is_string($oldToken)) {
             throw HoneyWebhookExceptions::salesChannelNotRegistered();
         }
 
