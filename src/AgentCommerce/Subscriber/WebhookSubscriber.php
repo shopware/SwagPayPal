@@ -18,7 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
-use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookExceptions;
+use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookException;
 use Swag\PayPal\AgentCommerce\HoneyWebhookService;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -102,7 +102,7 @@ class WebhookSubscriber implements EventSubscriberInterface
                     'requiredPrivileges' => [],
                     'createdByUserId' => $userId,
                 ];
-            } catch (HoneyWebhookExceptions $e) {
+            } catch (HoneyWebhookException $e) {
                 $notification = [
                     'id' => Uuid::randomHex(),
                     'status' => 'error',

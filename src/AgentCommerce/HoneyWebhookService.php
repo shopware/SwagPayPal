@@ -24,7 +24,7 @@ use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookExceptions;
+use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookException;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
@@ -54,20 +54,16 @@ class HoneyWebhookService
         try {
             $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
             if (!$salesChannel || !$salesChannel->getActive()) {
-                throw HoneyWebhookExceptions::invalidSalesChannel();
+                throw HoneyWebhookException::invalidSalesChannel();
             }
 
             $oldToken = $this->systemConfigService->get(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
             if (\is_string($oldToken)) {
-                $deregisterResult = $this->webhookCall($oldToken, 'uninstall');
-
-                if (!$deregisterResult->success) {
-                    throw HoneyWebhookExceptions::failedDeregisterWebhook();
-                }
+                $this->deregister($salesChannelId);
             }
 
             $token = $this->createToken($salesChannel);
-        } catch (HoneyWebhookExceptions $e) {
+        } catch (HoneyWebhookException $e) {
             $this->logger->error('PayPal agent commerce webhook livecycle: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
 
             throw $e;
@@ -79,7 +75,7 @@ class HoneyWebhookService
         } else {
             $this->systemConfigService->delete(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
 
-            throw HoneyWebhookExceptions::invalidRequest($result->exception);
+            throw HoneyWebhookException::invalidRequest($result);
         }
 
         return $result;
@@ -87,36 +83,42 @@ class HoneyWebhookService
 
     public function deregister(string $salesChannelId): HoneyWebhookResult
     {
-        $oldToken = $this->systemConfigService->get(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
-        if (!\is_string($oldToken)) {
-            throw HoneyWebhookExceptions::salesChannelNotRegistered();
-        }
+        try {
+            $oldToken = $this->systemConfigService->get(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
+            if (!\is_string($oldToken)) {
+                throw HoneyWebhookException::salesChannelNotRegistered();
+            }
 
-        $result = $this->webhookCall($oldToken, 'uninstall');
-        if ($result->success) {
-            $this->systemConfigService->delete(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
-        } else {
-            throw HoneyWebhookExceptions::invalidRequest($result->exception);
-        }
+            $result = $this->webhookCall($oldToken, 'uninstall');
+            if ($result->success) {
+                $this->systemConfigService->delete(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
+            } else {
+                throw HoneyWebhookException::invalidRequest($result);
+            }
 
-        return $result;
+            return $result;
+        } catch (HoneyWebhookException $e) {
+            $this->logger->error('PayPal agent commerce webhook livecycle: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
+
+            throw $e;
+        }
     }
 
     private function createToken(SalesChannelEntity $salesChannel): string
     {
         $productExport = $salesChannel->getProductExports()?->first();
         if (!$productExport) {
-            throw HoneyWebhookExceptions::productExportNotFound();
+            throw HoneyWebhookException::productExportNotFound();
         }
 
         $storefront = $productExport->getStorefrontSalesChannel();
         if (!$storefront) {
-            throw HoneyWebhookExceptions::storefrontSalesChannelNotFound();
+            throw HoneyWebhookException::storefrontSalesChannelNotFound();
         }
 
         $route = $this->router->getRouteCollection()->get('store-api.product.export');
         if (!$route) {
-            throw HoneyWebhookExceptions::invalidProductExportRoute();
+            throw HoneyWebhookException::invalidProductExportRoute();
         }
 
         $path = str_replace(['{accessKey}', '{fileName}'], [$productExport->getAccessKey(), $productExport->getFileName()], $route->getPath());
@@ -154,9 +156,6 @@ class HoneyWebhookService
         return $this->salesChannelRepository->search($criteria, $context)->first();
     }
 
-    /**
-     * @throws HoneyWebhookExceptions
-     */
     private function webhookCall(string $token, string $endpoint): HoneyWebhookResult
     {
         try {

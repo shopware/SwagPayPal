@@ -7,18 +7,18 @@
 
 namespace Swag\PayPal\AgentCommerce\Exception;
 
-use GuzzleHttp\Exception\ClientException;
 use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\AgentCommerce\HoneyWebhookResult;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @internal
  */
 #[Package('checkout')]
-class HoneyWebhookExceptions extends HttpException
+class HoneyWebhookException extends HttpException
 {
-    public const INVALID_REQUEST = 'INVALID_REQUEST';
+    public const API_ERROR = 'API_ERROR';
     public const FAILED_DEREGISTER = 'FAILED_DEREGISTER';
     public const NOT_REGISTERED = 'NOT_REGISTERED';
     public const SALES_CHANNEL_NOT_FOUND = 'SALES_CHANNEL_NOT_FOUND';
@@ -32,15 +32,6 @@ class HoneyWebhookExceptions extends HttpException
             Response::HTTP_BAD_REQUEST,
             self::NOT_REGISTERED,
             'Sales channel is not registered and can\'t be deregistered'
-        );
-    }
-
-    public static function failedDeregisterWebhook(): self
-    {
-        return new self(
-            Response::HTTP_BAD_REQUEST,
-            self::FAILED_DEREGISTER,
-            'Failed deregister the webhook'
         );
     }
 
@@ -80,13 +71,13 @@ class HoneyWebhookExceptions extends HttpException
         );
     }
 
-    public static function invalidRequest(?ClientException $exception): self
+    public static function invalidRequest(HoneyWebhookResult $result): self
     {
         return new self(
             Response::HTTP_BAD_REQUEST,
-            self::INVALID_REQUEST,
-            'Invalid request',
-            previous: $exception,
+            self::API_ERROR . '_' . $result->error,
+            $result->message,
+            previous: $result->exception,
         );
     }
 }

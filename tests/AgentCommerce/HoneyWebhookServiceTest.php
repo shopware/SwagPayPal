@@ -32,7 +32,7 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookExceptions;
+use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookException;
 use Swag\PayPal\AgentCommerce\HoneyWebhookService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
@@ -263,8 +263,8 @@ class HoneyWebhookServiceTest extends TestCase
 
     public function testFailedReRegister(): void
     {
-        $this->expectException(HoneyWebhookExceptions::class);
-        $this->expectExceptionMessage('Failed deregister the webhook');
+        $this->expectException(HoneyWebhookException::class);
+        $this->expectExceptionMessage('JWT signature verification failed');
 
         $context = Context::createCLIContext();
         $salesChannel = self::createSalesChannel();
@@ -326,7 +326,7 @@ class HoneyWebhookServiceTest extends TestCase
 
     public function testDeregisterNotRegistered(): void
     {
-        $this->expectException(HoneyWebhookExceptions::class);
+        $this->expectException(HoneyWebhookException::class);
         $this->expectExceptionMessage('Sales channel is not registered and can\'t be deregistered');
 
         $client = $this->createMock(HoneyClientMock::class);
@@ -360,7 +360,7 @@ class HoneyWebhookServiceTest extends TestCase
     #[DataProvider('dataProviderMissingSalesChannelDataRegister')]
     public function testMissingSalesChannelDataRegister(?SalesChannelEntity $salesChannel, string $exceptionMessage): void
     {
-        $this->expectException(HoneyWebhookExceptions::class);
+        $this->expectException(HoneyWebhookException::class);
         $this->expectExceptionMessage($exceptionMessage);
 
         $searchResult = new EntitySearchResult('sales_channel', 0, new SalesChannelCollection(), null, new Criteria(), Context::createCLIContext());
@@ -429,8 +429,8 @@ class HoneyWebhookServiceTest extends TestCase
 
     public function testInvalidRegisterRequest(): void
     {
-        $this->expectException(HoneyWebhookExceptions::class);
-        $this->expectExceptionMessage('Invalid request');
+        $this->expectException(HoneyWebhookException::class);
+        $this->expectExceptionMessage('JWT signature verification failed');
 
         $context = Context::createCLIContext();
         $salesChannel = self::createSalesChannel();
@@ -500,8 +500,8 @@ class HoneyWebhookServiceTest extends TestCase
 
     public function testInvalidDeregisterRequest(): void
     {
-        $this->expectException(HoneyWebhookExceptions::class);
-        $this->expectExceptionMessage('Invalid request');
+        $this->expectException(HoneyWebhookException::class);
+        $this->expectExceptionMessage('JWT signature verification failed');
 
         $client = $this->createMock(HoneyClientMock::class);
         $client
