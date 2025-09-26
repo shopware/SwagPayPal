@@ -1,0 +1,91 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '''
+				#^Class Swag\\PayPal\\Storefront\\Framework\\Cookie\\GooglePayCookieProvider implements deprecated interface Shopware\\Storefront\\Framework\\Cookie\\CookieProviderInterface\:
+				tag\:v6\.8\.0 \- Will be removed in 6\.8\.0\. Use \{@see CookieGroupCollectEvent\} instead to introduce cookies\.$#
+			'''
+			identifier: class.implementsDeprecatedInterface
+			count: 1
+			path: src/Storefront/Framework/Cookie/GooglePayCookieProvider.php
+
+		-
+			message: '''
+				#^Parameter \$cookieProvider of method Swag\\PayPal\\Storefront\\Framework\\Cookie\\GooglePayCookieProvider\:\:__construct\(\) has typehint with deprecated interface Shopware\\Storefront\\Framework\\Cookie\\CookieProviderInterface\:
+				tag\:v6\.8\.0 \- Will be removed in 6\.8\.0\. Use \{@see CookieGroupCollectEvent\} instead to introduce cookies\.$#
+			'''
+			identifier: parameter.deprecatedInterface
+			count: 1
+			path: src/Storefront/Framework/Cookie/GooglePayCookieProvider.php
+
+		-
+			message: '''
+				#^Property \$original references deprecated interface Shopware\\Storefront\\Framework\\Cookie\\CookieProviderInterface in its type\:
+				tag\:v6\.8\.0 \- Will be removed in 6\.8\.0\. Use \{@see CookieGroupCollectEvent\} instead to introduce cookies\.$#
+			'''
+			identifier: property.deprecatedInterface
+			count: 1
+			path: src/Storefront/Framework/Cookie/GooglePayCookieProvider.php
+
+		-
+			message: '''
+				#^Class Swag\\PayPal\\Storefront\\Framework\\Cookie\\PayPalCookieProvider implements deprecated interface Shopware\\Storefront\\Framework\\Cookie\\CookieProviderInterface\:
+				tag\:v6\.8\.0 \- Will be removed in 6\.8\.0\. Use \{@see CookieGroupCollectEvent\} instead to introduce cookies\.$#
+			'''
+			identifier: class.implementsDeprecatedInterface
+			count: 1
+			path: src/Storefront/Framework/Cookie/PayPalCookieProvider.php
+
+		-
+			message: '''
+				#^Parameter \$cookieProvider of method Swag\\PayPal\\Storefront\\Framework\\Cookie\\PayPalCookieProvider\:\:__construct\(\) has typehint with deprecated interface Shopware\\Storefront\\Framework\\Cookie\\CookieProviderInterface\:
+				tag\:v6\.8\.0 \- Will be removed in 6\.8\.0\. Use \{@see CookieGroupCollectEvent\} instead to introduce cookies\.$#
+			'''
+			identifier: parameter.deprecatedInterface
+			count: 1
+			path: src/Storefront/Framework/Cookie/PayPalCookieProvider.php
+
+		-
+			message: '''
+				#^Property \$original references deprecated interface Shopware\\Storefront\\Framework\\Cookie\\CookieProviderInterface in its type\:
+				tag\:v6\.8\.0 \- Will be removed in 6\.8\.0\. Use \{@see CookieGroupCollectEvent\} instead to introduce cookies\.$#
+			'''
+			identifier: property.deprecatedInterface
+			count: 1
+			path: src/Storefront/Framework/Cookie/PayPalCookieProvider.php
+
+		-
+			message: '''
+				#^Access to constant on deprecated interface Shopware\\Storefront\\Framework\\Cookie\\CookieProviderInterface\:
+				tag\:v6\.8\.0 \- Will be removed in 6\.8\.0\. Use \{@see CookieGroupCollectEvent\} instead to introduce cookies\.$#
+			'''
+			identifier: classConstant.deprecatedInterface
+			count: 3
+			path: tests/Storefront/Framework/Cookie/GooglePayCookieProviderTest.php
+
+		-
+			message: '''
+				#^Call to deprecated method getCookieGroups\(\) of class Swag\\PayPal\\Storefront\\Framework\\Cookie\\GooglePayCookieProvider\:
+				tag\:v6\.8\.0 \- Will be removed in 6\.8\.0\. Use \{@see CookieGroupCollectEvent\} instead to introduce cookies\.$#
+			'''
+			identifier: method.deprecated
+			count: 3
+			path: tests/Storefront/Framework/Cookie/GooglePayCookieProviderTest.php
+
+		-
+			message: '''
+				#^Access to constant on deprecated interface Shopware\\Storefront\\Framework\\Cookie\\CookieProviderInterface\:
+				tag\:v6\.8\.0 \- Will be removed in 6\.8\.0\. Use \{@see CookieGroupCollectEvent\} instead to introduce cookies\.$#
+			'''
+			identifier: classConstant.deprecatedInterface
+			count: 3
+			path: tests/Storefront/Framework/Cookie/PayPalCookieProviderTest.php
+
+		-
+			message: '''
+				#^Call to deprecated method getCookieGroups\(\) of class Swag\\PayPal\\Storefront\\Framework\\Cookie\\PayPalCookieProvider\:
+				tag\:v6\.8\.0 \- Will be removed in 6\.8\.0\. Use \{@see CookieGroupCollectEvent\} instead to introduce cookies\.$#
+			'''
+			identifier: method.deprecated
+			count: 3
+			path: tests/Storefront/Framework/Cookie/PayPalCookieProviderTest.php
