@@ -70,7 +70,7 @@ class HoneyWebhookServiceTest extends TestCase
                 static::assertSame('https://example.com/', $jwt['storeUrl']);
                 static::assertSame('DE', $jwt['country']);
                 static::assertSame('EUR', $jwt['currency']);
-                static::assertEmpty(array_diff(['DE', 'UK'], $jwt['shippingCountries']));
+                static::assertSame(['DE', 'UK'], $jwt['shippingCountries']);
                 static::assertSame('SomeMerchantId', $jwt['paypalMerchantId']);
                 static::assertSame($salesChannel->getId(), $jwt['shopwareMerchantId']);
                 static::assertSame('https://example.com/test/path/export', $jwt['catalogDownloadUrl']);
@@ -276,7 +276,7 @@ class HoneyWebhookServiceTest extends TestCase
 
         $client = $this->createMock(HoneyClientMock::class);
         $client
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('request')
             ->willReturnCallback(function (): void {
                 $response = new Response(400, body: (string) json_encode([
@@ -309,7 +309,7 @@ class HoneyWebhookServiceTest extends TestCase
 
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('log');
 
         $service = new HoneyWebhookService(

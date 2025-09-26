@@ -51,19 +51,13 @@ class HoneyWebhookService
 
     public function register(string $salesChannelId, Context $context): HoneyWebhookResult
     {
-        $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
-        if (!$salesChannel || !$salesChannel->getActive()) {
-            $this->logger->error('PayPal agent commerce no active sales channel: {salesChannelId}', ['salesChannelId' => $salesChannelId]);
-
-            throw HoneyWebhookException::invalidSalesChannel();
-        }
-
-        $oldToken = $this->systemConfigService->get(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
-        if (\is_string($oldToken)) {
+        try {
             $this->deregister($salesChannelId);
+        } catch (HoneyWebhookException) {
+            // Is logged already
         }
 
-        $token = $this->createToken($salesChannel);
+        $token = $this->createToken($salesChannelId, $context);
         $result = $this->webhookCall($token, 'install');
         if ($result->success) {
             $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, $token, $salesChannelId);
@@ -85,9 +79,8 @@ class HoneyWebhookService
             }
 
             $result = $this->webhookCall($oldToken, 'uninstall');
-            if ($result->success) {
-                $this->systemConfigService->delete(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
-            } else {
+            $this->systemConfigService->delete(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
+            if (!$result->success) {
                 throw HoneyWebhookException::invalidRequest($result);
             }
 
@@ -99,9 +92,14 @@ class HoneyWebhookService
         }
     }
 
-    private function createToken(SalesChannelEntity $salesChannel): string
+    private function createToken(string $salesChannelId, Context $context): string
     {
         try {
+            $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
+            if (!$salesChannel || !$salesChannel->getActive()) {
+                throw HoneyWebhookException::invalidSalesChannel();
+            }
+
             $productExport = $salesChannel->getProductExports()?->first();
             if (!$productExport) {
                 throw HoneyWebhookException::productExportNotFound();
@@ -120,15 +118,13 @@ class HoneyWebhookService
             $path = str_replace(['{accessKey}', '{fileName}'], [$productExport->getAccessKey(), $productExport->getFileName()], $route->getPath());
             $url = $storefront->getHreflangDefaultDomain()?->getUrl() ?? $storefront->getDomains()?->first()?->getUrl();
 
-            $tokenBuilder = Builder::new(new JoseEncoder(), ChainedFormatter::default());
-
-            return $tokenBuilder
+            return Builder::new(new JoseEncoder(), ChainedFormatter::default())
                 ->withClaim('storeName', $salesChannel->getTranslation('name'))
                 ->withClaim('storeUrl', $url)
                 ->withClaim('country', $salesChannel->getCountry()?->getIso())
                 ->withClaim('currency', $salesChannel->getCurrency()?->getIsoCode())
                 ->withClaim('favIcon', 'https://localhost/favicon.ico') // TODO: Need to be load
-                ->withClaim('shippingCountries', $storefront->getCountries()?->map(fn (CountryEntity $country) => $country->getIso()))
+                ->withClaim('shippingCountries', array_values($storefront->getCountries()?->map(fn (CountryEntity $country) => $country->getIso()) ?? []))
                 ->withClaim('paypalMerchantId', $this->credentialsUtil->getMerchantPayerId($storefront->getId()))
                 ->withClaim('shopwareMerchantId', $salesChannel->getId())
                 ->withClaim('catalogDownloadUrl', rtrim($url ?? '', '/') . $path)
