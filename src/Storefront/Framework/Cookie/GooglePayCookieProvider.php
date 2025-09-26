@@ -16,7 +16,7 @@ use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Swag\PayPal\Checkout\Payment\Method\GooglePayHandler;
 
 /**
- * @deprecated tag:v6.8.0 - Will be removed in 6.8.0. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
+ * @deprecated tag:v11.0.0 - Will be removed in 11.0.0. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
  */
 #[Package('checkout')]
 class GooglePayCookieProvider implements CookieProviderInterface
@@ -26,7 +26,7 @@ class GooglePayCookieProvider implements CookieProviderInterface
     /**
      * @internal
      *
-     * @deprecated tag:v6.8.0 - Will be removed in 6.8.0. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
+     * @deprecated tag:v11.0.0 - Will be removed in 11.0.0. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
      */
     public function __construct(
         CookieProviderInterface $cookieProvider,
@@ -36,7 +36,7 @@ class GooglePayCookieProvider implements CookieProviderInterface
     }
 
     /**
-     * @deprecated tag:v6.8.0 - Will be removed in 6.8.0. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
+     * @deprecated tag:v11.0.0 - Will be removed in 11.0.0. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
      */
     public function getCookieGroups(): array
     {
