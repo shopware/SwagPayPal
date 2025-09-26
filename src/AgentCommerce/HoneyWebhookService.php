@@ -51,24 +51,19 @@ class HoneyWebhookService
 
     public function register(string $salesChannelId, Context $context): HoneyWebhookResult
     {
-        try {
-            $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
-            if (!$salesChannel || !$salesChannel->getActive()) {
-                throw HoneyWebhookException::invalidSalesChannel();
-            }
+        $salesChannel = $this->loadSalesChannel($salesChannelId, $context);
+        if (!$salesChannel || !$salesChannel->getActive()) {
+            $this->logger->error('PayPal agent commerce no active sales channel: {salesChannelId}', ['salesChannelId' => $salesChannelId]);
 
-            $oldToken = $this->systemConfigService->get(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
-            if (\is_string($oldToken)) {
-                $this->deregister($salesChannelId);
-            }
-
-            $token = $this->createToken($salesChannel);
-        } catch (HoneyWebhookException $e) {
-            $this->logger->error('PayPal agent commerce webhook livecycle: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
-
-            throw $e;
+            throw HoneyWebhookException::invalidSalesChannel();
         }
 
+        $oldToken = $this->systemConfigService->get(Settings::AGENT_COMMERCE_ONBOARDED, $salesChannelId);
+        if (\is_string($oldToken)) {
+            $this->deregister($salesChannelId);
+        }
+
+        $token = $this->createToken($salesChannel);
         $result = $this->webhookCall($token, 'install');
         if ($result->success) {
             $this->systemConfigService->set(Settings::AGENT_COMMERCE_ONBOARDED, $token, $salesChannelId);
@@ -106,38 +101,44 @@ class HoneyWebhookService
 
     private function createToken(SalesChannelEntity $salesChannel): string
     {
-        $productExport = $salesChannel->getProductExports()?->first();
-        if (!$productExport) {
-            throw HoneyWebhookException::productExportNotFound();
+        try {
+            $productExport = $salesChannel->getProductExports()?->first();
+            if (!$productExport) {
+                throw HoneyWebhookException::productExportNotFound();
+            }
+
+            $storefront = $productExport->getStorefrontSalesChannel();
+            if (!$storefront) {
+                throw HoneyWebhookException::storefrontSalesChannelNotFound();
+            }
+
+            $route = $this->router->getRouteCollection()->get('store-api.product.export');
+            if (!$route) {
+                throw HoneyWebhookException::invalidProductExportRoute();
+            }
+
+            $path = str_replace(['{accessKey}', '{fileName}'], [$productExport->getAccessKey(), $productExport->getFileName()], $route->getPath());
+            $url = $storefront->getHreflangDefaultDomain()?->getUrl() ?? $storefront->getDomains()?->first()?->getUrl();
+
+            $tokenBuilder = Builder::new(new JoseEncoder(), ChainedFormatter::default());
+
+            return $tokenBuilder
+                ->withClaim('storeName', $salesChannel->getTranslation('name'))
+                ->withClaim('storeUrl', $url)
+                ->withClaim('country', $salesChannel->getCountry()?->getIso())
+                ->withClaim('currency', $salesChannel->getCurrency()?->getIsoCode())
+                ->withClaim('favIcon', 'https://localhost/favicon.ico') // TODO: Need to be load
+                ->withClaim('shippingCountries', $storefront->getCountries()?->map(fn (CountryEntity $country) => $country->getIso()))
+                ->withClaim('paypalMerchantId', $this->credentialsUtil->getMerchantPayerId($storefront->getId()))
+                ->withClaim('shopwareMerchantId', $salesChannel->getId())
+                ->withClaim('catalogDownloadUrl', rtrim($url ?? '', '/') . $path)
+                ->getToken(new Sha256(), InMemory::plainText(random_bytes(32)))
+                ->toString();
+        } catch (HoneyWebhookException $e) {
+            $this->logger->error('PayPal agent commerce cannot create token: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
+
+            throw $e;
         }
-
-        $storefront = $productExport->getStorefrontSalesChannel();
-        if (!$storefront) {
-            throw HoneyWebhookException::storefrontSalesChannelNotFound();
-        }
-
-        $route = $this->router->getRouteCollection()->get('store-api.product.export');
-        if (!$route) {
-            throw HoneyWebhookException::invalidProductExportRoute();
-        }
-
-        $path = str_replace(['{accessKey}', '{fileName}'], [$productExport->getAccessKey(), $productExport->getFileName()], $route->getPath());
-        $url = $storefront->getHreflangDefaultDomain()?->getUrl() ?? $storefront->getDomains()?->first()?->getUrl();
-
-        $tokenBuilder = Builder::new(new JoseEncoder(), ChainedFormatter::default());
-
-        return $tokenBuilder
-            ->withClaim('storeName', $salesChannel->getTranslation('name'))
-            ->withClaim('storeUrl', $url)
-            ->withClaim('country', $salesChannel->getCountry()?->getIso())
-            ->withClaim('currency', $salesChannel->getCurrency()?->getIsoCode())
-            ->withClaim('favIcon', 'https://localhost/favicon.ico') // TODO: Need to be load
-            ->withClaim('shippingCountries', $storefront->getCountries()?->map(fn (CountryEntity $country) => $country->getIso()))
-            ->withClaim('paypalMerchantId', $this->credentialsUtil->getMerchantPayerId($storefront->getId()))
-            ->withClaim('shopwareMerchantId', $salesChannel->getId())
-            ->withClaim('catalogDownloadUrl', rtrim($url ?? '', '/') . $path)
-            ->getToken(new Sha256(), InMemory::plainText(random_bytes(32)))
-            ->toString();
     }
 
     private function loadSalesChannel(string $salesChannelId, Context $context): ?SalesChannelEntity
