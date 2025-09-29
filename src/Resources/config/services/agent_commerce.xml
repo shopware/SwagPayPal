@@ -84,16 +84,38 @@
 
         <service id="Swag\PayPal\AgentCommerce\Subscriber\WebhookSubscriber">
             <argument type="service" id="sales_channel.repository"/>
-            <argument type="service" id="Swag\PayPal\AgentCommerce\WebhookService"/>
+            <argument type="service" id="Swag\PayPal\AgentCommerce\HoneyWebhookService"/>
+            <argument type="service" id="notification.repository"/>
 
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="Swag\PayPal\AgentCommerce\WebhookService">
-            <argument type="service" id="notification.repository"/>
+        <service id="swag.paypal.honey_webhook" class="GuzzleHttp\Client" lazy="true">
+            <argument type="collection">
+                <argument key="base_uri">https://d.joinhoney.com/</argument>
+                <argument key="timeout">20</argument>
+                <argument key="connect_timeout">20</argument>
+                <argument key="headers" type="collection">
+                    <argument key="Content-Type">text/plain</argument>
+                </argument>
+            </argument>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\HoneyWebhookService">
+            <argument type="service" id="swag.paypal.honey_webhook"/>
+            <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
             <argument type="service" id="router" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="logger"/>
+        </service>
+
+        <service id="Swag\PayPal\AgentCommerce\HoneyWebhookController" public="true">
+            <argument type="service" id="Swag\PayPal\AgentCommerce\HoneyWebhookService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
     </services>
 </container>
