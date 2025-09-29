@@ -25,6 +25,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookException;
+use Swag\PayPal\AgentCommerce\Util\FaviconLoader;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
@@ -46,6 +47,7 @@ class HoneyWebhookService
         private readonly RouterInterface $router,
         private readonly SystemConfigService $systemConfigService,
         private readonly LoggerInterface $logger,
+        private readonly FaviconLoader $faviconLoader,
     ) {
     }
 
@@ -123,7 +125,7 @@ class HoneyWebhookService
                 ->withClaim('storeUrl', $url)
                 ->withClaim('country', $salesChannel->getCountry()?->getIso())
                 ->withClaim('currency', $salesChannel->getCurrency()?->getIsoCode())
-                ->withClaim('favIcon', 'https://localhost/favicon.ico') // TODO: Need to be load
+                ->withClaim('favIcon', $this->faviconLoader->loadFaviconLink($storefront->getId(), $context))
                 ->withClaim('shippingCountries', array_values($storefront->getCountries()?->map(fn (CountryEntity $country) => $country->getIso()) ?? []))
                 ->withClaim('paypalMerchantId', $this->credentialsUtil->getMerchantPayerId($storefront->getId()))
                 ->withClaim('shopwareMerchantId', $salesChannel->getId())
