@@ -82,10 +82,7 @@ class FundingSubscriber implements EventSubscriberInterface
         $event->getPage()->addExtension(self::FUNDING_ELIGIBILITY_EXTENSION, $data);
     }
 
-    /**
-     * @param CheckoutConfirmPageLoadedEvent|CheckoutRegisterPageLoadedEvent $event
-     */
-    public function removeFundingAvailabilityDataFromPage($event): void
+    public function removeFundingAvailabilityDataFromPage(CheckoutConfirmPageLoadedEvent|CheckoutRegisterPageLoadedEvent $event): void
     {
         $event->getPage()->removeExtension(self::FUNDING_ELIGIBILITY_EXTENSION);
     }
