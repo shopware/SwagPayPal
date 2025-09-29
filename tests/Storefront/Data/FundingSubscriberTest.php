@@ -55,6 +55,7 @@ class FundingSubscriberTest extends TestCase
         $events = FundingSubscriber::getSubscribedEvents();
 
         static::assertCount(4, $events);
+        // @deprecated tag:v11.0.0 - Remove this line below.
         static::assertSame('addFundingAvailabilityDataToFooter', $events[FooterPageletLoadedEvent::class]);
         static::assertSame('addFundingAvailabilityDataToPage', $events[GenericPageLoadedEvent::class]);
         static::assertSame(['removeFundingAvailabilityDataFromPage', -1], $events[CheckoutConfirmPageLoadedEvent::class]);
@@ -66,11 +67,15 @@ class FundingSubscriberTest extends TestCase
         $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
         $subscriber = $this->createSubscriber($systemConfigService);
         $event = $this->createFooterPageletLoadedEvent();
+        // @deprecated tag:v11.0.0 - Remove this line below.
         $subscriber->addFundingAvailabilityDataToFooter($event);
 
         static::assertFalse($event->getPagelet()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed.
+     */
     public function testAddFundingAvailabilityDataToFooter(): void
     {
         $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();

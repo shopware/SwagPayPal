@@ -48,7 +48,7 @@ class FundingSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @deprecated tag:v11.0.0 - Will be removed in 11.0.0.
+     * @deprecated tag:v11.0.0 - Will be removed.
      */
     public function addFundingAvailabilityDataToFooter(FooterPageletLoadedEvent $event): void
     {

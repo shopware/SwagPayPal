@@ -92,6 +92,17 @@ parameters:
             identifier: method.deprecated
             message: '#(setActiveBillingAddress|setActiveShippingAddress).*Shopware\\Core\\Checkout\\Customer\\CustomerEntity.*#'
 
+        - # v11.0.0 deprecation - addFundingAvailabilityDataToFooter will be removed
+            identifier: method.deprecated
+            message: '#Call to deprecated method addFundingAvailabilityDataToFooter\(\) of class Swag\\PayPal\\Storefront\\Data\\FundingSubscriber#'
+            path: tests/Storefront/Data/FundingSubscriberTest.php
+
+        - # Null check for extension before adding
+            identifier: argument.type
+            message: '#Parameter \#2 \$extension of method Shopware\\Core\\Framework\\Struct\\Struct::addExtension\(\) expects Shopware\\Core\\Framework\\Struct\\Struct, Shopware\\Core\\Framework\\Struct\\Struct\|null given#'
+            paths:
+                - tests/Storefront/Data/FundingSubscriberTest.php
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
