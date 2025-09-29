@@ -1,6 +1,5 @@
 includes:
     - phpstan-baseline.neon
-    - phpstan-baseline-deprecations.neon
     - phpstan.dynamic.neon
 
 parameters:
