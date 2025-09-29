@@ -8,6 +8,8 @@
 namespace Swag\PayPal\Storefront\Data;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -40,6 +42,8 @@ class FundingSubscriber implements EventSubscriberInterface
         return [
             FooterPageletLoadedEvent::class => 'addFundingAvailabilityDataToFooter',  // for backward compability
             GenericPageLoadedEvent::class => 'addFundingAvailabilityDataToPage',
+            CheckoutConfirmPageLoadedEvent::class => ['removeFundingAvailabilityDataFromPage', -1],
+            CheckoutRegisterPageLoadedEvent::class => ['removeFundingAvailabilityDataFromPage', -1],
         ];
     }
 
@@ -76,5 +80,15 @@ class FundingSubscriber implements EventSubscriberInterface
         }
 
         $event->getPage()->addExtension(self::FUNDING_ELIGIBILITY_EXTENSION, $data);
+    }
+
+    /**
+     * @param CheckoutConfirmPageLoadedEvent|CheckoutRegisterPageLoadedEvent $event
+     */
+    public function removeFundingAvailabilityDataFromPage($event): void
+    {
+        if ($event instanceof CheckoutConfirmPageLoadedEvent || $event instanceof CheckoutRegisterPageLoadedEvent) {
+            $event->getPage()->removeExtension(self::FUNDING_ELIGIBILITY_EXTENSION);
+        }
     }
 }

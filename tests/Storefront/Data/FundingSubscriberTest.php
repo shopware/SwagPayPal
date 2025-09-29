@@ -16,6 +16,10 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Generator;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPage;
+use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
@@ -50,9 +54,11 @@ class FundingSubscriberTest extends TestCase
     {
         $events = FundingSubscriber::getSubscribedEvents();
 
-        static::assertCount(2, $events);
+        static::assertCount(4, $events);
         static::assertSame('addFundingAvailabilityDataToFooter', $events[FooterPageletLoadedEvent::class]);
         static::assertSame('addFundingAvailabilityDataToPage', $events[GenericPageLoadedEvent::class]);
+        static::assertSame(['removeFundingAvailabilityDataFromPage', -1], $events[CheckoutConfirmPageLoadedEvent::class]);
+        static::assertSame(['removeFundingAvailabilityDataFromPage', -1], $events[CheckoutRegisterPageLoadedEvent::class]);
     }
 
     public function testAddNoSettings(): void
@@ -113,6 +119,64 @@ class FundingSubscriberTest extends TestCase
         static::assertSame(\mb_strtolower(ConstantsV2::INTENT_CAPTURE), $extension->getIntent());
         static::assertSame('/paypal/payment-method-eligibility', $extension->getMethodEligibilityUrl());
         static::assertSame(['SEPA'], $extension->getFilteredPaymentMethods());
+    }
+
+    public function testRemoveFundingAvailabilityDataFromCheckoutConfirmPage(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
+        $subscriber = $this->createSubscriber($systemConfigService);
+
+        // Add the extension via GenericPageLoadedEvent
+        $genericEvent = $this->createGenericPageLoadedEvent();
+        $subscriber->addFundingAvailabilityDataToPage($genericEvent);
+        static::assertTrue($genericEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+
+        // Create CheckoutConfirmPage with the extension
+        $salesChannelContext = Generator::generateSalesChannelContext();
+        $page = new CheckoutConfirmPage();
+        $page->addExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION, $genericEvent->getPage()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+
+        $confirmEvent = new CheckoutConfirmPageLoadedEvent(
+            $page,
+            $salesChannelContext,
+            new Request()
+        );
+
+        // Remove the extension
+        $subscriber->removeFundingAvailabilityDataFromPage($confirmEvent);
+
+        static::assertFalse($confirmEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+    }
+
+    public function testRemoveFundingAvailabilityDataFromCheckoutRegisterPage(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
+        $subscriber = $this->createSubscriber($systemConfigService);
+
+        // First add the extension via GenericPageLoadedEvent
+        $genericEvent = $this->createGenericPageLoadedEvent();
+        $subscriber->addFundingAvailabilityDataToPage($genericEvent);
+        static::assertTrue($genericEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+
+        // Create CheckoutRegisterPage with the extension
+        $salesChannelContext = Generator::generateSalesChannelContext();
+        $page = new CheckoutRegisterPage();
+        $page->addExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION, $genericEvent->getPage()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+
+        $registerEvent = new CheckoutRegisterPageLoadedEvent(
+            $page,
+            $salesChannelContext,
+            new Request()
+        );
+
+        // Remove the extension
+        $subscriber->removeFundingAvailabilityDataFromPage($registerEvent);
+
+        static::assertFalse($registerEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
     }
 
     private function createSubscriber(SystemConfigService $systemConfig): FundingSubscriber
