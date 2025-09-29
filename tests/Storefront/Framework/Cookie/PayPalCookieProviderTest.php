@@ -15,6 +15,8 @@ use Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider;
 
 /**
  * @internal
+ *
+ * @deprecated tag:v11.0.0 - Will be removed. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
  */
 #[Package('checkout')]
 class PayPalCookieProviderTest extends TestCase
