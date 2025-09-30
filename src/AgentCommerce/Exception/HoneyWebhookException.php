@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 class HoneyWebhookException extends HttpException
 {
     public const API_ERROR = 'API_ERROR';
-    public const FAILED_DEREGISTER = 'FAILED_DEREGISTER';
     public const NOT_REGISTERED = 'NOT_REGISTERED';
     public const SALES_CHANNEL_NOT_FOUND = 'SALES_CHANNEL_NOT_FOUND';
     public const PRODUCT_EXPORT_NOT_FOUND = 'PRODUCT_EXPORT_NOT_FOUND';

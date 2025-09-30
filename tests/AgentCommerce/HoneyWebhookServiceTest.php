@@ -34,6 +34,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\AgentCommerce\Exception\HoneyWebhookException;
 use Swag\PayPal\AgentCommerce\HoneyWebhookService;
+use Swag\PayPal\AgentCommerce\Util\FaviconLoader;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
@@ -70,6 +71,7 @@ class HoneyWebhookServiceTest extends TestCase
                 static::assertSame('https://example.com/', $jwt['storeUrl']);
                 static::assertSame('DE', $jwt['country']);
                 static::assertSame('EUR', $jwt['currency']);
+                static::assertSame('https://example.com/favicon.ico', $jwt['favIcon']);
                 static::assertSame(['DE', 'UK'], $jwt['shippingCountries']);
                 static::assertSame('SomeMerchantId', $jwt['paypalMerchantId']);
                 static::assertSame($salesChannel->getId(), $jwt['shopwareMerchantId']);
@@ -115,6 +117,12 @@ class HoneyWebhookServiceTest extends TestCase
                 'error' => null,
             ]);
 
+        $faviconMock = $this->createMock(FaviconLoader::class);
+        $faviconMock
+            ->expects($this->once())
+            ->method('loadFaviconLink')
+            ->willReturn('https://example.com/favicon.ico');
+
         $service = new HoneyWebhookService(
             $client,
             $salesChannelRepository,
@@ -122,6 +130,7 @@ class HoneyWebhookServiceTest extends TestCase
             $routeMock,
             $configServiceMock,
             $loggerMock,
+            $faviconMock
         );
 
         $result = $service->register($salesChannel->getId(), $context);
@@ -180,6 +189,7 @@ class HoneyWebhookServiceTest extends TestCase
             $this->createMock(RouterInterface::class),
             $configServiceMock,
             $loggerMock,
+            $this->createMock(FaviconLoader::class)
         );
 
         $result = $service->deregister('019980f9426c716baa53befcd0879fb4');
@@ -253,6 +263,7 @@ class HoneyWebhookServiceTest extends TestCase
             $routeMock,
             $configServiceMock,
             $loggerMock,
+            $this->createMock(FaviconLoader::class)
         );
 
         $result = $service->register($salesChannel->getId(), $context);
@@ -319,6 +330,7 @@ class HoneyWebhookServiceTest extends TestCase
             $routeMock,
             $configServiceMock,
             $loggerMock,
+            $this->createMock(FaviconLoader::class)
         );
 
         $service->register($salesChannel->getId(), $context);
@@ -352,6 +364,7 @@ class HoneyWebhookServiceTest extends TestCase
             $this->createMock(RouterInterface::class),
             $configServiceMock,
             $this->createMock(LoggerInterface::class),
+            $this->createMock(FaviconLoader::class)
         );
 
         $service->deregister(Uuid::randomHex());
@@ -399,6 +412,7 @@ class HoneyWebhookServiceTest extends TestCase
             $routeMock,
             $configServiceMock,
             $this->createMock(LoggerInterface::class),
+            $this->createMock(FaviconLoader::class)
         );
 
         $service->register($salesChannel->getId(), $context);
@@ -493,6 +507,7 @@ class HoneyWebhookServiceTest extends TestCase
             $routeMock,
             $configServiceMock,
             $loggerMock,
+            $this->createMock(FaviconLoader::class)
         );
 
         $service->register($salesChannel->getId(), $context);
@@ -545,6 +560,7 @@ class HoneyWebhookServiceTest extends TestCase
             $this->createMock(RouterInterface::class),
             $configServiceMock,
             $loggerMock,
+            $this->createMock(FaviconLoader::class)
         );
 
         $service->deregister(Uuid::randomHex());
@@ -600,6 +616,7 @@ class HoneyWebhookServiceTest extends TestCase
             $routeMock,
             $configServiceMock,
             $this->createMock(LoggerInterface::class),
+            $this->createMock(FaviconLoader::class)
         );
 
         $result = $service->register($salesChannel->getId(), $context);

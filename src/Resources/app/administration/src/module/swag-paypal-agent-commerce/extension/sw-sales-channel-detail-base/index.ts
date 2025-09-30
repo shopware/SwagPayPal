@@ -13,9 +13,11 @@ export default Shopware.Component.wrapComponentConfig({
 
     data(): {
         webhookRegistered: boolean;
+        isRefreshingWebhook: boolean;
     } {
         return {
             webhookRegistered: false,
+            isRefreshingWebhook: false,
         };
     },
 
@@ -52,14 +54,20 @@ export default Shopware.Component.wrapComponentConfig({
             this.systemConfigApiService
                 .getValues('SwagPayPal.settings', salesChannelId)
                 .then((values: PayPal.SystemConfig) => {
-                    this.webhookRegistered = values['SwagPayPal.settings.agentCommerceOnboarded'] ?? false;
+                    this.webhookRegistered = !!(values['SwagPayPal.settings.agentCommerceOnboarded'] ?? false);
                 });
         },
 
         onRefreshWebhook() {
+            this.isRefreshingWebhook = true;
+
             // @ts-expect-error - salesChannel is defined in the parent component
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            this.SwagPayPalHoneyWebhookService.register(this.salesChannel.id as string);
+            this.SwagPayPalHoneyWebhookService.register(this.salesChannel.id as string).then(() => {
+                this.createdComponent();
+
+                this.isRefreshingWebhook = false;
+            });
         },
     },
 });

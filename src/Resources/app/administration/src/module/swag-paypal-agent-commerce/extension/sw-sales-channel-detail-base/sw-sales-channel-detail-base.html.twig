@@ -92,6 +92,7 @@
                 class="swag-paypal-settings-webhook__refresh-button"
                 variant="secondary"
                 :disabled="!salesChannel.active"
+                :is-loading="isRefreshingWebhook"
                 @click="onRefreshWebhook"
             >
                 {{ $t('swag-paypal-settings.webhook.buttonRefresh') }}
