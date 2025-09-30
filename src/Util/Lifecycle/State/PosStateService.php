@@ -127,7 +127,7 @@ class PosStateService
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
-        $salesChannels = $this->salesChannelRepository->search($criteria, $context);
+        $salesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
 
         $updateData = \array_values(\array_map(
             static fn (SalesChannelEntity $salesChannel) => [
