@@ -9,7 +9,7 @@ namespace Swag\PayPal\Tests\AgentCommerce\Routing;
 
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Signer\Rsa\Sha512;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -470,7 +470,7 @@ mwIDAQAB
     private static function encodeJWT(?string $paypalMerchantId = null, ?\DateTimeImmutable $iat = null, ?\DateTimeImmutable $exp = null, ?array $scopes = null, ?string $salesChannelId = null): string
     {
         $configuration = Configuration::forAsymmetricSigner(
-            new Sha512(),
+            new Sha256(),
             InMemory::plainText(self::JWT_PRIVATE),
             InMemory::plainText(self::JWT_PUBLIC),
         );

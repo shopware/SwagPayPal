@@ -8,7 +8,7 @@
 namespace Swag\PayPal\AgentCommerce\Routing;
 
 use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Signer\Rsa\Sha512;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
@@ -153,7 +153,7 @@ kQIDAQAB
         $constraints = [
             new IssuedBy(self::JWT_EXPECTED_ISSUER),
             new LooseValidAt(new NativeClock()),
-            new SignedWith(new Sha512(), InMemory::plainText(self::$PAYPAL_JWT)),
+            new SignedWith(new Sha256(), InMemory::plainText(self::$PAYPAL_JWT)),
         ];
 
         if (!empty($scopes)) {
