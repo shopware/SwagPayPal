@@ -124,14 +124,20 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
 
     protected function createWebhookHandler()
     {
+        // Mock OrderResource to avoid actual API calls
+        $orderResource = $this->createMock(OrderResource::class);
+
+        // Mock TransactionDataService
+        $transactionDataService = $this->createMock(TransactionDataService::class);
+
         return new CaptureCompleted(
             $this->orderTransactionRepository,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
             $this->getContainer()->get(PaymentStatusUtilV2::class),
             $this->getContainer()->get(PaymentMethodDataRegistry::class),
             $this->getContainer()->get(PUIInstructionsFetchService::class),
-            $this->getContainer()->get(TransactionDataService::class),
-            $this->getContainer()->get(OrderResource::class)
+            $transactionDataService,
+            $orderResource
         );
     }
 }

@@ -16,12 +16,12 @@ use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
-use Swag\PayPal\SwagPayPal;
 
 #[Package('checkout')]
 class CaptureCompleted extends AbstractWebhookHandler
