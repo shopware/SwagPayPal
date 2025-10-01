@@ -13,12 +13,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
+use Swag\PayPal\SwagPayPal;
 
 #[Package('checkout')]
 class CaptureCompleted extends AbstractWebhookHandler
@@ -32,6 +35,8 @@ class CaptureCompleted extends AbstractWebhookHandler
         private readonly PaymentStatusUtilV2 $paymentStatusUtil,
         private readonly PaymentMethodDataRegistry $methodDataRegistry,
         private readonly PUIInstructionsFetchService $instructionsFetchService,
+        private readonly TransactionDataService $transactionDataService,
+        private readonly OrderResource $orderResource,
     ) {
         parent::__construct($orderTransactionRepository, $orderTransactionStateHandler);
     }
@@ -63,5 +68,14 @@ class CaptureCompleted extends AbstractWebhookHandler
         }
 
         $this->paymentStatusUtil->applyCaptureState($orderTransaction->getId(), $capture, $context);
+
+        // Fetch the PayPal order and set the resource ID
+        $paypalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
+        if ($paypalOrderId && \is_string($paypalOrderId)) {
+            $salesChannelId = (string) $orderTransaction->getOrder()?->getSalesChannelId();
+            $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelId);
+
+            $this->transactionDataService->setResourceId($paypalOrder, $orderTransaction->getId(), $context);
+        }
     }
 }
