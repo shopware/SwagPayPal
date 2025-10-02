@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Exception\ExistingPosSalesChannelsException;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
@@ -23,6 +24,9 @@ use Swag\PayPal\SwagPayPal;
 #[Package('checkout')]
 class PosStateService
 {
+    /**
+     * @var EntityRepository<SalesChannelCollection>
+     */
     private EntityRepository $salesChannelRepository;
 
     private EntityRepository $salesChannelTypeRepository;
@@ -117,5 +121,22 @@ class PosStateService
             'pluginId' => null,
         ]], $context);
         $this->paymentMethodRepository->delete([['id' => InformationDefaultService::POS_PAYMENT_METHOD_ID]], $context);
+    }
+
+    public function setPosSalesChannelState(bool $active, Context $context): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
+        $salesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
+
+        $updateData = \array_values(\array_map(
+            static fn (SalesChannelEntity $salesChannel) => [
+                'id' => $salesChannel->getId(),
+                'active' => $active,
+            ],
+            $salesChannels->getElements(),
+        ));
+
+        $this->salesChannelRepository->update($updateData, $context);
     }
 }

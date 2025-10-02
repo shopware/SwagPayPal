@@ -42,8 +42,6 @@ class ActivateDeactivate
     public function deactivate(Context $context): void
     {
         $this->paymentMethodStateService->setAllPaymentMethodsState(false, $context);
-        $this->posStateService->checkPosSalesChannels($context);
-        $this->posStateService->removePosSalesChannelType($context);
-        $this->posStateService->removePosDefaultEntities($context);
+        $this->posStateService->setPosSalesChannelState(false, $context);
     }
 }
