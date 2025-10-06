@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where the plugin could not be updated when Zettle Sales Channels were active (shopware/SwagPayPal#361)
+
 # 8.7.8
 - Behebt ein Problem, bei dem Apple Pay aufgrund nicht unterstützte Zeichen im Anzeigenamen abbrechen konnte (shopware/SwagPayPal#331)
 
