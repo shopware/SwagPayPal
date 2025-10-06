@@ -1,0 +1,7 @@
+{% sw_extends '@Framework/documents/style_base_portrait.css.twig' %}
+
+{% block document_style %}
+    {{ parent() }}
+
+    {% sw_include '@SwagPayPal/documents/paypal_style_base.css.twig' %}
+{% endblock %}

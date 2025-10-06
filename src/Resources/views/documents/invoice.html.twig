@@ -16,31 +16,35 @@
 
     {% if payPalPuiPaymentInstruction %}
         <br>
-        <div>{{ 'paypal.payUponInvoice.document.paymentNoteRatepay'|trans({"%companyName%": config.companyName}) }}</div>
+        <div class="pay-upon-invoice--payment-note">
+            {{ 'paypal.payUponInvoice.document.paymentNoteRatepay'|trans({"%companyName%": config.companyName}) }}
+        </div>
         <br>
-        <div>{{ "paypal.payUponInvoice.instructions.transferRequest"|trans({"%value%": order.amountTotal|currency}) }}</div>
-        <table cellspacing="0">
-            <tr>
-                <th align="left">{{ "paypal.payUponInvoice.instructions.table.bank"|trans() }}</th>
-                <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.bank_name }}</td>
-            </tr>
-            <tr>
-                <th align="left">{{ "paypal.payUponInvoice.instructions.table.iban"|trans() }}</th>
-                <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.iban }}</td>
-            </tr>
-            <tr>
-                <th align="left">{{ "paypal.payUponInvoice.instructions.table.bic"|trans() }}</th>
-                <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.bic }}</td>
-            </tr>
-            <tr>
-                <th align="left">{{ "paypal.payUponInvoice.instructions.table.holder"|trans() }}</th>
-                <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.account_holder_name }}</td>
-            </tr>
-            <tr>
-                <th align="left">{{ "paypal.payUponInvoice.instructions.table.reference"|trans() }}</th>
-                <td>{{ payPalPuiPaymentInstruction.payment_reference }}</td>
-            </tr>
-        </table>
+        <div class="pay-upon-invoice--payment-instructions">
+            <div>{{ "paypal.payUponInvoice.instructions.transferRequest"|trans({"%value%": order.amountTotal|currency}) }}</div>
+            <table cellspacing="0">
+                <tr>
+                    <th align="left">{{ "paypal.payUponInvoice.instructions.table.bank"|trans() }}</th>
+                    <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.bank_name }}</td>
+                </tr>
+                <tr>
+                    <th align="left">{{ "paypal.payUponInvoice.instructions.table.iban"|trans() }}</th>
+                    <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.iban }}</td>
+                </tr>
+                <tr>
+                    <th align="left">{{ "paypal.payUponInvoice.instructions.table.bic"|trans() }}</th>
+                    <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.bic }}</td>
+                </tr>
+                <tr>
+                    <th align="left">{{ "paypal.payUponInvoice.instructions.table.holder"|trans() }}</th>
+                    <td>{{ payPalPuiPaymentInstruction.deposit_bank_details.account_holder_name }}</td>
+                </tr>
+                <tr>
+                    <th align="left">{{ "paypal.payUponInvoice.instructions.table.reference"|trans() }}</th>
+                    <td>{{ payPalPuiPaymentInstruction.payment_reference }}</td>
+                </tr>
+            </table>
+        </div>
     {% endif %}
 {% endblock %}
 
