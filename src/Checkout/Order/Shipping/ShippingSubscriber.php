@@ -53,7 +53,7 @@ class ShippingSubscriber implements EventSubscriberInterface
                 continue;
             }
 
-            if (!isset($command->getPayload()['tracking_codes'])) {
+            if (!\array_key_exists('tracking_codes', $command->getPayload())) {
                 continue;
             }
 
@@ -79,7 +79,7 @@ class ShippingSubscriber implements EventSubscriberInterface
             }
 
             // If there is no change set (e.g. for a insert command), we only want to continue if tracking codes are part of the payload
-            if (!$changeSet && !isset($writeResult->getPayload()['trackingCodes'])) {
+            if (!$changeSet && !\array_key_exists('trackingCodes', $writeResult->getPayload())) {
                 continue;
             }
 

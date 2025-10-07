@@ -54,7 +54,6 @@ class ShippingSubscriberTest extends TestCase
         yield 'inserted one tracking code, without changeset' => [
             new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => [self::TEST_CODE]], 'order_delivery', EntityWriteResult::OPERATION_INSERT, null, null),
             [self::TEST_CODE],
-            [],
             true,
         ];
 
@@ -65,7 +64,6 @@ class ShippingSubscriberTest extends TestCase
                 false,
             )),
             [self::TEST_CODE],
-            [],
             true,
         ];
 
@@ -76,7 +74,6 @@ class ShippingSubscriberTest extends TestCase
                 false,
             )),
             [],
-            [self::TEST_CODE],
             true,
         ];
 
@@ -87,13 +84,11 @@ class ShippingSubscriberTest extends TestCase
                 true,
             )),
             null,
-            [],
             true,
         ];
 
         yield 'updated without tracking codes or changeset' => [
             new EntityWriteResult(Uuid::randomHex(), [], 'order_delivery', EntityWriteResult::OPERATION_UPDATE, null, null),
-            null,
             null,
             false,
         ];
@@ -142,7 +137,7 @@ class ShippingSubscriberTest extends TestCase
     }
 
     #[DataProvider('dataProviderWriteResult')]
-    public function testOnOrderDeliveryWritten(EntityWriteResult $result, ?array $expectedAfter, array $expectedBefore, bool $expectEvent): void
+    public function testOnOrderDeliveryWritten(EntityWriteResult $result, ?array $expectedAfter, bool $expectEvent): void
     {
         $event = new EntityWrittenEvent(
             'order_delivery',
