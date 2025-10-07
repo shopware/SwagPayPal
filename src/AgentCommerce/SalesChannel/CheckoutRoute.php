@@ -57,9 +57,14 @@ class CheckoutRoute extends AbstractAgentCommerceRoute
             ->order($cart, $context, new RequestDataBag($request->request->all()))
             ->getOrder();
 
-        $primaryTransaction = $order->getPrimaryOrderTransactionId();
+        $primaryTransactionId = $order->getTransactions()?->last()?->getId();
 
-        if (!$primaryTransaction) {
+        // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.1.0, keep content
+        if (\method_exists($order, 'getPrimaryTransactionId')) {
+            $primaryTransactionId = $order->getPrimaryTransactionId();
+        }
+
+        if (!$primaryTransactionId) {
             throw AgentException::orderSystemError();
         }
 
@@ -72,7 +77,7 @@ class CheckoutRoute extends AbstractAgentCommerceRoute
         $payPalCart->setStatus(PayPalCart::STATUS__COMPLETE);
         $payPalCart->setPaymentMethod($this->createPaymentMethod($payPalOrder->getId()));
 
-        $response = $this->paymentHandler->pay($request, new PaymentTransactionStruct($primaryTransaction), $context->getContext(), null);
+        $response = $this->paymentHandler->pay($request, new PaymentTransactionStruct($primaryTransactionId), $context->getContext(), null);
 
         if ($response instanceof RedirectResponse) {
             $payPalCart->setStatus(PayPalCart::STATUS__INCOMPLETE);

@@ -83,7 +83,6 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
             $purchaseUnitPatch->setValue($purchaseUnitArray);
 
             $this->orderResource->update([$purchaseUnitPatch], $orderId, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP);
-            $orderId = $this->orderResource->get($orderId, $salesChannelContext->getSalesChannelId())->getId();
         } else {
             $orderId = $this->orderResource->create($order, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP)->getId();
         }

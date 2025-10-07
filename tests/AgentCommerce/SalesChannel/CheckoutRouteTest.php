@@ -13,6 +13,8 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRouteResponse;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Log\Package;
@@ -85,7 +87,7 @@ class CheckoutRouteTest extends TestCase
             ->willReturn(Generator::createCart());
 
         $order = new OrderEntity();
-        $order->setPrimaryOrderTransactionId(null);
+        $order->setTransactions(new OrderTransactionCollection([]));
 
         $orderResponse = new CartOrderRouteResponse($order);
 
@@ -115,8 +117,7 @@ class CheckoutRouteTest extends TestCase
         $context = Generator::generateSalesChannelContext();
         $cart = Generator::createCart();
 
-        $request = new Request();
-        $request->request->set('payment_method', ['token' => 'PAYPAL-ORDER-ID']);
+        $request = new Request(content: \json_encode(['payment_method' => ['token' => 'PAYPAL-ORDER-ID']], \JSON_THROW_ON_ERROR));
 
         $cartService = $this->createMock(CartService::class);
         $cartService
@@ -125,8 +126,11 @@ class CheckoutRouteTest extends TestCase
             ->with('TOKEN')
             ->willReturn($cart);
 
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('primary-order-transaction-id');
+
         $order = new OrderEntity();
-        $order->setPrimaryOrderTransactionId('primary-order-transaction-id');
+        $order->setTransactions(new OrderTransactionCollection([$transaction]));
 
         $orderResponse = new CartOrderRouteResponse($order);
 
@@ -187,8 +191,7 @@ class CheckoutRouteTest extends TestCase
         $context = Generator::generateSalesChannelContext();
         $cart = Generator::createCart();
 
-        $request = new Request();
-        $request->request->set('payment_method', ['token' => 'PAYPAL-ORDER-ID']);
+        $request = new Request(content: \json_encode(['payment_method' => ['token' => 'PAYPAL-ORDER-ID']], \JSON_THROW_ON_ERROR));
 
         $cartService = $this->createMock(CartService::class);
         $cartService
@@ -197,8 +200,11 @@ class CheckoutRouteTest extends TestCase
             ->with('TOKEN')
             ->willReturn($cart);
 
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('primary-order-transaction-id');
+
         $order = new OrderEntity();
-        $order->setPrimaryOrderTransactionId('primary-order-transaction-id');
+        $order->setTransactions(new OrderTransactionCollection([$transaction]));
 
         $orderResponse = new CartOrderRouteResponse($order);
 
