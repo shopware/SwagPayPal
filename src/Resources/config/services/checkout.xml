@@ -208,6 +208,7 @@
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
             <argument type="service" id="monolog.logger.paypal"/>
             <tag name="messenger.message_handler" />
         </service>

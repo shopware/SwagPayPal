@@ -14,8 +14,10 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
@@ -103,6 +105,8 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
                 $paymentStatusUtil,
                 $methodDataRegistry,
                 $instructionsFetchService,
+                $this->createMock(TransactionDataService::class),
+                $this->createMock(OrderResource::class),
             ])
             ->onlyMethods(['getOrderTransactionV2'])
             ->getMock();
@@ -120,12 +124,20 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
 
     protected function createWebhookHandler()
     {
+        // Mock OrderResource to avoid actual API calls
+        $orderResource = $this->createMock(OrderResource::class);
+
+        // Mock TransactionDataService
+        $transactionDataService = $this->createMock(TransactionDataService::class);
+
         return new CaptureCompleted(
             $this->orderTransactionRepository,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
             $this->getContainer()->get(PaymentStatusUtilV2::class),
             $this->getContainer()->get(PaymentMethodDataRegistry::class),
-            $this->getContainer()->get(PUIInstructionsFetchService::class)
+            $this->getContainer()->get(PUIInstructionsFetchService::class),
+            $transactionDataService,
+            $orderResource
         );
     }
 }
