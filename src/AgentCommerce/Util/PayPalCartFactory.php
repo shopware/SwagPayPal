@@ -68,11 +68,11 @@ class PayPalCartFactory
             throw AgentException::requiredFieldsMissing('address.addressLine1');
         }
 
-        if (!$address->getAddressLine2()) {
-            throw AgentException::requiredFieldsMissing('address.addressLine2');
+        if (!$address->getAdminArea2()) {
+            throw AgentException::requiredFieldsMissing('address.adminArea2');
         }
 
-        if (!$address->getCountryCode()) {
+        if (!$address->isset('countryCode')) {
             throw AgentException::requiredFieldsMissing('address.countryCode');
         }
     }
@@ -89,7 +89,7 @@ class PayPalCartFactory
             }
 
             if (!$item->isset('quantity')) {
-                throw AgentException::requiredFieldInvalid(\sprintf('cart.items.%s.quantity', $key), 'Not a valid UUID');
+                throw AgentException::requiredFieldsMissing(\sprintf('cart.items.%s.quantity', $key));
             }
         }
     }

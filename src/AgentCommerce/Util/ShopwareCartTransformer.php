@@ -92,7 +92,7 @@ class ShopwareCartTransformer
             'firstName' => $name->getGivenName(),
             'lastName' => $name->getSurname(),
             'zipcode' => $address->getPostalCode(),
-            'city' => $address->getAddressLine2(),
+            'city' => $address->getAdminArea2(),
             'street' => $address->getAddressLine1(),
             'phoneNumber' => $phone?->getFullPhoneNumber(),
         ];

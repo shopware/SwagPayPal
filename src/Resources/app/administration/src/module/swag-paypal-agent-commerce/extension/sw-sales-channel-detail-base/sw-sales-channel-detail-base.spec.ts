@@ -39,6 +39,10 @@ async function createWrapper() {
                         },
                     }),
                 },
+                systemConfigApiService: { getValues: () => Promise.resolve([]) },
+                SwagPayPalHoneyWebhookService: {
+                    register: jest.fn(() => Promise.resolve()),
+                },
             },
         },
     });

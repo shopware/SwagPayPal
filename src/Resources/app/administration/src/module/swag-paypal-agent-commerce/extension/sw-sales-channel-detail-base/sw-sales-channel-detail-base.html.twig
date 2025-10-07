@@ -59,3 +59,46 @@
         {% parent %}
     </template>
 {% endblock %}
+
+{% block sw_sales_channel_detail_base_options_delete %}
+    <mt-card
+        class="swag-paypal-settings-webhook"
+        position-identifier="swag-paypal-settings-webhook"
+    >
+        <template #title>
+            <div class="swag-paypal-settings-webhook__title">
+                <p>
+                    {{ $t('swag-paypal-settings.webhook.title') }}
+                </p>
+
+                <sw-label
+                    class="swag-paypal-settings-webhook__label"
+                    appearance="pill"
+                    size="medium"
+                    :variant="webhookStatusVariant"
+                >
+                    <sw-color-badge :rounded="true" :variant="webhookStatusVariant" />
+                    <span>{{ webhookStatusLabel }}</span>
+                </sw-label>
+            </div>
+        </template>
+
+        <div class="swag-paypal-settings-webhook__content">
+        <span class="swag-paypal-settings-webhook__info-text">
+            {{ $t('swag-paypal-settings.webhook.honey.info') }}
+        </span>
+
+            <mt-button
+                class="swag-paypal-settings-webhook__refresh-button"
+                variant="secondary"
+                :disabled="!salesChannel.active"
+                :is-loading="isRefreshingWebhook"
+                @click="onRefreshWebhook"
+            >
+                {{ $t('swag-paypal-settings.webhook.buttonRefresh') }}
+            </mt-button>
+        </div>
+    </mt-card>
+
+    {% parent %}
+{% endblock %}

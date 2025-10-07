@@ -8,6 +8,7 @@ import type SwagPaypalPosLogLabelMixin from './mixin/swag-paypal-pos-log-label.m
 import type SwagPaypalSettingsMixin from './mixin/swag-paypal-settings.mixin';
 import type SwagPaypalMerchantInformationMixin from './mixin/swag-paypal-merchant-information.mixin';
 import type SwagPayPalDisputeApiService from './core/service/api/swag-paypal-dispute.api.service';
+import type SwagPayPalHoneyWebhookService from './core/service/api/swag-paypal-honey-webhook.service';
 import type SwagPayPalOrderService from './core/service/api/swag-paypal-order.service';
 import type SwagPaypalPaymentMethodService from './core/service/api/swag-paypal-payment-method.service';
 import type SwagPayPalPaymentService from './core/service/api/swag-paypal-payment.service';
@@ -41,6 +42,7 @@ declare global {
         SwagPayPalPosWebhookRegisterService: SwagPayPalPosWebhookRegisterService;
         SwagPayPalWebhookService: SwagPayPalWebhookService;
         SwagPayPalPaymentService: SwagPayPalPaymentService;
+        SwagPayPalHoneyWebhookService: SwagPayPalHoneyWebhookService;
         SwagPayPalOrderService: SwagPayPalOrderService;
         SwagPaypalPaymentMethodService: SwagPaypalPaymentMethodService;
         SwagPayPalDisputeApiService: SwagPayPalDisputeApiService;
