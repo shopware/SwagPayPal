@@ -16,11 +16,11 @@
 
     {% if payPalPuiPaymentInstruction %}
         <br>
-        <div class="pay-upon-invoice--payment-note">
+        <div class="swag-paypal-pay-upon-invoice--payment-note">
             {{ 'paypal.payUponInvoice.document.paymentNoteRatepay'|trans({"%companyName%": config.companyName}) }}
         </div>
         <br>
-        <div class="pay-upon-invoice--payment-instructions">
+        <div class="swag-paypal-pay-upon-invoice--payment-instructions">
             <div>{{ "paypal.payUponInvoice.instructions.transferRequest"|trans({"%value%": order.amountTotal|currency}) }}</div>
             <table cellspacing="0">
                 <tr>
