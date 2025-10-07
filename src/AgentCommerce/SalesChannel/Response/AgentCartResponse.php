@@ -25,4 +25,9 @@ final class AgentCartResponse extends StoreApiResponse
             new ArrayStruct($this->cart->jsonSerialize())
         );
     }
+
+    public function getCart(): PayPalCart
+    {
+        return $this->cart;
+    }
 }
