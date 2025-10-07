@@ -21,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\StateMachineException;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -39,6 +40,7 @@ class TransactionStatusSyncMessageHandler
         private readonly EntityRepository $orderTransactionRepository,
         private readonly OrderTransactionStateHandler $orderTransactionStateHandler,
         private readonly OrderResource $orderResource,
+        private readonly TransactionDataService $transactionDataService,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -74,6 +76,9 @@ class TransactionStatusSyncMessageHandler
             }
 
             $order = $this->orderResource->get($message->getPayPalOrderId(), $message->getSalesChannelId());
+
+            // Set the resource ID for the transaction
+            $this->transactionDataService->setResourceId($order, $message->getTransactionId(), $context);
 
             if ($order->getIntent() === ConstantsV2::INTENT_CAPTURE) {
                 match ($order->getPurchaseUnits()->first()?->getPayments()?->getCaptures()?->first()?->getStatus()) {
