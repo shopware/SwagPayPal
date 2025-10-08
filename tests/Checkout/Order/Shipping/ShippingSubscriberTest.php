@@ -54,7 +54,7 @@ class ShippingSubscriberTest extends TestCase
         yield 'inserted one tracking code, without changeset' => [
             new EntityWriteResult(Uuid::randomHex(), ['trackingCodes' => [self::TEST_CODE]], 'order_delivery', EntityWriteResult::OPERATION_INSERT, null, null),
             [self::TEST_CODE],
-            [],
+            true,
         ];
 
         yield 'updated one tracking code, with changeset' => [
@@ -64,7 +64,7 @@ class ShippingSubscriberTest extends TestCase
                 false,
             )),
             [self::TEST_CODE],
-            [],
+            true,
         ];
 
         yield 'deleted one existing tracking code, with changeset' => [
@@ -74,7 +74,7 @@ class ShippingSubscriberTest extends TestCase
                 false,
             )),
             [],
-            [self::TEST_CODE],
+            true,
         ];
 
         yield 'deleted one not existing tracking code, with changeset' => [
@@ -84,7 +84,13 @@ class ShippingSubscriberTest extends TestCase
                 true,
             )),
             null,
-            [],
+            true,
+        ];
+
+        yield 'updated without tracking codes or changeset' => [
+            new EntityWriteResult(Uuid::randomHex(), [], 'order_delivery', EntityWriteResult::OPERATION_UPDATE, null, null),
+            null,
+            false,
         ];
     }
 
@@ -131,7 +137,7 @@ class ShippingSubscriberTest extends TestCase
     }
 
     #[DataProvider('dataProviderWriteResult')]
-    public function testOnOrderDeliveryWritten(EntityWriteResult $result, ?array $expectedAfter, array $expectedBefore): void
+    public function testOnOrderDeliveryWritten(EntityWriteResult $result, ?array $expectedAfter, bool $expectEvent): void
     {
         $event = new EntityWrittenEvent(
             'order_delivery',
@@ -142,14 +148,20 @@ class ShippingSubscriberTest extends TestCase
             [],
         );
 
-        $this->bus
-            ->expects($expectedAfter === null ? static::never() : static::once())
-            ->method('dispatch')
-            ->willReturnCallback(function (ShippingInformationMessage $message) use (&$result): Envelope {
-                static::assertSame($result->getPrimaryKey(), $message->getOrderDeliveryId());
+        if ($expectEvent) {
+            $this->bus
+                ->expects($expectedAfter === null ? $this->never() : $this->once())
+                ->method('dispatch')
+                ->willReturnCallback(function (ShippingInformationMessage $message) use (&$result): Envelope {
+                    static::assertSame($result->getPrimaryKey(), $message->getOrderDeliveryId());
 
-                return new Envelope($message);
-            });
+                    return new Envelope($message);
+                });
+        } else {
+            $this->bus
+                ->expects($this->never())
+                ->method('dispatch');
+        }
 
         $this->subscriber->onOrderDeliveryWritten($event);
     }
