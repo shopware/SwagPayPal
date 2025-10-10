@@ -54,11 +54,17 @@ runs:
       run: |
         DEPS='[
             {
-              "name":"SwagCmsExtensions",
-              "repo": "https://github.com/shopware/SwagCmsExtensions.git",
-              "token": "${{ steps.octo-sts.outputs.token }}"
+                "name":"SwagCmsExtensions",
+                "repo": "https://github.com/shopware/SwagCmsExtensions.git",
+                "token": "${{ steps.octo-sts.outputs.token }}"
             }
-          ]'
+        ]'
+
+        # @deprecated tag:v11.0.0 - Will be removed
+        if [ "${{ inputs.shopware-version }}" = "v6.7.0.0" ]; then
+            # require last ref of SwagCmsExtensions before requiring ~6.7.3
+            DEPS=$(echo "$DEPS" | jq '[.[0] + {"branch": "0b5f9df838541c47f67f3d4af14d94f01fa0b189"}]')
+        fi
 
         REPOS='{
             "${{ github.event.repository.name }}": {
@@ -71,26 +77,30 @@ runs:
               "url": "custom/plugins/SwagCmsExtensions",
               "symlink": true
             }
-          }'
+        }'
 
         if [[ "${{ inputs.install-commercial }}" == "true" ]]; then
-          DEPS=$(jq -s 'add' <(echo $DEPS) <(echo '[
-            {
-              "name":"SwagCommercial",
-              "repo": "https://github.com/shopware/SwagCommercial.git",
-              "branch": "${{ inputs.shopware-version }}",
-              "token": "${{ steps.octo-sts.outputs.token }}"
-            }]'))
-          REPOS=$(jq -s 'add' <(echo $REPOS) <(echo '{
-            "SwagCommercial": {
-              "type": "path",
-              "url": "custom/plugins/SwagCommercial",
-              "symlink": true
-            }
-          }'))
+            DEPS=$(jq -s 'add' <(echo $DEPS) <(echo '[
+                {
+                    "name":"SwagCommercial",
+                    "repo": "https://github.com/shopware/SwagCommercial.git",
+                    "branch": "${{ inputs.shopware-version }}",
+                    "token": "${{ steps.octo-sts.outputs.token }}"
+                }
+            ]'))
+
+            REPOS=$(jq -s 'add' <(echo $REPOS) <(echo '{
+                "SwagCommercial": {
+                    "type": "path",
+                    "url": "custom/plugins/SwagCommercial",
+                    "symlink": true
+                }
+            }'))
         fi
+
         echo "deps=$(echo $DEPS | jq -c .)" >> "$GITHUB_OUTPUT"
         echo "repos=$(echo $REPOS | jq -c .)" >> "$GITHUB_OUTPUT"
+
     - uses: shopware/github-actions/setup-extension@main
       with:
         extension-zip: ${{ inputs.extension-zip }}

@@ -8,6 +8,9 @@
 namespace Swag\PayPal\Storefront\Data;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
+use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -37,11 +40,17 @@ class FundingSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            FooterPageletLoadedEvent::class => 'addFundingAvailabilityData',
+            FooterPageletLoadedEvent::class => 'addFundingAvailabilityDataToFooter',  // for backward compability
+            GenericPageLoadedEvent::class => 'addFundingAvailabilityDataToPage',
+            CheckoutConfirmPageLoadedEvent::class => ['removeFundingAvailabilityDataFromPage', -1],
+            CheckoutRegisterPageLoadedEvent::class => ['removeFundingAvailabilityDataFromPage', -1],
         ];
     }
 
-    public function addFundingAvailabilityData(FooterPageletLoadedEvent $event): void
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed.
+     */
+    public function addFundingAvailabilityDataToFooter(FooterPageletLoadedEvent $event): void
     {
         try {
             $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannelId());
@@ -55,5 +64,26 @@ class FundingSubscriber implements EventSubscriberInterface
         }
 
         $event->getPagelet()->addExtension(self::FUNDING_ELIGIBILITY_EXTENSION, $data);
+    }
+
+    public function addFundingAvailabilityDataToPage(GenericPageLoadedEvent $event): void
+    {
+        try {
+            $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannelId());
+        } catch (PayPalSettingsInvalidException $e) {
+            return;
+        }
+
+        $data = $this->fundingEligibilityDataService->buildData($event->getSalesChannelContext());
+        if ($data === null) {
+            return;
+        }
+
+        $event->getPage()->addExtension(self::FUNDING_ELIGIBILITY_EXTENSION, $data);
+    }
+
+    public function removeFundingAvailabilityDataFromPage(CheckoutConfirmPageLoadedEvent|CheckoutRegisterPageLoadedEvent $event): void
+    {
+        $event->getPage()->removeExtension(self::FUNDING_ELIGIBILITY_EXTENSION);
     }
 }
