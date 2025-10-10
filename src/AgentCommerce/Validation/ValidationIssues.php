@@ -14,6 +14,8 @@ use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Content\Product\Cart\MinOrderQuantityError;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
+use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
+use Shopware\Core\Content\Product\Cart\ProductStockReachedError;
 use Shopware\Core\Content\Product\Cart\PurchaseStepsError;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
@@ -134,7 +136,7 @@ class ValidationIssues
         $validationIssue = new ValidationIssue();
         $validationIssue->setMessage($error->getId());
         $validationIssue->setMessage($this->translator->trans(\sprintf('swag_paypal.agent_commerce.validation_issue.error.%s.message', $error->getMessageKey()), $parameters));
-        $validationIssue->setUserMessage($this->translator->trans(\sprintf('swag_paypal.agent_commerce.validation_issue.error.%s.user_message', $error->getMessageKey()), $parameters));
+        $validationIssue->setUserMessage($error->getTranslatedMessage());
         $validationIssue->setType(ValidationIssue::TYPE__BUSINESS_RULE);
         $validationIssue->setCode(ValidationIssue::CODE__BUSINESS_RULE_ERROR);
 
@@ -142,6 +144,8 @@ class ValidationIssues
             case ProductNotFoundError::class:
             case PurchaseStepsError::class:
             case MinOrderQuantityError::class:
+            case ProductOutOfStockError::class:
+            case ProductStockReachedError::class:
                 $validationIssue->setCode(ValidationIssue::CODE__INVENTORY_ISSUE);
                 $validationIssue->setItemId(str_replace($error->getMessageKey(), '', $error->getId()));
 

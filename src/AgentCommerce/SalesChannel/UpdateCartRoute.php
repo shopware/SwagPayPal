@@ -10,17 +10,21 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressCollection;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
+use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
 use Swag\PayPal\AgentCommerce\Validation\CartTokenValidator;
-use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -42,7 +46,8 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
         private readonly CreateCartRoute $createCartRoute,
         private readonly EntityRepository $customerRepository,
         private readonly EntityRepository $customerAddressRepository,
-        private readonly CartService $cartService
+        private readonly CartService $cartService,
+        private readonly ContextSwitchRoute $contextSwitchRoute,
     ) {
     }
 
@@ -51,51 +56,12 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
     {
         CartTokenValidator::validateCartToken($token);
 
-        $toDeleteAddress = null;
-        $customer = $salesChannelContext->getCustomer();
         $payPalCart = (new PayPalCart())->assign($request->getPayload()->all());
-        if ($customer && $payPalCart->getCustomer()) {
-            $customerData = $this->shopwareCartTransformer->extractCustomerData($payPalCart, $salesChannelContext->getSalesChannelId(), $salesChannelContext->getContext());
-            $customerData['id'] = $customer->getId();
-            $customerData['shippingAddress']['id'] = $customer->getDefaultShippingAddress()?->getId();
-            $customerData['defaultShippingAddress'] = $customerData['shippingAddress'];
-
-            if (isset($customerData['billingAddress'])) {
-                $customerData['billingAddress']['id'] = $customer->getDefaultBillingAddress()?->getId() ?? Uuid::randomHex();
-                $customerData['defaultBillingAddress'] = $customerData['billingAddress'];
-            } elseif ($customer->getDefaultShippingAddressId() !== $customer->getDefaultBillingAddressId()) {
-                $toDeleteAddress = [['id' => $customer->getDefaultBillingAddressId()]];
-
-                $customerData['defaultBillingAddressId'] = $customer->getDefaultShippingAddressId();
-            }
-
-            unset($customerData['shippingAddress'], $customerData['billingAddress']);
-
-            $this->customerRepository->update([$customerData], $salesChannelContext->getContext());
-
-            if (!empty($toDeleteAddress)) {
-                $this->customerAddressRepository->delete($toDeleteAddress, $salesChannelContext->getContext());
-            }
-
-            $salesChannelContext = $this->createSalesChannelContext(
-                $salesChannelContext->getToken(),
-                $salesChannelContext->getSalesChannelId(),
-                $salesChannelContext->getContext()
-            );
-        } elseif ($customer && !$payPalCart->getCustomer()) {
-            $this->customerRepository->delete([['id' => $customer->getId()]], $salesChannelContext->getContext());
-
-            $salesChannelContext = $this->createSalesChannelContext(
-                $salesChannelContext->getToken(),
-                $salesChannelContext->getSalesChannelId(),
-                $salesChannelContext->getContext()
-            );
-        }
+        $salesChannelContext = $this->loginCustomer($payPalCart, $salesChannelContext);
 
         $this->cartService->deleteCart($salesChannelContext);
 
-        $body = \json_decode($request->getContent(), true, flags: \JSON_THROW_ON_ERROR);
-        $request->attributes->set(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME, $body['payment_method']['token'] ?? null);
+        $salesChannelContext = $this->changeShippingMethod($payPalCart, $salesChannelContext);
 
         $response = $this->createCartRoute->createCart($request, $salesChannelContext);
 
@@ -108,5 +74,85 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
         }
 
         return $response;
+    }
+
+    private function loginCustomer(PayPalCart $payPalCart, SalesChannelContext $salesChannelContext): SalesChannelContext
+    {
+        $customer = $salesChannelContext->getCustomer();
+        if (!$customer instanceof CustomerEntity) {
+            return $salesChannelContext;
+        }
+
+        if (!$payPalCart->getCustomer()) {
+            $this->customerRepository->delete([['id' => $customer->getId()]], $salesChannelContext->getContext());
+
+            return $this->createSalesChannelContext(
+                $salesChannelContext->getToken(),
+                $salesChannelContext->getSalesChannelId(),
+                $salesChannelContext->getContext()
+            );
+        }
+
+        $customerData = $this->shopwareCartTransformer->extractCustomerData($payPalCart, $salesChannelContext->getSalesChannelId(), $salesChannelContext->getContext());
+        $customerData['id'] = $customer->getId();
+        $customerData['shippingAddress']['id'] = $customer->getDefaultShippingAddress()?->getId();
+        $customerData['defaultShippingAddress'] = $customerData['shippingAddress'];
+
+        $toDeleteAddress = null;
+        if (isset($customerData['billingAddress'])) {
+            $customerData['billingAddress']['id'] = $customer->getDefaultBillingAddress()?->getId() ?? Uuid::randomHex();
+            $customerData['defaultBillingAddress'] = $customerData['billingAddress'];
+        } elseif ($customer->getDefaultShippingAddressId() !== $customer->getDefaultBillingAddressId()) {
+            $toDeleteAddress = [['id' => $customer->getDefaultBillingAddressId()]];
+
+            $customerData['defaultBillingAddressId'] = $customer->getDefaultShippingAddressId();
+        }
+
+        unset($customerData['shippingAddress'], $customerData['billingAddress']);
+
+        $this->customerRepository->update([$customerData], $salesChannelContext->getContext());
+
+        if (!empty($toDeleteAddress)) {
+            $this->customerAddressRepository->delete($toDeleteAddress, $salesChannelContext->getContext());
+        }
+
+        return $this->createSalesChannelContext(
+            $salesChannelContext->getToken(),
+            $salesChannelContext->getSalesChannelId(),
+            $salesChannelContext->getContext()
+        );
+    }
+
+    private function changeShippingMethod(PayPalCart $payPalCart, SalesChannelContext $salesChannelContext): SalesChannelContext
+    {
+        $shippingOptions = $payPalCart->getAvailableShippingOptions();
+        if (!$shippingOptions) {
+            return $salesChannelContext;
+        }
+
+        foreach ($shippingOptions as $shippingOption) {
+            if (!$shippingOption->isSelected()) {
+                continue;
+            }
+
+            if ($shippingOption->getId() === $salesChannelContext->getShippingMethod()->getId()) {
+                // Right shipping method already selected
+                break;
+            }
+
+            try {
+                $this->contextSwitchRoute->switchContext(new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shippingOption->getId()]), $salesChannelContext);
+            } catch (ConstraintViolationException $e) {
+                throw AgentException::requiredFieldInvalid('availableShippingOption.id', $e->getViolations()->__toString());
+            }
+
+            return $this->createSalesChannelContext(
+                $salesChannelContext->getToken(),
+                $salesChannelContext->getSalesChannelId(),
+                $salesChannelContext->getContext()
+            );
+        }
+
+        return $salesChannelContext;
     }
 }
