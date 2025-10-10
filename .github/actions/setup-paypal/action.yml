@@ -61,7 +61,7 @@ runs:
         ]'
 
         # @deprecated tag:v11.0.0 - Will be removed
-        if [ "${{ inputs.shopware-version }}" = "6.7.0.0" ]; then
+        if [ "${{ inputs.shopware-version }}" = "v6.7.0.0" ]; then
             # require last ref of SwagCmsExtensions before requiring ~6.7.3
             DEPS=$(echo "$DEPS" | jq '[.[0] + {"branch": "0b5f9df838541c47f67f3d4af14d94f01fa0b189"}]')
         fi
