@@ -71,9 +71,8 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         $swCart = $this->cartService->add($swCart, $lineItems, $salesChannelContext);
 
         $order = $this->orderBuilder->getOrderFromCart($swCart, $salesChannelContext, new RequestDataBag($request->request->all()));
-        $orderId = $request->attributes->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
 
-        if ($orderId) {
+        if ($payPalCart->getPaymentMethod()?->getToken()) {
             $purchaseUnit = $order->getPurchaseUnits()->first();
             $purchaseUnitArray = \json_decode((string) \json_encode($purchaseUnit), true);
 
@@ -82,7 +81,7 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
             $purchaseUnitPatch->setPath('/purchase_units/@reference_id==\'default\'');
             $purchaseUnitPatch->setValue($purchaseUnitArray);
 
-            $this->orderResource->update([$purchaseUnitPatch], $orderId, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP);
+            $this->orderResource->update([$purchaseUnitPatch], $payPalCart->getPaymentMethod()?->getToken(), $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP);
         } else {
             $orderId = $this->orderResource->create($order, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP)->getId();
         }
