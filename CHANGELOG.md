@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.1.2
 - Fixes an issue, where the plugin could not be updated when Zettle Sales Channels were active (shopware/SwagPayPal#361)
+- Fixes an issue, where Pay Upon Invoice payment information could misalign invoice documents (shopware/SwagPayPal#394)
 
 # 10.1.1
 - Fixes an issue, where PUI payment details were not shown, if the "logout guest customer after order" setting was enabled (shopware/SwagPayPal#315, requires Shopware 6.7.2.0 or higher)
