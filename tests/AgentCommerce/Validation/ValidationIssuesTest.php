@@ -257,8 +257,8 @@ class ValidationIssuesTest extends TestCase
         yield ShippingMethodBlockedError::class => [new ShippingMethodBlockedError('foo'), $code];
         yield MinOrderQuantityError::class => [new MinOrderQuantityError(Uuid::randomHex(), 'foo', 5), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield ProductNotFoundError::class => [new ProductNotFoundError(Uuid::randomHex()), ValidationIssue::CODE__INVENTORY_ISSUE];
-        yield ProductOutOfStockError::class => [new ProductOutOfStockError(Uuid::randomHex(), 'foo'), $code];
-        yield ProductStockReachedError::class => [new ProductStockReachedError(Uuid::randomHex(), 'foo', 1), $code];
+        yield ProductOutOfStockError::class => [new ProductOutOfStockError(Uuid::randomHex(), 'foo'), ValidationIssue::CODE__INVENTORY_ISSUE];
+        yield ProductStockReachedError::class => [new ProductStockReachedError(Uuid::randomHex(), 'foo', 1), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield PurchaseStepsError::class => [new PurchaseStepsError(Uuid::randomHex(), 'foo', 5), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield PaymentMethodChangedError::class => [new PaymentMethodChangedError('foo', 'bar'), $code];
         yield ShippingMethodChangedError::class => [new ShippingMethodChangedError('foo', 'bar'), $code];

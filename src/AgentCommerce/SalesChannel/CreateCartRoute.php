@@ -23,7 +23,6 @@ use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartFactory;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
-use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -71,8 +70,9 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         $swCart = $this->cartService->add($swCart, $lineItems, $salesChannelContext);
 
         $order = $this->orderBuilder->getOrderFromCart($swCart, $salesChannelContext, new RequestDataBag($request->request->all()));
+        $orderId = $payPalCart->getPaymentMethod()?->getToken();
 
-        if ($payPalCart->getPaymentMethod()?->getToken()) {
+        if ($orderId) {
             $purchaseUnit = $order->getPurchaseUnits()->first();
             $purchaseUnitArray = \json_decode((string) \json_encode($purchaseUnit), true);
 
@@ -81,7 +81,7 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
             $purchaseUnitPatch->setPath('/purchase_units/@reference_id==\'default\'');
             $purchaseUnitPatch->setValue($purchaseUnitArray);
 
-            $this->orderResource->update([$purchaseUnitPatch], $payPalCart->getPaymentMethod()?->getToken(), $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP);
+            $this->orderResource->update([$purchaseUnitPatch], $orderId, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP);
         } else {
             $orderId = $this->orderResource->create($order, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP)->getId();
         }
