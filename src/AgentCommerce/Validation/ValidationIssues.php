@@ -136,7 +136,7 @@ class ValidationIssues
         $validationIssue = new ValidationIssue();
         $validationIssue->setMessage($error->getId());
         $validationIssue->setMessage($this->translator->trans(\sprintf('swag_paypal.agent_commerce.validation_issue.error.%s.message', $error->getMessageKey()), $parameters));
-        $validationIssue->setUserMessage($error->getTranslatedMessage());
+        $validationIssue->setUserMessage($this->translator->trans(\sprintf('swag_paypal.agent_commerce.validation_issue.error.%s.user_message', $error->getMessageKey()), $parameters));
         $validationIssue->setType(ValidationIssue::TYPE__BUSINESS_RULE);
         $validationIssue->setCode(ValidationIssue::CODE__BUSINESS_RULE_ERROR);
 
