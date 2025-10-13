@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.1.2
 - Behebt ein Problem, bei dem das Plugin bei aktiven Zettle Verkaufskanälen nicht aktualisiert werden konnte (shopware/SwagPayPal#361)
+- Behebt ein Problem, bei dem Zahlungsinformationen für Rechnungskäufe zu Fehlausrichtungen in Rechnungsdokumenten führen konnten (shopware/SwagPayPal#394)
 
 # 10.1.1
 - Behebt ein Problem, bei dem Rechnungskauf-Details dem Kunden nicht angezeigt wurden, wenn die Einstellung "Gastkunde nach Bestellung ausloggen" aktiviert ist (shopware/SwagPayPal#315, benötigt Shopware 6.7.2.0 oder höher)
