@@ -169,7 +169,7 @@ class PayPalCartTransformer
         $errors = new ValidationIssueCollection();
 
         foreach ($cart->getErrors() as $error) {
-            $errors->add($this->validationIssues->cartError($error));
+            $errors->add($this->validationIssues->cartError($error, $context->getLanguageInfo()->localeCode));
         }
 
         $restockProducts = [];
@@ -201,7 +201,7 @@ class PayPalCartTransformer
             $initItem = $mapped[$lineItem->getReferencedId()] ?? null;
             $initPrice = $initItem?->getPrice()?->getValue();
             if ($initPrice !== null && $initPrice < $realPrice) {
-                $errors->add($this->validationIssues->changedPrice($lineItem, $initPrice, $context->getCurrency()));
+                $errors->add($this->validationIssues->changedPrice($lineItem, $initPrice, $context->getCurrency(), $context->getItemRounding()));
             }
         }
 

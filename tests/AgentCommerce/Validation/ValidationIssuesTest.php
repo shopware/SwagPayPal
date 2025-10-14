@@ -42,6 +42,7 @@ use Shopware\Core\Content\Product\Cart\ProductStockReachedError;
 use Shopware\Core\Content\Product\Cart\PurchaseStepsError;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -92,8 +93,8 @@ class ValidationIssuesTest extends TestCase
         static::assertSame(ValidationIssue::TYPE__BUSINESS_RULE, $validationIssue->getType());
         static::assertSame($uuid, $validationIssue->getItemId());
 
-        static::assertStringContainsString('out_of_stock.message', $validationIssue->getMessage());
-        static::assertStringContainsString('out_of_stock.user_message', $validationIssue->getUserMessage() ?? '');
+        static::assertSame('Product stock insufficient', $validationIssue->getMessage());
+        static::assertStringContainsString('validationIssue.userMessage.outOfStock', $validationIssue->getUserMessage() ?? '');
 
         $context = $validationIssue->getContext();
         static::assertInstanceOf(InventoryIssueContext::class, $context);
@@ -111,7 +112,7 @@ class ValidationIssuesTest extends TestCase
 
         static::assertInstanceOf(ResolutionOption::class, $remove);
         static::assertSame(ResolutionOption::ACTION__REMOVE_ITEM, $remove->getAction());
-        static::assertStringContainsString('out_of_stock.resolution_option.remove.label', $remove->getLabel());
+        static::assertStringContainsString('validationIssue.resolutionOption.removeLabel', $remove->getLabel());
         static::assertSame('-€1000', $remove->getMetadata()->getCostImpact());
         static::assertSame(MetaData::PRIORITY__LOW, $remove->getMetadata()->getPriority());
 
@@ -122,8 +123,8 @@ class ValidationIssuesTest extends TestCase
 
             static::assertInstanceOf(ResolutionOption::class, $wait);
             static::assertSame(ResolutionOption::ACTION__WAIT_FOR_RESTOCK, $wait->getAction());
-            static::assertStringContainsString('out_of_stock.resolution_option.wait.label', $wait->getLabel());
-            static::assertSame('10 Days', $wait->getMetadata()->getEstimatedTime());
+            static::assertStringContainsString('validationIssue.resolutionOption.waitRestockLabel', $wait->getLabel());
+            static::assertStringContainsString('validationIssue.resolutionOption.estimatedTime', $wait->getMetadata()->getEstimatedTime());
             static::assertSame(MetaData::PRIORITY__MEDIUM, $wait->getMetadata()->getPriority());
         }
     }
@@ -167,14 +168,14 @@ class ValidationIssuesTest extends TestCase
         $lineItem = new LineItem($uuid, 'product', $uuid, 10);
         $lineItem->setPrice(new CalculatedPrice($price, $price * 10, new CalculatedTaxCollection(), new TaxRuleCollection()));
 
-        $validationIssue = $validation->changedPrice($lineItem, $initPrice, $currency);
+        $validationIssue = $validation->changedPrice($lineItem, $initPrice, $currency, new CashRoundingConfig(2, 2, false));
 
         static::assertSame(ValidationIssue::CODE__PRICING_ERROR, $validationIssue->getCode());
         static::assertSame(ValidationIssue::TYPE__BUSINESS_RULE, $validationIssue->getType());
         static::assertSame($uuid, $validationIssue->getItemId());
 
-        static::assertStringContainsString('validation_issue.price_changed.message', $validationIssue->getMessage());
-        static::assertStringContainsString('validation_issue.price_changed.user_message', $validationIssue->getUserMessage() ?? '');
+        static::assertSame('Product price has changed', $validationIssue->getMessage());
+        static::assertStringContainsString('validationIssue.userMessage.priceChanged', $validationIssue->getUserMessage() ?? '');
 
         $context = $validationIssue->getContext();
         static::assertInstanceOf(PricingErrorContext::class, $context);
@@ -193,12 +194,12 @@ class ValidationIssuesTest extends TestCase
         static::assertSame(ResolutionOption::ACTION__ACCEPT_NEW_PRICE, $accept->getAction());
         static::assertSame('+€' . $diff, $accept->getMetadata()->getCostImpact());
         static::assertSame(MetaData::PRIORITY__HIGH, $accept->getMetadata()->getPriority());
-        static::assertStringContainsString('validation_issue.price_changed.resolution_option.accept.label', $accept->getLabel());
+        static::assertStringContainsString('validationIssue.resolutionOption.acceptLabel', $accept->getLabel());
 
         static::assertSame(ResolutionOption::ACTION__REMOVE_ITEM, $remove->getAction());
         static::assertSame('-€' . $initPrice, $remove->getMetadata()->getCostImpact());
         static::assertSame(MetaData::PRIORITY__MEDIUM, $remove->getMetadata()->getPriority());
-        static::assertStringContainsString('validation_issue.price_changed.resolution_option.remove.label', $remove->getLabel());
+        static::assertStringContainsString('validationIssue.resolutionOption.removeLabel', $remove->getLabel());
     }
 
     /**
@@ -223,7 +224,7 @@ class ValidationIssuesTest extends TestCase
 
         $validation = new ValidationIssues($translator);
 
-        $validationIssue = $validation->cartError($error);
+        $validationIssue = $validation->cartError($error, 'en-GB');
 
         static::assertSame($code, $validationIssue->getCode());
         static::assertSame(ValidationIssue::TYPE__BUSINESS_RULE, $validationIssue->getType());
