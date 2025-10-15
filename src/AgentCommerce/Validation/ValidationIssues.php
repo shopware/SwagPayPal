@@ -135,6 +135,7 @@ class ValidationIssues
         $validationIssue->setType(ValidationIssue::TYPE__BUSINESS_RULE);
         $validationIssue->setCode(ValidationIssue::CODE__BUSINESS_RULE_ERROR);
 
+        /** @deprecated tag:v11.0.0 - "getTranslatedMessage" is added with v6.7.3.0 */
         // @phpstan-ignore function.alreadyNarrowedType
         if (\method_exists($error, 'getTranslatedMessage')) {
             $validationIssue->setUserMessage($error->getTranslatedMessage());

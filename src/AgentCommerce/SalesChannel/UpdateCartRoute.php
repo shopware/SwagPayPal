@@ -141,13 +141,13 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
             }
 
             try {
-                $this->contextSwitchRoute->switchContext(new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shippingOption->getId()]), $salesChannelContext);
+                $token = $this->contextSwitchRoute->switchContext(new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shippingOption->getId()]), $salesChannelContext)->getToken();
             } catch (ConstraintViolationException $e) {
                 throw AgentException::requiredFieldInvalid('availableShippingOption.id', $e->getViolations()->__toString());
             }
 
             return $this->createSalesChannelContext(
-                $salesChannelContext->getToken(),
+                $token,
                 $salesChannelContext->getSalesChannelId(),
                 $salesChannelContext->getContext()
             );
