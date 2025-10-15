@@ -93,8 +93,7 @@ class MethodEligibilityRouteTest extends TestCase
         $this->browser->request(Request::METHOD_GET, '/store-api/checkout/cart');
         $response = $this->getJsonResponse();
         static::assertCount(1, $response['errors']);
-        // @deprecated tag:v6.8.0 - The parameter order will change in v6.8.0
-        static::assertSame((new PaymentMethodBlockedError(''))->getMessageKey(), \current($response['errors'])['messageKey']);
+        static::assertSame((new PaymentMethodBlockedError('', 'test', ''))->getMessageKey(), \current($response['errors'])['messageKey']);
 
         $this->browser->request(Request::METHOD_POST, '/store-api/paypal/payment-method-eligibility', ['paymentMethods' => []]);
         static::assertSame(Response::HTTP_NO_CONTENT, $this->browser->getResponse()->getStatusCode());

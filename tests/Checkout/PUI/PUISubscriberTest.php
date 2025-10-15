@@ -197,8 +197,7 @@ class PUISubscriberTest extends TestCase
 
         $cart = new Cart('test');
         $errors = new ErrorCollection();
-        // @deprecated tag:v6.8.0 - The parameter order will change in v6.8.0
-        $errors->add(new PaymentMethodBlockedError('test-payment-method'));
+        $errors->add(new PaymentMethodBlockedError('test-payment-method', 'test', $paymentMethod->getId()));
         $cart->setErrors($errors);
         $page = new CheckoutConfirmPage();
         $page->setCart($cart);
