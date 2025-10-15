@@ -1372,6 +1372,10 @@ export interface components {
             national_number: string;
             country_code: string;
         };
+        paypal_v2_common_upc: {
+            type: string;
+            code: string;
+        };
         paypal_v2_order: {
             create_time: string;
             update_time: string;
@@ -1650,6 +1654,7 @@ export interface components {
             items: components["schemas"]["paypal_v2_order_purchase_unit_item"][] | null;
             shipping: components["schemas"]["paypal_v2_order_purchase_unit_shipping"];
             payments: components["schemas"]["paypal_v2_order_purchase_unit_payments"] | null;
+            supplementary_data: components["schemas"]["paypal_v2_order_purchase_unit_supplementary_data"];
         };
         paypal_v2_order_purchase_unit_amount: components["schemas"]["paypal_v2_common_money"] & {
             breakdown: components["schemas"]["paypal_v2_order_purchase_unit_amount_breakdown"] | null;
@@ -1770,6 +1775,46 @@ export interface components {
             sku: string | null;
             url: string | null;
             image_url: string | null;
+        };
+        paypal_v2_order_purchase_unit_supplementary_data: {
+            card: components["schemas"]["paypal_v2_order_purchase_unit_supplementary_data_card"];
+            risk: components["schemas"]["paypal_v2_order_purchase_unit_supplementary_data_risk"];
+        };
+        paypal_v2_order_purchase_unit_supplementary_data_card: {
+            address: components["schemas"]["paypal_v2_order_purchase_unit_supplementary_data_card_level2"];
+        };
+        paypal_v2_order_purchase_unit_supplementary_data_card_level2: {
+            invoice_id: string;
+            tax_total: components["schemas"]["paypal_v2_common_money"];
+        };
+        paypal_v2_order_purchase_unit_supplementary_data_card_level3: {
+            shipping_amount: components["schemas"]["paypal_v2_common_money"];
+            duty_amount: components["schemas"]["paypal_v2_common_money"];
+            discount_amount: components["schemas"]["paypal_v2_common_money"];
+            shipping_address: components["schemas"]["paypal_v2_common_address"];
+            ships_from_postal_code: string;
+            line_items: components["schemas"]["paypal_v2_order_purchase_unit_supplementary_data_card_line_item"][];
+        };
+        paypal_v2_order_purchase_unit_supplementary_data_card_line_item: {
+            name: string;
+            quantity: number;
+            description: string;
+            sku: string;
+            url: string;
+            image_url: string;
+            upc: components["schemas"]["paypal_v2_common_upc"];
+            unit_amount: components["schemas"]["paypal_v2_common_money"];
+            tax: components["schemas"]["paypal_v2_common_money"];
+            commodity_code: string;
+            discount_amount: components["schemas"]["paypal_v2_common_money"];
+            total_amount: components["schemas"]["paypal_v2_common_money"];
+            unit_of_measure: string;
+        };
+        paypal_v2_order_purchase_unit_supplementary_data_risk: {
+            address: components["schemas"]["paypal_v2_order_purchase_unit_supplementary_data_risk_participant_metadata"];
+        };
+        paypal_v2_order_purchase_unit_supplementary_data_risk_participant_metadata: {
+            ip_address: string;
         };
         paypal_v2_order_tracker: {
             capture_id: string;

@@ -69,12 +69,14 @@ class CartValidator implements CartValidatorInterface
         try {
             $this->settingsValidationService->validate($context->getSalesChannelId());
         } catch (PayPalSettingsInvalidException $e) {
+            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
             $errors->add(new PaymentMethodBlockedError($name, 'not available', $id));
 
             return;
         }
 
         if ($this->cartPriceService->isZeroValueCart($cart)) {
+            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
             $errors->add(new PaymentMethodBlockedError($name, 'zero value cart', $id));
 
             return;
@@ -83,7 +85,7 @@ class CartValidator implements CartValidatorInterface
         try {
             $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
             if (\is_array($ineligiblePaymentMethods) && \in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
-                // @deprecated tag:v6.8.0 - The parameter order will change in v6.8.0
+            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
                 $errors->add(new PaymentMethodBlockedError($name), 'ineligible', $id);
 
                 return;
@@ -93,12 +95,14 @@ class CartValidator implements CartValidatorInterface
         }
 
         if ($this->excludedProductValidator->cartContainsExcludedProduct($cart, $context)) {
+            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
             $errors->add(new PaymentMethodBlockedError($name, 'excluded', $id));
 
             return;
         }
 
         if (!$this->availabilityService->isPaymentMethodAvailable($context->getPaymentMethod(), $cart, $context)) {
+            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
             $errors->add(new PaymentMethodBlockedError($name, 'not available', $id));
         }
     }
