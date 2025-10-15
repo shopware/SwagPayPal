@@ -52,10 +52,19 @@ jobs:
         PHP_VERSION: ["8.2", "8.3", "8.4"]
         WITH_COMMERCIAL: [true]
         include:
+          # without commercial, 6.7.0.0
           - WITH_COMMERCIAL: false
             PLATFORM_BRANCH: "v6.7.0.0"
             MYSQL_IMAGE: "mysql:8.0"
             PHP_VERSION: "8.4"
+
+          # without commercial, trunk
+          - WITH_COMMERCIAL: false
+            PLATFORM_BRANCH: "trunk"
+            MYSQL_IMAGE: "mysql:8.0"
+            PHP_VERSION: "8.4"
+
+          # mariadb
           - WITH_COMMERCIAL: true
             PLATFORM_BRANCH: "trunk"
             MYSQL_IMAGE: "mariadb:10.11"
