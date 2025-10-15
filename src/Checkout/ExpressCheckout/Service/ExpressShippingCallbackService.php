@@ -16,9 +16,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
-use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
-use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Util\PriceFormatter;
 
 #[Package('checkout')]
@@ -28,12 +25,9 @@ class ExpressShippingCallbackService
      * @internal
      */
     public function __construct(
-        private readonly OrderResource $orderResource,
         private readonly CartService $cartService,
         private readonly EntityRepository $countryRepository,
-        private readonly AmountProvider $amountProvider,
         private readonly PriceFormatter $priceFormatter,
-        private readonly CartPriceService $cartPriceService,
         private readonly LoggerInterface $logger,
     ) {
     }

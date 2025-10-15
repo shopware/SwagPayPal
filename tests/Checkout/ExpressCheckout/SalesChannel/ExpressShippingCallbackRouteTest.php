@@ -9,8 +9,10 @@ namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
@@ -54,7 +56,9 @@ class ExpressShippingCallbackRouteTest extends TestCase
         $response = $route->handleCallback($request, $this->getSalesChannelContext());
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        $content = \json_decode($response->getContent(), true);
+        $responseContent = $response->getContent();
+        static::assertNotFalse($responseContent);
+        $content = \json_decode($responseContent, true);
         static::assertIsArray($content);
         static::assertArrayHasKey('purchase_units', $content);
         static::assertSame('120.00', $content['purchase_units'][0]['amount']['value']);
@@ -111,8 +115,11 @@ class ExpressShippingCallbackRouteTest extends TestCase
         static::assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
     }
 
-    private function getSalesChannelContext()
+    private function getSalesChannelContext(): SalesChannelContext
     {
-        return $this->createSalesChannelContext();
+        return $this->createSalesChannelContext(
+            $this->getContainer(),
+            new PaymentMethodCollection(),
+        );
     }
 }
