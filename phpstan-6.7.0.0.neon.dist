@@ -60,3 +60,11 @@ parameters:
           identifier: arguments.count
           count: 1
           path: tests/AgentCommerce/Validation/ValidationIssuesTest.php
+
+        - identifier: arguments.count
+          message: '#.*(PaymentMethodBlockedError|ShippingMethodBlockedError).*#'
+          paths:
+              - src/Checkout/Cart/Validation/CartValidator.php
+              - tests/Checkout/PUI/PUISubscriberTest.php
+              - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
+              - tests/Storefront/Data/CheckoutSubscriberTest.php
