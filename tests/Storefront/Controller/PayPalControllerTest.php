@@ -88,28 +88,27 @@ class PayPalControllerTest extends TestCase
 
     public function testOnHandleErrorWithTranslatableErrorCode(): void
     {
-        $request = new Request(request: ['code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE']);
+        $session = new Session(new MockArraySessionStorage());
+        $request = new Request([], ['code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE']);
+        $request->setSession($session);
 
-        $matcher = $this->exactly(2);
-        $this->controller
-            ->expects($matcher)
+        $context = $this->generateSalesChannelContext();
+
+        $this->controller->expects($this->exactly(2))
             ->method('trans')
-            ->willReturnCallback(function (string $key) use (&$matcher) {
-                match ($matcher->numberOfInvocations()) {
-                    1 => static::assertSame('paypal.error.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', $key),
-                    2 => static::assertSame('paypal.error.test_handler.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', $key),
-                    default => static::fail('Unexpected number of invocations'),
-                };
+            ->willReturnCallback(function (string $key) {
+                if ($key === 'paypal.error.test_handler.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE') {
+                    return 'Translated error message';
+                }
 
-                return 'Translated error message';
+                return $key;
             });
 
-        $this->controller
-            ->expects($this->once())
-            ->method('addFlash')
-            ->with('danger', 'Translated error message');
+        $this->controller->onHandleError($request, $context);
 
-        $this->controller->onHandleError($request, $this->generateSalesChannelContext());
+        $errors = $session->get('paypal_page_errors', []);
+        static::assertNotEmpty($errors);
+        static::assertSame(['Translated error message'], $errors);
 
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
@@ -119,19 +118,24 @@ class PayPalControllerTest extends TestCase
 
     public function testOnHandleErrorWithNonTranslatableErrorCode(): void
     {
-        $request = new Request(request: ['code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE']);
+        $session = new Session(new MockArraySessionStorage());
+        $request = new Request([], ['code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE']);
+        $request->setSession($session);
 
-        $this->controller
-            ->expects($this->exactly(3))
+        $context = $this->generateSalesChannelContext();
+
+        $this->controller->expects($this->exactly(3))
             ->method('trans')
             ->willReturnCallback(fn (string $key) => $key);
 
-        $this->controller
-            ->expects($this->once())
-            ->method('addFlash')
-            ->with('danger', 'paypal.error.SWAG_PAYPAL__GENERIC_ERROR');
+        $this->controller->onHandleError($request, $context);
 
-        $this->controller->onHandleError($request, $this->generateSalesChannelContext());
+        $errors = $session->get('paypal_page_errors', []);
+        static::assertNotEmpty($errors);
+        static::assertSame(
+            ['paypal.error.SWAG_PAYPAL__GENERIC_ERROR'],
+            $errors
+        );
 
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',

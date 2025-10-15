@@ -1,0 +1,7 @@
+{% sw_extends '@Storefront/storefront/page/checkout/_page.html.twig' %}
+
+{% block base_flashbags_checkout %}
+    <div class="flashbags">
+        {% sw_include '@SwagPayPal/storefront/page/checkout/paypal/paypal-flashes.html.twig' %}
+    </div>
+{% endblock %}

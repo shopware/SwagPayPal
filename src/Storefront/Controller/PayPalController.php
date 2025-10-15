@@ -150,24 +150,36 @@ class PayPalController extends StorefrontController
         $code = $request->request->getString('code');
         $fatal = $request->request->getBoolean('fatal');
 
-        // Simply add a snippet for the error code to create a flash
+        // Translate error snippet
         $snippetGeneric = \sprintf('paypal.error.%s', $code);
-        $snippetByMethod = \sprintf('paypal.error.%s.%s', $context->getPaymentMethod()->getFormattedHandlerIdentifier(), $code);
+        $snippetByMethod = \sprintf(
+            'paypal.error.%s.%s',
+            $context->getPaymentMethod()->getFormattedHandlerIdentifier(),
+            $code
+        );
 
         $transSnippetGeneric = $this->trans($snippetGeneric);
         $transSnippetByMethod = $this->trans($snippetByMethod);
+        $errorMessages = [];
+
         if ($transSnippetByMethod !== $snippetByMethod) {
-            $this->addFlash(self::DANGER, $transSnippetByMethod);
+            $errorMessages[] = $transSnippetByMethod;
         } elseif ($transSnippetGeneric !== $snippetGeneric) {
-            $this->addFlash(self::DANGER, $transSnippetGeneric);
+            $errorMessages[] = $transSnippetGeneric;
         } else {
-            $this->addFlash(self::DANGER, $this->trans('paypal.error.SWAG_PAYPAL__GENERIC_ERROR'));
+            $errorMessages[] = $this->trans('paypal.error.SWAG_PAYPAL__GENERIC_ERROR');
         }
 
+        // Store error in session scoped to current path
+        $session = $request->getSession();
+        $session->set('paypal_page_errors', $errorMessages);
+
+        // Optional: mark fatal payment issues
         if ($fatal) {
-            $request->getSession()->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
+            $session->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
         }
 
+        // Log
         $this->logger->log(
             \in_array($code, ['SWAG_PAYPAL__SCRIPT_ERROR', 'SWAG_PAYPAL__SCRIPT_NOT_LOADED'], true) ? Level::Error : Level::Warning,
             'Storefront checkout error',

@@ -1,0 +1,12 @@
+{% block swag_paypal_flash_messages %}
+    {% set paypalErrors = app.session.get('paypal_page_errors') %}
+
+    {% if paypalErrors is not empty %}
+        {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+            type: 'danger',
+            list: paypalErrors
+        } %}
+
+        {% do app.session.set('paypal_page_errors', []) %}
+    {% endif %}
+{% endblock %}
