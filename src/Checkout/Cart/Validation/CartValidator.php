@@ -63,16 +63,21 @@ class CartValidator implements CartValidatorInterface
             return;
         }
 
+        $name = (string) $context->getPaymentMethod()->getTranslation('name');
+        $id = $context->getPaymentMethod()->getId();
+
         try {
             $this->settingsValidationService->validate($context->getSalesChannelId());
         } catch (PayPalSettingsInvalidException $e) {
-            $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
+            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
+            $errors->add(new PaymentMethodBlockedError($name, 'not available', $id));
 
             return;
         }
 
         if ($this->cartPriceService->isZeroValueCart($cart)) {
-            $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
+            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
+            $errors->add(new PaymentMethodBlockedError($name, 'zero value cart', $id));
 
             return;
         }
@@ -80,7 +85,8 @@ class CartValidator implements CartValidatorInterface
         try {
             $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
             if (\is_array($ineligiblePaymentMethods) && \in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
-                $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
+                /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
+                $errors->add(new PaymentMethodBlockedError($name, 'ineligible', $id));
 
                 return;
             }
@@ -89,13 +95,15 @@ class CartValidator implements CartValidatorInterface
         }
 
         if ($this->excludedProductValidator->cartContainsExcludedProduct($cart, $context)) {
-            $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
+            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
+            $errors->add(new PaymentMethodBlockedError($name, 'excluded', $id));
 
             return;
         }
 
         if (!$this->availabilityService->isPaymentMethodAvailable($context->getPaymentMethod(), $cart, $context)) {
-            $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
+            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
+            $errors->add(new PaymentMethodBlockedError($name, 'not available', $id));
         }
     }
 }

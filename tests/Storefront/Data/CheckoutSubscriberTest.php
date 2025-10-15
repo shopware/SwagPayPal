@@ -215,7 +215,8 @@ class CheckoutSubscriberTest extends TestCase
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
         $subscriber = $this->createSubscriber();
         $event = $this->createConfirmPageLoadedEvent($paymentMethodId);
-        $event->getPage()->getCart()->addErrors(new ShippingMethodBlockedError('foo'));
+        /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
+        $event->getPage()->getCart()->addErrors(new ShippingMethodBlockedError('foo', '', $paymentMethodId));
         $subscriber->onCheckoutConfirmLoaded($event);
 
         static::assertFalse($event->getPage()->hasExtension($extensionId));
