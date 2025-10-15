@@ -33,7 +33,11 @@ class ExpressShippingCallbackRouteTest extends TestCase
         $service = $this->createMock(ExpressShippingCallbackService::class);
         $service->expects($this->once())
             ->method('recalculateCart')
-            ->with('ORDER-123', ['country_code' => 'AT'])
+            ->with(
+                'ORDER-123',
+                ['country_code' => 'AT'],
+                static::isInstanceOf(SalesChannelContext::class)
+            )
             ->willReturn([[
                 'amount' => [
                     'currency_code' => 'EUR',
@@ -101,6 +105,11 @@ class ExpressShippingCallbackRouteTest extends TestCase
         $service = $this->createMock(ExpressShippingCallbackService::class);
         $service->expects($this->once())
             ->method('recalculateCart')
+            ->with(
+                'ORDER-123',
+                ['country_code' => 'AT'],
+                static::isInstanceOf(SalesChannelContext::class)
+            )
             ->willThrowException(new \RuntimeException('Test error'));
 
         $route = new ExpressShippingCallbackRoute($service, new NullLogger());
