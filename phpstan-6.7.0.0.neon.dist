@@ -40,3 +40,11 @@ parameters:
             - tests/Pos/Run/PosSyncControllerTest.php
             - tests/Storefront/Controller/ApplePayControllerTest.php
             - tests/Storefront/Data/CheckoutSubscriberTest.php
+
+        - identifier: arguments.count
+          message: '#.*(PaymentMethodBlockedError|ShippingMethodBlockedError).*#'
+          paths:
+              - src/Checkout/Cart/Validation/CartValidator.php
+              - tests/Checkout/PUI/PUISubscriberTest.php
+              - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
+              - tests/Storefront/Data/CheckoutSubscriberTest.php

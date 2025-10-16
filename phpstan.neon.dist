@@ -103,6 +103,15 @@ parameters:
             paths:
                 - tests/Storefront/Data/FundingSubscriberTest.php
 
+        - # 6.8 deprecation - Parameter order still has to be changed
+            identifier: method.deprecated
+            message: '#Call to deprecated method __construct\(\) of class .*\\(PaymentMethodBlockedError|ShippingMethodBlockedError)#'
+            paths:
+                - src/Checkout/Cart/Validation/CartValidator.php
+                - tests/Checkout/PUI/PUISubscriberTest.php
+                - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
+                - tests/Storefront/Data/CheckoutSubscriberTest.php
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule

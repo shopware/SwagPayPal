@@ -4685,29 +4685,36 @@
                     "address_line_1": {
                         "description": "The first line of the address. For example, number or street. For example, 173 Drury Lane.\nRequired for data entry and compliance and risk checks. Must contain the full address.",
                         "type": "string",
+                        "maxLength": 300,
                         "nullable": true
                     },
                     "address_line_2": {
                         "description": "The second line of the address. For example, suite or apartment number.",
                         "type": "string",
+                        "maxLength": 300,
                         "nullable": true
                     },
                     "admin_area_2": {
                         "description": "A city, town, or village. Smaller than $adminArea1",
                         "type": "string",
+                        "maxLength": 120,
                         "nullable": true
                     },
                     "admin_area_1": {
                         "description": "The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision.\nFormat for postal delivery. For example, CA and not California.",
                         "type": "string",
+                        "maxLength": 300,
                         "nullable": true
                     },
                     "postal_code": {
                         "type": "string",
+                        "maxLength": 60,
                         "nullable": true
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     }
                 },
                 "type": "object"
@@ -4743,10 +4750,13 @@
                 ],
                 "properties": {
                     "currency_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 3,
+                        "minLength": 3
                     },
                     "value": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 30
                     }
                 },
                 "type": "object"
@@ -4758,10 +4768,12 @@
                 ],
                 "properties": {
                     "given_name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 140
                     },
                     "surname": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 140
                     }
                 },
                 "type": "object"
@@ -4773,10 +4785,33 @@
                 ],
                 "properties": {
                     "national_number": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 3,
+                        "minLength": 1
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 14,
+                        "minLength": 1
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_common_upc": {
+                "required": [
+                    "type",
+                    "code"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "maxLength": 5,
+                        "minLength": 1
+                    },
+                    "code": {
+                        "type": "string",
+                        "maxLength": 17,
+                        "minLength": 6
                     }
                 },
                 "type": "object"
@@ -5090,10 +5125,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5125,10 +5164,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5145,10 +5188,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5171,10 +5218,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5225,10 +5276,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5534,10 +5589,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5582,10 +5641,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5601,10 +5664,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5620,10 +5687,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5640,10 +5711,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5663,10 +5738,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5850,10 +5929,14 @@
                 ],
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
                     },
                     "country_code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
                     },
                     "experience_context": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
@@ -5924,7 +6007,8 @@
                     "invoice_id",
                     "items",
                     "shipping",
-                    "payments"
+                    "payments",
+                    "supplementary_data"
                 ],
                 "properties": {
                     "reference_id": {
@@ -5964,6 +6048,9 @@
                             }
                         ],
                         "nullable": true
+                    },
+                    "supplementary_data": {
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_supplementary_data"
                     }
                 },
                 "type": "object"
@@ -6531,6 +6618,176 @@
                         "type": "string",
                         "maxLength": 2048,
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_purchase_unit_supplementary_data": {
+                "required": [
+                    "card",
+                    "risk"
+                ],
+                "properties": {
+                    "card": {
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_supplementary_data_card"
+                    },
+                    "risk": {
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_supplementary_data_risk"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_purchase_unit_supplementary_data_card": {
+                "required": [
+                    "address"
+                ],
+                "properties": {
+                    "address": {
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_supplementary_data_card_level2"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_purchase_unit_supplementary_data_card_level2": {
+                "required": [
+                    "invoice_id",
+                    "tax_total"
+                ],
+                "properties": {
+                    "invoice_id": {
+                        "type": "string"
+                    },
+                    "tax_total": {
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_purchase_unit_supplementary_data_card_level3": {
+                "required": [
+                    "shipping_amount",
+                    "duty_amount",
+                    "discount_amount",
+                    "shipping_address",
+                    "ships_from_postal_code",
+                    "line_items"
+                ],
+                "properties": {
+                    "shipping_amount": {
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
+                    },
+                    "duty_amount": {
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
+                    },
+                    "discount_amount": {
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
+                    },
+                    "shipping_address": {
+                        "$ref": "#/components/schemas/paypal_v2_common_address"
+                    },
+                    "ships_from_postal_code": {
+                        "type": "string"
+                    },
+                    "line_items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_supplementary_data_card_line_item"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_purchase_unit_supplementary_data_card_line_item": {
+                "required": [
+                    "name",
+                    "quantity",
+                    "description",
+                    "sku",
+                    "url",
+                    "image_url",
+                    "upc",
+                    "unit_amount",
+                    "tax",
+                    "commodity_code",
+                    "discount_amount",
+                    "total_amount",
+                    "unit_of_measure"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 127,
+                        "minLength": 1
+                    },
+                    "quantity": {
+                        "type": "integer"
+                    },
+                    "description": {
+                        "type": "string",
+                        "maxLength": 2048
+                    },
+                    "sku": {
+                        "type": "string",
+                        "maxLength": 127
+                    },
+                    "url": {
+                        "type": "string",
+                        "maxLength": 2048,
+                        "minLength": 1
+                    },
+                    "image_url": {
+                        "type": "string",
+                        "maxLength": 2048,
+                        "minLength": 1
+                    },
+                    "upc": {
+                        "$ref": "#/components/schemas/paypal_v2_common_upc"
+                    },
+                    "unit_amount": {
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
+                    },
+                    "tax": {
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
+                    },
+                    "commodity_code": {
+                        "type": "string",
+                        "maxLength": 12,
+                        "minLength": 1
+                    },
+                    "discount_amount": {
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
+                    },
+                    "total_amount": {
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
+                    },
+                    "unit_of_measure": {
+                        "type": "string",
+                        "maxLength": 12,
+                        "minLength": 1
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_purchase_unit_supplementary_data_risk": {
+                "required": [
+                    "address"
+                ],
+                "properties": {
+                    "address": {
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_supplementary_data_risk_participant_metadata"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_purchase_unit_supplementary_data_risk_participant_metadata": {
+                "required": [
+                    "ip_address"
+                ],
+                "properties": {
+                    "ip_address": {
+                        "type": "string",
+                        "maxLength": 37,
+                        "minLength": 7
                     }
                 },
                 "type": "object"
