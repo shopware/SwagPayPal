@@ -62,6 +62,7 @@
 
 {% block sw_sales_channel_detail_base_options_delete %}
     <mt-card
+        v-if="isAgentCommerceType"
         class="swag-paypal-settings-webhook"
         position-identifier="swag-paypal-settings-webhook"
     >

@@ -42,6 +42,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\DeliveryTime\DeliveryTimeEntity;
+use Shopware\Core\System\SalesChannel\Context\LanguageInfo;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Address;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AppliedCoupon;
@@ -514,6 +515,9 @@ class PayPalCartTransformerTest extends TestCase
         $context
             ->method('getContext')
             ->willReturn(Context::createCLIContext());
+        $context
+            ->method('getLanguageInfo')
+            ->willReturn(new LanguageInfo('Test', 'en-GB'));
 
         $outOfStockId = Uuid::randomHex();
         $priceChangedId = Uuid::randomHex();

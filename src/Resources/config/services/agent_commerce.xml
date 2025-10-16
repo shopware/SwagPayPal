@@ -61,6 +61,7 @@
             <argument type="service" id="customer.repository"/>
             <argument type="service" id="customer_address.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
         </service>
 
         <service id="Swag\PayPal\AgentCommerce\SalesChannel\CheckoutRoute" public="true">

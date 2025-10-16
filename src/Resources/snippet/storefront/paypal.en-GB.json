@@ -71,18 +71,32 @@
             "googlePay": "Google Pay payments"
         },
         "vault": {
-          "account": {
-            "clear": "Remove account",
-            "create": "Remember account for future purchases"
-          },
-          "card": {
-            "clear": "Remove card",
-            "create": "Remember card for future purchases"
-          }
+            "account": {
+                "clear": "Remove account",
+                "create": "Remember account for future purchases"
+            },
+            "card": {
+                "clear": "Remove card",
+                "create": "Remember card for future purchases"
+            }
         },
-        "e-invoice":{
-          "paymentMethod": "Payment method: \"%paymentMethod%\"",
-          "orderId": "Order ID: %orderId%"
+        "e-invoice": {
+            "paymentMethod": "Payment method: \"%paymentMethod%\"",
+            "orderId": "Order ID: %orderId%"
+        },
+        "agentCommerce": {
+            "validationIssue": {
+                "userMessage": {
+                    "outOfStock": "{0} The product \"%name%\" is out of stock | {1} The product \"%name%\" is only in stock once | [2,Inf[ The product \"%name%\" has only a stock of %count%",
+                    "priceChanged": "The product \"%name%\" price has changed from %oldPrice% to %newPrice% since cart creation"
+                },
+                "resolutionOption": {
+                    "removeLabel": "Remove from cart",
+                    "acceptLabel": "Continue with %option%",
+                    "waitRestockLabel": "Notify when \"%name%\" is back in stock",
+                    "estimatedTime": "%days% days"
+                }
+            }
         }
     }
 }
