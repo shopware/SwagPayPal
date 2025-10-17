@@ -105,7 +105,7 @@ parameters:
 
         - # 6.8 deprecation - Parameter order still has to be changed
             identifier: method.deprecated
-            message: '#Call to deprecated method __construct\(\) of class .*\\(PaymentMethodBlockedError|ShippingMethodBlockedError)#'
+            message: '#Call to deprecated method __construct\(\) of class .*\\PaymentMethodBlockedError#'
             paths:
                 - src/Checkout/Cart/Validation/CartValidator.php
                 - tests/Checkout/PUI/PUISubscriberTest.php

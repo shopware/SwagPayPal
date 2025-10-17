@@ -11,9 +11,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Payment\Cart\Error\PaymentMethodBlockedError;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
-use Shopware\Core\Checkout\Shipping\Cart\Error\ShippingMethodBlockedError;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -216,7 +216,7 @@ class CheckoutSubscriberTest extends TestCase
         $subscriber = $this->createSubscriber();
         $event = $this->createConfirmPageLoadedEvent($paymentMethodId);
         /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
-        $event->getPage()->getCart()->addErrors(new ShippingMethodBlockedError('foo', '', $paymentMethodId));
+        $event->getPage()->getCart()->addErrors(new PaymentMethodBlockedError('foo', '', $paymentMethodId));
         $subscriber->onCheckoutConfirmLoaded($event);
 
         static::assertFalse($event->getPage()->hasExtension($extensionId));
