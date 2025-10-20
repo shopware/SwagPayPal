@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\RestApi;
 
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Contract\Context\ApiContextInterface;
 use Shopware\PayPalSDK\Contract\RequestServiceInterface;
 use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\RequestService as SDKRequestService;
@@ -18,15 +20,30 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
  * Wrap ApiExceptions into PayPalApiExceptions
  */
 #[Package('checkout')]
-class RequestService extends SDKRequestService implements RequestServiceInterface
+class RequestService implements RequestServiceInterface
 {
+    public function __construct(
+        private readonly SDKRequestService $requestService
+    ) {
+    }
+
+    public function createRequest(string $method, string $path, ApiContextInterface $context): RequestInterface
+    {
+        return $this->requestService->createRequest($method, $path, $context);
+    }
+
+    public function withBody(RequestInterface $request, array|\JsonSerializable $body): RequestInterface
+    {
+        return $this->requestService->withBody($request, $body);
+    }
+
     /**
      * @throws PayPalApiException
      */
     public function handleResponse(ResponseInterface $response): ?array
     {
         try {
-            return parent::handleResponse($response);
+            return $this->requestService->handleResponse($response);
         } catch (ApiException $e) {
             throw PayPalApiException::from($e);
         }

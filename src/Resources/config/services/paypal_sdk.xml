@@ -23,7 +23,11 @@
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
         </service>
 
-        <service id="Shopware\PayPalSDK\Contract\RequestServiceInterface" class="Swag\PayPal\RestApi\RequestService"/>
+        <service id="Shopware\PayPalSDK\RequestService" class="Shopware\PayPalSDK\RequestService"/>
+
+        <service id="Shopware\PayPalSDK\Contract\RequestServiceInterface" class="Swag\PayPal\RestApi\RequestService">
+            <argument type="service" id="Shopware\PayPalSDK\RequestService"/>
+        </service>
 
         <!-- SDK GATEWAYS -->
         <service id="Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface" class="Shopware\PayPalSDK\Gateway\TokenGateway">
