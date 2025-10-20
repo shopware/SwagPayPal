@@ -91,14 +91,6 @@
             "type": "path",
             "url": "../../../src/*",
             "canonical": true
-        },
-        "paypal-sdk": {
-            "type": "path",
-            "url": "~/Projects/shopware-plugins/paypal-sdk",
-            "canonical": false,
-            "options": {
-              "symlink": true
-            }
         }
     },
     "suggest": {

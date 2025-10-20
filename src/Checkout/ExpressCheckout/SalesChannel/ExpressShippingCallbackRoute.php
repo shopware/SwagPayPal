@@ -64,7 +64,7 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
             ]);
 
             $paypalOrderId = $request->request->get('id');
-            $shippingAddress = $request->request->all()['shipping_address'] ?? null;
+            $shippingAddress = $request->request->get('shipping_address');
 
             if (!\is_string($paypalOrderId) || !\is_array($shippingAddress)) {
                 $this->logger->error('Invalid callback payload', [
