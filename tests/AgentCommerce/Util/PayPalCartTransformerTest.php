@@ -25,6 +25,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Promotion\Cart\PromotionCartAddedInformationError;
 use Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute;
 use Shopware\Core\Checkout\Shipping\SalesChannel\ShippingMethodRouteResponse;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
@@ -477,6 +478,9 @@ class PayPalCartTransformerTest extends TestCase
         $validationIssueMock
             ->method('cartError')
             ->willReturnCallback(function (Error $error) {
+                // We don't want this "error" to be converted
+                static::assertNotInstanceOf(PromotionCartAddedInformationError::class, $error);
+
                 $issue = new ValidationIssue();
                 $issue->setMessage($error::class);
 
@@ -544,10 +548,14 @@ class PayPalCartTransformerTest extends TestCase
         $validItemNoInitPrice->setPrice(new CalculatedPrice(100, 1000, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $validItemNoInitPrice->setPayloadValue('stock', 50);
 
+        $invalidReferenceUuid = new LineItem(Uuid::randomHex(), 'product', 'some-string', 1);
+        $referenceIdNull = new LineItem(Uuid::randomHex(), 'product', null, 1);
+
         $cart = new Cart(Uuid::randomHex());
-        $cart->addLineItems(new LineItemCollection([$outOfStock, $priceChanged, $validItem, $validItemWithInitPrice, $validItemNoInitPrice]));
+        $cart->addLineItems(new LineItemCollection([$outOfStock, $priceChanged, $validItem, $validItemWithInitPrice, $validItemNoInitPrice, $invalidReferenceUuid, $referenceIdNull]));
         $cart->addErrors(
             new ProductNotFoundError(Uuid::randomHex()),
+            new PromotionCartAddedInformationError(new LineItem(Uuid::randomHex(), 'promotion')),
             new PurchaseStepsError(Uuid::randomHex(), 'Name', 2),
         );
 

@@ -47,6 +47,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <argument type="service" id="Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder"/>
         </service>
 
         <service id="Swag\PayPal\AgentCommerce\SalesChannel\GetCartRoute" public="true">
