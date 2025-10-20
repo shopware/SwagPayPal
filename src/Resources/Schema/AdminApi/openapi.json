@@ -5437,6 +5437,28 @@
                 },
                 "type": "object"
             },
+            "paypal_v2_order_payment_source_common_attributes_order_update_callback_config": {
+                "required": [
+                    "callback_url",
+                    "callback_events"
+                ],
+                "properties": {
+                    "callback_url": {
+                        "type": "string"
+                    },
+                    "callback_events": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "SHIPPING_ADDRESS",
+                                "SHIPPING_OPTIONS"
+                            ]
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v2_order_payment_source_common_attributes_vault": {
                 "required": [
                     "id",
@@ -5504,7 +5526,8 @@
                     "return_url",
                     "cancel_url",
                     "payment_method_preference",
-                    "customer_service_instructions"
+                    "customer_service_instructions",
+                    "order_update_callback_config"
                 ],
                 "properties": {
                     "locale": {
@@ -5562,6 +5585,9 @@
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "order_update_callback_config": {
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_order_update_callback_config"
                     }
                 },
                 "type": "object"
