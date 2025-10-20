@@ -29,7 +29,6 @@ use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
-use function PHPUnit\Framework\once;
 
 /**
  * @internal
@@ -145,7 +144,7 @@ class CreateCartRouteTest extends TestCase
         $content = json_encode($cartData);
         static::assertIsString($content);
 
-        $response  = $this->createCartRoute->createCart(new Request(content: $content), $salesChannelContext);
+        $response = $this->createCartRoute->createCart(new Request(content: $content), $salesChannelContext);
 
         static::assertSame(PayPalCart::STATUS__CREATED, $response->getCart()->getStatus());
         static::assertSame(PayPalCart::VALIDATION_STATUS__VALID, $response->getCart()->getValidationStatus());

@@ -116,7 +116,8 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         return $items;
     }
 
-    private function createPayPalOrder(PayPalCart $payPalCart, Cart $swCart, array $requestData, SalesChannelContext $salesChannelContext): string {
+    private function createPayPalOrder(PayPalCart $payPalCart, Cart $swCart, array $requestData, SalesChannelContext $salesChannelContext): string
+    {
         $order = $this->orderBuilder->getOrderFromCart($swCart, $salesChannelContext, new RequestDataBag($requestData));
         $orderId = $payPalCart->getPaymentMethod()?->getToken();
 
