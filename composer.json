@@ -11,7 +11,7 @@
     ],
     "require": {
         "shopware/core": "~6.7.0@dev",
-        "shopware/paypal-sdk": "^1.3.0"
+        "shopware/paypal-sdk": "^1.4.0"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
@@ -91,6 +91,14 @@
             "type": "path",
             "url": "../../../src/*",
             "canonical": true
+        },
+        "paypal-sdk": {
+            "type": "path",
+            "url": "~/Projects/shopware-plugins/paypal-sdk",
+            "canonical": false,
+            "options": {
+              "symlink": true
+            }
         }
     },
     "suggest": {
