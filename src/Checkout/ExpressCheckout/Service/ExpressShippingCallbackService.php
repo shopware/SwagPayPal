@@ -8,6 +8,8 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -16,7 +18,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Util\PriceFormatter;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit;
+use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 
 #[Package('checkout')]
 class ExpressShippingCallbackService
@@ -27,7 +30,7 @@ class ExpressShippingCallbackService
     public function __construct(
         private readonly CartService $cartService,
         private readonly EntityRepository $countryRepository,
-        private readonly PriceFormatter $priceFormatter,
+        private readonly AmountProvider $amountProvider,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -64,12 +67,7 @@ class ExpressShippingCallbackService
             throw new \RuntimeException(\sprintf('Country not found for code: %s', $countryCode));
         }
 
-        // Create a temporary context with the new shipping country for tax recalculation
-        // Note: We don't persist this change, only use it for calculation
-        $taxCalculationContext = clone $salesChannelContext;
-
-        // Shopware will automatically recalculate taxes based on the context
-        // The cart's delivery address determines the tax rates
+        // Shopware will automatically recalculate taxes based on the cart's delivery address
         $this->logger->debug('Cart recalculated', [
             'cartTotal' => $cart->getPrice()->getTotalPrice(),
             'cartTax' => $cart->getPrice()->getCalculatedTaxes()->getAmount(),
@@ -78,42 +76,34 @@ class ExpressShippingCallbackService
 
         // Build the response in PayPal's expected format
         $currency = $salesChannelContext->getCurrency();
-        $currencyCode = $currency->getIsoCode();
+        $totalPrice = new CalculatedPrice(
+            $cart->getPrice()->getTotalPrice(),
+            $cart->getPrice()->getTotalPrice(),
+            $cart->getPrice()->getCalculatedTaxes(),
+            $cart->getPrice()->getTaxRules()
+        );
 
-        $cartTotal = $cart->getPrice()->getTotalPrice();
-        $cartTax = $cart->getPrice()->getCalculatedTaxes()->getAmount();
-        $shippingCosts = $cart->getShippingCosts()->getTotalPrice();
-        $itemTotal = $cartTotal - $shippingCosts;
+        // Create a temporary PurchaseUnit to use AmountProvider
+        $purchaseUnit = new PurchaseUnit();
+        $amount = $this->amountProvider->createAmount(
+            $totalPrice,
+            $cart->getShippingCosts(),
+            $currency,
+            $purchaseUnit,
+            $cart->getPrice()->getTaxStatus() !== CartPrice::TAX_STATE_GROSS
+        );
+        $purchaseUnit->setAmount($amount);
 
-        $purchaseUnit = [
-            'amount' => [
-                'currency_code' => $currencyCode,
-                'value' => $this->priceFormatter->formatPrice($cartTotal, $currencyCode),
-                'breakdown' => [
-                    'item_total' => [
-                        'currency_code' => $currencyCode,
-                        'value' => $this->priceFormatter->formatPrice($itemTotal, $currencyCode),
-                    ],
-                    'shipping' => [
-                        'currency_code' => $currencyCode,
-                        'value' => $this->priceFormatter->formatPrice($shippingCosts, $currencyCode),
-                    ],
-                    'tax_total' => [
-                        'currency_code' => $currencyCode,
-                        'value' => $this->priceFormatter->formatPrice($cartTax, $currencyCode),
-                    ],
-                ],
-            ],
-        ];
+        $purchaseUnitArray = $purchaseUnit->jsonSerialize();
 
         $this->logger->info('Cart recalculation completed', [
             'paypalOrderId' => $paypalOrderId,
             'newCountry' => $countryCode,
-            'newTotal' => $purchaseUnit['amount']['value'],
-            'newTax' => $purchaseUnit['amount']['breakdown']['tax_total']['value'],
+            'newTotal' => $amount->getValue(),
+            'newTax' => $amount->getBreakdown()?->getTaxTotal()?->getValue(),
         ]);
 
-        return [$purchaseUnit];
+        return [$purchaseUnitArray];
     }
 
     private function getCountryByIso(string $iso, Context $context): ?CountryEntity

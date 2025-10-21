@@ -36,6 +36,12 @@ class GenerateOpenApi extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        // Ensure plugin vendor autoloader is loaded for PayPal SDK classes
+        $vendorAutoload = self::ROOT_DIR . '/vendor/autoload.php';
+        if (\file_exists($vendorAutoload)) {
+            require_once $vendorAutoload;
+        }
+
         $logger = new ConsoleLogger($output);
 
         $generator = new Generator($logger);
@@ -78,7 +84,7 @@ class GenerateOpenApi extends Command
         $openApi = $generator->generate([
             Util::finder(self::ROOT_DIR . '/src/RestApi'),
             Util::finder(self::ROOT_DIR . '/src/Checkout'),
-            Util::finder(self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct'),
+            Util::finder(self::ROOT_DIR . '/vendor/shopware/paypal-sdk/src/Struct'),
         ])?->toJson();
 
         if ($openApi === null) {
@@ -110,7 +116,7 @@ class GenerateOpenApi extends Command
             Util::finder(self::ROOT_DIR . '/src/Pos'),
             Util::finder(self::ROOT_DIR . '/src/Setting'),
             Util::finder(self::ROOT_DIR . '/src/Webhook'),
-            Util::finder(self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct'),
+            Util::finder(self::ROOT_DIR . '/vendor/shopware/paypal-sdk/src/Struct'),
             Util::finder(__DIR__ . '/Polyfill'),
         ])?->toJson();
 
