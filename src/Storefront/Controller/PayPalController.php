@@ -149,34 +149,27 @@ class PayPalController extends StorefrontController
     {
         $code = $request->request->getString('code');
         $fatal = $request->request->getBoolean('fatal');
+        $isCheckout = $request->request->getBoolean('isCheckout');
 
-        // Translate error snippet
-        $snippetGeneric = \sprintf('paypal.error.%s', $code);
-        $snippetByMethod = \sprintf(
-            'paypal.error.%s.%s',
-            $context->getPaymentMethod()->getFormattedHandlerIdentifier(),
-            $code
-        );
+        if ($isCheckout) {
+            // Simply add a snippet for the error code to create a flash
+            $snippetGeneric = \sprintf('paypal.error.%s', $code);
+            $snippetByMethod = \sprintf('paypal.error.%s.%s', $context->getPaymentMethod()->getFormattedHandlerIdentifier(), $code);
 
-        $transSnippetGeneric = $this->trans($snippetGeneric);
-        $transSnippetByMethod = $this->trans($snippetByMethod);
-        $errorMessages = [];
-
-        if ($transSnippetByMethod !== $snippetByMethod) {
-            $errorMessages[] = $transSnippetByMethod;
-        } elseif ($transSnippetGeneric !== $snippetGeneric) {
-            $errorMessages[] = $transSnippetGeneric;
-        } else {
-            $errorMessages[] = $this->trans('paypal.error.SWAG_PAYPAL__GENERIC_ERROR');
+            $transSnippetGeneric = $this->trans($snippetGeneric);
+            $transSnippetByMethod = $this->trans($snippetByMethod);
+            if ($transSnippetByMethod !== $snippetByMethod) {
+                $this->addFlash(self::DANGER, $transSnippetByMethod);
+            } elseif ($transSnippetGeneric !== $snippetGeneric) {
+                $this->addFlash(self::DANGER, $transSnippetGeneric);
+            } else {
+                $this->addFlash(self::DANGER, $this->trans('paypal.error.SWAG_PAYPAL__GENERIC_ERROR'));
+            }
         }
-
-        // Store error in session scoped to current path
-        $session = $request->getSession();
-        $session->set('paypal_page_errors', $errorMessages);
 
         // Optional: mark fatal payment issues
         if ($fatal) {
-            $session->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
+            $request->getSession()->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
         }
 
         // Log

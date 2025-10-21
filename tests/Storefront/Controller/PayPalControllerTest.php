@@ -88,27 +88,57 @@ class PayPalControllerTest extends TestCase
 
     public function testOnHandleErrorWithTranslatableErrorCode(): void
     {
-        $session = new Session(new MockArraySessionStorage());
-        $request = new Request([], ['code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE']);
-        $request->setSession($session);
+        // --- Scenario 1: isCheckout = true (Flash IS added) ---
+        $request = new Request(request: [
+            'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
+            'isCheckout' => true, // Flash should be added
+        ]);
 
-        $context = $this->generateSalesChannelContext();
-
-        $this->controller->expects($this->exactly(2))
+        $matcher = $this->exactly(2);
+        $this->controller
+            ->expects($matcher)
             ->method('trans')
-            ->willReturnCallback(function (string $key) {
-                if ($key === 'paypal.error.test_handler.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE') {
-                    return 'Translated error message';
-                }
+            ->willReturnCallback(function (string $key) use (&$matcher) {
+                // Assert that the method-specific and generic translations are attempted
+                match ($matcher->numberOfInvocations()) {
+                    1 => static::assertSame('paypal.error.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', $key),
+                    2 => static::assertSame('paypal.error.test_handler.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', $key),
+                    default => static::fail('Unexpected number of invocations'),
+                };
 
-                return $key;
+                return 'Translated error message';
             });
 
-        $this->controller->onHandleError($request, $context);
+        $this->controller
+            ->expects($this->once())
+            ->method('addFlash')
+            ->with('danger', 'Translated error message');
 
-        $errors = $session->get('paypal_page_errors', []);
-        static::assertNotEmpty($errors);
-        static::assertSame(['Translated error message'], $errors);
+        $this->controller->onHandleError($request, $this->generateSalesChannelContext());
+
+        $this->assertLogRecord(Level::Warning, [
+            'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
+            'fatal' => false,
+        ]);
+
+        // --- Scenario 2: isCheckout = false (Flash is SKIPPED) ---
+        $request = new Request(request: [
+            'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
+            'isCheckout' => false, // Flash should be skipped
+        ]);
+
+        // Reset expectations for the second scenario
+        $this->setUp();
+
+        $this->controller
+            ->expects($this->never()) // ASSERTION: trans() must NOT be called
+            ->method('trans');
+
+        $this->controller
+            ->expects($this->never()) // ASSERTION: addFlash must NOT be called
+            ->method('addFlash');
+
+        $this->controller->onHandleError($request, $this->generateSalesChannelContext());
 
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
@@ -118,24 +148,47 @@ class PayPalControllerTest extends TestCase
 
     public function testOnHandleErrorWithNonTranslatableErrorCode(): void
     {
-        $session = new Session(new MockArraySessionStorage());
-        $request = new Request([], ['code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE']);
-        $request->setSession($session);
+        // --- Scenario 1: isCheckout = true (Generic Flash IS added) ---
+        $request = new Request(request: [
+            'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
+            'isCheckout' => true, // Flash should be added
+        ]);
 
-        $context = $this->generateSalesChannelContext();
-
-        $this->controller->expects($this->exactly(3))
+        $this->controller
+            ->expects($this->exactly(3)) // Specific, generic, AND fallback generic translation calls
             ->method('trans')
-            ->willReturnCallback(fn (string $key) => $key);
+            ->willReturnCallback(fn (string $key) => $key); // Returns key, causing fallback
 
-        $this->controller->onHandleError($request, $context);
+        $this->controller
+            ->expects($this->once()) // ASSERTION: addFlash IS called
+            ->method('addFlash')
+            ->with('danger', 'paypal.error.SWAG_PAYPAL__GENERIC_ERROR');
 
-        $errors = $session->get('paypal_page_errors', []);
-        static::assertNotEmpty($errors);
-        static::assertSame(
-            ['paypal.error.SWAG_PAYPAL__GENERIC_ERROR'],
-            $errors
-        );
+        $this->controller->onHandleError($request, $this->generateSalesChannelContext());
+
+        $this->assertLogRecord(Level::Warning, [
+            'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
+            'fatal' => false,
+        ]);
+
+        // --- Scenario 2: isCheckout = false (Flash is SKIPPED) ---
+        $request = new Request(request: [
+            'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
+            'isCheckout' => false, // Flash should be skipped
+        ]);
+
+        // Reset expectations for the second scenario
+        $this->setUp();
+
+        $this->controller
+            ->expects($this->never()) // ASSERTION: trans() must NOT be called
+            ->method('trans');
+
+        $this->controller
+            ->expects($this->never()) // ASSERTION: addFlash must NOT be called
+            ->method('addFlash');
+
+        $this->controller->onHandleError($request, $this->generateSalesChannelContext());
 
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
