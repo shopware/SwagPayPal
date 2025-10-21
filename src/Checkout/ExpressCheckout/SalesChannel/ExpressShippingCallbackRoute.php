@@ -57,19 +57,19 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
     #[Route(path: '/store-api/paypal/express/shipping-callback', name: 'store-api.paypal.express.shipping_callback', methods: ['POST'], defaults: ['csrf_protected' => false])]
     public function handleCallback(Request $request, SalesChannelContext $salesChannelContext): JsonResponse
     {
-        $data = $request->toArray();
+        $payload = $request->request->all();
 
         $this->logger->info('PayPal shipping callback received', [
-            'paypalOrderId' => $data['id'] ?? null,
-            'shippingAddress' => $data['shipping_address'] ?? null,
+            'paypalOrderId' => $payload['id'] ?? null,
+            'shippingAddress' => $payload['shipping_address'] ?? null,
         ]);
 
-        $paypalOrderId = $data['id'] ?? null;
-        $shippingAddress = $data['shipping_address'] ?? null;
+        $paypalOrderId = $payload['id'] ?? null;
+        $shippingAddress = $payload['shipping_address'] ?? null;
 
         if (!\is_string($paypalOrderId) || !\is_array($shippingAddress)) {
             $this->logger->error('Invalid callback payload', [
-                'payload' => $data,
+                'payload' => $payload,
             ]);
 
             return new JsonResponse(['error' => 'Invalid payload'], Response::HTTP_BAD_REQUEST);
