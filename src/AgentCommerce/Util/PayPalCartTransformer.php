@@ -13,7 +13,6 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryTime;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Promotion\Cart\PromotionCartAddedInformationError;
 use Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
@@ -171,8 +170,8 @@ class PayPalCartTransformer
         $errors = new ValidationIssueCollection();
 
         foreach ($cart->getErrors() as $error) {
-            if ($error instanceof PromotionCartAddedInformationError) {
-                // Not an "error" we want to add here
+            if (!$error->blockOrder()) {
+                // Not errors we want to add here
                 continue;
             }
 

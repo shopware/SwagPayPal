@@ -11,16 +11,12 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
-use Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Coupon;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\AgentCommerce\SalesChannel\CreateCartRoute;
@@ -47,13 +43,9 @@ class CreateCartRouteTest extends TestCase
 
     private AbstractRegisterRoute&MockObject $registerRoute;
 
-    private ProductLineItemFactory&MockObject $lineItemFactory;
-
     private AbstractOrderBuilder&MockObject $orderBuilder;
 
     private OrderResource&MockObject $orderResource;
-
-    private PromotionItemBuilder&MockObject $promotionItemBuilder;
 
     private CreateCartRoute $createCartRoute;
 
@@ -64,10 +56,8 @@ class CreateCartRouteTest extends TestCase
         $this->payPalCartTransformer = $this->createMock(PayPalCartTransformer::class);
         $this->shopwareCartTransformer = $this->createMock(ShopwareCartTransformer::class);
         $this->registerRoute = $this->createMock(AbstractRegisterRoute::class);
-        $this->lineItemFactory = $this->createMock(ProductLineItemFactory::class);
         $this->orderBuilder = $this->createMock(AbstractOrderBuilder::class);
         $this->orderResource = $this->createMock(OrderResource::class);
-        $this->promotionItemBuilder = $this->createMock(PromotionItemBuilder::class);
 
         $this->createCartRoute = new CreateCartRoute(
             $this->contextService,
@@ -75,16 +65,14 @@ class CreateCartRouteTest extends TestCase
             $this->payPalCartTransformer,
             $this->shopwareCartTransformer,
             $this->registerRoute,
-            $this->lineItemFactory,
             $this->orderBuilder,
             $this->orderResource,
-            $this->promotionItemBuilder
         );
     }
 
     public function testCreateCartWithCreateAndLoginCustomer(): void
     {
-        $cartData = array_merge(self::createItems(), self::createCustomer(), self::createCoupons());
+        $cartData = array_merge(self::createItems(), self::createCustomer());
 
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
         $salesChannelContext
@@ -115,10 +103,10 @@ class CreateCartRouteTest extends TestCase
             ->method('add')
             ->willReturn($cart);
 
-        $this->promotionItemBuilder
+        $this->shopwareCartTransformer
             ->expects($this->once())
-            ->method('buildPlaceholderItem')
-            ->willReturn(new LineItem(Uuid::randomHex(), 'promotion'));
+            ->method('getLineItems')
+            ->willReturn([]);
 
         $order = new Order();
         $order->setId('some-order-id');
@@ -153,26 +141,7 @@ class CreateCartRouteTest extends TestCase
 
     private static function createItems(): array
     {
-        return ['items' => [self::createCartItem(Uuid::randomHex(), 1)]];
-    }
-
-    private static function createCartItem(?string $variantId = null, ?int $quantity = null): array
-    {
-        $item = [];
-        if ($variantId !== null) {
-            $item['variant_id'] = $variantId;
-        }
-
-        if ($quantity !== null) {
-            $item['quantity'] = $quantity;
-        }
-
-        return $item;
-    }
-
-    private static function createCoupons(): array
-    {
-        return ['coupons' => [['action' => Coupon::APPLY, 'code' => 'some-code']]];
+        return ['items' => [['variant_id' => Uuid::randomHex(), 'quantity' => 1]]];
     }
 
     private static function createCustomer(): array

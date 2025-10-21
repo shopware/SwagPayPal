@@ -478,8 +478,8 @@ class PayPalCartTransformerTest extends TestCase
         $validationIssueMock
             ->method('cartError')
             ->willReturnCallback(function (Error $error) {
-                // We don't want this "error" to be converted
-                static::assertNotInstanceOf(PromotionCartAddedInformationError::class, $error);
+                // Only blocking orders error should be added
+                static::assertTrue($error->blockOrder());
 
                 $issue = new ValidationIssue();
                 $issue->setMessage($error::class);

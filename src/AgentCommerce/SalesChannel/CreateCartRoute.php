@@ -8,16 +8,12 @@
 namespace Swag\PayPal\AgentCommerce\SalesChannel;
 
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
-use Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Coupon;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Shopware\PayPalSDK\Struct\V2\Patch;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
@@ -45,10 +41,8 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         private readonly PayPalCartTransformer $payPalCartTransformer,
         private readonly ShopwareCartTransformer $shopwareCartTransformer,
         private readonly AbstractRegisterRoute $registerRoute,
-        private readonly ProductLineItemFactory $lineItemFactory,
         private readonly AbstractOrderBuilder $orderBuilder,
         private readonly OrderResource $orderResource,
-        private readonly PromotionItemBuilder $promotionItemBuilder,
     ) {
     }
 
@@ -61,9 +55,9 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         }
 
         $swCart = $this->cartService->createNew($salesChannelContext->getToken());
-        $swCart = $this->cartService->add($swCart, $this->getLineItems($payPalCart, $salesChannelContext), $salesChannelContext);
+        $swCart = $this->cartService->add($swCart, $this->shopwareCartTransformer->getLineItems($payPalCart, $salesChannelContext), $salesChannelContext);
 
-        $orderId = $this->createPayPalOrder($payPalCart, $swCart, $request->request->all(), $salesChannelContext);
+        $orderId = $this->upsertPayPalOrder($payPalCart, $swCart, $request->request->all(), $salesChannelContext);
 
         $createdPayPalCart = $this->payPalCartTransformer->convertToPayPalCart($swCart, $salesChannelContext, $payPalCart);
 
@@ -87,36 +81,7 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
         return $this->createSalesChannelContext($salesChannelContext->getToken(), $salesChannelContext->getSalesChannelId(), $salesChannelContext->getContext());
     }
 
-    private function getLineItems(PayPalCart $payPalCart, SalesChannelContext $salesChannelContext): array
-    {
-        $lineItems = [];
-        foreach ($payPalCart->getItems() as $item) {
-            $lineItems[] = $this->lineItemFactory->create(['id' => $item->getVariantId(), 'quantity' => $item->getQuantity()], $salesChannelContext);
-        }
-
-        if ($payPalCart->isset('coupons')) {
-            $lineItems = array_merge($lineItems, $this->handleCoupons($payPalCart));
-        }
-
-        return $lineItems;
-    }
-
-    /**
-     * @return LineItem[]
-     */
-    private function handleCoupons(PayPalCart $payPalCart): array
-    {
-        $items = [];
-        foreach ($payPalCart->getCoupons() as $item) {
-            if ($item->getAction() === Coupon::APPLY) {
-                $items[] = $this->promotionItemBuilder->buildPlaceholderItem($item->getCode());
-            }
-        }
-
-        return $items;
-    }
-
-    private function createPayPalOrder(PayPalCart $payPalCart, Cart $swCart, array $requestData, SalesChannelContext $salesChannelContext): string
+    private function upsertPayPalOrder(PayPalCart $payPalCart, Cart $swCart, array $requestData, SalesChannelContext $salesChannelContext): string
     {
         $order = $this->orderBuilder->getOrderFromCart($swCart, $salesChannelContext, new RequestDataBag($requestData));
         $orderId = $payPalCart->getPaymentMethod()?->getToken();
