@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Passt den Betrag an, für den Pay Later zur Verfügung steht, an die aktuellen Beschränkungen an (https://developer.paypal.com/studio/checkout/pay-later/de)
+
 # 10.1.2
 - Behebt ein Problem, bei dem das Plugin bei aktiven Zettle Verkaufskanälen nicht aktualisiert werden konnte (shopware/SwagPayPal#361)
 - Behebt ein Problem, bei dem Zahlungsinformationen für Rechnungskäufe zu Fehlausrichtungen in Rechnungsdokumenten führen konnten (shopware/SwagPayPal#394)
