@@ -58,7 +58,7 @@ jobs:
   playwright:
     needs: build-zip
     if: (needs.build-zip.result == 'success' && contains(github.event.pull_request.labels.*.name, 'run/acceptance')) || github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ${{ format('runs-on={0}/runner=sw-arm', github.run_id) }}
     environment: acceptance-production
     services:
       redis:
@@ -118,14 +118,16 @@ jobs:
         run: |
           symfony console cache:clear --env="${APP_ENV}" || true
           echo "APP_URL=${APP_URL}" >> "${PLUGIN_PATH}/tests/acceptance/.env"
-          echo "$PAYPAL_SECRETS" | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]' >> "${PLUGIN_PATH}/tests/acceptance/.env"
           symfony console integration:create AcceptanceTest --admin >> "${PLUGIN_PATH}/tests/acceptance/.env"
-        env:
-          PAYPAL_SECRETS: ${{ toJson(secrets) }}
 
       - name: Run playwright
         working-directory: ${{ env.PLUGIN_PATH }}/tests/acceptance
         run: npx playwright test --reporter=${{ github.event.act && 'line' || 'github' }} --trace=on-first-retry
+        env:
+          PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
+          PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
+          PAYPAL_MERCHANT_ID: ${{ secrets.PAYPAL_MERCHANT_ID }}
+          PAYPAL_SANDBOX: ${{ secrets.PAYPAL_SANDBOX }}
 
       - name: Compress and encrypt test-results
         if: always()
