@@ -66,8 +66,8 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
         $response = $this->createCartRoute->createCart($request, $salesChannelContext);
 
         if ($response->isSuccessful()) {
-            if ($response->getObject()->getVars()['validation_status'] === PayPalCart::VALIDATION_STATUS__VALID) {
-                $response->getObject()->assign(['validation_status' => 'READY']);
+            if ($response->getObject()->offsetGet('validation_status') === PayPalCart::VALIDATION_STATUS__VALID) {
+                $response->getObject()->offsetSet('validation_status', PayPalCart::STATUS__READY);
             }
 
             $response->setStatusCode(Response::HTTP_OK);
@@ -95,12 +95,12 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
 
         $customerData = $this->shopwareCartTransformer->extractCustomerData($payPalCart, $salesChannelContext->getSalesChannelId(), $salesChannelContext->getContext());
         $customerData['id'] = $customer->getId();
-        $customerData['shippingAddress']['id'] = $customer->getDefaultShippingAddress()?->getId();
+        $customerData['shippingAddress']['id'] = $customer->getDefaultShippingAddressId();
         $customerData['defaultShippingAddress'] = $customerData['shippingAddress'];
 
         $toDeleteAddress = null;
         if (isset($customerData['billingAddress'])) {
-            $customerData['billingAddress']['id'] = $customer->getDefaultBillingAddress()?->getId() ?? Uuid::randomHex();
+            $customerData['billingAddress']['id'] = $customer->getDefaultBillingAddressId() ?? Uuid::randomHex();
             $customerData['defaultBillingAddress'] = $customerData['billingAddress'];
         } elseif ($customer->getDefaultShippingAddressId() !== $customer->getDefaultBillingAddressId()) {
             $toDeleteAddress = [['id' => $customer->getDefaultBillingAddressId()]];

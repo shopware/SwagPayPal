@@ -478,7 +478,7 @@ class PayPalCartTransformerTest extends TestCase
         $validationIssueMock
             ->method('cartError')
             ->willReturnCallback(function (Error $error) {
-                // Only blocking orders error should be added
+                // Only blocking order errors should be added
                 static::assertTrue($error->blockOrder());
 
                 $issue = new ValidationIssue();
