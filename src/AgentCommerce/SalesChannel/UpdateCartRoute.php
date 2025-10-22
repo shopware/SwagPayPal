@@ -13,7 +13,6 @@ use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -100,7 +99,7 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
 
         $toDeleteAddress = null;
         if (isset($customerData['billingAddress'])) {
-            $customerData['billingAddress']['id'] = $customer->getDefaultBillingAddressId() ?? Uuid::randomHex();
+            $customerData['billingAddress']['id'] = $customer->getDefaultBillingAddressId();
             $customerData['defaultBillingAddress'] = $customerData['billingAddress'];
         } elseif ($customer->getDefaultShippingAddressId() !== $customer->getDefaultBillingAddressId()) {
             $toDeleteAddress = [['id' => $customer->getDefaultBillingAddressId()]];
