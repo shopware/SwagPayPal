@@ -117,7 +117,7 @@ class ExpressShippingCallbackRouteTest extends TestCase
 
         $request = new Request([], [
             'id' => 'ORDER-123',
-            'shipping_address' => ['country_code' => 'AT'],
+            'shipping_address' => ['country_code' => null],
         ]);
 
         $response = $route->handleCallback($request, $this->getSalesChannelContext());
