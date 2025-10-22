@@ -37,7 +37,7 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
         'ES' => ['currency' => 'EUR', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
         'GB' => ['currency' => 'GBP', 'minAmount' => 20.00, 'maxAmount' => 3000.00],
         'US' => ['currency' => 'USD', 'minAmount' => 30.00, 'maxAmount' => 10000.00],
-        'AU' => ['currency' => 'AUD', 'minAmount' => 1.00, 'maxAmount' => 2000.00],
+        'AU' => ['currency' => 'AUD', 'minAmount' => 1.00, 'maxAmount' => 1999.99],
     ];
 
     /**
