@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -59,7 +60,7 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
     {
         $payload = $request->request->all();
 
-        $this->logger->info('PayPal shipping callback received', [
+        $this->logger->debug('Shipping callback received', [
             'paypalOrderId' => $payload['id'] ?? null,
             'shippingAddress' => $payload['shipping_address'] ?? null,
         ]);
@@ -68,7 +69,7 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
         $shippingAddress = $payload['shipping_address'] ?? null;
 
         if (!\is_string($paypalOrderId) || !\is_array($shippingAddress)) {
-            $this->logger->error('Invalid callback payload', [
+            $this->logger->error('Shipping callback: Invalid payload', [
                 'payload' => $payload,
             ]);
 
@@ -82,16 +83,12 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
                 $salesChannelContext
             );
 
-            $this->logger->info('PayPal shipping callback processed successfully', [
-                'paypalOrderId' => $paypalOrderId,
-                'updatedAmount' => $updatedPurchaseUnits[0]['amount']['value'] ?? null,
-            ]);
-
             return new JsonResponse(['purchase_units' => $updatedPurchaseUnits]);
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Throwable $e) {
-            $this->logger->error('PayPal shipping callback failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+            $this->logger->error('Shipping callback failed', [
+                'exception' => $e,
             ]);
 
             return new JsonResponse(

@@ -19,6 +19,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit;
+use Swag\PayPal\Checkout\CheckoutException;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 
 #[Package('checkout')]
@@ -45,7 +46,7 @@ class ExpressShippingCallbackService
         array $shippingAddress,
         SalesChannelContext $salesChannelContext,
     ): array {
-        $this->logger->info('PayPal shipping callback: Recalculating cart for address change', [
+        $this->logger->debug('Shipping callback: Recalculating cart for address change', [
             'paypalOrderId' => $paypalOrderId,
             'countryCode' => $shippingAddress['country_code'] ?? null,
             'fullAddress' => $shippingAddress,
@@ -57,14 +58,14 @@ class ExpressShippingCallbackService
         // Get country by ISO code
         $countryCode = $shippingAddress['country_code'] ?? null;
         if (!$countryCode) {
-            $this->logger->error('Missing country code in shipping address');
-            throw new \RuntimeException('Missing country code in shipping address');
+            $this->logger->error('Shipping callback: Missing country code in shipping address');
+            throw CheckoutException::expressMissingCountryCode();
         }
 
         $country = $this->getCountryByIso($countryCode, $salesChannelContext->getContext());
         if (!$country) {
             $this->logger->error('Country not found', ['countryCode' => $countryCode]);
-            throw new \RuntimeException(\sprintf('Country not found for code: %s', $countryCode));
+            throw CheckoutException::expressCountryNotFound($countryCode);
         }
 
         // Shopware will automatically recalculate taxes based on the cart's delivery address
@@ -96,7 +97,7 @@ class ExpressShippingCallbackService
 
         $purchaseUnitArray = $purchaseUnit->jsonSerialize();
 
-        $this->logger->info('Cart recalculation completed', [
+        $this->logger->debug('Cart recalculation completed', [
             'paypalOrderId' => $paypalOrderId,
             'newCountry' => $countryCode,
             'newTotal' => $amount->getValue(),

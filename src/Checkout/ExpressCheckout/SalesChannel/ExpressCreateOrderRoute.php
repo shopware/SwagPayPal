@@ -81,7 +81,6 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 
                 // Configure shipping callback for dynamic price recalculation
                 $callbackConfig = new OrderUpdateCallbackConfig();
-                $this->router->getContext()->setScheme('https');
                 $callbackUrl = $this->router->generate(
                     'store-api.paypal.express.shipping_callback',
                     [],

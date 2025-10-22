@@ -96,8 +96,6 @@ jobs:
 
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
-        with:
-          php-version: "8.3"
 
       - name: Fetch SwagPayPal
         working-directory: custom/plugins/${{ github.event.repository.name }}
