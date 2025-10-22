@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Pay Later is now available for amounts of up to €10,000 instead of €5,000 in Germany
+- Adjusted the amount that Pay Later is available for to the current limitations given (https://developer.paypal.com/studio/checkout/pay-later/de)
 
 # 10.1.2
 - Fixes an issue, where the plugin could not be updated when Zettle Sales Channels were active (shopware/SwagPayPal#361)
