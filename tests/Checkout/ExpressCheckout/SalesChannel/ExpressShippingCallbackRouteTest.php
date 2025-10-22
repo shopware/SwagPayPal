@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Checkout\CheckoutException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
@@ -110,7 +111,7 @@ class ExpressShippingCallbackRouteTest extends TestCase
                 ['country_code' => 'AT'],
                 static::isInstanceOf(SalesChannelContext::class)
             )
-            ->willThrowException(new \RuntimeException('Test error'));
+            ->willThrowException(CheckoutException::expressMissingCountryCode());
 
         $route = new ExpressShippingCallbackRoute($service, new NullLogger());
 

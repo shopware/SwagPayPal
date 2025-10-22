@@ -16,7 +16,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\CountryEntity;
+use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit;
 use Swag\PayPal\Checkout\CheckoutException;
@@ -32,6 +36,8 @@ class ExpressShippingCallbackService
         private readonly CartService $cartService,
         private readonly EntityRepository $countryRepository,
         private readonly AmountProvider $amountProvider,
+        private readonly AbstractContextSwitchRoute $contextSwitchRoute,
+        private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -52,9 +58,6 @@ class ExpressShippingCallbackService
             'fullAddress' => $shippingAddress,
         ]);
 
-        // Get the cart token from the PayPal order
-        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
-
         // Get country by ISO code
         $countryCode = $shippingAddress['country_code'] ?? null;
         if (!$countryCode) {
@@ -68,7 +71,29 @@ class ExpressShippingCallbackService
             throw CheckoutException::expressCountryNotFound($countryCode);
         }
 
-        // Shopware will automatically recalculate taxes based on the cart's delivery address
+        // Since a new customer was logged in, the context changed in the system,
+        // but this doesn't effect the current context given as parameter.
+        // Because of that a new context for the cart recalculation is created
+        $this->logger->debug('Switching context to new country', ['countryId' => $country->getId()]);
+        $this->contextSwitchRoute->switchContext(
+            new RequestDataBag([
+                SalesChannelContextService::COUNTRY_ID => $country->getId(),
+            ]),
+            $salesChannelContext
+        );
+
+        $newSalesChannelContext = $this->salesChannelContextFactory->create(
+            $salesChannelContext->getToken(),
+            $salesChannelContext->getSalesChannel()->getId()
+        );
+
+        // Recalculate cart with new context
+        $this->logger->debug('Recalculating cart with new country context');
+        $cart = $this->cartService->recalculate(
+            $this->cartService->getCart($newSalesChannelContext->getToken(), $newSalesChannelContext),
+            $newSalesChannelContext
+        );
+
         $this->logger->debug('Cart recalculated', [
             'cartTotal' => $cart->getPrice()->getTotalPrice(),
             'cartTax' => $cart->getPrice()->getCalculatedTaxes()->getAmount(),
@@ -76,7 +101,7 @@ class ExpressShippingCallbackService
         ]);
 
         // Build the response in PayPal's expected format
-        $currency = $salesChannelContext->getCurrency();
+        $currency = $newSalesChannelContext->getCurrency();
         $totalPrice = new CalculatedPrice(
             $cart->getPrice()->getTotalPrice(),
             $cart->getPrice()->getTotalPrice(),
