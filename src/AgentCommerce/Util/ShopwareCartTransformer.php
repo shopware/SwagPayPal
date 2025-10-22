@@ -7,7 +7,10 @@
 
 namespace Swag\PayPal\AgentCommerce\Util;
 
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
+use Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -15,9 +18,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Salutation\SalutationCollection;
 use Shopware\Core\System\Salutation\SalutationDefinition;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Address;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Coupon;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CouponCollection;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Customer;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Phone;
@@ -40,6 +46,8 @@ class ShopwareCartTransformer
         private readonly EntityRepository $countryRepository,
         private readonly EntityRepository $salutationRepository,
         private readonly EntityRepository $groupRepository,
+        private readonly ProductLineItemFactory $lineItemFactory,
+        private readonly PromotionItemBuilder $promotionItemBuilder,
     ) {
     }
 
@@ -73,6 +81,23 @@ class ShopwareCartTransformer
         return $options;
     }
 
+    /**
+     * @return LineItem[]
+     */
+    public function getLineItems(PayPalCart $payPalCart, SalesChannelContext $salesChannelContext): array
+    {
+        $lineItems = [];
+        foreach ($payPalCart->getItems() as $item) {
+            $lineItems[] = $this->lineItemFactory->create(['id' => $item->getVariantId(), 'quantity' => $item->getQuantity()], $salesChannelContext);
+        }
+
+        if ($payPalCart->isset('coupons')) {
+            $lineItems = array_merge($lineItems, $this->handleCoupons($payPalCart->getCoupons()));
+        }
+
+        return $lineItems;
+    }
+
     private function formatAddress(Address $address, CustomerName $name, ?Phone $phone, Context $context): array
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('iso', $address->getCountryCode()));
@@ -96,5 +121,20 @@ class ShopwareCartTransformer
             'street' => $address->getAddressLine1(),
             'phoneNumber' => $phone?->getFullPhoneNumber(),
         ];
+    }
+
+    /**
+     * @return LineItem[]
+     */
+    private function handleCoupons(CouponCollection $coupons): array
+    {
+        $items = [];
+        foreach ($coupons as $coupon) {
+            if ($coupon->getAction() === Coupon::APPLY) {
+                $items[] = $this->promotionItemBuilder->buildPlaceholderItem($coupon->getCode());
+            }
+        }
+
+        return $items;
     }
 }

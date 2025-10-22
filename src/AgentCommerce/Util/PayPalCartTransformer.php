@@ -22,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Address;
@@ -169,11 +170,24 @@ class PayPalCartTransformer
         $errors = new ValidationIssueCollection();
 
         foreach ($cart->getErrors() as $error) {
+            if (!$error->blockOrder()) {
+                // Not errors we want to add here
+                continue;
+            }
+
             $errors->add($this->validationIssues->cartError($error, $context->getLanguageInfo()->localeCode));
         }
 
+        $lineItems = $cart->getLineItems()->filterFlatByType(LineItem::PRODUCT_LINE_ITEM_TYPE);
+
         $restockProducts = [];
-        $productIds = array_filter($cart->getLineItems()->getReferenceIds());
+        $productIds = [];
+        foreach ($lineItems as $lineItem) {
+            if ($lineItem->getReferencedId() !== null && Uuid::isValid($lineItem->getReferencedId())) {
+                $productIds[] = $lineItem->getReferencedId();
+            }
+        }
+
         if (!empty($productIds)) {
             $criteria = new Criteria($productIds);
             $criteria->addFilter(
@@ -188,19 +202,17 @@ class PayPalCartTransformer
             $mapped[$cartItem->getVariantId()] = $cartItem;
         }
 
-        foreach ($cart->getLineItems() as $lineItem) {
+        foreach ($lineItems as $lineItem) {
             $stock = $lineItem->getPayloadValue('stock'); // @phpstan-ignore method.deprecated
             if ($stock !== null && $stock < $lineItem->getQuantity()) {
-                $restockProduct = $restockProducts[(string) $lineItem->getReferencedId()] ?? null;
-                $issue = $this->validationIssues->outOfStock($lineItem, $restockProduct, $context->getCurrency());
+                $issue = $this->validationIssues->outOfStock($lineItem, $restockProducts[$lineItem->getReferencedId()] ?? null, $context->getCurrency());
 
                 $errors->add($issue);
             }
 
-            $realPrice = (string) $lineItem->getPrice()?->getUnitPrice();
             $initItem = $mapped[$lineItem->getReferencedId()] ?? null;
             $initPrice = $initItem?->getPrice()?->getValue();
-            if ($initPrice !== null && $initPrice < $realPrice) {
+            if ($initPrice !== null && (float) $initPrice < $lineItem->getPrice()?->getUnitPrice()) {
                 $errors->add($this->validationIssues->changedPrice($lineItem, $initPrice, $context->getCurrency(), $context->getItemRounding()));
             }
         }
