@@ -22,7 +22,7 @@ jobs:
 
       - name: Checkout SwagPayPal
         if: (!contains(github.event.pull_request.labels.*.name, 'run/acceptance'))
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: custom/plugins/${{ github.event.repository.name }}
 
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout SwagPayPal
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: custom/plugins/${{ github.event.repository.name }}
 
@@ -84,12 +84,12 @@ jobs:
               channels: [paypal]
               path: '%kernel.project_dir%/paypal/tests/acceptance/paypal.log'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ env.PLUGIN_PATH }}
 
       - name: Download zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: SwagPayPal.zip
 
@@ -102,7 +102,7 @@ jobs:
           install-storefront: true
           install-commercial: true
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ env.PLUGIN_PATH }}
 
