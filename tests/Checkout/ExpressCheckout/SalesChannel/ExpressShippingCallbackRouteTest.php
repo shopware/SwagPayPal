@@ -101,14 +101,14 @@ class ExpressShippingCallbackRouteTest extends TestCase
         static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
     }
 
-    public function testHandleCallbackWithServiceException(): void
+    public function testHandleCallbackWithMissingCountryCodeException(): void
     {
         $service = $this->createMock(ExpressShippingCallbackService::class);
         $service->expects($this->once())
             ->method('recalculateCart')
             ->with(
                 'ORDER-123',
-                ['country_code' => 'AT'],
+                ['country_code' => null],
                 static::isInstanceOf(SalesChannelContext::class)
             )
             ->willThrowException(CheckoutException::expressMissingCountryCode());
