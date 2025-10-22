@@ -31,7 +31,7 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
      * @see https://developer.paypal.com/studio/checkout/pay-later/{{countryCode}}
      */
     public const PAYPAL_PAY_LATER_CRITERIA = [
-        'DE' => ['currency' => 'EUR', 'minAmount' => 1.00, 'maxAmount' => 5000.00],
+        'DE' => ['currency' => 'EUR', 'minAmount' => 1.00, 'maxAmount' => 10000.00],
         'FR' => ['currency' => 'EUR', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
         'IT' => ['currency' => 'EUR', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
         'ES' => ['currency' => 'EUR', 'minAmount' => 30.00, 'maxAmount' => 2000.00],

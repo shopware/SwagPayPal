@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Pay Later ist in Deutschland jetzt für Beträge bis zu 10.000 € statt wie bisher 5.000 € verfügbar
+
 # 10.1.2
 - Behebt ein Problem, bei dem das Plugin bei aktiven Zettle Verkaufskanälen nicht aktualisiert werden konnte (shopware/SwagPayPal#361)
 - Behebt ein Problem, bei dem Zahlungsinformationen für Rechnungskäufe zu Fehlausrichtungen in Rechnungsdokumenten führen konnten (shopware/SwagPayPal#394)
