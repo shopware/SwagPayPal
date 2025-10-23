@@ -58,7 +58,7 @@ jobs:
   playwright:
     needs: build-zip
     if: (needs.build-zip.result == 'success' && contains(github.event.pull_request.labels.*.name, 'run/acceptance')) || github.event_name != 'pull_request'
-    runs-on: ${{ format('runs-on={0}/runner=sw-arm', github.run_id) }}
+    runs-on: ubuntu-latest
     environment: acceptance-production
     services:
       redis:
