@@ -44,7 +44,7 @@ class GetCartRoute
         }
 
         $payPalCart = $this->payPalCartTransformer->convertToPayPalCart($cart, $salesChannelContext);
-        $payPalCart->setStatus(PayPalCart::STATUS__READY);
+        $payPalCart->setStatus($payPalCart->getValidationStatus() === PayPalCart::VALIDATION_STATUS__VALID ? PayPalCart::STATUS__READY : PayPalCart::STATUS__INCOMPLETE);
 
         return new AgentCartResponse($payPalCart);
     }
