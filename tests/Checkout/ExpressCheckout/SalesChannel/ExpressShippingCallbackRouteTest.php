@@ -120,9 +120,10 @@ class ExpressShippingCallbackRouteTest extends TestCase
             'shipping_address' => ['country_code' => null],
         ]);
 
-        $response = $route->handleCallback($request, $this->getSalesChannelContext());
+        $this->expectException(CheckoutException::class);
+        $this->expectExceptionMessage('Missing country code in shipping address');
 
-        static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $route->handleCallback($request, $this->getSalesChannelContext());
     }
 
     private function getSalesChannelContext(): SalesChannelContext
