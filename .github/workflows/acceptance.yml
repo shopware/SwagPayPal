@@ -22,7 +22,7 @@ jobs:
 
       - name: Checkout SwagPayPal
         if: (!contains(github.event.pull_request.labels.*.name, 'run/acceptance'))
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: custom/plugins/${{ github.event.repository.name }}
 
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout SwagPayPal
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: custom/plugins/${{ github.event.repository.name }}
 
@@ -84,12 +84,12 @@ jobs:
               channels: [paypal]
               path: '%kernel.project_dir%/paypal/tests/acceptance/paypal.log'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ env.PLUGIN_PATH }}
 
       - name: Download zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: SwagPayPal.zip
 
@@ -102,7 +102,7 @@ jobs:
           install-storefront: true
           install-commercial: true
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ env.PLUGIN_PATH }}
 
@@ -118,14 +118,16 @@ jobs:
         run: |
           symfony console cache:clear --env="${APP_ENV}" || true
           echo "APP_URL=${APP_URL}" >> "${PLUGIN_PATH}/tests/acceptance/.env"
-          echo "$PAYPAL_SECRETS" | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]' >> "${PLUGIN_PATH}/tests/acceptance/.env"
           symfony console integration:create AcceptanceTest --admin >> "${PLUGIN_PATH}/tests/acceptance/.env"
-        env:
-          PAYPAL_SECRETS: ${{ toJson(secrets) }}
 
       - name: Run playwright
         working-directory: ${{ env.PLUGIN_PATH }}/tests/acceptance
         run: npx playwright test --reporter=${{ github.event.act && 'line' || 'github' }} --trace=on-first-retry
+        env:
+          PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
+          PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
+          PAYPAL_MERCHANT_ID: ${{ secrets.PAYPAL_MERCHANT_ID }}
+          PAYPAL_SANDBOX: ${{ secrets.PAYPAL_SANDBOX }}
 
       - name: Compress and encrypt test-results
         if: always()
