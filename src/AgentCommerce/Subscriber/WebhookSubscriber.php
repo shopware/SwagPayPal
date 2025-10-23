@@ -102,6 +102,10 @@ class WebhookSubscriber implements EventSubscriberInterface
                     'createdByUserId' => $userId,
                 ];
             } catch (HoneyWebhookException $e) {
+                if ($e->getErrorCode() === HoneyWebhookException::NOT_REGISTERED) {
+                    continue;
+                }
+
                 $notification = [
                     'id' => Uuid::randomHex(),
                     'status' => 'error',
