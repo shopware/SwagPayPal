@@ -71,7 +71,7 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
             return;
         }
 
-        const isCheckout = this.isCheckoutContext() || false; 
+        const isCheckout = this.options.isCheckout || false; 
 
         this._client.post(this.options.handleErrorUrl, JSON.stringify({
             code,
@@ -92,10 +92,8 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
      */
     // eslint-disable-next-line no-unused-vars
     onErrorHandled(code, fatal, error, isCheckout = false) {
-        window.scrollTo(0, 0);
-        
-        // Make sure only relooad when the current page is checkout
         if (isCheckout) {
+            window.scrollTo(0, 0);
             window.location.reload();
         }
     }
@@ -154,24 +152,5 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
         } catch { /* no error handling needed */ }
 
         return null;
-    }
-
-    /**
-     * @override
-     * Provides the specific logic for this plugin to determine if it's on the
-     * checkout confirmation page, using data available in its options.
-     * @returns {boolean}
-     */
-    isCheckoutContext() {
-        const checkoutConfirmUrl = this.options?.checkoutConfirmUrl;
-        const currentPath = window.location.pathname;
-        
-        if (checkoutConfirmUrl) {
-            // Check if the current path matches the configured checkout URL
-            return currentPath.startsWith(checkoutConfirmUrl) || currentPath.includes(checkoutConfirmUrl);
-        }
-
-        // Fallback or explicit check for the typical route segment
-        return /\/checkout\/confirm/i.test(currentPath);
     }
 }

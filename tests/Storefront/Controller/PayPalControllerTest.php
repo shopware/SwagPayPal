@@ -86,12 +86,11 @@ class PayPalControllerTest extends TestCase
         static::assertSame('SWAG_PAYPAL__API_issue', $json['errors'][0]['code']);
     }
 
-    public function testOnHandleErrorWithTranslatableErrorCode(): void
+    public function testOnHandleErrorWithTranslatableErrorCodeAddsFlash(): void
     {
-        // --- Scenario 1: isCheckout = true (Flash IS added) ---
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
-            'isCheckout' => true, // Flash should be added
+            'isCheckout' => true,
         ]);
 
         $matcher = $this->exactly(2);
@@ -99,7 +98,6 @@ class PayPalControllerTest extends TestCase
             ->expects($matcher)
             ->method('trans')
             ->willReturnCallback(function (string $key) use (&$matcher) {
-                // Assert that the method-specific and generic translations are attempted
                 match ($matcher->numberOfInvocations()) {
                     1 => static::assertSame('paypal.error.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', $key),
                     2 => static::assertSame('paypal.error.test_handler.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', $key),
@@ -120,22 +118,21 @@ class PayPalControllerTest extends TestCase
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
         ]);
+    }
 
-        // --- Scenario 2: isCheckout = false (Flash is SKIPPED) ---
+    public function testOnHandleErrorWithTranslatableErrorCodeSkipsFlash(): void
+    {
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
-            'isCheckout' => false, // Flash should be skipped
+            'isCheckout' => false,
         ]);
 
-        // Reset expectations for the second scenario
-        $this->setUp();
-
         $this->controller
-            ->expects($this->never()) // ASSERTION: trans() must NOT be called
+            ->expects($this->never())
             ->method('trans');
 
         $this->controller
-            ->expects($this->never()) // ASSERTION: addFlash must NOT be called
+            ->expects($this->never())
             ->method('addFlash');
 
         $this->controller->onHandleError($request, $this->generateSalesChannelContext());
@@ -146,21 +143,20 @@ class PayPalControllerTest extends TestCase
         ]);
     }
 
-    public function testOnHandleErrorWithNonTranslatableErrorCode(): void
+    public function testOnHandleErrorWithNonTranslatableErrorCodeAddsFlash(): void
     {
-        // --- Scenario 1: isCheckout = true (Generic Flash IS added) ---
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
-            'isCheckout' => true, // Flash should be added
+            'isCheckout' => true,
         ]);
 
         $this->controller
-            ->expects($this->exactly(3)) // Specific, generic, AND fallback generic translation calls
+            ->expects($this->exactly(3))
             ->method('trans')
-            ->willReturnCallback(fn (string $key) => $key); // Returns key, causing fallback
+            ->willReturnCallback(fn (string $key) => $key);
 
         $this->controller
-            ->expects($this->once()) // ASSERTION: addFlash IS called
+            ->expects($this->once())
             ->method('addFlash')
             ->with('danger', 'paypal.error.SWAG_PAYPAL__GENERIC_ERROR');
 
@@ -170,22 +166,21 @@ class PayPalControllerTest extends TestCase
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
         ]);
+    }
 
-        // --- Scenario 2: isCheckout = false (Flash is SKIPPED) ---
+    public function testOnHandleErrorWithNonTranslatableErrorCodeSkipsFlash(): void
+    {
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
-            'isCheckout' => false, // Flash should be skipped
+            'isCheckout' => false,
         ]);
 
-        // Reset expectations for the second scenario
-        $this->setUp();
-
         $this->controller
-            ->expects($this->never()) // ASSERTION: trans() must NOT be called
+            ->expects($this->never())
             ->method('trans');
 
         $this->controller
-            ->expects($this->never()) // ASSERTION: addFlash must NOT be called
+            ->expects($this->never())
             ->method('addFlash');
 
         $this->controller->onHandleError($request, $this->generateSalesChannelContext());

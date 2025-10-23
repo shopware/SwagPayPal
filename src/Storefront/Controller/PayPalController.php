@@ -152,7 +152,6 @@ class PayPalController extends StorefrontController
         $isCheckout = $request->request->getBoolean('isCheckout');
 
         if ($isCheckout) {
-            // Simply add a snippet for the error code to create a flash
             $snippetGeneric = \sprintf('paypal.error.%s', $code);
             $snippetByMethod = \sprintf('paypal.error.%s.%s', $context->getPaymentMethod()->getFormattedHandlerIdentifier(), $code);
 
@@ -167,12 +166,10 @@ class PayPalController extends StorefrontController
             }
         }
 
-        // Optional: mark fatal payment issues
         if ($fatal) {
             $request->getSession()->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
         }
 
-        // Log
         $this->logger->log(
             \in_array($code, ['SWAG_PAYPAL__SCRIPT_ERROR', 'SWAG_PAYPAL__SCRIPT_NOT_LOADED'], true) ? Level::Error : Level::Warning,
             'Storefront checkout error',
