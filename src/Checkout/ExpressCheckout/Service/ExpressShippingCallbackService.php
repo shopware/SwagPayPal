@@ -71,19 +71,19 @@ class ExpressShippingCallbackService
             throw CheckoutException::expressCountryNotFound($countryCode);
         }
 
-        // Since a new customer was logged in, the context changed in the system,
-        // but this doesn't effect the current context given as parameter.
-        // Because of that a new context for the cart recalculation is created
+        // The current context should not be affected by the shipping country
+        // That the customer selects in the PayPal UI
+        // Hence a new context for the cart recalculation is created
         $this->logger->debug('Switching context to new country', ['countryId' => $country->getId()]);
-        $this->contextSwitchRoute->switchContext(
+        $newToken = $this->contextSwitchRoute->switchContext(
             new RequestDataBag([
                 SalesChannelContextService::COUNTRY_ID => $country->getId(),
             ]),
             $salesChannelContext
-        );
+        )->getToken();
 
         $newSalesChannelContext = $this->salesChannelContextFactory->create(
-            $salesChannelContext->getToken(),
+            $newToken,
             $salesChannelContext->getSalesChannel()->getId()
         );
 
@@ -93,12 +93,6 @@ class ExpressShippingCallbackService
             $this->cartService->getCart($newSalesChannelContext->getToken(), $newSalesChannelContext),
             $newSalesChannelContext
         );
-
-        $this->logger->debug('Cart recalculated', [
-            'cartTotal' => $cart->getPrice()->getTotalPrice(),
-            'cartTax' => $cart->getPrice()->getCalculatedTaxes()->getAmount(),
-            'shippingCosts' => $cart->getShippingCosts()->getTotalPrice(),
-        ]);
 
         // Build the response in PayPal's expected format
         $currency = $newSalesChannelContext->getCurrency();
@@ -127,6 +121,7 @@ class ExpressShippingCallbackService
             'newCountry' => $countryCode,
             'newTotal' => $amount->getValue(),
             'newTax' => $amount->getBreakdown()?->getTaxTotal()?->getValue(),
+            'newShippingCosts' => $cart->getShippingCosts()->getTotalPrice(),
         ]);
 
         return [$purchaseUnitArray];

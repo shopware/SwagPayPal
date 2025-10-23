@@ -84,12 +84,14 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
             );
 
             return new JsonResponse(['purchase_units' => $updatedPurchaseUnits]);
-        } catch (HttpException $e) {
-            throw $e;
         } catch (\Throwable $e) {
             $this->logger->error('Shipping callback failed', [
                 'exception' => $e,
             ]);
+
+            if ($e instanceof HttpException) {
+                throw $e;
+            }
 
             return new JsonResponse(
                 ['error' => 'Failed to process shipping callback'],
