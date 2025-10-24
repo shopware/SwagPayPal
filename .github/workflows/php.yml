@@ -27,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        PHP_VERSION: ["8.2", "8.4"] # only min and max
         PLATFORM_BRANCH: ["v6.7.0.0", "trunk"]
       fail-fast: false
     steps:

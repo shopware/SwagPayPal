@@ -1521,6 +1521,10 @@ export interface components {
         paypal_v2_order_payment_source_common_attributes_customer: {
             id: string;
         };
+        paypal_v2_order_payment_source_common_attributes_order_update_callback_config: {
+            callback_url: string;
+            callback_events: ("SHIPPING_ADDRESS" | "SHIPPING_OPTIONS")[];
+        };
         paypal_v2_order_payment_source_common_attributes_vault: {
             id: string | null;
             store_in_vault: string;
@@ -1562,6 +1566,7 @@ export interface components {
             payment_method_preference: "UNRESTRICTED" | "IMMEDIATE_PAYMENT_REQUIRED";
             /** @description Only: PUI */
             customer_service_instructions: string[];
+            order_update_callback_config: components["schemas"]["paypal_v2_order_payment_source_common_attributes_order_update_callback_config"];
         };
         paypal_v2_order_payment_source_common_phone: {
             phone_type: string;
