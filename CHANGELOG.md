@@ -1,3 +1,6 @@
+# 8.8.0
+- Fixes an issue, where Paypal Express Checkout does not recalculate cart price after changing shipping country (shopware/SwagPayPal#342)
+
 # 8.7.10
 - Fixes an issue, where the Smart Payment Buttons were not stretched to full width on the product detail page for digital products
 - Fixed an issue, where Paypal errors showing on category page in Storefront, which should only be showed on checkout pages (shopware/shopware#12701)

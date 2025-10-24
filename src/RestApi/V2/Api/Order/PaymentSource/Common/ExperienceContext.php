@@ -10,6 +10,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common;
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\OrderUpdateCallbackConfig;
 
 #[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_common_experience_context')]
 #[Package('checkout')]
@@ -71,6 +72,9 @@ class ExperienceContext extends PayPalApiStruct
      */
     #[OA\Property(type: 'array', items: new OA\Items(type: 'string'))]
     protected array $customerServiceInstructions;
+
+    #[OA\Property(ref: OrderUpdateCallbackConfig::class)]
+    protected ?OrderUpdateCallbackConfig $orderUpdateCallbackConfig = null;
 
     public function getLocale(): string
     {
@@ -176,5 +180,15 @@ class ExperienceContext extends PayPalApiStruct
     public function setCustomerServiceInstructions(array $customerServiceInstructions): void
     {
         $this->customerServiceInstructions = $customerServiceInstructions;
+    }
+
+    public function getOrderUpdateCallbackConfig(): ?OrderUpdateCallbackConfig
+    {
+        return $this->orderUpdateCallbackConfig;
+    }
+
+    public function setOrderUpdateCallbackConfig(?OrderUpdateCallbackConfig $orderUpdateCallbackConfig): void
+    {
+        $this->orderUpdateCallbackConfig = $orderUpdateCallbackConfig;
     }
 }

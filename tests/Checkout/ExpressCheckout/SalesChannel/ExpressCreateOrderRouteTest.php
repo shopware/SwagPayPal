@@ -30,6 +30,7 @@ use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -41,6 +42,30 @@ class ExpressCreateOrderRouteTest extends TestCase
     use IntegrationTestBehaviour;
 
     public function testCreatePayment(): void
+    {
+        $salesChannelContext = $this->getSalesChannelContext();
+
+        $cart = new Cart('token');
+        $cart->add(new LineItem('test', LineItem::PRODUCT_LINE_ITEM_TYPE, 'test'));
+
+        $cartService = $this->createMock(CartService::class);
+        $cartService->method('getCart')->willReturn($cart);
+
+        $route = new ExpressCreateOrderRoute(
+            $cartService,
+            $this->getContainer()->get(PayPalOrderBuilder::class),
+            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            $this->getContainer()->get(CartPriceService::class),
+            $this->createMock(RouterInterface::class),
+            new NullLogger(),
+        );
+
+        static::expectException(OrderZeroValueException::class);
+
+        $route->createPayPalOrder(new Request(), $salesChannelContext);
+    }
+
+    public function testCreatePaymentWithZeroValueCart(): void
     {
         $salesChannelContext = $this->getSalesChannelContext();
 
@@ -76,7 +101,8 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->getContainer()->get(CartService::class),
             $paypalOrderBuilder,
             new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
-            new NullLogger()
+            $this->createMock(RouterInterface::class),
+            new NullLogger(),
         );
     }
 }
