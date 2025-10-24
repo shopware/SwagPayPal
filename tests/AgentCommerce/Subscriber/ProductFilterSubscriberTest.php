@@ -45,6 +45,7 @@ class ProductFilterSubscriberTest extends TestCase
     public function testProductAddCriteria(): void
     {
         $source = new AgentSource('merchantId', new \DateTime(), new \DateTime(), [], Uuid::randomHex());
+        $source->setStreamId(Uuid::randomHex());
 
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
         $salesChannelContext
@@ -61,11 +62,13 @@ class ProductFilterSubscriberTest extends TestCase
 
         static::assertInstanceOf(EqualsFilter::class, $filter);
         static::assertSame('streams.id', $filter->getField());
+        static::assertSame($source->getStreamId(), $filter->getValue());
     }
 
     public function testProductAddCriteriaAdminSalesChannelSource(): void
     {
         $originalSource = new AgentSource('merchantId', new \DateTime(), new \DateTime(), [], Uuid::randomHex());
+        $originalSource->setStreamId(Uuid::randomHex());
         $source = new AdminSalesChannelApiSource(Uuid::randomHex(), Context::createCLIContext($originalSource));
 
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
@@ -83,5 +86,6 @@ class ProductFilterSubscriberTest extends TestCase
 
         static::assertInstanceOf(EqualsFilter::class, $filter);
         static::assertSame('streams.id', $filter->getField());
+        static::assertSame($originalSource->getStreamId(), $filter->getValue());
     }
 }
