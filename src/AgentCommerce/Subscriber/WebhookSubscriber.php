@@ -81,14 +81,13 @@ class WebhookSubscriber implements EventSubscriberInterface
             $userId = $source->getUserId();
         }
 
-        /** @var list<string> $salesChannelIds */
-        $salesChannelIds = $this->salesChannelRepository->searchIds($criteria, $context)->getIds();
-        foreach ($salesChannelIds as $salesChannelId) {
+        $salesChannelIds = $this->salesChannelRepository->searchIds($criteria, $context);
+        foreach ($mapped as $id => $active) {
             try {
-                if ($mapped[$salesChannelId]) {
-                    $result = $this->webhookService->register($salesChannelId, $context);
+                if ($active && $salesChannelIds->has($id)) {
+                    $result = $this->webhookService->register($id, $context);
                 } else {
-                    $result = $this->webhookService->deregister($salesChannelId);
+                    $result = $this->webhookService->deregister($id);
                 }
 
                 if (!$userId) {
@@ -103,6 +102,10 @@ class WebhookSubscriber implements EventSubscriberInterface
                     'createdByUserId' => $userId,
                 ];
             } catch (HoneyWebhookException $e) {
+                if ($e->getErrorCode() === HoneyWebhookException::NOT_REGISTERED) {
+                    continue;
+                }
+
                 $notification = [
                     'id' => Uuid::randomHex(),
                     'status' => 'error',
