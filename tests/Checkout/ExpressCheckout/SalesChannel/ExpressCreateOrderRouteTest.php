@@ -34,6 +34,7 @@ use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -59,6 +60,7 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->getContainer()->get(PayPalOrderBuilder::class),
             new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
             $this->getContainer()->get(CartPriceService::class),
+            $this->createMock(RouterInterface::class),
             new NullLogger(),
         );
 
@@ -104,6 +106,7 @@ class ExpressCreateOrderRouteTest extends TestCase
             $paypalOrderBuilder,
             new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
             $this->getContainer()->get(CartPriceService::class),
+            $this->createMock(RouterInterface::class),
             new NullLogger(),
         );
     }

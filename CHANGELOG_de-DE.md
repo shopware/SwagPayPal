@@ -1,3 +1,6 @@
+# 9.9.0
+- Behebt ein Problem, bei dem der Warenkorbpreis beim Verändern des Versandlandes im Express Checkout nicht angepasst wurde (shopware/SwagPayPal#342)
+
 # 9.8.4
 - Passt den Betrag an, für den Pay Later zur Verfügung steht, an die aktuellen Beschränkungen an (https://developer.paypal.com/studio/checkout/pay-later/de)
 - Behebt ein Problem, bei dem die Smart Payment Buttons auf der Produktdetailseite für digitale Produkte nicht über die volle Breite dargestellt wurden

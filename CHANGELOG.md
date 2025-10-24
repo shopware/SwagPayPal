@@ -1,3 +1,6 @@
+# 9.9.0
+- Fixes an issue, where Paypal Express Checkout does not recalculate cart price after changing shipping country (shopware/SwagPayPal#342)
+
 # 9.8.4
 - Adjusted the amount that Pay Later is available for to the current limitations given (https://developer.paypal.com/studio/checkout/pay-later/de)
 - Fixes an issue, where the Smart Payment Buttons were not stretched to full width on the product detail page for digital products

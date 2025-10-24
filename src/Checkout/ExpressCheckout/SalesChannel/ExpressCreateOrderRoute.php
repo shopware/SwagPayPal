@@ -20,10 +20,13 @@ use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\OrderUpdateCallbackConfig;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 #[Package('checkout')]
 #[Route(defaults: ['_routeScope' => ['store-api']])]
@@ -37,6 +40,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
         private readonly PayPalOrderBuilder $paypalOrderBuilder,
         private readonly OrderResource $orderResource,
         private readonly CartPriceService $cartPriceService,
+        private readonly RouterInterface $router,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -69,8 +73,25 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 
             $this->logger->debug('Building order');
             $order = $this->paypalOrderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag($request->request->all()));
-            $order->getPaymentSource()?->getPaypal()?->getExperienceContext()->setShippingPreference(ApplicationContext::SHIPPING_PREFERENCE_GET_FROM_FILE);
-            $order->getPaymentSource()?->getPaypal()?->getExperienceContext()->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
+            $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+
+            if ($experienceContext !== null) {
+                $experienceContext->setShippingPreference(ApplicationContext::SHIPPING_PREFERENCE_GET_FROM_FILE);
+                $experienceContext->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
+
+                // Configure shipping callback for dynamic price recalculation
+                $callbackConfig = new OrderUpdateCallbackConfig();
+                $callbackUrl = $this->router->generate(
+                    'store-api.paypal.express.shipping_callback',
+                    ['salesChannelId' => $salesChannelContext->getSalesChannelId(), 'token' => $salesChannelContext->getToken()],
+                    UrlGeneratorInterface::ABSOLUTE_URL,
+                );
+                $callbackConfig->setCallbackUrl($callbackUrl);
+                $callbackConfig->setCallbackEvents([OrderUpdateCallbackConfig::CALLBACK_EVENT_SHIPPING_OPTIONS]);
+                $experienceContext->setOrderUpdateCallbackConfig($callbackConfig);
+
+                $this->logger->debug('Configured shipping callback', ['callbackUrl' => $callbackUrl]);
+            }
 
             $orderResponse = $this->orderResource->create(
                 $order,
