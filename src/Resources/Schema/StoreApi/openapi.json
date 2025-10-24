@@ -58,6 +58,60 @@
                 }
             }
         },
+        "/paypal/express/shipping-callback": {
+            "post": {
+                "tags": [
+                    "Store API",
+                    "PayPal"
+                ],
+                "description": "Handles PayPal shipping address change callbacks and returns updated cart pricing",
+                "operationId": "handlePayPalExpressShippingCallback",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "PayPal order ID",
+                                        "type": "string"
+                                    },
+                                    "shipping_address": {
+                                        "type": "object"
+                                    },
+                                    "purchase_units": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated purchase units with recalculated prices",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "purchase_units": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/paypal/pui/payment-instructions/{transactionId}": {
             "get": {
                 "tags": [

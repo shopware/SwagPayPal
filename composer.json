@@ -11,7 +11,7 @@
     ],
     "require": {
         "shopware/core": "~6.7.0@dev",
-        "shopware/paypal-sdk": "^1.3.0"
+        "shopware/paypal-sdk": "^1.4.0"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
@@ -62,7 +62,7 @@
         "phpstan": [
             "php ../../../src/Core/DevOps/StaticAnalyze/phpstan-bootstrap.php",
             "php bin/phpstan-config-generator.php",
-            "../../../vendor/bin/phpstan analyze"
+            "php -dmemory_limit=512M ../../../vendor/bin/phpstan analyze"
         ],
         "rector": "../../../vendor/bin/rector process",
         "rector-dry": "../../../vendor/bin/rector process --dry-run",
