@@ -1,0 +1,92 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\AgentCommerce\Struct\V1;
+
+use OpenApi\Attributes as OA;
+use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Struct\Struct;
+
+/**
+ * @experimental
+ */
+#[Package('checkout')]
+#[OA\Schema(
+    schema: 'paypal_agentic_commerce_v1_error',
+    required: ['name', 'message']
+)]
+class Error extends Struct
+{
+    /**
+     * Error name/type
+     */
+    #[OA\Property(type: 'string')]
+    protected string $name;
+
+    /**
+     * Error description
+     */
+    #[OA\Property(type: 'string')]
+    protected string $message;
+
+    /**
+     * Unique error identifier for support
+     */
+    #[OA\Property(type: 'string')]
+    protected ?string $debugId = null;
+
+    /**
+     * Detailed error information
+     */
+    #[OA\Property(ref: AgentErrorDetailCollection::class)]
+    protected AgentErrorDetailCollection $details;
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
+
+    public function getDebugId(): ?string
+    {
+        return $this->debugId;
+    }
+
+    public function setDebugId(?string $debugId): void
+    {
+        $this->debugId = $debugId;
+    }
+
+    public function getDetails(): AgentErrorDetailCollection
+    {
+        return $this->details;
+    }
+
+    public function setDetails(AgentErrorDetailCollection $details): void
+    {
+        $this->details = $details;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return \array_filter(parent::jsonSerialize());
+    }
+}
