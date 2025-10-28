@@ -26,7 +26,9 @@
 
                 {% if (isProductDetail and expressSettings.productDetailEnabled) or (not isProductDetail and expressSettings.listingEnabled) %}
                     <div class="{{ isBootstrap5 ? 'row g-2 mt-0' : 'form-row mt-3' }} justify-content-end">
-                        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'col-8'} %}
+                        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {
+                            button_class: showQuantitySelect ? 'col-8' : 'col-12'
+                        } %}
                     </div>
                 {% endif %}
             {% endblock %}
