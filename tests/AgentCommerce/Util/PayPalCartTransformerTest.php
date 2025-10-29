@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Util;
+namespace Swag\PayPal\Test\AgentCommerce\Util;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -43,23 +43,26 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\DeliveryTime\DeliveryTimeEntity;
+use Shopware\Core\System\Locale\LocaleCollection;
+use Shopware\Core\System\Locale\LocaleDefinition;
+use Shopware\Core\System\Locale\LocaleEntity;
 use Shopware\Core\System\SalesChannel\Context\LanguageInfo;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Address;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AppliedCoupon;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AppliedCouponCollection;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\BillingAddress;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartItem;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartItemCollection;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartTotals;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Customer;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Money;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingAddress;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOption;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOptionCollection;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssue;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgentCommerce\Struct\V1\Address;
+use Swag\PayPal\AgentCommerce\Struct\V1\AppliedCoupon;
+use Swag\PayPal\AgentCommerce\Struct\V1\AppliedCouponCollection;
+use Swag\PayPal\AgentCommerce\Struct\V1\BillingAddress;
+use Swag\PayPal\AgentCommerce\Struct\V1\CartItem;
+use Swag\PayPal\AgentCommerce\Struct\V1\CartItemCollection;
+use Swag\PayPal\AgentCommerce\Struct\V1\CartTotals;
+use Swag\PayPal\AgentCommerce\Struct\V1\Customer;
+use Swag\PayPal\AgentCommerce\Struct\V1\Money;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
+use Swag\PayPal\AgentCommerce\Struct\V1\ShippingAddress;
+use Swag\PayPal\AgentCommerce\Struct\V1\ShippingOption;
+use Swag\PayPal\AgentCommerce\Struct\V1\ShippingOptionCollection;
+use Swag\PayPal\AgentCommerce\Struct\V1\ValidationIssue;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer;
 use Swag\PayPal\AgentCommerce\Validation\ValidationIssues;
 
@@ -77,6 +80,7 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         $currency = new CurrencyEntity();
@@ -125,6 +129,7 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         $currency = new CurrencyEntity();
@@ -205,12 +210,12 @@ class PayPalCartTransformerTest extends TestCase
             new ShippingMethodCollection([$shippingMethod1, $shippingMethod2, $shippingMethod3]),
             null,
             new Criteria(),
-            Context::createCLIContext()
+            Context::createDefaultContext()
         );
 
         $shippingRouteMock = $this->createMock(AbstractShippingMethodRoute::class);
         $shippingRouteMock
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('load')
             ->willReturn(new ShippingMethodRouteResponse($result));
 
@@ -219,6 +224,7 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $shippingRouteMock,
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         $currency = new CurrencyEntity();
@@ -233,7 +239,7 @@ class PayPalCartTransformerTest extends TestCase
             new DeliveryPositionCollection(),
             new DeliveryDate(new \DateTime(), new \DateTime()),
             new ShippingMethodEntity(),
-            new ShippingLocation(new CountryEntity()),
+            new ShippingLocation(new CountryEntity(), null, null),
             new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection())
         );
 
@@ -287,6 +293,7 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         static::assertNull($transformer->convertCustomer(null));
@@ -299,6 +306,7 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         $converted = $transformer->convertCustomer(self::createCustomer(null));
@@ -316,6 +324,7 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         $converted = $transformer->convertCustomer(self::createCustomer('+12 12345-67890'));
@@ -336,6 +345,7 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         $converted = $transformer->convertCustomer(self::createCustomer('1234567890'));
@@ -353,6 +363,7 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         $currency = new CurrencyEntity();
@@ -384,12 +395,13 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         $address = new CustomerAddressEntity();
         $address->setCountryId(Uuid::randomHex());
 
-        $transformer->convertAddress($address, ShippingAddress::class, Context::createCLIContext());
+        $transformer->convertAddress($address, ShippingAddress::class, Context::createDefaultContext());
     }
 
     public function testConvertNullAddress(): void
@@ -399,9 +411,10 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
-        static::assertNull($transformer->convertAddress(null, ShippingAddress::class, Context::createCLIContext()));
+        static::assertNull($transformer->convertAddress(null, ShippingAddress::class, Context::createDefaultContext()));
     }
 
     public function testConvertAddress(): void
@@ -416,7 +429,7 @@ class PayPalCartTransformerTest extends TestCase
             new EntityCollection([$entity]),
             null,
             new Criteria(),
-            Context::createCLIContext()
+            Context::createDefaultContext()
         );
 
         $repository = $this->createMock(EntityRepository::class);
@@ -429,6 +442,7 @@ class PayPalCartTransformerTest extends TestCase
             $repository,
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         $address = new CustomerAddressEntity();
@@ -437,8 +451,8 @@ class PayPalCartTransformerTest extends TestCase
         $address->setStreet('Mainstreet 1');
         $address->setCity('City 1');
 
-        $shippingAddress = $transformer->convertAddress($address, ShippingAddress::class, Context::createCLIContext());
-        $billingAddress = $transformer->convertAddress($address, BillingAddress::class, Context::createCLIContext());
+        $shippingAddress = $transformer->convertAddress($address, ShippingAddress::class, Context::createDefaultContext());
+        $billingAddress = $transformer->convertAddress($address, BillingAddress::class, Context::createDefaultContext());
 
         static::assertInstanceOf(ShippingAddress::class, $shippingAddress);
         static::assertInstanceOf(BillingAddress::class, $billingAddress);
@@ -460,6 +474,7 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         ['validationIssues' => $issues, 'status' => $status] = $transformer->convertToValidationIssues(
@@ -505,11 +520,13 @@ class PayPalCartTransformerTest extends TestCase
                 return $issue;
             });
 
+        $localeRepository = $this->createMock(EntityRepository::class);
         $transformer = new PayPalCartTransformer(
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $validationIssueMock,
+            $localeRepository,
         );
 
         $context = $this->createMock(SalesChannelContext::class);
@@ -518,10 +535,27 @@ class PayPalCartTransformerTest extends TestCase
             ->willReturn(new CurrencyEntity());
         $context
             ->method('getContext')
-            ->willReturn(Context::createCLIContext());
-        $context
-            ->method('getLanguageInfo')
-            ->willReturn(new LanguageInfo('Test', 'en-GB'));
+            ->willReturn(Context::createDefaultContext());
+
+        if (\method_exists($context, 'getLanguageInfo') && \class_exists(LanguageInfo::class)) {
+            $context
+                ->method('getLanguageInfo')
+                ->willReturn(new LanguageInfo('Test', 'en-GB'));
+        } else {
+            $locale = new LocaleEntity();
+            $locale->setCode('en-GB');
+
+            $localeRepository
+                ->method('search')
+                ->willReturn(new EntitySearchResult(
+                    LocaleDefinition::ENTITY_NAME,
+                    1,
+                    new LocaleCollection([$locale]),
+                    null,
+                    new Criteria(),
+                    Context::createDefaultContext()
+                ));
+        }
 
         $outOfStockId = Uuid::randomHex();
         $priceChangedId = Uuid::randomHex();
@@ -551,11 +585,14 @@ class PayPalCartTransformerTest extends TestCase
         $invalidReferenceUuid = new LineItem(Uuid::randomHex(), 'product', 'some-string', 1);
         $referenceIdNull = new LineItem(Uuid::randomHex(), 'product', null, 1);
 
+        $lineItem = new LineItem(Uuid::randomHex(), 'promotion');
+        $lineItem->setLabel('Promotion Label');
+
         $cart = new Cart(Uuid::randomHex());
         $cart->addLineItems(new LineItemCollection([$outOfStock, $priceChanged, $validItem, $validItemWithInitPrice, $validItemNoInitPrice, $invalidReferenceUuid, $referenceIdNull]));
         $cart->addErrors(
             new ProductNotFoundError(Uuid::randomHex()),
-            new PromotionCartAddedInformationError(new LineItem(Uuid::randomHex(), 'promotion')),
+            new PromotionCartAddedInformationError($lineItem),
             new PurchaseStepsError(Uuid::randomHex(), 'Name', 2),
         );
 
@@ -606,6 +643,7 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(AbstractShippingMethodRoute::class),
             $this->createMock(ValidationIssues::class),
+            $this->createMock(EntityRepository::class),
         );
 
         $currency = new CurrencyEntity();
@@ -656,14 +694,14 @@ class PayPalCartTransformerTest extends TestCase
             new DeliveryPositionCollection(),
             new DeliveryDate(new \DateTime(), new \DateTime()),
             new ShippingMethodEntity(),
-            new ShippingLocation(new CountryEntity()),
+            new ShippingLocation(new CountryEntity(), null, null),
             new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection())
         );
         $delivery2 = new Delivery(
             new DeliveryPositionCollection(),
             new DeliveryDate(new \DateTime(), new \DateTime()),
             new ShippingMethodEntity(),
-            new ShippingLocation(new CountryEntity()),
+            new ShippingLocation(new CountryEntity(), null, null),
             new CalculatedPrice(5, 5, new CalculatedTaxCollection(), new TaxRuleCollection())
         );
 

@@ -36,7 +36,7 @@ class WebhookSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly EntityRepository $salesChannelRepository,
         private readonly HoneyWebhookService $webhookService,
-        private readonly EntityRepository $notificationRepository, // @phpstan-ignore parameter.deprecatedClass, property.deprecatedClass
+        private readonly EntityRepository $notificationRepository,
     ) {
     }
 
@@ -115,6 +115,7 @@ class WebhookSubscriber implements EventSubscriberInterface
                 ];
             }
 
+            // @phpstan-ignore method.deprecated
             $context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($notification): void {
                 $this->notificationRepository->create([$notification], $context);
             });

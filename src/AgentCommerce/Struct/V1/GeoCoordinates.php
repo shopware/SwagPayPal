@@ -9,14 +9,14 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
  */
 #[Package('checkout')]
 #[OA\Schema(schema: 'paypal_agentic_commerce_v1_geo_coordinates')]
-class GeoCoordinates extends Struct
+class GeoCoordinates extends PayPalApiStruct
 {
     /**
      * Latitude coordinate in decimal degrees (-90 to 90). WGS84 datum.

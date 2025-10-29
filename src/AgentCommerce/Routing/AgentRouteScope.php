@@ -26,9 +26,9 @@ class AgentRouteScope extends AbstractRouteScope
     /**
      * @var array<string>
      *
-     * @deprecated tag:v6.7.0 - Will be natively typed
+     * @deprecated tag:v10.0.0 - Will be natively typed
      */
-    protected $allowedPaths = ['api'];
+    protected $allowedPaths = ['api']; // @phpstan-ignore shopware.propertyNativeType
 
     public function isAllowed(Request $request): bool
     {

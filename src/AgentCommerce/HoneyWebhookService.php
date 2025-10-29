@@ -107,11 +107,11 @@ class HoneyWebhookService
                 throw HoneyWebhookException::productExportNotFound();
             }
 
-            $storefront = $productExport->getStorefrontSalesChannel();
-            if (!$storefront) {
+            if (!$productExport->__isset('storefrontSalesChannel')) {
                 throw HoneyWebhookException::storefrontSalesChannelNotFound();
             }
 
+            $storefront = $productExport->getStorefrontSalesChannel();
             $route = $this->router->getRouteCollection()->get('store-api.product.export');
             if (!$route) {
                 throw HoneyWebhookException::invalidProductExportRoute();
@@ -152,7 +152,10 @@ class HoneyWebhookService
             'productExports.storefrontSalesChannel.countries',
         ]);
 
-        return $this->salesChannelRepository->search($criteria, $context)->first();
+        /** @var SalesChannelEntity|null $salesChannel */
+        $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
+
+        return $salesChannel;
     }
 
     private function webhookCall(string $token, string $endpoint): HoneyWebhookResult

@@ -9,7 +9,7 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -42,7 +42,7 @@ use Shopware\Core\Framework\Struct\Struct;
     schema: 'paypal_agentic_commerce_v1_cart_totals',
     required: ['total']
 )]
-class CartTotals extends Struct
+class CartTotals extends PayPalApiStruct
 {
     #[OA\Property(ref: Money::class)]
     protected ?Money $subtotal = null;

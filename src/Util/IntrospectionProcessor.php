@@ -15,9 +15,11 @@ use Psr\Log\LogLevel;
 use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
+use Swag\PayPal\AgentCommerce\Exception\AgentHttpException;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
 use Swag\PayPal\RestApi\Client\AbstractClient;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -149,6 +151,10 @@ class IntrospectionProcessor implements ProcessorInterface
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
         ];
+
+        if ($exception instanceof AgentHttpException) {
+            $context['details'] = $exception->getDetails()->map(static fn (PayPalApiStruct $e): array => $e->jsonSerialize());
+        }
 
         if ($exception instanceof ShopwareHttpException) {
             $context['parameters'] = $exception->getParameters();

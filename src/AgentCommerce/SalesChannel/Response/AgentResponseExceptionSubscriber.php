@@ -58,7 +58,7 @@ class AgentResponseExceptionSubscriber implements EventSubscriberInterface
         $this->logger->error($exception->getMessage(), ['exception' => $exception]);
 
         $source = self::extractSource($event);
-        $response = new JsonResponse(self::getResponseFromException($exception, $source));
+        $response = new JsonResponse($this->getResponseFromException($exception, $source));
 
         $event->setResponse($response);
         $event->stopPropagation();

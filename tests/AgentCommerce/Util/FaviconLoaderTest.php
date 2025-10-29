@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Util;
+namespace Swag\PayPal\Test\AgentCommerce\Util;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -33,7 +33,7 @@ class FaviconLoaderTest extends TestCase
 
         $themeProviderMock = $this->createMock(AbstractAvailableThemeProvider::class);
         $themeProviderMock
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('load')
             ->willReturn([]);
 
@@ -43,18 +43,18 @@ class FaviconLoaderTest extends TestCase
             $this->createMock(SalesChannelContextService::class),
         );
 
-        $faviconLoader->loadFaviconLink(Uuid::randomHex(), Context::createCLIContext());
+        $faviconLoader->loadFaviconLink(Uuid::randomHex(), Context::createDefaultContext());
     }
 
     public function testLoadFaviconLink(): void
     {
         $themeId = Uuid::randomHex();
         $salesChannelId = Uuid::randomHex();
-        $context = Context::createCLIContext();
+        $context = Context::createDefaultContext();
 
         $themeProviderMock = $this->createMock(AbstractAvailableThemeProvider::class);
         $themeProviderMock
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('load')
             ->willReturn([$salesChannelId => $themeId]);
 
@@ -62,13 +62,13 @@ class FaviconLoaderTest extends TestCase
 
         $contextServiceMock = $this->createMock(SalesChannelContextService::class);
         $contextServiceMock
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('get')
             ->willReturn($salesChannelMock);
 
         $configLoaderMock = $this->createMock(AbstractResolvedConfigLoader::class);
         $configLoaderMock
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('load')
             ->with($themeId, $salesChannelMock)
             ->willReturn(['sw-logo-favicon' => 'https://example.com/favicon.ico']);
@@ -88,11 +88,11 @@ class FaviconLoaderTest extends TestCase
     {
         $themeId = Uuid::randomHex();
         $salesChannelId = Uuid::randomHex();
-        $context = Context::createCLIContext();
+        $context = Context::createDefaultContext();
 
         $themeProviderMock = $this->createMock(AbstractAvailableThemeProvider::class);
         $themeProviderMock
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('load')
             ->willReturn([$salesChannelId => $themeId]);
 
@@ -100,13 +100,13 @@ class FaviconLoaderTest extends TestCase
 
         $contextServiceMock = $this->createMock(SalesChannelContextService::class);
         $contextServiceMock
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('get')
             ->willReturn($salesChannelMock);
 
         $configLoaderMock = $this->createMock(AbstractResolvedConfigLoader::class);
         $configLoaderMock
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('load')
             ->with($themeId, $salesChannelMock)
             ->willReturn([]);

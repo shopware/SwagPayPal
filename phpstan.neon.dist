@@ -102,11 +102,6 @@ services:
     -   # register the class, so we can decorate it, but don't tag it as a rule, so only our decorator is used by PHPStan
         class: Symplify\PHPStanRules\Rules\NoReturnSetterMethodRule
 
-        - # Has to be fixed upstream, but we can ignore it for now
-            message: '#Call to deprecated method __construct\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition#'
-            identifier: method.deprecated
-            path: 'tests/*'
-
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule

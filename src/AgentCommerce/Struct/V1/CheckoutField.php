@@ -9,7 +9,6 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\AgentCommerce\Struct\V1\Value\AgeVerificationValue;
 use Swag\PayPal\AgentCommerce\Struct\V1\Value\AllergyInformationValue;
 use Swag\PayPal\AgentCommerce\Struct\V1\Value\CustomEngravingTextValue;
@@ -21,6 +20,7 @@ use Swag\PayPal\AgentCommerce\Struct\V1\Value\GiftRecipientEmailValue;
 use Swag\PayPal\AgentCommerce\Struct\V1\Value\GiftRecipientNameValue;
 use Swag\PayPal\AgentCommerce\Struct\V1\Value\PrivacyConsentValue;
 use Swag\PayPal\AgentCommerce\Struct\V1\Value\TermsAcceptanceValue;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -41,7 +41,7 @@ use Swag\PayPal\AgentCommerce\Struct\V1\Value\TermsAcceptanceValue;
     schema: 'paypal_agentic_commerce_v1_checkout_field',
     required: ['type', 'status']
 )]
-class CheckoutField extends Struct
+class CheckoutField extends PayPalApiStruct
 {
     public const TYPE__AGE_VERIFICATION_18_PLUS = 'AGE_VERIFICATION_18_PLUS';
     public const TYPE__AGE_VERIFICATION_21_PLUS = 'AGE_VERIFICATION_21_PLUS';
@@ -142,7 +142,7 @@ class CheckoutField extends Struct
         new OA\Schema(ref: TermsAcceptanceValue::class),
         new OA\Schema(ref: PrivacyConsentValue::class),
     ])]
-    protected Struct $value;
+    protected PayPalApiStruct $value;
 
     /**
      * Additional context and metadata for the checkout field.
@@ -183,12 +183,12 @@ class CheckoutField extends Struct
         $this->status = $status;
     }
 
-    public function getValue(): Struct
+    public function getValue(): PayPalApiStruct
     {
         return $this->value;
     }
 
-    public function setValue(Struct $value): void
+    public function setValue(PayPalApiStruct $value): void
     {
         $this->value = $value;
     }

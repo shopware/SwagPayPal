@@ -9,14 +9,14 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1\Value;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
  */
 #[Package('checkout')]
 #[OA\Schema(schema: 'paypal_agentic_commerce_v1_value_allergy_information_value')]
-class AllergyInformationValue extends Struct
+class AllergyInformationValue extends PayPalApiStruct
 {
     public const SEVERITY__MILD = 'mild';
     public const SEVERITY__MODERATE = 'moderate';

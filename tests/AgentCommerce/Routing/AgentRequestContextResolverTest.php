@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Routing;
+namespace Swag\PayPal\Test\AgentCommerce\Routing;
 
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
@@ -21,7 +21,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\JWT\JWTDecoder;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RouteScope;
 use Shopware\Core\Framework\Routing\RouteScopeRegistry;
@@ -116,7 +115,6 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $this->createMock(EntityRepository::class),
-            new JWTDecoder(),
             new RouteScopeRegistry([]),
             $this->createMock(SalesChannelContextService::class),
         );
@@ -140,7 +138,6 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $this->createMock(EntityRepository::class),
-            new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope(), $wrongScope]),
             $this->createMock(SalesChannelContextService::class),
         );
@@ -159,7 +156,6 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $this->createMock(EntityRepository::class),
-            new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
         );
@@ -202,14 +198,13 @@ mwIDAQAB
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $entityRepository,
-            new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
         );
@@ -242,6 +237,9 @@ mwIDAQAB
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
 
         $resolver = $this->getContainer()->get(AgentRequestContextResolver::class);
+
+        static::assertInstanceOf(AgentRequestContextResolver::class, $resolver);
+
         $resolver->resolve($request);
     }
 
@@ -255,7 +253,6 @@ mwIDAQAB
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $this->createMock(EntityRepository::class),
-            new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
         );
@@ -289,6 +286,8 @@ mwIDAQAB
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
 
         $resolver = $this->getContainer()->get(AgentRequestContextResolver::class);
+
+        static::assertInstanceOf(AgentRequestContextResolver::class, $resolver);
 
         $resolver->resolve($request);
     }
@@ -325,14 +324,13 @@ mwIDAQAB
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $entityRepository,
-            new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
         );
@@ -388,23 +386,22 @@ mwIDAQAB
 
         $repo = $this->createMock(EntityRepository::class);
         $repo
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('search')
             ->with(static::isInstanceOf(Criteria::class), $expectedContext)
             ->willReturn($productExportResult);
 
         $contextService = $this->createMock(SalesChannelContextService::class);
         $contextService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('get')
             ->willReturn(
-                Generator::generateSalesChannelContext($expectedContext)
+                Generator::createSalesChannelContext($expectedContext)
             );
 
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $repo,
-            new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $contextService,
         );
@@ -432,22 +429,21 @@ mwIDAQAB
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
-        $salesChannelContext = Generator::generateSalesChannelContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
 
         $salesChannelMock = $this->createMock(SalesChannelContextService::class);
         $salesChannelMock
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('get')
             ->willReturn($salesChannelContext);
 
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $entityRepository,
-            new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $salesChannelMock,
         );

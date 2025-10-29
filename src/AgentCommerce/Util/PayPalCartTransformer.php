@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEnt
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -24,24 +25,26 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryCollection;
+use Shopware\Core\System\Locale\LocaleCollection;
+use Shopware\Core\System\Locale\LocaleEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Address;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AppliedCoupon;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AppliedCouponCollection;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\BillingAddress;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartItem;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartItemCollection;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartTotals;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Customer;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Money;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Phone;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\CustomerName;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingAddress;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOption;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingOptionCollection;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssueCollection;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgentCommerce\Struct\V1\Address;
+use Swag\PayPal\AgentCommerce\Struct\V1\AppliedCoupon;
+use Swag\PayPal\AgentCommerce\Struct\V1\AppliedCouponCollection;
+use Swag\PayPal\AgentCommerce\Struct\V1\BillingAddress;
+use Swag\PayPal\AgentCommerce\Struct\V1\CartItem;
+use Swag\PayPal\AgentCommerce\Struct\V1\CartItemCollection;
+use Swag\PayPal\AgentCommerce\Struct\V1\CartTotals;
+use Swag\PayPal\AgentCommerce\Struct\V1\Customer;
+use Swag\PayPal\AgentCommerce\Struct\V1\Money;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
+use Swag\PayPal\AgentCommerce\Struct\V1\Phone;
+use Swag\PayPal\AgentCommerce\Struct\V1\Referral\CustomerName;
+use Swag\PayPal\AgentCommerce\Struct\V1\ShippingAddress;
+use Swag\PayPal\AgentCommerce\Struct\V1\ShippingOption;
+use Swag\PayPal\AgentCommerce\Struct\V1\ShippingOptionCollection;
+use Swag\PayPal\AgentCommerce\Struct\V1\ValidationIssueCollection;
 use Swag\PayPal\AgentCommerce\Validation\ValidationIssues;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -54,12 +57,14 @@ class PayPalCartTransformer
     /**
      * @param EntityRepository<ProductCollection> $productRepository
      * @param EntityRepository<CountryCollection> $countryRepository
+     * @param EntityRepository<LocaleCollection> $countryRepository
      */
     public function __construct(
         private readonly EntityRepository $productRepository,
         private readonly EntityRepository $countryRepository,
         private readonly AbstractShippingMethodRoute $shippingMethodRoute,
         private readonly ValidationIssues $validationIssues,
+        private readonly EntityRepository $localeRepository,
     ) {
     }
 
@@ -108,7 +113,7 @@ class PayPalCartTransformer
             // itemId will be removed in the future.
             $cartItem->setItemId($lineItem->getReferencedId());
             $cartItem->setVariantId($lineItem->getReferencedId());
-            $cartItem->setParentId($lineItem->getPayloadValue('parentId')); // @phpstan-ignore method.deprecated
+            $cartItem->setParentId($lineItem->getPayloadValue('parentId'));
             $cartItem->setQuantity($lineItem->getQuantity());
             $cartItem->setName($lineItem->getLabel());
             $cartItem->setPrice($itemPrice);
@@ -175,7 +180,22 @@ class PayPalCartTransformer
                 continue;
             }
 
-            $errors->add($this->validationIssues->cartError($error, $context->getLanguageInfo()->localeCode));
+            // @phpstan-ignore function.alreadyNarrowedType
+            if (\method_exists($context, 'getLanguageInfo')) {
+                $languageInfo = $context->getLanguageInfo(); // @phpstan-ignore method.deprecated
+                $localeCode = $languageInfo?->localeCode;
+            } else {
+                $localeCriteria = new Criteria();
+                $localeCriteria->addFilter(new EqualsFilter('languages.id', $context->getLanguageId()));
+
+                /** @var LocaleEntity|null $locale */
+                $locale = $this->localeRepository->search($localeCriteria, $context->getContext())->first();
+                $localeCode = $locale?->getCode();
+            }
+
+            if ($localeCode) {
+                $errors->add($this->validationIssues->cartError($error, $localeCode));
+            }
         }
 
         $lineItems = $cart->getLineItems()->filterFlatByType(LineItem::PRODUCT_LINE_ITEM_TYPE);
@@ -194,6 +214,8 @@ class PayPalCartTransformer
                 new RangeFilter('stock', [RangeFilter::LTE => 0]),
                 new NotFilter('AND', [new EqualsFilter('restockTime', null)])
             );
+
+            /** @var ProductEntity[] $restockProducts */
             $restockProducts = $this->productRepository->search($criteria, $context->getContext())->getElements();
         }
 
@@ -203,7 +225,7 @@ class PayPalCartTransformer
         }
 
         foreach ($lineItems as $lineItem) {
-            $stock = $lineItem->getPayloadValue('stock'); // @phpstan-ignore method.deprecated
+            $stock = $lineItem->getPayloadValue('stock');
             if ($stock !== null && $stock < $lineItem->getQuantity()) {
                 $issue = $this->validationIssues->outOfStock($lineItem, $restockProducts[$lineItem->getReferencedId()] ?? null, $context->getCurrency());
 
@@ -267,7 +289,7 @@ class PayPalCartTransformer
             $criteria = new Criteria([$addressEntity->getCountryId()]);
             $criteria->addFields(['iso']);
 
-            $iso = $this->countryRepository->search($criteria, $context)->first()?->get('iso');
+            $iso = $this->countryRepository->search($criteria, $context)->first()?->get('iso'); // @phpstan-ignore method.deprecated
             if (!$iso) {
                 throw AgentException::requiredFieldInvalid('address.countryCode', 'Country not found');
             }
@@ -334,7 +356,7 @@ class PayPalCartTransformer
             $discount->setCurrencyCode($context->getCurrency()->getIsoCode());
 
             $coupon = new AppliedCoupon();
-            $coupon->setCode($lineItem->getPayloadValue('code')); // @phpstan-ignore method.deprecated
+            $coupon->setCode($lineItem->getPayloadValue('code'));
             $coupon->setDescription($lineItem->getDescription());
             $coupon->setDiscountAmount($discount);
 

@@ -9,13 +9,13 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1\Context;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
  */
 #[Package('checkout')]
-abstract class AbstractContext extends Struct
+abstract class AbstractContext extends PayPalApiStruct
 {
     /**
      * Specific business rule issue type

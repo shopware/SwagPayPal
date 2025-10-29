@@ -5,15 +5,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Exception;
+namespace Swag\PayPal\Test\AgentCommerce\Exception;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetail;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetailCollection;
-use Shopware\PayPalSDK\Struct\Struct;
 use Swag\PayPal\AgentCommerce\Exception\AgentHttpException;
+use Swag\PayPal\AgentCommerce\Struct\V1\AgentErrorDetail;
+use Swag\PayPal\AgentCommerce\Struct\V1\AgentErrorDetailCollection;
 
 /**
  * @internal
@@ -24,7 +23,8 @@ class AgentHttpExceptionTest extends TestCase
 {
     public function testPublicAPI(): void
     {
-        $detail1 = Struct::from(AgentErrorDetail::class, [
+        $detail1 = new AgentErrorDetail();
+        $detail1->assign([
             'field' => 'foo',
             'issue' => 'bar',
             'description' => 'baz',

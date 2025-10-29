@@ -32,7 +32,7 @@ class ProductFilterSubscriberTest extends TestCase
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
         $salesChannelContext
             ->method('getContext')
-            ->willReturn(Context::createCLIContext());
+            ->willReturn(Context::createDefaultContext());
 
         $criteria = new Criteria();
         $event = new ProductGatewayCriteriaEvent([], $criteria, $salesChannelContext);
@@ -50,7 +50,7 @@ class ProductFilterSubscriberTest extends TestCase
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
         $salesChannelContext
             ->method('getContext')
-            ->willReturn(Context::createCLIContext($source));
+            ->willReturn(Context::createDefaultContext($source));
 
         $criteria = new Criteria();
         $event = new ProductGatewayCriteriaEvent([], $criteria, $salesChannelContext);
@@ -69,12 +69,12 @@ class ProductFilterSubscriberTest extends TestCase
     {
         $originalSource = new AgentSource('merchantId', new \DateTime(), new \DateTime(), [], Uuid::randomHex());
         $originalSource->setStreamId(Uuid::randomHex());
-        $source = new AdminSalesChannelApiSource(Uuid::randomHex(), Context::createCLIContext($originalSource));
+        $source = new AdminSalesChannelApiSource(Uuid::randomHex(), Context::createDefaultContext($originalSource));
 
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
         $salesChannelContext
             ->method('getContext')
-            ->willReturn(Context::createCLIContext($source));
+            ->willReturn(Context::createDefaultContext($source));
 
         $criteria = new Criteria();
         $event = new ProductGatewayCriteriaEvent([], $criteria, $salesChannelContext);

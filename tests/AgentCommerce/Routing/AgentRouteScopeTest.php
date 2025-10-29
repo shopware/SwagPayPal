@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Routing;
+namespace Swag\PayPal\Test\AgentCommerce\Routing;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -100,7 +100,7 @@ class AgentRouteScopeTest extends TestCase
 
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
         $salesChannelContext
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getContext')
             ->willReturn(Context::createDefaultContext($source));
 

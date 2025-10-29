@@ -13,7 +13,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PaymentMethod;
+use Swag\PayPal\AgentCommerce\Struct\V1\PaymentMethod;
 
 /**
  * @internal

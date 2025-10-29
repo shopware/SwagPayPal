@@ -7,19 +7,23 @@
 
 namespace Swag\PayPal\AgentCommerce\Routing;
 
+use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\Token\Parser;
+use Lcobucci\JWT\UnencryptedToken;
+use Lcobucci\JWT\Validation\Constraint;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
+use Lcobucci\JWT\Validation\Validator;
 use Shopware\Core\Content\ProductExport\ProductExportCollection;
+use Shopware\Core\Content\ProductExport\ProductExportEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\JWT\JWTDecoder;
-use Shopware\Core\Framework\JWT\JWTException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RequestContextResolverInterface;
 use Shopware\Core\Framework\Routing\RouteScopeCheckTrait;
@@ -33,6 +37,7 @@ use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgentCommerce\Exception\JWTException;
 use Swag\PayPal\AgentCommerce\Validation\CartTokenValidator;
 use Swag\PayPal\AgentCommerce\Validation\HasScopes;
 use Swag\PayPal\SwagPayPal;
@@ -78,7 +83,6 @@ kQIDAQAB
     public function __construct(
         private readonly DataValidator $validator,
         private readonly EntityRepository $productExportRepository,
-        private readonly JWTDecoder $JWTDecoder,
         private readonly RouteScopeRegistry $routeScopeRegistry,
         private readonly SalesChannelContextService $contextService,
     ) {
@@ -111,6 +115,7 @@ kQIDAQAB
             new EqualsFilter('salesChannel.id', $source->salesChannelId),
         );
 
+        /** @var ProductExportEntity|null $productExport */
         $productExport = $this->productExportRepository->search($criteria, $context)->first();
         if (!$productExport) {
             throw AgentException::unauthorized('Sales channel not found');
@@ -160,14 +165,14 @@ kQIDAQAB
             $constraints[] = new HasScopes($scopes);
         }
 
-        $this->JWTDecoder->validate($jwt, ...$constraints);
+        $this->validate($jwt, ...$constraints);
     }
 
     private function resolveContextSource(string $token): AgentSource
     {
         try {
             /** @var array{external_id: array{0: string}, sub: string, iat: \DateTimeInterface, exp: \DateTimeInterface, scope: list<string>, debug_id?: string} $decoded */
-            $decoded = $this->JWTDecoder->decode($token); // @phpstan-ignore varTag.type
+            $decoded = $this->decode($token);
         } catch (JWTException $e) {
             throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
         }
@@ -194,6 +199,42 @@ kQIDAQAB
     {
         \preg_match('/^PayPal:\s*(.+)$/', $externalId, $matches);
 
-        return $matches[1];
+        // already checked with DataValidationDefinition
+        return $matches[1] ?? '';
+    }
+
+    private function decode(string $jwt): array
+    {
+        return $this->parseToken($jwt)->claims()->all();
+    }
+
+    private function validate(string $jwt, Constraint ...$constraints): void
+    {
+        try {
+            $validator = new Validator();
+            $validator->assert($this->parseToken($jwt), ...$constraints);
+        } catch (RequiredConstraintsViolated $e) {
+            throw JWTException::invalidJwt($e->getMessage(), $e);
+        }
+    }
+
+    private function parseToken(string $jwt): UnencryptedToken
+    {
+        if (!$jwt) {
+            throw JWTException::invalidJwt('JWT cannot be empty');
+        }
+
+        try {
+            $parser = new Parser(new JoseEncoder());
+            $token = $parser->parse($jwt);
+        } catch (\Exception $e) {
+            throw JWTException::invalidJwt($e->getMessage(), $e);
+        }
+
+        if (!$token instanceof UnencryptedToken) {
+            throw JWTException::invalidJwt('Incorrect token type');
+        }
+
+        return $token;
     }
 }

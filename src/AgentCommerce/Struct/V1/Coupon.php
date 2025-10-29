@@ -9,7 +9,7 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -30,7 +30,7 @@ use Shopware\Core\Framework\Struct\Struct;
     schema: 'paypal_agentic_commerce_v1_coupon',
     required: ['code', 'action']
 )]
-class Coupon extends Struct
+class Coupon extends PayPalApiStruct
 {
     public const APPLY = 'APPLY';
     public const REMOVE = 'REMOVE';

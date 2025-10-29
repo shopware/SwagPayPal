@@ -9,7 +9,7 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -19,7 +19,7 @@ use Shopware\Core\Framework\Struct\Struct;
     schema: 'paypal_agentic_commerce_v1_error',
     required: ['name', 'message']
 )]
-class Error extends Struct
+class Error extends PayPalApiStruct
 {
     /**
      * Error name/type
@@ -42,7 +42,7 @@ class Error extends Struct
     /**
      * Detailed error information
      */
-    #[OA\Property(ref: AgentErrorDetailCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: AgentErrorDetail::class))]
     protected AgentErrorDetailCollection $details;
 
     public function getName(): string

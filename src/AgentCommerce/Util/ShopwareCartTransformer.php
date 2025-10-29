@@ -21,15 +21,15 @@ use Shopware\Core\System\Country\CountryCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Salutation\SalutationCollection;
 use Shopware\Core\System\Salutation\SalutationDefinition;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Address;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Coupon;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CouponCollection;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Customer;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Phone;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\CustomerName;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ShippingAddress;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgentCommerce\Struct\V1\Address;
+use Swag\PayPal\AgentCommerce\Struct\V1\Coupon;
+use Swag\PayPal\AgentCommerce\Struct\V1\CouponCollection;
+use Swag\PayPal\AgentCommerce\Struct\V1\Customer;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
+use Swag\PayPal\AgentCommerce\Struct\V1\Phone;
+use Swag\PayPal\AgentCommerce\Struct\V1\Referral\CustomerName;
+use Swag\PayPal\AgentCommerce\Struct\V1\ShippingAddress;
 
 /**
  * @internal

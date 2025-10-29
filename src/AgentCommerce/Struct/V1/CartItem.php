@@ -9,9 +9,11 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\AgentCommerce\Struct\V1\Referral\CustomOption;
 use Swag\PayPal\AgentCommerce\Struct\V1\Referral\CustomOptionCollection;
+use Swag\PayPal\AgentCommerce\Struct\V1\Referral\SelectedAttribute;
 use Swag\PayPal\AgentCommerce\Struct\V1\Referral\SelectedAttributeCollection;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -21,7 +23,7 @@ use Swag\PayPal\AgentCommerce\Struct\V1\Referral\SelectedAttributeCollection;
     schema: 'paypal_agentic_commerce_v1_cart_item',
     required: ['itemId', 'quantity', 'price']
 )]
-class CartItem extends Struct
+class CartItem extends PayPalApiStruct
 {
     /**
      * Unique product identifier (optional in v1 for backwards compatibility)
@@ -68,13 +70,13 @@ class CartItem extends Struct
     #[OA\Property(ref: Money::class)]
     protected ?Money $price = null;
 
-    #[OA\Property(ref: SelectedAttributeCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: SelectedAttribute::class))]
     protected SelectedAttributeCollection $selectedAttributes;
 
     #[OA\Property(ref: GiftOptions::class)]
     protected ?GiftOptions $giftOptions = null;
 
-    #[OA\Property(ref: CustomOptionCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: CustomOption::class))]
     protected CustomOptionCollection $customOptions;
 
     public function getItemId(): ?string

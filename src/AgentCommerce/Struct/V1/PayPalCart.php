@@ -9,7 +9,7 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -19,7 +19,7 @@ use Shopware\Core\Framework\Struct\Struct;
     schema: 'paypal_agentic_commerce_v1_pay_pal_cart',
     required: ['items', 'paymentMethod']
 )]
-class PayPalCart extends Struct
+class PayPalCart extends PayPalApiStruct
 {
     public const STATUS__CREATED = 'CREATED';
     public const STATUS__INCOMPLETE = 'INCOMPLETE';
@@ -80,7 +80,7 @@ class PayPalCart extends Struct
     /**
      * List of issues preventing checkout (empty = ready)
      */
-    #[OA\Property(ref: ValidationIssueCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: ValidationIssue::class))]
     protected ValidationIssueCollection $validationIssues;
 
     #[OA\Property(ref: CartTotals::class)]
@@ -89,25 +89,25 @@ class PayPalCart extends Struct
     /**
      * Successfully applied coupons (server-calculated)
      */
-    #[OA\Property(ref: AppliedCouponCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: AppliedCoupon::class))]
     protected ?AppliedCouponCollection $appliedCoupons = null;
 
     /**
      * Available shipping methods with selection state
      */
-    #[OA\Property(ref: ShippingOptionCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: ShippingOption::class))]
     protected ?ShippingOptionCollection $availableShippingOptions = null;
 
     /**
      * HATEOAS navigation links for cart operations
      */
-    #[OA\Property(ref: LinkCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Link::class))]
     protected ?LinkCollection $links = null;
 
     /**
      * Products in the cart
      */
-    #[OA\Property(ref: CartItemCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: CartItem::class))]
     protected CartItemCollection $items;
 
     #[OA\Property(ref: Customer::class)]
@@ -125,13 +125,13 @@ class PayPalCart extends Struct
     /**
      * Custom checkout fields (age verification, etc.)
      */
-    #[OA\Property(ref: CheckoutFieldCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: CheckoutField::class))]
     protected ?CheckoutFieldCollection $checkoutFields = null;
 
     /**
      * Discount coupons to apply or remove from cart
      */
-    #[OA\Property(ref: CouponCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: Coupon::class))]
     protected CouponCollection $coupons;
 
     #[OA\Property(ref: GeoCoordinates::class)]

@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Util;
+namespace Swag\PayPal\Test\AgentCommerce\Util;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -19,9 +19,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Coupon;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgentCommerce\Struct\V1\Coupon;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
 
 /**

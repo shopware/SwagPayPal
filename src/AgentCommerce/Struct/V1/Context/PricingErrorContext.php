@@ -9,6 +9,7 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1\Context;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\AgentCommerce\Struct\V1\Referral\MixedItem;
 use Swag\PayPal\AgentCommerce\Struct\V1\Referral\MixedItemCollection;
 
 /**
@@ -170,7 +171,7 @@ class PricingErrorContext extends AbstractContext
     /**
      * Items with different currencies
      */
-    #[OA\Property(ref: MixedItemCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: MixedItem::class))]
     protected MixedItemCollection $mixedItems;
 
     public function getItemId(): ?string

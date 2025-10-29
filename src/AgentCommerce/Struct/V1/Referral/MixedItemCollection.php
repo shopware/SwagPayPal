@@ -8,17 +8,17 @@
 namespace Swag\PayPal\AgentCommerce\Struct\V1\Referral;
 
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Collection;
+use Swag\PayPal\RestApi\PayPalApiCollection;
 
 /**
  * @experimental
  *
- * @extends Collection<MixedItem>
+ * @extends PayPalApiCollection<MixedItem>
  */
 #[Package('checkout')]
-class MixedItemCollection extends Collection
+class MixedItemCollection extends PayPalApiCollection
 {
-    protected function getExpectedClass(): string
+    public static function getExpectedClass(): string
     {
         return MixedItem::class;
     }

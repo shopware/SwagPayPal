@@ -9,7 +9,6 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\AgentCommerce\Struct\V1\Context\AbstractContext;
 use Swag\PayPal\AgentCommerce\Struct\V1\Context\BusinessRuleErrorContext;
 use Swag\PayPal\AgentCommerce\Struct\V1\Context\DataErrorContext;
@@ -17,6 +16,7 @@ use Swag\PayPal\AgentCommerce\Struct\V1\Context\InventoryIssueContext;
 use Swag\PayPal\AgentCommerce\Struct\V1\Context\PaymentErrorContext;
 use Swag\PayPal\AgentCommerce\Struct\V1\Context\PricingErrorContext;
 use Swag\PayPal\AgentCommerce\Struct\V1\Context\ShippingErrorContext;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -26,7 +26,7 @@ use Swag\PayPal\AgentCommerce\Struct\V1\Context\ShippingErrorContext;
     schema: 'paypal_agentic_commerce_v1_validation_issue',
     required: ['code', 'type', 'message']
 )]
-class ValidationIssue extends Struct
+class ValidationIssue extends PayPalApiStruct
 {
     public const CODE__INVENTORY_ISSUE = 'INVENTORY_ISSUE';
     public const CODE__PRICING_ERROR = 'PRICING_ERROR';
@@ -108,7 +108,7 @@ class ValidationIssue extends Struct
     /**
      * Available actions to resolve this issue
      */
-    #[OA\Property(ref: ResolutionOptionCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: ResolutionOption::class))]
     protected ResolutionOptionCollection $resolutionOptions;
 
     public function getCode(): string
@@ -202,10 +202,5 @@ class ValidationIssue extends Struct
     public function jsonSerialize(): array
     {
         return \array_filter(parent::jsonSerialize());
-    }
-
-    public function isset(string $propertyName): bool
-    {
-        return isset($this->{$propertyName});
     }
 }

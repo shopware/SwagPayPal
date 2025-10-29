@@ -9,20 +9,20 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer;
 use Swag\PayPal\AgentCommerce\Validation\CartTokenValidator;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -57,14 +57,14 @@ class CheckoutRoute extends AbstractAgentCommerceRoute
             ->order($cart, $context, new RequestDataBag($request->request->all()))
             ->getOrder();
 
-        $primaryTransactionId = $order->getTransactions()?->last()?->getId();
+        $primaryTransaction = $order->getTransactions()?->last();
 
         // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.1.0, keep content
-        if (\method_exists($order, 'getPrimaryTransactionId')) {
-            $primaryTransactionId = $order->getPrimaryTransactionId();
+        if (\method_exists($order, 'getPrimaryOrderTransactionId')) {
+            $primaryTransaction = $order->getPrimaryOrderTransactionId();
         }
 
-        if (!$primaryTransactionId) {
+        if (!$primaryTransaction) {
             throw AgentException::orderSystemError();
         }
 
@@ -77,12 +77,16 @@ class CheckoutRoute extends AbstractAgentCommerceRoute
         $payPalCart->setStatus(PayPalCart::STATUS__COMPLETE);
         $payPalCart->setPaymentMethod($this->createPaymentMethod($payPalOrder->getId()));
 
-        $response = $this->paymentHandler->pay($request, new PaymentTransactionStruct($primaryTransactionId), $context->getContext(), null);
+        try {
+            // @phpstan-ignore new.deprecated
+            $payment = new AsyncPaymentTransactionStruct($primaryTransaction, $order, '');
+            $response = $this->paymentHandler->pay($payment, new RequestDataBag($request->request->all()), $context);
 
-        if ($response instanceof RedirectResponse) {
             $payPalCart->setStatus(PayPalCart::STATUS__INCOMPLETE);
             $payPalCart->setValidationStatus(PayPalCart::VALIDATION_STATUS__INVALID);
             $payPalCart->getPaymentMethod()?->setApprovalUrl($response->getTargetUrl());
+        } catch (PaymentException $e) {
+            // TODO: do nothing here?
         }
 
         return new AgentCartResponse($payPalCart);

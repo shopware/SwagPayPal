@@ -15,11 +15,11 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssue;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssueCollection;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\SalesChannel\GetCartRoute;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
+use Swag\PayPal\AgentCommerce\Struct\V1\ValidationIssue;
+use Swag\PayPal\AgentCommerce\Struct\V1\ValidationIssueCollection;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer;
 
 /**

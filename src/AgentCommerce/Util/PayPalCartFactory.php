@@ -9,10 +9,10 @@ namespace Swag\PayPal\AgentCommerce\Util;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Address;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\CartItemCollection;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgentCommerce\Struct\V1\Address;
+use Swag\PayPal\AgentCommerce\Struct\V1\CartItemCollection;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
 
 /**
  * @internal

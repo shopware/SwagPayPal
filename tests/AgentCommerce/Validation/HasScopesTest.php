@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Validation;
+namespace Swag\PayPal\Test\AgentCommerce\Validation;
 
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\ConstraintViolation;

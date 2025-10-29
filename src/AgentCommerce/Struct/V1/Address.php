@@ -9,7 +9,7 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -19,7 +19,7 @@ use Shopware\Core\Framework\Struct\Struct;
     schema: 'paypal_agentic_commerce_v1_address',
     required: ['countryCode']
 )]
-class Address extends Struct
+class Address extends PayPalApiStruct
 {
     /**
      * The first line of the address, such as number and street, for example, 173 Drury Lane.

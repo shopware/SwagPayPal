@@ -5,14 +5,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Routing;
+namespace Swag\PayPal\Test\AgentCommerce\Routing;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\KernelListenerPriorities;
 use Shopware\Core\Framework\Routing\RequestContextResolverInterface;
-use Shopware\Core\Test\Stub\Symfony\StubKernel;
 use Swag\PayPal\AgentCommerce\Routing\AgentContextResolverListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -41,11 +40,11 @@ class AgentContextResolverListenerTest extends TestCase
     public function testResolveContext(): void
     {
         $request = new Request();
-        $event = new ControllerEvent(new StubKernel(), function (): void {}, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event = new ControllerEvent($this->createMock(HttpKernelInterface::class), function (): void {}, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $resolver = $this->createMock(RequestContextResolverInterface::class);
         $resolver
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('resolve')
             ->with($request);
 

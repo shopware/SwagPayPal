@@ -7,14 +7,16 @@
 
 namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
+use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
  */
 #[Package('checkout')]
-class AgentErrorDetail extends Struct
+#[OA\Schema(schema: 'paypal_agentic_commerce_v1_agent_error_detail')]
+class AgentErrorDetail extends PayPalApiStruct
 {
     protected string $field;
 

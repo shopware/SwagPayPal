@@ -9,8 +9,8 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\AgentCommerce\Struct\V1\Referral\MetaData;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -20,7 +20,7 @@ use Swag\PayPal\AgentCommerce\Struct\V1\Referral\MetaData;
     schema: 'paypal_agentic_commerce_v1_resolution_option',
     required: ['action', 'label']
 )]
-class ResolutionOption extends Struct
+class ResolutionOption extends PayPalApiStruct
 {
     public const ACTION__REDIRECT_TO_MERCHANT = 'REDIRECT_TO_MERCHANT';
     public const ACTION__MODIFY_CART = 'MODIFY_CART';
@@ -144,10 +144,5 @@ class ResolutionOption extends Struct
     public function jsonSerialize(): array
     {
         return \array_filter(parent::jsonSerialize());
-    }
-
-    public function isset(string $propertyName): bool
-    {
-        return isset($this->{$propertyName});
     }
 }

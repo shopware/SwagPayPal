@@ -13,15 +13,16 @@ use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
 use Swag\PayPal\AgentCommerce\Validation\CartTokenValidator;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,8 +66,10 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
         $response = $this->createCartRoute->createCart($request, $salesChannelContext);
 
         if ($response->isSuccessful()) {
-            if ($response->getObject()->offsetGet('validation_status') === PayPalCart::VALIDATION_STATUS__VALID) {
-                $response->getObject()->offsetSet('validation_status', PayPalCart::STATUS__READY);
+            $responseObject = $response->getObject();
+            \assert($responseObject instanceof ArrayStruct);
+            if ($responseObject->offsetGet('validation_status') === PayPalCart::VALIDATION_STATUS__VALID) {
+                $responseObject->offsetSet('validation_status', PayPalCart::STATUS__READY);
             }
 
             $response->setStatusCode(Response::HTTP_OK);

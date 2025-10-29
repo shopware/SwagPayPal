@@ -5,13 +5,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\SalesChannel\Response;
+namespace Swag\PayPal\Test\AgentCommerce\SalesChannel\Response;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
 
 /**
  * @internal
@@ -26,7 +27,9 @@ class AgentCartResponseTest extends TestCase
         $cart->setId('test-token');
 
         $response = new AgentCartResponse($cart);
+        $responseObject = $response->getObject();
 
-        static::assertSame(['id' => 'test-token'], $response->getObject()->all());
+        static::assertInstanceOf(ArrayStruct::class, $responseObject);
+        static::assertSame(['id' => 'test-token'], $responseObject->all());
     }
 }

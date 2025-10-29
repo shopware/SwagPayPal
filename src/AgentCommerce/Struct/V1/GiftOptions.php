@@ -9,15 +9,15 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\AgentCommerce\Struct\V1\Referral\Recipient;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
  */
 #[Package('checkout')]
 #[OA\Schema(schema: 'paypal_agentic_commerce_v1_gift_options')]
-class GiftOptions extends Struct
+class GiftOptions extends PayPalApiStruct
 {
     /**
      * Whether this is a gift

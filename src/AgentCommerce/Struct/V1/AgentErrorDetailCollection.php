@@ -8,17 +8,17 @@
 namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Collection;
+use Swag\PayPal\RestApi\PayPalApiCollection;
 
 /**
  * @experimental
  *
- * @extends Collection<AgentErrorDetail>
+ * @extends PayPalApiCollection<AgentErrorDetail>
  */
 #[Package('checkout')]
-class AgentErrorDetailCollection extends Collection
+class AgentErrorDetailCollection extends PayPalApiCollection
 {
-    protected function getExpectedClass(): string
+    public static function getExpectedClass(): string
     {
         return AgentErrorDetail::class;
     }

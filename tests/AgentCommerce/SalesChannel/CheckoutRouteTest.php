@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\SalesChannel;
+namespace Swag\PayPal\Test\AgentCommerce\SalesChannel;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -16,15 +16,18 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Test\Generator;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
-use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\SalesChannel\CheckoutRoute;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer;
+use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,7 +51,7 @@ class CheckoutRouteTest extends TestCase
 
         $this->expectExceptionObject(AgentException::invalidCartId());
 
-        $route->checkout('invalid-token', new Request(), Generator::generateSalesChannelContext());
+        $route->checkout('invalid-token', new Request(), Generator::createSalesChannelContext());
     }
 
     public function testCheckoutWithEmptyCart(): void
@@ -57,7 +60,7 @@ class CheckoutRouteTest extends TestCase
 
         $cartService = $this->createMock(CartService::class);
         $cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getCart')
             ->with('TOKEN')
             ->willReturn(new Cart('TOKEN'));
@@ -72,7 +75,7 @@ class CheckoutRouteTest extends TestCase
 
         $this->expectExceptionObject(AgentException::cartNotFound($token));
 
-        $route->checkout($token, new Request(), Generator::generateSalesChannelContext());
+        $route->checkout($token, new Request(), Generator::createSalesChannelContext());
     }
 
     public function testCheckoutWithoutTransaction(): void
@@ -81,7 +84,7 @@ class CheckoutRouteTest extends TestCase
 
         $cartService = $this->createMock(CartService::class);
         $cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getCart')
             ->with('TOKEN')
             ->willReturn(Generator::createCart());
@@ -93,7 +96,7 @@ class CheckoutRouteTest extends TestCase
 
         $orderRoute = $this->createMock(AbstractCartOrderRoute::class);
         $orderRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('order')
             ->willReturn($orderResponse);
 
@@ -107,21 +110,21 @@ class CheckoutRouteTest extends TestCase
 
         $this->expectExceptionObject(AgentException::orderSystemError());
 
-        $route->checkout($token, new Request(), Generator::generateSalesChannelContext());
+        $route->checkout($token, new Request(), Generator::createSalesChannelContext());
     }
 
     public function testCheckout(): void
     {
         $token = 'CART-TOKEN';
 
-        $context = Generator::generateSalesChannelContext();
+        $context = Generator::createSalesChannelContext();
         $cart = Generator::createCart();
 
         $request = new Request(content: \json_encode(['payment_method' => ['token' => 'PAYPAL-ORDER-ID']], \JSON_THROW_ON_ERROR));
 
         $cartService = $this->createMock(CartService::class);
         $cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getCart')
             ->with('TOKEN')
             ->willReturn($cart);
@@ -136,7 +139,7 @@ class CheckoutRouteTest extends TestCase
 
         $orderRoute = $this->createMock(AbstractCartOrderRoute::class);
         $orderRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('order')
             ->willReturn($orderResponse);
 
@@ -145,7 +148,7 @@ class CheckoutRouteTest extends TestCase
 
         $orderResource = $this->createMock(OrderResource::class);
         $orderResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('get')
             ->with('PAYPAL-ORDER-ID', $context->getSalesChannelId())
             ->willReturn($payPalOrder);
@@ -155,17 +158,20 @@ class CheckoutRouteTest extends TestCase
 
         $transformer = $this->createMock(PayPalCartTransformer::class);
         $transformer
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('convertToPayPalCart')
             ->with($cart, $context)
             ->willReturn($payPalCart);
 
+        $requestDataBag = new RequestDataBag($request->request->all());
+        $requestDataBag->set(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME, $payPalCart->getId());
+
         $paymentHandler = $this->createMock(PayPalPaymentHandler::class);
         $paymentHandler
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('pay')
-            ->with($request, static::equalTo(new PaymentTransactionStruct('primary-order-transaction-id')), $context->getContext(), null)
-            ->willReturn(null);
+            ->with(static::equalTo(new AsyncPaymentTransactionStruct($transaction, $order, '')), $requestDataBag, $context)
+            ->willThrowException(PaymentException::asyncProcessInterrupted($transaction->getId(), 'error message'));
 
         $route = new CheckoutRoute(
             $orderRoute,
@@ -188,14 +194,14 @@ class CheckoutRouteTest extends TestCase
     {
         $token = 'CART-TOKEN';
 
-        $context = Generator::generateSalesChannelContext();
+        $context = Generator::createSalesChannelContext();
         $cart = Generator::createCart();
 
         $request = new Request(content: \json_encode(['payment_method' => ['token' => 'PAYPAL-ORDER-ID']], \JSON_THROW_ON_ERROR));
 
         $cartService = $this->createMock(CartService::class);
         $cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getCart')
             ->with('TOKEN')
             ->willReturn($cart);
@@ -210,7 +216,7 @@ class CheckoutRouteTest extends TestCase
 
         $orderRoute = $this->createMock(AbstractCartOrderRoute::class);
         $orderRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('order')
             ->willReturn($orderResponse);
 
@@ -219,7 +225,7 @@ class CheckoutRouteTest extends TestCase
 
         $orderResource = $this->createMock(OrderResource::class);
         $orderResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('get')
             ->with('PAYPAL-ORDER-ID', $context->getSalesChannelId())
             ->willReturn($payPalOrder);
@@ -229,19 +235,20 @@ class CheckoutRouteTest extends TestCase
 
         $transformer = $this->createMock(PayPalCartTransformer::class);
         $transformer
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('convertToPayPalCart')
             ->with($cart, $context)
             ->willReturn($payPalCart);
 
-        $redirect = new RedirectResponse('https://example.com/redirect-url');
+        $requestDataBag = new RequestDataBag($request->request->all());
+        $requestDataBag->set(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME, $payPalCart->getId());
 
         $paymentHandler = $this->createMock(PayPalPaymentHandler::class);
         $paymentHandler
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('pay')
-            ->with($request, static::equalTo(new PaymentTransactionStruct('primary-order-transaction-id')), $context->getContext(), null)
-            ->willReturn($redirect);
+            ->with(static::equalTo(new AsyncPaymentTransactionStruct($transaction, $order, '')), $requestDataBag, $context)
+            ->willReturn(new RedirectResponse('https://example.com/redirect-url'));
 
         $route = new CheckoutRoute(
             $orderRoute,

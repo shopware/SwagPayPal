@@ -17,12 +17,12 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
-use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\AgentCommerce\SalesChannel\CreateCartRoute;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartTransformer;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -80,12 +80,12 @@ class CreateCartRouteTest extends TestCase
             ->willReturn(null);
 
         $this->shopwareCartTransformer
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('extractCustomerData')
             ->willReturn(['valid-data']);
 
         $this->registerRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('register');
 
         $this->contextService
@@ -95,16 +95,16 @@ class CreateCartRouteTest extends TestCase
         $cart = new Cart('');
 
         $this->cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('createNew')
             ->willReturn($cart);
         $this->cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('add')
             ->willReturn($cart);
 
         $this->shopwareCartTransformer
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getLineItems')
             ->willReturn([]);
 
@@ -112,12 +112,12 @@ class CreateCartRouteTest extends TestCase
         $order->setId('some-order-id');
 
         $this->orderBuilder
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getOrderFromCart')
             ->willReturn($order);
 
         $this->orderResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('create')
             ->willReturn($order);
 
@@ -125,7 +125,7 @@ class CreateCartRouteTest extends TestCase
         $payPalCart->setValidationStatus(PayPalCart::VALIDATION_STATUS__VALID);
 
         $this->payPalCartTransformer
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('convertToPayPalCart')
             ->willReturn($payPalCart);
 

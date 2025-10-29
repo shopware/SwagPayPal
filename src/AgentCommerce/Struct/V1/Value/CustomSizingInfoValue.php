@@ -9,15 +9,15 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1\Value;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\AgentCommerce\Struct\V1\Referral\Measurements;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
  */
 #[Package('checkout')]
 #[OA\Schema(schema: 'paypal_agentic_commerce_v1_value_custom_sizing_info_value')]
-class CustomSizingInfoValue extends Struct
+class CustomSizingInfoValue extends PayPalApiStruct
 {
     public const SIZE__TIGHT = 'tight';
     public const SIZE__REGULAR = 'regular';

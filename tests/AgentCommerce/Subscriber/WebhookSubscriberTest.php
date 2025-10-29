@@ -63,13 +63,13 @@ class WebhookSubscriberTest extends TestCase
         $event = new EntityWrittenEvent(
             SalesChannelDefinition::ENTITY_NAME,
             [$deleteResult, $noPayloadResult, $activateResult, $deactivateResult],
-            Context::createCLIContext(new AdminApiSource(Uuid::randomHex())),
+            Context::createDefaultContext(new AdminApiSource(Uuid::randomHex())),
             []
         );
 
         $salesChannelRepository = $this->createMock(EntityRepository::class);
         $salesChannelRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('searchIds')
             ->willReturnCallback(static function (Criteria $criteria) use ($deleteId, $activateId, $deactiveId) {
                 static::assertSame([$deleteId, $activateId, $deactiveId], $criteria->getIds());
@@ -79,24 +79,24 @@ class WebhookSubscriberTest extends TestCase
                     ['primaryKey' => $deactiveId, 'data' => []],
                 ];
 
-                return new IdSearchResult(2, $data, $criteria, Context::createCLIContext());
+                return new IdSearchResult(2, $data, $criteria, Context::createDefaultContext());
             });
 
         $webhookResult = new HoneyWebhookResult(true, 'success message', null);
         $webhook = $this->createMock(HoneyWebhookService::class);
         $webhook
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('register')
             ->with($activateId)
             ->willReturn($webhookResult);
         $webhook
-            ->expects($this->exactly(2))
+            ->expects(static::exactly(2))
             ->method('deregister')
             ->willReturn($webhookResult);
 
         $notificationRepository = $this->createMock(EntityRepository::class);
         $notificationRepository
-            ->expects($this->exactly(3))
+            ->expects(static::exactly(3))
             ->method('create');
 
         $subscriber = new WebhookSubscriber(
@@ -112,20 +112,20 @@ class WebhookSubscriberTest extends TestCase
     {
         $salesChannelRepository = $this->createMock(EntityRepository::class);
         $salesChannelRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('searchIds');
 
         $webhook = $this->createMock(HoneyWebhookService::class);
         $webhook
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('register');
         $webhook
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('deregister');
 
         $notificationRepository = $this->createMock(EntityRepository::class);
         $notificationRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('create');
 
         $subscriber = new WebhookSubscriber(
@@ -134,7 +134,7 @@ class WebhookSubscriberTest extends TestCase
             $notificationRepository,
         );
 
-        $event = new EntityWrittenEvent(SalesChannelDefinition::ENTITY_NAME, [], Context::createCLIContext(), []);
+        $event = new EntityWrittenEvent(SalesChannelDefinition::ENTITY_NAME, [], Context::createDefaultContext(), []);
 
         $subscriber->handleWebhookLifecycle($event);
     }

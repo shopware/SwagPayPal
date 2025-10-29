@@ -60,7 +60,7 @@ class ShippingErrorContext extends AbstractContext
     /**
      * Suggested address corrections
      */
-    #[OA\Property(ref: SuggestedCorrectionCollection::class)]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: SuggestedCorrection::class))]
     protected SuggestedCorrectionCollection $suggestedCorrections;
 
     /**

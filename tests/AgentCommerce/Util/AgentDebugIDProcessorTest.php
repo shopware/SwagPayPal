@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Util;
+namespace Swag\PayPal\Test\AgentCommerce\Util;
 
 use Monolog\Level;
 use Monolog\LogRecord;

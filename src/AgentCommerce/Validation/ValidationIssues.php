@@ -23,12 +23,12 @@ use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Shopware\PayPalSDK\Builder\AgenticCommerce\V1\ValidationIssueBuilder;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Context\InventoryIssueContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Context\PricingErrorContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\MetaData;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ResolutionOption;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssue;
+use Swag\PayPal\AgentCommerce\Struct\V1\Builder\ValidationIssueBuilder;
+use Swag\PayPal\AgentCommerce\Struct\V1\Context\InventoryIssueContext;
+use Swag\PayPal\AgentCommerce\Struct\V1\Context\PricingErrorContext;
+use Swag\PayPal\AgentCommerce\Struct\V1\Referral\MetaData;
+use Swag\PayPal\AgentCommerce\Struct\V1\ResolutionOption;
+use Swag\PayPal\AgentCommerce\Struct\V1\ValidationIssue;
 
 #[Package('checkout')]
 class ValidationIssues
@@ -43,9 +43,10 @@ class ValidationIssues
 
     public function outOfStock(LineItem $item, ?ProductEntity $restockProduct, CurrencyEntity $currency): ValidationIssue
     {
-        $stock = $item->getPayloadValue('stock'); // @phpstan-ignore method.deprecated
+        $stock = $item->getPayloadValue('stock');
 
         $builder = new ValidationIssueBuilder();
+        // @phpstan-ignore method.resultUnused
         $builder
             ->withCode(ValidationIssue::CODE__INVENTORY_ISSUE)
             ->withType(ValidationIssue::TYPE__BUSINESS_RULE)
@@ -135,25 +136,19 @@ class ValidationIssues
         $validationIssue->setType(ValidationIssue::TYPE__BUSINESS_RULE);
         $validationIssue->setCode(ValidationIssue::CODE__BUSINESS_RULE_ERROR);
 
-        /** @deprecated tag:v11.0.0 - "getTranslatedMessage" is added with v6.7.3.0 */
-        // @phpstan-ignore function.alreadyNarrowedType
-        if (\method_exists($error, 'getTranslatedMessage')) {
-            $validationIssue->setUserMessage($error->getTranslatedMessage());
-        } else {
-            $parameters = [];
-            foreach ($error->getParameters() as $key => $value) {
-                $parameters['%' . $key . '%'] = $value;
-            }
-
-            $message = $this->translator->trans(
-                'checkout.' . $error->getMessageKey(),
-                $parameters,
-                null,
-                $localeCode
-            );
-
-            $validationIssue->setUserMessage($message);
+        $parameters = [];
+        foreach ($error->getParameters() as $key => $value) {
+            $parameters['%' . $key . '%'] = $value;
         }
+
+        $message = $this->translator->trans(
+            'checkout.' . $error->getMessageKey(),
+            $parameters,
+            null,
+            $localeCode
+        );
+
+        $validationIssue->setUserMessage($message);
 
         switch ($error::class) {
             case ProductNotFoundError::class:

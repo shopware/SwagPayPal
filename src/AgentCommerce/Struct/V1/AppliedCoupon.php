@@ -9,14 +9,14 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
  */
 #[Package('checkout')]
 #[OA\Schema(schema: 'paypal_agentic_commerce_v1_applied_coupon')]
-class AppliedCoupon extends Struct
+class AppliedCoupon extends PayPalApiStruct
 {
     #[OA\Property(type: 'string')]
     protected ?string $code = null;

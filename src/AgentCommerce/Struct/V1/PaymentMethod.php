@@ -9,7 +9,7 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -37,7 +37,7 @@ use Shopware\Core\Framework\Struct\Struct;
     schema: 'paypal_agentic_commerce_v1_payment_method',
     required: ['type']
 )]
-class PaymentMethod extends Struct
+class PaymentMethod extends PayPalApiStruct
 {
     /**
      * Payment method type - only PayPal is supported by this API

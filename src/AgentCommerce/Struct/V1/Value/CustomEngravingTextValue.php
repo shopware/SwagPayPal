@@ -9,7 +9,7 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1\Value;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -19,7 +19,7 @@ use Shopware\Core\Framework\Struct\Struct;
     schema: 'paypal_agentic_commerce_v1_value_custom_engraving_text_value',
     required: ['text']
 )]
-class CustomEngravingTextValue extends Struct
+class CustomEngravingTextValue extends PayPalApiStruct
 {
     public const FONT__ARIAL = 'arial';
     public const FONT__TIMES = 'times';

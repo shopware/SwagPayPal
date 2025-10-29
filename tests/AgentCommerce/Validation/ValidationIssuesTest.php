@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Validation;
+namespace Swag\PayPal\Test\AgentCommerce\Validation;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -25,13 +25,11 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
-use Shopware\Core\Checkout\Gateway\Error\CheckoutGatewayError;
 use Shopware\Core\Checkout\Payment\Cart\Error\PaymentMethodBlockedError;
 use Shopware\Core\Checkout\Promotion\Cart\Error\AutoPromotionNotFoundError;
 use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionExcludedError;
 use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotEligibleError;
 use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotFoundError;
-use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionsOnCartPriceZeroError;
 use Shopware\Core\Checkout\Promotion\Cart\PromotionCartAddedInformationError;
 use Shopware\Core\Checkout\Promotion\Cart\PromotionCartDeletedInformationError;
 use Shopware\Core\Checkout\Shipping\Cart\Error\ShippingMethodBlockedError;
@@ -46,13 +44,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Context\InventoryIssueContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Context\PricingErrorContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\MetaData;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ResolutionOption;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\ValidationIssue;
 use Shopware\Storefront\Checkout\Cart\Error\PaymentMethodChangedError;
 use Shopware\Storefront\Checkout\Cart\Error\ShippingMethodChangedError;
+use Swag\PayPal\AgentCommerce\Struct\V1\Context\InventoryIssueContext;
+use Swag\PayPal\AgentCommerce\Struct\V1\Context\PricingErrorContext;
+use Swag\PayPal\AgentCommerce\Struct\V1\Referral\MetaData;
+use Swag\PayPal\AgentCommerce\Struct\V1\ResolutionOption;
+use Swag\PayPal\AgentCommerce\Struct\V1\ValidationIssue;
 use Swag\PayPal\AgentCommerce\Validation\ValidationIssues;
 use Symfony\Component\Validator\ConstraintViolationList;
 
@@ -246,23 +244,21 @@ class ValidationIssuesTest extends TestCase
         yield ShippingAddressSalutationMissingError::class => [new ShippingAddressSalutationMissingError(self::createCustomerAddress()), $code];
         yield GenericCartError::class => [new GenericCartError('foo', 'bar', [], Error::LEVEL_ERROR, false, false, false), $code];
         yield IncompleteLineItemError::class => [new IncompleteLineItemError('foo', 'bar'), $code];
-        yield CheckoutGatewayError::class => [new CheckoutGatewayError('foo', Error::LEVEL_NOTICE, true), $code];
-        yield PaymentMethodBlockedError::class => [new PaymentMethodBlockedError('foo', 'reason', Uuid::randomHex()), $code]; // @phpstan-ignore method.deprecated
+        yield PaymentMethodBlockedError::class => [new PaymentMethodBlockedError('foo', 'reason'), $code];
         yield AutoPromotionNotFoundError::class => [new AutoPromotionNotFoundError('foo'), $code];
         yield PromotionExcludedError::class => [new PromotionExcludedError('foo'), $code];
         yield PromotionNotEligibleError::class => [new PromotionNotEligibleError('foo'), $code];
         yield PromotionNotFoundError::class => [new PromotionNotFoundError('foo'), $code];
-        yield PromotionsOnCartPriceZeroError::class => [new PromotionsOnCartPriceZeroError(['foo', 'bar']), $code];
         yield PromotionCartAddedInformationError::class => [new PromotionCartAddedInformationError(self::createLineItem()), $code];
         yield PromotionCartDeletedInformationError::class => [new PromotionCartDeletedInformationError(self::createLineItem()), $code];
-        yield ShippingMethodBlockedError::class => [new ShippingMethodBlockedError('foo', Uuid::randomHex(), 'reason'), $code]; // @phpstan-ignore method.deprecated
+        yield ShippingMethodBlockedError::class => [new ShippingMethodBlockedError('foo'), $code];
         yield MinOrderQuantityError::class => [new MinOrderQuantityError(Uuid::randomHex(), 'foo', 5), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield ProductNotFoundError::class => [new ProductNotFoundError(Uuid::randomHex()), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield ProductOutOfStockError::class => [new ProductOutOfStockError(Uuid::randomHex(), 'foo'), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield ProductStockReachedError::class => [new ProductStockReachedError(Uuid::randomHex(), 'foo', 1), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield PurchaseStepsError::class => [new PurchaseStepsError(Uuid::randomHex(), 'foo', 5), ValidationIssue::CODE__INVENTORY_ISSUE];
-        yield PaymentMethodChangedError::class => [new PaymentMethodChangedError('foo', 'bar', Uuid::randomHex(), Uuid::randomHex(), 'reason'), $code]; // @phpstan-ignore method.deprecated
-        yield ShippingMethodChangedError::class => [new ShippingMethodChangedError('foo', 'bar', Uuid::randomHex(), Uuid::randomHex(), 'reason'), $code]; // @phpstan-ignore method.deprecated
+        yield PaymentMethodChangedError::class => [new PaymentMethodChangedError('foo', 'bar'), $code];
+        yield ShippingMethodChangedError::class => [new ShippingMethodChangedError('foo', 'bar'), $code];
     }
 
     private static function createCustomerAddress(): CustomerAddressEntity

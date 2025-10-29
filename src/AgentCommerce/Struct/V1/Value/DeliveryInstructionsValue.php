@@ -9,7 +9,7 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1\Value;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -19,7 +19,7 @@ use Shopware\Core\Framework\Struct\Struct;
     schema: 'paypal_agentic_commerce_v1_value_delivery_instructions_value',
     required: ['instructions']
 )]
-class DeliveryInstructionsValue extends Struct
+class DeliveryInstructionsValue extends PayPalApiStruct
 {
     /**
      * Special delivery instructions

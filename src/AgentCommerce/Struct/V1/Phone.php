@@ -9,7 +9,7 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
@@ -19,7 +19,7 @@ use Shopware\Core\Framework\Struct\Struct;
     schema: 'paypal_agentic_commerce_v1_phone',
     required: ['countryCode', 'nationalNumber']
 )]
-class Phone extends Struct
+class Phone extends PayPalApiStruct
 {
     private const PHONE_NUMBER_REGEX = '/\+(\d{1,3})\s(\d{1,14})(-?(\d{1,15}))?/';
 

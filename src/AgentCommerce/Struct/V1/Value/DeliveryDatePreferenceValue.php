@@ -9,14 +9,14 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1\Value;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
  */
 #[Package('checkout')]
 #[OA\Schema(schema: 'paypal_agentic_commerce_v1_value_delivery_date_preference_value')]
-class DeliveryDatePreferenceValue extends Struct
+class DeliveryDatePreferenceValue extends PayPalApiStruct
 {
     public const TIME_WINDOW__MORNING = 'morning';
     public const TIME_WINDOW__AFTERNOON = 'afternoon';

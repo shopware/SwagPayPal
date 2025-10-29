@@ -9,15 +9,15 @@ namespace Swag\PayPal\AgentCommerce\Struct\V1;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\AgentCommerce\Struct\V1\Referral\CustomerName;
+use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @experimental
  */
 #[Package('checkout')]
 #[OA\Schema(schema: 'paypal_agentic_commerce_v1_customer')]
-class Customer extends Struct
+class Customer extends PayPalApiStruct
 {
     #[OA\Property(ref: CustomerName::class)]
     protected CustomerName $name;

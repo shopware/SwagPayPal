@@ -13,17 +13,18 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\SalesChannel\CreateCartRoute;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Swag\PayPal\AgentCommerce\SalesChannel\UpdateCartRoute;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -94,12 +95,12 @@ class UpdateCartRouteTest extends TestCase
             ->willReturn($customer);
 
         $this->customerRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('delete')
             ->with([['id' => $customer->getId()]]);
 
         $this->cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('deleteCart');
 
         $payPalCart = new PayPalCart();
@@ -107,14 +108,16 @@ class UpdateCartRouteTest extends TestCase
         $createResponse = new AgentCartResponse($payPalCart);
 
         $this->createCartRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('createCart')
             ->willReturn($createResponse);
 
         $response = $this->updateCartRoute->updateCart('CART-11111111111111111111111111111111', new Request(content: $content), $this->salesChannelContext);
+        $responseObject = $response->getObject();
 
         static::assertSame(200, $response->getStatusCode());
-        static::assertSame(PayPalCart::STATUS__READY, $response->getObject()->offsetGet('validation_status'));
+        static::assertInstanceOf(ArrayStruct::class, $responseObject);
+        static::assertSame(PayPalCart::STATUS__READY, $responseObject->offsetGet('validation_status'));
     }
 
     public function testUpsertAddresses(): void
@@ -132,11 +135,11 @@ class UpdateCartRouteTest extends TestCase
             ->willReturn($customer);
 
         $this->customerAddressRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('delete');
 
         $this->cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('deleteCart');
 
         $customerData = [
@@ -163,15 +166,15 @@ class UpdateCartRouteTest extends TestCase
         ];
 
         $this->customerRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('delete');
         $this->customerRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('update')
             ->with([$upsertData]);
 
         $this->shopwareCartTransformer
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('extractCustomerData')
             ->willReturn($customerData);
 
@@ -180,14 +183,16 @@ class UpdateCartRouteTest extends TestCase
         $createResponse = new AgentCartResponse($payPalCart);
 
         $this->createCartRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('createCart')
             ->willReturn($createResponse);
 
         $response = $this->updateCartRoute->updateCart('CART-11111111111111111111111111111111', new Request(content: $content), $this->salesChannelContext);
+        $responseObject = $response->getObject();
 
         static::assertSame(200, $response->getStatusCode());
-        static::assertSame(PayPalCart::STATUS__READY, $response->getObject()->offsetGet('validation_status'));
+        static::assertInstanceOf(ArrayStruct::class, $responseObject);
+        static::assertSame(PayPalCart::STATUS__READY, $responseObject->offsetGet('validation_status'));
     }
 
     public function testDeleteBillingAddress(): void
@@ -205,12 +210,12 @@ class UpdateCartRouteTest extends TestCase
             ->willReturn($customer);
 
         $this->customerAddressRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('delete')
             ->with([['id' => $customer->getDefaultBillingAddressId()]]);
 
         $this->cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('deleteCart');
 
         $customerData = [
@@ -231,10 +236,10 @@ class UpdateCartRouteTest extends TestCase
         ];
 
         $this->customerRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('delete');
         $this->customerRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('update')
             ->with([$upsertData]);
 
@@ -247,14 +252,16 @@ class UpdateCartRouteTest extends TestCase
         $createResponse = new AgentCartResponse($payPalCart);
 
         $this->createCartRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('createCart')
             ->willReturn($createResponse);
 
         $response = $this->updateCartRoute->updateCart('CART-11111111111111111111111111111111', new Request(content: $content), $this->salesChannelContext);
+        $responseObject = $response->getObject();
 
         static::assertSame(200, $response->getStatusCode());
-        static::assertSame(PayPalCart::STATUS__READY, $response->getObject()->offsetGet('validation_status'));
+        static::assertInstanceOf(ArrayStruct::class, $responseObject);
+        static::assertSame(PayPalCart::STATUS__READY, $responseObject->offsetGet('validation_status'));
     }
 
     public function testChangeShippingMethod(): void
@@ -267,7 +274,7 @@ class UpdateCartRouteTest extends TestCase
             ->willReturn(null);
 
         $this->cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('deleteCart');
 
         $payPalCart = new PayPalCart();
@@ -275,19 +282,21 @@ class UpdateCartRouteTest extends TestCase
         $createResponse = new AgentCartResponse($payPalCart);
 
         $this->createCartRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('createCart')
             ->willReturn($createResponse);
 
         $this->contextSwitchRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('switchContext')
             ->willReturn(new ContextTokenResponse('some-token', 'some-url'));
 
         $response = $this->updateCartRoute->updateCart('CART-11111111111111111111111111111111', new Request(content: $content), $this->salesChannelContext);
+        $responseObject = $response->getObject();
 
         static::assertSame(200, $response->getStatusCode());
-        static::assertSame(PayPalCart::STATUS__READY, $response->getObject()->offsetGet('validation_status'));
+        static::assertInstanceOf(ArrayStruct::class, $responseObject);
+        static::assertSame(PayPalCart::STATUS__READY, $responseObject->offsetGet('validation_status'));
     }
 
     public function testShippingMethodError(): void
@@ -302,22 +311,24 @@ class UpdateCartRouteTest extends TestCase
             ->willReturn(null);
 
         $this->cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('deleteCart');
 
         $this->createCartRoute
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('createCart');
 
         $this->contextSwitchRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('switchContext')
             ->willThrowException(new ConstraintViolationException(new ConstraintViolationList(), []));
 
         $response = $this->updateCartRoute->updateCart('CART-11111111111111111111111111111111', new Request(content: $content), $this->salesChannelContext);
+        $responseObject = $response->getObject();
 
         static::assertSame(200, $response->getStatusCode());
-        static::assertSame(PayPalCart::STATUS__READY, $response->getObject()->offsetGet('validation_status'));
+        static::assertInstanceOf(ArrayStruct::class, $responseObject);
+        static::assertSame(PayPalCart::STATUS__READY, $responseObject->offsetGet('validation_status'));
     }
 
     public function testRightShippingMethodSelected(): void
@@ -338,7 +349,7 @@ class UpdateCartRouteTest extends TestCase
             ->willReturn($shippingMethod);
 
         $this->cartService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('deleteCart');
 
         $payPalCart = new PayPalCart();
@@ -346,18 +357,20 @@ class UpdateCartRouteTest extends TestCase
         $createResponse = new AgentCartResponse($payPalCart);
 
         $this->createCartRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('createCart')
             ->willReturn($createResponse);
 
         $this->contextSwitchRoute
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('switchContext');
 
         $response = $this->updateCartRoute->updateCart('CART-11111111111111111111111111111111', new Request(content: $content), $this->salesChannelContext);
+        $responseObject = $response->getObject();
 
         static::assertSame(200, $response->getStatusCode());
-        static::assertSame(PayPalCart::STATUS__READY, $response->getObject()->offsetGet('validation_status'));
+        static::assertInstanceOf(ArrayStruct::class, $responseObject);
+        static::assertSame(PayPalCart::STATUS__READY, $responseObject->offsetGet('validation_status'));
     }
 
     private static function createItems(): array

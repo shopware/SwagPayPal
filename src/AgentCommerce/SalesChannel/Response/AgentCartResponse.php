@@ -10,11 +10,8 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel\Response;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\StoreApiResponse;
-use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
+use Swag\PayPal\AgentCommerce\Struct\V1\PayPalCart;
 
-/**
- * @extends StoreApiResponse<ArrayStruct<array<string, mixed>>>
- */
 #[Package('checkout')]
 final class AgentCartResponse extends StoreApiResponse
 {
