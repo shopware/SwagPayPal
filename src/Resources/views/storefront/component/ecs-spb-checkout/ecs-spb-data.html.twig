@@ -18,8 +18,6 @@
     {# @var \Swag\PayPal\Storefront\Data\Struct\GooglePayCheckoutData googlePayData #}
     {% set googlePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\GooglePayMethodData::PAYPAL_GOOGLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
 
-    {% set isCheckoutFlag = isCheckout is defined ? isCheckout : false %}
-
     {% if expressCheckoutData %}
 
         {% block swag_paypal_ecs_spb_data_express_checkout_input %}
@@ -31,7 +29,7 @@
 
         {% block swag_paypal_ecs_spb_data_smart_payment_button %}
             <div data-swag-paypal-smart-payment-buttons="true"
-                 data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData.jsonSerialize|merge({ 'isCheckout': isCheckoutFlag })|json_encode }}">
+                 data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData|json_encode }}">
             </div>
         {% endblock %}
 
@@ -39,7 +37,7 @@
 
         {% block swag_paypal_ecs_spb_data_acdc_fields %}
             <div data-swag-paypal-acdc-fields="true"
-                 data-swag-paypal-acdc-fields-options="{{ acdcFieldData.jsonSerialize|merge({ 'isCheckout': isCheckoutFlag })|json_encode }}">
+                 data-swag-paypal-acdc-fields-options="{{ acdcFieldData|json_encode }}">
             </div>
         {% endblock %}
 
@@ -62,7 +60,7 @@
 
         {% block swag_paypal_ecs_spb_data_sepa_fields %}
             <div data-swag-paypal-sepa="true"
-                 data-swag-paypal-sepa-options="{{ sepaData.jsonSerialize|merge({ 'isCheckout': isCheckoutFlag })|json_encode }}">
+                 data-swag-paypal-sepa-options="{{ sepaData|json_encode }}">
             </div>
         {% endblock %}
 
@@ -70,7 +68,7 @@
 
         {% block swag_paypal_ecs_spb_data_venmo_fields %}
             <div data-swag-paypal-venmo="true"
-                 data-swag-paypal-venmo-options="{{ venmoData.jsonSerialize|merge({ 'isCheckout': isCheckoutFlag })|json_encode }}">
+                 data-swag-paypal-venmo-options="{{ venmoData|json_encode }}">
             </div>
         {% endblock %}
 
@@ -78,7 +76,7 @@
 
         {% block swag_paypal_ecs_spb_data_pay_later_fields %}
             <div data-swag-paypal-pay-later="true"
-                 data-swag-paypal-pay-later-options="{{ payLaterData.jsonSerialize|merge({ 'isCheckout': isCheckoutFlag })|json_encode }}">
+                 data-swag-paypal-pay-later-options="{{ payLaterData|json_encode }}">
             </div>
         {% endblock %}
 
@@ -88,7 +86,7 @@
             <div
                 class="swag-paypal-ecs-spb-apple-pay"
                 data-swag-paypal-apple-pay="true"
-                data-swag-paypal-apple-pay-options="{{ applePayData.jsonSerialize|merge({ 'isCheckout': isCheckoutFlag })|json_encode }}">
+                data-swag-paypal-apple-pay-options="{{ applePayData|json_encode }}">
             </div>
         {% endblock %}
 
@@ -98,7 +96,7 @@
             <div
                 class="swag-paypal-ecs-spb-google-pay"
                 data-swag-paypal-google-pay="true"
-                data-swag-paypal-google-pay-options="{{ googlePayData.jsonSerialize|merge({ 'isCheckout': isCheckoutFlag })|json_encode }}">
+                data-swag-paypal-google-pay-options="{{ googlePayData|json_encode }}">
             </div>
         {% endblock %}
 

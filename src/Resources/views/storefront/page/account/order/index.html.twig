@@ -33,6 +33,6 @@
     {{ parent() }}
 
     {% block page_checkout_confirm_form_submit_paypal_container %}
-        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' with { isCheckout: true } %}
+        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
     {% endblock %}
 {% endblock %}

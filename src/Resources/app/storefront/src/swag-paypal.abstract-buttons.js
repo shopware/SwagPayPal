@@ -71,7 +71,7 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
             return;
         }
 
-        const isCheckout = this.options.isCheckout || false; 
+        const isCheckout = !!this.options.isCheckout; 
 
         this._client.post(this.options.handleErrorUrl, JSON.stringify({
             code,
