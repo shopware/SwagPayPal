@@ -90,6 +90,6 @@ class ExpressShippingCallbackService
         $this->logger->debug('Shipping callback: switching context to new country', ['context_parameters' => $params]);
         $token = $this->contextSwitchRoute->switchContext(new RequestDataBag($params), $salesChannelContext)->getToken();
 
-        return dump($this->salesChannelContextFactory->create($token, $salesChannelContext->getSalesChannelId(), $params));
+        return $this->salesChannelContextFactory->create($token, $salesChannelContext->getSalesChannelId(), $params);
     }
 }
