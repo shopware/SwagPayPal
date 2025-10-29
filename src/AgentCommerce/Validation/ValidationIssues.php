@@ -23,7 +23,7 @@ use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Shopware\PayPalSDK\Builder\AgenticCommerce\V1\ValidationIssueBuilder;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Builder\ValidationIssueBuilder;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Context\InventoryIssueContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Context\PricingErrorContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\Referral\MetaData;
