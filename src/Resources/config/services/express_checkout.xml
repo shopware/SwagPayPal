@@ -47,7 +47,8 @@
         <service id="Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService">
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="country.repository"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <argument type="service" id="monolog.logger.paypal"/>

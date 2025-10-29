@@ -13,6 +13,7 @@ use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\PayPalSDK\Struct\V2\OrderShippingCallback;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,39 +56,25 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
             ])
         )],
     )]
-    #[Route(path: '/store-api/paypal/express/shipping-callback', name: 'store-api.paypal.express.shipping_callback', methods: ['POST'], defaults: ['csrf_protected' => false])]
+    #[Route(path: '/store-api/paypal/express/shipping-callback/{salesChannelId}/{token}', name: 'store-api.paypal.express.shipping_callback', methods: ['POST'], defaults: ['csrf_protected' => false, 'auth_required' => false])]
     public function handleCallback(Request $request, SalesChannelContext $salesChannelContext): JsonResponse
     {
-        $payload = $request->request->all();
+        $callback = (new OrderShippingCallback())->assign($request->request->all());
 
-        $this->logger->debug('Shipping callback received', [
-            'paypalOrderId' => $payload['id'] ?? null,
-            'shippingAddress' => $payload['shipping_address'] ?? null,
-        ]);
+        $this->logger->debug('Shipping callback received', ['callback' => $callback]);
 
-        $paypalOrderId = $payload['id'] ?? null;
-        $shippingAddress = $payload['shipping_address'] ?? null;
-
-        if (!\is_string($paypalOrderId) || !\is_array($shippingAddress)) {
-            $this->logger->error('Shipping callback: Invalid payload', [
-                'payload' => $payload,
-            ]);
+        if (!$callback->isset('id') || !$callback->isset('shippingAddress') || !$callback->isset('purchaseUnits')) {
+            $this->logger->error('Shipping callback: Invalid payload', ['callback' => $callback]);
 
             return new JsonResponse(['error' => 'Invalid payload'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
-            $updatedPurchaseUnits = $this->shippingCallbackService->recalculateCart(
-                $paypalOrderId,
-                $shippingAddress,
-                $salesChannelContext
-            );
+            $result = $this->shippingCallbackService->recalculateCart($callback, $salesChannelContext);
 
-            return new JsonResponse(['purchase_units' => $updatedPurchaseUnits]);
+            return new JsonResponse($result);
         } catch (\Throwable $e) {
-            $this->logger->error('Shipping callback failed', [
-                'exception' => $e,
-            ]);
+            $this->logger->error('Shipping callback failed', ['exception' => $e]);
 
             if ($e instanceof HttpException) {
                 throw $e;
