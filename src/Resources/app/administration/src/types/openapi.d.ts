@@ -1340,6 +1340,9 @@ export interface components {
             state: string;
             merchant_id: string | null;
         };
+        paypal_v1_webhook_list: {
+            webhooks: components["schemas"]["paypal_v1_webhook"][];
+        };
         paypal_v2_common_address: {
             /** @description The first line of the address. For example, number or street. For example, 173 Drury Lane.
              *     Required for data entry and compliance and risk checks. Must contain the full address. */
@@ -1660,6 +1663,7 @@ export interface components {
             shipping: components["schemas"]["paypal_v2_order_purchase_unit_shipping"];
             payments: components["schemas"]["paypal_v2_order_purchase_unit_payments"] | null;
             supplementary_data: components["schemas"]["paypal_v2_order_purchase_unit_supplementary_data"];
+            shipping_options: components["schemas"]["paypal_v2_order_purchase_unit_shipping_option"][] | null;
         };
         paypal_v2_order_purchase_unit_amount: components["schemas"]["paypal_v2_common_money"] & {
             breakdown: components["schemas"]["paypal_v2_order_purchase_unit_amount_breakdown"] | null;
@@ -1781,6 +1785,14 @@ export interface components {
             url: string | null;
             image_url: string | null;
         };
+        paypal_v2_order_purchase_unit_shipping_option: {
+            id: string;
+            label: string;
+            amount: components["schemas"]["paypal_v2_common_money"];
+            /** @enum {string} */
+            type: "SHIPPING" | "PICKUP";
+            selected: boolean;
+        };
         paypal_v2_order_purchase_unit_supplementary_data: {
             card: components["schemas"]["paypal_v2_order_purchase_unit_supplementary_data_card"];
             risk: components["schemas"]["paypal_v2_order_purchase_unit_supplementary_data_risk"];
@@ -1829,6 +1841,12 @@ export interface components {
             /** @default false */
             notify_payer: boolean;
             items: components["schemas"]["paypal_v2_order_purchase_unit_shipping_tracker_item"][];
+        };
+        paypal_v2_order_shipping_callback: {
+            id: string;
+            shipping_address: components["schemas"]["paypal_v2_common_address"];
+            shipping_option: components["schemas"]["paypal_v2_order_purchase_unit_shipping_option"];
+            purchase_units: components["schemas"]["paypal_v2_order_purchase_unit"][];
         };
         paypal_v2_patch: {
             op: string;
