@@ -9,10 +9,9 @@ namespace Swag\PayPal\DataAbstractionLayer\VaultTokenMapping;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 
 /**
- * @extends EntityCollection<VaultTokenEntity>
+ * @extends EntityCollection<VaultTokenMappingEntity>
  */
 #[Package('checkout')]
 class VaultTokenMappingCollection extends EntityCollection
