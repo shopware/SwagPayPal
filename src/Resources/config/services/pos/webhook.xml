@@ -26,7 +26,7 @@
 
         <!-- handler registry -->
         <service id="Swag\PayPal\Pos\Webhook\WebhookRegistry">
-            <argument type="tagged" tag="swag.paypal.pos.webhook.handler"/>
+            <argument type="tagged_iterator" tag="swag.paypal.pos.webhook.handler"/>
         </service>
 
         <!-- handler -->
