@@ -11,7 +11,9 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
+use Swag\PayPal\RestApi\V1\Api\CreateWebhooks\CreateWebhooksCollection;
 use Swag\PayPal\RestApi\V1\Api\Patch;
+use Swag\PayPal\RestApi\V1\Api\CreateWebhooksList;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
@@ -79,6 +81,16 @@ class WebhookResource
 
             throw $e;
         }
+    }
+
+    public function getAllWebhooks(?string $salesChannelId): CreateWebhooksCollection
+    {
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(RequestUriV1::WEBHOOK_RESOURCE);
+
+        $webhookList = new CreateWebhooksList();
+        $webhookList->assign($response);
+
+        return $webhookList->getWebhooks();
     }
 
     /**
