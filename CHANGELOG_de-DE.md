@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Passt den Betrag an, für den Pay Later zur Verfügung steht, an die aktuellen Beschränkungen an (https://developer.paypal.com/studio/checkout/pay-later/de)
 - Behebt ein Problem, bei dem die Smart Payment Buttons auf der Produktdetailseite für digitale Produkte nicht über die volle Breite dargestellt wurden
+- Behebt ein Problem, bei dem Fehler, die für den Checkout bestimmt sind, auch auf Kategorie- und Produktseiten der Storefront angezeigt wurden
 
 # 9.8.3
 - Fixes an issue, where the plugin could not be updated when Zettle Sales Channels were active (shopware/SwagPayPal#361)
