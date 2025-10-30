@@ -2,6 +2,7 @@
 - Passt den Betrag an, für den Pay Later zur Verfügung steht, an die aktuellen Beschränkungen an (https://developer.paypal.com/studio/checkout/pay-later/de)
 - Behebt ein Problem, bei dem der Warenkorbpreis beim Verändern des Versandlandes im Express Checkout nicht angepasst wurde (shopware/SwagPayPal#342)
 - Behebt ein Problem, bei dem die Smart Payment Buttons auf der Produktdetailseite für digitale Produkte nicht über die volle Breite dargestellt wurden
+- Behebt ein Problem, bei dem die Registrierung des Webhooks in eine Endlosschleife geraten kann, wenn die gespeicherte Webhook ID ungültig ist
 
 # 10.1.2
 - Behebt ein Problem, bei dem das Plugin bei aktiven Zettle Verkaufskanälen nicht aktualisiert werden konnte (shopware/SwagPayPal#361)

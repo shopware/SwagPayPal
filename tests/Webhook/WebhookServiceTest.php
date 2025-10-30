@@ -12,17 +12,16 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\PayPalSDK\Struct\V1\Webhook;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V1\Webhook\WebhookCollection;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
-use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
-use Swag\PayPal\Test\Mock\PayPalSDK\MockRequestHandler;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
-use Swag\PayPal\Test\RestApi\V1\Resource\WebhookResourceTest;
+use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
+use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\Routing\RouterInterface;
@@ -33,15 +32,13 @@ use Symfony\Component\Routing\RouterInterface;
 #[Package('checkout')]
 class WebhookServiceTest extends TestCase
 {
-    use GatewayTestBehaviour;
-    use ServicesTrait;
-
     public const THROW_WEBHOOK_ID_INVALID = 'webhookIdInvalid';
-
-    public const THROW_WEBHOOK_ALREADY_EXISTS = 'webhookAlreadyExists';
 
     public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
     public const ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN = 'testWebhookExecuteToken';
+
+    private const WEBHOOK_URL = 'testWebhookUrl';
+    private const WEBHOOK_ID = 'testWebhookId';
 
     private OrderTransactionRepoMock $orderTransactionRepo;
 
@@ -49,16 +46,24 @@ class WebhookServiceTest extends TestCase
 
     private RouterInterface&MockObject $router;
 
+    /**
+     * @var WebhookResource&MockObject
+     */
+    private WebhookResource $webhookResource;
+
     private WebhookService $webhookService;
 
     protected function setUp(): void
     {
         $this->orderTransactionRepo = new OrderTransactionRepoMock();
         $this->systemConfig = SystemConfigServiceMock::createWithCredentials();
+
         $this->router = $this->createMock(RouterInterface::class);
 
+        $this->webhookResource = $this->createMock(WebhookResource::class);
+
         $this->webhookService = new WebhookService(
-            new WebhookResource(self::webhookGateway(), new ApiContextFactoryMock()),
+            $this->webhookResource,
             new WebhookRegistry([new DummyWebhook($this->orderTransactionRepo)]),
             $this->systemConfig,
             $this->router,
@@ -74,7 +79,14 @@ class WebhookServiceTest extends TestCase
 
     public function testStatusWebhookWithoutRegisteredWebhook(): void
     {
-        $this->systemConfig->set(Settings::WEBHOOK_ID, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID);
+        $this->systemConfig->set(Settings::WEBHOOK_ID, self::THROW_WEBHOOK_ID_INVALID);
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('getWebhookUrl')
+            ->with(self::THROW_WEBHOOK_ID_INVALID, null)
+            ->willThrowException(new WebhookIdInvalidException(self::THROW_WEBHOOK_ID_INVALID));
+
         $result = $this->webhookService->getStatus(null);
 
         static::assertSame(WebhookService::STATUS_WEBHOOK_MISSING, $result);
@@ -85,11 +97,19 @@ class WebhookServiceTest extends TestCase
         $this->systemConfig->set(Settings::WEBHOOK_ID, 'someId');
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, 'someToken');
 
+        $localUrl = 'https://unit.test/webhook?' . WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME . '=someToken';
+
         $this->router
             ->expects($this->once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
-            ->willReturn(MockRequestHandler::GET_WEBHOOK_URL);
+            ->willReturn($localUrl);
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('getWebhookUrl')
+            ->with('someId', null)
+            ->willReturn($localUrl);
 
         $result = $this->webhookService->getStatus(null);
 
@@ -101,11 +121,20 @@ class WebhookServiceTest extends TestCase
         $this->systemConfig->set(Settings::WEBHOOK_ID, 'someId');
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, 'someToken');
 
+        $localUrl = 'https://unit.test/webhook?' . WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME . '=someToken';
+        $remoteUrlWithDifferentToken = 'https://unit.test/webhook?' . WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME . '=differentToken';
+
         $this->router
             ->expects($this->once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
-            ->willReturn(MockRequestHandler::GET_WEBHOOK_URL . 'Invalid');
+            ->willReturn($localUrl);
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('getWebhookUrl')
+            ->with('someId', null)
+            ->willReturn($remoteUrlWithDifferentToken);
 
         $result = $this->webhookService->getStatus(null);
 
@@ -118,10 +147,17 @@ class WebhookServiceTest extends TestCase
             ->expects($this->once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
-            ->willReturn(MockRequestHandler::GET_WEBHOOK_URL);
+            ->willReturn(self::WEBHOOK_URL);
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('getWebhookUrl')
+            ->with('someId', null)
+            ->willReturn(self::WEBHOOK_URL);
 
         $this->systemConfig->set(Settings::WEBHOOK_ID, 'someId');
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, 'someToken');
+
         $result = $this->webhookService->registerWebhook(null);
 
         static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
@@ -129,7 +165,53 @@ class WebhookServiceTest extends TestCase
 
     public function testRegisterWebhookWithoutTokenButWithId(): void
     {
-        $this->systemConfig->set(Settings::WEBHOOK_ID, self::ALREADY_EXISTING_WEBHOOK_ID);
+        $this->systemConfig->set(Settings::WEBHOOK_ID, self::THROW_WEBHOOK_ID_INVALID);
+        $this->router->method('generate')->willReturn(self::WEBHOOK_URL);
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('getWebhookUrl')
+            ->with(self::THROW_WEBHOOK_ID_INVALID, null)
+            ->willThrowException(new WebhookIdInvalidException('someId'));
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('updateWebhook')
+            ->with(self::WEBHOOK_URL, self::THROW_WEBHOOK_ID_INVALID, null)
+            ->willThrowException(new WebhookIdInvalidException('someId'));
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('createWebhook')
+            ->with(self::WEBHOOK_URL, static::anything(), null)
+            ->willThrowException(new WebhookAlreadyExistsException(self::WEBHOOK_URL));
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('getAllWebhooks')
+            ->with(null)
+            ->willReturn(
+                new WebhookCollection([(new Webhook())->assign([
+                    'id' => 'someId',
+                    'url' => self::WEBHOOK_URL,
+                ])])
+            );
+
+        $result = $this->webhookService->registerWebhook(null);
+
+        static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
+        static::assertSame('someId', $this->systemConfig->getString(Settings::WEBHOOK_ID));
+    }
+
+    public function testRegisterWebhookWithInvalidId(): void
+    {
+        $this->systemConfig->set(Settings::WEBHOOK_ID, self::THROW_WEBHOOK_ID_INVALID);
+        $this->router->method('generate')->willReturn(self::WEBHOOK_URL);
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('updateWebhook')
+            ->with(static::anything(), self::THROW_WEBHOOK_ID_INVALID, null);
 
         $result = $this->webhookService->registerWebhook(null);
 
@@ -138,11 +220,16 @@ class WebhookServiceTest extends TestCase
 
     public function testRegisterWebhookWithoutTokenAndId(): void
     {
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('createWebhook')
+            ->with(static::anything(), static::anything(), null)
+            ->willReturn(self::WEBHOOK_ID);
+
         $result = $this->webhookService->registerWebhook(null);
 
         static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
-
-        static::assertSame(MockRequestHandler::TEST_WEBHOOK_ID, $this->systemConfig->getString(Settings::WEBHOOK_ID));
+        static::assertSame(self::WEBHOOK_ID, $this->systemConfig->getString(Settings::WEBHOOK_ID));
         static::assertSame(WebhookService::PAYPAL_WEBHOOK_TOKEN_LENGTH, \mb_strlen($this->systemConfig->getString(Settings::WEBHOOK_EXECUTE_TOKEN)));
     }
 
@@ -150,6 +237,9 @@ class WebhookServiceTest extends TestCase
     {
         $this->systemConfig->set(Settings::WEBHOOK_ID, self::ALREADY_EXISTING_WEBHOOK_ID);
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+
+        // No deletion on inherited id
+        $this->webhookResource->expects($this->never())->method('deleteWebhook');
 
         $result = $this->webhookService->deregisterWebhook(TestDefaults::SALES_CHANNEL);
 
@@ -162,6 +252,11 @@ class WebhookServiceTest extends TestCase
     {
         $this->systemConfig->set(Settings::WEBHOOK_ID, self::ALREADY_EXISTING_WEBHOOK_ID);
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('deleteWebhook')
+            ->with(self::ALREADY_EXISTING_WEBHOOK_ID, null);
 
         $result = $this->webhookService->deregisterWebhook(null);
 
@@ -198,6 +293,12 @@ class WebhookServiceTest extends TestCase
         $this->systemConfig->set(Settings::WEBHOOK_ID, self::THROW_WEBHOOK_ID_INVALID);
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('createWebhook')
+            ->with(static::anything(), static::anything(), TestDefaults::SALES_CHANNEL)
+            ->willReturn(self::WEBHOOK_ID);
+
         $result = $this->webhookService->registerWebhook(TestDefaults::SALES_CHANNEL);
 
         static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
@@ -205,8 +306,14 @@ class WebhookServiceTest extends TestCase
 
     public function testDeregisterWebhookWithInvalidIdThrowsException(): void
     {
-        $this->systemConfig->set(Settings::WEBHOOK_ID, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID);
+        $this->systemConfig->set(Settings::WEBHOOK_ID, self::THROW_WEBHOOK_ID_INVALID);
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+
+        $this->webhookResource
+            ->expects($this->once())
+            ->method('deleteWebhook')
+            ->with(self::THROW_WEBHOOK_ID_INVALID, null)
+            ->willThrowException(new WebhookIdInvalidException(self::THROW_WEBHOOK_ID_INVALID));
 
         $result = $this->webhookService->deregisterWebhook(null);
 

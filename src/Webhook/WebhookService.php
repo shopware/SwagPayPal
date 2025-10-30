@@ -175,7 +175,17 @@ class WebhookService implements WebhookServiceInterface
             $this->systemConfigService->set(Settings::WEBHOOK_ID, $webhookId, $salesChannelId);
 
             return self::WEBHOOK_CREATED;
-        } catch (WebhookAlreadyExistsException $e) {
+        } catch (WebhookAlreadyExistsException) {
+            $webhooks = $this->webhookResource->getAllWebhooks($salesChannelId);
+
+            foreach ($webhooks as $webhook) {
+                if ($webhook->getUrl() === $webhookUrl) {
+                    $this->systemConfigService->set(Settings::WEBHOOK_ID, $webhook->getId(), $salesChannelId);
+
+                    break;
+                }
+            }
+
             return self::NO_WEBHOOK_ACTION_REQUIRED;
         }
     }
