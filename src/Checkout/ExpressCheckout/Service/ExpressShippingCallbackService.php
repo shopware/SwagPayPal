@@ -8,22 +8,22 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
 use Psr\Log\LoggerInterface;
-use Shopware\PayPalSDK\Struct\V2\Order;
-use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\Checkout\CheckoutException;
-use Shopware\Core\System\Country\CountryCollection;
-use Shopware\PayPalSDK\Struct\V2\OrderShippingCallback;
-use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
+use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\Country\CountryCollection;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\OrderShippingCallback;
+use Swag\PayPal\Checkout\CheckoutException;
+use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
 
 #[Package('checkout')]
 class ExpressShippingCallbackService
@@ -48,20 +48,41 @@ class ExpressShippingCallbackService
         OrderShippingCallback $callback,
         SalesChannelContext $salesChannelContext,
     ): Order {
-        $salesChannelContext = $this->switchSalesChannelContext($callback, $salesChannelContext);
+        if ($this->hasContextChanges($callback, $salesChannelContext)) {
+            $salesChannelContext = $this->switchSalesChannelContext($callback, $salesChannelContext);
 
-        // Recalculate cart with new context
-        $this->logger->debug('Shipping callback: recalculating cart with new context');
-        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, false, true);
+            $this->logger->debug('Shipping callback: recalculating cart with new context');
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, false);
+        } else {
+            $this->logger->debug('Shipping callback: use existing cart');
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+        }
 
         $order = $this->orderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
         $order->setId($callback->getId());
         $order->getPurchaseUnits()->first()?->setReferenceId((string) $callback->getPurchaseUnits()->first()?->getReferenceId());
-        $order->getPurchaseUnits()->first()?->setShippingOptions($this->shippingOptionsProvider->getShippingOptions($salesChannelContext, $cart));
+        $order->getPurchaseUnits()->first()?->setShippingOptions($this->shippingOptionsProvider->getShippingOptions($cart, $salesChannelContext));
 
-        $this->logger->debug('Shipping callback: cart recalculated', ['order' => $order]);
+        $this->logger->debug('Shipping callback: update order', ['order' => $order]);
 
         return $order;
+    }
+
+    private function hasContextChanges(OrderShippingCallback $callback, SalesChannelContext $salesChannelContext): bool
+    {
+        if ($callback->getShippingAddress()->getCountryCode() !== $salesChannelContext->getShippingLocation()->getCountry()->getIso()) {
+            return true;
+        }
+
+        if (($shippingMethodId = $callback->getShippingOption()?->getId()) && $shippingMethodId !== $salesChannelContext->getShippingMethod()->getId()) {
+            return true;
+        }
+
+        if (($state = $salesChannelContext->getShippingLocation()->getState()) && $state->getTranslation('name') !== $callback->getShippingAddress()->getAdminArea1()) {
+            return true;
+        }
+
+        return false;
     }
 
     private function switchSalesChannelContext(OrderShippingCallback $callback, SalesChannelContext $salesChannelContext): SalesChannelContext

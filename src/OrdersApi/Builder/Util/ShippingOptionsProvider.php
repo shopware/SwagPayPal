@@ -31,17 +31,17 @@ class ShippingOptionsProvider
     ) {
     }
 
-    public function getShippingOptions(SalesChannelContext $salesChannelContext, ?Cart $cart = null): ShippingOptionCollection
+    public function getShippingOptions(Cart $cart, SalesChannelContext $salesChannelContext): ShippingOptionCollection
     {
         $shippingMethodOptions = $this->shippingMethodRoute
-            ->load(new Request(), $salesChannelContext, new Criteria())
+            ->load(new Request(query: ['onlyAvailable' => '1']), $salesChannelContext, new Criteria())
             ->getShippingMethods()
-            ->map(fn ($shippingMethod) => $this->createShippingOption($shippingMethod, $salesChannelContext, $cart));
+            ->map(fn ($shippingMethod) => $this->createShippingOption($shippingMethod, $cart, $salesChannelContext));
 
         return new ShippingOptionCollection($shippingMethodOptions);
     }
 
-    private function createShippingOption(ShippingMethodEntity $shippingMethod, SalesChannelContext $salesChannelContext, ?Cart $cart = null): ShippingOption
+    private function createShippingOption(ShippingMethodEntity $shippingMethod, Cart $cart, SalesChannelContext $salesChannelContext): ShippingOption
     {
         $option = new ShippingOption();
         $option->setId($shippingMethod->getId());
@@ -50,7 +50,7 @@ class ShippingOptionsProvider
         if ($salesChannelContext->getShippingMethod()->getId() === $shippingMethod->getId()) {
             $option->setSelected(true);
 
-            if ($shippingCosts = $cart?->getDeliveries()->first()?->getShippingCosts()) {
+            if ($shippingCosts = $cart->getDeliveries()->first()?->getShippingCosts()) {
                 $currencyCode = $salesChannelContext->getCurrency()->getIsoCode();
 
                 $amount = new Money();
