@@ -92,6 +92,10 @@ parameters:
             identifier: method.deprecated
             message: '#(setActiveBillingAddress|setActiveShippingAddress).*Shopware\\Core\\Checkout\\Customer\\CustomerEntity.*#'
 
+        - # 6.8 deprecation - only type change
+            identifier: method.deprecated
+            message: '#getShippingMethodId.*Shopware\\Core\\Checkout\\Shipping\\Cart\\Error\\ShippingMethodBlockedError.*#'
+
         - # v11.0.0 deprecation - addFundingAvailabilityDataToFooter will be removed
             identifier: method.deprecated
             message: '#Call to deprecated method addFundingAvailabilityDataToFooter\(\) of class Swag\\PayPal\\Storefront\\Data\\FundingSubscriber#'

@@ -7,130 +7,176 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
-use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Checkout\CheckoutException;
+use Shopware\Core\Test\Generator;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\OrderShippingCallback;
+use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
-use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @internal
  */
 #[Package('checkout')]
+#[CoversClass(ExpressShippingCallbackRoute::class)]
 class ExpressShippingCallbackRouteTest extends TestCase
 {
-    use IntegrationTestBehaviour;
-    use SalesChannelContextTrait;
+    private MockObject&ExpressShippingCallbackService $service;
 
-    public function testHandleCallbackWithValidPayload(): void
+    private TestHandler $logger;
+
+    private ExpressShippingCallbackRoute $route;
+
+    protected function setUp(): void
     {
-        $service = $this->createMock(ExpressShippingCallbackService::class);
-        $service->expects($this->once())
-            ->method('recalculateCart')
-            ->with(
-                'ORDER-123',
-                ['country_code' => 'AT'],
-                static::isInstanceOf(SalesChannelContext::class)
-            )
-            ->willReturn([[
-                'amount' => [
-                    'currency_code' => 'EUR',
-                    'value' => '120.00',
-                    'breakdown' => [
-                        'item_total' => ['currency_code' => 'EUR', 'value' => '100.00'],
-                        'shipping' => ['currency_code' => 'EUR', 'value' => '0.00'],
-                        'tax_total' => ['currency_code' => 'EUR', 'value' => '20.00'],
-                    ],
-                ],
-            ]]);
-
-        $route = new ExpressShippingCallbackRoute($service, new NullLogger());
-
-        $request = new Request([], [
-            'id' => 'ORDER-123',
-            'shipping_address' => ['country_code' => 'AT'],
-        ]);
-
-        $response = $route->handleCallback($request, $this->getSalesChannelContext());
-
-        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        $responseContent = $response->getContent();
-        static::assertNotFalse($responseContent);
-        $content = \json_decode($responseContent, true);
-        static::assertIsArray($content);
-        static::assertArrayHasKey('purchase_units', $content);
-        static::assertSame('120.00', $content['purchase_units'][0]['amount']['value']);
-    }
-
-    public function testHandleCallbackWithMissingOrderId(): void
-    {
-        $service = $this->createMock(ExpressShippingCallbackService::class);
-        $service->expects($this->never())->method('recalculateCart');
-
-        $route = new ExpressShippingCallbackRoute($service, new NullLogger());
-
-        $request = new Request([], [
-            'shipping_address' => ['country_code' => 'AT'],
-        ]);
-
-        $response = $route->handleCallback($request, $this->getSalesChannelContext());
-
-        static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-    }
-
-    public function testHandleCallbackWithMissingShippingAddress(): void
-    {
-        $service = $this->createMock(ExpressShippingCallbackService::class);
-        $service->expects($this->never())->method('recalculateCart');
-
-        $route = new ExpressShippingCallbackRoute($service, new NullLogger());
-
-        $request = new Request([], [
-            'id' => 'ORDER-123',
-        ]);
-
-        $response = $route->handleCallback($request, $this->getSalesChannelContext());
-
-        static::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-    }
-
-    public function testHandleCallbackWithMissingCountryCodeException(): void
-    {
-        $service = $this->createMock(ExpressShippingCallbackService::class);
-        $service->expects($this->once())
-            ->method('recalculateCart')
-            ->with(
-                'ORDER-123',
-                ['country_code' => null],
-                static::isInstanceOf(SalesChannelContext::class)
-            )
-            ->willThrowException(CheckoutException::expressMissingCountryCode());
-
-        $route = new ExpressShippingCallbackRoute($service, new NullLogger());
-
-        $request = new Request([], [
-            'id' => 'ORDER-123',
-            'shipping_address' => ['country_code' => null],
-        ]);
-
-        $this->expectException(CheckoutException::class);
-        $this->expectExceptionMessage('Missing country code in shipping address');
-
-        $route->handleCallback($request, $this->getSalesChannelContext());
-    }
-
-    private function getSalesChannelContext(): SalesChannelContext
-    {
-        return $this->createSalesChannelContext(
-            $this->getContainer(),
-            new PaymentMethodCollection(),
+        $this->service = $this->createMock(ExpressShippingCallbackService::class);
+        $this->logger = new TestHandler();
+        $this->route = new ExpressShippingCallbackRoute(
+            $this->service,
+            new Logger('test', [$this->logger]),
         );
+    }
+
+    public function testHandleCallback(): void
+    {
+        $payload = [
+            'id' => 'paypal-order-id',
+            'shipping_address' => ['country_code' => 'DE'],
+            'shipping_option' => [
+                'id' => 'shipping-method-id',
+                'label' => 'test-method',
+            ],
+            'purchase_units' => [['reference_id' => 'default']],
+        ];
+
+        $callback = (new OrderShippingCallback())->assign($payload);
+        $request = new Request(request: $payload);
+        $salesChannelContext = Generator::generateSalesChannelContext();
+
+        $this->service
+            ->expects($this->once())
+            ->method('recalculateCart')
+            ->with(static::equalTo($callback), $salesChannelContext)
+            ->willReturn(new Order());
+
+        $response = $this->route->handleCallback($request, $salesChannelContext);
+        static::assertEquals(\json_encode(new Order()), $response->getContent());
+
+        static::assertCount(1, $this->logger->getRecords());
+        static::assertTrue($this->logger->hasDebug(['message' => 'Shipping callback received']));
+    }
+
+    /**
+     * @param array<mixed> $payload
+     */
+    #[DataProvider('handleCallbackInvalidPayloadDataProvider')]
+    public function testHandleCallbackInvalidPayload(array $payload): void
+    {
+        $request = new Request(request: $payload);
+        $salesChannelContext = Generator::generateSalesChannelContext();
+
+        $this->service
+            ->expects($this->never())
+            ->method('recalculateCart');
+
+        $response = $this->route->handleCallback($request, $salesChannelContext);
+        static::assertEquals(\json_encode(['error' => 'Invalid payload']), $response->getContent());
+
+        static::assertCount(2, $this->logger->getRecords());
+        static::assertTrue($this->logger->hasDebug(['message' => 'Shipping callback received']));
+        static::assertTrue($this->logger->hasError(['message' => 'Shipping callback: Invalid payload']));
+    }
+
+    public static function handleCallbackInvalidPayloadDataProvider(): \Generator
+    {
+        yield 'missing purchase_unit' => [[
+            'id' => 'paypal-order-id',
+            'shipping_address' => ['country_code' => 'DE'],
+        ]];
+
+        yield 'missing shipping_address' => [[
+            'id' => 'paypal-order-id',
+            'purchase_units' => [['reference_id' => 'default']],
+        ]];
+
+        yield 'missing id' => [[
+            'purchase_units' => [['reference_id' => 'default']],
+            'shipping_address' => ['country_code' => 'DE'],
+        ]];
+    }
+
+    public function testHandleCallbackThrowsRandomException(): void
+    {
+        $payload = [
+            'id' => 'paypal-order-id',
+            'shipping_address' => ['country_code' => 'DE'],
+            'shipping_option' => [
+                'id' => 'shipping-method-id',
+                'label' => 'test-method',
+            ],
+            'purchase_units' => [['reference_id' => 'default']],
+        ];
+
+        $callback = (new OrderShippingCallback())->assign($payload);
+        $request = new Request(request: $payload);
+        $salesChannelContext = Generator::generateSalesChannelContext();
+
+        $expection = new \RuntimeException('test');
+
+        $this->service
+            ->expects($this->once())
+            ->method('recalculateCart')
+            ->with(static::equalTo($callback), $salesChannelContext)
+            ->willThrowException($expection);
+
+        static::expectExceptionObject($expection);
+
+        try {
+            $this->route->handleCallback($request, $salesChannelContext);
+        } finally {
+            static::assertCount(2, $this->logger->getRecords());
+            static::assertTrue($this->logger->hasDebug(['message' => 'Shipping callback received']));
+            static::assertTrue($this->logger->hasError(['message' => 'Shipping callback failed']));
+        }
+    }
+
+    public function testHandleCallbackThrowsShippingCallbackException(): void
+    {
+        $payload = [
+            'id' => 'paypal-order-id',
+            'shipping_address' => ['country_code' => 'DE'],
+            'shipping_option' => [
+                'id' => 'shipping-method-id',
+                'label' => 'test-method',
+            ],
+            'purchase_units' => [['reference_id' => 'default']],
+        ];
+
+        $callback = (new OrderShippingCallback())->assign($payload);
+        $request = new Request(request: $payload);
+        $salesChannelContext = Generator::generateSalesChannelContext();
+
+        $expection = ExpressShippingCallbackException::addressError($callback);
+
+        $this->service
+            ->expects($this->once())
+            ->method('recalculateCart')
+            ->with(static::equalTo($callback), $salesChannelContext)
+            ->willThrowException($expection);
+
+        $response = $this->route->handleCallback($request, $salesChannelContext);
+        static::assertSame($expection->intoCallbackResponse()->getContent(), $response->getContent());
+
+        static::assertCount(2, $this->logger->getRecords());
+        static::assertTrue($this->logger->hasDebug(['message' => 'Shipping callback received']));
+        static::assertTrue($this->logger->hasError(['message' => 'Shipping callback failed']));
     }
 }
