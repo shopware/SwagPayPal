@@ -72,13 +72,7 @@ class WebhookService implements WebhookServiceInterface
         }
 
         $webhookExecuteToken = $this->systemConfigService->getString(Settings::WEBHOOK_EXECUTE_TOKEN, $salesChannelId);
-
-        $this->router->getContext()->setScheme('https');
-        $webhookUrl = $this->router->generate(
-            'api.action.paypal.webhook.execute',
-            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        $webhookUrl = $this->createWebhookUrl($webhookExecuteToken);
 
         return $registeredWebhookUrl === $webhookUrl ? self::STATUS_WEBHOOK_VALID : self::STATUS_WEBHOOK_INVALID;
     }
@@ -96,13 +90,7 @@ class WebhookService implements WebhookServiceInterface
             $webhookExecuteToken = Random::getAlphanumericString(self::PAYPAL_WEBHOOK_TOKEN_LENGTH);
         }
 
-        $this->router->getContext()->setScheme('https');
-        $webhookUrl = $this->router->generate(
-            'api.action.paypal.webhook.execute',
-            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
+        $webhookUrl = $this->createWebhookUrl($webhookExecuteToken);
         $webhookId = $this->systemConfigService->getString(Settings::WEBHOOK_ID, $salesChannelId);
 
         if ($salesChannelId !== null && $webhookId === $this->systemConfigService->getString(Settings::WEBHOOK_ID)) {
@@ -118,7 +106,7 @@ class WebhookService implements WebhookServiceInterface
             if ($registeredWebhookUrl === $webhookUrl) {
                 return self::NO_WEBHOOK_ACTION_REQUIRED;
             }
-        } catch (WebhookIdInvalidException $e) {
+        } catch (WebhookIdInvalidException) {
             // do nothing, so the following code will be executed
         }
 
@@ -126,7 +114,7 @@ class WebhookService implements WebhookServiceInterface
             $this->webhookResource->updateWebhook($webhookUrl, $webhookId, $salesChannelId);
 
             return self::WEBHOOK_UPDATED;
-        } catch (WebhookIdInvalidException $e) {
+        } catch (WebhookIdInvalidException) {
             return $this->createWebhook($salesChannelId, $webhookUrl, $webhookExecuteToken);
         }
     }
@@ -153,7 +141,7 @@ class WebhookService implements WebhookServiceInterface
         try {
             $this->webhookResource->deleteWebhook($webhookId, $salesChannelId);
             $deleted = true;
-        } catch (WebhookIdInvalidException $e) {
+        } catch (WebhookIdInvalidException) {
             $deleted = false;
         }
 
@@ -190,5 +178,16 @@ class WebhookService implements WebhookServiceInterface
         } catch (WebhookAlreadyExistsException $e) {
             return self::NO_WEBHOOK_ACTION_REQUIRED;
         }
+    }
+
+    private function createWebhookUrl(string $executeToken): string
+    {
+        $this->router->getContext()->setScheme('https');
+
+        return $this->router->generate(
+            'api.action.paypal.webhook.execute',
+            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $executeToken],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
     }
 }
