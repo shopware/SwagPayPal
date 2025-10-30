@@ -3,6 +3,7 @@
 - Behebt ein Problem, bei dem der Warenkorbpreis beim Verändern des Versandlandes im Express Checkout nicht angepasst wurde (shopware/SwagPayPal#342)
 - Behebt ein Problem, bei dem die Smart Payment Buttons auf der Produktdetailseite für digitale Produkte nicht über die volle Breite dargestellt wurden
 - Behebt ein Problem, bei dem die Registrierung des Webhooks in eine Endlosschleife geraten kann, wenn die gespeicherte Webhook ID ungültig ist
+- Behebt ein Problem, bei dem Fehler, die für den Checkout bestimmt sind, auch auf Kategorie- und Produktseiten der Storefront angezeigt wurden
 
 # 10.1.2
 - Behebt ein Problem, bei dem das Plugin bei aktiven Zettle Verkaufskanälen nicht aktualisiert werden konnte (shopware/SwagPayPal#361)

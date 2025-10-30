@@ -91,6 +91,13 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         commit: false,
         scriptAwaitVisibility: true,
         partOfDomContentLoading: false,
+
+        /**
+         * Indicates whether the PayPal button is rendered within a checkout context.
+         * 
+         * @type {boolean}
+         */
+        isCheckout: true,
     };
 
     GENERIC_ERROR = 'SWAG_PAYPAL__EXPRESS_GENERIC_ERROR';
