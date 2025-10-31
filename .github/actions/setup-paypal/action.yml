@@ -45,13 +45,35 @@ runs:
   steps:
     - uses: octo-sts/action@main
       id: octo-sts
+      continue-on-error: true
       with:
         scope: shopware
         identity: ${{ github.event.repository.name }}
+
     - name: Prepare dependency list
       id: dependency-list
       shell: bash
       run: |
+        REPOS='{
+            "${{ github.event.repository.name }}": {
+              "type": "path",
+              "url": "custom/plugins/${{ github.event.repository.name }}",
+              "symlink": true
+            },
+            "SwagCmsExtensions": {
+              "type": "path",
+              "url": "custom/plugins/SwagCmsExtensions",
+              "symlink": true
+            }
+        }'
+
+        if [ -z "${{ steps.get-token.outputs.token }}" ]; then
+            echo "deps='[]'" >> "$GITHUB_OUTPUT"
+            echo "repos=$(echo $REPOS | jq -c .)" >> "$GITHUB_OUTPUT"
+
+            exit 0
+        fi
+
         DEPS='[
             {
                 "name":"SwagCmsExtensions",
@@ -65,19 +87,6 @@ runs:
             # require last ref of SwagCmsExtensions before requiring ~6.7.3
             DEPS=$(echo "$DEPS" | jq '[.[0] + {"branch": "0b5f9df838541c47f67f3d4af14d94f01fa0b189"}]')
         fi
-
-        REPOS='{
-            "${{ github.event.repository.name }}": {
-              "type": "path",
-              "url": "custom/plugins/${{ github.event.repository.name }}",
-              "symlink": true
-            },
-            "SwagCmsExtensions": {
-              "type": "path",
-              "url": "custom/plugins/SwagCmsExtensions",
-              "symlink": true
-            }
-        }'
 
         if [[ "${{ inputs.install-commercial }}" == "true" ]]; then
             DEPS=$(jq -s 'add' <(echo $DEPS) <(echo '[
@@ -115,6 +124,7 @@ runs:
         dependencies: ${{ steps.dependency-list.outputs.deps }}
         extraRepositories: ${{ steps.dependency-list.outputs.repos }}
         keep-composer-tools: true
+
     - name: Prepare Administration
       shell: bash
       if: ${{ inputs.install-admin == 'true' }}
