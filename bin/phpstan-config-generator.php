@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+use Shopware\Core\Kernel;
+
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -18,6 +20,7 @@ $kernel = require $pluginRootPath . '/tests/PHPStanBootstrap.php';
 $plugins = $kernel->getPluginLoader()->getPluginInstances();
 
 $shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
+$shopwareVersion = $shopwareVersion === Kernel::SHOPWARE_FALLBACK_VERSION ? 'trunk' : $shopwareVersion;
 echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
 
 $versionedConfig = \sprintf('%s/phpstan-%s.neon.dist', $pluginRootPath, $shopwareVersion);
