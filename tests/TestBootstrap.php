@@ -17,7 +17,7 @@ function doesPluginExist(string $name): bool
         }
 
         $composer = json_decode((string) file_get_contents($pathToComposerJson), true, 512, \JSON_THROW_ON_ERROR);
-        $pluginName = array_last(explode('\\', $composer['extra']['shopware-plugin-class'] ?? ''));
+        $pluginName = end(explode('\\', $composer['extra']['shopware-plugin-class'] ?? ''));
 
         if ($pluginName === $name) {
             return true;
