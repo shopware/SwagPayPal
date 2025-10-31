@@ -15,6 +15,7 @@ on:
       - phpstan.neon.dist
       - phpstan-baseline.neon
       - .bc-exclude.php
+  merge_group:
   workflow_dispatch:
   workflow_call:
 
