@@ -1,199 +1,199 @@
 parameters:
 	ignoreErrors:
 		-
-			rawMessage: 'Call to method getCustomFields() on an unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Call to method getCustomFields\(\) on an unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Checkout/Payment/Service/VaultTokenService.php
 
 		-
-			rawMessage: 'Call to method getId() on an unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Call to method getId\(\) on an unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Checkout/Payment/Service/VaultTokenService.php
 
 		-
-			rawMessage: 'Call to method getSubscription() on an unknown class Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct.'
+			message: '#^Call to method getSubscription\(\) on an unknown class Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Checkout/Payment/Service/VaultTokenService.php
 
 		-
-			rawMessage: Class Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct not found.
+			message: '#^Class Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct not found\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Checkout/Payment/Service/VaultTokenService.php
 
 		-
-			rawMessage: 'Method Swag\PayPal\Checkout\Payment\Service\VaultTokenService::getSubscription() has invalid return type Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Method Swag\\PayPal\\Checkout\\Payment\\Service\\VaultTokenService\:\:getSubscription\(\) has invalid return type Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Checkout/Payment/Service/VaultTokenService.php
 
 		-
-			rawMessage: 'Parameter $subscription of method Swag\PayPal\Checkout\Payment\Service\VaultTokenService::saveTokenToSubscription() has invalid type Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Parameter \$subscription of method Swag\\PayPal\\Checkout\\Payment\\Service\\VaultTokenService\:\:saveTokenToSubscription\(\) has invalid type Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Checkout/Payment/Service/VaultTokenService.php
 
 		-
-			rawMessage: 'Parameter $subscriptionRepository of method Swag\PayPal\Checkout\Payment\Service\VaultTokenService::__construct() has invalid type Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection.'
+			message: '#^Parameter \$subscriptionRepository of method Swag\\PayPal\\Checkout\\Payment\\Service\\VaultTokenService\:\:__construct\(\) has invalid type Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionCollection\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Checkout/Payment/Service/VaultTokenService.php
 
 		-
-			rawMessage: Property Swag\PayPal\Checkout\Payment\Service\VaultTokenService::$subscriptionRepository has unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection as its type.
+			message: '#^Property Swag\\PayPal\\Checkout\\Payment\\Service\\VaultTokenService\:\:\$subscriptionRepository has unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionCollection as its type\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Checkout/Payment/Service/VaultTokenService.php
 
 		-
-			rawMessage: Type Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection in generic type Shopware\Core\Framework\DataAbstractionLayer\EntityRepository<Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection> in PHPDoc tag @param for parameter $subscriptionRepository is not subtype of template type TEntityCollection of Shopware\Core\Framework\DataAbstractionLayer\EntityCollection of class Shopware\Core\Framework\DataAbstractionLayer\EntityRepository.
+			message: '#^Type Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionCollection in generic type Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository\<Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionCollection\> in PHPDoc tag @param for parameter \$subscriptionRepository is not subtype of template type TEntityCollection of Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection of class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository\.$#'
 			identifier: generics.notSubtype
 			count: 1
 			path: src/Checkout/Payment/Service/VaultTokenService.php
 
 		-
-			rawMessage: Type Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection in generic type Shopware\Core\Framework\DataAbstractionLayer\EntityRepository<Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection> in PHPDoc type for property Swag\PayPal\Checkout\Payment\Service\VaultTokenService::$subscriptionRepository is not subtype of template type TEntityCollection of Shopware\Core\Framework\DataAbstractionLayer\EntityCollection of class Shopware\Core\Framework\DataAbstractionLayer\EntityRepository.
+			message: '#^Type Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionCollection in generic type Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository\<Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionCollection\> in PHPDoc type for property Swag\\PayPal\\Checkout\\Payment\\Service\\VaultTokenService\:\:\$subscriptionRepository is not subtype of template type TEntityCollection of Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection of class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository\.$#'
 			identifier: generics.notSubtype
 			count: 1
 			path: src/Checkout/Payment/Service/VaultTokenService.php
 
 		-
-			rawMessage: Class Shopware\Commercial\SwagCommercial not found.
+			message: '#^Class Shopware\\Commercial\\SwagCommercial not found\.$#'
 			identifier: class.notFound
 			count: 2
 			path: src/OrdersApi/Builder/Util/CustomIdProvider.php
 
 		-
-			rawMessage: 'Call to method setId() on an unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Call to method setId\(\) on an unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 1
 			path: tests/Checkout/Method/ACDCHandlerTest.php
 
 		-
-			rawMessage: 'Call to method setNextSchedule() on an unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Call to method setNextSchedule\(\) on an unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 1
 			path: tests/Checkout/Method/ACDCHandlerTest.php
 
 		-
-			rawMessage: Instantiated class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity not found.
+			message: '#^Instantiated class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity not found\.$#'
 			identifier: class.notFound
 			count: 1
 			path: tests/Checkout/Method/ACDCHandlerTest.php
 
 		-
-			rawMessage: 'Parameter #3 $recurring of class Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct constructor expects Shopware\Core\Checkout\Payment\Cart\Recurring\RecurringDataStruct|null, Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct given.'
+			message: '#^Parameter \#3 \$recurring of class Shopware\\Core\\Checkout\\Payment\\Cart\\PaymentTransactionStruct constructor expects Shopware\\Core\\Checkout\\Payment\\Cart\\Recurring\\RecurringDataStruct\|null, Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Checkout/Method/ACDCHandlerTest.php
 
 		-
-			rawMessage: 'Call to method setId() on an unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Call to method setId\(\) on an unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 1
 			path: tests/Checkout/Method/VenmoHandlerTest.php
 
 		-
-			rawMessage: 'Call to method setNextSchedule() on an unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Call to method setNextSchedule\(\) on an unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 1
 			path: tests/Checkout/Method/VenmoHandlerTest.php
 
 		-
-			rawMessage: Instantiated class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity not found.
+			message: '#^Instantiated class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity not found\.$#'
 			identifier: class.notFound
 			count: 1
 			path: tests/Checkout/Method/VenmoHandlerTest.php
 
 		-
-			rawMessage: 'Parameter #3 $recurring of class Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct constructor expects Shopware\Core\Checkout\Payment\Cart\Recurring\RecurringDataStruct|null, Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct given.'
+			message: '#^Parameter \#3 \$recurring of class Shopware\\Core\\Checkout\\Payment\\Cart\\PaymentTransactionStruct constructor expects Shopware\\Core\\Checkout\\Payment\\Cart\\Recurring\\RecurringDataStruct\|null, Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Checkout/Method/VenmoHandlerTest.php
 
 		-
-			rawMessage: 'Call to method getId() on an unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Call to method getId\(\) on an unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 1
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: 'Call to method setCustomFields() on an unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Call to method setCustomFields\(\) on an unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 1
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: 'Call to method setId() on an unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Call to method setId\(\) on an unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 5
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: 'Call to method setNextSchedule() on an unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity.'
+			message: '#^Call to method setNextSchedule\(\) on an unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity\.$#'
 			identifier: class.notFound
 			count: 5
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: Instantiated class Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct not found.
+			message: '#^Instantiated class Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct not found\.$#'
 			identifier: class.notFound
 			count: 4
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: Instantiated class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition not found.
+			message: '#^Instantiated class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionDefinition not found\.$#'
 			identifier: class.notFound
 			count: 1
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: Instantiated class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity not found.
+			message: '#^Instantiated class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionEntity not found\.$#'
 			identifier: class.notFound
 			count: 5
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: PHPDoc tag @var for variable $subscriptionRepository contains unknown class Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection.
+			message: '#^PHPDoc tag @var for variable \$subscriptionRepository contains unknown class Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionCollection\.$#'
 			identifier: class.notFound
 			count: 9
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: 'Parameter #1 $expected of static method PHPUnit\Framework\Assert::assertSame() contains unresolvable type.'
+			message: '#^Parameter \#1 \$expected of static method PHPUnit\\Framework\\Assert\:\:assertSame\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
 			count: 1
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: 'Parameter #2 $definition of class Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository constructor expects Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition|null, Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition given.'
+			message: '#^Parameter \#2 \$definition of class Shopware\\Core\\Test\\Stub\\DataAbstractionLayer\\StaticEntityRepository constructor expects Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition\|null, Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionDefinition given\.$#'
 			identifier: argument.type
 			count: 5
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: 'Parameter $recurring of class Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct constructor expects Shopware\Core\Checkout\Payment\Cart\Recurring\RecurringDataStruct|null, Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct given.'
+			message: '#^Parameter \$recurring of class Shopware\\Core\\Checkout\\Payment\\Cart\\PaymentTransactionStruct constructor expects Shopware\\Core\\Checkout\\Payment\\Cart\\Recurring\\RecurringDataStruct\|null, Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct given\.$#'
 			identifier: argument.type
 			count: 5
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: Type Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection in generic type Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository<Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection> in PHPDoc tag @var for variable $subscriptionRepository is not subtype of template type TEntityCollection of Shopware\Core\Framework\DataAbstractionLayer\EntityCollection of class Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository.
+			message: '#^Type Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionCollection in generic type Shopware\\Core\\Test\\Stub\\DataAbstractionLayer\\StaticEntityRepository\<Shopware\\Commercial\\Subscription\\Entity\\Subscription\\SubscriptionCollection\> in PHPDoc tag @var for variable \$subscriptionRepository is not subtype of template type TEntityCollection of Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection of class Shopware\\Core\\Test\\Stub\\DataAbstractionLayer\\StaticEntityRepository\.$#'
 			identifier: generics.notSubtype
 			count: 9
 			path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
 		-
-			rawMessage: Class Shopware\Commercial\SwagCommercial not found.
+			message: '#^Class Shopware\\Commercial\\SwagCommercial not found\.$#'
 			identifier: class.notFound
 			count: 1
 			path: tests/OrdersApi/Builder/Util/CustomIdProviderTest.php
 
 		-
-			rawMessage: 'Parameter #1 $baseClass of method Shopware\Core\Framework\Plugin\PluginEntity::setBaseClass() expects class-string<Shopware\Core\Framework\Plugin>, string given.'
+			message: '#^Parameter \#1 \$baseClass of method Shopware\\Core\\Framework\\Plugin\\PluginEntity\:\:setBaseClass\(\) expects class\-string\<Shopware\\Core\\Framework\\Plugin\>, string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/OrdersApi/Builder/Util/CustomIdProviderTest.php

@@ -55,7 +55,7 @@ jobs:
       # @deprecated tag:v11.0.0 - step can be removed
       - name: Install dependencies
         if: matrix.PLATFORM_BRANCH == 'v6.7.0.0'
-        run: composer require --dev phpstan/phpstan-strict-rules phpstan/phpstan:2.1.31
+        run: composer require --dev phpstan/phpstan-strict-rules phpstan/phpstan:2.1.16
 
       - run: composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
 

@@ -19,6 +19,7 @@ parameters:
 
     featureToggles:
         internalTag: true
+        rawMessageInBaseline: false
 
     symfony:
         constantHassers: false
