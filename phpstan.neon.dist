@@ -15,7 +15,7 @@ parameters:
         - tests/DeprecatedTagTest.php
 
     bootstrapFiles:
-        - bin/static-analyze-autoloader.php
+        - tests/PHPStanBootstrap.php
 
     featureToggles:
         internalTag: true

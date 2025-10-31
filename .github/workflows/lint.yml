@@ -57,12 +57,6 @@ jobs:
         if: matrix.PLATFORM_BRANCH == 'v6.7.0.0'
         run: composer require --dev phpstan/phpstan-strict-rules phpstan/phpstan:2.1.16
 
-      - name: Prepare phpstan
-        working-directory: custom/plugins/${{ github.event.repository.name }}
-        run: |
-          [ -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCmsExtensions" ] && composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCmsExtensions"
-          [ -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCommercial" ] && composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCommercial"
-
       - run: composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
 
   php-cs-fixer:

@@ -7,32 +7,14 @@
 
 use Shopware\Core\TestBootstrapper;
 
-function doesPluginExist(string $name): bool
-{
-    foreach (\scandir('../..') as $pluginDir) {
-        $pathToComposerJson = $pluginDir . '/composer.json';
-
-        if (!\file_exists($pathToComposerJson)) {
-            continue;
-        }
-
-        $composer = json_decode((string) file_get_contents($pathToComposerJson), true, 512, \JSON_THROW_ON_ERROR);
-        $pluginName = end(explode('\\', $composer['extra']['shopware-plugin-class'] ?? ''));
-
-        if ($pluginName === $name) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 $plugins = ['SwagPayPal'];
 
-if (doesPluginExist('SwagCmsExtensions')) {
-    $plugins[] = 'SwagCmsExtensions';
+foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
+    if ((new TestBootstrapper())->getPluginPath($pluginName)) {
+        $plugins[] = $pluginName;
 
-    echo 'SwagCmsExtensions detected, require being active.' . \PHP_EOL;
+        echo "{$pluginName} detected, require being active." . \PHP_EOL;
+    }
 }
 
 return (new TestBootstrapper())

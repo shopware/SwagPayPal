@@ -6,37 +6,13 @@
  * file that was distributed with this source code.
  */
 
-use Shopware\Core\DevOps\StaticAnalyze\StaticAnalyzeKernel;
-use Shopware\Core\Framework\Adapter\Kernel\KernelFactory;
-use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
-use Swag\PayPal\SwagPayPal;
 
 // SETUP
 
 $_SERVER['CI'] ??= false;
-$projectRoot = $_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4);
 $pluginRootPath = dirname(__DIR__);
 
-$classLoader = require $projectRoot . '/vendor/autoload.php';
-
-/** @var array{autoload: array{}, version: string} $composer */
-$composer = json_decode((string) file_get_contents($pluginRootPath . '/composer.json'), true);
-
-$pluginLoader = new StaticKernelPluginLoader($classLoader, null, [[
-    'name' => 'SwagPayPal',
-    'active' => true,
-    'version' => $composer['version'],
-    'baseClass' => SwagPayPal::class,
-    'managedByComposer' => true,
-    'autoload' => $composer['autoload'],
-    'path' => $pluginRootPath,
-]]);
-
-KernelFactory::$kernelClass = StaticAnalyzeKernel::class;
-
-/** @var StaticAnalyzeKernel $kernel */
-$kernel = KernelFactory::create('dev', true, $classLoader, $pluginLoader);
-$kernel->boot();
+require $pluginRootPath . '/tests/PHPStanBootstrap.php';
 
 // GENERATE CONFIG
 
@@ -51,7 +27,7 @@ $phpstanConfig = [
         \file_exists($versionedConfig) ? [$versionedConfig] : [],
     ),
     'parameters' => [
-        'symfony' => ['containerXmlPath' => \sprintf('%s/%sDevDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class))],
+        'symfony' => ['containerXmlPath' => \sprintf('%s/%s%sDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class), \ucfirst($kernel->getEnvironment()))],
         'reportUnmatchedIgnoredErrors' => !((bool) $_SERVER['CI']),
     ],
 ];
