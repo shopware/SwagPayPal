@@ -1,5 +1,3 @@
-name: Acceptance
-
 on:
   push:
     branches:
