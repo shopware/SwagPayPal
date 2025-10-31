@@ -61,11 +61,6 @@ class ExpressShippingCallbackService
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
         }
 
-        if ($error = $cart->getErrors()->filterInstance(ShippingMethodBlockedError::class)->first()) {
-            /** @var ShippingMethodBlockedError $error */
-            throw ExpressShippingCallbackException::methodUnavailable($callback, $error);
-        }
-
         $order = $this->orderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
         $order->setId($callback->getId());
         $order->getPurchaseUnits()->first()?->setReferenceId((string) $callback->getPurchaseUnits()->first()?->getReferenceId());
@@ -73,6 +68,11 @@ class ExpressShippingCallbackService
 
         if ((int) $order->getPurchaseUnits()->first()?->getShippingOptions()?->count() === 0) {
             throw ExpressShippingCallbackException::addressError($callback);
+        }
+
+        if ($error = $cart->getErrors()->filterInstance(ShippingMethodBlockedError::class)->first()) {
+            /** @var ShippingMethodBlockedError $error */
+            throw ExpressShippingCallbackException::methodUnavailable($callback, $error);
         }
 
         $this->logger->debug('Shipping callback: update order', ['order' => $order]);
