@@ -62,7 +62,7 @@ runs:
             }
         }'
 
-        if [ -z "${{ steps.get-token.outputs.token }}" ]; then
+        if [ -z "${{ steps.octo-sts.outputs.token }}" ]; then
             echo "deps='[]'" >> "$GITHUB_OUTPUT"
             echo "repos=$(echo $REPOS | jq -c .)" >> "$GITHUB_OUTPUT"
 
