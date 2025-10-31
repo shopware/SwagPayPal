@@ -45,7 +45,7 @@ class ShippingOptionsProvider
     {
         $option = new ShippingOption();
         $option->setId($shippingMethod->getId());
-        $option->setLabel($shippingMethod->getTranslation('name') ?? $shippingMethod->getName());
+        $option->setLabel((string) $shippingMethod->getTranslation('name'));
 
         if ($salesChannelContext->getShippingMethod()->getId() === $shippingMethod->getId()) {
             $option->setSelected(true);
