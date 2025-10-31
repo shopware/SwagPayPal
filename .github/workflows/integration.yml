@@ -1,3 +1,5 @@
+name: integration
+
 on:
   push:
     branches:
