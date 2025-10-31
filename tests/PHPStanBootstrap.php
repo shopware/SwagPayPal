@@ -59,3 +59,5 @@ $kernel = KernelFactory::create(
 );
 
 $kernel->boot();
+
+return $kernel;

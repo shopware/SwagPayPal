@@ -6,15 +6,16 @@
  * file that was distributed with this source code.
  */
 
-
 // SETUP
 
 $_SERVER['CI'] ??= false;
 $pluginRootPath = dirname(__DIR__);
 
-require $pluginRootPath . '/tests/PHPStanBootstrap.php';
+$kernel = require $pluginRootPath . '/tests/PHPStanBootstrap.php';
 
 // GENERATE CONFIG
+
+$plugins = $kernel->getPluginLoader()->getPluginInstances();
 
 $shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
 echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
@@ -25,6 +26,8 @@ $phpstanConfig = [
     'includes' => \array_merge(
         [$kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/common.neon'],
         \file_exists($versionedConfig) ? [$versionedConfig] : [],
+        $plugins->has('Shopware\\Commercial\\SwagCommercial') ? [] : [$pluginRootPath . '/phpstan-baseline.commercial.neon'],
+        $plugins->has('Swag\\CmsExtensions\\SwagCmsExtensions') ? [] : [$pluginRootPath . '/phpstan-baseline.cms-extensions.neon'],
     ),
     'parameters' => [
         'symfony' => ['containerXmlPath' => \sprintf('%s/%s%sDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class), \ucfirst($kernel->getEnvironment()))],
