@@ -4672,6 +4672,20 @@
                 },
                 "type": "object"
             },
+            "paypal_v1_webhook_list": {
+                "required": [
+                    "webhooks"
+                ],
+                "properties": {
+                    "webhooks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_webhook"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v2_common_address": {
                 "required": [
                     "address_line_1",
@@ -6034,7 +6048,8 @@
                     "items",
                     "shipping",
                     "payments",
-                    "supplementary_data"
+                    "supplementary_data",
+                    "shipping_options"
                 ],
                 "properties": {
                     "reference_id": {
@@ -6077,6 +6092,13 @@
                     },
                     "supplementary_data": {
                         "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_supplementary_data"
+                    },
+                    "shipping_options": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_shipping_option"
+                        },
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -6648,6 +6670,37 @@
                 },
                 "type": "object"
             },
+            "paypal_v2_order_purchase_unit_shipping_option": {
+                "required": [
+                    "id",
+                    "label",
+                    "amount",
+                    "type",
+                    "selected"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "SHIPPING",
+                            "PICKUP"
+                        ]
+                    },
+                    "selected": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v2_order_purchase_unit_supplementary_data": {
                 "required": [
                     "card",
@@ -6849,6 +6902,32 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_shipping_tracker_item"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_shipping_callback": {
+                "required": [
+                    "id",
+                    "shipping_address",
+                    "shipping_option",
+                    "purchase_units"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "shipping_address": {
+                        "$ref": "#/components/schemas/paypal_v2_common_address"
+                    },
+                    "shipping_option": {
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_shipping_option"
+                    },
+                    "purchase_units": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit"
                         }
                     }
                 },
