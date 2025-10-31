@@ -9,9 +9,12 @@ namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\LineItemFactoryRegistry;
 use Shopware\Core\Checkout\Cart\Rule\CartAmountRule;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
+use Shopware\Core\Content\Test\Product\ProductBuilder;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -82,6 +85,12 @@ class ExpressShippingCallbackServiceTest extends TestCase
             TestDefaults::SALES_CHANNEL,
             $this->ids->get('token'),
         ));
+
+        $this->getContainer()->get(CartService::class)->add(
+            new Cart($this->ids->get('token')),
+            $this->getProductLineItem(),
+            $this->salesChannelContext,
+        );
 
         $this->service = $this->getContainer()->get(ExpressShippingCallbackService::class);
     }
@@ -276,5 +285,26 @@ class ExpressShippingCallbackServiceTest extends TestCase
     private function getCart(): Cart
     {
         return static::getContainer()->get(CartService::class)->getCart($this->salesChannelContext->getToken(), $this->salesChannelContext);
+    }
+
+    private function getProductLineItem(): LineItem
+    {
+        $standardTaxId = static::getContainer()->get('tax.repository')->searchIds((new Criteria())->addFilter(new EqualsFilter('taxRate', 19.0)), Context::createDefaultContext())->firstId();
+        static::assertNotNull($standardTaxId, 'Tax "Standard rate" is missing');
+        $this->ids->set('standard-tax-rate', $standardTaxId);
+
+        /** @phpstan-ignore-next-line new.internalClass - it's a test */
+        $product = (new ProductBuilder($this->ids, 'P-10000'))
+            ->price(10)
+            ->visibility()
+            ->tax('standard-tax-rate', 19)
+            ->build();
+
+        static::getContainer()->get('product.repository')->create([$product], $this->salesChannelContext->getContext());
+
+        return static::getContainer()->get(LineItemFactoryRegistry::class)->create([
+            'type' => 'product',
+            'id' => $this->ids->get('P-10000'),
+        ], $this->salesChannelContext);
     }
 }

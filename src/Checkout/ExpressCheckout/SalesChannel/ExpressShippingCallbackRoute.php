@@ -40,7 +40,7 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
     }
 
     #[OA\Post(
-        path: '/paypal/express/shipping-callback',
+        path: '/paypal/express/shipping-callback/{salesChannelId}/{token}',
         operationId: 'handlePayPalExpressShippingCallback',
         description: 'Handles PayPal shipping address change callbacks and returns updated cart pricing',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(ref: OrderShippingCallback::class)),

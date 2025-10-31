@@ -58,7 +58,8 @@ class ExpressShippingCallbackException extends HttpException
             'Shipping method "{{ shippingMethodName }}" not available',
             [
                 'orderId' => $callback->getId(),
-                'shippingMethodId' => $error->getShippingMethodId(),
+                /** @phpstan-ignore-next-line function.alreadyNarrowedType */
+                'shippingMethodId' => \method_exists($error, 'getShippingMethodId') ? $error->getShippingMethodId() : null,
                 'shippingMethodName' => $error->getName(),
             ],
         );
