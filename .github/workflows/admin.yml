@@ -13,6 +13,15 @@ permissions:
   id-token: write
 
 jobs:
+  check:
+      if: always()
+      needs: [eslint, jest]
+      runs-on: ubuntu-latest
+      steps:
+        - uses: re-actors/alls-green@v1.2.2
+          with:
+            jobs: ${{ toJSON(needs) }}
+
   eslint:
     runs-on: ubuntu-latest
     steps:

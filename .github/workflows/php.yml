@@ -23,6 +23,15 @@ permissions:
   id-token: write
 
 jobs:
+  check:
+      if: always()
+      needs: [phpstan, php-cs-fixer, validate-openapi-typescript, bc-check]
+      runs-on: ubuntu-latest
+      steps:
+        - uses: re-actors/alls-green@v1.2.2
+          with:
+            jobs: ${{ toJSON(needs) }}
+
   phpstan:
     runs-on: ubuntu-latest
     strategy:

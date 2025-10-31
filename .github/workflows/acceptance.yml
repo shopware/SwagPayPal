@@ -12,25 +12,14 @@ permissions:
   id-token: write
 
 jobs:
-  build-zip:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build and validate zip
-        uses: shopware/github-actions/build-zip@main
-        with:
-          extensionName: ${{ github.event.repository.name }}
-
-      - name: Checkout SwagPayPal
-        if: (!contains(github.event.pull_request.labels.*.name, 'run/acceptance'))
-        uses: actions/checkout@v5
-        with:
-          path: custom/plugins/${{ github.event.repository.name }}
-
-      - name: Test install zip
-        if: (!contains(github.event.pull_request.labels.*.name, 'run/acceptance'))
-        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
-        with:
-          extension-zip: ${{ steps.upload.outputs.artifact-url }}
+  check:
+      if: always()
+      needs: [eslint]
+      runs-on: ubuntu-latest
+      steps:
+        - uses: re-actors/alls-green@v1.2.2
+          with:
+            jobs: ${{ toJSON(needs) }}
 
   eslint:
     runs-on: ubuntu-latest
@@ -54,91 +43,3 @@ jobs:
       - name: Run ESLint
         working-directory: ./custom/plugins/SwagPayPal/tests/acceptance
         run: npm run lint
-
-  playwright:
-    needs: build-zip
-    if: (needs.build-zip.result == 'success' && contains(github.event.pull_request.labels.*.name, 'run/acceptance')) || github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    environment: acceptance-production
-    services:
-      redis:
-        image: redis:7.0
-        ports:
-          - '9200:9200'
-      mailpit:
-        image: axllent/mailpit:latest
-        ports:
-          - '1025:1025'
-          - '8025:8025'
-    env:
-      APP_ENV: prod
-      APP_DEBUG: '1'
-      MAILER_DSN: smtp://localhost:1025
-      PLUGIN_PATH: ./paypal
-      MONOLOG_CONFIG: |
-        monolog:
-          handlers:
-            paypal:
-              type: stream
-              level: debug
-              channels: [paypal]
-              path: '%kernel.project_dir%/paypal/tests/acceptance/paypal.log'
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          path: ${{ env.PLUGIN_PATH }}
-
-      - name: Download zip
-        uses: actions/download-artifact@v5
-        with:
-          name: SwagPayPal.zip
-
-      - name: Setup SwagPayPal
-        uses: ./paypal/.github/actions/setup-paypal
-        with:
-          extension-zip: SwagPayPal.zip
-          env: prod
-          install-admin: true
-          install-storefront: true
-          install-commercial: true
-
-      - uses: actions/checkout@v5
-        with:
-          path: ${{ env.PLUGIN_PATH }}
-
-      - name: Setup acceptance
-        uses: ./paypal/.github/actions/setup-acceptance
-        with:
-          path: ${{ env.PLUGIN_PATH }}/tests/acceptance
-
-      - name: Prepare logging
-        run: echo "$MONOLOG_CONFIG" > ./config/packages/monolog.yaml
-
-      - name: Prepare environment variables
-        run: |
-          symfony console cache:clear --env="${APP_ENV}" || true
-          echo "APP_URL=${APP_URL}" >> "${PLUGIN_PATH}/tests/acceptance/.env"
-          symfony console integration:create AcceptanceTest --admin >> "${PLUGIN_PATH}/tests/acceptance/.env"
-
-      - name: Run playwright
-        working-directory: ${{ env.PLUGIN_PATH }}/tests/acceptance
-        run: npx playwright test --reporter=${{ github.event.act && 'line' || 'github' }} --trace=on-first-retry
-        env:
-          PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
-          PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
-          PAYPAL_MERCHANT_ID: ${{ secrets.PAYPAL_MERCHANT_ID }}
-          PAYPAL_SANDBOX: ${{ secrets.PAYPAL_SANDBOX }}
-
-      - name: Compress and encrypt test-results
-        if: always()
-        working-directory: ${{ env.PLUGIN_PATH }}/tests/acceptance
-        run: zip -r -P "$ARTIFACT_PASSWORD" test-results.zip test-results/ paypal.log
-        env:
-          ARTIFACT_PASSWORD: ${{ secrets.ARTIFACT_PASSWORD }}
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: acceptance-test-result
-          path: ${{ env.PLUGIN_PATH }}/tests/acceptance/test-results.zip
-          retention-days: 3

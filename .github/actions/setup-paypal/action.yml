@@ -59,11 +59,6 @@ runs:
               "type": "path",
               "url": "custom/plugins/${{ github.event.repository.name }}",
               "symlink": true
-            },
-            "SwagCmsExtensions": {
-              "type": "path",
-              "url": "custom/plugins/SwagCmsExtensions",
-              "symlink": true
             }
         }'
 
@@ -73,6 +68,14 @@ runs:
 
             exit 0
         fi
+
+        REPOS=$(jq -s 'add' <(echo $REPOS) <(echo '{
+            "SwagCmsExtensions": {
+              "type": "path",
+              "url": "custom/plugins/SwagCmsExtensions",
+              "symlink": true
+            }
+        }'))
 
         DEPS='[
             {
