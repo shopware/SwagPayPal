@@ -193,11 +193,15 @@ export interface components {
       value: string;
     };
     swag_paypal_v1_create_webhooks: {
+      id: string;
       url: string;
       event_types: components["schemas"]["swag_paypal_v1_create_webhooks_event_type"][];
     };
     swag_paypal_v1_create_webhooks_event_type: {
       name: string;
+    };
+    swag_paypal_v1_create_webhooks_list: {
+      webhooks: components["schemas"]["swag_paypal_v1_create_webhooks"][];
     };
     swag_paypal_v1_disputes: {
       items: components["schemas"]["swag_paypal_v1_disputes_item"][] | null;

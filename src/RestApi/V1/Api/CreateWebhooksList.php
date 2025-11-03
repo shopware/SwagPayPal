@@ -12,7 +12,7 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\CreateWebhooks\CreateWebhooksCollection;
 
-#[OA\Schema(schema: 'paypal_v1_webhook_list')]
+#[OA\Schema(schema: 'swag_paypal_v1_create_webhooks_list')]
 #[Package('checkout')]
 class CreateWebhooksList extends PayPalApiStruct
 {
