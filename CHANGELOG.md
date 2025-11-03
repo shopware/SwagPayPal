@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Adjusted the amount that Pay Later is available for to the current limitations given (https://developer.paypal.com/studio/checkout/pay-later/de)
 - Fixes an issue, where the Smart Payment Buttons were not stretched to full width on the product detail page for digital products
+- Fixes an issue, where the webhook registration could run into a loop, if the saved Webhook ID is invalid
 
 # 9.8.3
 - Fixes an issue, where the plugin could not be updated when Zettle Sales Channels were active (shopware/SwagPayPal#361)
