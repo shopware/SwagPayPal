@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
 
+use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiCollection;
 use Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
 
 /**
  * @extends PayPalApiCollection<CreateWebhooks>
  */
+#[Package('checkout')]
 class CreateWebhooksCollection extends PayPalApiCollection
 {
     public static function getExpectedClass(): string
