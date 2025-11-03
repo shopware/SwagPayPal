@@ -111,6 +111,7 @@ export default Shopware.Component.wrapComponentConfig({
 
             this.status = 'none';
 
+            delete this.allWebhookStatus[String(this.settingsStore.salesChannel)];
             this.fetchWebhookStatus(this.settingsStore.salesChannel);
         },
     },

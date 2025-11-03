@@ -31,7 +31,6 @@ class WebhookSystemConfigHelperTest extends TestCase
         Settings::CLIENT_ID_SANDBOX,
         Settings::CLIENT_SECRET_SANDBOX,
         Settings::SANDBOX,
-        Settings::WEBHOOK_ID,
     ];
 
     private WebhookSystemConfigHelper $helper;

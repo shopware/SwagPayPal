@@ -7,12 +7,14 @@
 
 use Shopware\Core\TestBootstrapper;
 
+$projectDir = $_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4);
+
 return (new TestBootstrapper())
-    ->setProjectDir($_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4))
+    ->setProjectDir($projectDir)
     ->setLoadEnvFile(true)
     ->setForceInstallPlugins(true)
     ->addActivePlugins('SwagCmsExtensions')
     ->addCallingPlugin()
     ->bootstrap()
-    ->setClassLoader(require dirname(__DIR__) . '/vendor/autoload.php')
+    ->setClassLoader(require $projectDir . '/vendor/autoload.php')
     ->getClassLoader();
