@@ -132,9 +132,7 @@ jobs:
       - name: Compress and encrypt test-results
         if: always()
         working-directory: ${{ env.PLUGIN_PATH }}/tests/acceptance
-        run: zip -r -P "$ARTIFACT_PASSWORD" test-results.zip test-results/ paypal.log
-        env:
-          ARTIFACT_PASSWORD: ${{ secrets.ARTIFACT_PASSWORD }}
+        run: zip -r -P "${{ secrets.ARTIFACT_PASSWORD }}" test-results.zip test-results/ paypal.log
 
       - uses: actions/upload-artifact@v4
         if: always()
