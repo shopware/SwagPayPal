@@ -71,7 +71,7 @@ class PayPalControllerTest extends TestCase
         $exception = new PayPalApiException('test', 'message', issue: 'issue');
 
         $this->createOrderRoute
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('createPayPalOrder')
             ->willThrowException($exception);
 
@@ -93,7 +93,7 @@ class PayPalControllerTest extends TestCase
             'isCheckout' => true,
         ]);
 
-        $matcher = $this->exactly(2);
+        $matcher = static::exactly(2);
         $this->controller
             ->expects($matcher)
             ->method('trans')
@@ -108,7 +108,7 @@ class PayPalControllerTest extends TestCase
             });
 
         $this->controller
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('addFlash')
             ->with('danger', 'Translated error message');
 
@@ -128,11 +128,11 @@ class PayPalControllerTest extends TestCase
         ]);
 
         $this->controller
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('trans');
 
         $this->controller
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('addFlash');
 
         $this->controller->onHandleError($request, $this->generateSalesChannelContext());
@@ -151,12 +151,12 @@ class PayPalControllerTest extends TestCase
         ]);
 
         $this->controller
-            ->expects($this->exactly(3))
+            ->expects(static::exactly(3))
             ->method('trans')
             ->willReturnCallback(fn (string $key) => $key);
 
         $this->controller
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('addFlash')
             ->with('danger', 'paypal.error.SWAG_PAYPAL__GENERIC_ERROR');
 
@@ -176,11 +176,11 @@ class PayPalControllerTest extends TestCase
         ]);
 
         $this->controller
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('trans');
 
         $this->controller
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('addFlash');
 
         $this->controller->onHandleError($request, $this->generateSalesChannelContext());
