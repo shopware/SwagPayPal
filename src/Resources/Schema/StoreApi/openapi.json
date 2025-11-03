@@ -58,7 +58,7 @@
                 }
             }
         },
-        "/paypal/express/shipping-callback": {
+        "/paypal/express/shipping-callback/{salesChannelId}/{token}": {
             "post": {
                 "tags": [
                     "Store API",
@@ -70,41 +70,18 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "properties": {
-                                    "id": {
-                                        "description": "PayPal order ID",
-                                        "type": "string"
-                                    },
-                                    "shipping_address": {
-                                        "type": "object"
-                                    },
-                                    "purchase_units": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object"
-                                        }
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/paypal_v2_order_shipping_callback"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Updated purchase units with recalculated prices",
+                        "description": "Updated order with recalculated prices",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "purchase_units": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/paypal_v2_order"
                                 }
                             }
                         }
