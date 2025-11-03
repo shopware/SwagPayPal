@@ -61,13 +61,13 @@
 {% endblock %}
 
 {% block sw_sales_channel_detail_base_options_delete %}
-    <mt-card
+    <sw-card
         v-if="isAgentCommerceType"
         class="swag-paypal-settings-webhook"
         position-identifier="swag-paypal-settings-webhook"
     >
         <template #title>
-            <div class="swag-paypal-settings-webhook__title">
+            <div class="sw-card__title swag-paypal-settings-webhook__title">
                 <p>
                     {{ $t('swag-paypal-settings.webhook.title') }}
                 </p>
@@ -89,7 +89,7 @@
             {{ $t('swag-paypal-settings.webhook.honey.info') }}
         </span>
 
-            <mt-button
+            <sw-button
                 class="swag-paypal-settings-webhook__refresh-button"
                 variant="secondary"
                 :disabled="!salesChannel.active"
@@ -97,9 +97,9 @@
                 @click="onRefreshWebhook"
             >
                 {{ $t('swag-paypal-settings.webhook.buttonRefresh') }}
-            </mt-button>
+            </sw-button>
         </div>
-    </mt-card>
+    </sw-card>
 
     {% parent %}
 {% endblock %}

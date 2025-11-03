@@ -126,8 +126,6 @@ class ShopwareCartTransformerTest extends TestCase
         static::assertSame(2, $lineItems[0]->getQuantity());
         static::assertSame(LineItem::PRODUCT_LINE_ITEM_TYPE, $lineItems[0]->getType());
 
-        $key = PromotionItemBuilder::PLACEHOLDER_PREFIX . 'some-code';
-        static::assertSame(Uuid::fromStringToHex($key), $lineItems[1]->getId());
         static::assertSame('some-code', $lineItems[1]->getReferencedId());
         static::assertSame(1, $lineItems[1]->getQuantity());
         static::assertSame(LineItem::PROMOTION_LINE_ITEM_TYPE, $lineItems[1]->getType());

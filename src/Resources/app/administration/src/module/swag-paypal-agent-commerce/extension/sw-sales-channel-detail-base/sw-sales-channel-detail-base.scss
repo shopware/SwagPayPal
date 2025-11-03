@@ -6,11 +6,6 @@
         grid-template-columns: min-content min-content;
         gap: 12px;
         place-items: center;
-
-        p {
-            font-weight: var(--font-weight-semibold);
-            font-size: var(--font-size-m);
-        }
     }
 
     &__content {

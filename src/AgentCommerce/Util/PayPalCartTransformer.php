@@ -11,6 +11,7 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryDate;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryTime;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute;
@@ -57,7 +58,7 @@ class PayPalCartTransformer
     /**
      * @param EntityRepository<ProductCollection> $productRepository
      * @param EntityRepository<CountryCollection> $countryRepository
-     * @param EntityRepository<LocaleCollection> $countryRepository
+     * @param EntityRepository<LocaleCollection> $localeRepository
      */
     public function __construct(
         private readonly EntityRepository $productRepository,
@@ -309,8 +310,11 @@ class PayPalCartTransformer
         $iso = $context->getCurrency()->getIsoCode();
         $cartPrice = $cart->getPrice();
 
+        $promotions = $cart->getLineItems()->filterFlatByType(LineItem::PROMOTION_LINE_ITEM_TYPE);
+        $promotionDiscount = (new LineItemCollection($promotions))->getPrices()->sum();
+
         $subtotal = new Money();
-        $subtotal->setValue((string) $cartPrice->getPositionPrice());
+        $subtotal->setValue((string) ($cartPrice->getPositionPrice() - $promotionDiscount->getTotalPrice()));
         $subtotal->setCurrencyCode($iso);
 
         $shipping = new Money();
@@ -325,13 +329,16 @@ class PayPalCartTransformer
         $total->setValue((string) $cartPrice->getTotalPrice());
         $total->setCurrencyCode($iso);
 
-        // TODO: discount need to be done, when coupons are implemented
+        $discount = new Money();
+        $discount->setValue((string) ($promotionDiscount->getTotalPrice() * -1));
+        $discount->setCurrencyCode($iso);
 
         $totals = new CartTotals();
         $totals->setSubtotal($subtotal);
         $totals->setShipping($shipping);
         $totals->setTax($tax);
         $totals->setTotal($total);
+        $totals->setDiscount($discount);
 
         return $totals;
     }
