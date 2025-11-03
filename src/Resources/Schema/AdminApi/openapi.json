@@ -1822,10 +1822,14 @@
             },
             "swag_paypal_v1_create_webhooks": {
                 "required": [
+                    "id",
                     "url",
                     "event_types"
                 ],
                 "properties": {
+                    "id": {
+                        "type": "string"
+                    },
                     "url": {
                         "type": "string"
                     },
@@ -1845,6 +1849,20 @@
                 "properties": {
                     "name": {
                         "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "swag_paypal_v1_create_webhooks_list": {
+                "required": [
+                    "webhooks"
+                ],
+                "properties": {
+                    "webhooks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/swag_paypal_v1_create_webhooks"
+                        }
                     }
                 },
                 "type": "object"
