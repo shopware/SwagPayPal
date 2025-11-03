@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
 
-
 use Swag\PayPal\RestApi\PayPalApiCollection;
 use Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
 

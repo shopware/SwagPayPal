@@ -82,7 +82,7 @@ class WebhookServiceTest extends TestCase
         $this->systemConfig->set(Settings::WEBHOOK_ID, self::THROW_WEBHOOK_ID_INVALID);
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getWebhookUrl')
             ->with(self::THROW_WEBHOOK_ID_INVALID, null)
             ->willThrowException(new WebhookIdInvalidException(self::THROW_WEBHOOK_ID_INVALID));
@@ -100,13 +100,13 @@ class WebhookServiceTest extends TestCase
         $localUrl = 'https://unit.test/webhook?' . WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME . '=someToken';
 
         $this->router
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
             ->willReturn($localUrl);
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getWebhookUrl')
             ->with('someId', null)
             ->willReturn($localUrl);
@@ -125,13 +125,13 @@ class WebhookServiceTest extends TestCase
         $remoteUrlWithDifferentToken = 'https://unit.test/webhook?' . WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME . '=differentToken';
 
         $this->router
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
             ->willReturn($localUrl);
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getWebhookUrl')
             ->with('someId', null)
             ->willReturn($remoteUrlWithDifferentToken);
@@ -144,13 +144,13 @@ class WebhookServiceTest extends TestCase
     public function testRegisterWebhookWithAlreadyExistingTokenAndId(): void
     {
         $this->router
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('generate')
             ->with('api.action.paypal.webhook.execute', [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'someToken'], RouterInterface::ABSOLUTE_URL)
             ->willReturn(self::WEBHOOK_URL);
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getWebhookUrl')
             ->with('someId', null)
             ->willReturn(self::WEBHOOK_URL);
@@ -169,25 +169,25 @@ class WebhookServiceTest extends TestCase
         $this->router->method('generate')->willReturn(self::WEBHOOK_URL);
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getWebhookUrl')
             ->with(self::THROW_WEBHOOK_ID_INVALID, null)
             ->willThrowException(new WebhookIdInvalidException('someId'));
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('updateWebhook')
             ->with(self::WEBHOOK_URL, self::THROW_WEBHOOK_ID_INVALID, null)
             ->willThrowException(new WebhookIdInvalidException('someId'));
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('createWebhook')
             ->with(self::WEBHOOK_URL, static::anything(), null)
             ->willThrowException(new WebhookAlreadyExistsException(self::WEBHOOK_URL));
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('getAllWebhooks')
             ->with(null)
             ->willReturn(
@@ -209,7 +209,7 @@ class WebhookServiceTest extends TestCase
         $this->router->method('generate')->willReturn(self::WEBHOOK_URL);
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('updateWebhook')
             ->with(static::anything(), self::THROW_WEBHOOK_ID_INVALID, null);
 
@@ -221,7 +221,7 @@ class WebhookServiceTest extends TestCase
     public function testRegisterWebhookWithoutTokenAndId(): void
     {
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('createWebhook')
             ->with(static::anything(), static::anything(), null)
             ->willReturn(self::WEBHOOK_ID);
@@ -240,7 +240,7 @@ class WebhookServiceTest extends TestCase
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
         // No deletion on inherited id
-        $this->webhookResource->expects($this->never())->method('deleteWebhook');
+        $this->webhookResource->expects(static::never())->method('deleteWebhook');
 
         $result = $this->webhookService->deregisterWebhook(TestDefaults::SALES_CHANNEL);
 
@@ -255,7 +255,7 @@ class WebhookServiceTest extends TestCase
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('deleteWebhook')
             ->with(self::ALREADY_EXISTING_WEBHOOK_ID, null);
 
@@ -295,7 +295,7 @@ class WebhookServiceTest extends TestCase
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('createWebhook')
             ->with(static::anything(), static::anything(), TestDefaults::SALES_CHANNEL)
             ->willReturn(self::WEBHOOK_ID);
@@ -311,7 +311,7 @@ class WebhookServiceTest extends TestCase
         $this->systemConfig->set(Settings::WEBHOOK_EXECUTE_TOKEN, self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
         $this->webhookResource
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('deleteWebhook')
             ->with(self::THROW_WEBHOOK_ID_INVALID, null)
             ->willThrowException(new WebhookIdInvalidException(self::THROW_WEBHOOK_ID_INVALID));
