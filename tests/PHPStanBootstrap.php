@@ -13,21 +13,21 @@ use Shopware\Core\TestBootstrapper;
 $projectRoot = $_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4);
 
 if (!\class_exists(TestBootstrapper::class)) {
-    require_once ($_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4)) . '/vendor/autoload.php';
+    require_once ($projectRoot) . '/vendor/autoload.php';
 }
 
-$plugins = ['SwagPayPal'];
+$bootstrapper = (new TestBootstrapper())->setProjectDir($projectRoot);
 
+$plugins = ['SwagPayPal'];
 foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
-    if ((new TestBootstrapper())->getPluginPath($pluginName)) {
+    if ($bootstrapper->getPluginPath($pluginName)) {
         $plugins[] = $pluginName;
 
         echo "{$pluginName} detected, require being active." . \PHP_EOL;
     }
 }
 
-$bootsrapper = (new TestBootstrapper())
-    ->setProjectDir($_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4))
+$bootsrapper = $bootstrapper
     ->setLoadEnvFile(true)
     ->addActivePlugins(...$plugins);
 
