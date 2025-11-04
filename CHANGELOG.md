@@ -1,4 +1,4 @@
-# 8.8.0
+# 8.7.10
 - Fixes an issue, where the Smart Payment Buttons were not stretched to full width on the product detail page for digital products
 - Fixed an issue, where Paypal errors showing on category page in Storefront, which should only be showed on checkout pages (shopware/shopware#12701)
 - Fixes an issue, where the webhook registration could run into a loop, if the saved Webhook ID is invalid
