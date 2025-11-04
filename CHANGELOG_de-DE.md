@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 8.7.10
 - Behebt ein Problem, bei dem die Smart Payment Buttons auf der Produktdetailseite für digitale Produkte nicht über die volle Breite dargestellt wurden
 - Behebt ein Problem, bei dem Fehler, die für den Checkout bestimmt sind, auch auf Kategorie- und Produktseiten der Storefront angezeigt wurden
 - Behebt ein Problem, bei dem die Registrierung des Webhooks in eine Endlosschleife geraten kann, wenn die gespeicherte Webhook ID ungültig ist
