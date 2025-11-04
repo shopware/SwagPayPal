@@ -27,14 +27,14 @@ foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
     }
 }
 
-$bootsrapper = $bootstrapper
+$bootstrapper = $bootstrapper
     ->setLoadEnvFile(true)
     ->addActivePlugins(...$plugins);
 
-$pluginLoader = new StaticKernelPluginLoader($bootsrapper->getClassLoader(), plugins: \array_map(
-    function (string $plugin) use ($bootsrapper) {
+$pluginLoader = new StaticKernelPluginLoader($bootstrapper->getClassLoader(), plugins: \array_map(
+    function (string $plugin) use ($bootstrapper) {
         /** @var array{autoload: array{}, version: string, extra: array{}} $composer */
-        $composer = \json_decode(\file_get_contents($bootsrapper->getPluginPath($plugin) . '/composer.json') ?: '', true, flags: \JSON_THROW_ON_ERROR);
+        $composer = \json_decode(\file_get_contents($bootstrapper->getPluginPath($plugin) . '/composer.json') ?: '', true, flags: \JSON_THROW_ON_ERROR);
 
         return [
             'name' => $plugin,
@@ -43,7 +43,7 @@ $pluginLoader = new StaticKernelPluginLoader($bootsrapper->getClassLoader(), plu
             'baseClass' => $composer['extra']['shopware-plugin-class'] ?? '',
             'managedByComposer' => false, // even though some are, namespaces wouldn't load if set true
             'autoload' => $composer['autoload'],
-            'path' => $bootsrapper->getPluginPath($plugin),
+            'path' => $bootstrapper->getPluginPath($plugin),
         ];
     },
     $plugins,
@@ -54,7 +54,7 @@ KernelFactory::$kernelClass = StaticAnalyzeKernel::class;
 $kernel = KernelFactory::create(
     environment: 'phpstan_dev',
     debug: true,
-    classLoader: $bootsrapper->getClassLoader(),
+    classLoader: $bootstrapper->getClassLoader(),
     pluginLoader: $pluginLoader,
 );
 
