@@ -18,7 +18,7 @@ foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
 }
 
 return (new TestBootstrapper())
-    ->setProjectDir($_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4))
+    ->setProjectDir($projectDir)
     ->setLoadEnvFile(true)
     ->addActivePlugins(...$plugins)
     ->bootstrap()
