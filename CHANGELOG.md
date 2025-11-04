@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 9.9.0
 - Adjusted the amount that Pay Later is available for to the current limitations given (https://developer.paypal.com/studio/checkout/pay-later/de)
 - Fixes an issue, where the Smart Payment Buttons were not stretched to full width on the product detail page for digital products
 - Fixed an issue, where Paypal errors showing on category page in Storefront, which should only be showed on checkout pages (shopware/shopware#12701)
