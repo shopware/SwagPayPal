@@ -85,9 +85,12 @@ class PayPalControllerTest extends TestCase
         static::assertSame('SWAG_PAYPAL__API_issue', $json['errors'][0]['code']);
     }
 
-    public function testOnHandleErrorWithTranslatableErrorCode(): void
+    public function testOnHandleErrorWithTranslatableErrorCodeAddsFlash(): void
     {
-        $request = new Request(request: ['code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE']);
+        $request = new Request(request: [
+            'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
+            'isCheckout' => true,
+        ]);
 
         /** @phpstan-ignore-next-line - will not handle withConsecutive */
         $this->controller
@@ -112,9 +115,35 @@ class PayPalControllerTest extends TestCase
         ]);
     }
 
-    public function testOnHandleErrorWithNonTranslatableErrorCode(): void
+    public function testOnHandleErrorWithTranslatableErrorCodeSkipsFlash(): void
     {
-        $request = new Request(request: ['code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE']);
+        $request = new Request(request: [
+            'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
+            'isCheckout' => false,
+        ]);
+
+        $this->controller
+            ->expects(static::never())
+            ->method('trans');
+
+        $this->controller
+            ->expects(static::never())
+            ->method('addFlash');
+
+        $this->controller->onHandleError($request, $this->generateSalesChannelContext());
+
+        $this->assertLogRecord(Level::Warning, [
+            'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
+            'fatal' => false,
+        ]);
+    }
+
+    public function testOnHandleErrorWithNonTranslatableErrorCodeAddsFlash(): void
+    {
+        $request = new Request(request: [
+            'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
+            'isCheckout' => true,
+        ]);
 
         $this->controller
             ->expects(static::exactly(3))
@@ -125,6 +154,29 @@ class PayPalControllerTest extends TestCase
             ->expects(static::once())
             ->method('addFlash')
             ->with('danger', 'paypal.error.SWAG_PAYPAL__GENERIC_ERROR');
+
+        $this->controller->onHandleError($request, $this->generateSalesChannelContext());
+
+        $this->assertLogRecord(Level::Warning, [
+            'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
+            'fatal' => false,
+        ]);
+    }
+
+    public function testOnHandleErrorWithNonTranslatableErrorCodeSkipsFlash(): void
+    {
+        $request = new Request(request: [
+            'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
+            'isCheckout' => false,
+        ]);
+
+        $this->controller
+            ->expects(static::never())
+            ->method('trans');
+
+        $this->controller
+            ->expects(static::never())
+            ->method('addFlash');
 
         $this->controller->onHandleError($request, $this->generateSalesChannelContext());
 
