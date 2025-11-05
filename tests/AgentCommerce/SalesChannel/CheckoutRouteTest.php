@@ -133,6 +133,7 @@ class CheckoutRouteTest extends TestCase
         $order->setTransactions(new OrderTransactionCollection([$transaction]));
 
         // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.1.0, keep content
+        // @phpstan-ignore function.alreadyNarrowedType
         if (\method_exists($order, 'setPrimaryOrderTransactionId')) {
             $order->setPrimaryOrderTransactionId($transaction->getId());
         }
@@ -212,6 +213,7 @@ class CheckoutRouteTest extends TestCase
         $order->setTransactions(new OrderTransactionCollection([$transaction]));
 
         // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.1.0, keep content
+        // @phpstan-ignore function.alreadyNarrowedType
         if (\method_exists($order, 'setPrimaryOrderTransactionId')) {
             $order->setPrimaryOrderTransactionId($transaction->getId());
         }

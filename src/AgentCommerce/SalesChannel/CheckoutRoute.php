@@ -59,7 +59,8 @@ class CheckoutRoute extends AbstractAgentCommerceRoute
 
         $primaryTransactionId = $order->getTransactions()?->last()?->getId();
 
-        // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.1.0, keep content
+        // @deprecated tag:v11.0.0 - remove if condition with min-version of v6.7.1.0
+        // @phpstan-ignore function.alreadyNarrowedType
         if (\method_exists($order, 'getPrimaryOrderTransactionId')) {
             $primaryTransactionId = $order->getPrimaryOrderTransactionId();
         }

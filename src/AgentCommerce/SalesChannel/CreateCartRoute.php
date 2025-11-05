@@ -16,6 +16,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Shopware\PayPalSDK\Struct\V2\Patch;
+use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
 use Swag\PayPal\AgentCommerce\SalesChannel\Response\AgentCartResponse;
 use Swag\PayPal\AgentCommerce\Util\PayPalCartFactory;
@@ -56,6 +57,10 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
 
         $swCart = $this->cartService->createNew($salesChannelContext->getToken());
         $swCart = $this->cartService->add($swCart, $this->shopwareCartTransformer->getLineItems($payPalCart, $salesChannelContext), $salesChannelContext);
+
+        if (!$swCart->getLineItems()->count()) {
+            throw AgentException::requiredFieldInvalid('cart.items', 'no valid item found');
+        }
 
         $orderId = $this->upsertPayPalOrder($payPalCart, $swCart, $request->request->all(), $salesChannelContext);
 

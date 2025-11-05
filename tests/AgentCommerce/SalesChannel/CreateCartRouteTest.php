@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Framework\Log\Package;
@@ -93,6 +94,7 @@ class CreateCartRouteTest extends TestCase
             ->willReturn($salesChannelContext);
 
         $cart = new Cart('');
+        $cart->add(new LineItem(Uuid::randomHex(), 'product', Uuid::randomHex()));
 
         $this->cartService
             ->expects($this->once())

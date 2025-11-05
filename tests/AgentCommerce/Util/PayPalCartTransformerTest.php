@@ -371,8 +371,10 @@ class PayPalCartTransformerTest extends TestCase
         static::assertSame('EUR', $totals->getTotal()->getCurrencyCode());
         static::assertSame('15', $totals->getShipping()?->getValue());
         static::assertSame('EUR', $totals->getShipping()->getCurrencyCode());
-        static::assertSame('185', $totals->getSubtotal()?->getValue());
+        static::assertSame('200', $totals->getSubtotal()?->getValue());
         static::assertSame('EUR', $totals->getSubtotal()->getCurrencyCode());
+        static::assertSame('15', $totals->getDiscount()?->getValue());
+        static::assertSame('EUR', $totals->getDiscount()->getCurrencyCode());
     }
 
     public function testConvertAddressNoIsoFound(): void
@@ -671,11 +673,17 @@ class PayPalCartTransformerTest extends TestCase
         $deliveries->add($delivery1);
         $deliveries->add($delivery2);
 
+        $lineItem1 = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE);
+        $lineItem1->setPrice(new CalculatedPrice(100, 100, new CalculatedTaxCollection(), new TaxRuleCollection()));
+        $lineItem2 = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE);
+        $lineItem2->setPrice(new CalculatedPrice(100, 100, new CalculatedTaxCollection(), new TaxRuleCollection()));
+        $promotion = new LineItem(Uuid::randomHex(), LineItem::PROMOTION_LINE_ITEM_TYPE);
+        $promotion->setPrice(new CalculatedPrice(-15, -15, new CalculatedTaxCollection(), new TaxRuleCollection()));
+
         $cart = new Cart(Uuid::randomHex());
         $cart->setPrice($cartPrice);
         $cart->setDeliveries($deliveries);
-
-        // TODO: discounts need to be tested
+        $cart->setLineItems(new LineItemCollection([$lineItem1, $lineItem2, $promotion]));
 
         return $cart;
     }

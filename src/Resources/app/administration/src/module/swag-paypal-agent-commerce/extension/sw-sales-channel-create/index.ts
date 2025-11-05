@@ -1,5 +1,5 @@
-import exportHeader from 'SwagPayPal/module/swag-paypal-agent-commerce/static/product-export/header.txt?raw';
-import exportBody from 'SwagPayPal/module/swag-paypal-agent-commerce/static/product-export/body.txt?raw';
+import exportHeader from 'SwagPayPal/module/swag-paypal-agent-commerce/static/product-export/header.csv.twig?raw';
+import exportBody from 'SwagPayPal/module/swag-paypal-agent-commerce/static/product-export/body.csv.twig?raw';
 
 export default Shopware.Component.wrapComponentConfig<{ salesChannel: TEntity<'sales_channel'>; productExport: TEntity<'product_export'> }>({
     methods: {
