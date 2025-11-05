@@ -22,7 +22,7 @@ jobs:
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
 
-      - uses: octo-sts/action@main
+      - uses: shopware/octo-sts-action@main
         id: create-pr-token
         with:
           scope: shopware
