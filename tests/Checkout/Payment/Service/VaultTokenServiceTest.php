@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\Payment\Service;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\TestCase;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
@@ -27,7 +28,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
-use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -500,7 +500,6 @@ class VaultTokenServiceTest extends TestCase
         $paymentSource->setEmailAddress('test@hatoken.de');
         $paymentSource->setAttributes($attributes);
 
-
         /** @deprecated tag:v11.0.0 - Condition will always be true */
         if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
             $recurring = new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]));
@@ -521,6 +520,7 @@ class VaultTokenServiceTest extends TestCase
     /**
      * @param array<string, mixed> $args
      */
+    #[RequiresMethod(SubscriptionDefinition::class, 'getEntityName')]
     #[DataProvider('isSubscriptionContextDataProvider')]
     public function testIsSubscriptionContext(array $args, bool $expected): void
     {
@@ -556,7 +556,7 @@ class VaultTokenServiceTest extends TestCase
         $salesChannelContext->addExtension('subscription', new ArrayStruct());
         yield 'subscription context' => [['context' => $salesChannelContext], true];
 
-        if (\class_exists(PlanIntervalMappingStruct::class) && PlanIntervalMappingStruct::class instanceof Struct) {
+        if (\class_exists(PlanIntervalMappingStruct::class)) {
             $salesChannelContext->removeExtension('subscription');
             /** @var PlanIntervalMappingStruct<SalesChannelContext> $managedContexts */
             $managedContexts = new PlanIntervalMappingStruct();
