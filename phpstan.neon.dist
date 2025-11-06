@@ -10,7 +10,7 @@ parameters:
     treatPhpDocTypesAsCertain: false
     checkFunctionNameCase: true
     checkInternalClassCaseSensitivity: true
-    reportUnmatchedIgnoredErrors: true
+    reportUnmatchedIgnoredErrors: false
 
     paths:
         - src

@@ -11,7 +11,7 @@ $bootstrapper = (new TestBootstrapper())->setProjectDir($_SERVER['PROJECT_ROOT']
 
 $plugins = ['SwagPayPal'];
 foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
-    if (\is_readable($bootstrapper->getProjectDir() . '/custom/plugins/' . $name . '/composer.json')) {
+    if (\is_readable($bootstrapper->getProjectDir() . '/custom/plugins/' . $pluginName . '/composer.json')) {
         $plugins[] = $pluginName;
 
         echo "{$pluginName} detected, require being active." . \PHP_EOL;
