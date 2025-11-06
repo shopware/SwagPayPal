@@ -24,7 +24,6 @@ jobs:
         - admin-eslint
         - admin-jest
         - storefront-eslint
-        - acceptance-eslint
       runs-on: ubuntu-latest
       steps:
         - uses: re-actors/alls-green@v1.2.2
@@ -154,26 +153,3 @@ jobs:
           STOREFRONT_PATH: ${{ github.workspace }}/src/Storefront/Resources/app/storefront
         working-directory: custom/plugins/${{ github.event.repository.name }}
         run: composer lint:storefront:ci
-
-  acceptance-eslint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout SwagPayPal
-        uses: actions/checkout@v5
-        with:
-          path: custom/plugins/${{ github.event.repository.name }}
-
-      - name: Setup SwagPayPal
-        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
-        with:
-          install-admin: false
-          install-storefront: false
-          install-commercial: false
-
-      - name: Install dependencies
-        working-directory: ./custom/plugins/SwagPayPal/tests/acceptance
-        run: npm ci
-
-      - name: Run ESLint
-        working-directory: ./custom/plugins/SwagPayPal/tests/acceptance
-        run: npm run lint
