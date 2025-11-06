@@ -21,7 +21,7 @@ parameters:
         - src/Pos/Payment/PosPayment.php
 
     bootstrapFiles:
-        - bin/static-analyze-autoloader.php
+        - tests/PHPStanBootstrap.php
 
     symfony:
         constantHassers: false

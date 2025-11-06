@@ -1,20 +1,11 @@
-name: PHP checks
+name: lint
 
 on:
   push:
     branches:
       - 6.6.x
   pull_request:
-    paths:
-      - bin/*.php
-      - src/**/*.php
-      - tests/**/*.php
-      - rector.php
-      - composer.json
-      - .php-cs-fixer.dist.php
-      - phpstan.neon.dist
-      - phpstan-baseline.neon
-      - .bc-exclude.php
+  merge_group:
   workflow_dispatch:
   workflow_call:
 
@@ -23,6 +14,23 @@ permissions:
   id-token: write
 
 jobs:
+  check:
+      if: always()
+      needs:
+        - phpstan
+        - php-cs-fixer
+        - validate-openapi-typescript
+        - bc-check
+        - admin-eslint
+        - admin-jest
+        - storefront-eslint
+        - acceptance-eslint
+      runs-on: ubuntu-latest
+      steps:
+        - uses: re-actors/alls-green@v1.2.2
+          with:
+            jobs: ${{ toJSON(needs) }}
+
   phpstan:
     runs-on: ubuntu-latest
     strategy:
@@ -34,6 +42,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: custom/plugins/${{ github.event.repository.name }}
+
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
         with:
@@ -41,20 +50,8 @@ jobs:
           install-admin: true
           install-storefront: true
           shopware-version: ${{ matrix.PLATFORM_BRANCH }}
-      - name: Prepare phpstan
-        working-directory: custom/plugins/${{ github.event.repository.name }}
-        run: |
-          composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCmsExtensions"
-          composer dump-autoload --dev -d "${GITHUB_WORKSPACE}/custom/plugins/SwagCommercial"
-          sed -i 's|reportUnmatchedIgnoredErrors: true|reportUnmatchedIgnoredErrors: false|' ./phpstan.neon.dist
-          if [[ "${{ matrix.PLATFORM_BRANCH }}" == "v6.6.0.0" ]]; then
-            sed -i '/type_perfect/d' ./phpstan.neon.dist
-            sed -i '/narrow_return: true/d' ./phpstan.neon.dist
-            sed -i '/no_mixed: true/d' ./phpstan.neon.dist
-            sed -i '/null_over_false: true/d' ./phpstan.neon.dist
-          fi
-      - run: |
-          composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
+
+      - run: composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
 
   php-cs-fixer:
     runs-on: ubuntu-latest
@@ -63,11 +60,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: custom/plugins/${{ github.event.repository.name }}
+
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+
       - name: Run php-cs-fixer
-        run: |
-          composer -d custom/plugins/${{ github.event.repository.name }} run ecs
+        run: composer -d custom/plugins/${{ github.event.repository.name }} run ecs
 
   validate-openapi-typescript:
     runs-on: ubuntu-latest
@@ -76,12 +74,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: custom/plugins/${{ github.event.repository.name }}
+
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
         with:
           install-admin: true
           install-storefront: true
-          shopware-version: ${{ matrix.PLATFORM_BRANCH }}
+
       - working-directory: custom/plugins/${{ github.event.repository.name }}
         run: |
           ${GITHUB_WORKSPACE}/bin/console bundle:dump
@@ -110,3 +109,71 @@ jobs:
         working-directory: custom/plugins/${{ github.event.repository.name }}
         if: github.event_name == 'pull_request' && !contains(github.base_ref, '/feature/')
         run: composer bc-check -- --format=github-actions --from="origin/${{ github.base_ref }}"
+
+  admin-eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          install-admin: true
+
+      - name: Run ESLint
+        env:
+          ADMIN_PATH: ${{ github.workspace }}/src/Administration/Resources/app/administration
+        working-directory: custom/plugins/${{ github.event.repository.name }}
+        run: composer run lint:admin:ci
+
+  admin-jest:
+    uses: shopware/github-actions/.github/workflows/admin-jest.yml@main
+    with:
+      extensionName: ${{ github.event.repository.name }}
+      uploadCoverage: false
+
+  storefront-eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          install-commercial: true
+          install-storefront: true
+
+      - name: Run ESLint
+        env:
+          STOREFRONT_PATH: ${{ github.workspace }}/src/Storefront/Resources/app/storefront
+        working-directory: custom/plugins/${{ github.event.repository.name }}
+        run: composer lint:storefront:ci
+
+  acceptance-eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v5
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          install-admin: false
+          install-storefront: false
+          install-commercial: false
+
+      - name: Install dependencies
+        working-directory: ./custom/plugins/SwagPayPal/tests/acceptance
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./custom/plugins/SwagPayPal/tests/acceptance
+        run: npm run lint
