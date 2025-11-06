@@ -112,6 +112,11 @@ parameters:
                 - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
                 - tests/Storefront/Data/CheckoutSubscriberTest.php
 
+        - # 6.8 deprecation - Will be removed
+            message: '#Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct#'
+            paths:
+                - src/Checkout/Payment/Service/VaultTokenService.php
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule

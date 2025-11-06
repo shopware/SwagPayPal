@@ -9,7 +9,8 @@ namespace Swag\PayPal\Test\Checkout\Method;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
+use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
@@ -477,7 +478,7 @@ class ACDCHandlerTest extends TestCase
 
     public function testRecurring(): void
     {
-        if (!\class_exists(SubscriptionRecurringDataStruct::class)) {
+        if (!\class_exists(SubscriptionsRecurringDataStruct::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
@@ -491,10 +492,12 @@ class ACDCHandlerTest extends TestCase
         $subscription = new SubscriptionEntity();
         $subscription->setId('subscriptionId');
         $subscription->setNextSchedule(new \DateTime());
+        $subscriptions = new SubscriptionCollection([$subscription]);
+
         $paymentTransaction = new PaymentTransactionStruct(
             'orderTransactionId',
             null,
-            new SubscriptionRecurringDataStruct($subscription),
+            new SubscriptionsRecurringDataStruct($subscriptions),
         );
 
         $payPalOrder = $this->createOrderObject();
@@ -503,9 +506,9 @@ class ACDCHandlerTest extends TestCase
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getSubscription')
+            ->method('getSubscriptions')
             ->with($paymentTransaction)
-            ->willReturn($subscription);
+            ->willReturn($subscriptions);
 
         $this->transactionDataService
             ->expects($this->once())
@@ -570,7 +573,7 @@ class ACDCHandlerTest extends TestCase
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getSubscription')
+            ->method('getSubscriptions')
             ->with($paymentTransaction)
             ->willReturn(null);
 

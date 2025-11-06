@@ -9,7 +9,8 @@ namespace Swag\PayPal\Test\Checkout\Method;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\NullLogger;
-use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
+use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
@@ -88,7 +89,7 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
 
     public function testRecurring(): void
     {
-        if (!\class_exists(SubscriptionRecurringDataStruct::class)) {
+        if (!\class_exists(SubscriptionsRecurringDataStruct::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
@@ -97,19 +98,21 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
         $subscription = new SubscriptionEntity();
         $subscription->setId('subscriptionId');
         $subscription->setNextSchedule(new \DateTime());
+        $subscriptions = new SubscriptionCollection([$subscription]);
+
         $paymentTransaction = new PaymentTransactionStruct(
             $this->getTransactionId($context, $this->getContainer()),
             null,
-            new SubscriptionRecurringDataStruct($subscription),
+            new SubscriptionsRecurringDataStruct($subscriptions),
         );
 
         $paypalOrder = $this->createOrderObject();
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getSubscription')
+            ->method('getSubscriptions')
             ->with($paymentTransaction)
-            ->willReturn($subscription);
+            ->willReturn($subscriptions);
 
         $this->transactionDataService
             ->expects($this->once())
@@ -173,7 +176,7 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getSubscription')
+            ->method('getSubscriptions')
             ->with($paymentTransaction)
             ->willReturn(null);
 
