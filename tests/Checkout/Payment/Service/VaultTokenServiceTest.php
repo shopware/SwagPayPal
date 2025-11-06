@@ -27,6 +27,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
+use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -499,9 +500,17 @@ class VaultTokenServiceTest extends TestCase
         $paymentSource->setEmailAddress('test@hatoken.de');
         $paymentSource->setAttributes($attributes);
 
+
+        /** @deprecated tag:v11.0.0 - Condition will always be true */
+        if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
+            $recurring = new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]));
+        } else {
+            $recurring = new SubscriptionRecurringDataStruct($subscription);
+        }
+
         $this->expectException(ServiceNotFoundException::class);
         $vaultTokenService->saveToken(
-            new PaymentTransactionStruct($transaction->getId(), recurring: new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]))),
+            new PaymentTransactionStruct($transaction->getId(), recurring: $recurring),
             $transaction,
             $paymentSource,
             $customerId,
@@ -547,7 +556,7 @@ class VaultTokenServiceTest extends TestCase
         $salesChannelContext->addExtension('subscription', new ArrayStruct());
         yield 'subscription context' => [['context' => $salesChannelContext], true];
 
-        if (\class_exists(PlanIntervalMappingStruct::class)) {
+        if (\class_exists(PlanIntervalMappingStruct::class) && PlanIntervalMappingStruct::class instanceof Struct) {
             $salesChannelContext->removeExtension('subscription');
             /** @var PlanIntervalMappingStruct<SalesChannelContext> $managedContexts */
             $managedContexts = new PlanIntervalMappingStruct();
