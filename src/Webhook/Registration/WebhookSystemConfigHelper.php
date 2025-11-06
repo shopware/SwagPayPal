@@ -23,7 +23,6 @@ class WebhookSystemConfigHelper
         Settings::CLIENT_ID_SANDBOX,
         Settings::CLIENT_SECRET_SANDBOX,
         Settings::SANDBOX,
-        Settings::WEBHOOK_ID,
     ];
 
     private LoggerInterface $logger;

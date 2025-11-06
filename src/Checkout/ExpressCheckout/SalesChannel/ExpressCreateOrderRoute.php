@@ -83,11 +83,11 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
                 $callbackConfig = new OrderUpdateCallbackConfig();
                 $callbackUrl = $this->router->generate(
                     'store-api.paypal.express.shipping_callback',
-                    [],
-                    UrlGeneratorInterface::ABSOLUTE_URL
+                    ['salesChannelId' => $salesChannelContext->getSalesChannelId(), 'token' => $salesChannelContext->getToken()],
+                    UrlGeneratorInterface::ABSOLUTE_URL,
                 );
                 $callbackConfig->setCallbackUrl($callbackUrl);
-                $callbackConfig->setCallbackEvents([OrderUpdateCallbackConfig::CALLBACK_EVENT_SHIPPING_ADDRESS]);
+                $callbackConfig->setCallbackEvents([OrderUpdateCallbackConfig::CALLBACK_EVENT_SHIPPING_OPTIONS]);
                 $experienceContext->setOrderUpdateCallbackConfig($callbackConfig);
 
                 $this->logger->debug('Configured shipping callback', ['callbackUrl' => $callbackUrl]);

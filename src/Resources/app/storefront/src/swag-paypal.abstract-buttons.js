@@ -71,12 +71,15 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
             return;
         }
 
+        const isCheckout = !!this.options.isCheckout; 
+
         this._client.post(this.options.handleErrorUrl, JSON.stringify({
             code,
             error,
             fatal,
+            isCheckout,
         }), () => {
-            this.onErrorHandled(code, fatal, error);
+            this.onErrorHandled(code, fatal, error, isCheckout);
         });
     }
 
@@ -88,9 +91,11 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
      * @param {*} [error=undefined] - The error. Can be any type, but will be converted to a string
      */
     // eslint-disable-next-line no-unused-vars
-    onErrorHandled(code, fatal, error) {
-        window.scrollTo(0, 0);
-        window.location.reload();
+    onErrorHandled(code, fatal, error, isCheckout = false) {
+        if (isCheckout) {
+            window.scrollTo(0, 0);
+            window.location.reload();
+        }
     }
 
     /**

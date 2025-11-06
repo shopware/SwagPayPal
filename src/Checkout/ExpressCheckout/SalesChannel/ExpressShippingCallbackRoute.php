@@ -9,10 +9,12 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\OrderShippingCallback;
+use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,65 +40,42 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
     }
 
     #[OA\Post(
-        path: '/paypal/express/shipping-callback',
+        path: '/paypal/express/shipping-callback/{salesChannelId}/{token}',
         operationId: 'handlePayPalExpressShippingCallback',
         description: 'Handles PayPal shipping address change callbacks and returns updated cart pricing',
-        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
-            new OA\Property(property: 'id', description: 'PayPal order ID', type: 'string'),
-            new OA\Property(property: 'shipping_address', type: 'object'),
-            new OA\Property(property: 'purchase_units', type: 'array', items: new OA\Items(type: 'object')),
-        ])),
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(ref: OrderShippingCallback::class)),
         tags: ['Store API', 'PayPal'],
         responses: [new OA\Response(
             response: Response::HTTP_OK,
-            description: 'Updated purchase units with recalculated prices',
-            content: new OA\JsonContent(properties: [
-                new OA\Property(property: 'purchase_units', type: 'array', items: new OA\Items(type: 'object')),
-            ])
+            description: 'Updated order with recalculated prices',
+            content: new OA\JsonContent(ref: Order::class)
         )],
     )]
-    #[Route(path: '/store-api/paypal/express/shipping-callback', name: 'store-api.paypal.express.shipping_callback', methods: ['POST'], defaults: ['csrf_protected' => false])]
-    public function handleCallback(Request $request, SalesChannelContext $salesChannelContext): JsonResponse
+    #[Route(path: '/store-api/paypal/express/shipping-callback/{salesChannelId}/{token}', name: 'store-api.paypal.express.shipping_callback', methods: ['POST'], defaults: ['csrf_protected' => false, 'auth_required' => false])]
+    public function handleCallback(Request $request, SalesChannelContext $salesChannelContext): Response
     {
-        $payload = $request->request->all();
+        $callback = (new OrderShippingCallback())->assign($request->request->all());
 
-        $this->logger->debug('Shipping callback received', [
-            'paypalOrderId' => $payload['id'] ?? null,
-            'shippingAddress' => $payload['shipping_address'] ?? null,
-        ]);
+        $this->logger->debug('Shipping callback received', ['callback' => $callback]);
 
-        $paypalOrderId = $payload['id'] ?? null;
-        $shippingAddress = $payload['shipping_address'] ?? null;
-
-        if (!\is_string($paypalOrderId) || !\is_array($shippingAddress)) {
-            $this->logger->error('Shipping callback: Invalid payload', [
-                'payload' => $payload,
-            ]);
+        if (!$callback->isset('id') || !$callback->isset('shippingAddress') || !$callback->isset('purchaseUnits')) {
+            $this->logger->error('Shipping callback: Invalid payload', ['callback' => $callback]);
 
             return new JsonResponse(['error' => 'Invalid payload'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
-            $updatedPurchaseUnits = $this->shippingCallbackService->recalculateCart(
-                $paypalOrderId,
-                $shippingAddress,
-                $salesChannelContext
-            );
+            $order = $this->shippingCallbackService->recalculateCart($callback, $salesChannelContext);
 
-            return new JsonResponse(['purchase_units' => $updatedPurchaseUnits]);
+            return new JsonResponse($order);
         } catch (\Throwable $e) {
-            $this->logger->error('Shipping callback failed', [
-                'exception' => $e,
-            ]);
+            $this->logger->error('Shipping callback failed', ['exception' => $e]);
 
-            if ($e instanceof HttpException) {
-                throw $e;
+            if ($e instanceof ExpressShippingCallbackException) {
+                return $e->intoCallbackResponse();
             }
 
-            return new JsonResponse(
-                ['error' => 'Failed to process shipping callback'],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            throw $e;
         }
     }
 }

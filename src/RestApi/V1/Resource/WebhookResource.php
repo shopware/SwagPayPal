@@ -12,6 +12,7 @@ use Shopware\PayPalSDK\Gateway\WebhookGateway;
 use Shopware\PayPalSDK\Struct\V1\Patch;
 use Shopware\PayPalSDK\Struct\V1\PatchCollection;
 use Shopware\PayPalSDK\Struct\V1\Webhook;
+use Shopware\PayPalSDK\Struct\V1\Webhook\WebhookCollection;
 use Swag\PayPal\RestApi\ApiContextFactoryInterface;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
@@ -74,6 +75,13 @@ class WebhookResource
 
             throw $e;
         }
+    }
+
+    public function getAllWebhooks(?string $salesChannelId): WebhookCollection
+    {
+        $context = $this->apiContextFactory->getApiContext($salesChannelId);
+
+        return $this->webhookGateway->getWebhookList($context)->getWebhooks();
     }
 
     /**

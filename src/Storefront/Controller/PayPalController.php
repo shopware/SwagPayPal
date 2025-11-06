@@ -149,19 +149,21 @@ class PayPalController extends StorefrontController
     {
         $code = $request->request->getString('code');
         $fatal = $request->request->getBoolean('fatal');
+        $isCheckout = $request->request->getBoolean('isCheckout');
 
-        // Simply add a snippet for the error code to create a flash
-        $snippetGeneric = \sprintf('paypal.error.%s', $code);
-        $snippetByMethod = \sprintf('paypal.error.%s.%s', $context->getPaymentMethod()->getFormattedHandlerIdentifier(), $code);
+        if ($isCheckout) {
+            $snippetGeneric = \sprintf('paypal.error.%s', $code);
+            $snippetByMethod = \sprintf('paypal.error.%s.%s', $context->getPaymentMethod()->getFormattedHandlerIdentifier(), $code);
 
-        $transSnippetGeneric = $this->trans($snippetGeneric);
-        $transSnippetByMethod = $this->trans($snippetByMethod);
-        if ($transSnippetByMethod !== $snippetByMethod) {
-            $this->addFlash(self::DANGER, $transSnippetByMethod);
-        } elseif ($transSnippetGeneric !== $snippetGeneric) {
-            $this->addFlash(self::DANGER, $transSnippetGeneric);
-        } else {
-            $this->addFlash(self::DANGER, $this->trans('paypal.error.SWAG_PAYPAL__GENERIC_ERROR'));
+            $transSnippetGeneric = $this->trans($snippetGeneric);
+            $transSnippetByMethod = $this->trans($snippetByMethod);
+            if ($transSnippetByMethod !== $snippetByMethod) {
+                $this->addFlash(self::DANGER, $transSnippetByMethod);
+            } elseif ($transSnippetGeneric !== $snippetGeneric) {
+                $this->addFlash(self::DANGER, $transSnippetGeneric);
+            } else {
+                $this->addFlash(self::DANGER, $this->trans('paypal.error.SWAG_PAYPAL__GENERIC_ERROR'));
+            }
         }
 
         if ($fatal) {

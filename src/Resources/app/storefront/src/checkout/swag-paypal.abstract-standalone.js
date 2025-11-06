@@ -46,6 +46,13 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
          * @type string
          */
         brandName: '',
+
+        /**
+         * Indicates whether the PayPal button is rendered within a checkout context.
+         * 
+         * @type {boolean}
+         */
+        isCheckout: true,
     };
 
     init() {

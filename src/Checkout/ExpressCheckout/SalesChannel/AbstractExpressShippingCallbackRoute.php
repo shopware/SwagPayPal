@@ -9,13 +9,13 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
 abstract class AbstractExpressShippingCallbackRoute
 {
     abstract public function getDecorated(): AbstractExpressShippingCallbackRoute;
 
-    abstract public function handleCallback(Request $request, SalesChannelContext $salesChannelContext): JsonResponse;
+    abstract public function handleCallback(Request $request, SalesChannelContext $salesChannelContext): Response;
 }

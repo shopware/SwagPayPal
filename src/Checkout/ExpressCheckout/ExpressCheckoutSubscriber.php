@@ -17,8 +17,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\Event\DataMappingEvent;
 use Shopware\Core\Framework\Event\ShopwareSalesChannelEvent;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Routing\KernelListenerPriorities;
 use Shopware\Core\Framework\Struct\ArrayStruct;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\BuildValidationEvent;
+use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntitySearchResultLoadedEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -43,6 +46,8 @@ use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * @internal
@@ -90,6 +95,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
             CustomerEvents::MAPPING_REGISTER_CUSTOMER => 'addPayerIdToCustomer',
             CustomerEvents::CUSTOMER_WRITTEN_EVENT => 'onCustomerWritten',
+
+            KernelEvents::CONTROLLER => ['mapShippingCallbackContextToken', KernelListenerPriorities::KERNEL_CONTROLLER_EVENT_CONTEXT_RESOLVE_PRE],
         ];
     }
 
@@ -278,6 +285,24 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         $filtered = $paymentMethods->filterByProperty('id', $payPalPaymentMethodId);
         $confirmPage->setPaymentMethods($filtered);
         $this->logger->debug('Removed other payment methods from selection for Express Checkout');
+    }
+
+    public function mapShippingCallbackContextToken(ControllerEvent $event): void
+    {
+        if ($event->getRequest()->attributes->get('_route') !== 'store-api.paypal.express.shipping_callback') {
+            return;
+        }
+
+        if (!($token = $event->getRequest()->attributes->getString('token'))) {
+            return;
+        }
+
+        if (!($salesChannelId = $event->getRequest()->attributes->getString('salesChannelId')) || !Uuid::isValid($salesChannelId)) {
+            return;
+        }
+
+        $event->getRequest()->headers->set(PlatformRequest::HEADER_CONTEXT_TOKEN, $token);
+        $event->getRequest()->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID, $salesChannelId);
     }
 
     private function getExpressCheckoutButtonData(
