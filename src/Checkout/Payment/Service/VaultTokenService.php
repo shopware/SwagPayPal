@@ -129,7 +129,7 @@ class VaultTokenService
             return null;
         }
 
-        if ($recurring instanceof SubscriptionsRecurringDataStruct) {
+        if (\class_exists(SubscriptionsRecurringDataStruct::class) && $recurring instanceof SubscriptionsRecurringDataStruct) {
             return $recurring->getSubscriptions();
         }
 
@@ -161,7 +161,7 @@ class VaultTokenService
         ?ParameterBag $bag = null,
         ?PaymentTransactionStruct $paymentTransaction = null,
     ): bool {
-        if ($context && ($context->hasExtension('subscription') || $context->getExtensionOfType('subscriptionManagedContexts', PlanIntervalMappingStruct::class)?->all())) {
+        if ($context && ($context->hasExtension('subscription') || (\class_exists(PlanIntervalMappingStruct::class) && $context->getExtensionOfType('subscriptionManagedContexts', PlanIntervalMappingStruct::class)?->all()))) {
             return true;
         }
 

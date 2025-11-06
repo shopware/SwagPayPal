@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Checkout\Method;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\NullLogger;
+use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
@@ -100,19 +101,28 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
         $subscription->setNextSchedule(new \DateTime());
         $subscriptions = new SubscriptionCollection([$subscription]);
 
-        $paymentTransaction = new PaymentTransactionStruct(
-            $this->getTransactionId($context, $this->getContainer()),
-            null,
-            new SubscriptionsRecurringDataStruct($subscriptions),
-        );
-
         $paypalOrder = $this->createOrderObject();
 
-        $this->vaultTokenService
-            ->expects($this->once())
-            ->method('getSubscriptions')
-            ->with($paymentTransaction)
-            ->willReturn($subscriptions);
+        /** @deprecated tag:v11.0.0 - Condition will always be true */
+        if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
+            $recurring = new SubscriptionsRecurringDataStruct($subscriptions);
+            $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null, $recurring);
+
+            $this->vaultTokenService
+                ->expects($this->once())
+                ->method('getSubscriptions')
+                ->with($paymentTransaction)
+                ->willReturn($subscriptions);
+        } else {
+            $recurring = new SubscriptionRecurringDataStruct($subscription);
+            $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null, $recurring);
+
+            $this->vaultTokenService
+                ->expects($this->once())
+                ->method('getSubscriptions')
+                ->with($paymentTransaction)
+                ->willReturn($subscriptions);
+        }
 
         $this->transactionDataService
             ->expects($this->once())

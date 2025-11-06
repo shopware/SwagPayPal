@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Checkout\Payment\Service;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition;
@@ -97,8 +98,15 @@ class VaultTokenServiceTest extends TestCase
             $subscriptionRepository,
         );
 
+        /** @deprecated tag:v11.0.0 - Condition will always be true */
+        if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
+            $recurring = new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]));
+        } else {
+            $recurring = new SubscriptionRecurringDataStruct($subscription);
+        }
+
         static::assertSame($token, $vaultTokenService->getAvailableToken(
-            new PaymentTransactionStruct($transaction->getId(), recurring: new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]))),
+            new PaymentTransactionStruct($transaction->getId(), recurring: $recurring),
             $transaction,
             $order,
             Context::createDefaultContext()
@@ -152,8 +160,15 @@ class VaultTokenServiceTest extends TestCase
             $subscriptionRepository,
         );
 
+        /** @deprecated tag:v11.0.0 - Condition will always be true */
+        if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
+            $recurring = new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]));
+        } else {
+            $recurring = new SubscriptionRecurringDataStruct($subscription);
+        }
+
         static::assertNull($vaultTokenService->getAvailableToken(
-            new PaymentTransactionStruct($transaction->getId(), recurring: new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]))),
+            new PaymentTransactionStruct($transaction->getId(), recurring: $recurring),
             $transaction,
             $order,
             Context::createDefaultContext()
@@ -259,13 +274,14 @@ class VaultTokenServiceTest extends TestCase
 
     public function testGetSubscription(): void
     {
-        if (!\class_exists(SubscriptionsRecurringDataStruct::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
         $subscription = new SubscriptionEntity();
         $subscription->setId(Uuid::randomHex());
         $subscription->setNextSchedule(new \DateTime());
+        $subscriptions = new SubscriptionCollection([$subscription]);
 
         /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
         $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
@@ -280,10 +296,15 @@ class VaultTokenServiceTest extends TestCase
             $subscriptionRepository,
         );
 
-        $subscriptions = new SubscriptionCollection([$subscription]);
+        /** @deprecated tag:v11.0.0 - Condition will always be true */
+        if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
+            $recurring = new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]));
+        } else {
+            $recurring = new SubscriptionRecurringDataStruct($subscription);
+        }
 
         static::assertSame($subscriptions, $vaultTokenService->getSubscriptions(
-            new PaymentTransactionStruct(Uuid::randomHex(), recurring: new SubscriptionsRecurringDataStruct($subscriptions)),
+            new PaymentTransactionStruct(Uuid::randomHex(), recurring: $recurring),
         ));
     }
 
@@ -413,8 +434,16 @@ class VaultTokenServiceTest extends TestCase
         $paymentSource = new Paypal();
         $paymentSource->setEmailAddress('test@hatoken.de');
         $paymentSource->setAttributes($attributes);
+
+        /** @deprecated tag:v11.0.0 - Condition will always be true */
+        if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
+            $recurring = new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]));
+        } else {
+            $recurring = new SubscriptionRecurringDataStruct($subscription);
+        }
+
         $vaultTokenService->saveToken(
-            new PaymentTransactionStruct($transaction->getId(), recurring: new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]))),
+            new PaymentTransactionStruct($transaction->getId(), recurring: $recurring),
             $transaction,
             $paymentSource,
             $customerId,
@@ -518,14 +547,16 @@ class VaultTokenServiceTest extends TestCase
         $salesChannelContext->addExtension('subscription', new ArrayStruct());
         yield 'subscription context' => [['context' => $salesChannelContext], true];
 
-        $salesChannelContext->removeExtension('subscription');
-        /** @var PlanIntervalMappingStruct<SalesChannelContext> $managedContexts */
-        $managedContexts = new PlanIntervalMappingStruct();
-        $salesChannelContext->addExtension('subscriptionManagedContexts', $managedContexts);
-        yield 'empty managed subscription context' => [['context' => clone $salesChannelContext], false];
+        if (\class_exists(PlanIntervalMappingStruct::class)) {
+            $salesChannelContext->removeExtension('subscription');
+            /** @var PlanIntervalMappingStruct<SalesChannelContext> $managedContexts */
+            $managedContexts = new PlanIntervalMappingStruct();
+            $salesChannelContext->addExtension('subscriptionManagedContexts', $managedContexts);
+            yield 'empty managed subscription context' => [['context' => clone $salesChannelContext], false];
 
-        $managedContexts->set('id', 'id', $salesChannelContext);
-        yield 'managed subscription context' => [['context' => clone $salesChannelContext], true];
+            $managedContexts->set('id', 'id', $salesChannelContext);
+            yield 'managed subscription context' => [['context' => clone $salesChannelContext], true];
+        }
 
         $bag = new RequestDataBag();
         yield 'empty parameter bag' => [['bag' => clone $bag], false];
@@ -536,8 +567,17 @@ class VaultTokenServiceTest extends TestCase
         $subscription = new SubscriptionEntity();
         $subscription->setId('subscription-id');
         $subscription->setNextSchedule(new \DateTimeImmutable());
+
+        if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
+            yield 'payment transaction struct' => [
+                ['paymentTransaction' => new PaymentTransactionStruct('id', recurring: new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription])))],
+                true,
+            ];
+        }
+
+        /** @deprecated tag:v11.0.0 - Will be removed in v6.8.0 */
         yield 'payment transaction struct' => [
-            ['paymentTransaction' => new PaymentTransactionStruct('id', recurring: new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription])))],
+            ['paymentTransaction' => new PaymentTransactionStruct('id', recurring: new SubscriptionRecurringDataStruct($subscription))],
             true,
         ];
     }

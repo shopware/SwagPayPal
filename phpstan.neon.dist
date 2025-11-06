@@ -116,6 +116,9 @@ parameters:
             message: '#Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct#'
             paths:
                 - src/Checkout/Payment/Service/VaultTokenService.php
+                - tests/Checkout/Payment/Service/VaultTokenServiceTest.php
+                - tests/Checkout/Method/ACDCHandlerTest.php
+                - tests/Checkout/Method/VenmoHandlerTest.php
 
 rules:
     # Shopware core rules
