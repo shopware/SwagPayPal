@@ -1,16 +1,20 @@
 import template from './swag-paypal-settings-storefront.html.twig';
 import { BUTTON_COLORS, BUTTON_SHAPES } from 'SwagPayPal/constant/swag-paypal-settings.constant';
 
+const { Criteria } = Shopware.Data;
+
 export default Shopware.Component.wrapComponentConfig({
     template,
 
     inject: [
         'systemConfigApiService',
+        'repositoryFactory',
     ],
 
     data() {
         return {
             doubleOptInConfig: false,
+            phoneRequiredConfig: false,
         };
     },
 
@@ -45,6 +49,19 @@ export default Shopware.Component.wrapComponentConfig({
                 && !this.settingsStore.getActual('SwagPayPal.settings.ecsLoginEnabled')
                 && !this.settingsStore.getActual('SwagPayPal.settings.ecsListingEnabled');
         },
+
+        systemConfigRepository() {
+            return this.repositoryFactory.create('system_config');
+        },
+
+        systemConfigCriteria() {
+            const criteria = new Criteria();
+
+            criteria.addFilter(Criteria.equalsAny('configurationKey', ['core.loginRegistration.doubleOptInGuestOrder', 'core.loginRegistration.phoneNumberFieldRequired']));
+            criteria.addFilter(Criteria.equals('configurationValue', 'true'));
+
+            return criteria;
+        },
     },
 
     watch: {
@@ -58,9 +75,10 @@ export default Shopware.Component.wrapComponentConfig({
 
     methods: {
         async fetchDoubleOptIn() {
-            const config = await this.systemConfigApiService.getValues('core.loginRegistration.doubleOptInGuestOrder') as Record<string, boolean>;
+            const response = await this.systemConfigRepository.search(this.systemConfigCriteria);
 
-            this.doubleOptInConfig = !!config['core.loginRegistration.doubleOptInGuestOrder'];
+            this.doubleOptInConfig = response.some((config) => config.configurationKey === 'core.loginRegistration.doubleOptInGuestOrder');
+            this.phoneRequiredConfig = response.some((config) => config.configurationKey === 'core.loginRegistration.phoneNumberFieldRequired');
         },
     },
 });

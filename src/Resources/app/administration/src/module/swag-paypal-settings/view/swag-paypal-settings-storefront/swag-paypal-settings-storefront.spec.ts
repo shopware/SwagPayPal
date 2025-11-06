@@ -22,6 +22,11 @@ async function createWrapper() {
                 },
                 provide: {
                     systemConfigApiService: { getValues: () => false },
+                    repositoryFactory: {
+                        create: () => ({
+                            search: jest.fn(() => Promise.resolve([])),
+                        }),
+                    },
                 },
             },
         },
