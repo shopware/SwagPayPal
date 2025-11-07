@@ -7,14 +7,19 @@
 
 use Shopware\Core\TestBootstrapper;
 
-$projectDir = $_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4);
+$bootstrapper = (new TestBootstrapper())->setProjectDir($_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4));
 
-return (new TestBootstrapper())
-    ->setProjectDir($projectDir)
+$plugins = ['SwagPayPal'];
+foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
+    if ($bootstrapper->getPluginPath($pluginName)) {
+        $plugins[] = $pluginName;
+
+        echo "{$pluginName} detected, require being active." . \PHP_EOL;
+    }
+}
+
+return $bootstrapper
     ->setLoadEnvFile(true)
-    ->setForceInstallPlugins(true)
-    ->addActivePlugins('SwagCmsExtensions')
-    ->addCallingPlugin()
+    ->addActivePlugins(...$plugins)
     ->bootstrap()
-    ->setClassLoader(require $projectDir . '/vendor/autoload.php')
     ->getClassLoader();

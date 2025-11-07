@@ -1,46 +1,26 @@
 <?php declare(strict_types=1);
 
+use Shopware\Core\Kernel;
+
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-use Shopware\Core\DevOps\StaticAnalyze\StaticAnalyzeKernel;
-use Shopware\Core\Framework\Adapter\Kernel\KernelFactory;
-use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
-use Swag\PayPal\SwagPayPal;
-
 // SETUP
 
 $_SERVER['CI'] ??= false;
-$projectRoot = $_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4);
 $pluginRootPath = dirname(__DIR__);
 
-$classLoader = require $projectRoot . '/vendor/autoload.php';
-
-/** @var array{autoload: array{}, version: string} $composer */
-$composer = json_decode((string) file_get_contents($pluginRootPath . '/composer.json'), true);
-
-$pluginLoader = new StaticKernelPluginLoader($classLoader, null, [[
-    'name' => 'SwagPayPal',
-    'active' => true,
-    'version' => $composer['version'],
-    'baseClass' => SwagPayPal::class,
-    'managedByComposer' => true,
-    'autoload' => $composer['autoload'],
-    'path' => $pluginRootPath,
-]]);
-
-KernelFactory::$kernelClass = StaticAnalyzeKernel::class;
-
-/** @var StaticAnalyzeKernel $kernel */
-$kernel = KernelFactory::create('dev', true, $classLoader, $pluginLoader);
-$kernel->boot();
+$kernel = require $pluginRootPath . '/tests/PHPStanBootstrap.php';
 
 // GENERATE CONFIG
 
+$plugins = $kernel->getPluginLoader()->getPluginInstances();
+
 $shopwareVersion = $kernel->getContainer()->getParameter('kernel.shopware_version');
+$shopwareVersion = $shopwareVersion === Kernel::SHOPWARE_FALLBACK_VERSION ? 'trunk' : $shopwareVersion;
 echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
 
 $versionedConfig = \sprintf('%s/phpstan-%s.neon.dist', $pluginRootPath, $shopwareVersion);
@@ -49,9 +29,11 @@ $phpstanConfig = [
     'includes' => \array_merge(
         [$kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/common.neon'],
         \file_exists($versionedConfig) ? [$versionedConfig] : [],
+        $plugins->has('Shopware\\Commercial\\SwagCommercial') ? [] : [$pluginRootPath . '/phpstan-baseline.commercial.neon'],
+        $plugins->has('Swag\\CmsExtensions\\SwagCmsExtensions') ? [] : [$pluginRootPath . '/phpstan-baseline.cms-extensions.neon'],
     ),
     'parameters' => [
-        'symfony' => ['containerXmlPath' => \sprintf('%s/%sDevDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class))],
+        'symfony' => ['containerXmlPath' => \sprintf('%s/%s%sDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class), \ucfirst($kernel->getEnvironment()))],
         'reportUnmatchedIgnoredErrors' => !((bool) $_SERVER['CI']),
     ],
 ];
