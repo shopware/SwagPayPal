@@ -298,7 +298,7 @@ class VaultTokenServiceTest extends TestCase
 
         /** @deprecated tag:v11.0.0 - Condition will always be true */
         if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
-            $recurring = new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription]));
+            $recurring = new SubscriptionsRecurringDataStruct($subscriptions);
         } else {
             $recurring = new SubscriptionRecurringDataStruct($subscription);
         }
