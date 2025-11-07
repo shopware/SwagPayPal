@@ -7,11 +7,24 @@
 
 use Shopware\Core\TestBootstrapper;
 
-$bootstrapper = (new TestBootstrapper())->setProjectDir($_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4));
+$_SERVER['PROJECT_ROOT'] ??= dirname(__DIR__, 4);
+
+function getPluginPath(string $name): ?string
+{
+    foreach (glob($_SERVER['PROJECT_ROOT'] . '/custom/*plugins/*', \GLOB_ONLYDIR) ?: [] as $pluginDir) {
+        if (is_file($pluginDir . '/composer.json') && is_file($pluginDir . '/src/' . $name . '.php')) {
+            return $pluginDir;
+        }
+    }
+
+    return null;
+};
+
+$bootstrapper = (new TestBootstrapper())->setProjectDir($_SERVER['PROJECT_ROOT']);
 
 $plugins = ['SwagPayPal'];
 foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
-    if (\is_readable($bootstrapper->getProjectDir() . '/custom/plugins/' . $pluginName . '/composer.json')) {
+    if (getPluginPath($pluginName)) {
         $plugins[] = $pluginName;
 
         echo "{$pluginName} detected, require being active." . \PHP_EOL;
