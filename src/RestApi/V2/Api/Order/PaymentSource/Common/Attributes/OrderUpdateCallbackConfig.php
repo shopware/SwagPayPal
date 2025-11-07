@@ -11,7 +11,7 @@ use OpenApi\Attributes as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
-#[OA\Schema(schema: 'paypal_v2_order_payment_source_common_attributes_order_update_callback_config')]
+#[OA\Schema(schema: 'swag_paypal_v2_order_payment_source_common_attributes_order_update_callback_config')]
 #[Package('checkout')]
 class OrderUpdateCallbackConfig extends PayPalApiStruct
 {

@@ -16,7 +16,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ShippingOption;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 
-#[OA\Schema(schema: 'paypal_v2_order_shipping_callback')]
+#[OA\Schema(schema: 'swag_paypal_v2_order_shipping_callback')]
 #[Package('checkout')]
 class OrderShippingCallback extends PayPalApiStruct
 {

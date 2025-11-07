@@ -13,7 +13,7 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
-#[OA\Schema(schema: 'paypal_v2_order_purchase_unit_shipping_option')]
+#[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_shipping_option')]
 #[Package('checkout')]
 class ShippingOption extends PayPalApiStruct
 {
