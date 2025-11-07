@@ -554,7 +554,7 @@ class VaultTokenServiceTest extends TestCase
         yield 'non subscription context' => [['context' => clone $salesChannelContext], false];
 
         $salesChannelContext->addExtension('subscription', new ArrayStruct());
-        yield 'subscription context' => [['context' => $salesChannelContext], true];
+        yield 'subscription context' => [['context' => clone $salesChannelContext], true];
 
         if (\class_exists(PlanIntervalMappingStruct::class)) {
             $salesChannelContext->removeExtension('subscription');
@@ -564,7 +564,7 @@ class VaultTokenServiceTest extends TestCase
             yield 'empty managed subscription context' => [['context' => clone $salesChannelContext], false];
 
             $managedContexts->set('id', 'id', $salesChannelContext);
-            yield 'managed subscription context' => [['context' => clone $salesChannelContext], true];
+            yield 'managed subscription context' => [['context' => $salesChannelContext], true];
         }
 
         $bag = new RequestDataBag();
@@ -586,7 +586,7 @@ class VaultTokenServiceTest extends TestCase
         }
 
         /** @deprecated tag:v11.0.0 - Will be removed in v6.8.0 */
-        yield 'payment transaction struct' => [
+        yield 'payment transaction struct deprecated' => [
             ['paymentTransaction' => new PaymentTransactionStruct('id', recurring: new SubscriptionRecurringDataStruct($subscription))],
             true,
         ];

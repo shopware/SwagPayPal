@@ -67,7 +67,9 @@ class VaultTokenService
 
         if ($subscriptions = $this->getSubscriptions($struct)) {
             $customFieldKey = $this->getSubscriptionCustomFieldKey($orderTransaction->getPaymentMethodId());
-            $tokenIds = \array_unique($subscriptions->fmap(fn (SubscriptionEntity $subscription): string => (string) $subscription->getCustomFieldsValue($customFieldKey)));
+            $tokenIds = \array_unique(\array_values(
+                $subscriptions->fmap(fn (SubscriptionEntity $subscription): string => (string) $subscription->getCustomFieldsValue($customFieldKey))
+            ));
 
             if (\count($tokenIds) > 1) {
                 throw new SubscriptionTypeNotSupportedException('recurring data struct containing multiple subscriptions');
