@@ -22,6 +22,7 @@ use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Shopware\PayPalSDK\Struct\V2\Order;
@@ -107,7 +108,7 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
         /** @deprecated tag:v11.0.0 - Condition will always be true */
         if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
             $recurring = new SubscriptionsRecurringDataStruct($subscriptions);
-            $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null, $recurring);
+            $paymentTransaction = new PaymentTransactionStruct(Uuid::randomHex(), null, $recurring);
 
             $this->vaultTokenService
                 ->expects($this->once())
@@ -116,7 +117,7 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
                 ->willReturn($subscriptions);
         } else {
             $recurring = new SubscriptionRecurringDataStruct($subscription);
-            $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null, $recurring);
+            $paymentTransaction = new PaymentTransactionStruct(Uuid::randomHex(), null, $recurring);
 
             $this->vaultTokenService
                 ->expects($this->once())
