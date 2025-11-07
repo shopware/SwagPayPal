@@ -10,25 +10,28 @@ use Shopware\Core\Framework\Adapter\Kernel\KernelFactory;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Core\TestBootstrapper;
 
-$projectRoot = $_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4);
+$_SERVER['PROJECT_ROOT'] ??= dirname(__DIR__, 4);
 
-if (!\class_exists(TestBootstrapper::class)) {
-    require_once ($projectRoot) . '/vendor/autoload.php';
-}
-
-$bootstrapper = (new TestBootstrapper())->setProjectDir($projectRoot);
-
-$getPluginPath = function (string $name) use ($projectRoot): ?string {
-    if (\is_readable($projectRoot . '/custom/plugins/' . $name . '/composer.json')) {
-        return $projectRoot . '/custom/plugins/' . $name;
+function getPluginPath(string $name): ?string
+{
+    foreach (\glob($_SERVER['PROJECT_ROOT'] . '/custom/*plugins/*', \GLOB_ONLYDIR) ?: [] as $pluginDir) {
+        if (is_file($pluginDir . '/composer.json') && is_file($pluginDir . '/src/' . $name . '.php')) {
+            return $pluginDir;
+        }
     }
 
     return null;
 };
 
+if (!\class_exists(TestBootstrapper::class)) {
+    require_once $_SERVER['PROJECT_ROOT'] . '/vendor/autoload.php';
+}
+
+$bootstrapper = (new TestBootstrapper())->setProjectDir($_SERVER['PROJECT_ROOT']);
+
 $plugins = ['SwagPayPal'];
 foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
-    if ($getPluginPath($pluginName)) {
+    if (getPluginPath($pluginName)) {
         $plugins[] = $pluginName;
 
         echo "{$pluginName} detected, require being active." . \PHP_EOL;
@@ -40,9 +43,9 @@ $bootstrapper = $bootstrapper
     ->addActivePlugins(...$plugins);
 
 $pluginLoader = new StaticKernelPluginLoader($bootstrapper->getClassLoader(), plugins: \array_map(
-    function (string $plugin) use ($getPluginPath) {
+    function (string $plugin) {
         /** @var array{autoload: array{}, version: string, extra: array{}} $composer */
-        $composer = \json_decode(\file_get_contents($getPluginPath($plugin) . '/composer.json') ?: '', true, flags: \JSON_THROW_ON_ERROR);
+        $composer = \json_decode(\file_get_contents(getPluginPath($plugin) . '/composer.json') ?: '', true, flags: \JSON_THROW_ON_ERROR);
 
         return [
             'name' => $plugin,
@@ -51,7 +54,7 @@ $pluginLoader = new StaticKernelPluginLoader($bootstrapper->getClassLoader(), pl
             'baseClass' => $composer['extra']['shopware-plugin-class'] ?? '',
             'managedByComposer' => false, // even though some are, namespaces wouldn't load if set true
             'autoload' => $composer['autoload'],
-            'path' => $getPluginPath($plugin),
+            'path' => getPluginPath($plugin),
         ];
     },
     $plugins,
