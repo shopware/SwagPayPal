@@ -5364,7 +5364,7 @@
                 },
                 "type": "object"
             },
-            "paypal_v2_order_payment_source_common_attributes_order_update_callback_config": {
+            "swag_paypal_v2_order_payment_source_common_attributes_order_update_callback_config": {
                 "required": [
                     "callback_url",
                     "callback_events"
@@ -5514,7 +5514,7 @@
                         }
                     },
                     "order_update_callback_config": {
-                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_order_update_callback_config"
+                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes_order_update_callback_config"
                     }
                 },
                 "type": "object"
@@ -6015,7 +6015,7 @@
                     "shipping_options": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_shipping_option"
+                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_shipping_option"
                         },
                         "nullable": true
                     }
@@ -6579,7 +6579,7 @@
                 },
                 "type": "object"
             },
-            "paypal_v2_order_purchase_unit_shipping_option": {
+            "swag_paypal_v2_order_purchase_unit_shipping_option": {
                 "required": [
                     "id",
                     "label",
@@ -6645,7 +6645,7 @@
                 },
                 "type": "object"
             },
-            "paypal_v2_order_shipping_callback": {
+            "swag_paypal_v2_order_shipping_callback": {
                 "required": [
                     "id",
                     "shipping_address",
@@ -6660,7 +6660,7 @@
                         "$ref": "#/components/schemas/swag_paypal_v2_common_address"
                     },
                     "shipping_option": {
-                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_shipping_option"
+                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_shipping_option"
                     },
                     "purchase_units": {
                         "type": "array",

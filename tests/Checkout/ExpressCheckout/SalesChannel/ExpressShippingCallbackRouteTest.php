@@ -59,7 +59,7 @@ class ExpressShippingCallbackRouteTest extends TestCase
 
         $callback = (new OrderShippingCallback())->assign($payload);
         $request = new Request(request: $payload);
-        $salesChannelContext = Generator::generateSalesChannelContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
 
         $this->service
             ->expects(static::once())
@@ -81,7 +81,7 @@ class ExpressShippingCallbackRouteTest extends TestCase
     public function testHandleCallbackInvalidPayload(array $payload): void
     {
         $request = new Request(request: $payload);
-        $salesChannelContext = Generator::generateSalesChannelContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
 
         $this->service
             ->expects(static::never())
@@ -127,7 +127,7 @@ class ExpressShippingCallbackRouteTest extends TestCase
 
         $callback = (new OrderShippingCallback())->assign($payload);
         $request = new Request(request: $payload);
-        $salesChannelContext = Generator::generateSalesChannelContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
 
         $expection = new \RuntimeException('test');
 
@@ -162,7 +162,7 @@ class ExpressShippingCallbackRouteTest extends TestCase
 
         $callback = (new OrderShippingCallback())->assign($payload);
         $request = new Request(request: $payload);
-        $salesChannelContext = Generator::generateSalesChannelContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
 
         $expection = ExpressShippingCallbackException::addressError($callback);
 
