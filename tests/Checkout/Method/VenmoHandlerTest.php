@@ -12,6 +12,7 @@ use Psr\Log\NullLogger;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
@@ -90,7 +91,7 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
 
     public function testRecurring(): void
     {
-        if (!\class_exists(SubscriptionsRecurringDataStruct::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 

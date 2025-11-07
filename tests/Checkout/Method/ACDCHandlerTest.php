@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
@@ -479,7 +480,7 @@ class ACDCHandlerTest extends TestCase
 
     public function testRecurring(): void
     {
-        if (!\class_exists(SubscriptionRecurringDataStruct::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 

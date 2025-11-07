@@ -9,8 +9,7 @@ namespace Swag\PayPal\Test\OrdersApi\Builder\Trait;
 
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\MockObject\MockObject;
-use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
-use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\Recurring\RecurringDataStruct;
 use Shopware\Core\Framework\Context;
@@ -32,7 +31,7 @@ trait VaultableOrderBuildTrait
 
     public function testGetOrderRequestsVaultingWithSubscription(): void
     {
-        if (!\class_exists(SubscriptionsRecurringDataStruct::class) || !\class_exists(SubscriptionEntity::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not installed');
         }
 

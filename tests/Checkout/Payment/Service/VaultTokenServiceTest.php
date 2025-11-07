@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Checkout\Payment\Service;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\TestCase;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
@@ -520,7 +519,6 @@ class VaultTokenServiceTest extends TestCase
     /**
      * @param array<string, mixed> $args
      */
-    #[RequiresMethod(SubscriptionDefinition::class, 'getEntityName')]
     #[DataProvider('isSubscriptionContextDataProvider')]
     public function testIsSubscriptionContext(array $args, bool $expected): void
     {
@@ -546,8 +544,10 @@ class VaultTokenServiceTest extends TestCase
 
     public static function isSubscriptionContextDataProvider(): \Generator
     {
+        yield 'empty' => [[], false];
+
         if (!\class_exists(SubscriptionDefinition::class)) {
-            return [];
+            return;
         }
 
         $salesChannelContext = Generator::generateSalesChannelContext();
@@ -577,6 +577,7 @@ class VaultTokenServiceTest extends TestCase
         $subscription->setId('subscription-id');
         $subscription->setNextSchedule(new \DateTimeImmutable());
 
+        /** @deprecated tag:v11.0.0 - Condition will always be true */
         if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
             yield 'payment transaction struct' => [
                 ['paymentTransaction' => new PaymentTransactionStruct('id', recurring: new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription])))],
