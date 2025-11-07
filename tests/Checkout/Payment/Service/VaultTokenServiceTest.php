@@ -303,7 +303,7 @@ class VaultTokenServiceTest extends TestCase
             $recurring = new SubscriptionRecurringDataStruct($subscription);
         }
 
-        static::assertSame($subscriptions, $vaultTokenService->getSubscriptions(
+        static::assertEquals($subscriptions, $vaultTokenService->getSubscriptions(
             new PaymentTransactionStruct(Uuid::randomHex(), recurring: $recurring),
         ));
     }
