@@ -1,5 +1,6 @@
 includes:
-    - %ShopwareRoot%/vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - phpstan.dynamic.neon
+    - phar://phpstan.phar/conf/bleedingEdge.neon
 
 parameters:
     phpVersion: 80100
@@ -19,10 +20,11 @@ parameters:
         -   src/Resources
         -   src/DevOps/Rector
 
+    bootstrapFiles:
+        - tests/PHPStanBootstrap.php
+
     symfony:
         constant_hassers: false
-        # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
-        container_xml_path: '../../..%ShopwareHashedCacheDir%/%ShopwareKernelClass%DevDebugContainer.xml'
 
     ignoreErrors:
         # We won't type all arrays/iterables for now
@@ -87,9 +89,6 @@ parameters:
             message: "#^Parameter \\#1 \\$entity of method Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityCollection\\<Shopware\\\\Core\\\\Content\\\\Product\\\\ProductEntity\\>\\:\\:add\\(\\) expects Shopware\\\\Core\\\\Content\\\\Product\\\\ProductEntity, Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\Entity given\\.$#"
             count: 2
             path: tests/Pos/Mock/Repositories/SalesChannelProductRepoMock.php
-
-    bootstrapFiles:
-        -   bin/static-analyze-autoloader.php
 
 rules:
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
