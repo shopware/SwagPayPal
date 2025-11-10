@@ -52,6 +52,7 @@ parameters:
         - message: '#PHPDoc tag .* but class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\(Criteria|IdSearchResult) is not generic.#'
           paths:
             - src/Pos/Run/Administration/SyncResetter.php
+            - src/Pos/Sync/ImageSyncer.php
             - tests/Mock/Repositories/AbstractRepoMock.php
             - tests/Pos/Run/Administration/SyncResetterTest.php
 
