@@ -1,9 +1,11 @@
-name: Integration
+name: integration
+
 on:
   push:
     branches:
       - 6.6.x
   pull_request:
+  merge_group:
   workflow_dispatch:
 
 permissions:
@@ -11,11 +13,42 @@ permissions:
   id-token: write
 
 jobs:
-  build_zip:
-    name: Build and validate zip
-    uses: shopware/github-actions/.github/workflows/build-zip.yml@main
-    with:
-      extensionName: ${{ github.event.repository.name }}
+  check:
+      if: always()
+      needs: [build-zip, test-install-zip, phpunit]
+      runs-on: ubuntu-latest
+      steps:
+        - uses: re-actors/alls-green@v1.2.2
+          with:
+            jobs: ${{ toJSON(needs) }}
+
+  build-zip:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-url: ${{ steps.upload.outputs.artifact-url }}
+    steps:
+      - name: Build and validate zip
+        uses: shopware/github-actions/build-zip@main
+        with:
+          extensionName: ${{ github.event.repository.name }}
+
+  test-install-zip:
+    needs: build-zip
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PLATFORM_BRANCH: ["v6.6.0.0", "6.6.x"]
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+
+      - name: Test install zip
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          extension-zip: ${{ needs.build-zip.outputs.artifact-url }}
+          shopware-version: ${{ matrix.PLATFORM_BRANCH }}
 
   phpunit:
     runs-on: ubuntu-latest
@@ -37,6 +70,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: custom/plugins/${{ github.event.repository.name }}
+
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
         with:
@@ -46,6 +80,7 @@ jobs:
           mysql-version: ${{ matrix.MYSQL_IMAGE }}
           php-version: ${{ matrix.PHP_VERSION }}
           shopware-version: ${{ matrix.PLATFORM_BRANCH }}
+
       - name: Run PHPUnit
         working-directory: custom/plugins/${{ github.event.repository.name }}
         run: |
