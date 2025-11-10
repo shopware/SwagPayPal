@@ -55,7 +55,7 @@ parameters:
             - tests/Mock/Repositories/AbstractRepoMock.php
             - tests/Pos/Run/Administration/SyncResetterTest.php
 
-        - message: '#Parameter .* $ids of method Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository.*::delete\(\)#'
+        - message: '#Parameter .* \$ids of method Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository.*::delete\(\)#'
           paths:
             - src/Pos/Run/Administration/SyncResetter.php
             - src/Pos/Sync/ImageSyncer.php
