@@ -175,8 +175,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             return;
         }
 
-        $subscription = $this->vaultTokenService->getSubscription($transaction);
-        if (!$subscription) {
+        if (!$this->vaultTokenService->getSubscriptions($transaction)) {
             throw PaymentException::recurringInterrupted($transaction->getOrderTransactionId(), 'Subscription not found');
         }
 
