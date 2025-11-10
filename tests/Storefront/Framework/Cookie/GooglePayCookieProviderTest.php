@@ -68,7 +68,7 @@ class GooglePayCookieProviderTest extends TestCase
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $searchResult = new IdSearchResult(0, [['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext());
+        $searchResult = new IdSearchResult(0, ['test-id' => ['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext());
 
         $this->paymentMethodRepository->expects($cookieAdded ? $this->once() : $this->never())
             ->method('searchIds')

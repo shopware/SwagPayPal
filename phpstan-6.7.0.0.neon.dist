@@ -48,3 +48,15 @@ parameters:
               - tests/Checkout/PUI/PUISubscriberTest.php
               - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
               - tests/Storefront/Data/CheckoutSubscriberTest.php
+
+        - message: '#PHPDoc tag .* but class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\(Criteria|IdSearchResult) is not generic.#'
+          paths:
+            - src/Pos/Run/Administration/SyncResetter.php
+            - src/Pos/Sync/ImageSyncer.php
+            - tests/Mock/Repositories/AbstractRepoMock.php
+            - tests/Pos/Run/Administration/SyncResetterTest.php
+
+        - message: '#Parameter .* \$ids of method Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository.*::delete\(\)#'
+          paths:
+            - src/Pos/Run/Administration/SyncResetter.php
+            - src/Pos/Sync/ImageSyncer.php

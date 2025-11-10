@@ -111,7 +111,7 @@ trait RepoTrait
 
         return new IdSearchResult(
             \count($entityCollection),
-            \array_map(static function (Entity $entity) use ($repository) {
+            $entityCollection->map(static function (Entity $entity) use ($repository) {
                 $key = $repository->getPrimaryKey($entity);
                 if (\count($key) === 1) {
                     $key = \array_pop($key);
@@ -121,7 +121,7 @@ trait RepoTrait
                     'primaryKey' => $key,
                     'data' => $entity,
                 ];
-            }, $entityCollection->getElements()),
+            }),
             $criteria,
             $context
         );
