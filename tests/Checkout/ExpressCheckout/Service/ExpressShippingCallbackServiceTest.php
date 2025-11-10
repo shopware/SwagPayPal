@@ -7,6 +7,10 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\Service;
 
+if (!\class_exists('Shopware\Core\Test\Stub\Framework\IdsCollection')) {
+    \class_alias('Shopware\Core\Framework\Test\IdsCollection', 'Shopware\Core\Test\Stub\Framework\IdsCollection');
+}
+
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
