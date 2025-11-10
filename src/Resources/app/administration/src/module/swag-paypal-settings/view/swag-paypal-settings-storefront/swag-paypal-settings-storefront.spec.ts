@@ -3,10 +3,12 @@ import SwagPayPalSettingsStorefront from '.';
 import { SYSTEM_CONFIGS } from '../../../../constant/swag-paypal-settings.constant';
 import SettingsFixture from '../../../../app/store/settings.fixture';
 import type SwagPayPalSetting from 'SwagPayPal/app/component/swag-paypal-setting';
+import EntityCollection from "@shopware-ag/meteor-admin-sdk/es/_internals/data/EntityCollection";
+import Entity from "@shopware-ag/meteor-admin-sdk/es/_internals/data/Entity";
 
 Shopware.Component.register('swag-paypal-settings-storefront', Promise.resolve(SwagPayPalSettingsStorefront));
 
-async function createWrapper() {
+async function createWrapper(systemConfigValues: EntityCollection<"system_config"> | null = null) {
     return mount(
         await Shopware.Component.build('swag-paypal-settings-storefront') as typeof SwagPayPalSettingsStorefront,
         {
@@ -24,7 +26,7 @@ async function createWrapper() {
                     systemConfigApiService: { getValues: () => false },
                     repositoryFactory: {
                         create: () => ({
-                            search: jest.fn(() => Promise.resolve([])),
+                            search: jest.fn(() => Promise.resolve(systemConfigValues ?? [])),
                         }),
                     },
                 },
@@ -143,5 +145,87 @@ describe('swag-paypal-settings-storefront', () => {
 
         expect(wrapper.vm.sbpSettingsDisabled).toBe(true);
         expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(5).fill(true));
+    });
+
+    it('should fetch config without selected sales channel', async () => {
+        store.salesChannel = null;
+        const wrapper = await createWrapper(
+            new EntityCollection('', 'system_config', Shopware.Context.api, null, [
+                new Entity('foo', 'system_config', {
+                    id: 'foo',
+                    configurationKey: 'core.loginRegistration.phoneNumberFieldRequired',
+                    configurationValue: 'true',
+                    createdAt: '',
+                }),
+            ]),
+        );
+        await flushPromises();
+
+        expect(wrapper.vm.phoneRequiredConfig).toBe(true);
+    });
+
+    it('should fetch specific config with selected sales channel if true', async () => {
+        store.salesChannel = 'foobar';
+        const wrapper = await createWrapper(
+            new EntityCollection('', 'system_config', Shopware.Context.api, null, [
+                new Entity('foo', 'system_config', {
+                    id: 'foo',
+                    configurationKey: 'core.loginRegistration.phoneNumberFieldRequired',
+                    configurationValue: 'true',
+                    createdAt: '',
+                    salesChannelId: 'foobar',
+                }),
+                new Entity('bar', 'system_config', {
+                    id: 'bar',
+                    configurationKey: 'core.loginRegistration.phoneNumberFieldRequired',
+                    configurationValue: 'false',
+                    createdAt: '',
+                }),
+            ]),
+        );
+        await flushPromises();
+
+        expect(wrapper.vm.phoneRequiredConfig).toBe(true);
+    });
+
+    it('should fetch specific config with selected sales channel if false', async () => {
+        store.salesChannel = 'foobar';
+        const wrapper = await createWrapper(
+            new EntityCollection('', 'system_config', Shopware.Context.api, null, [
+                new Entity('foo', 'system_config', {
+                    id: 'foo',
+                    configurationKey: 'core.loginRegistration.phoneNumberFieldRequired',
+                    configurationValue: 'false',
+                    createdAt: '',
+                    salesChannelId: 'foobar',
+                }),
+                new Entity('bar', 'system_config', {
+                    id: 'bar',
+                    configurationKey: 'core.loginRegistration.phoneNumberFieldRequired',
+                    configurationValue: 'true',
+                    createdAt: '',
+                }),
+            ]),
+        );
+        await flushPromises();
+
+        expect(wrapper.vm.phoneRequiredConfig).toBe(false);
+    });
+
+    it('should fetch inherited config with selected sales channel', async () => {
+        store.salesChannel = 'foobar';
+        const wrapper = await createWrapper(
+            new EntityCollection('', 'system_config', Shopware.Context.api, null, [
+                new Entity('bar', 'system_config', {
+                    id: 'bar',
+                    configurationKey: 'core.loginRegistration.phoneNumberFieldRequired',
+                    configurationValue: 'true',
+                    createdAt: '',
+                }),
+            ]),
+        );
+        await flushPromises();
+
+        expect(wrapper.vm.phoneRequiredConfig).toBe(true);
     });
 });
