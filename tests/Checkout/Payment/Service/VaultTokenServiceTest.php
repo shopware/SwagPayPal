@@ -520,7 +520,7 @@ class VaultTokenServiceTest extends TestCase
      * @param array<string, mixed> $args
      */
     #[DataProvider('shouldRequestVaultingDataProvider')]
-    public function testshouldRequestVaulting(array $args, bool $expected): void
+    public function testShouldRequestVaulting(array $args, bool $expected): void
     {
         if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
