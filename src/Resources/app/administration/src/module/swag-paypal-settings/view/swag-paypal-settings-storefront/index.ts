@@ -60,6 +60,10 @@ export default Shopware.Component.wrapComponentConfig({
             criteria.addFilter(Criteria.equalsAny('configurationKey', ['core.loginRegistration.doubleOptInGuestOrder', 'core.loginRegistration.phoneNumberFieldRequired']));
             criteria.addFilter(Criteria.equals('configurationValue', 'true'));
 
+            if (this.settingsStore.salesChannel) {
+                criteria.addFilter(Criteria.equals('salesChannelId', this.settingsStore.salesChannel));
+            }
+
             return criteria;
         },
     },
