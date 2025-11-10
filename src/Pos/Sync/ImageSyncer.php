@@ -129,6 +129,7 @@ class ImageSyncer
 
     public function cleanUp(string $salesChannelId, Context $context): void
     {
+        /** @var Criteria<array<string, string>> $criteria */
         $criteria = new Criteria();
         $criteria->addFilter(
             new EqualsFilter('salesChannelId', $salesChannelId),

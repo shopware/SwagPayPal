@@ -119,6 +119,7 @@ parameters:
                 - tests/Checkout/Payment/Service/VaultTokenServiceTest.php
                 - tests/Checkout/Method/ACDCHandlerTest.php
                 - tests/Checkout/Method/VenmoHandlerTest.php
+                - tests/OrdersApi/Builder/Trait/VaultableOrderBuildTrait.php
 
 rules:
     # Shopware core rules
