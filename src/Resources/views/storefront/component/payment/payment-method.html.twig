@@ -1,6 +1,6 @@
 {% sw_extends {
     template: '@Storefront/storefront/component/payment/payment-method.html.twig',
-    scopes: ['default', 'subscription']
+    scopes: ['default', 'subscription', 'mixed-subscription']
 } %}
 
 {% block component_payment_method_description %}
@@ -8,6 +8,7 @@
 
     {# @var \Swag\PayPal\Storefront\Data\Struct\VaultData payPalVaultData #}
     {% set payPalVaultData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\VaultSubscriber::VAULT_EXTENSION')] %}
+    {% set subscriptionContext = context.extensions.subscription is defined or (context.extensions.subscriptionManagedContexts.all|length > 0) or (page.order.extensions.initialSubscriptions|length > 0) %}
 
     {% if payment.id is same as(context.paymentMethod.id) and payPalVaultData is not null %}
         {% block component_payment_method_description_paypal_vault %}
@@ -16,7 +17,7 @@
             <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
                 {{ ("paypal.vault." ~ payPalVaultData.snippetType ~ ".clear")|trans }}
             </a>
-        {% elseif context.extensions.subscription is not defined %}
+        {% elseif not subscriptionContext %}
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="createVault" id="swagPaypalCreateVault" form="confirmOrderForm" value="1" />
                 <label class="form-check-label" for="swagPaypalCreateVault" >

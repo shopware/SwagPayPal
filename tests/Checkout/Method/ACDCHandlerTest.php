@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Checkout\Method;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
+use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
@@ -477,7 +480,7 @@ class ACDCHandlerTest extends TestCase
 
     public function testRecurring(): void
     {
-        if (!\class_exists(SubscriptionRecurringDataStruct::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
@@ -491,21 +494,32 @@ class ACDCHandlerTest extends TestCase
         $subscription = new SubscriptionEntity();
         $subscription->setId('subscriptionId');
         $subscription->setNextSchedule(new \DateTime());
-        $paymentTransaction = new PaymentTransactionStruct(
-            'orderTransactionId',
-            null,
-            new SubscriptionRecurringDataStruct($subscription),
-        );
+        $subscriptions = new SubscriptionCollection([$subscription]);
 
         $payPalOrder = $this->createOrderObject();
 
         $this->orderTransactionRepository->addSearch([$transaction]);
 
-        $this->vaultTokenService
-            ->expects($this->once())
-            ->method('getSubscription')
-            ->with($paymentTransaction)
-            ->willReturn($subscription);
+        /** @deprecated tag:v11.0.0 - Condition will always be true */
+        if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
+            $recurring = new SubscriptionsRecurringDataStruct($subscriptions);
+            $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null, $recurring);
+
+            $this->vaultTokenService
+                ->expects($this->once())
+                ->method('getSubscriptions')
+                ->with($paymentTransaction)
+                ->willReturn($subscriptions);
+        } else {
+            $recurring = new SubscriptionRecurringDataStruct($subscription);
+            $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null, $recurring);
+
+            $this->vaultTokenService
+                ->expects($this->once())
+                ->method('getSubscriptions')
+                ->with($paymentTransaction)
+                ->willReturn($subscriptions);
+        }
 
         $this->transactionDataService
             ->expects($this->once())
@@ -570,7 +584,7 @@ class ACDCHandlerTest extends TestCase
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getSubscription')
+            ->method('getSubscriptions')
             ->with($paymentTransaction)
             ->willReturn(null);
 

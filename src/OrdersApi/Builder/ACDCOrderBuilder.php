@@ -68,7 +68,7 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
             $card->setVaultId($token->getToken());
             $storedCredential = new StoredCredential();
 
-            if ($this->vaultTokenService->getSubscription($paymentTransaction)) {
+            if ($this->vaultTokenService->getSubscriptions($paymentTransaction)) {
                 $storedCredential->setPaymentInitiator(StoredCredential::PAYMENT_INITIATOR_MERCHANT);
                 $storedCredential->setPaymentType(StoredCredential::PAYMENT_TYPE_RECURRING);
                 $storedCredential->setUsage(StoredCredential::USAGE_DERIVED);
@@ -83,11 +83,7 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
             return;
         }
 
-        if ($this->vaultTokenService->getSubscription($paymentTransaction)) {
-            $this->vaultTokenService->requestVaulting($card);
-        }
-
-        if ($request->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+        if ($this->vaultTokenService->shouldRequestVaulting(bag: $request->request, paymentTransaction: $paymentTransaction)) {
             $this->vaultTokenService->requestVaulting($card);
         }
     }
@@ -103,11 +99,7 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
 
         $paymentSource->setCard($card);
 
-        if ($salesChannelContext->hasExtension('subscription')) {
-            $this->vaultTokenService->requestVaulting($card);
-        }
-
-        if ($requestDataBag->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+        if ($this->vaultTokenService->shouldRequestVaulting($salesChannelContext, $requestDataBag)) {
             $this->vaultTokenService->requestVaulting($card);
         }
     }

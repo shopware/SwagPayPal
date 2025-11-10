@@ -10,7 +10,12 @@ namespace Swag\PayPal\Test\Checkout\Method;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\NullLogger;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
+use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -20,6 +25,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\Generator;
+use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\Core\Test\TestDefaults;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
@@ -41,6 +47,7 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Util\PriceFormatter;
@@ -69,6 +76,11 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
 
     private OrderExecuteService&MockObject $orderExecuteService;
 
+    /**
+     * @var StaticEntityRepository<OrderTransactionCollection>
+     */
+    private StaticEntityRepository $orderTransactionRepository;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -81,14 +93,14 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
             $this->transactionDataService = $this->createMock(TransactionDataService::class),
             $this->orderResource = $this->createMock(OrderResource::class),
             $this->vaultTokenService = $this->createMock(VaultTokenService::class),
-            $this->orderTransactionRepo,
+            $this->orderTransactionRepository = new StaticEntityRepository([], new OrderTransactionDefinition()),
             $this->orderBuilder = $this->createMock(VenmoOrderBuilder::class),
         );
     }
 
     public function testRecurring(): void
     {
-        if (!\class_exists(SubscriptionRecurringDataStruct::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
@@ -97,19 +109,34 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
         $subscription = new SubscriptionEntity();
         $subscription->setId('subscriptionId');
         $subscription->setNextSchedule(new \DateTime());
-        $paymentTransaction = new PaymentTransactionStruct(
-            $this->getTransactionId($context, $this->getContainer()),
-            null,
-            new SubscriptionRecurringDataStruct($subscription),
-        );
+        $subscriptions = new SubscriptionCollection([$subscription]);
 
         $paypalOrder = $this->createOrderObject();
+        $order = new OrderEntity();
+        $order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypalOrderId',
+        ]);
+        $transaction->setOrder($order);
+
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        /** @deprecated tag:v11.0.0 - Condition will always be true */
+        if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
+            $recurring = new SubscriptionsRecurringDataStruct($subscriptions);
+            $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null, $recurring);
+        } else {
+            $recurring = new SubscriptionRecurringDataStruct($subscription);
+            $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null, $recurring);
+        }
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getSubscription')
+            ->method('getSubscriptions')
             ->with($paymentTransaction)
-            ->willReturn($subscription);
+            ->willReturn($subscriptions);
 
         $this->transactionDataService
             ->expects($this->once())
@@ -173,7 +200,7 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getSubscription')
+            ->method('getSubscriptions')
             ->with($paymentTransaction)
             ->willReturn(null);
 
