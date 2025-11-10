@@ -138,7 +138,6 @@ class ImageSyncer
 
         $ids = $this->posMediaRepository->searchIds($criteria, $context)->getIds();
         if (!empty($ids)) {
-            $ids = \array_map(static fn ($id) => ['id' => $id], $ids);
             $this->posMediaRepository->delete($ids, $context);
         }
     }

@@ -59,6 +59,8 @@ class SyncResetterTest extends TestCase
             ->method('delete')
             ->with([['salesChannelId' => $salesChannelId, 'productId' => $entityId]], $context);
 
+        /** @var IdSearchResult<array<string, string>> $idSearchResult */
+        $idSearchResult = new IdSearchResult(1, ["{$salesChannelId}-{$entityId}" => ['primaryKey' => ['salesChannelId' => $salesChannelId, 'mediaId' => $entityId], 'data' => []]], $criteria, $context);
         $mediaRepo = $this->createMock(EntityRepository::class);
         $mediaRepo
             ->expects($this->once())
