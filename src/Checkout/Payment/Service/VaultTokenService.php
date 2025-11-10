@@ -158,7 +158,7 @@ class VaultTokenService
     /**
      * @internal
      */
-    public function isSubscriptionContext(
+    public function shouldRequestVaulting(
         ?SalesChannelContext $context = null,
         ?ParameterBag $bag = null,
         ?PaymentTransactionStruct $paymentTransaction = null,

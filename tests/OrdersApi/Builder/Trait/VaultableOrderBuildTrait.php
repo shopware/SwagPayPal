@@ -39,7 +39,7 @@ trait VaultableOrderBuildTrait
         $order = $this->createOrder();
         $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
 
-        $this->vaultTokenService->expects(static::once())->method('isSubscriptionContext')->willReturn(true);
+        $this->vaultTokenService->expects(static::once())->method('shouldRequestVaulting')->willReturn(true);
         $this->vaultTokenService->expects(static::once())->method('getAvailableToken')->willReturn(null);
         $this->vaultTokenService->expects(static::once())->method('requestVaulting');
 
@@ -58,7 +58,7 @@ trait VaultableOrderBuildTrait
         $order = $this->createOrder();
         $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
 
-        $this->vaultTokenService->expects(static::once())->method('isSubscriptionContext')->willReturn(true);
+        $this->vaultTokenService->expects(static::once())->method('shouldRequestVaulting')->willReturn(true);
         $this->vaultTokenService->expects(static::once())->method('getAvailableToken')->willReturn(null);
         $this->vaultTokenService->expects(static::once())->method('requestVaulting');
 

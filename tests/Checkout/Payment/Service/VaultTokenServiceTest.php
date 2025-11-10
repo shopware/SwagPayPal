@@ -519,8 +519,8 @@ class VaultTokenServiceTest extends TestCase
     /**
      * @param array<string, mixed> $args
      */
-    #[DataProvider('isSubscriptionContextDataProvider')]
-    public function testIsSubscriptionContext(array $args, bool $expected): void
+    #[DataProvider('shouldRequestVaultingDataProvider')]
+    public function testshouldRequestVaulting(array $args, bool $expected): void
     {
         if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
@@ -537,12 +537,12 @@ class VaultTokenServiceTest extends TestCase
             null,
         );
 
-        $result = $vaultTokenService->isSubscriptionContext(...$args);
+        $result = $vaultTokenService->shouldRequestVaulting(...$args);
 
         static::assertSame($expected, $result);
     }
 
-    public static function isSubscriptionContextDataProvider(): \Generator
+    public static function shouldRequestVaultingDataProvider(): \Generator
     {
         yield 'empty' => [[], false];
 

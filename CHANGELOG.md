@@ -1,3 +1,6 @@
+# 10.3.0
+- Added compatibility with subscription mixed carts (shopware/shopware#10486)
+
 # 10.2.0
 - Adjusted the amount that Pay Later is available for to the current limitations given (https://developer.paypal.com/studio/checkout/pay-later/de)
 - Fixes an issue, where Paypal Express Checkout does not recalculate cart price after changing shipping country (shopware/SwagPayPal#342)

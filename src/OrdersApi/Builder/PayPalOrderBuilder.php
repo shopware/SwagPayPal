@@ -89,7 +89,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $name->setSurname($customer->getLastName());
         $paypal->setName($name);
 
-        if ($this->vaultTokenService->isSubscriptionContext(bag: $request->request, paymentTransaction: $paymentTransaction)) {
+        if ($this->vaultTokenService->shouldRequestVaulting(bag: $request->request, paymentTransaction: $paymentTransaction)) {
             $this->vaultTokenService->requestVaulting($paypal);
         }
     }
@@ -120,7 +120,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $this->addressProvider->createAddress($billingAddress, $address);
         $paypal->setAddress($address);
 
-        if ($this->vaultTokenService->isSubscriptionContext($salesChannelContext, $requestDataBag)) {
+        if ($this->vaultTokenService->shouldRequestVaulting($salesChannelContext, $requestDataBag)) {
             $this->vaultTokenService->requestVaulting($paypal);
         }
     }
