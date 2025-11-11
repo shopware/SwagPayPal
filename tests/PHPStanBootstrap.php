@@ -40,7 +40,7 @@ foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
 
 $bootstrapper = $bootstrapper
     ->setLoadEnvFile(true)
-    ->addActivePlugins('paypal', ...$plugins);
+    ->addActivePlugins(basename(dirname(__DIR__)), ...$plugins);
 
 $plugins[] = 'SwagPayPal';
 
@@ -63,12 +63,11 @@ $pluginLoader = new StaticKernelPluginLoader($bootstrapper->getClassLoader(), pl
 ));
 
 KernelFactory::$kernelClass = StaticAnalyzeKernel::class;
-/** @var StaticAnalyzeKernel $kernel */
-$kernel = KernelFactory::create(
-    environment: 'phpstan_dev',
-    debug: true,
-    classLoader: $bootstrapper->getClassLoader(),
-    pluginLoader: $pluginLoader,
+$kernel = new StaticAnalyzeKernel(
+    'phpstan_dev',
+    true,
+    $pluginLoader,
+    'phpstan-test-cache-id',
 );
 
 $kernel->boot();
