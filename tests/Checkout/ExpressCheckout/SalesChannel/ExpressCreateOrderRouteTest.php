@@ -45,24 +45,10 @@ class ExpressCreateOrderRouteTest extends TestCase
     {
         $salesChannelContext = $this->getSalesChannelContext();
 
-        $cart = new Cart('token');
-        $cart->add(new LineItem('test', LineItem::PRODUCT_LINE_ITEM_TYPE, 'test'));
+        $response = $this->createRoute()->createPayPalOrder(new Request(), $salesChannelContext);
 
-        $cartService = $this->createMock(CartService::class);
-        $cartService->method('getCart')->willReturn($cart);
-
-        $route = new ExpressCreateOrderRoute(
-            $cartService,
-            $this->getContainer()->get(PayPalOrderBuilder::class),
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
-            $this->getContainer()->get(CartPriceService::class),
-            $this->createMock(RouterInterface::class),
-            new NullLogger(),
-        );
-
-        static::expectException(OrderZeroValueException::class);
-
-        $route->createPayPalOrder(new Request(), $salesChannelContext);
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        static::assertSame(CreateOrderCapture::ID, $response->getToken());
     }
 
     public function testCreatePaymentWithZeroValueCart(): void
