@@ -9,7 +9,8 @@ use Shopware\Core\TestBootstrapper;
 
 $_SERVER['PROJECT_ROOT'] ??= dirname(__DIR__, 4);
 
-function getPluginPath(string $name): ?string {
+function getPluginPath(string $name): ?string
+{
     foreach (glob($_SERVER['PROJECT_ROOT'] . '/custom/*plugins/*', \GLOB_ONLYDIR) ?: [] as $pluginDir) {
         if (is_file($pluginDir . '/composer.json') && is_file($pluginDir . '/src/' . $name . '.php')) {
             return $pluginDir;
