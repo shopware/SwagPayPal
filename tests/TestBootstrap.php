@@ -22,7 +22,7 @@ function getPluginPath(string $name): ?string
 
 $bootstrapper = (new TestBootstrapper())->setProjectDir($_SERVER['PROJECT_ROOT']);
 
-$plugins = ['SwagPayPal'];
+$plugins = [];
 foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
     if (getPluginPath($pluginName)) {
         $plugins[] = $pluginName;
@@ -33,6 +33,6 @@ foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
 
 return $bootstrapper
     ->setLoadEnvFile(true)
-    ->addActivePlugins(...$plugins)
+    ->addActivePlugins(basename(dirname(__DIR__)), ...$plugins)
     ->bootstrap()
     ->getClassLoader();

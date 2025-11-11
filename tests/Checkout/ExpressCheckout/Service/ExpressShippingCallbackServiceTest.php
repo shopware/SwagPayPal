@@ -67,7 +67,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
     protected function setUp(): void
     {
         $country = $this->getCountry('DE');
-        $shippingMethod = $this->getShippingMethod('shipping_standard');
+        $shippingMethod = $this->getShippingMethod('Standard');
 
         $this->ids = new IdsCollection();
 
@@ -136,7 +136,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
     public function testCalculationWithChangedShippingMethod(): void
     {
         $cart = $this->getCart();
-        $shippingMethod = $this->getShippingMethod('shipping_express');
+        $shippingMethod = $this->getShippingMethod('Express');
         $country = $this->getCountry('DE');
 
         $order = $this->service->recalculateCart($this->createCallback($country, $shippingMethod->getId()), $this->salesChannelContext);
@@ -171,7 +171,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
 
     public function testCalculationThrowsMethodNotAvailable(): void
     {
-        $shippingMethod = $this->getShippingMethod('shipping_express');
+        $shippingMethod = $this->getShippingMethod('Express');
         static::getContainer()->get('shipping_method.repository')->update([[
             'id' => $shippingMethod->getId(),
             'availabilityRule' => self::BLOCK_AVAILABLITITY_RULE,
@@ -186,7 +186,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
 
     public function testCalculationThrowsAddressError(): void
     {
-        $shippingMethod = $this->getShippingMethod('shipping_express');
+        $shippingMethod = $this->getShippingMethod('Express');
 
         static::getContainer()->get('shipping_method.repository')->update([
             [
@@ -252,11 +252,11 @@ class ExpressShippingCallbackServiceTest extends TestCase
         return $callback;
     }
 
-    private function getShippingMethod(string $technicalName): ShippingMethodEntity
+    private function getShippingMethod(string $name): ShippingMethodEntity
     {
         $criteria = (new Criteria())
             ->setLimit(1)
-            ->addFilter(new EqualsFilter('technicalName', $technicalName))
+            ->addFilter(new EqualsFilter('name', $name))
             ->addFilter(new EqualsFilter('salesChannels.id', TestDefaults::SALES_CHANNEL));
 
         /** @var ShippingMethodEntity|null $shippingMethod */
