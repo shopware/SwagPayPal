@@ -6,7 +6,6 @@
  */
 
 use Shopware\Core\DevOps\StaticAnalyze\StaticAnalyzeKernel;
-use Shopware\Core\Framework\Adapter\Kernel\KernelFactory;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Core\TestBootstrapper;
 
@@ -62,7 +61,6 @@ $pluginLoader = new StaticKernelPluginLoader($bootstrapper->getClassLoader(), pl
     $plugins,
 ));
 
-KernelFactory::$kernelClass = StaticAnalyzeKernel::class;
 $kernel = new StaticAnalyzeKernel(
     'phpstan_dev',
     true,
