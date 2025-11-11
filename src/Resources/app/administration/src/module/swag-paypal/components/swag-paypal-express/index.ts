@@ -1,4 +1,5 @@
 import type * as PayPal from 'src/types';
+import type EntityCollection from '@shopware-ag/meteor-admin-sdk/es/_internals/data/EntityCollection';
 import template from './swag-paypal-express.html.twig';
 
 const { Criteria } = Shopware.Data;
@@ -28,11 +29,8 @@ export default Shopware.Component.wrapComponentConfig({
     data() {
         return {
             doubleOptInConfig: false,
+            phoneRequiredConfig: false,
         };
-    },
-
-    created() {
-        this.fetchSystemConfig();
     },
 
     computed: {
@@ -95,10 +93,22 @@ export default Shopware.Component.wrapComponentConfig({
         systemConfigCriteria() {
             const criteria = new Criteria();
 
-            criteria.addFilter(Criteria.equals('configurationKey', 'core.loginRegistration.doubleOptInGuestOrder'));
-            criteria.addFilter(Criteria.equals('configurationValue', 'true'));
+            criteria.addFilter(Criteria.equalsAny('configurationKey', ['core.loginRegistration.doubleOptInGuestOrder', 'core.loginRegistration.phoneNumberFieldRequired']));
+
+            if (this.selectedSalesChannelId) {
+                criteria.addFilter(Criteria.equalsAny('salesChannelId', [this.selectedSalesChannelId, null]));
+            }
 
             return criteria;
+        },
+    },
+
+    watch: {
+        selectedSalesChannelId: {
+            immediate: true,
+            handler() {
+                this.fetchSystemConfig();
+            },
         },
     },
 
@@ -124,7 +134,23 @@ export default Shopware.Component.wrapComponentConfig({
         async fetchSystemConfig() {
             const response = await this.systemConfigRepository.search(this.systemConfigCriteria);
 
-            this.doubleOptInConfig = (response?.total != null && response.total > 0);
+            this.doubleOptInConfig = this.getInheritedConfigValue(response, 'core.loginRegistration.doubleOptInGuestOrder');
+            this.phoneRequiredConfig = this.getInheritedConfigValue(response, 'core.loginRegistration.phoneNumberFieldRequired');
+        },
+
+        getInheritedConfigValue(response: EntityCollection<'system_config'>, key: string): boolean {
+            if (!this.selectedSalesChannelId) {
+                return response.some((config) => config.configurationKey === key && config.configurationValue === true);
+            }
+
+            const inheritedConfig = response.find((config) => !config.salesChannelId && config.configurationKey === key);
+            const specificConfig = response.find((config) => config.salesChannelId === this.selectedSalesChannelId && config.configurationKey === key);
+
+            if (!specificConfig) {
+                return inheritedConfig?.configurationValue === true;
+            }
+
+            return specificConfig.configurationValue === true;
         },
 
         preventSave(mode: boolean) {
