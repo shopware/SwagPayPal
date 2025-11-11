@@ -18,7 +18,7 @@ jobs:
       if: always()
       needs:
         - phpstan
-        - php-cs-fixer
+        - ecs
         - validate-openapi-typescript
         - bc-check
         - admin-eslint
