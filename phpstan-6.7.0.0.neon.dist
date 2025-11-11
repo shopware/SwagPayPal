@@ -73,3 +73,28 @@ parameters:
 
         - message: '#(Call to an undefined method.*)?Shopware\\Core\\Framework\\Struct\\Struct::(all|getExtensionOfType)\(\).*(, string given)?#'
           path: src/Checkout/Payment/Service/VaultTokenService.php
+
+        - message: '#Shopware\\Core\\Content\\Cookie\\Event\\CookieGroupCollectEvent#'
+          paths:
+            - src/Storefront/Framework/Cookie/CookieProviderSubscriber.php
+            - tests/Storefront/Framework/Cookie/CookieProviderSubscriberTest.php
+
+        - message: '#Shopware\\Core\\Content\\Cookie\\Struct\\CookieEntry#'
+          paths:
+            - src/Storefront/Framework/Cookie/CookieProviderSubscriber.php
+            - tests/Storefront/Framework/Cookie/CookieProviderSubscriberTest.php
+
+        - message: '#Shopware\\Core\\Content\\Cookie\\Struct\\CookieGroup#'
+          path: tests/Storefront/Framework/Cookie/CookieProviderSubscriberTest.php
+
+        - message: '#^Mixed variable in a `\$(required|entries)\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
+          identifier: typePerfect.noMixedMethodCaller
+          paths:
+            - src/Storefront/Framework/Cookie/CookieProviderSubscriber.php
+            - tests/Storefront/Framework/Cookie/CookieProviderSubscriberTest.php
+
+        - message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+          identifier: staticMethod.internal
+          paths:
+            - src/Storefront/Framework/Cookie/GooglePayCookieProvider.php
+            - src/Storefront/Framework/Cookie/PayPalCookieProvider.php

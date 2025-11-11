@@ -7,8 +7,16 @@
 
 namespace Swag\PayPal\Storefront\Framework\Cookie;
 
+use Shopware\Core\Content\Cookie\Event\CookieGroupCollectEvent;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\PrefixFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @deprecated tag:v11.0.0 - Will be removed. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
@@ -23,8 +31,11 @@ class PayPalCookieProvider implements CookieProviderInterface
      *
      * @deprecated tag:v11.0.0 - Will be removed. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
      */
-    public function __construct(CookieProviderInterface $cookieProvider)
-    {
+    public function __construct(
+        CookieProviderInterface $cookieProvider,
+        private readonly EntityRepository $paymentMethodRepository,
+        private readonly RequestStack $requestStack,
+    ) {
         $this->original = $cookieProvider;
     }
 
@@ -34,6 +45,9 @@ class PayPalCookieProvider implements CookieProviderInterface
     public function getCookieGroups(): array
     {
         $cookies = $this->original->getCookieGroups();
+        if (\class_exists(CookieGroupCollectEvent::class)) {
+            return $cookies;
+        }
 
         foreach ($cookies as &$cookie) {
             if (!\is_array($cookie)) {
@@ -45,6 +59,10 @@ class PayPalCookieProvider implements CookieProviderInterface
             }
 
             if (!\array_key_exists('entries', $cookie)) {
+                continue;
+            }
+
+            if (!$this->isPayPalPaymentActive()) {
                 continue;
             }
 
@@ -61,5 +79,23 @@ class PayPalCookieProvider implements CookieProviderInterface
     {
         return (\array_key_exists('isRequired', $cookie) && $cookie['isRequired'] === true)
             && (\array_key_exists('snippet_name', $cookie) && $cookie['snippet_name'] === 'cookie.groupRequired');
+    }
+
+    private function isPayPalPaymentActive(): bool
+    {
+        $criteria = new Criteria();
+        $criteria->setLimit(1);
+        $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addFilter(new PrefixFilter('technicalName', 'swag_paypal_'));
+
+        $mainRequestAttributes = $this->requestStack->getMainRequest()?->attributes;
+        $context = $mainRequestAttributes?->get('sw-context') ?? Context::createDefaultContext();
+        $salesChannelId = $mainRequestAttributes?->getString('sw-sales-channel-id') ?? '';
+
+        if (Uuid::isValid($salesChannelId)) {
+            $criteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelId));
+        }
+
+        return $this->paymentMethodRepository->searchIds($criteria, $context)->firstId() !== null;
     }
 }
