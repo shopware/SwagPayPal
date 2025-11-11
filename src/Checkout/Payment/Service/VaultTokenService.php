@@ -184,12 +184,12 @@ class VaultTokenService
             throw new ServiceNotFoundException('subscription.repository');
         }
 
-        $this->subscriptionRepository->upsert($subscriptions->map(fn (SubscriptionEntity $subscription) => [
+        $this->subscriptionRepository->upsert(\array_values($subscriptions->map(fn (SubscriptionEntity $subscription) => [
             'id' => $subscription->getId(),
             'customFields' => [
                 $this->getSubscriptionCustomFieldKey($paymentMethodId) => $tokenId,
             ],
-        ]), $context);
+        ])), $context);
     }
 
     private function saveTokenToCustomer(string $tokenId, string $paymentMethodId, string $customerId, Context $context): void
