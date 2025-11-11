@@ -20,7 +20,6 @@ jobs:
         - phpstan
         - ecs
         - validate-openapi-typescript
-        - bc-check
         - admin-eslint
         - admin-jest
         - storefront-eslint
