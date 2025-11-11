@@ -36,7 +36,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: octo-sts/action@main
+    - uses: shopware/octo-sts-action@main
       id: octo-sts
       continue-on-error: true
       with:
