@@ -83,4 +83,4 @@ jobs:
 
       - name: Run PHPUnit
         working-directory: custom/plugins/${{ github.event.repository.name }}
-        run: composer phpunit -- --coverage-cobertura cobertura.xml --coverage-text --only-summary-for-coverage-text
+        run: composer phpunit -- --coverage-cobertura cobertura.xml --coverage-text

@@ -9,8 +9,6 @@ namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
@@ -24,9 +22,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @internal
+ *
+ * @covers \Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressShippingCallbackRoute
  */
 #[Package('checkout')]
-#[CoversClass(ExpressShippingCallbackRoute::class)]
 class ExpressShippingCallbackRouteTest extends TestCase
 {
     private MockObject&ExpressShippingCallbackService $service;
@@ -75,9 +74,10 @@ class ExpressShippingCallbackRouteTest extends TestCase
     }
 
     /**
+     * @dataProvider handleCallbackInvalidPayloadDataProvider
+     *
      * @param array<mixed> $payload
      */
-    #[DataProvider('handleCallbackInvalidPayloadDataProvider')]
     public function testHandleCallbackInvalidPayload(array $payload): void
     {
         $request = new Request(request: $payload);
