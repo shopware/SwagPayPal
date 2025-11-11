@@ -6,7 +6,6 @@
  */
 
 use Shopware\Core\DevOps\StaticAnalyze\StaticAnalyzeKernel;
-use Shopware\Core\Framework\Adapter\Kernel\KernelFactory;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Core\TestBootstrapper;
 
@@ -40,7 +39,7 @@ foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
 
 $bootstrapper = $bootstrapper
     ->setLoadEnvFile(true)
-    ->addActivePlugins('paypal', ...$plugins);
+    ->addActivePlugins(basename(dirname(__DIR__)), ...$plugins);
 
 $plugins[] = 'SwagPayPal';
 
@@ -62,13 +61,11 @@ $pluginLoader = new StaticKernelPluginLoader($bootstrapper->getClassLoader(), pl
     $plugins,
 ));
 
-KernelFactory::$kernelClass = StaticAnalyzeKernel::class;
-/** @var StaticAnalyzeKernel $kernel */
-$kernel = KernelFactory::create(
-    environment: 'phpstan_dev',
-    debug: true,
-    classLoader: $bootstrapper->getClassLoader(),
-    pluginLoader: $pluginLoader,
+$kernel = new StaticAnalyzeKernel(
+    'phpstan_dev',
+    true,
+    $pluginLoader,
+    'phpstan-test-cache-id',
 );
 
 $kernel->boot();

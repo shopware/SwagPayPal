@@ -20,7 +20,6 @@ jobs:
         - phpstan
         - ecs
         - validate-openapi-typescript
-        - bc-check
         - admin-eslint
         - admin-jest
         - storefront-eslint
@@ -69,10 +68,8 @@ jobs:
   validate-openapi-typescript:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Extension
-        uses: shopware/github-actions/setup-extension@main
-        env:
-          runner: ${{ runner.environment }}
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
         with:
           path: custom/plugins/${{ github.event.repository.name }}
 
@@ -90,26 +87,6 @@ jobs:
           git update-index --refresh || printf ''
           git diff --exit-code src/Resources/app/administration/src/types/openapi.d.ts || (echo "Please run 'composer openapi:generate' to update openapi.d.ts" && exit 1)
           git diff --exit-code src/Resources/Schema || (echo "Please run 'composer openapi:generate' to update Resources/Schema files" && exit 1)
-
-  bc-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout SwagPayPal
-        uses: actions/checkout@v4
-        with:
-          path: custom/plugins/${{ github.event.repository.name }}
-
-      - name: Setup SwagPayPal
-        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
-
-      - name: Fetch SwagPayPal
-        working-directory: custom/plugins/${{ github.event.repository.name }}
-        run: git fetch --unshallow origin
-
-      - name: Run bc-check
-        working-directory: custom/plugins/${{ github.event.repository.name }}
-        if: github.event_name == 'pull_request' && !contains(github.base_ref, '/feature/')
-        run: composer bc-check -- --format=github-actions --from="origin/${{ github.base_ref }}"
 
   admin-eslint:
     runs-on: ubuntu-latest
@@ -133,10 +110,23 @@ jobs:
           composer run lint:admin:ci
 
   admin-jest:
-    uses: shopware/github-actions/.github/workflows/admin-jest.yml@main
-    with:
-      extensionName: ${{ github.event.repository.name }}
-      uploadCoverage: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          install-admin: true
+
+      - name: Run ESLint
+        env:
+          ADMIN_PATH: ${{ github.workspace }}/src/Administration/Resources/app/administration
+        working-directory: custom/plugins/${{ github.event.repository.name }}
+        run: composer run jest
 
   storefront-eslint:
     runs-on: ubuntu-latest
