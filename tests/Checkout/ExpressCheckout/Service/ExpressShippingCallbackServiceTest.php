@@ -305,6 +305,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
         return static::getContainer()->get(LineItemFactoryRegistry::class)->create([
             'type' => 'product',
             'id' => $this->ids->get('P-10000'),
+            'referencedId' => $this->ids->get('P-10000'),
         ], $this->salesChannelContext);
     }
 }
