@@ -20,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber;
@@ -32,6 +33,15 @@ use Symfony\Component\HttpFoundation\Request;
 #[Package('checkout')]
 class CookieProviderSubscriberTest extends TestCase
 {
+    use IntegrationTestBehaviour;
+
+    public function testLoadService(): void
+    {
+        $subscriber = $this->getContainer()->get(CookieProviderSubscriber::class);
+
+        static::assertInstanceOf(CookieProviderSubscriber::class, $subscriber);
+    }
+
     #[DataProvider('dataStructs')]
     public function testRequiredStructsNotSet(?CookieGroupCollection $cookieGroupCollection): void
     {
