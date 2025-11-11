@@ -62,8 +62,6 @@ export default Shopware.Component.wrapComponentConfig({
 
             if (this.settingsStore.salesChannel) {
                 criteria.addFilter(Criteria.equalsAny('salesChannelId', [this.settingsStore.salesChannel, null]));
-            } else {
-                criteria.addFilter(Criteria.equals('configurationValue', 'true'));
             }
 
             return criteria;
@@ -89,7 +87,7 @@ export default Shopware.Component.wrapComponentConfig({
 
         getInheritedConfigValue(response: EntityCollection<"system_config">, key: string): boolean {
             if (!this.settingsStore.salesChannel) {
-                return response.some((config) => config.configurationKey === key);
+                return response.some((config) => config.configurationKey === key && config.configurationValue === 'true');
             }
 
             const inheritedConfig = response.find((config) => !config.salesChannelId && config.configurationKey === key);
