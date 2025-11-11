@@ -69,6 +69,11 @@
         "openapi:generate": [
             "../../../bin/console swag:paypal:openapi:generate",
             "npm run openapi-types --prefix src/Resources/app/administration"
+        ],
+        "bc-check": [
+            "php ../../../vendor-bin/roave-backward-compatibility-check/bin/verify-version.php",
+            "@putenv TMPDIR=./..",
+            "../../../vendor/bin/roave-backward-compatibility-check"
         ]
     },
     "autoload": {

@@ -18,7 +18,7 @@ jobs:
       if: always()
       needs:
         - phpstan
-        - php-cs-fixer
+        - ecs
         - validate-openapi-typescript
         - bc-check
         - admin-eslint
@@ -69,10 +69,8 @@ jobs:
   validate-openapi-typescript:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Extension
-        uses: shopware/github-actions/setup-extension@main
-        env:
-          runner: ${{ runner.environment }}
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
         with:
           path: custom/plugins/${{ github.event.repository.name }}
 
