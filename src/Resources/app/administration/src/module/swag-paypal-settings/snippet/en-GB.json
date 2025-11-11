@@ -73,7 +73,9 @@
     "express": {
       "title": "Express Checkout Shortcut",
       "subtitle": "Express Checkouts increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated. ",
-      "alertMessage": "Double opt-in for guests is activated in one of your Sales Channels. This feature is not compatible with PayPal Express Shortcut buttons. Customers who sign up via the Express Checkout Shortcut buttons won't receive double opt-in verification emails."
+      "alertMessage": "Double opt-in for guests is activated in one of your Sales Channels. This feature is not compatible with PayPal Express Shortcut buttons. Customers who sign up via the Express Checkout Shortcut buttons won't receive double opt-in verification emails.",
+      "alertMessagePhone": "Phone numbers are required for one of your Sales Channels. Please ensure that you have enabled the transmission for \"contact phone number\" in the PayPal account settings to avoid checkout issues. You can find this setting {url}.",
+      "alertMessagePhoneLink": "here"
     },
     "installment": {
       "title": "'Pay Later' banner",

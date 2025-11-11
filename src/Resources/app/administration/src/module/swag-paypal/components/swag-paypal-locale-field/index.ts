@@ -14,12 +14,32 @@ export default Shopware.Component.wrapComponentConfig({
 
     inject: ['feature'],
 
+    compatConfig: Shopware.compatConfig,
+
+    props: {
+        value: {
+            type: String,
+            required: false,
+            default: '',
+        },
+    },
+
     data(): {
         error: null | PayPal.ErrorState;
     } {
         return {
             error: null,
         };
+    },
+
+    computed: {
+        listeners() {
+            if (this.isCompatEnabled('INSTANCE_LISTENERS')) {
+                return this.$listeners;
+            }
+
+            return {};
+        },
     },
 
     methods: {
@@ -38,7 +58,6 @@ export default Shopware.Component.wrapComponentConfig({
             const localeCodeRegex = /^[a-z]{2}_[A-Z]{2}$/;
 
             this.$emit('update:value', value || '');
-
 
             if (!value || localeCodeRegex.exec(value)) {
                 this.preventSave(false);
