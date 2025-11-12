@@ -30,6 +30,7 @@ use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -41,6 +42,16 @@ class ExpressCreateOrderRouteTest extends TestCase
     use IntegrationTestBehaviour;
 
     public function testCreatePayment(): void
+    {
+        $salesChannelContext = $this->getSalesChannelContext();
+
+        $response = $this->createRoute()->createPayPalOrder(new Request(), $salesChannelContext);
+
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        static::assertSame(CreateOrderCapture::ID, $response->getToken());
+    }
+
+    public function testCreatePaymentWithZeroValueCart(): void
     {
         $salesChannelContext = $this->getSalesChannelContext();
 
@@ -76,7 +87,8 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->getContainer()->get(CartService::class),
             $paypalOrderBuilder,
             new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
-            new NullLogger()
+            $this->createMock(RouterInterface::class),
+            new NullLogger(),
         );
     }
 }
