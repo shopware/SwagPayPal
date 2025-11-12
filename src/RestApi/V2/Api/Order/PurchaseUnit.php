@@ -16,6 +16,8 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payee;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ShippingOption;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ShippingOptionCollection;
 
 #[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit')]
 #[Package('checkout')]
@@ -47,6 +49,9 @@ class PurchaseUnit extends PayPalApiStruct
 
     #[OA\Property(ref: Payments::class, nullable: true)]
     protected ?Payments $payments = null;
+
+    #[OA\Property(type: 'array', items: new OA\Items(ref: ShippingOption::class), nullable: true)]
+    protected ?ShippingOptionCollection $shippingOptions = null;
 
     public function getReferenceId(): string
     {
@@ -136,5 +141,15 @@ class PurchaseUnit extends PayPalApiStruct
     public function setPayments(Payments $payments): void
     {
         $this->payments = $payments;
+    }
+
+    public function getShippingOptions(): ?ShippingOptionCollection
+    {
+        return $this->shippingOptions;
+    }
+
+    public function setShippingOptions(?ShippingOptionCollection $shippingOptions): void
+    {
+        $this->shippingOptions = $shippingOptions;
     }
 }
