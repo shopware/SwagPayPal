@@ -61,6 +61,7 @@ final class Settings
     public const VAULTING_ENABLED_WALLET = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledWallet';
     public const VAULTING_ENABLED_ACDC = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledACDC';
     public const VAULTING_ENABLED_VENMO = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledVenmo';
+    public const PAYPAL_CALLBACKS = self::SYSTEM_CONFIG_DOMAIN . 'paypalCallbacks';
 
     /**
      * @internal these may change at any time
@@ -98,6 +99,7 @@ final class Settings
         self::VAULTING_ENABLED_VENMO => false,
         self::CROSS_BORDER_MESSAGING_ENABLED => false,
         self::CROSS_BORDER_BUYER_COUNTRY => null,
+        self::PAYPAL_CALLBACKS => true,
     ];
 
     public const LIVE_CREDENTIAL_KEYS = [

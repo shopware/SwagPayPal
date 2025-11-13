@@ -101,6 +101,11 @@
       "info": "Pay Later messaging is a feature that allows you to display a Pay Later message in the language of the customer. This feature is only available for certain countries. {0}",
       "buyerCountryAuto": "Automatic determination",
       "buyerCountryOverride": "Localization"
+    },
+    "paypalCallbacks": {
+      "title": "PayPal Callbacks",
+      "warning": "We recommend not disabling this option, as this would impair the functionality of the extension. Please only disable it if your shop is not publicly accessible.",
+      "info": "Callbacks enable PayPal to contact the shop for order status updates and cart calculations in PayPal's Express Checkout UI."
     }
   },
   "swag-paypal-settings-sales-channel-switch": {

@@ -1,3 +1,6 @@
+# 10.3.1
+- Fügt eine Option zum deaktiveren von PayPal Callbacks hinzu
+
 # 10.3.0
 - Fügt Kompatibilität mit Abos in gemischten Warenkörben hinzu (shopware/shopware#10486)
 

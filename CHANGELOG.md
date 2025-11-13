@@ -1,3 +1,6 @@
+# 10.3.1
+- Added option to disable PayPal callbacks
+
 # 10.3.0
 - Added compatibility with subscription mixed carts (shopware/shopware#10486)
 

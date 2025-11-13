@@ -151,6 +151,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '9.6.1', '<')) {
             $this->updateTo961($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.3.1', '<')) {
+            $this->updateTo1031();
+        }
     }
 
     private function updateTo130(): void
@@ -570,5 +574,10 @@ class Update
                 'technicalName' => 'swag_paypal_pos',
             ]], $context);
         }
+    }
+
+    private function updateTo1031(): void
+    {
+        $this->setSettingToDefaultValue(Settings::PAYPAL_CALLBACKS);
     }
 }

@@ -25,3 +25,22 @@
         />
     </div>
 </mt-card>
+
+<mt-card
+    class="swag-paypal-settings-paypal-callbacks"
+    position-identifier="swag-paypal-settings-paypal-callbacks"
+    :title="$t('swag-paypal-settings.paypalCallbacks.title')"
+    :is-loading="settingsStore.isLoading"
+>
+    <div class="swag-paypal-settings-paypal-callbacks__content">
+        <mt-banner class="swag-paypal-settings-paypal-callbacks__warning-text" variant="attention">
+            {{ $t('swag-paypal-settings.paypalCallbacks.warning') }}
+        </mt-banner>
+
+        <span class="swag-paypal-settings-paypal-callbacks__info-text">
+            {{ $t('swag-paypal-settings.paypalCallbacks.info') }}
+        </span>
+
+        <swag-paypal-setting path="SwagPayPal.settings.paypalCallbacks" />
+    </div>
+</mt-card>
