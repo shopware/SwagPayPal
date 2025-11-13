@@ -74,7 +74,7 @@ class WebhookSystemConfigHelper
                 continue;
             }
 
-            if ($newData[Settings::PAYPAL_CALLBACKS] ?? true && !$this->configHasChangedSettings($newSettings, $oldActualSettings)) {
+            if (($newData[Settings::PAYPAL_CALLBACKS] ?? true) && !$this->configHasChangedSettings($newSettings, $oldActualSettings)) {
                 // No writing of new credentials in this Sales Channel
                 continue;
             }

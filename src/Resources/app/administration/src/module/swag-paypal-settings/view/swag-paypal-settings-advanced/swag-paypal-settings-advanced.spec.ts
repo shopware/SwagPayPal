@@ -42,6 +42,7 @@ describe('swag-paypal-settings-advanced', () => {
 
         expect(cardClasses).toEqual([
             'swag-paypal-settings-cross-border',
+            'swag-paypal-settings-paypal-callbacks',
         ]);
     });
 
@@ -54,6 +55,7 @@ describe('swag-paypal-settings-advanced', () => {
         expect(Object.keys(settings)).toEqual([
             'SwagPayPal.settings.crossBorderMessagingEnabled',
             'SwagPayPal.settings.crossBorderBuyerCountry',
+            'SwagPayPal.settings.paypalCallbacks',
         ]);
 
         expect(settings['SwagPayPal.settings.crossBorderBuyerCountry'].vm.$attrs.options)
@@ -63,7 +65,7 @@ describe('swag-paypal-settings-advanced', () => {
     it('should have cross-border information', async () => {
         const wrapper = await createWrapper();
 
-        const alert = wrapper.find('.mt-banner');
+        const alert = wrapper.find('.swag-paypal-settings-cross-border .mt-banner');
 
         expect(alert.exists()).toBe(true);
         expect(alert.classes()).toContain('swag-paypal-settings-cross-border__warning-text');
@@ -72,5 +74,19 @@ describe('swag-paypal-settings-advanced', () => {
 
         expect(info.exists()).toBe(true);
         expect(info.text()).toBe('swag-paypal-settings.crossBorder.info');
+    });
+
+    it('should have paypal-callback information', async () => {
+        const wrapper = await createWrapper();
+
+        const alert = wrapper.find('.swag-paypal-settings-paypal-callbacks .mt-banner');
+
+        expect(alert.exists()).toBe(true);
+        expect(alert.classes()).toContain('swag-paypal-settings-paypal-callbacks__warning-text');
+
+        const info = wrapper.find('.swag-paypal-settings-paypal-callbacks__info-text');
+
+        expect(info.exists()).toBe(true);
+        expect(info.text()).toBe('swag-paypal-settings.paypalCallbacks.info');
     });
 });

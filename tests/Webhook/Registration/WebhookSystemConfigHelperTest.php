@@ -45,8 +45,6 @@ class WebhookSystemConfigHelperTest extends TestCase
 
     private StaticSystemConfigService $systemConfigService;
 
-    private SettingsValidationService $settingsValidationService;
-
     private WebhookSystemConfigHelper $helper;
 
     protected function setUp(): void
@@ -55,7 +53,7 @@ class WebhookSystemConfigHelperTest extends TestCase
             new NullLogger(),
             $this->webhookService = $this->createMock(WebhookServiceInterface::class),
             $this->systemConfigService = new StaticSystemConfigService(),
-            $this->settingsValidationService = new SettingsValidationService(
+            new SettingsValidationService(
                 $this->systemConfigService,
                 new NullLogger(),
             ),
@@ -66,7 +64,7 @@ class WebhookSystemConfigHelperTest extends TestCase
      * @param array<string, array<string, mixed>> $newConfig
      * @param array<string, array<string, mixed>> $existingConfig
      */
-    #[DataProvider('providercheckWebhookBefore')]
+    #[DataProvider('providerCheckWebhookBefore')]
     public function testCheckWebhookBefore(bool $expected, array $newConfig, array $existingConfig): void
     {
         foreach ($existingConfig as $salesChannelId => $config) {
@@ -115,10 +113,9 @@ class WebhookSystemConfigHelperTest extends TestCase
     }
 
     /**
-     * @param array<string, array<string, mixed>> $newConfig
-     * @param array<string, array<string, mixed>> $existingConfig
+     * @param array<string, array<string, mixed>> $config
      */
-    #[DataProvider('providercheckWebhookAfter')]
+    #[DataProvider('providerCheckWebhookAfter')]
     public function testCheckWebhookAfter(bool $expected, array $config): void
     {
         foreach ($config as $salesChannelId => $config) {
