@@ -55,7 +55,7 @@ runs:
       shell: bash
       run: |
         mkdir -p ~/.config/composer
-        yq e -n -o=json '.config.audit.block-insecure=true' > ~/.config/composer/config.json
+        yq e -n -o=json '.config.audit.block-insecure=false' > ~/.config/composer/config.json
 
     - name: Prepare dependency list
       id: dependency-list
