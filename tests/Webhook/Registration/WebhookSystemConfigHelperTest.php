@@ -118,9 +118,9 @@ class WebhookSystemConfigHelperTest extends TestCase
     #[DataProvider('providerCheckWebhookAfter')]
     public function testCheckWebhookAfter(bool $expected, array $config): void
     {
-        foreach ($config as $salesChannelId => $config) {
+        foreach ($config as $salesChannelId => $values) {
             $salesChannelId = $salesChannelId === 'null' ? null : $salesChannelId;
-            $this->systemConfigService->setMultiple($config, $salesChannelId);
+            $this->systemConfigService->setMultiple($values, $salesChannelId);
         }
 
         $this->webhookService
