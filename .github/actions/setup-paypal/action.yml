@@ -50,6 +50,13 @@ runs:
         scope: shopware
         identity: ${{ github.event.repository.name }}
 
+    - name: Ignore audit
+      if: ${{ inputs.shopware-version != 'trunk' }}
+      shell: bash
+      run: |
+        mkdir -p ~/.config/composer
+        yq e -n -o=json '.config.audit.block-insecure=false' > ~/.config/composer/config.json
+
     - name: Prepare dependency list
       id: dependency-list
       shell: bash
