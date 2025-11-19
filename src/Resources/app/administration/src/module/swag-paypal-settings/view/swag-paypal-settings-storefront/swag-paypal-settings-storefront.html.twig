@@ -1,4 +1,14 @@
 <mt-card
+    class="swag-paypal-settings-sdk"
+    position-identifier="swag-paypal-settings-sdk"
+    :title="$t('swag-paypal-settings.sdk.title')"
+    :subtitle="$t('swag-paypal-settings.sdk.subtitle')"
+    :is-loading="settingsStore.isLoading"
+>
+    <swag-paypal-setting path="SwagPayPal.settings.sdkV6Enabled" />
+</mt-card>
+
+<mt-card
     class="swag-paypal-settings-express"
     position-identifier="swag-paypal-settings-express"
     :title="$t('swag-paypal-settings.express.title')"

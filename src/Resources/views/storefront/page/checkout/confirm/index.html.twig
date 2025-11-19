@@ -5,7 +5,7 @@
 
 {% block page_checkout_confirm_form_submit %}
     {% block page_checkout_confirm_form_pui_disclaimer %}
-        {# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData acdcFieldData #}
+        {# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData puiFraudnetData #}
         {% set puiFraudnetData = page.extensions[constant('Swag\\PayPal\\Checkout\\PUI\\PUISubscriber::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID')] %}
         {% if puiFraudnetData and puiFraudnetData.paymentMethodId is same as(context.paymentMethod.id) %}
             <div class="text-muted mb-3">{{ "paypal.payUponInvoice.checkout.confirmDisclaimer"|trans|raw }}</div>
@@ -15,6 +15,11 @@
     {{ parent() }}
 
     {% block page_checkout_confirm_form_submit_paypal_container %}
-        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
+        {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
+        {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+            {% sw_include '@SwagPayPal/storefront/paypal/checkout-button.html.twig' %}
+        {% else %}
+            {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
+        {% endif %}
     {% endblock %}
 {% endblock %}

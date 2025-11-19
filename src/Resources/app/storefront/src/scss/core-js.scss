@@ -1,0 +1,28 @@
+paypal-button, venmo-button, paypal-pay-later-button {
+    width: 100%;
+
+    &.shape-sharp {
+        --paypal-button-border-radius: 0px;
+    }
+
+    &.shape-pill {
+        --paypal-button-border-radius: 50%;
+    }
+
+    &.shape-rect {
+        --paypal-button-border-radius: 4px;
+    }
+}
+
+paypal-message {
+    --paypal-message-font-size: 12px;
+}
+
+.swag-paypal-express-buttons {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.swag-paypal-acdc-form-field {
+    height: 50px;
+}

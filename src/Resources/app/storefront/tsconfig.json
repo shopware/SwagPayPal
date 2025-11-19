@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2021", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true,
+    "allowJs": true,
+    "baseUrl": "./",
+    "paths": {
+      "src/*": [
+        "./../../../../../../../src/Storefront/Resources/app/storefront/src/*",
+      ],
+    },
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

@@ -1,13 +1,9 @@
-const { join, resolve } = require('path');
-
-module.exports = () => {
+module.exports = (params) => {
     return {
         resolve: {
-            alias: {
-                '@paypal': resolve(
-                    join(__dirname, '..', 'node_modules', '@paypal'),
-                ),
-            },
+            modules: [
+                `${params.basePath}Resources/app/storefront/node_modules`,
+            ],
         },
     };
 };

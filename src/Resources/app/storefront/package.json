@@ -6,5 +6,10 @@
   "license": "MIT",
   "dependencies": {
     "@paypal/paypal-js": "~9"
+  },
+  "devDependencies": {
+    "@types/applepayjs": "^14.0.9",
+    "@types/googlepay": "^0.7.8",
+    "typescript": "^5.9.3"
   }
 }
