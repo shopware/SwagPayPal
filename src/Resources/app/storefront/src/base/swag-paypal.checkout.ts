@@ -40,6 +40,8 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         preventErrorReload: false,
     }
 
+    protected abstract get metadata(): { components: PayPalCoreJS.Components[], fundingSource: FS, product: Products };
+
     protected get confirmOrderForm(): HTMLFormElement {
         const form = document.querySelector<'form'>(this.options.confirmOrderFormSelector);
 
@@ -58,10 +60,6 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         }
 
         return button;
-    }
-
-    protected get product(): Products {
-        return 'default' as const;
     }
 
     async init() {
@@ -95,7 +93,7 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
 
     protected async createOrder(): Promise<{ orderId: string, vaultSetupToken?: string }> {
         const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
-        formData.set('product', this.product);
+        formData.set('product', this.metadata.product);
 
         const orderId = this.options.orderId;
         if (orderId !== null) {

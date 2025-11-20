@@ -1,5 +1,4 @@
 import SwagPaypalBase, { type SwagPaypalBaseOptions } from '../base/swag-paypal.base';
-import PayPalLoader from '../helper/paypal-loader.helper';
 
 interface SwagPayPalEligibilityOptions extends SwagPaypalBaseOptions {
     filteredPaymentMethods: string[];
@@ -13,6 +12,12 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
         VENMO: 'venmo',
         PAYLATER: 'paylater',
     };
+
+    protected get metadata(): { components: [] } {
+        return {
+            components: [],
+        };
+    }
 
     static options: SwagPayPalEligibilityOptions = {
         ...this.options,
@@ -31,9 +36,7 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
     };
 
     protected async prepare(): Promise<void> {
-        const eligibleMethods = await PayPalLoader.findEligibleMethods({
-            currencyCode: this.options.currency,
-        });
+        const eligibleMethods = await this.findEligibleMethods();
 
         const unavailable = Object.entries(SwagPayPalEligibility.fundingSources)
             .filter(async ([, source]) => !eligibleMethods.isEligible(source))

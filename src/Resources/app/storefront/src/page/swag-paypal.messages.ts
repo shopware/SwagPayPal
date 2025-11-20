@@ -1,6 +1,4 @@
 import SwagPaypalBase, { SwagPaypalBaseOptions } from '../base/swag-paypal.base';
-import PayPalPluginError from '../base/paypal-plugin.error';
-import PayPalLoader from '../helper/paypal-loader.helper';
 
 interface SwagPaypalMessagesOptions extends SwagPaypalBaseOptions {
     crossBorderBuyerCountry?: string;
@@ -89,11 +87,17 @@ export default class SwagPaypalMessages extends SwagPaypalBase {
         partOfDomContentLoading: false,
     };
 
-    private static messagesInstance: PayPalCoreJS.Messages.PayPalMessages | null = null;
+    protected get metadata(): { components: 'paypal-messages'[] } {
+        return {
+            components: ['paypal-messages'],
+        };
+    }
+
+    private static messagesInstance: Promise<PayPalCoreJS.Messages.PayPalMessages> | null = null;
 
     protected async prepare(): Promise<void> {
-        if (this.instance.createPayPalMessages) {
-            SwagPaypalMessages.messagesInstance ??= await this.instance.createPayPalMessages();
-        }
+        SwagPaypalMessages.messagesInstance ??= this.instance!.createPayPalMessages();
+
+        await SwagPaypalMessages.messagesInstance;
     }
 }

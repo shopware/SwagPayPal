@@ -86,12 +86,12 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
 
     protected orderId: string | null = null;
 
-    protected get product(): Products {
-        return 'acdc' as const;
-    }
-
-    protected get fundingSource(): 'advanced_cards' {
-        return 'advanced_cards';
+    protected get metadata(): { components: 'card-fields'[], fundingSource: 'advanced_cards', product: Products } {
+        return {
+            components: ['card-fields'],
+            fundingSource: 'advanced_cards',
+            product: 'acdc',
+        };
     }
 
     protected get wrapperCardFields(): Fields {
@@ -112,7 +112,7 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
     }
 
     protected async prepare(): Promise<void> {
-        const paymentSession = this.instance.createCardFieldsOneTimePaymentSession();
+        const paymentSession = this.instance!.createCardFieldsOneTimePaymentSession();
 
         for (const field of ['number', 'expiry', 'cvv'] as const) {
             this.fields[field] = paymentSession.createCardFieldsComponent({

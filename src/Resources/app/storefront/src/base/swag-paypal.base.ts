@@ -19,7 +19,7 @@ export interface SwagPaypalBaseOptions {
  * On plugin initialization, the preparation flow is started, which loads the PayPal SDK and prepares the plugin.
  */
 // @ts-expect-error - "private" _init is overriden
-export default class SwagPaypalBase extends Plugin {
+export default abstract class SwagPaypalBase extends Plugin {
     static options: SwagPaypalBaseOptions = {
         /**
          * This option holds the client token required for field rendering
@@ -64,15 +64,11 @@ export default class SwagPaypalBase extends Plugin {
         partOfDomContentLoading: true,
     };
 
-    private _instance: PayPalCoreJS.Instance | null = null;
+    protected instance: PayPalCoreJS.Instance<(typeof this.metadata)['components'][number]> | null = null;
 
-    protected get instance(): PayPalCoreJS.Instance {
-        if (!this._instance) {
-            throw new Error('PayPal SDK instance not initialized yet');
-        }
+    protected static eligibleMethods: Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods> | null = null;
 
-        return this._instance;
-    }
+    protected abstract get metadata(): { components: PayPalCoreJS.Components[] };
 
     _init() {
         if (this.options.partOfDomContentLoading || document.readyState === 'complete') {
@@ -103,18 +99,15 @@ export default class SwagPaypalBase extends Plugin {
      * Override in child classes to handle pre-SDK loading logic.
      */
     protected async beforePrepare(): Promise<void> {
-        this._instance = await PayPalLoader.getInstance(
-            {
-                environment: this.options.environment,
-                // debug: this.options.environment !== 'production',
-            },
-            {
-                clientToken: this.options.clientToken,
-                locale: this.options.languageIso.replace('_', '-'),
-                pageType: this.options.pageType,
-                partnerAttributionId: this.options.partnerAttributionId,
-            },
-        )
+        const paypal = await PayPalLoader.loadPayPalCore({ environment: this.options.environment });
+
+        this.instance ??= await paypal.createInstance({
+            clientToken: this.options.clientToken,
+            locale: this.options.languageIso.replace('_', '-'),
+            pageType: this.options.pageType,
+            partnerAttributionId: this.options.partnerAttributionId,
+            components: this.metadata.components,
+        });
     }
 
     /**
@@ -123,6 +116,23 @@ export default class SwagPaypalBase extends Plugin {
     protected async prepare(): Promise<void> {}
 
     protected async afterPrepare(): Promise<void> {}
+
+    public async findEligibleMethods(): Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods> {
+        if (!this.instance) {
+            throw new Error('PayPal SDK instance is not initialized yet.');
+        }
+
+        SwagPaypalBase.eligibleMethods ??= this.instance.findEligibleMethods({
+            currencyCode: this.options.currency,
+        });
+
+        try {
+            return await SwagPaypalBase.eligibleMethods;
+        } catch (error) {
+            SwagPaypalBase.eligibleMethods = null;
+            throw PayPalPluginError.genericError(false, 'Failed to find eligible payment methods');
+        }
+    }
 
     /**
      * @param code - The error code. Will be replaced by an extracted error code from {@link data} if available

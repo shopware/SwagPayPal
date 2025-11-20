@@ -1,4 +1,4 @@
-import { loadCoreSdkScript } from '../../node_modules/@paypal/paypal-js/dist/v6/esm/paypal-js.min.js';
+import { loadCoreSdkScript } from '@paypal/paypal-js/sdk-v6';
 import PayPalPluginError from '../base/paypal-plugin.error';
 
 export default class PayPalLoader {
@@ -8,34 +8,11 @@ export default class PayPalLoader {
 
     private static eligibleMethods: Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods>|null = null;
 
-    private static messagesScript: Promise<void>|null = null;
-
     private static googlePay: Promise<void>|null = null;
 
     private static applePay: Promise<void>|null = null;
 
     private constructor() {}
-
-    public static async getInstance(script: PayPalCoreJS.LoadCoreScriptOptions, options: PayPalCoreJS.InstanceOptions): Promise<PayPalCoreJS.Instance> {
-        try {
-            PayPalLoader.instance ??= this.loadPayPalCore(script)!.then((paypal) => paypal.createInstance({
-                ...options,
-                components: [
-                    'paypal-payments',
-                    'venmo-payments',
-                    'card-fields',
-                    'googlepay-payments',
-                    'applepay-payments',
-                    'paypal-messages',
-                ],
-            }));
-
-            return await PayPalLoader.instance;
-        } catch (error) {
-            PayPalLoader.instance = null;
-            throw PayPalPluginError.scriptError(error);
-        }
-    }
 
     public static async loadPayPalCore(script: PayPalCoreJS.LoadCoreScriptOptions): Promise<PayPalCoreJS.Namespace> {
         try {

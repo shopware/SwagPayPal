@@ -1,0 +1,60 @@
+{% set spbData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
+{% set acdcFieldData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
+{% set venmoData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\VenmoMethodData::PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID')] %}
+{% set payLaterData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\PayLaterMethodData::PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID')] %}
+{% set applePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ApplePayMethodData::PAYPAL_APPLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
+{% set googlePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\GooglePayMethodData::PAYPAL_GOOGLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
+{% set installmentBannerData = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+
+{% set expressSettings = page.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+{% set expressSettings = expressSettings ?? cmsPage.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+{% set expressSettings = expressSettings ?? product.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+
+{% set anyPresent = expressSettings or spbData or acdcFieldData or puiFraudnetData or sepaData or venmoData or payLaterData or applePayData or googlePayData or installmentBannerData %}
+
+{% set baseUrl = config('SwagPayPal.settings.sandbox') ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com' %}
+
+{% if anyPresent and config('SwagPayPal.settings.sdkV6Enabled') %}
+    {% block swag_paypal_script_preload_core %}
+    <link href="{{ baseUrl }}/web-sdk/v6/core" rel="modulepreload" as="script">
+    {% endblock %}
+
+    {% if spbData or payLaterData or (expressSettings and ('paypal' in expressSettings.fundingSources or 'paylater' in expressSettings.fundingSources)) %}
+        {% block swag_paypal_script_preload_paypal_payments %}
+        <link href="{{ baseUrl }}/web-sdk/v6/paypal-payments" rel="modulepreload" as="script">
+        {% endblock %}
+    {% endif %}
+
+    {% if venmoData or (expressSettings and 'venmo' in expressSettings.fundingSources) %}
+        {% block swag_paypal_script_preload_venmo_payments %}
+        <link href="{{ baseUrl }}/web-sdk/v6/venmo-payments" rel="modulepreload" as="script">
+        {% endblock %}
+    {% endif %}
+
+    {% if acdcFieldData %}
+        {% block swag_paypal_script_preload_card_fields %}
+        <link href="{{ baseUrl }}/web-sdk/v6/card-fields" rel="modulepreload" as="script">
+        {% endblock %}
+    {% endif %}
+
+    {% if applePayData %}
+        {% block swag_paypal_script_preload_applepay_payments %}
+        <link href="{{ baseUrl }}/web-sdk/v6/applepay-payments" rel="modulepreload" as="script">
+        <link href="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js" rel="modulepreload" as="script">
+        {% endblock %}
+    {% endif %}
+
+    {% if googlePayData %}
+        {% block swag_paypal_script_preload_googlepay_payments %}
+        <link href="{{ baseUrl }}/web-sdk/v6/googlepay-payments" rel="modulepreload" as="script">
+        <link href="https://pay.google.com/gp/p/js/pay.js" rel="modulepreload" as="script">
+        {% endblock %}
+    {% endif %}
+
+    {% if installmentBannerData %}
+        {% block swag_paypal_script_preload_paypal_messages %}
+        <link href="{{ baseUrl }}/web-sdk/v6/paypal-messages" rel="modulepreload" as="script">
+        {% endblock %}
+    {% endif %}
+
+{% endif %}

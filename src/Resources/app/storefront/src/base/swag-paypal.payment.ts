@@ -2,7 +2,6 @@ import SwagPaypalBase from './swag-paypal.base';
 import type { SwagPaypalBaseOptions } from './swag-paypal.base';
 import type { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
 import { PaypalButtonHelper } from '../helper/paypal-button.helper';
-import PayPalLoader from '../helper/paypal-loader.helper';
 import PayPalPluginError from './paypal-plugin.error';
 
 export interface SwagPaypalPaymentOptions extends SwagPaypalBaseOptions {
@@ -13,23 +12,15 @@ export interface SubmissionData<FS extends PayPalCoreJS.FundingSource> {
     [key: string]: unknown;
 }
 
-export interface CreatePaymentSessionOptions {
-    onApprove: (data: OnApproveDataOneTimePayments) => void|Promise<void>;
-    onCancel: (error?: unknown) => void|Promise<void>;
-    onError: (error?: unknown) => void|Promise<void>;
-}
-
 export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingSource> extends SwagPaypalBase {
     static options: SwagPaypalPaymentOptions = {
         ...this.options,
     };
 
-    protected abstract get fundingSource(): FS;
+    protected abstract get metadata(): { components: PayPalCoreJS.Components[], fundingSource: FS };
 
-    protected async checkFundingEligiblity(fundingSource: PayPalCoreJS.FundingSource = this.fundingSource): Promise<void> {
-        const eligibleMethods = await PayPalLoader.findEligibleMethods({
-            currencyCode: this.options.currency,
-        });
+    protected async checkFundingEligiblity(fundingSource: PayPalCoreJS.FundingSource = this.metadata.fundingSource): Promise<void> {
+        const eligibleMethods = await this.findEligibleMethods();
 
         if (!eligibleMethods.isEligible(fundingSource)) {
             throw PayPalPluginError.notEligible(fundingSource);
@@ -37,11 +28,8 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
     }
 
     protected async getFundingDetails(): Promise<PayPalCoreJS.FindEligibleMethods.Details<FS>> {
-        const eligibleMethods = await PayPalLoader.findEligibleMethods({
-            currencyCode: this.options.currency,
-        });
-
-        return eligibleMethods.getDetails(this.fundingSource);
+        const eligibleMethods = await this.findEligibleMethods();
+        return eligibleMethods.getDetails(this.metadata.fundingSource);
     }
 
     protected async beforePrepare(): Promise<void> {

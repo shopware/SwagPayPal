@@ -10,12 +10,12 @@ interface ApplePaySubmissionData extends SubmissionData<'applepay'> {
 }
 
 export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applepay'> {
-    protected get product(): Products {
-        return 'applepay' as const;
-    }
-
-    protected get fundingSource(): 'applepay' {
-        return 'applepay';
+    protected get metadata(): { components: 'applepay-payments'[], fundingSource: 'applepay', product: 'applepay' } {
+        return {
+            components: ['applepay-payments'],
+            fundingSource: 'applepay',
+            product: 'applepay',
+        };
     }
 
     protected async beforePrepare(): Promise<void> {
@@ -25,23 +25,23 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
         ]);
 
         if (!window.ApplePayMerchandising) {
-            throw PayPalPluginError.scriptNotLoaded(this.fundingSource);
+            throw PayPalPluginError.scriptNotLoaded(this.metadata.fundingSource);
         }
 
         if (!window.ApplePaySession?.supportsVersion(4) || !window.ApplePaySession?.canMakePayments()) {
-            throw PayPalPluginError.browserUnsupported(this.fundingSource);
+            throw PayPalPluginError.browserUnsupported(this.metadata.fundingSource);
         }
 
         return super.beforePrepare();
     }
 
     protected async prepare(): Promise<void> {
-        const paymentSession = this.instance.createApplePayOneTimePaymentSession();
+        const paymentSession = this.instance!.createApplePayOneTimePaymentSession();
 
         const config = await paymentSession.config();
 
         if (!config.isEligible) {
-            throw PayPalPluginError.notEligible(this.fundingSource);
+            throw PayPalPluginError.notEligible(this.metadata.fundingSource);
         }
 
         this.el!.addEventListener('click', () => this.submissionFlow({ paymentSession, config }));

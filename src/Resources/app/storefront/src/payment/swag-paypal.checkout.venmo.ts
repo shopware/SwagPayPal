@@ -1,16 +1,16 @@
 import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 
 export default class SwagPaypalCheckoutVenmo extends SwagPaypalCheckout<'venmo'> {
-    protected get product(): Products {
-        return 'venmo' as const;
-    }
-
-    protected get fundingSource(): 'venmo' {
-        return 'venmo';
+    protected get metadata(): { components: 'venmo-payments'[], fundingSource: 'venmo', product: 'venmo' } {
+        return {
+            components: ['venmo-payments'],
+            fundingSource: 'venmo',
+            product: 'venmo',
+        };
     }
 
     protected async prepare(): Promise<void> {
-        const paymentSession = this.instance.createVenmoOneTimePaymentSession({
+        const paymentSession = this.instance!.createVenmoOneTimePaymentSession({
             onApprove: this.onApprove.bind(this),
             onCancel: this.onCancel.bind(this),
             onError: this.onError.bind(this),

@@ -1,16 +1,16 @@
 import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 
 export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'paypal'> {
-    protected get product(): Products {
-        return 'default' as const;
-    }
-
-    protected get fundingSource(): 'paypal' {
-        return 'paypal';
+    protected get metadata(): { components: 'paypal-payments'[], fundingSource: 'paypal', product: 'default' } {
+        return {
+            components: ['paypal-payments'],
+            fundingSource: 'paypal',
+            product: 'default',
+        };
     }
 
     protected async prepare(): Promise<void> {
-        const paymentSession = this.instance.createPayPalOneTimePaymentSession({
+        const paymentSession = this.instance!.createPayPalOneTimePaymentSession({
             onApprove: this.onApprove.bind(this),
             onCancel: this.onCancel.bind(this),
             onError: this.onError.bind(this),

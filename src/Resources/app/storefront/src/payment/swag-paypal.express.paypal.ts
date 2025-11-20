@@ -1,16 +1,17 @@
 import SwagPaypalExpress from '../base/swag-paypal.express';
 
 export default class SwagPaypalExpressPaypal extends SwagPaypalExpress<'paypal'> {
-    protected get product(): Products {
-        return 'default' as const;
+    protected get metadata(): { components: 'paypal-payments'[], fundingSource: 'paypal', product: 'default' } {
+        return {
+            components: ['paypal-payments'],
+            fundingSource: 'paypal',
+            product: 'default',
+        };
     }
 
-    protected get fundingSource(): 'paypal' {
-        return 'paypal';
-    }
 
     protected async prepare(): Promise<void> {
-        const paymentSession = this.instance.createPayPalOneTimePaymentSession({
+        const paymentSession = this.instance!.createPayPalOneTimePaymentSession({
             onApprove: this.onApprove.bind(this),
             onCancel: this.onCancel.bind(this),
             onError: this.onError.bind(this),

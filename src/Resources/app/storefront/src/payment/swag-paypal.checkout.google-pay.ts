@@ -7,12 +7,12 @@ import PayPalLoader from '../helper/paypal-loader.helper';
 export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'googlepay'> {
     el: GooglePayButton | undefined;
 
-    protected get product(): Products {
-        return 'googlepay' as const;
-    }
-
-    protected get fundingSource(): 'googlepay' {
-        return 'googlepay';
+    protected get metadata(): { components: 'googlepay-payments'[], fundingSource: 'googlepay', product: 'googlepay' } {
+        return {
+            components: ['googlepay-payments'],
+            fundingSource: 'googlepay',
+            product: 'googlepay',
+        };
     }
 
     protected async beforePrepare(): Promise<void> {
@@ -22,12 +22,12 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
         ]);
 
         if (!window?.google?.payments?.api?.PaymentsClient) {
-            throw PayPalPluginError.scriptNotLoaded(this.fundingSource);
+            throw PayPalPluginError.scriptNotLoaded(this.metadata.fundingSource);
         }
     }
 
     protected async prepare(): Promise<void> {
-        const paymentSession = this.instance.createGooglePayOneTimePaymentSession();
+        const paymentSession = this.instance!.createGooglePayOneTimePaymentSession();
 
         const {
             apiVersion,
@@ -39,7 +39,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
         } = await paymentSession.getGooglePayConfig();
 
         if (!isEligible) {
-            throw PayPalPluginError.notEligible(this.fundingSource);
+            throw PayPalPluginError.notEligible(this.metadata.fundingSource);
         }
 
         this.el!.onPaymentAuthorized = this.onPaymentAuthorized.bind(this, paymentSession);
@@ -48,7 +48,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
         // Quote Docs: "If the browser supports Google Pay, isReadyToPay returns true"
         this.el!.addEventListener('readytopaychange', (event) => {
             if (!event.detail) {
-                this.onError(PayPalPluginError.browserUnsupported(this.fundingSource));
+                this.onError(PayPalPluginError.browserUnsupported(this.metadata.fundingSource));
             }
         });
 
