@@ -10,7 +10,6 @@ export interface SwagPaypalBaseOptions {
     languageIso: string;
     currency: string;
     handleErrorUrl: string;
-    partOfDomContentLoading: boolean;
 }
 
 /**
@@ -18,8 +17,9 @@ export interface SwagPaypalBaseOptions {
  *
  * On plugin initialization, the preparation flow is started, which loads the PayPal SDK and prepares the plugin.
  */
-// @ts-expect-error - "private" _init is overriden
 export default abstract class SwagPaypalBase extends Plugin {
+    declare options: SwagPaypalBaseOptions;
+
     static options: SwagPaypalBaseOptions = {
         /**
          * This option holds the client token required for field rendering
@@ -55,13 +55,6 @@ export default abstract class SwagPaypalBase extends Plugin {
          * URL for adding flash error message
          */
         handleErrorUrl: '',
-
-        /**
-         * This option toggles when the script should be loaded.
-         * If false, the script will be loaded on 'load' instead of 'DOMContentLoaded' event.
-         * See 'DOMContentLoaded' and 'load' event for more information.
-         */
-        partOfDomContentLoading: true,
     };
 
     protected instance: PayPalCoreJS.Instance<(typeof this.metadata)['components'][number]> | null = null;
@@ -70,18 +63,8 @@ export default abstract class SwagPaypalBase extends Plugin {
 
     protected abstract get metadata(): { components: PayPalCoreJS.Components[] };
 
-    _init() {
-        if (this.options.partOfDomContentLoading || document.readyState === 'complete') {
-            // @ts-expect-error - "private" _init is called
-            super._init();
-        } else {
-            // @ts-expect-error - "private" _init is called
-            window.addEventListener('load', () => super._init());
-        }
-    }
-
-    async init(): Promise<void> {
-        await this.preparationFlow();
+    init(): void {
+        this.preparationFlow();
     }
 
     protected async preparationFlow(): Promise<void> {
@@ -113,9 +96,9 @@ export default abstract class SwagPaypalBase extends Plugin {
     /**
      * Hook called when SDK is ready. Override in child classes to handle SDK initialization
      */
-    protected async prepare(): Promise<void> {}
+    protected prepare(): Promise<void>|void {}
 
-    protected async afterPrepare(): Promise<void> {}
+    protected afterPrepare(): Promise<void>|void {}
 
     public async findEligibleMethods(): Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods> {
         if (!this.instance) {

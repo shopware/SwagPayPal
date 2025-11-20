@@ -1,7 +1,7 @@
-import { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
-import SwagPaypalPayment, { SubmissionData, SwagPaypalPaymentOptions } from './swag-paypal.payment';
+import type { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
+import type { SubmissionData, SwagPaypalPaymentOptions } from './swag-paypal.payment';
+import SwagPaypalPayment from './swag-paypal.payment';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
-import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import PayPalPluginError from './paypal-plugin.error';
 import { PaypalButtonHelper } from '../helper/paypal-button.helper';
 
@@ -9,12 +9,15 @@ export interface SwagPaypalCheckoutOptions extends SwagPaypalPaymentOptions {
     orderId: string|null;
     confirmOrderFormSelector: string;
     confirmOrderButtonSelector: string;
+    createOrderUrl: string;
     preventErrorReload: boolean;
 }
 
 export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.FundingSource> extends SwagPaypalPayment<FS> {
+    declare options: SwagPaypalCheckoutOptions;
+
     static options: SwagPaypalCheckoutOptions = {
-        ...this.options,
+        ...SwagPaypalPayment.options,
 
         pageType: 'checkout' as const,
 
@@ -34,16 +37,21 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         confirmOrderButtonSelector: 'button[type="submit"]',
 
         /**
+         * URL to create a new PayPal order
+         */
+        createOrderUrl: '',
+
+        /**
          * If set to true, the payment method caused an error and already reloaded the page.
          * This could for example happen if the funding type is not eligible.
          */
         preventErrorReload: false,
-    }
+    };
 
-    protected abstract get metadata(): { components: PayPalCoreJS.Components[], fundingSource: FS, product: Products };
+    protected abstract get metadata(): { components: PayPalCoreJS.Components[]; fundingSource: FS; product: Products };
 
     protected get confirmOrderForm(): HTMLFormElement {
-        const form = document.querySelector<'form'>(this.options.confirmOrderFormSelector);
+        const form = document.querySelector<HTMLFormElement>(this.options.confirmOrderFormSelector);
 
         if (!(form instanceof HTMLFormElement)) {
             throw PayPalPluginError.scriptError(`Confirm order form not found with selector: ${this.options.confirmOrderFormSelector}`);
@@ -62,14 +70,14 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         return button;
     }
 
-    async init() {
+    init() {
         if (this.options.preventErrorReload) {
             this.confirmOrderButton.disabled = true;
 
             return;
         }
 
-        return super.init();
+        super.init();
     }
 
     protected async beforePrepare(): Promise<void> {
@@ -83,7 +91,7 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         PaypalButtonHelper.enable(this.el!);
 
         return super.afterPrepare();
-    };
+    }
 
     protected beforeSubmit(data: SubmissionData<FS>): void {
         if (!this.confirmOrderForm?.reportValidity()) {
@@ -91,8 +99,8 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         }
     }
 
-    protected async createOrder(): Promise<{ orderId: string, vaultSetupToken?: string }> {
-        const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
+    protected async createOrder(): Promise<{ orderId: string; vaultSetupToken?: string }> {
+        const formData = new FormData(this.confirmOrderForm);
         formData.set('product', this.metadata.product);
 
         const orderId = this.options.orderId;
@@ -109,10 +117,11 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
             throw new Error(`Failed to create order(${response.status}): ${await response.text()}`);
         }
 
-        return { orderId: (await response.json()).token };
+        const { token } = await response.json() as { token: string };
+        return { orderId: token };
     }
 
-    protected async onApprove({ orderId }: OnApproveDataOneTimePayments): Promise<void> {
+    protected onApprove({ orderId }: OnApproveDataOneTimePayments): void|Promise<void> {
         const existingInput = this.confirmOrderForm?.querySelector('input[name="paypalOrderId"]');
         if (existingInput) {
             return;

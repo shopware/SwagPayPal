@@ -6,7 +6,22 @@ interface SwagPayPalEligibilityOptions extends SwagPaypalBaseOptions {
 }
 
 export default class SwagPayPalEligibility extends SwagPaypalBase {
-    static fundingSources: Record<string, PayPalCoreJS.FundingSource> = {
+    declare options: SwagPayPalEligibilityOptions;
+    static options: SwagPayPalEligibilityOptions = {
+        ...SwagPaypalBase.options,
+
+        /**
+         * Previously filtered payment methods
+         */
+        filteredPaymentMethods: [],
+
+        /**
+         * The url to filter payment methods
+         */
+        methodEligibilityUrl: '',
+    };
+
+    fundingSources: Record<string, PayPalCoreJS.FundingSource> = {
         CARD: 'advanced_cards',
         // SEPA: 'sepa',
         VENMO: 'venmo',
@@ -19,27 +34,11 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
         };
     }
 
-    static options: SwagPayPalEligibilityOptions = {
-        ...this.options,
-
-        /**
-         * Previously filtered payment methods
-         */
-        filteredPaymentMethods: [],
-
-        /**
-         * The url to filter payment methods
-         */
-        methodEligibilityUrl: '',
-
-        partOfDomContentLoading: false,
-    };
-
     protected async prepare(): Promise<void> {
         const eligibleMethods = await this.findEligibleMethods();
 
-        const unavailable = Object.entries(SwagPayPalEligibility.fundingSources)
-            .filter(async ([, source]) => !eligibleMethods.isEligible(source))
+        const unavailable = Object.entries(this.fundingSources)
+            .filter(([, source]) => !eligibleMethods.isEligible(source))
             .map(([key]) => key);
 
         try {
@@ -63,7 +62,7 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
         });
 
         if (response.ok) {
-            this.options.filteredPaymentMethods = await response.json();
+            this.options.filteredPaymentMethods = await response.json() as string[];
         }
     }
 }

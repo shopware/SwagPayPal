@@ -13,11 +13,12 @@ export interface SubmissionData<FS extends PayPalCoreJS.FundingSource> {
 }
 
 export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingSource> extends SwagPaypalBase {
+    declare options: SwagPaypalPaymentOptions;
     static options: SwagPaypalPaymentOptions = {
-        ...this.options,
+        ...SwagPaypalBase.options,
     };
 
-    protected abstract get metadata(): { components: PayPalCoreJS.Components[], fundingSource: FS };
+    protected abstract get metadata(): { components: PayPalCoreJS.Components[]; fundingSource: FS };
 
     protected async checkFundingEligiblity(fundingSource: PayPalCoreJS.FundingSource = this.metadata.fundingSource): Promise<void> {
         const eligibleMethods = await this.findEligibleMethods();
@@ -55,13 +56,13 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
     /**
      * Validate submission. Any error will silently stop the submission flow.
      */
-    protected beforeSubmit(data: SubmissionData<FS>): void {};
+    protected beforeSubmit(data: SubmissionData<FS>): void {}
 
-    protected async submit(data: SubmissionData<FS>): Promise<void> {};
+    protected submit(data: SubmissionData<FS>): void|Promise<void> {}
 
-    protected async afterSubmit(data: SubmissionData<FS>): Promise<void> {};
+    protected afterSubmit(data: SubmissionData<FS>): void|Promise<void> {}
 
-    protected async onApprove(data: OnApproveDataOneTimePayments): Promise<void> {};
+    protected onApprove(data: OnApproveDataOneTimePayments): void|Promise<void> {}
 
     /**
      * Stop payment process with a generic error.
@@ -69,7 +70,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
      *
      * @param error - Can be any type, but will be converted to a string
      */
-    protected onError(error: unknown = undefined): void|Promise<void> {
+    protected onError(error: unknown = undefined): void {
         this.handleError(PayPalPluginError.GENERIC_ERROR, false, error);
     }
 
@@ -79,7 +80,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
      *
      * @param error - Can be any type, but will be converted to a string
      */
-    protected onCancel(error: unknown = undefined): void|Promise<void> {
+    protected onCancel(error: unknown = undefined): void {
         this.handleError(PayPalPluginError.USER_CANCELLED, false, error);
     }
 

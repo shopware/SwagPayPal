@@ -1,7 +1,7 @@
 import SwagPaypalExpress from '../base/swag-paypal.express';
 
 export default class SwagPaypalExpressPaypal extends SwagPaypalExpress<'paypal'> {
-    protected get metadata(): { components: 'paypal-payments'[], fundingSource: 'paypal', product: 'default' } {
+    protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paypal'; product: 'default' } {
         return {
             components: ['paypal-payments'],
             fundingSource: 'paypal',
@@ -10,14 +10,14 @@ export default class SwagPaypalExpressPaypal extends SwagPaypalExpress<'paypal'>
     }
 
 
-    protected async prepare(): Promise<void> {
+    protected prepare(): void {
         const paymentSession = this.instance!.createPayPalOneTimePaymentSession({
             onApprove: this.onApprove.bind(this),
             onCancel: this.onCancel.bind(this),
             onError: this.onError.bind(this),
         });
 
-        this.el!.addEventListener('click', () => this.submissionFlow({ paymentSession }));
+        this.el!.addEventListener('click', () => void this.submissionFlow({ paymentSession }));
     }
 
     protected async submit(data: { paymentSession: PayPalCoreJS.PaymentSession<'paypal'> }): Promise<void> {

@@ -57,8 +57,6 @@ PluginManager.register(
 );
 
 
-
-
 PluginManager.register(
     'SwagPaypalCheckoutPaypal',
     () => import('./payment/swag-paypal.checkout.paypal'),

@@ -1,7 +1,7 @@
 import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 
 export default class SwagPaypalCheckoutPayLater extends SwagPaypalCheckout<'paylater'> {
-    protected get metadata(): { components: 'paypal-payments'[], fundingSource: 'paylater', product: 'default' } {
+    protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paylater'; product: 'default' } {
         return {
             components: ['paypal-payments'],
             fundingSource: 'paylater',
@@ -20,7 +20,7 @@ export default class SwagPaypalCheckoutPayLater extends SwagPaypalCheckout<'payl
             onError: this.onError.bind(this),
         });
 
-        this.el!.addEventListener('click', () => this.submissionFlow({ paymentSession }));
+        this.el!.addEventListener('click', () => void this.submissionFlow({ paymentSession }));
     }
 
     protected async submit(data: { paymentSession: PayPalCoreJS.PaymentSession<'paylater'> }): Promise<void> {

@@ -1,6 +1,5 @@
 import { PaypalButtonHelper } from '../helper/paypal-button.helper';
 import SwagPaypalCheckout, { type SwagPaypalCheckoutOptions } from '../base/swag-paypal.checkout';
-import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
 export interface SwagPaypalCheckoutAcdcOptions extends SwagPaypalCheckoutOptions {
@@ -15,11 +14,12 @@ export interface SwagPaypalCheckoutAcdcOptions extends SwagPaypalCheckoutOptions
     cardFieldStyleConfig: Record<string, Record<string, string | number>>;
 }
 
-type Fields = Partial<Record<'form' | 'number' | 'expiry' | 'cvv' | 'name', HTMLElement>>;
+type Fields = Partial<Record<'form' | 'number' | 'expiry' | 'cvv' | 'name', HTMLElement | null>>;
 
 export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced_cards'> {
+    declare options: SwagPaypalCheckoutAcdcOptions;
     static options: SwagPaypalCheckoutAcdcOptions = {
-        ...this.options,
+        ...SwagPaypalCheckout.options,
 
         /**
          * This option specifies the PayPal button color
@@ -80,13 +80,13 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
                 paddingLeft: 'calc(2rem + 40px) !important',
             },
         },
-    }
+    };
 
     protected fields: Omit<Fields, 'form'> = {};
 
     protected orderId: string | null = null;
 
-    protected get metadata(): { components: 'card-fields'[], fundingSource: 'advanced_cards', product: Products } {
+    protected get metadata(): { components: 'card-fields'[]; fundingSource: 'advanced_cards'; product: Products } {
         return {
             components: ['card-fields'],
             fundingSource: 'advanced_cards',
@@ -98,11 +98,11 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
         const form = document.querySelector(this.options.cardFieldFormSelector) as HTMLElement;
         return {
             form,
-            number: form?.querySelector(this.options.cardNumberFieldSelector),
-            expiry: form?.querySelector(this.options.cardExpiryFieldSelector),
-            cvv: form?.querySelector(this.options.cardCvvFieldSelector),
-            name: form?.querySelector(this.options.cardNameFieldSelector),
-        }
+            number: form?.querySelector<HTMLElement>(this.options.cardNumberFieldSelector),
+            expiry: form?.querySelector<HTMLElement>(this.options.cardExpiryFieldSelector),
+            cvv: form?.querySelector<HTMLElement>(this.options.cardCvvFieldSelector),
+            name: form?.querySelector<HTMLElement>(this.options.cardNameFieldSelector),
+        };
     }
 
     protected async beforePrepare(): Promise<void> {
@@ -111,7 +111,7 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
         return super.beforePrepare();
     }
 
-    protected async prepare(): Promise<void> {
+    protected prepare(): void {
         const paymentSession = this.instance!.createCardFieldsOneTimePaymentSession();
 
         for (const field of ['number', 'expiry', 'cvv'] as const) {
@@ -121,12 +121,13 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
                 style: this.options.cardFieldStyleConfig,
             });
 
-            this.wrapperCardFields[field]?.appendChild(this.fields[field]!);
+            this.wrapperCardFields[field]?.appendChild(this.fields[field]);
         }
 
         // remove history listener, it messes up errors
-        const formAddHistoryPlugin = window.PluginManager.getPluginInstanceFromElement(this.confirmOrderForm, 'FormAddHistory');
+        const formAddHistoryPlugin = window.PluginManager.getPluginInstanceFromElement(this.confirmOrderForm, 'FormAddHistory') as SwPlugin;
         if (formAddHistoryPlugin) {
+            // eslint-disable-next-line
             formAddHistoryPlugin.options.entries = [];
         }
 
@@ -151,7 +152,7 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
     }
 
     protected async submit(data: { paymentSession: PayPalCoreJS.PaymentSession<'advanced_cards'> }): Promise<void> {
-        if (FormSerializeUtil.serialize(this.confirmOrderForm).has('paypalOrderId')) {
+        if ((new FormData(this.confirmOrderForm)).has('paypalOrderId')) {
             // card fields have been successfully submitted, do regular submit
             return;
         }

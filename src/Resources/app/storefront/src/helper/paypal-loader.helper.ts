@@ -17,7 +17,7 @@ export default class PayPalLoader {
     public static async loadPayPalCore(script: PayPalCoreJS.LoadCoreScriptOptions): Promise<PayPalCoreJS.Namespace> {
         try {
             PayPalLoader.paypal ??= loadCoreSdkScript(script) as Promise<PayPalCoreJS.Namespace>;
-            return await PayPalLoader.paypal!;
+            return await PayPalLoader.paypal;
         } catch (error) {
             PayPalLoader.paypal = null;
             throw PayPalPluginError.scriptError(error);
@@ -75,7 +75,8 @@ export default class PayPalLoader {
 
             return new Promise<void>((resolve, reject) => {
                 currentScript.addEventListener('load', () => resolve());
-                currentScript.addEventListener('error', (event) => reject(event));
+                // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+                currentScript.addEventListener('error', (event) => reject(event.error));
             });
         }
 
@@ -86,9 +87,10 @@ export default class PayPalLoader {
             scriptTag.type = 'text/javascript';
 
             scriptTag.addEventListener('load', () => resolve());
+            // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
             scriptTag.addEventListener('error', (event) => reject(event.error));
 
             document.head.appendChild(scriptTag);
-        })
+        });
     }
 }

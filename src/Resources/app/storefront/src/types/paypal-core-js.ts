@@ -1,8 +1,4 @@
 import type * as SDK from '@paypal/paypal-js/sdk-v6';
-import './paypalcorejs.applepay';
-import './google-pay';
-import './card-fields';
-import './paypalcorejs.findeligiblemethods';
 
 declare global {
     namespace PayPalCoreJS {
@@ -28,24 +24,24 @@ declare global {
             components?: C[];
         };
 
-        export type PaymentSessionOptions<T extends FundingSource = any> =
-            | T extends 'paypal' ? Instance['createPayPalOneTimePaymentSession'] extends (options: infer U,) => any ? U : never : never
-            | T extends 'paylater' ? Instance['createPayLaterOneTimePaymentSession'] extends (options: infer U,) => any ? U : never : never
-            | T extends 'credit' ? Instance['createPayPalCreditOneTimePaymentSession'] extends (options: infer U,) => any ? U : never : never
-            | T extends 'venmo' ? Instance['createVenmoOneTimePaymentSession'] extends (options: infer U,) => any ? U : never : never
-            | T extends 'googlepay' ? Instance['createGooglePayOneTimePaymentSession'] extends (options: infer U,) => any ? U : never : never
-            | T extends 'applepay' ? Instance['createApplePayOneTimePaymentSession'] extends (options: infer U,) => any ? U : never : never
-            | T extends 'advanced_cards' ? Instance['createCardFieldsOneTimePaymentSession'] extends (options: infer U,) => any ? U : never : never
+        export type PaymentSessionOptions<T extends FundingSource = FundingSource> =
+            | T extends 'paypal' ? SDK.PayPalOneTimePaymentSessionOptions : never
+            | T extends 'paylater' ? SDK.PayLaterOneTimePaymentSessionOptions : never
+            | T extends 'credit' ? SDK.PayPalOneTimePaymentSessionOptions : never
+            | T extends 'venmo' ? SDK.VenmoOneTimePaymentSessionOptions : never
+            | T extends 'googlepay' ? PayPalCoreJS.GooglePay.PaymentSessionOptions : never
+            | T extends 'applepay' ? PayPalCoreJS.ApplePay.PaymentSessionOptions : never
+            | T extends 'advanced_cards' ? PayPalCoreJS.CardFields.PaymentSessionOptions : never
         ;
 
-        export type PaymentSession<T extends FundingSource = any> =
-            | T extends 'paypal' ? ReturnType<Instance['createPayPalOneTimePaymentSession']> : never
-            | T extends 'paylater' ? ReturnType<Instance['createPayLaterOneTimePaymentSession']> : never
-            | T extends 'credit' ? ReturnType<Instance['createPayPalCreditOneTimePaymentSession']> : never
-            | T extends 'venmo' ? ReturnType<Instance['createVenmoOneTimePaymentSession']> : never
-            | T extends 'googlepay' ? ReturnType<Instance['createGooglePayOneTimePaymentSession']> : never
-            | T extends 'applepay' ? ReturnType<Instance['createApplePayOneTimePaymentSession']> : never
-            | T extends 'advanced_cards' ? ReturnType<Instance['createCardFieldsOneTimePaymentSession']> : never
+        export type PaymentSession<T extends FundingSource = FundingSource> =
+            | T extends 'paypal' ? SDK.OneTimePaymentSession : never
+            | T extends 'paylater' ? SDK.OneTimePaymentSession : never
+            | T extends 'credit' ? SDK.OneTimePaymentSession : never
+            | T extends 'venmo' ? SDK.VenmoOneTimePaymentSession : never
+            | T extends 'googlepay' ? PayPalCoreJS.GooglePay.PaymentSession : never
+            | T extends 'applepay' ? PayPalCoreJS.ApplePay.PaymentSession : never
+            | T extends 'advanced_cards' ? PayPalCoreJS.CardFields.PaymentSession : never
         ;
 
         export type PageTypes = SDK.PageTypes;
@@ -115,7 +111,7 @@ declare global {
             export interface CreateCardFieldsComponentOptions {
                 type: string;
                 placeholder?: string;
-                style?: any;
+                style?: Record<string, unknown>;
             }
 
             export interface SubmitOptions {
@@ -194,7 +190,7 @@ declare global {
                 isEligible: boolean;
                 merchantCountry: string;
                 supportedNetworks: string[];
-                merchantCapabilities: string[];
+                merchantCapabilities: ApplePayJS.ApplePayMerchantCapability[];
                 tokenNotificationUrl: string;
                 currencyCode: string;
                 countryCode: string;
@@ -213,7 +209,7 @@ declare global {
             }
 
             export interface ValidateMerchantOutput {
-                merchantSession: any;
+                merchantSession: unknown;
             }
 
             export interface PaymentMethodDetails extends SDK.BaseEligiblePaymentMethodDetails {
@@ -237,26 +233,26 @@ declare global {
             }
 
             export interface ContentOptions {
-                amount?: string,
-                currencyCode?: string,
-                logoType?: 'MONOGRAM' | 'TEXT' | 'WORDMARK',
-                textColor?: 'BLACK' | 'WHITE' | 'MONOCHROME',
-                logoPosition?: 'INLINE' | 'RIGHT' | 'TOP' | 'LEFT',
+                amount?: string;
+                currencyCode?: string;
+                logoType?: 'MONOGRAM' | 'TEXT' | 'WORDMARK';
+                textColor?: 'BLACK' | 'WHITE' | 'MONOCHROME';
+                logoPosition?: 'INLINE' | 'RIGHT' | 'TOP' | 'LEFT';
             }
 
             export interface FetchContentOptions extends ContentOptions {
-                onContentReady?: () => void,
-                onReady?: () => void,
-                onTemplateReady?: () => void,
+                onContentReady?: () => void;
+                onReady?: () => void;
+                onTemplateReady?: () => void;
             }
 
             export interface LearnMoreOptions {
-                amount?: string,
-                presentationMode?: 'AUTO' | 'MODAL' | 'POPUP' | 'REDIRECT',
-                onApply?: () => void,
-                onCalculate?: () => void,
-                onShow?: () => void,
-                onClose?: () => void,
+                amount?: string;
+                presentationMode?: 'AUTO' | 'MODAL' | 'POPUP' | 'REDIRECT';
+                onApply?: () => void;
+                onCalculate?: () => void;
+                onShow?: () => void;
+                onClose?: () => void;
             }
 
             export interface Content {

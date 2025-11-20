@@ -1,16 +1,55 @@
+import type { SwagPaypalCheckoutOptions } from '../base/swag-paypal.checkout';
 import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 import PayPalPluginError from '../base/paypal-plugin.error';
-import { SubmissionData } from '../base/swag-paypal.payment';
+import type { SubmissionData } from '../base/swag-paypal.payment';
 import PayPalLoader from '../helper/paypal-loader.helper';
+
+export interface SwagPaypalCheckoutApplePayOptions extends SwagPaypalCheckoutOptions {
+    totalPrice: string;
+    brandName: string;
+    displayName: string;
+    billingAddress: {
+        givenName: string;
+        familyName: string;
+        emailAddress: string;
+        phoneNumber: string;
+        street: string;
+        city: string;
+        region: string;
+        postalCode: string;
+        countryCode: string;
+        addressLines: string;
+    };
+}
 
 interface ApplePaySubmissionData extends SubmissionData<'applepay'> {
     paymentSession: PayPalCoreJS.ApplePay.PaymentSession;
-    config: PayPalCoreJS.ApplePay.Config
+    config: PayPalCoreJS.ApplePay.Config;
     session: ApplePaySession;
 }
 
 export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applepay'> {
-    protected get metadata(): { components: 'applepay-payments'[], fundingSource: 'applepay', product: 'applepay' } {
+    declare options: SwagPaypalCheckoutApplePayOptions;
+    static options: SwagPaypalCheckoutApplePayOptions = {
+        ...SwagPaypalCheckout.options,
+        totalPrice: '0.00',
+        brandName: '',
+        displayName: '',
+        billingAddress: {
+            givenName: '',
+            familyName: '',
+            emailAddress: '',
+            phoneNumber: '',
+            street: '',
+            city: '',
+            region: '',
+            postalCode: '',
+            countryCode: '',
+            addressLines: '',
+        },
+    };
+
+    protected get metadata(): { components: 'applepay-payments'[]; fundingSource: 'applepay'; product: 'applepay' } {
         return {
             components: ['applepay-payments'],
             fundingSource: 'applepay',
@@ -44,10 +83,10 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
             throw PayPalPluginError.notEligible(this.metadata.fundingSource);
         }
 
-        this.el!.addEventListener('click', () => this.submissionFlow({ paymentSession, config }));
+        this.el!.addEventListener('click', () => void this.submissionFlow({ paymentSession, config }));
     }
 
-    protected async submit(data: ApplePaySubmissionData): Promise<void> {
+    protected submit(data: ApplePaySubmissionData): void {
         const { countryCode, merchantCapabilities, supportedNetworks, currencyCode } = data.config;
 
         const paymentRequest = {
@@ -66,18 +105,18 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
                 type: 'final',
                 amount: this.options.totalPrice,
             },
-        };
+        } satisfies ApplePayJS.ApplePayPaymentRequest;
 
         data.session = new window.ApplePaySession(4, paymentRequest);
 
-        data.session.onvalidatemerchant = this.handleValidateMerchant.bind(this, data);
-        data.session.onpaymentauthorized = this.handlePaymentAuthorized.bind(this, data);
+        data.session.onvalidatemerchant = (event) => void this.handleValidateMerchant(data, event);
+        data.session.onpaymentauthorized = (event) => void this.handlePaymentAuthorized(data, event);
         data.session.oncancel = this.onCancel.bind(this);
 
         data.session.begin();
     }
 
-    async handleValidateMerchant({ session, paymentSession }: ApplePaySubmissionData, event: ApplePayJS.ApplePayValidateMerchantEvent) {
+    protected async handleValidateMerchant({ session, paymentSession }: ApplePaySubmissionData, event: ApplePayJS.ApplePayValidateMerchantEvent): Promise<void> {
         try {
             const { merchantSession } = await paymentSession.validateMerchant({
                 validationUrl: event.validationURL,
@@ -91,7 +130,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
         }
     }
 
-    async handlePaymentAuthorized({ session, paymentSession }: ApplePaySubmissionData, event: ApplePayJS.ApplePayPaymentAuthorizedEvent) {
+    protected async handlePaymentAuthorized({ session, paymentSession }: ApplePaySubmissionData, event: ApplePayJS.ApplePayPaymentAuthorizedEvent): Promise<void> {
         try {
             const { orderId } = await this.createOrder();
 

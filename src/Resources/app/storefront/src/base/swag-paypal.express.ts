@@ -1,40 +1,30 @@
 import { PaypalButtonHelper } from '../helper/paypal-button.helper';
-import SwagPaypalPayment, { SwagPaypalPaymentOptions } from './swag-paypal.payment';
+import type { SwagPaypalPaymentOptions } from './swag-paypal.payment';
+import SwagPaypalPayment from './swag-paypal.payment';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
-import { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
+import type { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
 import PayPalPluginError from './paypal-plugin.error';
 
 export interface SwagPaypalExpressOptions extends SwagPaypalPaymentOptions {
-    buttonColor: 'gold' | 'blue' | 'silver' | 'black' | 'white';
-    disabledClass: string;
     buyButtonSelector: string;
-    tagline: boolean;
     addProductToCart: boolean;
     contextSwitchUrl: string;
-    payPalPaymentMethodId: string;
-    deleteCartUrl: string;
+    createOrderUrl: string;
     prepareCheckoutUrl: string;
     checkoutConfirmUrl: string;
     cancelRedirectUrl: string;
-    useAlternativePaymentMethods: boolean;
-    commit: boolean;
-    scriptAwaitVisibility: boolean;
-    partOfDomContentLoading: boolean;
+    payPalPaymentMethodId: string;
 }
 
 export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingSource> extends SwagPaypalPayment<FS> {
+    declare options: SwagPaypalExpressOptions;
     static options: SwagPaypalExpressOptions = {
-        ...this.options,
+        ...SwagPaypalPayment.options,
 
         /**
          * This option defines the selector for the buy button on the product detail page and listing.
          */
         buyButtonSelector: '.btn-buy',
-
-        /**
-         * This option toggles the text below the PayPal Express button
-         */
-        tagline: false,
 
         /**
          * This option toggles the Process whether or not the product needs to be added to the cart.
@@ -46,12 +36,10 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
          */
         contextSwitchUrl: '',
 
-        payPalPaymentMethodId: '',
-
         /**
-         * URL to delete an existing cart in Shopware
+         * URL to create a new PayPal order
          */
-        deleteCartUrl: '',
+        createOrderUrl: '',
 
         /**
          * URL for creating and logging in guest customer
@@ -68,7 +56,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
          */
         cancelRedirectUrl: '',
 
-        partOfDomContentLoading: false,
+        payPalPaymentMethodId: '',
     };
 
     GENERIC_ERROR = 'SWAG_PAYPAL__EXPRESS_GENERIC_ERROR';
@@ -80,10 +68,10 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
     }
 
     get buyButton(): HTMLButtonElement|null {
-        return this.buyButtonForm?.querySelector<'button'>(this.options.buyButtonSelector) || null;
+        return this.buyButtonForm?.querySelector<HTMLButtonElement>(this.options.buyButtonSelector) || null;
     }
 
-    protected async afterPrepare(): Promise<void> {
+    protected afterPrepare(): void {
         if (this.options.addProductToCart && this.buyButton) {
             if (this.buyButton?.disabled) {
                 PaypalButtonHelper.disable(this.el!);
@@ -99,7 +87,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
     protected buyButtonObserver(mutations: MutationRecord[]): void {
         mutations.forEach((mutation) => {
             if (mutation.attributeName === 'disabled') {
-                if (mutation.target.disabled) {
+                if ((mutation.target as HTMLButtonElement).disabled) {
                     PaypalButtonHelper.disable(this.el!);
                 } else {
                     PaypalButtonHelper.enable(this.el!);
@@ -135,14 +123,15 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
             throw new Error(`Failed to create order (${orderResponse.status}): ${await orderResponse.text()}`);
         }
 
-        return { orderId: (await orderResponse.json()).token };
+        const { token } = await orderResponse.json() as { token: string };
+        return { orderId: token };
     }
 
     protected addProductToCart(): Promise<void> {
-        const plugin = window.PluginManager.getPluginInstanceFromElement(this.buyButtonForm!, 'AddToCart');
+        const plugin = window.PluginManager.getPluginInstanceFromElement(this.buyButtonForm!, 'AddToCart') as SwPlugin;
 
         return new Promise(resolve => {
-            plugin.$emitter.subscribe('openOffCanvasCart', () => resolve());
+            plugin.$emitter!.subscribe('openOffCanvasCart', () => resolve());
             this.buyButton!.click();
         });
     }
@@ -175,7 +164,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
     protected onErrorHandled(error: PayPalPluginError) {
         if (error.code === this.USER_CANCELLED) {
             window.scrollTo(0, 0);
-            window.location = this.options.cancelRedirectUrl;
+            window.location.href = this.options.cancelRedirectUrl;
         }
     }
 }

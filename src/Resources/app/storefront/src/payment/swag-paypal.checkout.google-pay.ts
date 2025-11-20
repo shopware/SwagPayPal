@@ -1,13 +1,29 @@
-import SwagPaypalCheckout from '../base/swag-paypal.checkout';
+import SwagPaypalCheckout, { type SwagPaypalCheckoutOptions } from '../base/swag-paypal.checkout';
 import PayPalPluginError from '../base/paypal-plugin.error';
 import '@google-pay/button-element';
 import type GooglePayButton from '@google-pay/button-element';
 import PayPalLoader from '../helper/paypal-loader.helper';
 
-export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'googlepay'> {
-    el: GooglePayButton | undefined;
+export interface SwagPaypalCheckoutGooglePayOptions extends SwagPaypalCheckoutOptions {
+    totalPrice: string;
+    currency: string;
+    brandName: string;
+    displayItems: google.payments.api.DisplayItem[];
+}
 
-    protected get metadata(): { components: 'googlepay-payments'[], fundingSource: 'googlepay', product: 'googlepay' } {
+export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'googlepay'> {
+    declare options: SwagPaypalCheckoutGooglePayOptions;
+    declare el: GooglePayButton | undefined;
+
+    static options: SwagPaypalCheckoutGooglePayOptions = {
+        ...SwagPaypalCheckout.options,
+        totalPrice: '0.00',
+        currency: 'EUR',
+        brandName: '',
+        displayItems: [],
+    };
+
+    protected get metadata(): { components: 'googlepay-payments'[]; fundingSource: 'googlepay'; product: 'googlepay' } {
         return {
             components: ['googlepay-payments'],
             fundingSource: 'googlepay',
@@ -35,7 +51,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             allowedPaymentMethods,
             merchantInfo,
             countryCode,
-            isEligible
+            isEligible,
         } = await paymentSession.getGooglePayConfig();
 
         if (!isEligible) {
@@ -43,8 +59,8 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
         }
 
         this.el!.onPaymentAuthorized = this.onPaymentAuthorized.bind(this, paymentSession);
-        this.el!.addEventListener('cancel', (event) => this.onCancel(event.detail));
-        this.el!.addEventListener('error', (event) => this.onError(event.error));
+        this.el!.addEventListener('cancel', (event) => void this.onCancel(event.detail));
+        this.el!.addEventListener('error', (event) => void this.onError(event.error));
         // Quote Docs: "If the browser supports Google Pay, isReadyToPay returns true"
         this.el!.addEventListener('readytopaychange', (event) => {
             if (!event.detail) {
@@ -54,7 +70,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
 
         this.el!.addEventListener('click', (event) => {
             try {
-                this.beforeSubmit({ paymentSession })
+                this.beforeSubmit({ paymentSession });
             } catch {
                 event.preventDefault();
                 event.stopPropagation();
@@ -82,8 +98,8 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
         } satisfies google.payments.api.PaymentDataRequest;
     }
 
-    protected async afterPrepare(): Promise<void> {
-        this.applyStyle();
+    protected afterPrepare(): Promise<void> {
+        this.el!.buttonRadius = Number(window.getComputedStyle(this.el!).getPropertyValue('--google-pay-button-border-radius'));
 
         return super.afterPrepare();
     }
@@ -115,14 +131,10 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
                 transactionState: 'ERROR',
                 error: {
                     intent: 'PAYMENT_AUTHORIZATION',
-                    message: error.message || 'TRANSACTION FAILED',
-                    reason: 'OTHER_ERROR'
+                    message: error?.message as string || 'TRANSACTION FAILED',
+                    reason: 'OTHER_ERROR',
                 },
             };
         }
-    }
-
-    protected applyStyle(): void {
-        this.el!.buttonRadius = Number(window.getComputedStyle(this.el!).getPropertyValue('--google-pay-button-border-radius'));
     }
 }

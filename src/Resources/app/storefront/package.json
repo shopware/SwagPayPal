@@ -4,13 +4,23 @@
   "private": true,
   "description": "Shopware Storefront PayPal",
   "license": "MIT",
+  "scripts": {
+    "lint": "eslint src",
+    "lint-fix": "eslint src --fix"
+  },
   "dependencies": {
     "@google-pay/button-element": "^3.2.1",
     "@paypal/paypal-js": "~9"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@stylistic/eslint-plugin": "^5.6.1",
     "@types/applepayjs": "^14.0.9",
     "@types/googlepay": "^0.7.8",
-    "typescript": "^5.9.3"
+    "eslint": "^9.39.1",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.47.0"
   }
 }

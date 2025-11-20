@@ -35,6 +35,7 @@ export default class PayPalPluginError extends Error {
             code = errorCode;
         }
 
+        // eslint-disable-next-line
         const message = `PayPal ${fatal ? 'fatal ' : ''}error occurred: ${code} - ${String(error ?? '')}`;
 
         return new PayPalPluginError(message, code, fatal);
@@ -66,18 +67,22 @@ export default class PayPalPluginError extends Error {
 
     private static extractErrorCode(error: string): string | null {
         try {
+            // eslint-disable-next-line
             const errors = JSON.parse(error)?.errors;
 
             if (!Array.isArray(errors)) {
                 return null;
             }
 
+            // eslint-disable-next-line
             for (const error of errors) {
                 if (typeof error !== 'object') {
                     continue;
                 }
 
+                // eslint-disable-next-line
                 if (typeof error.code === 'string') {
+                    // eslint-disable-next-line
                     return error.code;
                 }
             }

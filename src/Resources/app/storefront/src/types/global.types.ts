@@ -1,16 +1,17 @@
-import './paypal-core-js';
 import type PluginManager from 'src/plugin-system/plugin.manager';
 import type TPayPalPluginError from '../base/paypal-plugin.error';
-import type { ApplePaySession } from '@types/applepayjs';
+import type Plugin from 'src/plugin-system/plugin.class';
 
 declare global {
     type Products = 'default' | 'googlepay' | 'applepay' | 'acdc' | 'venmo';
 
     type PayPalPluginError = TPayPalPluginError;
 
+    type SwPlugin = Plugin;
+
     interface Window {
-        PluginManager: PluginManager;
+        PluginManager: PluginManager&(typeof PluginManager);
         ApplePayMerchandising: unknown;
-        ApplePaySession: ApplePaySession;
+        ApplePaySession: ApplePaySession&(typeof ApplePaySession);
     }
 }

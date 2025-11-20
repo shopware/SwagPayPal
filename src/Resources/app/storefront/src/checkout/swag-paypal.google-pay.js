@@ -107,7 +107,7 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
         }
 
         if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status) {
-            await paypal.Googlepay().initiatePayerAction({orderId});
+            await paypal.Googlepay().initiatePayerAction({ orderId });
         }
 
         this.onApprove({ orderId });
