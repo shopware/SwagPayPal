@@ -1,16 +1,22 @@
-paypal-button, venmo-button, paypal-pay-later-button {
+.swag-paypal-button {
     width: 100%;
 
     &.shape-sharp {
         --paypal-button-border-radius: 0px;
+        --google-pay-button-border-radius: 0;
+        --apple-pay-button-border-radius: 0;
     }
 
     &.shape-pill {
-        --paypal-button-border-radius: 50%;
+        --paypal-button-border-radius: 500px;
+        --google-pay-button-border-radius: 500;
+        --apple-pay-button-border-radius: 500px;
     }
 
     &.shape-rect {
         --paypal-button-border-radius: 4px;
+        --google-pay-button-border-radius: 4;
+        --apple-pay-button-border-radius: 4px;
     }
 }
 

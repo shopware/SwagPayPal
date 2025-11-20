@@ -28,7 +28,7 @@
 
     {% block swag_paypal_paypal %}
     <paypal-button
-        class="shape-{{ spbCheckoutButtonData.buttonShape }} paypal-{{ spbCheckoutButtonData.buttonColor }}"
+        class="swag-paypal-button shape-{{ spbCheckoutButtonData.buttonShape }} paypal-{{ spbCheckoutButtonData.buttonColor }}"
         data-swag-paypal-checkout-paypal="true"
         data-swag-paypal-checkout-paypal-options="{{ spbCheckoutButtonData|json_encode }}"
         type="checkout"
@@ -41,7 +41,7 @@
 
     {% block swag_paypal_pay_later %}
     <paypal-pay-later-button
-        class="shape-{{ payLaterData.buttonShape }} paypal-gold"
+        class="swag-paypal-button shape-{{ payLaterData.buttonShape }} paypal-gold"
         data-swag-paypal-checkout-pay-later="true"
         data-swag-paypal-checkout-pay-later-options="{{ payLaterData|json_encode }}"
         hidden
@@ -63,7 +63,7 @@
 
     {% block swag_paypal_venmo %}
     <venmo-button
-        class="shape-{{ venmoData.buttonShape }} paypal-blue"
+        class="swag-paypal-button shape-{{ venmoData.buttonShape }} paypal-blue"
         data-swag-paypal-checkout-venmo="true"
         data-swag-paypal-checkout-venmo-options="{{ venmoData|json_encode }}"
         type="checkout"
@@ -77,11 +77,11 @@
 
     {% block swag_paypal_apple_pay %}
     <apple-pay-button
+        class="swag-paypal-button shape-{{ applePayData.buttonShape }} d-none"
         buttonstyle="black"
         type="check-out"
         data-swag-paypal-checkout-apple-pay="true"
         data-swag-paypal-checkout-apple-pay-options="{{ applePayData|json_encode }}"
-        class="d-none"
         disabled
     >
     </apple-pay-button>
@@ -90,10 +90,14 @@
 {% elseif googlePayData and googlePayData.paymentMethodId is same as(context.paymentMethod.id) %}
 
     {% block swag_paypal_google_pay %}
-    <div
+    <google-pay-button
+        class="swag-paypal-button shape-{{ googlePayData.buttonShape }}"
+        button-type="checkout"
+        button-size-mode="fill"
+        environment="{{ googlePayData.environment === 'sandbox' ? 'TEST' : 'PRODUCTION' }}"
         data-swag-paypal-checkout-google-pay="true"
         data-swag-paypal-checkout-google-pay-options="{{ googlePayData|json_encode }}"
     >
-    </div>
+    </google-pay-button>
     {% endblock %}
 {% endif %}

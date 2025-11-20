@@ -4,7 +4,7 @@
 
         {% block swag_paypal_paypal %}
         <paypal-button
-            class="shape-{{ expressSettings.buttonShape }} paypal-{{ expressSettings.buttonColor }}"
+            class="swag-paypal-button shape-{{ expressSettings.buttonShape }} paypal-{{ expressSettings.buttonColor }}"
             data-swag-paypal-express-paypal="true"
             data-swag-paypal-express-paypal-options="{{ expressSettings|json_encode }}"
             type="buynow"
@@ -19,7 +19,7 @@
 
         {% block swag_paypal_pay_later %}
         <paypal-pay-later-button
-            class="shape-{{ expressSettings.buttonShape }} paypal-gold"
+            class="swag-paypal-button shape-{{ expressSettings.buttonShape }} paypal-gold"
             data-swag-paypal-express-pay-later="true"
             data-swag-paypal-express-pay-later-options="{{ expressSettings|json_encode }}"
             hidden
@@ -33,7 +33,7 @@
 
         {% block swag_paypal_venmo %}
         <venmo-button
-            class="shape-{{ expressSettings.buttonShape }} paypal-blue"
+            class="swag-paypal-button shape-{{ expressSettings.buttonShape }} paypal-blue"
             data-swag-paypal-express-venmo="true"
             data-swag-paypal-express-venmo-options="{{ expressSettings|json_encode }}"
             type="buynow"

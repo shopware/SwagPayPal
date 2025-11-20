@@ -1,5 +1,4 @@
 import { PaypalButtonHelper } from '../helper/paypal-button.helper';
-import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 import SwagPaypalPayment, { SwagPaypalPaymentOptions } from './swag-paypal.payment';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';

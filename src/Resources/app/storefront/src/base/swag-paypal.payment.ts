@@ -6,7 +6,6 @@ import PayPalSdkLoader from '../helper/paypal-sdk-loader.helper';
 import PayPalPluginError from './paypal-plugin.error';
 
 export interface SwagPaypalPaymentOptions extends SwagPaypalBaseOptions {
-    buttonShape: 'sharp' | 'pill' | 'rect';
 }
 
 export interface SubmissionData<FS extends PayPalCoreJS.FundingSource> {
@@ -23,8 +22,6 @@ export interface CreatePaymentSessionOptions {
 export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingSource> extends SwagPaypalBase {
     static options: SwagPaypalPaymentOptions = {
         ...this.options,
-
-        buttonShape: 'sharp',
     };
 
     protected abstract get fundingSource(): FS;
@@ -72,11 +69,11 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
      */
     protected beforeSubmit(data: SubmissionData<FS>): void {};
 
-    protected abstract submit(data: SubmissionData<FS>): Promise<void>;
+    protected async submit(data: SubmissionData<FS>): Promise<void> {};
 
     protected async afterSubmit(data: SubmissionData<FS>): Promise<void> {};
 
-    protected abstract onApprove(data: OnApproveDataOneTimePayments): Promise<void>;
+    protected async onApprove(data: OnApproveDataOneTimePayments): Promise<void> {};
 
     /**
      * Stop payment process with a generic error.

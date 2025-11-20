@@ -1,14 +1,11 @@
 import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 import PayPalPluginError from '../base/paypal-plugin.error';
-import { SubmissionData } from '../base/swag-paypal.payment';
-
-interface GooglePaySubmissionData extends SubmissionData<'googlepay'> {
-    paymentSession: PayPalCoreJS.PaymentSession<'googlepay'>;
-    gpClient: google.payments.api.PaymentsClient;
-    paymentDataRequest: google.payments.api.PaymentDataRequest;
-}
+import '@google-pay/button-element';
+import type GooglePayButton from '@google-pay/button-element';
 
 export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'googlepay'> {
+    el: GooglePayButton | undefined;
+
     protected get product(): Products {
         return 'googlepay' as const;
     }
@@ -41,15 +38,27 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             throw PayPalPluginError.notEligible(this.fundingSource);
         }
 
-        const gpClient = this.createGPClient(paymentSession);
-        const { result } = await gpClient.isReadyToPay({ apiVersion, apiVersionMinor, allowedPaymentMethods });
-
+        this.el!.onPaymentAuthorized = this.onPaymentAuthorized.bind(this, paymentSession);
+        this.el!.addEventListener('cancel', (event) => this.onCancel(event.detail));
+        this.el!.addEventListener('error', (event) => this.onError(event.error));
         // Quote Docs: "If the browser supports Google Pay, isReadyToPay returns true"
-        if (!result) {
-            throw PayPalPluginError.browserUnsupported(this.fundingSource);
-        }
+        this.el!.addEventListener('readytopaychange', (event) => {
+            if (!event.detail) {
+                this.onError(PayPalPluginError.browserUnsupported(this.fundingSource));
+            }
+        });
 
-        const paymentDataRequest = {
+        this.el!.addEventListener('click', (event) => {
+            try {
+                this.beforeSubmit({ paymentSession })
+            } catch {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }, true);
+
+
+        this.el!.paymentRequest = {
             apiVersion,
             apiVersionMinor,
             allowedPaymentMethods,
@@ -67,80 +76,49 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
                 displayItems: Object.values(this.options.displayItems),
             },
         } satisfies google.payments.api.PaymentDataRequest;
-
-        gpClient.prefetchPaymentData(paymentDataRequest);
-
-        const button = gpClient.createButton({
-            allowedPaymentMethods,
-            onClick: this.submissionFlow.bind(this, { paymentSession, gpClient, paymentDataRequest }),
-            buttonType: 'checkout',
-            buttonSizeMode: 'fill',
-            buttonRadius: this.options.buttonShape === 'pill' ? 500
-                : this.options.buttonShape === 'rect' ? 4
-                : 0,
-        });
-
-        button.addEventListener('click', (event) => {
-            try {
-                this.beforeSubmit({ paymentSession })
-            } catch {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        }, true);
-
-        this.el!.appendChild(button);
     }
 
-    protected async submit(data: GooglePaySubmissionData): Promise<void> {
+    protected async afterPrepare(): Promise<void> {
+        this.applyStyle();
+
+        return super.afterPrepare();
+    }
+
+    async onPaymentAuthorized(session: PayPalCoreJS.PaymentSession<'googlepay'>, paymentData: google.payments.api.PaymentData): Promise<google.payments.api.PaymentAuthorizationResult> {
         try {
-            await data.gpClient.loadPaymentData(data.paymentDataRequest)
-        } catch (error: any) {
-            if (error.statusCode === 'CANCELED') {
-                throw PayPalPluginError.userCancelled();
+            const { orderId } = await this.createOrder();
+
+            const confirmOrderResponse = await session.confirmOrder({
+                orderId,
+                paymentMethodData: paymentData.paymentMethodData,
+            });
+
+            if (!['APPROVED','PAYER_ACTION_REQUIRED'].includes(confirmOrderResponse.status)) {
+                throw new Error('PayPal didn\'t approve the transaction.');
             }
 
-            throw PayPalPluginError.scriptError(error);
+            if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status) {
+                await session.initiatePayerAction({ orderId });
+            }
+
+            await this.onApprove({ orderId });
+
+            return { transactionState: 'SUCCESS' };
+        } catch (error: any) {
+            this.onError(error);
+
+            return {
+                transactionState: 'ERROR',
+                error: {
+                    intent: 'PAYMENT_AUTHORIZATION',
+                    message: error.message || 'TRANSACTION FAILED',
+                    reason: 'OTHER_ERROR'
+                },
+            };
         }
     }
 
-    async onPaymentAuthorized(session: PayPalCoreJS.PaymentSession<'googlepay'>, paymentData: google.payments.api.PaymentData): Promise<void> {
-        const { orderId } = await this.createOrder().catch((e) => {
-            this.onError(e);
-            throw e;
-        });
-
-        const confirmOrderResponse = await session.confirmOrder({
-            orderId,
-            paymentMethodData: paymentData.paymentMethodData,
-        });
-
-        if (!['APPROVED','PAYER_ACTION_REQUIRED'].includes(confirmOrderResponse.status)) {
-            throw new Error('PayPal didn\'t approve the transaction.');
-        }
-
-        if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status) {
-            await session.initiatePayerAction({ orderId });
-        }
-
-        this.onApprove({ orderId });
-    }
-
-    protected createGPClient(session: PayPalCoreJS.PaymentSession<'googlepay'>): google.payments.api.PaymentsClient {
-        return new window.google.payments.api.PaymentsClient({
-            environment: this.options.environment === 'sandbox' ? 'TEST' : 'PRODUCTION',
-            paymentDataCallbacks: {
-                onPaymentAuthorized: (paymentData) => this.onPaymentAuthorized(session, paymentData)
-                    .then(() => ({ transactionState: 'SUCCESS' } satisfies google.payments.api.PaymentAuthorizationResult))
-                    .catch((e) => ({
-                        transactionState: 'ERROR',
-                        error: {
-                            intent: 'PAYMENT_AUTHORIZATION',
-                            message: e.message || 'TRANSACTION FAILED',
-                            reason: 'OTHER_ERROR'
-                        },
-                    })),
-            },
-        });
+    protected applyStyle(): void {
+        this.el!.buttonRadius = Number(window.getComputedStyle(this.el!).getPropertyValue('--google-pay-button-border-radius'));
     }
 }

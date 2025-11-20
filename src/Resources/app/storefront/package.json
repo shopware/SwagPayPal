@@ -5,6 +5,7 @@
   "description": "Shopware Storefront PayPal",
   "license": "MIT",
   "dependencies": {
+    "@google-pay/button-element": "^3.2.1",
     "@paypal/paypal-js": "~9"
   },
   "devDependencies": {
