@@ -1,6 +1,7 @@
 import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 import PayPalPluginError from '../base/paypal-plugin.error';
 import { SubmissionData } from '../base/swag-paypal.payment';
+import PayPalLoader from '../helper/paypal-loader.helper';
 
 interface ApplePaySubmissionData extends SubmissionData<'applepay'> {
     paymentSession: PayPalCoreJS.ApplePay.PaymentSession;
@@ -18,6 +19,11 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
     }
 
     protected async beforePrepare(): Promise<void> {
+        await Promise.all([
+            super.beforePrepare(),
+            PayPalLoader.loadApplePay(),
+        ]);
+
         if (!window.ApplePayMerchandising) {
             throw PayPalPluginError.scriptNotLoaded(this.fundingSource);
         }

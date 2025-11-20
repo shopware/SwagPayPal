@@ -1,6 +1,6 @@
 import SwagPaypalBase, { SwagPaypalBaseOptions } from '../base/swag-paypal.base';
 import PayPalPluginError from '../base/paypal-plugin.error';
-import PayPalSdkLoader from '../helper/paypal-sdk-loader.helper';
+import PayPalLoader from '../helper/paypal-loader.helper';
 
 interface SwagPaypalMessagesOptions extends SwagPaypalBaseOptions {
     crossBorderBuyerCountry?: string;
@@ -91,32 +91,9 @@ export default class SwagPaypalMessages extends SwagPaypalBase {
 
     private static messagesInstance: PayPalCoreJS.Messages.PayPalMessages | null = null;
 
-    protected async beforePrepare(): Promise<void> {
-        await Promise.all([
-            super.beforePrepare(),
-            PayPalSdkLoader.loadMessagesScript(this.options.environment),
-        ]);
-    };
-
     protected async prepare(): Promise<void> {
         if (this.instance.createPayPalMessages) {
             SwagPaypalMessages.messagesInstance ??= await this.instance.createPayPalMessages();
         }
-    }
-
-    private async loadCustomScript(path: string, environment: 'sandbox' | 'production'): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            const url = new URL(path, environment === 'production' ? 'https://www.paypal.com' : 'https://www.sandbox.paypal.com');
-
-            const scriptTag = document.createElement('script');
-            scriptTag.src = url.toString();
-            scriptTag.async = true;
-            scriptTag.type = 'text/javascript';
-
-            scriptTag.addEventListener('load', () => resolve());
-            scriptTag.addEventListener('error', () => reject(PayPalPluginError.scriptError('Failed to load paypal messages script')));
-
-            document.head.appendChild(scriptTag);
-        })
     }
 }

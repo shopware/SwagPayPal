@@ -1,5 +1,5 @@
 import Plugin from 'src/plugin-system/plugin.class';
-import PayPalSdkLoader from '../helper/paypal-sdk-loader.helper';
+import PayPalLoader from '../helper/paypal-loader.helper';
 import PayPalPluginError from './paypal-plugin.error';
 
 export interface SwagPaypalBaseOptions {
@@ -103,7 +103,7 @@ export default class SwagPaypalBase extends Plugin {
      * Override in child classes to handle pre-SDK loading logic.
      */
     protected async beforePrepare(): Promise<void> {
-        this._instance = await PayPalSdkLoader.getSDK(
+        this._instance = await PayPalLoader.getInstance(
             {
                 environment: this.options.environment,
                 // debug: this.options.environment !== 'production',

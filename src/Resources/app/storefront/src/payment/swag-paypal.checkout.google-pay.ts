@@ -2,6 +2,7 @@ import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 import PayPalPluginError from '../base/paypal-plugin.error';
 import '@google-pay/button-element';
 import type GooglePayButton from '@google-pay/button-element';
+import PayPalLoader from '../helper/paypal-loader.helper';
 
 export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'googlepay'> {
     el: GooglePayButton | undefined;
@@ -15,11 +16,14 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
     }
 
     protected async beforePrepare(): Promise<void> {
+        await Promise.all([
+            super.beforePrepare(),
+            PayPalLoader.loadGooglePay(),
+        ]);
+
         if (!window?.google?.payments?.api?.PaymentsClient) {
             throw PayPalPluginError.scriptNotLoaded(this.fundingSource);
         }
-
-        return super.beforePrepare();
     }
 
     protected async prepare(): Promise<void> {

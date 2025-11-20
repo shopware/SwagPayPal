@@ -2,7 +2,7 @@ import SwagPaypalBase from './swag-paypal.base';
 import type { SwagPaypalBaseOptions } from './swag-paypal.base';
 import type { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
 import { PaypalButtonHelper } from '../helper/paypal-button.helper';
-import PayPalSdkLoader from '../helper/paypal-sdk-loader.helper';
+import PayPalLoader from '../helper/paypal-loader.helper';
 import PayPalPluginError from './paypal-plugin.error';
 
 export interface SwagPaypalPaymentOptions extends SwagPaypalBaseOptions {
@@ -27,7 +27,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
     protected abstract get fundingSource(): FS;
 
     protected async checkFundingEligiblity(fundingSource: PayPalCoreJS.FundingSource = this.fundingSource): Promise<void> {
-        const eligibleMethods = await PayPalSdkLoader.findEligibleMethods({
+        const eligibleMethods = await PayPalLoader.findEligibleMethods({
             currencyCode: this.options.currency,
         });
 
@@ -37,7 +37,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
     }
 
     protected async getFundingDetails(): Promise<PayPalCoreJS.FindEligibleMethods.Details<FS>> {
-        const eligibleMethods = await PayPalSdkLoader.findEligibleMethods({
+        const eligibleMethods = await PayPalLoader.findEligibleMethods({
             currencyCode: this.options.currency,
         });
 

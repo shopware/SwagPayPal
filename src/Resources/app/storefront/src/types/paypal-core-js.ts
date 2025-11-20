@@ -12,7 +12,7 @@ declare global {
             ) => Promise<Instance<T>>;
         }
 
-        export type Components = Exclude<SDK.Components, 'paypal-legacy-billing-agreements'> | 'googlepay-payments' | 'applepay-payments' | 'card-fields';
+        export type Components = Exclude<SDK.Components, 'paypal-legacy-billing-agreements'> | 'googlepay-payments' | 'applepay-payments' | 'card-fields' | 'paypal-messages';
         export type AllComponents = [Components, ...Components[]];
         export type FundingSource = SDK.FundingSource | 'googlepay' | 'applepay' | 'advanced_cards';
 
@@ -20,8 +20,8 @@ declare global {
             & (C extends 'googlepay-payments' ? PayPalCoreJS.GooglePay.Instance : never)
             & (C extends 'applepay-payments' ? PayPalCoreJS.ApplePay.Instance : never)
             & (C extends 'card-fields' ? PayPalCoreJS.CardFields.Instance : never)
+            & (C extends 'paypal-messages' ? PayPalCoreJS.Messages.Instance : never)
             & PayPalCoreJS.FindEligibleMethods.Instance
-            & Partial<PayPalCoreJS.Messages.Instance>
         ;
 
         export type InstanceOptions<C extends Components = Components> = Omit<SDK.CreateInstanceOptions<[Extract<C, SDK.Components>]>, 'components'> & {

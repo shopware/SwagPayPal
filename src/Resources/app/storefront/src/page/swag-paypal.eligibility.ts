@@ -1,5 +1,5 @@
 import SwagPaypalBase, { type SwagPaypalBaseOptions } from '../base/swag-paypal.base';
-import PayPalSdkLoader from '../helper/paypal-sdk-loader.helper';
+import PayPalLoader from '../helper/paypal-loader.helper';
 
 interface SwagPayPalEligibilityOptions extends SwagPaypalBaseOptions {
     filteredPaymentMethods: string[];
@@ -31,7 +31,7 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
     };
 
     protected async prepare(): Promise<void> {
-        const eligibleMethods = await PayPalSdkLoader.findEligibleMethods({
+        const eligibleMethods = await PayPalLoader.findEligibleMethods({
             currencyCode: this.options.currency,
         });
 
