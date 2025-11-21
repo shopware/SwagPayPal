@@ -13,6 +13,14 @@ use Shopware\Core\Framework\Struct\Struct;
 #[Package('checkout')]
 class AbstractScriptData extends Struct
 {
+    public const PAGE_TYPE_CART = 'cart';
+    public const PAGE_TYPE_CHECKOUT = 'checkout';
+    public const PAGE_TYPE_HOME = 'home';
+    public const PAGE_TYPE_MINI_CART = 'mini-cart';
+    public const PAGE_TYPE_PRODUCT_DETAILS = 'product-details';
+    public const PAGE_TYPE_PRODUCT_LISTING = 'product-listing';
+    public const PAGE_TYPE_SEARCH_RESULTS = 'search-results';
+
     protected string $clientId;
 
     protected string $merchantPayerId;
@@ -28,6 +36,8 @@ class AbstractScriptData extends Struct
     protected string $clientToken;
 
     protected string $environment;
+
+    protected ?string $pageType = null;
 
     public function getClientId(): string
     {
@@ -107,5 +117,15 @@ class AbstractScriptData extends Struct
     public function setEnvironment(string $environment): void
     {
         $this->environment = $environment;
+    }
+
+    public function getPageType(): ?string
+    {
+        return $this->pageType;
+    }
+
+    public function setPageType(?string $pageType): void
+    {
+        $this->pageType = $pageType;
     }
 }

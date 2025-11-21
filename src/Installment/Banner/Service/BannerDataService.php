@@ -26,6 +26,7 @@ use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\AbstractScriptDataService;
+use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
@@ -93,6 +94,7 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
             'loginPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED),
             'detailPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED),
             'crossBorderBuyerCountry' => $crossBorderBuyerCountry ?? null,
+            'pageType' => $this->getPageType($page),
         ]);
 
         return $bannerData;
@@ -129,6 +131,21 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
             'it-IT-EUR' => 'IT',
             'en-GB-GBP' => 'UK',
             'en-US-USD' => 'US',
+            default => null,
+        };
+    }
+
+    /**
+     * @param CheckoutCartPage|CheckoutConfirmPage|CheckoutRegisterPage|OffcanvasCartPage|ProductPage|FooterPagelet|QuickviewPagelet $page
+     */
+    private function getPageType($page): ?string
+    {
+        return match (true) {
+            $page instanceof CheckoutCartPage => AbstractScriptData::PAGE_TYPE_CART,
+            $page instanceof CheckoutRegisterPage,
+            $page instanceof CheckoutConfirmPage => AbstractScriptData::PAGE_TYPE_CHECKOUT,
+            $page instanceof OffcanvasCartPage => AbstractScriptData::PAGE_TYPE_MINI_CART,
+            $page instanceof ProductPage => AbstractScriptData::PAGE_TYPE_PRODUCT_DETAILS,
             default => null,
         };
     }

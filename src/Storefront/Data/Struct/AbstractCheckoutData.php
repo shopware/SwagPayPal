@@ -30,6 +30,8 @@ class AbstractCheckoutData extends AbstractScriptData
 
     protected string $brandName;
 
+    protected ?string $pageType = 'checkout';
+
     public function getUserIdToken(): ?string
     {
         return $this->userIdToken;

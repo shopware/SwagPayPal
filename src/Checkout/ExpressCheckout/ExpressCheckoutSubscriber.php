@@ -44,6 +44,7 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -313,11 +314,15 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             return null;
         }
 
-        return $this->expressCheckoutDataService->buildExpressCheckoutButtonData(
+        $data = $this->expressCheckoutDataService->buildExpressCheckoutButtonData(
             $event->getSalesChannelContext(),
             $addProductToCart,
             $event
         );
+
+        $data?->setPageType($this->getPageType($event));
+
+        return $data;
     }
 
     private function checkSettings(SalesChannelContext $context, string $eventName): bool
@@ -361,5 +366,23 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             default:
                 return false;
         }
+    }
+
+    private function getPageType(ShopwareSalesChannelEvent $event): ?string
+    {
+        return match (true) {
+            $event instanceof ProductPageLoadedEvent,
+            $event instanceof QuickviewPageletLoadedEvent => AbstractScriptData::PAGE_TYPE_PRODUCT_DETAILS,
+            $event instanceof OffcanvasCartPageLoadedEvent => AbstractScriptData::PAGE_TYPE_MINI_CART,
+            $event instanceof CheckoutRegisterPageLoadedEvent => AbstractScriptData::PAGE_TYPE_CHECKOUT,
+            $event instanceof CheckoutCartPageLoadedEvent => AbstractScriptData::PAGE_TYPE_CART,
+            $event instanceof NavigationPageLoadedEvent,
+            $event instanceof CmsPageLoadedEvent,
+            $event instanceof SearchPageLoadedEvent,
+            $event instanceof GuestWishlistPageletLoadedEvent,
+            $event instanceof SwitchBuyBoxVariantEvent,
+            $event instanceof SalesChannelEntitySearchResultLoadedEvent => AbstractScriptData::PAGE_TYPE_PRODUCT_LISTING,
+            default => null,
+        };
     }
 }
