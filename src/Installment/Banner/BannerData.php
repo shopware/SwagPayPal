@@ -28,17 +28,32 @@ class BannerData extends AbstractScriptData
 
     protected float $amount;
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::logoType}
+     */
     protected string $layout = 'text';
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::textColor}
+     */
     protected string $color = 'blue';
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed without replacement
+     */
     protected string $ratio = '8x1';
 
-    protected string $logoType = self::LOGO_TYPE_WORDMARK;
+    /**
+     * @deprecated tag:v11.0.0 - Will default to `self::LOGO_TYPE_WORDMARK`
+     */
+    protected string $logoType = 'primary';
 
     protected string $logoPosition = self::LOGO_POSITION_LEFT;
 
-    protected string $textColor = self::TEXT_COLOR_BLACK;
+    /**
+     * @deprecated tag:v11.0.0 - Will default to `self::TEXT_COLOR_BLACK`
+     */
+    protected string $textColor = 'black';
 
     protected string $paymentMethodId;
 
@@ -69,16 +84,25 @@ class BannerData extends AbstractScriptData
         return $this->amount;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::logoType}
+     */
     public function getLayout(): string
     {
         return $this->layout;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::textColor}
+     */
     public function getColor(): string
     {
         return $this->color;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed without replacement
+     */
     public function getRatio(): string
     {
         return $this->ratio;
@@ -86,21 +110,22 @@ class BannerData extends AbstractScriptData
 
     public function getLogoType(): string
     {
+        /** @deprecated tag:v11.0.0 - Will be removed */
         if (!$this->isV6Enabled()) {
             return $this->logoType;
         }
 
         return match ($this->logoType) {
-            'primary' => ['logoType' => self::LOGO_TYPE_WORDMARK, 'logoPosition' => self::LOGO_POSITION_LEFT],
-            'alternative' => ['logoType' => self::LOGO_TYPE_MONOGRAM, 'logoPosition' => self::LOGO_POSITION_LEFT],
-            'inline' => ['logoType' => self::LOGO_TYPE_WORDMARK, 'logoPosition' => self::LOGO_POSITION_INLINE],
-            'none' => ['logoType' => self::LOGO_TYPE_TEXT, 'logoPosition' => self::LOGO_POSITION_INLINE],
+            'primary', 'inline' => self::LOGO_TYPE_WORDMARK,
+            'alternative' => self::LOGO_TYPE_MONOGRAM,
+            'none' => self::LOGO_TYPE_TEXT,
             default => $this->logoType,
         };
     }
 
     public function getTextColor(): string
     {
+        /** @deprecated tag:v11.0.0 - Will be removed */
         if (!$this->isV6Enabled()) {
             return $this->textColor;
         }
@@ -141,16 +166,25 @@ class BannerData extends AbstractScriptData
         $this->amount = $amount;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::logoType}
+     */
     public function setLayout(string $layout): void
     {
         $this->layout = $layout;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::textColor}
+     */
     public function setColor(string $color): void
     {
         $this->color = $color;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed without replacement
+     */
     public function setRatio(string $ratio): void
     {
         $this->ratio = $ratio;
@@ -204,8 +238,8 @@ class BannerData extends AbstractScriptData
     public function getLogoPosition(): string
     {
         return match ($this->logoType) {
-            self::LOGO_TYPE_MONOGRAM => self::LOGO_POSITION_LEFT,
-            self::LOGO_TYPE_TEXT => self::LOGO_POSITION_INLINE,
+            self::LOGO_TYPE_MONOGRAM, 'alternative', 'primary' => self::LOGO_POSITION_LEFT,
+            self::LOGO_TYPE_TEXT, 'inline', 'none' => self::LOGO_POSITION_INLINE,
             default => $this->logoPosition,
         };
     }

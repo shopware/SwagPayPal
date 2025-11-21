@@ -43,6 +43,9 @@ class ExpressCheckoutButtonData extends AbstractScriptData
 
     protected string $cancelRedirectUrl;
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::fundingSources}
+     */
     protected bool $showPayLater;
 
     /**
@@ -200,11 +203,17 @@ class ExpressCheckoutButtonData extends AbstractScriptData
         $this->cancelRedirectUrl = $cancelRedirectUrl;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::fundingSources}
+     */
     public function isShowPayLater(): bool
     {
         return $this->showPayLater;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::fundingSources}
+     */
     public function setShowPayLater(bool $showPayLater): void
     {
         $this->showPayLater = $showPayLater;

@@ -23,8 +23,14 @@ class AbstractScriptData extends Struct
 
     protected bool $_v6Enabled;
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::clientToken}
+     */
     protected string $clientId;
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::clientToken}
+     */
     protected string $merchantPayerId;
 
     protected string $partnerAttributionId;
@@ -49,21 +55,33 @@ class AbstractScriptData extends Struct
         return $this->_v6Enabled;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::clientToken}
+     */
     public function getClientId(): string
     {
         return $this->clientId;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::clientToken}
+     */
     public function setClientId(string $clientId): void
     {
         $this->clientId = $clientId;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::clientToken}
+     */
     public function getMerchantPayerId(): string
     {
         return $this->merchantPayerId;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::clientToken}
+     */
     public function setMerchantPayerId(string $merchantPayerId): void
     {
         $this->merchantPayerId = $merchantPayerId;

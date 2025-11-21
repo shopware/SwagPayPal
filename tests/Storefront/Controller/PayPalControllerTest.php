@@ -91,6 +91,7 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'isCheckout' => true,
+            'plugin' => 'test',
         ]);
 
         $matcher = $this->exactly(2);
@@ -117,6 +118,7 @@ class PayPalControllerTest extends TestCase
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
+            'plugin' => 'test',
         ]);
     }
 
@@ -125,6 +127,7 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'isCheckout' => false,
+            'plugin' => 'test',
         ]);
 
         $this->controller
@@ -140,6 +143,7 @@ class PayPalControllerTest extends TestCase
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
+            'plugin' => 'test',
         ]);
     }
 
@@ -148,6 +152,7 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'isCheckout' => true,
+            'plugin' => 'test',
         ]);
 
         $this->controller
@@ -165,6 +170,7 @@ class PayPalControllerTest extends TestCase
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
+            'plugin' => 'test',
         ]);
     }
 
@@ -173,6 +179,7 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'isCheckout' => false,
+            'plugin' => 'test',
         ]);
 
         $this->controller
@@ -188,6 +195,7 @@ class PayPalControllerTest extends TestCase
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
+            'plugin' => 'test',
         ]);
     }
 
@@ -198,6 +206,7 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: [
             'code' => $code,
             'fatal' => $fatal,
+            'plugin' => 'test',
         ]);
 
         $session = new Session(new MockArraySessionStorage());
@@ -213,6 +222,7 @@ class PayPalControllerTest extends TestCase
         $this->assertLogRecord($level, [
             'code' => $code,
             'fatal' => $fatal,
+            'plugin' => 'test',
         ]);
     }
 
