@@ -8,20 +8,25 @@
 namespace Swag\PayPal\Installment\Banner;
 
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 
 #[Package('checkout')]
-class BannerData extends Struct
+class BannerData extends AbstractScriptData
 {
-    protected string $clientId;
+    public const TEXT_COLOR_BLACK = 'BLACK';
+    public const TEXT_COLOR_WHITE = 'WHITE';
+    public const TEXT_COLOR_MONOCHROME  = 'MONOCHROME';
+
+    public const LOGO_POSITION_INLINE = 'INLINE';
+    public const LOGO_POSITION_LEFT = 'LEFT';
+    public const LOGO_POSITION_RIGHT = 'RIGHT';
+    public const LOGO_POSITION_TOP = 'TOP';
+
+    public const LOGO_TYPE_TEXT = 'TEXT';
+    public const LOGO_TYPE_MONOGRAM = 'MONOGRAM';
+    public const LOGO_TYPE_WORDMARK = 'WORDMARK';
 
     protected float $amount;
-
-    protected string $currency;
-
-    protected string $partnerAttributionId;
-
-    protected string $merchantPayerId;
 
     protected string $layout = 'text';
 
@@ -29,9 +34,11 @@ class BannerData extends Struct
 
     protected string $ratio = '8x1';
 
-    protected string $logoType = 'primary';
+    protected string $logoType = self::LOGO_TYPE_WORDMARK;
 
-    protected string $textColor = 'black';
+    protected string $logoPosition = self::LOGO_POSITION_LEFT;
+
+    protected string $textColor = self::TEXT_COLOR_BLACK;
 
     protected string $paymentMethodId;
 
@@ -57,44 +64,9 @@ class BannerData extends Struct
         $this->paymentMethodId = $paymentMethodId;
     }
 
-    public function getMerchantPayerId(): string
-    {
-        return $this->merchantPayerId;
-    }
-
-    public function setMerchantPayerId(string $merchantPayerId): void
-    {
-        $this->merchantPayerId = $merchantPayerId;
-    }
-
-    public function getPartnerAttributionId(): string
-    {
-        return $this->partnerAttributionId;
-    }
-
-    public function setPartnerAttributionId(string $partnerAttributionId): void
-    {
-        $this->partnerAttributionId = $partnerAttributionId;
-    }
-
-    public function getClientId(): string
-    {
-        return $this->clientId;
-    }
-
-    public function setClientId(string $clientId): void
-    {
-        $this->clientId = $clientId;
-    }
-
     public function getAmount(): float
     {
         return $this->amount;
-    }
-
-    public function getCurrency(): string
-    {
-        return $this->currency;
     }
 
     public function getLayout(): string
@@ -114,12 +86,29 @@ class BannerData extends Struct
 
     public function getLogoType(): string
     {
-        return $this->logoType;
+        if (!$this->isV6Enabled()) {
+            return $this->logoType;
+        }
+
+        return match ($this->logoType) {
+            'primary' => ['logoType' => self::LOGO_TYPE_WORDMARK, 'logoPosition' => self::LOGO_POSITION_LEFT],
+            'alternative' => ['logoType' => self::LOGO_TYPE_MONOGRAM, 'logoPosition' => self::LOGO_POSITION_LEFT],
+            'inline' => ['logoType' => self::LOGO_TYPE_WORDMARK, 'logoPosition' => self::LOGO_POSITION_INLINE],
+            'none' => ['logoType' => self::LOGO_TYPE_TEXT, 'logoPosition' => self::LOGO_POSITION_INLINE],
+            default => $this->logoType,
+        };
     }
 
     public function getTextColor(): string
     {
-        return $this->textColor;
+        if (!$this->isV6Enabled()) {
+            return $this->textColor;
+        }
+
+        return match ($this->textColor) {
+            'grayscale' => self::TEXT_COLOR_MONOCHROME,
+            default => $this->textColor,
+        };
     }
 
     public function getFooterEnabled(): bool
@@ -150,11 +139,6 @@ class BannerData extends Struct
     public function setAmount(float $amount): void
     {
         $this->amount = $amount;
-    }
-
-    public function setCurrency(string $currency): void
-    {
-        $this->currency = $currency;
     }
 
     public function setLayout(string $layout): void
@@ -215,5 +199,29 @@ class BannerData extends Struct
     public function setCrossBorderBuyerCountry(?string $crossBorderBuyerCountry): void
     {
         $this->crossBorderBuyerCountry = $crossBorderBuyerCountry;
+    }
+
+    public function getLogoPosition(): string
+    {
+        return match ($this->logoType) {
+            self::LOGO_TYPE_MONOGRAM => self::LOGO_POSITION_LEFT,
+            self::LOGO_TYPE_TEXT => self::LOGO_POSITION_INLINE,
+            default => $this->logoPosition,
+        };
+    }
+
+    public function setLogoPosition(string $logoPosition): void
+    {
+        $this->logoPosition = $logoPosition;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            ...parent::jsonSerialize(),
+            'logoPosition' => $this->getLogoPosition(),
+            'logoType' => $this->getLogoType(),
+            'textColor' => $this->getTextColor(),
+        ];
     }
 }

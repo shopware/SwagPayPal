@@ -1,6 +1,8 @@
 import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 
 export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'paypal'> {
+    declare el: PayPalCoreJS.HTMLPaypalButton | undefined;
+
     protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paypal'; product: 'default' } {
         return {
             components: ['paypal-payments'],
@@ -16,6 +18,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'paypal
             onError: this.onError.bind(this),
         });
 
+        this.el!.type = 'checkout';
         this.el!.addEventListener('click', () => void this.submissionFlow({ paymentSession }));
     }
 

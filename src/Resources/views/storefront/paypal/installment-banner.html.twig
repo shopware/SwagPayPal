@@ -4,14 +4,9 @@
 {% block swag_paypal_message %}
 <div class="swag-paypal-installment-banner {{ classes ?? '' }}">
     <paypal-message
-        amount="{{ installmentBanner.amount ?? 0 }}"
-        text-color="{{ installmentBanner.textColor ?? 'black' }}"
-        currency-code="{{ installmentBanner.currencyCode ?? 'EUR' }}"
-        logo-type="MONOGRAM"
-        text-color="MONOCHROME"
-        auto-bootstrap="true"
         data-swag-paypal-messages="true"
         data-swag-paypal-messages-options="{{ installmentBanner|json_encode }}"
+        hidden
     >
     </paypal-message>
 </div>

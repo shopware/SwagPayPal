@@ -58,6 +58,8 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             throw PayPalPluginError.notEligible(this.metadata.fundingSource);
         }
 
+        this.el!.buttonType = 'checkout';
+        this.el!.environment = this.options.environment === 'sandbox' ? 'TEST' : 'PRODUCTION';
         this.el!.onPaymentAuthorized = this.onPaymentAuthorized.bind(this, paymentSession);
         this.el!.addEventListener('cancel', (event) => void this.onCancel(event.detail));
         this.el!.addEventListener('error', (event) => void this.onError(event.error));

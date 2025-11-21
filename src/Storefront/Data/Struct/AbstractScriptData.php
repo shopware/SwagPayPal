@@ -21,6 +21,8 @@ class AbstractScriptData extends Struct
     public const PAGE_TYPE_PRODUCT_LISTING = 'product-listing';
     public const PAGE_TYPE_SEARCH_RESULTS = 'search-results';
 
+    protected bool $_v6Enabled;
+
     protected string $clientId;
 
     protected string $merchantPayerId;
@@ -38,6 +40,14 @@ class AbstractScriptData extends Struct
     protected string $environment;
 
     protected ?string $pageType = null;
+
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed
+     */
+    public function isV6Enabled(): bool
+    {
+        return $this->_v6Enabled;
+    }
 
     public function getClientId(): string
     {

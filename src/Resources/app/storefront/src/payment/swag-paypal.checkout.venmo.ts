@@ -1,6 +1,8 @@
 import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 
 export default class SwagPaypalCheckoutVenmo extends SwagPaypalCheckout<'venmo'> {
+    declare el: PayPalCoreJS.HTMLVenmoButton | undefined;
+
     protected get metadata(): { components: 'venmo-payments'[]; fundingSource: 'venmo'; product: 'venmo' } {
         return {
             components: ['venmo-payments'],
@@ -16,6 +18,7 @@ export default class SwagPaypalCheckoutVenmo extends SwagPaypalCheckout<'venmo'>
             onError: this.onError.bind(this),
         });
 
+        this.el!.type = 'checkout';
         this.el!.addEventListener('click', () => void this.submissionFlow({ paymentSession }));
     }
 

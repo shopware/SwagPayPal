@@ -78,6 +78,7 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
         }
 
         $bannerData = new BannerData();
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
 
         if ($this->systemConfigService->getBool(Settings::CROSS_BORDER_MESSAGING_ENABLED)) {
             $crossBorderBuyerCountry = $this->matchBuyerCountry($this->systemConfigService->getString(Settings::CROSS_BORDER_BUYER_COUNTRY), $salesChannelContext);
@@ -88,14 +89,19 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
             ...$this->getBaseData($salesChannelContext),
             'paymentMethodId' => (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
             'amount' => $amount,
-            'footerEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED),
-            'cartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_CART_ENABLED),
-            'offCanvasCartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED),
-            'loginPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED),
-            'detailPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED),
+            'footerEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED, $salesChannelId),
+            'cartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_CART_ENABLED, $salesChannelId),
+            'offCanvasCartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED, $salesChannelId),
+            'loginPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED, $salesChannelId),
+            'detailPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED, $salesChannelId),
             'crossBorderBuyerCountry' => $crossBorderBuyerCountry ?? null,
             'pageType' => $this->getPageType($page),
         ]);
+
+        /** @deprecated tag:v11.0.0 - Will be removed */
+        if (!$this->systemConfigService->getBool(Settings::SDK_V6_ENABLED, $salesChannelId)) {
+            $bannerData->setLogoType('primary');
+        }
 
         return $bannerData;
     }

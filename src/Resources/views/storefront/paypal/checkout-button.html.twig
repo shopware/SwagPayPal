@@ -31,7 +31,6 @@
         class="swag-paypal-button shape-{{ spbData.buttonShape }} paypal-{{ spbData.buttonColor }}"
         data-swag-paypal-checkout-paypal="true"
         data-swag-paypal-checkout-paypal-options="{{ spbData|json_encode }}"
-        type="checkout"
         hidden
     >
     </paypal-button>
@@ -92,7 +91,6 @@
         class="swag-paypal-button shape-{{ venmoData.buttonShape }} paypal-blue"
         data-swag-paypal-checkout-venmo="true"
         data-swag-paypal-checkout-venmo-options="{{ venmoData|json_encode }}"
-        type="checkout"
         hidden
     >
     </venmo-button>
@@ -105,7 +103,6 @@
     <apple-pay-button
         class="swag-paypal-button shape-{{ applePayData.buttonShape }} d-none"
         buttonstyle="black"
-        type="check-out"
         data-swag-paypal-checkout-apple-pay="true"
         data-swag-paypal-checkout-apple-pay-options="{{ applePayData|json_encode }}"
         disabled
@@ -118,9 +115,7 @@
     {% block swag_paypal_google_pay %}
     <google-pay-button
         class="swag-paypal-button shape-{{ googlePayData.buttonShape }}"
-        button-type="checkout"
         button-size-mode="fill"
-        environment="{{ googlePayData.environment === 'sandbox' ? 'TEST' : 'PRODUCTION' }}"
         data-swag-paypal-checkout-google-pay="true"
         data-swag-paypal-checkout-google-pay-options="{{ googlePayData|json_encode }}"
     >

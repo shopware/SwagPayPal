@@ -30,6 +30,8 @@ interface ApplePaySubmissionData extends SubmissionData<'applepay'> {
 
 export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applepay'> {
     declare options: SwagPaypalCheckoutApplePayOptions;
+    declare el: (HTMLElement&{ type: 'check-out' }) | undefined;
+
     static options: SwagPaypalCheckoutApplePayOptions = {
         ...SwagPaypalCheckout.options,
         totalPrice: '0.00',
@@ -83,6 +85,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
             throw PayPalPluginError.notEligible(this.metadata.fundingSource);
         }
 
+        this.el!.type = 'check-out';
         this.el!.addEventListener('click', () => void this.submissionFlow({ paymentSession, config }));
     }
 

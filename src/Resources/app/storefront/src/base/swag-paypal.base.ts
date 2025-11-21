@@ -124,7 +124,7 @@ export default abstract class SwagPaypalBase extends Plugin {
      */
     protected async handleError(code: string, fatal: boolean = false, data: unknown = undefined): Promise<void> {
         const error = PayPalPluginError.create(code, fatal, data);
-        console.error(error.message);
+        console.error(error);
 
         if (!this.options.handleErrorUrl) {
             return;
@@ -137,7 +137,7 @@ export default abstract class SwagPaypalBase extends Plugin {
                 code: error.code,
                 error: error.message,
                 fatal: error.isFatal,
-                plugin: this.constructor.name,
+                plugin: this._pluginName,
                 isCheckout: this.options.pageType === 'checkout',
             }),
         }).catch(console.error.bind(console, 'Failed to send error to server: '));

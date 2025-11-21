@@ -50,11 +50,15 @@ declare global {
 
         export interface HTMLPaypalButton extends HTMLElement {
             disabled: boolean;
+            hidden: boolean;
             ariaDisabled: string;
-            type: 'checkout';
+            type: 'checkout' | 'buynow' | 'donate' | 'subscribe'; // more types are unknown
         }
 
+        export interface HTMLVenmoButton extends HTMLPaypalButton {}
+
         export interface HTMLPaypalPayLaterButton extends HTMLElement {
+            hidden: boolean;
             disabled: boolean;
             ariaDisabled: string;
             countryCode: string;
@@ -65,9 +69,12 @@ declare global {
         }
 
         export interface HTMLPaypalMessage extends HTMLElement, Messages.ContentOptions {
-            autoBootstrap: boolean;
-            buyerCountry: string;
-            offerTypes: string;
+            autoBootstrap?: boolean;
+            buyerCountry?: string;
+            offerTypes?: string;
+            getFetchContentOptions: () => Messages.FetchContentOptions;
+            addEventListener(type: 'paypal-message-click', listener: (event: CustomEvent<{ config: unknown }>) => void): void;
+            addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
         }
 
         export namespace FindEligibleMethods {
