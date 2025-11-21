@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem der Bundesstaat nicht korrent an PayPal übermittelt wurde (shopware/SwagPayPal#469)
+
 # 10.3.0
 - Fügt Kompatibilität mit Abos in gemischten Warenkörben hinzu (shopware/shopware#10486)
 

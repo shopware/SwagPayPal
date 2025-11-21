@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where the state of a country was not correctly transmitted to PayPal (shopware/SwagPayPal#469)
+
 # 10.3.0
 - Added compatibility with subscription mixed carts (shopware/shopware#10486)
 
