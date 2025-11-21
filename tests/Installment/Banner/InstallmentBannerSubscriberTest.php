@@ -48,6 +48,7 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
@@ -371,6 +372,7 @@ class InstallmentBannerSubscriberTest extends TestCase
                 $this->localeCodeProvider,
                 $settings,
                 new CredentialsUtil($settings),
+                $this->createMock(TokenResource::class),
                 $this->paymentMethodUtil,
                 $this->languageRepository
             ),

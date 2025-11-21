@@ -8,7 +8,6 @@
 namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
-use Shopware\PayPalSDK\Context\ClientTokenOAuthContext;
 use Shopware\PayPalSDK\Context\CredentialsOAuthContext;
 use Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface;
 use Shopware\PayPalSDK\Exception\ApiException;

@@ -27,6 +27,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
@@ -62,6 +63,7 @@ class BannerDataServiceTest extends TestCase
             $this->localeCodeProvider,
             $this->systemConfigService,
             new CredentialsUtil($this->systemConfigService),
+            $this->createMock(TokenResource::class),
             $this->paymentMethodUtil,
             $this->languageRepository
         );

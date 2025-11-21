@@ -87,6 +87,7 @@ export default class PayPalPluginError extends Error {
                 }
             }
         } finally {
+            // eslint-disable-next-line
             return null;
         }
     }

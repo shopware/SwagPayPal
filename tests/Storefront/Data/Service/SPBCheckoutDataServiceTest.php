@@ -22,6 +22,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
 use Swag\PayPal\Checkout\TokenResponse;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
@@ -83,6 +84,7 @@ class SPBCheckoutDataServiceTest extends TestCase
             $this->createMock(RouterInterface::class),
             $this->systemConfigService,
             $this->createMock(CredentialsUtilInterface::class),
+            $this->createMock(TokenResource::class),
             $this->customerVaultTokenRoute,
         );
     }

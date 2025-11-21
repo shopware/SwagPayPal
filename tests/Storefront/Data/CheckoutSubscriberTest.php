@@ -31,6 +31,7 @@ use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
@@ -314,7 +315,8 @@ class CheckoutSubscriberTest extends TestCase
             $localeCodeProvider,
             $router,
             $settings,
-            $credentialsUtil
+            $credentialsUtil,
+            $this->createMock(TokenResource::class),
         );
 
         $payLaterDataService = new PayLaterCheckoutDataService(
@@ -322,7 +324,8 @@ class CheckoutSubscriberTest extends TestCase
             $localeCodeProvider,
             $router,
             $settings,
-            $credentialsUtil
+            $credentialsUtil,
+            $this->createMock(TokenResource::class),
         );
 
         $venmoDataService = new VenmoCheckoutDataService(
@@ -331,6 +334,7 @@ class CheckoutSubscriberTest extends TestCase
             $router,
             $settings,
             $credentialsUtil,
+            $this->createMock(TokenResource::class),
             $this->createMock(CustomerVaultTokenRoute::class)
         );
 
@@ -339,7 +343,8 @@ class CheckoutSubscriberTest extends TestCase
             $localeCodeProvider,
             $router,
             $settings,
-            $credentialsUtil
+            $credentialsUtil,
+            $this->createMock(TokenResource::class),
         );
 
         $spbDataService = new SPBCheckoutDataService(
@@ -348,6 +353,7 @@ class CheckoutSubscriberTest extends TestCase
             $router,
             $settings,
             $credentialsUtil,
+            $this->createMock(TokenResource::class),
             $this->createMock(CustomerVaultTokenRoute::class)
         );
 

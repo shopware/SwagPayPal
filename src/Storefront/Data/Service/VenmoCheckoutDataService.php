@@ -14,6 +14,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Exception\MissingCustomerVaultTokenException;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Storefront\Data\Struct\VenmoCheckoutData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -33,9 +34,10 @@ class VenmoCheckoutDataService extends AbstractCheckoutDataService
         RouterInterface $router,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
+        TokenResource $tokenResource,
         private readonly CustomerVaultTokenRoute $customerVaultTokenRoute,
     ) {
-        parent::__construct($paymentMethodDataRegistry, $localeCodeProvider, $router, $systemConfigService, $credentialsUtil);
+        parent::__construct($paymentMethodDataRegistry, $localeCodeProvider, $router, $systemConfigService, $credentialsUtil, $tokenResource);
     }
 
     public function buildCheckoutData(SalesChannelContext $context, ?Cart $cart = null, ?OrderEntity $order = null): ?VenmoCheckoutData

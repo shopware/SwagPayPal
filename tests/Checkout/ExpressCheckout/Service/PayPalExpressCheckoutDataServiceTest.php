@@ -39,6 +39,7 @@ use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -98,6 +99,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $this->paymentMethodUtil,
             $this->systemConfigService,
             new CredentialsUtil($this->systemConfigService),
+            $this->createMock(TokenResource::class),
             new CartPriceService(),
             $this->payLaterMethodData
         );
@@ -267,6 +269,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $this->paymentMethodUtil,
             $this->systemConfigService,
             new CredentialsUtil($this->systemConfigService),
+            $this->createMock(TokenResource::class),
             $this->getContainer()->get(CartPriceService::class),
             $payLaterMethodData
         );

@@ -26,6 +26,7 @@ use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
@@ -207,6 +208,7 @@ class FundingSubscriberTest extends TestCase
                 $credentialsUtil,
                 $systemConfig,
                 $localeCodeProvider,
+                $this->createMock(TokenResource::class),
                 $router,
                 $requestStack
             )
