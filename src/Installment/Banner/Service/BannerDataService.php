@@ -80,8 +80,8 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
         $bannerData = new BannerData();
         $salesChannelId = $salesChannelContext->getSalesChannelId();
 
-        if ($this->systemConfigService->getBool(Settings::CROSS_BORDER_MESSAGING_ENABLED)) {
-            $crossBorderBuyerCountry = $this->matchBuyerCountry($this->systemConfigService->getString(Settings::CROSS_BORDER_BUYER_COUNTRY), $salesChannelContext);
+        if ($this->systemConfigService->getBool(Settings::CROSS_BORDER_MESSAGING_ENABLED, $salesChannelId)) {
+            $crossBorderBuyerCountry = $this->matchBuyerCountry($this->systemConfigService->getString(Settings::CROSS_BORDER_BUYER_COUNTRY, $salesChannelId), $salesChannelContext);
             $crossBorderBuyerCountry ??= $this->determineBuyerCountry($salesChannelContext);
         }
 

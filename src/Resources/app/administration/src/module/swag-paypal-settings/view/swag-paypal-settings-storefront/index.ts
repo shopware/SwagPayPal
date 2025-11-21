@@ -1,4 +1,5 @@
 import template from './swag-paypal-settings-storefront.html.twig';
+import './swag-paypal-settings-storefront.scss';
 import { BUTTON_COLORS, BUTTON_SHAPES } from 'SwagPayPal/constant/swag-paypal-settings.constant';
 import type EntityCollection from "@shopware-ag/meteor-admin-sdk/es/_internals/data/EntityCollection";
 

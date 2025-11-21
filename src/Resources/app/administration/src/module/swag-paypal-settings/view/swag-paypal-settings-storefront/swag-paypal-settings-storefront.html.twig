@@ -2,9 +2,16 @@
     class="swag-paypal-settings-sdk"
     position-identifier="swag-paypal-settings-sdk"
     :title="$t('swag-paypal-settings.sdk.title')"
-    :subtitle="$t('swag-paypal-settings.sdk.subtitle')"
     :is-loading="settingsStore.isLoading"
 >
+    <p class="swag-paypal-settings-sdk__info-text">
+        {{ $t('swag-paypal-settings.sdk.info') }}
+    </p>
+
+    <p class="swag-paypal-settings-sdk__recommendation-text">
+        {{ $t('swag-paypal-settings.sdk.recommendation') }}
+    </p>
+
     <swag-paypal-setting path="SwagPayPal.settings.sdkV6Enabled" />
 </mt-card>
 

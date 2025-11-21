@@ -99,7 +99,7 @@ final class Settings
         self::VAULTING_ENABLED_VENMO => false,
         self::CROSS_BORDER_MESSAGING_ENABLED => false,
         self::CROSS_BORDER_BUYER_COUNTRY => null,
-        self::SDK_V6_ENABLED => false,
+        self::SDK_V6_ENABLED => true,
     ];
 
     public const LIVE_CREDENTIAL_KEYS = [

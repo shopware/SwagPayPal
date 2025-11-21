@@ -1,0 +1,12 @@
+.swag-paypal-settings-sdk {
+    &__info-text, &__recommendation-text {
+        font-size: var(--font-size-xs);
+        line-height: var(--line-height-sm);
+        margin-bottom: var(--scale-size-12);
+        white-space: pre-wrap;
+    }
+
+    &__recommendation-text {
+        font-weight: var(--font-weight-semibold);
+    }
+}

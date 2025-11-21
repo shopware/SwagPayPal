@@ -103,6 +103,11 @@
       "info": "Mit länderübergreifende Nachrichten für \"Später bezahlen\" wird die \"Später bezahlen\"-Nachricht in der Sprache des Kunden anzeigt. Diese Funktion ist nur für bestimmte Länder verfügbar. {0}",
       "buyerCountryAuto": "Automatische Bestimmung",
       "buyerCountryOverride": "Lokalisierung"
+    },
+    "sdk": {
+      "title": "PayPal SDK Version 6",
+      "info": "Dadurch wird die neueste Version der PayPal-Checkout-Integration, PayPal SDK v6, aktiviert. Version 6 bietet eine verbesserte Leistung und Sicherheit sowie eine bessere Kompatibilität mit modernen Zahlungsabläufen. Bitte beachten Sie, dass einige Anpassungen und Erweiterungen möglicherweise angepasst werden müssen.\nSDK v6 wird die Standardimplementierung in Version 11 des Plugins sein.",
+      "recommendation": "Wir empfehlen sehr, diese Option zu aktivieren, um von den neuesten Funktionen und Verbesserungen zu profitieren."
     }
   },
   "swag-paypal-settings-sales-channel-switch": {

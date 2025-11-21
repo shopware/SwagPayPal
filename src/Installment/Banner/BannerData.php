@@ -15,7 +15,7 @@ class BannerData extends AbstractScriptData
 {
     public const TEXT_COLOR_BLACK = 'BLACK';
     public const TEXT_COLOR_WHITE = 'WHITE';
-    public const TEXT_COLOR_MONOCHROME  = 'MONOCHROME';
+    public const TEXT_COLOR_MONOCHROME = 'MONOCHROME';
 
     public const LOGO_POSITION_INLINE = 'INLINE';
     public const LOGO_POSITION_LEFT = 'LEFT';

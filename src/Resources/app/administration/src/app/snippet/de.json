@@ -84,7 +84,7 @@
       "vaultingEnabledVenmo": "Vaulting für Venmo-Zahlungen verwenden",
       "crossBorderMessagingEnabled" : "Länderübergreifende Lokalisierung der \"Später bezahlen\"-Nachricht aktivieren",
       "crossBorderBuyerCountry" : "Lokalisierung",
-      "sdkV6Enabled": "PayPal SDK Version 6 verwenden"
+      "sdkV6Enabled": "PayPal SDK v6 verwenden"
     },
     "helpText": {
       "clientId": "Die Client-ID der REST-API, die das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren.",
@@ -117,8 +117,7 @@
       "acdcForce3DS": "PayPal prüft auf Basis der präsentierten Kredit- oder Debitkarte, ob 3DS (Starke Kunden-Authentifizierung) erforderlich ist. Durch das Setzen dieser Option werden Zahlungsversuche ohne 3DS-Check abgelehnt.",
       "puiCustomerServiceInstructions": "Diese Anweisungen werden an PayPal & RatePay übermittelt und in Kunden-E-Mails verwendet.",
       "spbButtonLanguageIso": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet.",
-      "spbAlternativePaymentMethodsEnabled": "Die alternativen Zahlungsarten sind Kredit- und Debitkarten und weitere.",
-      "sdkV6Enabled": "Aktivieren Sie diese Option, um die neueste Version des PayPal SDK (Version 6) zu verwenden, die Verbesserungen in Leistung und Sicherheit bietet."
+      "spbAlternativePaymentMethodsEnabled": "Die alternativen Zahlungsarten sind Kredit- und Debitkarten und weitere."
     },
     "hintText": {
       "landingPage": {
