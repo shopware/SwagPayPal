@@ -3,9 +3,7 @@ export default class PayPalPluginError extends Error {
     public readonly code: string;
     public readonly isFatal: boolean;
 
-    public static GENERIC_ERROR = 'SWAG_PAYPAL__GENERIC_ERROR';
     public static NOT_ELIGIBLE = 'SWAG_PAYPAL__NOT_ELIGIBLE';
-    public static USER_CANCELLED = 'SWAG_PAYPAL__USER_CANCELLED';
     public static BROWSER_UNSUPPORTED = 'SWAG_PAYPAL__BROWSER_UNSUPPORTED';
     public static SCRIPT_ERROR = 'SWAG_PAYPAL__SCRIPT_ERROR';
     public static SCRIPT_NOT_LOADED = 'SWAG_PAYPAL__SCRIPT_NOT_LOADED';
@@ -45,16 +43,8 @@ export default class PayPalPluginError extends Error {
         return this.create(this.NOT_ELIGIBLE, true, `Funding for "${fundingSource}" is not eligible`);
     }
 
-    public static userCancelled(error: unknown = undefined): PayPalPluginError {
-        return this.create(this.USER_CANCELLED, false, error);
-    }
-
     public static browserUnsupported(fundingSource: PayPalCoreJS.FundingSource): PayPalPluginError {
         return this.create(this.BROWSER_UNSUPPORTED, true, `Browser does not support by "${fundingSource}"`);
-    }
-
-    public static genericError(fatal: boolean, error: unknown = undefined): PayPalPluginError {
-        return this.create(this.GENERIC_ERROR, fatal, error);
     }
 
     public static scriptError(error: unknown = undefined): PayPalPluginError {

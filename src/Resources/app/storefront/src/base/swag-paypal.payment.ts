@@ -18,6 +18,9 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
         ...SwagPaypalBase.options,
     };
 
+    protected USER_CANCELLED = 'SWAG_PAYPAL__USER_CANCELLED';
+    protected GENERIC_ERROR = 'SWAG_PAYPAL__GENERIC_ERROR';
+
     protected abstract get metadata(): { components: PayPalCoreJS.Components[]; fundingSource: FS };
 
     protected async checkFundingEligiblity(fundingSource: PayPalCoreJS.FundingSource = this.metadata.fundingSource): Promise<void> {
@@ -49,7 +52,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
             await this.submit(data);
             await this.afterSubmit(data);
         } catch (error) {
-            await this.handleError(PayPalPluginError.GENERIC_ERROR, false, error);
+            await this.handleError(this.GENERIC_ERROR, false, error);
         }
     }
 
@@ -71,7 +74,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
      * @param error - Can be any type, but will be converted to a string
      */
     protected onError(error: unknown = undefined): void {
-        this.handleError(PayPalPluginError.GENERIC_ERROR, false, error);
+        this.handleError(this.GENERIC_ERROR, false, error);
     }
 
     /**
@@ -81,7 +84,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
      * @param error - Can be any type, but will be converted to a string
      */
     protected onCancel(error: unknown = undefined): void {
-        this.handleError(PayPalPluginError.USER_CANCELLED, false, error);
+        this.handleError(this.USER_CANCELLED, false, error);
     }
 
     protected async handleError(code: string, fatal: boolean = false, error: unknown = undefined) {

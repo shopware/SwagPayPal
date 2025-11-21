@@ -73,7 +73,7 @@ export default abstract class SwagPaypalBase extends Plugin {
             await this.prepare();
             await this.afterPrepare();
         } catch (error) {
-            await this.handleError(PayPalPluginError.GENERIC_ERROR, true, error);
+            await this.handleError(PayPalPluginError.SCRIPT_ERROR, true, error);
         }
     }
 
@@ -113,7 +113,7 @@ export default abstract class SwagPaypalBase extends Plugin {
             return await SwagPaypalBase.eligibleMethods;
         } catch (error) {
             SwagPaypalBase.eligibleMethods = null;
-            throw PayPalPluginError.genericError(false, 'Failed to find eligible payment methods');
+            throw PayPalPluginError.scriptError('Failed to find eligible payment methods');
         }
     }
 
@@ -137,6 +137,7 @@ export default abstract class SwagPaypalBase extends Plugin {
                 code: error.code,
                 error: error.message,
                 fatal: error.isFatal,
+                plugin: this.constructor.name,
                 isCheckout: this.options.pageType === 'checkout',
             }),
         }).catch(console.error.bind(console, 'Failed to send error to server: '));

@@ -59,8 +59,8 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
         payPalPaymentMethodId: '',
     };
 
-    GENERIC_ERROR = 'SWAG_PAYPAL__EXPRESS_GENERIC_ERROR';
-    USER_CANCELLED = 'SWAG_PAYPAL__EXPRESS_USER_CANCELLED';
+    protected GENERIC_ERROR = 'SWAG_PAYPAL__EXPRESS_GENERIC_ERROR';
+    protected USER_CANCELLED = 'SWAG_PAYPAL__EXPRESS_USER_CANCELLED';
 
     get buyButtonForm(): HTMLFormElement|null {
         const form = this.el?.closest('form');

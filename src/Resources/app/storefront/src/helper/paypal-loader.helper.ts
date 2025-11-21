@@ -4,10 +4,6 @@ import PayPalPluginError from '../base/paypal-plugin.error';
 export default class PayPalLoader {
     private static paypal: Promise<PayPalCoreJS.Namespace>|null = null;
 
-    private static instance: Promise<PayPalCoreJS.Instance>|null = null;
-
-    private static eligibleMethods: Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods>|null = null;
-
     private static googlePay: Promise<void>|null = null;
 
     private static applePay: Promise<void>|null = null;
@@ -47,21 +43,6 @@ export default class PayPalLoader {
         } catch (error) {
             PayPalLoader.applePay = null;
             throw PayPalPluginError.scriptError(error);
-        }
-    }
-
-    public static async findEligibleMethods(options: PayPalCoreJS.FindEligibleMethods.Options): Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods> {
-        if (!PayPalLoader.instance) {
-            throw new Error('PayPal SDK instance is not initialized yet.');
-        }
-
-        PayPalLoader.eligibleMethods ??= PayPalLoader.instance.then((instance) => instance.findEligibleMethods(options));
-
-        try {
-            return await PayPalLoader.eligibleMethods;
-        } catch (error) {
-            PayPalLoader.eligibleMethods = null;
-            throw PayPalPluginError.genericError(false, 'Failed to find eligible payment methods');
         }
     }
 

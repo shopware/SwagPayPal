@@ -150,6 +150,7 @@ class PayPalController extends StorefrontController
         $code = $request->request->getString('code');
         $fatal = $request->request->getBoolean('fatal');
         $isCheckout = $request->request->getBoolean('isCheckout');
+        $plugin = $request->request->getString('plugin');
 
         if ($isCheckout) {
             $snippetGeneric = \sprintf('paypal.error.%s', $code);
@@ -177,6 +178,7 @@ class PayPalController extends StorefrontController
                 'error' => $request->request->get('error'),
                 'code' => $code,
                 'fatal' => $fatal,
+                'plugin' => $plugin,
                 'paymentMethodId' => $context->getPaymentMethod()->getId(),
                 'paymentMethodName' => $context->getPaymentMethod()->getName(),
             ],
