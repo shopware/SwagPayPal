@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where cookies are added even though associated payment methods are not active (shopware/SwagPayPal#457)
+
 # 9.9.0
 - Fixes an issue, where Paypal Express Checkout does not recalculate cart price after changing shipping country (shopware/SwagPayPal#342)
 
