@@ -104,7 +104,7 @@
 
     <swag-paypal-setting
         path="SwagPayPal.settings.spbAlternativePaymentMethodsEnabled"
-        :disabled="sbpSettingsDisabled"
+        :disabled="sbpSettingsDisabled || settingsStore.getActual('SwagPayPal.settings.sdkV6Enabled')"
     />
 
     <swag-paypal-setting

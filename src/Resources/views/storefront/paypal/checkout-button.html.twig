@@ -17,108 +17,124 @@
 {# @var \Swag\PayPal\Storefront\Data\Struct\GooglePayCheckoutData googlePayData #}
 {% set googlePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\GooglePayMethodData::PAYPAL_GOOGLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
 
-{% if expressData %}
+{% block swag_paypal_checkout_buttons %}
+<div class="swag-paypal-checkout-buttons {{ classes }}">
+    {% if expressData %}
 
-    {% block swag_paypal_express_checkout %}
-    <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}" value="1">
-    <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Method\\AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}" value="{{ expressData.paypalOrderId }}">
-    {% endblock %}
+        {% block swag_paypal_express_checkout %}
+        <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}" value="1">
+        <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Method\\AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}" value="{{ expressData.paypalOrderId }}">
+        {% endblock %}
 
-{% elseif spbData and spbData.paymentMethodId is same as(context.paymentMethod.id) %}
+    {% elseif spbData and spbData.paymentMethodId is same as(context.paymentMethod.id) %}
 
-    {% block swag_paypal_paypal %}
-    <paypal-button
-        class="swag-paypal-button shape-{{ spbData.buttonShape }} paypal-{{ spbData.buttonColor }}"
-        data-swag-paypal-checkout-paypal="true"
-        data-swag-paypal-checkout-paypal-options="{{ spbData|json_encode }}"
-        hidden
-    >
-    </paypal-button>
-    {% endblock %}
+        {% block swag_paypal_paypal %}
+        <paypal-button
+            class="swag-paypal-button shape-{{ spbData.buttonShape }} paypal-{{ spbData.buttonColor }}"
+            data-swag-paypal-checkout-paypal="true"
+            data-swag-paypal-checkout-paypal-options="{{ spbData|json_encode }}"
+            hidden
+        >
+        </paypal-button>
+        {% endblock %}
 
-{% elseif payLaterData and payLaterData.paymentMethodId is same as(context.paymentMethod.id) %}
+        {% if spbData.showPayLater %}
+            {% block swag_paypal_paypal_pay_later %}
+            <paypal-pay-later-button
+                class="swag-paypal-button shape-{{ spbData.buttonShape }} paypal-gold"
+                data-swag-paypal-checkout-pay-later="true"
+                data-swag-paypal-checkout-pay-later-options="{{ spbData|json_encode }}"
+                hidden
+            >
+            </paypal-pay-later-button>
+            {% endblock %}
+        {% endif %}
 
-    {% block swag_paypal_pay_later %}
-    <paypal-pay-later-button
-        class="swag-paypal-button shape-{{ payLaterData.buttonShape }} paypal-gold"
-        data-swag-paypal-checkout-pay-later="true"
-        data-swag-paypal-checkout-pay-later-options="{{ payLaterData|json_encode }}"
-        hidden
-    >
-    </paypal-pay-later-button>
-    {% endblock %}
+    {% elseif payLaterData and payLaterData.paymentMethodId is same as(context.paymentMethod.id) %}
 
-{% elseif acdcFieldData and acdcFieldData.paymentMethodId is same as(context.paymentMethod.id) %}
+        {% block swag_paypal_pay_later %}
+        <paypal-pay-later-button
+            class="swag-paypal-button shape-{{ payLaterData.buttonShape }} paypal-gold"
+            data-swag-paypal-checkout-pay-later="true"
+            data-swag-paypal-checkout-pay-later-options="{{ payLaterData|json_encode }}"
+            hidden
+        >
+        </paypal-pay-later-button>
+        {% endblock %}
 
-    {% block swag_paypal_acdc %}
-    <div
-        data-swag-paypal-checkout-acdc="true"
-        data-swag-paypal-checkout-acdc-options="{{ acdcFieldData|json_encode }}"
-    >
-    </div>
-    {% endblock %}
+    {% elseif acdcFieldData and acdcFieldData.paymentMethodId is same as(context.paymentMethod.id) %}
 
-{% elseif puiFraudnetData and puiFraudnetData.paymentMethodId is same as(context.paymentMethod.id) %}
+        {% block swag_paypal_acdc %}
+        <div
+            data-swag-paypal-checkout-acdc="true"
+            data-swag-paypal-checkout-acdc-options="{{ acdcFieldData|json_encode }}"
+        >
+        </div>
+        {% endblock %}
 
-    {% block swag_paypal_pui %}
-    <script type="application/json" fncls="fnparams-dede7cc5-15fd-4c75-a9f4-36c430ee3a99">
-        {
-            "f": "{{ puiFraudnetData.sessionIdentifier }}",
-            "s": "{{ puiFraudnetData.websiteIdentifier }}",
-            "sandbox": {{ puiFraudnetData.sandbox ? "true" : "false" }}
-        }
-    </script>
-    <script type="text/javascript" src="https://c.paypal.com/da/r/fb.js"></script>
+    {% elseif puiFraudnetData and puiFraudnetData.paymentMethodId is same as(context.paymentMethod.id) %}
 
-    <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Method\\PUIHandler::PUI_FRAUD_NET_SESSION_ID') }}" value="{{ puiFraudnetData.sessionIdentifier }}">
-    {% endblock %}
+        {% block swag_paypal_pui %}
+        <script type="application/json" fncls="fnparams-dede7cc5-15fd-4c75-a9f4-36c430ee3a99">
+            {
+                "f": "{{ puiFraudnetData.sessionIdentifier }}",
+                "s": "{{ puiFraudnetData.websiteIdentifier }}",
+                "sandbox": {{ puiFraudnetData.sandbox ? "true" : "false" }}
+            }
+        </script>
+        <script type="text/javascript" src="https://c.paypal.com/da/r/fb.js"></script>
 
-{% elseif sepaData and sepaData.paymentMethodId is same as(context.paymentMethod.id) %}
+        <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Method\\PUIHandler::PUI_FRAUD_NET_SESSION_ID') }}" value="{{ puiFraudnetData.sessionIdentifier }}">
+        {% endblock %}
 
-    {# @TODO - Replace by v6 equivalent #}
-    {% block swag_paypal_sepa %}
-    <div
-        data-swag-paypal-sepa="true"
-        data-swag-paypal-sepa-options="{{ sepaData|json_encode }}"
-    >
-    </div>
-    {% endblock %}
+    {% elseif sepaData and sepaData.paymentMethodId is same as(context.paymentMethod.id) %}
 
-{% elseif venmoData and venmoData.paymentMethodId is same as(context.paymentMethod.id) %}
+        {# @TODO - Replace by v6 equivalent #}
+        {% block swag_paypal_sepa %}
+        <div
+            data-swag-paypal-sepa="true"
+            data-swag-paypal-sepa-options="{{ sepaData|json_encode }}"
+        >
+        </div>
+        {% endblock %}
 
-    {% block swag_paypal_venmo %}
-    <venmo-button
-        class="swag-paypal-button shape-{{ venmoData.buttonShape }} paypal-blue"
-        data-swag-paypal-checkout-venmo="true"
-        data-swag-paypal-checkout-venmo-options="{{ venmoData|json_encode }}"
-        hidden
-    >
-    </venmo-button>
-    {% endblock %}
+    {% elseif venmoData and venmoData.paymentMethodId is same as(context.paymentMethod.id) %}
+
+        {% block swag_paypal_venmo %}
+        <venmo-button
+            class="swag-paypal-button shape-{{ venmoData.buttonShape }} paypal-blue"
+            data-swag-paypal-checkout-venmo="true"
+            data-swag-paypal-checkout-venmo-options="{{ venmoData|json_encode }}"
+            hidden
+        >
+        </venmo-button>
+        {% endblock %}
 
 
-{% elseif applePayData and applePayData.paymentMethodId is same as(context.paymentMethod.id) %}
+    {% elseif applePayData and applePayData.paymentMethodId is same as(context.paymentMethod.id) %}
 
-    {% block swag_paypal_apple_pay %}
-    <apple-pay-button
-        class="swag-paypal-button shape-{{ applePayData.buttonShape }} d-none"
-        buttonstyle="black"
-        data-swag-paypal-checkout-apple-pay="true"
-        data-swag-paypal-checkout-apple-pay-options="{{ applePayData|json_encode }}"
-        disabled
-    >
-    </apple-pay-button>
-    {% endblock %}
+        {% block swag_paypal_apple_pay %}
+        <apple-pay-button
+            class="swag-paypal-button shape-{{ applePayData.buttonShape }} d-none"
+            buttonstyle="black"
+            data-swag-paypal-checkout-apple-pay="true"
+            data-swag-paypal-checkout-apple-pay-options="{{ applePayData|json_encode }}"
+            disabled
+        >
+        </apple-pay-button>
+        {% endblock %}
 
-{% elseif googlePayData and googlePayData.paymentMethodId is same as(context.paymentMethod.id) %}
+    {% elseif googlePayData and googlePayData.paymentMethodId is same as(context.paymentMethod.id) %}
 
-    {% block swag_paypal_google_pay %}
-    <google-pay-button
-        class="swag-paypal-button shape-{{ googlePayData.buttonShape }}"
-        button-size-mode="fill"
-        data-swag-paypal-checkout-google-pay="true"
-        data-swag-paypal-checkout-google-pay-options="{{ googlePayData|json_encode }}"
-    >
-    </google-pay-button>
-    {% endblock %}
-{% endif %}
+        {% block swag_paypal_google_pay %}
+        <google-pay-button
+            class="swag-paypal-button shape-{{ googlePayData.buttonShape }}"
+            button-size-mode="fill"
+            data-swag-paypal-checkout-google-pay="true"
+            data-swag-paypal-checkout-google-pay-options="{{ googlePayData|json_encode }}"
+        >
+        </google-pay-button>
+        {% endblock %}
+    {% endif %}
+</div>
+{% endblock %}
