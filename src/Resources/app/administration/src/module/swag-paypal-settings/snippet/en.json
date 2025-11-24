@@ -107,7 +107,8 @@
     "sdk": {
       "title": "PayPal SDK version 6",
       "info": "This will activate the latest version of the PayPal checkout integration, PayPal SDK v6. Version 6 offers improved performance and security, as well as better compatibility with modern payment workflows. Please note that some customisations and extensions may require adaptation.\nSDK v6 will become the default implementation in version 11 of this plugin.",
-      "recommendation": "We highly recommend enabling this option to take advantage of the latest features and improvements."
+      "recommendation": "We highly recommend enabling this option to take advantage of the latest features and improvements.",
+      "bannerText": "Enable the latest PayPal SDK v6 for improved performance and security in your shop."
     }
   },
   "swag-paypal-settings-sales-channel-switch": {

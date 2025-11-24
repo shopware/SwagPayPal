@@ -1,3 +1,4 @@
+<!-- @deprecated tag:v11.0.0 - SDK card will be removed without replacement -->
 <mt-card
     class="swag-paypal-settings-sdk"
     position-identifier="swag-paypal-settings-sdk"
@@ -12,7 +13,9 @@
         {{ $t('swag-paypal-settings.sdk.recommendation') }}
     </p>
 
-    <swag-paypal-setting path="SwagPayPal.settings.sdkV6Enabled" />
+    <div class="swag-paypal-settings-sdk__toggle_wrapper">
+        <swag-paypal-setting path="SwagPayPal.settings.sdkV6Enabled" />
+    </div>
 </mt-card>
 
 <mt-card
