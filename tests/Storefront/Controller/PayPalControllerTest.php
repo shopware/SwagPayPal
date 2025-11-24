@@ -92,6 +92,7 @@ class PayPalControllerTest extends TestCase
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'isCheckout' => true,
             'plugin' => 'test',
+            'step' => null,
         ]);
 
         $matcher = $this->exactly(2);
@@ -119,6 +120,7 @@ class PayPalControllerTest extends TestCase
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
             'plugin' => 'test',
+            'step' => null,
         ]);
     }
 
@@ -128,6 +130,7 @@ class PayPalControllerTest extends TestCase
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'isCheckout' => false,
             'plugin' => 'test',
+            'step' => null,
         ]);
 
         $this->controller
@@ -144,6 +147,7 @@ class PayPalControllerTest extends TestCase
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
             'plugin' => 'test',
+            'step' => null,
         ]);
     }
 
@@ -153,6 +157,7 @@ class PayPalControllerTest extends TestCase
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'isCheckout' => true,
             'plugin' => 'test',
+            'step' => null,
         ]);
 
         $this->controller
@@ -171,6 +176,7 @@ class PayPalControllerTest extends TestCase
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
             'plugin' => 'test',
+            'step' => null,
         ]);
     }
 
@@ -180,6 +186,7 @@ class PayPalControllerTest extends TestCase
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'isCheckout' => false,
             'plugin' => 'test',
+            'step' => null,
         ]);
 
         $this->controller
@@ -196,6 +203,7 @@ class PayPalControllerTest extends TestCase
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
             'plugin' => 'test',
+            'step' => null,
         ]);
     }
 
@@ -207,6 +215,7 @@ class PayPalControllerTest extends TestCase
             'code' => $code,
             'fatal' => $fatal,
             'plugin' => 'test',
+            'step' => null,
         ]);
 
         $session = new Session(new MockArraySessionStorage());
@@ -223,6 +232,7 @@ class PayPalControllerTest extends TestCase
             'code' => $code,
             'fatal' => $fatal,
             'plugin' => 'test',
+            'step' => null,
         ]);
     }
 
