@@ -16,7 +16,7 @@ export default class PayPalLoader {
             return await PayPalLoader.paypal;
         } catch (error) {
             PayPalLoader.paypal = null;
-            throw PayPalPluginError.scriptError(error);
+            throw PayPalPluginError.scriptLoad('paypal-core-js', error);
         }
     }
 
@@ -29,7 +29,7 @@ export default class PayPalLoader {
             return await PayPalLoader.googlePay;
         } catch (error) {
             PayPalLoader.googlePay = null;
-            throw PayPalPluginError.scriptError(error);
+            throw PayPalPluginError.scriptLoad('google-pay-js', error);
         }
     }
 
@@ -42,7 +42,7 @@ export default class PayPalLoader {
             return await PayPalLoader.applePay;
         } catch (error) {
             PayPalLoader.applePay = null;
-            throw PayPalPluginError.scriptError(error);
+            throw PayPalPluginError.scriptLoad('apple-pay-js', error);
         }
     }
 
@@ -67,7 +67,14 @@ export default class PayPalLoader {
             scriptTag.async = true;
             scriptTag.type = 'text/javascript';
 
-            scriptTag.addEventListener('load', () => resolve());
+            scriptTag.addEventListener('load', () => {
+                if (checkLoaded()) {
+                    return resolve();
+                }
+
+                // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+                reject(`Script "${url.toString()}" loaded but check failed.`);
+            });
             // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
             scriptTag.addEventListener('error', (event) => reject(event.error));
 

@@ -1,6 +1,5 @@
 import SwagPaypalBase from './swag-paypal.base';
 import type { SwagPaypalBaseOptions } from './swag-paypal.base';
-import type { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
 import { PaypalButtonHelper } from '../helper/paypal-button.helper';
 import PayPalPluginError from './paypal-plugin.error';
 
@@ -18,9 +17,6 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
         ...SwagPaypalBase.options,
     };
 
-    protected USER_CANCELLED = 'SWAG_PAYPAL__USER_CANCELLED';
-    protected GENERIC_ERROR = 'SWAG_PAYPAL__GENERIC_ERROR';
-
     protected abstract get metadata(): { components: PayPalCoreJS.Components[]; fundingSource: FS };
 
     protected async checkFundingEligiblity(fundingSource: PayPalCoreJS.FundingSource = this.metadata.fundingSource): Promise<void> {
@@ -36,8 +32,8 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
         return eligibleMethods.getDetails(this.metadata.fundingSource);
     }
 
-    protected async beforePrepare(): Promise<void> {
-        await super.beforePrepare();
+    protected async beforeSetup(): Promise<void> {
+        await super.beforeSetup();
         await this.checkFundingEligiblity();
     }
 
@@ -52,7 +48,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
             await this.submit(data);
             await this.afterSubmit(data);
         } catch (error) {
-            await this.handleError(this.GENERIC_ERROR, false, error);
+            await this.handleError(PayPalPluginError.submitFlow(PayPalPluginError.CODE_GENERIC, error));
         }
     }
 
@@ -65,7 +61,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
 
     protected afterSubmit(data: SubmissionData<FS>): void|Promise<void> {}
 
-    protected onApprove(data: OnApproveDataOneTimePayments): void|Promise<void> {}
+    protected async onApprove(data: { orderId: string }): Promise<void> {}
 
     /**
      * Stop payment process with a generic error.
@@ -74,7 +70,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
      * @param error - Can be any type, but will be converted to a string
      */
     protected onError(error: unknown = undefined): void {
-        this.handleError(this.GENERIC_ERROR, false, error);
+        this.handleError(PayPalPluginError.submitFlow(PayPalPluginError.CODE_GENERIC, error));
     }
 
     /**
@@ -84,12 +80,12 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
      * @param error - Can be any type, but will be converted to a string
      */
     protected onCancel(error: unknown = undefined): void {
-        this.handleError(this.USER_CANCELLED, false, error);
+        this.handleError(PayPalPluginError.submitFlow(PayPalPluginError.CODE_USER_CANCELLED, error));
     }
 
-    protected async handleError(code: string, fatal: boolean = false, error: unknown = undefined) {
+    protected async handleError(error: PayPalPluginError): Promise<void> {
         PaypalButtonHelper.disable(this.el!);
 
-        await super.handleError(code, fatal, error);
+        await super.handleError(error);
     }
 }

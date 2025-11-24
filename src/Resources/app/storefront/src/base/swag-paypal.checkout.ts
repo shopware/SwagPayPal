@@ -54,7 +54,7 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         const form = document.querySelector<HTMLFormElement>(this.options.confirmOrderFormSelector);
 
         if (!(form instanceof HTMLFormElement)) {
-            throw PayPalPluginError.scriptError(`Confirm order form not found with selector: ${this.options.confirmOrderFormSelector}`);
+            throw PayPalPluginError.create(PayPalPluginError.CODE_SCRIPT, null, `Confirm order form not found with selector: ${this.options.confirmOrderFormSelector}`);
         }
 
         return form;
@@ -64,7 +64,7 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         const button = this.confirmOrderForm.querySelector(this.options.confirmOrderButtonSelector);
 
         if (!(button instanceof HTMLButtonElement)) {
-            throw PayPalPluginError.scriptError(`Confirm order button not found with selector: ${this.options.confirmOrderButtonSelector}`);
+            throw PayPalPluginError.create(PayPalPluginError.CODE_SCRIPT, null, `Confirm order button not found with selector: ${this.options.confirmOrderButtonSelector}`);
         }
 
         return button;
@@ -80,21 +80,21 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         super.init();
     }
 
-    protected async beforePrepare(): Promise<void> {
+    protected async beforeSetup(): Promise<void> {
         PaypalButtonHelper.load(this.confirmOrderButton);
 
-        return super.beforePrepare();
+        return super.beforeSetup();
     }
 
-    protected async afterPrepare(): Promise<void> {
+    protected async afterSetup(): Promise<void> {
         PaypalButtonHelper.hide(this.confirmOrderButton);
         PaypalButtonHelper.enable(this.el!);
 
-        return super.afterPrepare();
+        return super.afterSetup();
     }
 
     protected beforeSubmit(data: SubmissionData<FS>): void {
-        if (!this.confirmOrderForm?.reportValidity()) {
+        if (!this.confirmOrderForm.reportValidity()) {
             throw new Error('Form is invalid');
         }
     }
@@ -114,17 +114,17 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to create order(${response.status}): ${await response.text()}`);
+            throw await PayPalPluginError.api('create-order', response);
         }
 
         const { token } = await response.json() as { token: string };
         return { orderId: token };
     }
 
-    protected onApprove({ orderId }: OnApproveDataOneTimePayments): void|Promise<void> {
-        const existingInput = this.confirmOrderForm?.querySelector('input[name="paypalOrderId"]');
+    protected onApprove({ orderId }: OnApproveDataOneTimePayments): Promise<void> {
+        const existingInput = this.confirmOrderForm.querySelector('input[name="paypalOrderId"]');
         if (existingInput) {
-            return;
+            return Promise.resolve();
         }
 
         PageLoadingIndicatorUtil.create();
@@ -134,9 +134,9 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         input.setAttribute('name', 'paypalOrderId');
         input.setAttribute('value', orderId);
 
-        this.confirmOrderForm?.appendChild(input);
-        this.confirmOrderForm?.submit();
+        this.confirmOrderForm.appendChild(input);
+        this.confirmOrderForm.submit();
 
-        return;
+        return Promise.resolve();
     }
 }

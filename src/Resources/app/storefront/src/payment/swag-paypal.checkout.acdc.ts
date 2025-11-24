@@ -105,13 +105,14 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
         };
     }
 
-    protected async beforePrepare(): Promise<void> {
+    protected async beforeSetup(): Promise<void> {
+        this.wrapperCardFields.form!.classList.remove('d-none');
         ElementLoadingIndicatorUtil.create(this.wrapperCardFields.form!);
 
-        return super.beforePrepare();
+        return super.beforeSetup();
     }
 
-    protected prepare(): void {
+    protected setup(): void {
         const paymentSession = this.instance!.createCardFieldsOneTimePaymentSession();
 
         for (const field of ['number', 'expiry', 'cvv'] as const) {
@@ -142,11 +143,11 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
         });
     }
 
-    protected async afterPrepare(): Promise<void> {
+    protected async afterSetup(): Promise<void> {
         ElementLoadingIndicatorUtil.remove(this.wrapperCardFields.form!);
         this.wrapperCardFields.form?.classList.remove('d-none');
 
-        await super.afterPrepare();
+        await super.afterSetup();
 
         PaypalButtonHelper.enable(this.confirmOrderButton);
     }

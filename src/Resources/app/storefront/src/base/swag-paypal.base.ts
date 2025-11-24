@@ -64,16 +64,16 @@ export default abstract class SwagPaypalBase extends Plugin {
     protected abstract get metadata(): { components: PayPalCoreJS.Components[] };
 
     init(): void {
-        this.preparationFlow();
+        this.setupFlow();
     }
 
-    protected async preparationFlow(): Promise<void> {
+    protected async setupFlow(): Promise<void> {
         try {
-            await this.beforePrepare();
-            await this.prepare();
-            await this.afterPrepare();
+            await this.beforeSetup();
+            await this.setup();
+            await this.afterSetup();
         } catch (error) {
-            await this.handleError(PayPalPluginError.SCRIPT_ERROR, true, error);
+            await this.handleError(PayPalPluginError.setupFlow(PayPalPluginError.CODE_GENERIC, error));
         }
     }
 
@@ -81,7 +81,7 @@ export default abstract class SwagPaypalBase extends Plugin {
      * Hook called to load PayPal SDK and create SDK instance.
      * Override in child classes to handle pre-SDK loading logic.
      */
-    protected async beforePrepare(): Promise<void> {
+    protected async beforeSetup(): Promise<void> {
         const paypal = await PayPalLoader.loadPayPalCore({ environment: this.options.environment });
 
         this.instance ??= await paypal.createInstance({
@@ -96,9 +96,9 @@ export default abstract class SwagPaypalBase extends Plugin {
     /**
      * Hook called when SDK is ready. Override in child classes to handle SDK initialization
      */
-    protected prepare(): Promise<void>|void {}
+    protected setup(): Promise<void>|void {}
 
-    protected afterPrepare(): Promise<void>|void {}
+    protected afterSetup(): Promise<void>|void {}
 
     public async findEligibleMethods(): Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods> {
         if (!this.instance) {
@@ -113,7 +113,7 @@ export default abstract class SwagPaypalBase extends Plugin {
             return await SwagPaypalBase.eligibleMethods;
         } catch (error) {
             SwagPaypalBase.eligibleMethods = null;
-            throw PayPalPluginError.scriptError('Failed to find eligible payment methods');
+            throw PayPalPluginError.create(PayPalPluginError.CODE_SCRIPT, null, `Failed to find eligible payment methods: ${PayPalPluginError.stringifyError(error)}`);
         }
     }
 
@@ -122,8 +122,7 @@ export default abstract class SwagPaypalBase extends Plugin {
      * @param fatal - A fatal error will not allow a rerender of the PayPal buttons
      * @param data - The error. Can be any type, but will be converted to a string
      */
-    protected async handleError(code: string, fatal: boolean = false, data: unknown = undefined): Promise<void> {
-        const error = PayPalPluginError.create(code, fatal, data);
+    protected async handleError(error: PayPalPluginError): Promise<void> {
         console.error(error);
 
         if (!this.options.handleErrorUrl) {
@@ -134,21 +133,22 @@ export default abstract class SwagPaypalBase extends Plugin {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                step: error.step,
                 code: error.code,
                 error: error.message,
                 fatal: error.isFatal,
                 plugin: this._pluginName,
-                isCheckout: this.options.pageType === 'checkout',
+                pageType: this.options.pageType,
             }),
         }).catch(console.error.bind(console, 'Failed to send error to server: '));
 
-        await this.onErrorHandled(error);
+        await this.afterHandleError(error);
     }
 
     /**
      * Will be called after the handleErrorUrl was called. See {@link handleError}.
      */
-    protected onErrorHandled(error: PayPalPluginError): void|Promise<void> {
+    protected afterHandleError(error: PayPalPluginError): void|Promise<void> {
         if (this.options.pageType === 'checkout') {
             window.scrollTo(0, 0);
             window.location.reload();

@@ -8,17 +8,8 @@ export interface SwagPaypalCheckoutApplePayOptions extends SwagPaypalCheckoutOpt
     totalPrice: string;
     brandName: string;
     displayName: string;
-    billingAddress: {
-        givenName: string;
-        familyName: string;
-        emailAddress: string;
-        phoneNumber: string;
-        street: string;
-        city: string;
-        region: string;
-        postalCode: string;
-        countryCode: string;
-        addressLines: string;
+    billingAddress: ApplePayJS.ApplePayPaymentContact&{
+        addressLines?: string;
     };
 }
 
@@ -37,18 +28,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
         totalPrice: '0.00',
         brandName: '',
         displayName: '',
-        billingAddress: {
-            givenName: '',
-            familyName: '',
-            emailAddress: '',
-            phoneNumber: '',
-            street: '',
-            city: '',
-            region: '',
-            postalCode: '',
-            countryCode: '',
-            addressLines: '',
-        },
+        billingAddress: {},
     };
 
     protected get metadata(): { components: 'applepay-payments'[]; fundingSource: 'applepay'; product: 'applepay' } {
@@ -59,24 +39,20 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
         };
     }
 
-    protected async beforePrepare(): Promise<void> {
+    protected async beforeSetup(): Promise<void> {
         await Promise.all([
-            super.beforePrepare(),
+            super.beforeSetup(),
             PayPalLoader.loadApplePay(),
         ]);
-
-        if (!window.ApplePayMerchandising) {
-            throw PayPalPluginError.scriptNotLoaded(this.metadata.fundingSource);
-        }
 
         if (!window.ApplePaySession?.supportsVersion(4) || !window.ApplePaySession?.canMakePayments()) {
             throw PayPalPluginError.browserUnsupported(this.metadata.fundingSource);
         }
 
-        return super.beforePrepare();
+        return super.beforeSetup();
     }
 
-    protected async prepare(): Promise<void> {
+    protected async setup(): Promise<void> {
         const paymentSession = this.instance!.createApplePayOneTimePaymentSession();
 
         const config = await paymentSession.config();
@@ -101,7 +77,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
             requiredBillingContactFields: [],
             billingContact: {
                 ...this.options.billingAddress,
-                addressLines: [this.options.billingAddress.addressLines],
+                addressLines: this.options.billingAddress.addressLines ? [this.options.billingAddress.addressLines] : undefined,
             },
             total: {
                 label: this.options.brandName,

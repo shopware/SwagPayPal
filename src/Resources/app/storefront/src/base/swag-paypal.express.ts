@@ -59,9 +59,6 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
         payPalPaymentMethodId: '',
     };
 
-    protected GENERIC_ERROR = 'SWAG_PAYPAL__EXPRESS_GENERIC_ERROR';
-    protected USER_CANCELLED = 'SWAG_PAYPAL__EXPRESS_USER_CANCELLED';
-
     get buyButtonForm(): HTMLFormElement|null {
         const form = this.el?.closest('form');
         return form instanceof HTMLFormElement ? form : null;
@@ -71,7 +68,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
         return this.buyButtonForm?.querySelector<HTMLButtonElement>(this.options.buyButtonSelector) || null;
     }
 
-    protected afterPrepare(): void {
+    protected afterSetup(): void {
         if (this.options.addProductToCart && this.buyButton) {
             if (this.buyButton?.disabled) {
                 PaypalButtonHelper.disable(this.el!);
@@ -107,7 +104,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
         });
 
         if (!contextResponse.ok) {
-            throw new Error(`Failed to switch payment method (${contextResponse.status}): ${await contextResponse.text()}`);
+            throw await PayPalPluginError.api('context-switch', contextResponse);
         }
 
         if (this.options.addProductToCart) {
@@ -120,7 +117,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
         });
 
         if (!orderResponse.ok) {
-            throw new Error(`Failed to create order (${orderResponse.status}): ${await orderResponse.text()}`);
+            throw await PayPalPluginError.api('create-order', orderResponse);
         }
 
         const { token } = await orderResponse.json() as { token: string };
@@ -146,23 +143,27 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to validate order (${response.status}): ${await response.text()}`);
+            throw await PayPalPluginError.api('prepare-checkout', response);
         }
 
         window.location.replace(this.options.checkoutConfirmUrl);
     }
 
-    protected handleError(code: string, fatal?: boolean, error?: unknown): Promise<void> {
-        if (error instanceof PayPalPluginError && error.code === PayPalPluginError.NOT_ELIGIBLE) {
-            PaypalButtonHelper.disable(this.el!);
+    protected handleError(error: PayPalPluginError): Promise<void> {
+        if (error.code === PayPalPluginError.CODE_NOT_ELIGIBLE) {
+            PaypalButtonHelper.hide(this.el!);
             return Promise.resolve();
         }
 
-        return super.handleError(code, fatal, error);
+        if (['SWAG_PAYPAL__USER_CANCELLED', 'SWAG_PAYPAL__GENERIC_ERROR'].includes(error.code)) {
+            error.code = error.code.replace('SWAG_PAYPAL__', 'SWAG_PAYPAL__EXPRESS_');
+        }
+
+        return super.handleError(error);
     }
 
-    protected onErrorHandled(error: PayPalPluginError) {
-        if (error.code === this.USER_CANCELLED) {
+    protected afterHandleError(error: PayPalPluginError) {
+        if (error.code.includes('USER_CANCELLED')) {
             window.scrollTo(0, 0);
             window.location.href = this.options.cancelRedirectUrl;
         }

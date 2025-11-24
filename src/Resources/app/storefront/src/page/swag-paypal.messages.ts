@@ -28,7 +28,7 @@ export default class SwagPaypalMessages extends SwagPaypalBase {
 
     private static messagesInstance: Promise<PayPalCoreJS.Messages.PayPalMessages> | null = null;
 
-    protected async prepare(): Promise<void> {
+    protected async setup(): Promise<void> {
         if (this.options.crossBorderBuyerCountry) {
             this.el!.buyerCountry = this.options.crossBorderBuyerCountry;
         }
@@ -53,7 +53,7 @@ export default class SwagPaypalMessages extends SwagPaypalBase {
         });
     }
 
-    protected afterPrepare(): void {
+    protected afterSetup(): void {
         PaypalButtonHelper.enable(this.el!);
     }
 }

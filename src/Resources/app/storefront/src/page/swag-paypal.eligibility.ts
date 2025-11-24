@@ -1,3 +1,4 @@
+import PayPalPluginError from '../base/paypal-plugin.error';
 import SwagPaypalBase, { type SwagPaypalBaseOptions } from '../base/swag-paypal.base';
 
 interface SwagPayPalEligibilityOptions extends SwagPaypalBaseOptions {
@@ -34,7 +35,7 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
         };
     }
 
-    protected async prepare(): Promise<void> {
+    protected async setup(): Promise<void> {
         const eligibleMethods = await this.findEligibleMethods();
 
         const unavailable = Object.entries(this.fundingSources)
@@ -61,8 +62,10 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
             body: JSON.stringify({ paymentMethods: unavailable }),
         });
 
-        if (response.ok) {
-            this.options.filteredPaymentMethods = await response.json() as string[];
+        if (!response.ok) {
+            throw await PayPalPluginError.api('method-eligibility', response);
         }
+
+        this.options.filteredPaymentMethods = await response.json() as string[];
     }
 }

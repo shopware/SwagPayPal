@@ -31,18 +31,14 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
         };
     }
 
-    protected async beforePrepare(): Promise<void> {
+    protected async beforeSetup(): Promise<void> {
         await Promise.all([
-            super.beforePrepare(),
+            super.beforeSetup(),
             PayPalLoader.loadGooglePay(),
         ]);
-
-        if (!window?.google?.payments?.api?.PaymentsClient) {
-            throw PayPalPluginError.scriptNotLoaded(this.metadata.fundingSource);
-        }
     }
 
-    protected async prepare(): Promise<void> {
+    protected async setup(): Promise<void> {
         const paymentSession = this.instance!.createGooglePayOneTimePaymentSession();
 
         const {
@@ -100,10 +96,10 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
         } satisfies google.payments.api.PaymentDataRequest;
     }
 
-    protected afterPrepare(): Promise<void> {
+    protected afterSetup(): Promise<void> {
         this.el!.buttonRadius = Number(window.getComputedStyle(this.el!).getPropertyValue('--google-pay-button-border-radius'));
 
-        return super.afterPrepare();
+        return super.afterSetup();
     }
 
     async onPaymentAuthorized(session: PayPalCoreJS.PaymentSession<'googlepay'>, paymentData: google.payments.api.PaymentData): Promise<google.payments.api.PaymentAuthorizationResult> {

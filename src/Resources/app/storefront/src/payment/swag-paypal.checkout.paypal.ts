@@ -11,7 +11,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'paypal
         };
     }
 
-    protected prepare(): void {
+    protected setup(): void {
         const paymentSession = this.instance!.createPayPalOneTimePaymentSession({
             onApprove: this.onApprove.bind(this),
             onCancel: this.onCancel.bind(this),

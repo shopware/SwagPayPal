@@ -32,6 +32,7 @@ use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -134,6 +135,16 @@ class PayPalController extends StorefrontController
         operationId: 'paypalHandleError',
         description: 'Adds an error message to the flash bag',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'step', type: 'string'),
+            new OA\Property(property: 'pageType', type: 'string', description: 'Page type "checkout" will prevent any flash messages added', enum: [
+                AbstractScriptData::PAGE_TYPE_CART,
+                AbstractScriptData::PAGE_TYPE_CHECKOUT,
+                AbstractScriptData::PAGE_TYPE_HOME,
+                AbstractScriptData::PAGE_TYPE_MINI_CART,
+                AbstractScriptData::PAGE_TYPE_PRODUCT_DETAILS,
+                AbstractScriptData::PAGE_TYPE_PRODUCT_LISTING,
+                AbstractScriptData::PAGE_TYPE_SEARCH_RESULTS,
+            ]),
             new OA\Property(property: 'code', type: 'string'),
             new OA\Property(property: 'fatal', description: 'Will prevent reinitiate the corresponding payment method.', type: 'boolean', default: false),
             new OA\Property(property: 'error', type: 'string', default: null),
@@ -147,12 +158,17 @@ class PayPalController extends StorefrontController
     #[Route(path: '/paypal/handle-error', name: 'frontend.paypal.handle-error', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function onHandleError(Request $request, SalesChannelContext $context): Response
     {
-        $code = $request->request->getString('code');
+        $step = \mb_trim($request->request->getString('step')) ?: null;
+        $code = \mb_trim($request->request->getString('code')) ?: null;
+        $pageType = \mb_trim($request->request->getString('pageType')) ?: null;
         $fatal = $request->request->getBoolean('fatal');
-        $isCheckout = $request->request->getBoolean('isCheckout');
-        $plugin = $request->request->getString('plugin');
+        $plugin = \mb_trim($request->request->getString('plugin')) ?: null;
+        $error = $request->request->getString('error') ?: null;
 
-        if ($isCheckout) {
+        /** @deprecated tag:v11.0.0 - Will be removed */
+        $isCheckout = $request->request->getBoolean('isCheckout');
+
+        if ($pageType === AbstractScriptData::PAGE_TYPE_CHECKOUT || $isCheckout) {
             $snippetGeneric = \sprintf('paypal.error.%s', $code);
             $snippetByMethod = \sprintf('paypal.error.%s.%s', $context->getPaymentMethod()->getFormattedHandlerIdentifier(), $code);
 
@@ -175,7 +191,8 @@ class PayPalController extends StorefrontController
             \in_array($code, ['SWAG_PAYPAL__SCRIPT_ERROR', 'SWAG_PAYPAL__SCRIPT_NOT_LOADED'], true) ? Level::Error : Level::Warning,
             'Storefront checkout error',
             [
-                'error' => $request->request->get('error'),
+                'error' => $error,
+                'step' => $step,
                 'code' => $code,
                 'fatal' => $fatal,
                 'plugin' => $plugin,

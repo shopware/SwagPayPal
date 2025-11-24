@@ -9,7 +9,7 @@ export default class SwagPaypalCheckoutPayLater extends SwagPaypalCheckout<'payl
         };
     }
 
-    protected async prepare(): Promise<void> {
+    protected async setup(): Promise<void> {
         const details = await this.getFundingDetails();
         this.el!.setAttribute("productCode", details.productCode);
         this.el!.setAttribute("countryCode", details.countryCode);
