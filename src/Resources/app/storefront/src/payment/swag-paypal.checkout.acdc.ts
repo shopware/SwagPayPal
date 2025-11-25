@@ -122,10 +122,7 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
             event.preventDefault();
             event.stopPropagation();
 
-            this.submissionFlow({ paymentSession })
-                .catch(() => {
-                    this.confirmOrderForm.dispatchEvent(new CustomEvent('removeLoader'));
-                });
+            this.submissionFlow({ paymentSession });
         });
     }
 
@@ -160,6 +157,8 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
                     });
 
                     this.wrapperCardFields.form?.classList.add(this.options.validatedStyleClass);
+
+                    this.confirmOrderForm.dispatchEvent(new CustomEvent('removeLoader'));
 
                     return;
                 }
