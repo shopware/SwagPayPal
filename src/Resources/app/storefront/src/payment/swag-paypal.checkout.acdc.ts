@@ -11,7 +11,7 @@ export interface SwagPaypalCheckoutAcdcOptions extends SwagPaypalCheckoutOptions
     cardNameFieldSelector: string;
     fixedHeaderSelector: string;
     validatedStyleClass: string;
-    cardFieldStyleConfig: Record<string, Record<string, string | number>>;
+    cardFieldStyleConfig?: Record<string, Record<string, string | number>>;
 }
 
 type Fields = Partial<Record<'form' | 'number' | 'expiry' | 'cvv' | 'name', HTMLElement | null>>;
@@ -62,24 +62,10 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
         validatedStyleClass: 'was-validated',
 
         /**
-         * Styling information for the card fields at PayPal
+         * Styling information for the card fields at PayPal.
+         * Defaults to a computed style based on bootstrap variables.
          */
-        cardFieldStyleConfig: {
-            input: {
-                fontFamily: '"Inter", sans-serif',
-                fontSize: '0.875rem',
-                fontWeight: 300,
-                letterSpacing: '0.03rem',
-                padding: '0.5625rem',
-            },
-            'input::placeholder': {
-                color: '#c3c3c3',
-                opacity: 1,
-            },
-            'paypal-card-fields-network': {
-                paddingLeft: 'calc(2rem + 40px) !important',
-            },
-        },
+        cardFieldStyleConfig: undefined,
     };
 
     protected fields: Omit<Fields, 'form'> = {};
@@ -119,7 +105,7 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
             this.fields[field] = paymentSession.createCardFieldsComponent({
                 type: field,
                 placeholder: this.wrapperCardFields[field]?.dataset.placeholder || '',
-                style: this.options.cardFieldStyleConfig,
+                style: this.options.cardFieldStyleConfig ?? this.computeFieldStyle(field),
             });
 
             this.wrapperCardFields[field]?.appendChild(this.fields[field]);
@@ -183,5 +169,30 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
         }
 
         await this.onApprove({ orderId: this.orderId });
+    }
+
+    protected computeFieldStyle(field: keyof Fields): Record<string, Record<string, string | number>> {
+        const style = window.getComputedStyle(this.wrapperCardFields[field]!);
+        return {
+            input: {
+                fontFamily: style.getPropertyValue('--paypal-card-field-font-family'),
+                fontSize: style.getPropertyValue('--paypal-card-field-font-size'),
+                lineHeight: style.getPropertyValue('--paypal-card-field-line-height'),
+                padding: style.getPropertyValue('--paypal-card-field-padding'),
+                border: style.getPropertyValue('--paypal-card-field-border'),
+                borderRadius: style.getPropertyValue('--paypal-card-field-border-radius'),
+                color: style.getPropertyValue('--paypal-card-field-color'),
+            },
+            'input.focus': {
+                boxShadow: style.getPropertyValue('--paypal-card-field-focus-box-shadow'),
+            },
+            'input.invalid': {
+                border: style.getPropertyValue('--paypal-card-field-invalid-border'),
+            },
+            'input::placeholder': {
+                color: style.getPropertyValue('--paypal-card-field-color-placeholder'),
+                opacity: 1,
+            },
+        };
     }
 }

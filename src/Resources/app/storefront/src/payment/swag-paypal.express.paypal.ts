@@ -11,7 +11,6 @@ export default class SwagPaypalExpressPaypal extends SwagPaypalExpress<'paypal'>
         };
     }
 
-
     protected setup(): void {
         const paymentSession = this.instance!.createPayPalOneTimePaymentSession({
             onApprove: this.onApprove.bind(this),
