@@ -6,8 +6,8 @@
 
     <services>
         <!-- CACHE -->
-        <service id="paypal-sdk.token-cache" class="Shopware\PayPalSDK\Util\TokenArrayCache">
-            <!-- <argument type="service" id="cache.object" /> -->
+        <service id="paypal-sdk.token-cache" class="Symfony\Component\Cache\Psr16Cache">
+            <argument type="service" id="cache.object" />
         </service>
 
         <!-- HTTP CLIENT -->

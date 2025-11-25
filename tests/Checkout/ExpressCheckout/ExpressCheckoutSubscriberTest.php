@@ -57,6 +57,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
@@ -572,6 +573,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
                 $this->getContainer()->get(PaymentMethodUtil::class),
                 $settings,
                 new CredentialsUtil($settings),
+                $this->createMock(TokenResource::class),
                 new CartPriceService(),
                 new PayLaterMethodData($this->getContainer())
             ),
