@@ -1,5 +1,5 @@
 export default class PayPalPluginError extends Error {
-    private error: string;
+    private _message: string;
     private _code: string;
     private _step: string | null;
 
@@ -17,10 +17,10 @@ export default class PayPalPluginError extends Error {
     public static CODE_BROWSER_UNSUPPORTED = 'SWAG_PAYPAL__BROWSER_UNSUPPORTED' as const;
     public static CODE_USER_CANCELLED = 'SWAG_PAYPAL__USER_CANCELLED' as const;
 
-    protected constructor(code: string, step: string | null, error: string) {
-        super(error);
+    protected constructor(code: string, step: string | null, message: string, cause: unknown = undefined) {
+        super(message, { cause });
         this.name = 'PayPalPluginError';
-        this.error = error;
+        this._message = message;
         this._code = code;
         this._step = step;
         this.updateMessage();
@@ -34,7 +34,7 @@ export default class PayPalPluginError extends Error {
 
         const message = this.stringifyError(error);
 
-        return new PayPalPluginError(code, step, message);
+        return new PayPalPluginError(code, step, message, error);
     }
 
     public static generic(step: string, error: unknown = undefined): PayPalPluginError {
@@ -130,6 +130,6 @@ export default class PayPalPluginError extends Error {
     }
 
     private updateMessage(): void {
-        this.message = `${this.code} occurred${this.step ? ` at ${this.step}` : ''}: ${this.error}`;
+        this.message = `${this.code} occurred${this.step ? ` at ${this.step}` : ''}: ${this._message}`;
     }
 }

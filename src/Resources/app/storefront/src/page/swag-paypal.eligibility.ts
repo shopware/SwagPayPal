@@ -65,7 +65,5 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
         if (!response.ok) {
             throw await PayPalPluginError.api('method-eligibility', response);
         }
-
-        this.options.filteredPaymentMethods = await response.json() as string[];
     }
 }

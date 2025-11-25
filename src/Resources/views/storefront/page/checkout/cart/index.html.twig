@@ -11,7 +11,7 @@
             <div class="form-row">
                 {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
                 {% if config('SwagPayPal.settings.sdkV6Enabled') %}
-                    {% sw_include '@SwagPayPal/storefront/paypal/installment-banner.html.twig' with { classes: 'col swag-paypal-installment-banner-cart-table' } %}
+                    {% sw_include '@SwagPayPal/storefront/paypal/installment-banner.html.twig' with { classes: 'col mt-2' } %}
                 {% else %}
                     <div class="col"
                         data-swag-paypal-installment-banner="true"

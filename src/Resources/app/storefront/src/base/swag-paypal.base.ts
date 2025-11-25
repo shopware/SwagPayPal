@@ -123,7 +123,7 @@ export default abstract class SwagPaypalBase extends Plugin {
      * @param data - The error. Can be any type, but will be converted to a string
      */
     protected async handleError(error: PayPalPluginError): Promise<void> {
-        console.error(error);
+        console.error(this._pluginName, error);
 
         if (!this.options.handleErrorUrl) {
             return;

@@ -34,13 +34,6 @@
         --paypal-message-font-size: 12px;
     }
 
-    &-cart-table {
-        background: #eaeced;
-        display: flex;
-        justify-content: center;
-        padding: 0.5rem;
-    }
-
     &:has(paypal-message[hidden]) {
         display: none;
     }
