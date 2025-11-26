@@ -281,8 +281,10 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
     {
         $criteria = new Criteria([$transactionId]);
         $criteria->addAssociation('order.billingAddress.country');
+        $criteria->addAssociation('order.billingAddress.countryState');
         $criteria->addAssociation('order.currency');
         $criteria->addAssociation('order.deliveries.shippingOrderAddress.country');
+        $criteria->addAssociation('order.deliveries.shippingOrderAddress.countryState');
         $criteria->addAssociation('order.lineItems');
         $criteria->addAssociation('order.orderCustomer.customer');
         $criteria->addAssociation('order.salesChannel');
