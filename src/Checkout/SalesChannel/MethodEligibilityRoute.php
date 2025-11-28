@@ -73,7 +73,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
         /** @var array $paymentMethods */
         $paymentMethods = $request->request->all()['paymentMethods'] ?? null;
         if (!\is_array($paymentMethods)) {
-            RoutingException::invalidRequestParameter('paymentMethods');
+            throw RoutingException::invalidRequestParameter('paymentMethods');
         }
 
         $handlers = [];
