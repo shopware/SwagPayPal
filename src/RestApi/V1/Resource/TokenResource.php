@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Context\CredentialsOAuthContext;
 use Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface;
 use Shopware\PayPalSDK\Exception\ApiException;
@@ -54,16 +55,16 @@ class TokenResource implements TokenResourceInterface
         return $this->tokenGateway->getToken($context->withOAuthContext($oauthContext->intoUserIdContext($targetCustomerId)));
     }
 
-    public function getClientToken(?string $salesChannelId): Token
+    public function getClientToken(SalesChannelContext $salesChannelContext): Token
     {
-        $context = $this->apiContextFactory->getApiContext($salesChannelId);
+        $context = $this->apiContextFactory->getApiContext($salesChannelContext->getSalesChannelId());
 
         if (!($oauthContext = $context->getOAuthContext()) instanceof CredentialsOAuthContext) {
             throw new \InvalidArgumentException($this->apiContextFactory::class . ' should have returned a context including ' . CredentialsOAuthContext::class);
         }
 
-        $oauthContext = $oauthContext->intoClientTokenContext();
+        $clientTokenContext = $oauthContext->intoClientTokenContext();
 
-        return $this->tokenGateway->getToken($context->withOAuthContext($oauthContext));
+        return $this->tokenGateway->getToken($context->withOAuthContext($clientTokenContext));
     }
 }

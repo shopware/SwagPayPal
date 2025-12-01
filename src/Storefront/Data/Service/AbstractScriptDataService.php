@@ -39,7 +39,7 @@ abstract class AbstractScriptDataService
         return [
             '_v6Enabled' => $this->systemConfigService->getBool(Settings::SDK_V6_ENABLED, $salesChannelId),
             'clientId' => $this->credentialsUtil->getClientId($salesChannelId),
-            'clientToken' => $this->tokenResource->getClientToken($salesChannelId)->getAccessToken(),
+            'clientToken' => $this->tokenResource->getClientToken($context)->getAccessToken(),
             'environment' => $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId) ? 'sandbox' : 'production',
             'merchantPayerId' => $merchantPayerId,
             'languageIso' => $this->getButtonLanguage($context),
