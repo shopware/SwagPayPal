@@ -18,14 +18,13 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 #[Package('checkout')]
 class AvailabilityService
 {
-    private PaymentMethodDataRegistry $paymentMethodDataRegistry;
-
     /**
      * @internal
      */
-    public function __construct(PaymentMethodDataRegistry $paymentMethodDataRegistry)
-    {
-        $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
+    public function __construct(
+        private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        private readonly AvailabilityContextBuilder $availabilityContextBuilder,
+    ) {
     }
 
     /**
@@ -35,7 +34,7 @@ class AvailabilityService
     {
         $handlers = [];
 
-        $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
+        $context = $this->availabilityContextBuilder->buildFromCart($cart, $salesChannelContext);
 
         foreach ($paymentMethods as $paymentMethod) {
             if (!$this->isAvailable($paymentMethod, $context)) {
@@ -53,7 +52,7 @@ class AvailabilityService
     {
         $handlers = [];
 
-        $context = AvailabilityContextBuilder::buildFromOrder($order, $salesChannelContext);
+        $context = $this->availabilityContextBuilder->buildFromOrder($order, $salesChannelContext);
 
         foreach ($paymentMethods as $paymentMethod) {
             if (!$this->isAvailable($paymentMethod, $context)) {
@@ -68,7 +67,7 @@ class AvailabilityService
     {
         return $this->isAvailable(
             $paymentMethod,
-            AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext)
+            $this->availabilityContextBuilder->buildFromCart($cart, $salesChannelContext)
         );
     }
 

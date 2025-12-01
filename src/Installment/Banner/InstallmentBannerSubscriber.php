@@ -17,7 +17,6 @@ use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPage;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
-use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
@@ -30,9 +29,9 @@ use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Installment\Banner\Service\BannerDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
-use Swag\PayPal\Util\Availability\AvailabilityContext;
 use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -43,6 +42,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class InstallmentBannerSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID = 'payPalInstallmentBannerData';
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed without replacement
+     */
     public const PAYPAL_INSTALLMENT_BANNER_DATA_CART_PAGE_EXTENSION_ID = 'payPalInstallmentBannerDataCheckoutCart';
 
     public function __construct(
@@ -51,7 +53,8 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         private readonly BannerDataServiceInterface $bannerDataService,
         private readonly ExcludedProductValidator $excludedProductValidator,
         private readonly LoggerInterface $logger,
-        private readonly PayLaterMethodData $payLaterMethodData,
+        private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        private readonly AvailabilityContextBuilder $availabilityContextBuilder,
     ) {
     }
 
@@ -90,26 +93,24 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
                 return;
             }
 
-            $availabilityContext = AvailabilityContextBuilder::buildFromProduct($page->getProduct(), $salesChannelContext);
-        }
-
-        if (!$page instanceof ProductPage) {
+            $availabilityContext = $this->availabilityContextBuilder->buildFromProduct($page->getProduct(), $salesChannelContext);
+        } else {
             if ($this->excludedProductValidator->cartContainsExcludedProduct($page->getCart(), $pageLoadedEvent->getSalesChannelContext())) {
                 return;
             }
 
-            $availabilityContext = AvailabilityContextBuilder::buildFromCart($page->getCart(), $salesChannelContext);
+            $availabilityContext = $this->availabilityContextBuilder->buildFromCart($page->getCart(), $salesChannelContext);
         }
 
-        if (!$this->shouldDisplayPayLaterBanner($page, $availabilityContext)) {
+        if (!$this->paymentMethodDataRegistry->getPaymentMethod(PayLaterMethodData::class)->isAvailable($availabilityContext)) {
             return;
         }
 
         $bannerData = $this->bannerDataService->getInstallmentBannerData($page, $salesChannelContext);
 
+        /** @deprecated tag:v11.0.0 - Will be removed */
         if ($page instanceof CheckoutCartPage) {
             $productTableBannerData = clone $bannerData;
-            /** @deprecated tag:v11.0.0 - All setters will be removed */
             $productTableBannerData->setLayout('flex');
             $productTableBannerData->setColor('grey');
             $productTableBannerData->setRatio('20x1');
@@ -152,19 +153,5 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
             self::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID,
             $bannerData
         );
-    }
-
-    private function shouldDisplayPayLaterBanner(Page $page, AvailabilityContext $availabilityContext): bool
-    {
-        return $this->pageOfCorrectType($page)
-            ? $this->payLaterMethodData->isAvailable($availabilityContext)
-            : true;
-    }
-
-    private function pageOfCorrectType(Page $page): bool
-    {
-        return $page instanceof CheckoutRegisterPage
-            || $page instanceof OffcanvasCartPage
-            || $page instanceof CheckoutConfirmPage;
     }
 }

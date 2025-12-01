@@ -11,7 +11,8 @@
             <argument type="service" id="Swag\PayPal\Installment\Banner\Service\BannerDataService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator"/>
             <argument type="service" id="monolog.logger.paypal"/>
-            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\Util\Availability\AvailabilityContextBuilder"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

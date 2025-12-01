@@ -21,11 +21,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 #[Package('checkout')]
 final class AvailabilityContextBuilder
 {
-    private function __construct()
-    {
-    }
-
-    public static function buildFromCart(Cart $cart, SalesChannelContext $salesChannelContext): AvailabilityContext
+    public function buildFromCart(Cart $cart, SalesChannelContext $salesChannelContext): AvailabilityContext
     {
         return self::buildContext(
             $salesChannelContext,
@@ -35,7 +31,7 @@ final class AvailabilityContextBuilder
         );
     }
 
-    public static function buildFromProduct(SalesChannelProductEntity $product, SalesChannelContext $salesChannelContext): AvailabilityContext
+    public function buildFromProduct(SalesChannelProductEntity $product, SalesChannelContext $salesChannelContext): AvailabilityContext
     {
         return self::buildContext(
             $salesChannelContext,
@@ -45,7 +41,7 @@ final class AvailabilityContextBuilder
         );
     }
 
-    public static function buildFromOrder(OrderEntity $order, SalesChannelContext $salesChannelContext): AvailabilityContext
+    public function buildFromOrder(OrderEntity $order, SalesChannelContext $salesChannelContext): AvailabilityContext
     {
         return self::buildContext(
             $salesChannelContext,
@@ -55,15 +51,13 @@ final class AvailabilityContextBuilder
         );
     }
 
-    private static function buildContext(
+    private function buildContext(
         SalesChannelContext $salesChannelContext,
         float $price,
         bool $subscription,
         bool $downloadable,
     ): AvailabilityContext {
-        $context = new AvailabilityContext();
-
-        $context->assign([
+        return (new AvailabilityContext())->assign([
             'billingCountryCode' => self::getBillingCountryCode($salesChannelContext),
             'currencyCode' => $salesChannelContext->getCurrency()->getIsoCode(),
             'totalAmount' => $price,
@@ -71,11 +65,9 @@ final class AvailabilityContextBuilder
             'salesChannelId' => $salesChannelContext->getSalesChannelId(),
             'hasDigitalProducts' => $downloadable,
         ]);
-
-        return $context;
     }
 
-    private static function getBillingCountryCode(SalesChannelContext $salesChannelContext): string
+    private function getBillingCountryCode(SalesChannelContext $salesChannelContext): string
     {
         return $salesChannelContext->getCustomer()?->getActiveBillingAddress()?->getCountry()?->getIso()
             ?? $salesChannelContext->getShippingLocation()->getCountry()->getIso() ?? '';
