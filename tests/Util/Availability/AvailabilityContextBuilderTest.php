@@ -31,6 +31,13 @@ use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
 #[Package('checkout'), CoversClass(AvailabilityContextBuilder::class)]
 class AvailabilityContextBuilderTest extends TestCase
 {
+    private AvailabilityContextBuilder $availabilityContextBuilder;
+
+    protected function setUp(): void
+    {
+        $this->availabilityContextBuilder = new AvailabilityContextBuilder();
+    }
+
     public function testBuildFromCart(): void
     {
         $country = new CountryEntity();
@@ -53,7 +60,7 @@ class AvailabilityContextBuilderTest extends TestCase
 
         $salesChannelContext = Generator::generateSalesChannelContext(currency: $currency, customer: $customer);
 
-        $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
+        $context = $this->availabilityContextBuilder->buildFromCart($cart, $salesChannelContext);
 
         static::assertSame('US', $context->getBillingCountryCode());
         static::assertSame('USD', $context->getCurrencyCode());
@@ -81,7 +88,7 @@ class AvailabilityContextBuilderTest extends TestCase
             customer: new CustomerEntity()
         );
 
-        $context = AvailabilityContextBuilder::buildFromCart($cart, $salesChannelContext);
+        $context = $this->availabilityContextBuilder->buildFromCart($cart, $salesChannelContext);
 
         static::assertSame('US', $context->getBillingCountryCode());
         static::assertSame('USD', $context->getCurrencyCode());
@@ -112,7 +119,7 @@ class AvailabilityContextBuilderTest extends TestCase
 
         $salesChannelContext = Generator::generateSalesChannelContext(currency: $currency, customer: $customer);
 
-        $context = AvailabilityContextBuilder::buildFromProduct($product, $salesChannelContext);
+        $context = $this->availabilityContextBuilder->buildFromProduct($product, $salesChannelContext);
 
         static::assertSame('US', $context->getBillingCountryCode());
         static::assertSame('USD', $context->getCurrencyCode());
@@ -141,7 +148,7 @@ class AvailabilityContextBuilderTest extends TestCase
             customer: new CustomerEntity()
         );
 
-        $context = AvailabilityContextBuilder::buildFromProduct($product, $salesChannelContext);
+        $context = $this->availabilityContextBuilder->buildFromProduct($product, $salesChannelContext);
 
         static::assertSame('US', $context->getBillingCountryCode());
         static::assertSame('USD', $context->getCurrencyCode());
@@ -172,7 +179,7 @@ class AvailabilityContextBuilderTest extends TestCase
 
         $salesChannelContext = Generator::generateSalesChannelContext(currency: $currency, customer: $customer);
 
-        $context = AvailabilityContextBuilder::buildFromOrder($order, $salesChannelContext);
+        $context = $this->availabilityContextBuilder->buildFromOrder($order, $salesChannelContext);
 
         static::assertSame('US', $context->getBillingCountryCode());
         static::assertSame('USD', $context->getCurrencyCode());
@@ -207,7 +214,7 @@ class AvailabilityContextBuilderTest extends TestCase
         $order = new OrderEntity();
         $order->setPrice(new CartPrice(275, 275, 1, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_GROSS));
 
-        $context = AvailabilityContextBuilder::buildFromOrder($order, $salesChannelContext);
+        $context = $this->availabilityContextBuilder->buildFromOrder($order, $salesChannelContext);
 
         static::assertSame('US', $context->getBillingCountryCode());
         static::assertSame('USD', $context->getCurrencyCode());
