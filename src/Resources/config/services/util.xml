@@ -175,6 +175,11 @@
 
         <service id="Swag\PayPal\Util\Availability\AvailabilityService">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\Util\Availability\AvailabilityContextBuilder"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Availability\AvailabilityContextBuilder">
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\EligibleMethodsResource"/>
         </service>
     </services>
 </container>

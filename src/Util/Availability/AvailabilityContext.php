@@ -9,6 +9,8 @@ namespace Swag\PayPal\Util\Availability;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\Struct;
+use Shopware\PayPalSDK\Struct\Struct as PayPalSDKStruct;
+use Shopware\PayPalSDK\Struct\V2\EligibleMethodsData\EligibleMethods;
 
 #[Package('checkout')]
 class AvailabilityContext extends Struct
@@ -24,6 +26,8 @@ class AvailabilityContext extends Struct
     protected string $salesChannelId;
 
     protected bool $hasDigitalProducts;
+
+    protected ?EligibleMethods $eligibleMethods = null;
 
     public function getBillingCountryCode(): string
     {
@@ -53,5 +57,18 @@ class AvailabilityContext extends Struct
     public function hasDigitalProducts(): bool
     {
         return $this->hasDigitalProducts;
+    }
+
+    public function getEligibleMethods(): ?EligibleMethods
+    {
+        return $this->eligibleMethods;
+    }
+
+    /**
+     * @param class-string<PayPalSDKStruct> $method
+     */
+    public function isEligible(string $methodClass): bool
+    {
+        return !$this->eligibleMethods || $this->eligibleMethods?->has($methodClass);
     }
 }

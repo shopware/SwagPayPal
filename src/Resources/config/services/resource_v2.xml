@@ -24,5 +24,12 @@
             <argument type="service" id="Shopware\PayPalSDK\Gateway\PaymentGateway"/>
             <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
         </service>
+
+        <service id="Swag\PayPal\RestApi\V2\Resource\EligibleMethodsResource">
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\PaymentGateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
+        </service>
     </services>
 </container>

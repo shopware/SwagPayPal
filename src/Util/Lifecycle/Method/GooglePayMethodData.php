@@ -10,6 +10,7 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations\Capability;
+use Shopware\PayPalSDK\Struct\V2\EligibleMethodsData\EligibleMethods\GooglePay;
 use Swag\PayPal\Checkout\Payment\Method\GooglePayHandler;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
@@ -65,7 +66,8 @@ class GooglePayMethodData extends AbstractMethodData implements CheckoutDataMeth
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return \in_array($availabilityContext->getCurrencyCode(), self::AVAILABLE_CURRENCIES, true);
+        return \in_array($availabilityContext->getCurrencyCode(), self::AVAILABLE_CURRENCIES, true)
+            && $availabilityContext->isEligible(GooglePay::class);
     }
 
     public function getInitialState(): bool

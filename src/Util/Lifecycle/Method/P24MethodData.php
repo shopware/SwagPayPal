@@ -9,6 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
+use Shopware\PayPalSDK\Struct\V2\EligibleMethodsData\EligibleMethods\P24;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 /**
@@ -55,7 +56,8 @@ class P24MethodData extends AbstractMethodData
     {
         return $availabilityContext->getTotalAmount() >= 1.0
             && \in_array($availabilityContext->getCurrencyCode(), ['EUR', 'PLN'], true)
-            && $availabilityContext->getBillingCountryCode() === 'PL';
+            && $availabilityContext->getBillingCountryCode() === 'PL'
+            && $availabilityContext->isEligible(P24::class);
     }
 
     public function getInitialState(): bool

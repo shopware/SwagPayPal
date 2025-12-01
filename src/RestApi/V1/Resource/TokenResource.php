@@ -7,7 +7,12 @@
 
 namespace Swag\PayPal\RestApi\V1\Resource;
 
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\PartialEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\PayPalSDK\Context\CredentialsOAuthContext;
 use Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface;
 use Shopware\PayPalSDK\Exception\ApiException;
@@ -24,6 +29,7 @@ class TokenResource implements TokenResourceInterface
     public function __construct(
         private readonly TokenGatewayInterface $tokenGateway,
         private readonly ApiContextFactoryInterface $apiContextFactory,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -62,8 +68,24 @@ class TokenResource implements TokenResourceInterface
             throw new \InvalidArgumentException($this->apiContextFactory::class . ' should have returned a context including ' . CredentialsOAuthContext::class);
         }
 
-        $oauthContext = $oauthContext->intoClientTokenContext();
+        $clientTokenContext = $clientTokenContext->withDomains($salesChannelContext->getSalesChannel()->getDomains()?->fmap(fn (SalesChannelDomainEntity $entity) => $entity->getUrl()) ?? []);
 
-        return $this->tokenGateway->getToken($context->withOAuthContext($oauthContext));
+        try {
+            return $this->tokenGateway->getToken($context->withOAuthContext($clientTokenContext));
+        } catch (\InvalidArgumentException|PayPalApiException $e) {
+            if ($e instanceof \InvalidArgumentException || $e instanceof PayPalApiException && $e->is(PayPalApiException::ERROR_CODE_INVALID_DOMAIN)) {
+                $this->logger->error('Failed to fetch client token. Please make sure that your PayPal app is configured with the correct domain.', [
+                    'salesChannelId' => $salesChannelContext->getSalesChannelId(),
+                    'exception' => $e,
+                    'domains' => $domains,
+                ]);
+
+                $clientTokenContext = $oauthContext->intoClientTokenContext();
+
+                return $this->tokenGateway->getToken($context->withOAuthContext($clientTokenContext));
+            }
+
+            throw $e;
+        }
     }
 }

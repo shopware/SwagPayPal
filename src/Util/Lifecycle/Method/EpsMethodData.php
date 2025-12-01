@@ -9,6 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
+use Shopware\PayPalSDK\Struct\V2\EligibleMethodsData\EligibleMethods\Eps;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 /**
@@ -55,7 +56,8 @@ class EpsMethodData extends AbstractMethodData
     {
         return $availabilityContext->getTotalAmount() >= 1.0
             && $availabilityContext->getCurrencyCode() === 'EUR'
-            && $availabilityContext->getBillingCountryCode() === 'AT';
+            && $availabilityContext->getBillingCountryCode() === 'AT'
+            && $availabilityContext->isEligible(Eps::class);
     }
 
     public function getInitialState(): bool

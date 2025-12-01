@@ -9,6 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
+use Shopware\PayPalSDK\Struct\V2\EligibleMethodsData\EligibleMethods\Bancontact;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 /**
@@ -55,7 +56,8 @@ class BancontactMethodData extends AbstractMethodData
     {
         return $availabilityContext->getTotalAmount() >= 1.0
             && $availabilityContext->getCurrencyCode() === 'EUR'
-            && $availabilityContext->getBillingCountryCode() === 'BE';
+            && $availabilityContext->getBillingCountryCode() === 'BE'
+            && $availabilityContext->isEligible(Bancontact::class);
     }
 
     public function getInitialState(): bool

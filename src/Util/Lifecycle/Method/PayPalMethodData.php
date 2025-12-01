@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
+use Shopware\PayPalSDK\Struct\V2\EligibleMethodsData\EligibleMethods\Paypal;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
@@ -68,7 +69,7 @@ class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodI
             return $systemConfigService->getBool(Settings::VAULTING_ENABLED_WALLET, $availabilityContext->getSalesChannelId());
         }
 
-        return true;
+        return $availabilityContext->isEligible(Paypal::class);
     }
 
     public function getInitialState(): bool

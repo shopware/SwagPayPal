@@ -12,6 +12,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations\Capability;
+use Shopware\PayPalSDK\Struct\V2\EligibleMethodsData\EligibleMethods\AdvancedCards;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
@@ -63,7 +64,7 @@ class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInt
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return true;
+        return $availabilityContext->isEligible(AdvancedCards::class);
     }
 
     public function getInitialState(): bool

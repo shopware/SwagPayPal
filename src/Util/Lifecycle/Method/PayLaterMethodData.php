@@ -9,6 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
+use Shopware\PayPalSDK\Struct\V2\EligibleMethodsData\EligibleMethods\PaypalPayLater;
 use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
@@ -89,7 +90,8 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
 
         return $currencyCode === $criteria['currency']
             && $totalAmount >= $criteria['minAmount']
-            && $totalAmount <= $criteria['maxAmount'];
+            && $totalAmount <= $criteria['maxAmount']
+            && $availabilityContext->isEligible(PaypalPayLater::class);
     }
 
     public function getInitialState(): bool

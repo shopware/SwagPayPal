@@ -123,7 +123,11 @@ class PaymentMethodDataRegistry
     }
 
     /**
-     * @param class-string<AbstractMethodData> $methodDataClass
+     * @template T of AbstractMethodData
+     *
+     * @param class-string<T> $methodDataClass
+     *
+     * @return T
      */
     public function getPaymentMethod(string $methodDataClass): AbstractMethodData
     {

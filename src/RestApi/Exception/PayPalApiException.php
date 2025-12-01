@@ -19,6 +19,7 @@ class PayPalApiException extends PaymentException
     public const ERROR_CODE_INVALID_CREDENTIALS = 'INVALID_CREDENTIALS';
     public const ERROR_CODE_DUPLICATE_ORDER_NUMBER = 'DUPLICATE_TRANSACTION';
     public const ERROR_CODE_RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND';
+    public const ERROR_CODE_INVALID_DOMAIN = 'invalid_domain';
 
     public const ISSUE_NOT_AVAILABLE = 'NOT_AVAILABLE';
     public const ISSUE_DUPLICATE_INVOICE_ID = 'DUPLICATE_INVOICE_ID';

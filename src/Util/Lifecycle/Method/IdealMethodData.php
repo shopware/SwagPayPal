@@ -10,6 +10,7 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations\Capability;
+use Shopware\PayPalSDK\Struct\V2\EligibleMethodsData\EligibleMethods\Ideal;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 /**
@@ -55,7 +56,8 @@ class IdealMethodData extends AbstractMethodData
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
         return $availabilityContext->getCurrencyCode() === 'EUR'
-            && $availabilityContext->getBillingCountryCode() === 'NL';
+            && $availabilityContext->getBillingCountryCode() === 'NL'
+            && $availabilityContext->isEligible(Ideal::class);
     }
 
     public function getInitialState(): bool

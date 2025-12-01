@@ -9,6 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V1\MerchantIntegrations;
+use Shopware\PayPalSDK\Struct\V2\EligibleMethodsData\EligibleMethods\ApplePay;
 use Swag\PayPal\Checkout\Payment\Method\ApplePayHandler;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
@@ -64,7 +65,8 @@ class ApplePayMethodData extends AbstractMethodData implements CheckoutDataMetho
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return \in_array($availabilityContext->getCurrencyCode(), self::AVAILABLE_CURRENCIES, true);
+        return \in_array($availabilityContext->getCurrencyCode(), self::AVAILABLE_CURRENCIES, true)
+            && $availabilityContext->isEligible(ApplePay::class);
     }
 
     public function getInitialState(): bool
