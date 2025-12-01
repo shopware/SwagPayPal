@@ -12,10 +12,10 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Symfony\Component\Routing\RouterInterface;
 
 #[Package('checkout')]
 abstract class AbstractScriptDataService
@@ -27,7 +27,7 @@ abstract class AbstractScriptDataService
         protected readonly LocaleCodeProvider $localeCodeProvider,
         protected readonly SystemConfigService $systemConfigService,
         protected readonly CredentialsUtilInterface $credentialsUtil,
-        protected readonly TokenResource $tokenResource,
+        protected readonly RouterInterface $router,
     ) {
     }
 
@@ -39,7 +39,7 @@ abstract class AbstractScriptDataService
         return [
             '_v6Enabled' => $this->systemConfigService->getBool(Settings::SDK_V6_ENABLED, $salesChannelId),
             'clientId' => $this->credentialsUtil->getClientId($salesChannelId),
-            'clientToken' => $this->tokenResource->getClientToken($context)->getAccessToken(),
+            'clientTokenUrl' => $this->router->generate('frontend.paypal.client_token'),
             'environment' => $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId) ? 'sandbox' : 'production',
             'merchantPayerId' => $merchantPayerId,
             'languageIso' => $this->getButtonLanguage($context),

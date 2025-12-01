@@ -150,6 +150,33 @@
                 }
             }
         },
+        "/paypal/client-token": {
+            "post": {
+                "tags": [
+                    "Store API",
+                    "PayPal"
+                ],
+                "description": "Retrieves a client ID token for the current sales channel",
+                "operationId": "paypalClientToken",
+                "responses": {
+                    "200": {
+                        "description": "Client ID token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/paypal/create-order": {
             "post": {
                 "tags": [

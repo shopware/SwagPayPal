@@ -3,7 +3,8 @@ import PayPalLoader from '../helper/paypal-loader.helper';
 import PayPalPluginError from './paypal-plugin.error';
 
 export interface SwagPaypalBaseOptions {
-    clientToken: string;
+    clientToken: string | null;
+    clientTokenUrl: string;
     environment: 'production' | 'sandbox';
     pageType?: PayPalCoreJS.PageTypes;
     partnerAttributionId: string;
@@ -24,7 +25,12 @@ export default abstract class SwagPaypalBase extends Plugin {
         /**
          * This option holds the client token required for field rendering
          */
-        clientToken: '',
+        clientToken: null,
+
+        /**
+         * This option holds the client token required for field rendering
+         */
+        clientTokenUrl: '',
 
         /**
          * This option holds the client token required for field rendering
@@ -61,6 +67,8 @@ export default abstract class SwagPaypalBase extends Plugin {
 
     protected static eligibleMethods: Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods> | null = null;
 
+    protected static clientToken: Promise<string> | null = null;
+
     protected abstract get metadata(): { components: PayPalCoreJS.Components[] };
 
     init(): void {
@@ -85,7 +93,7 @@ export default abstract class SwagPaypalBase extends Plugin {
         await PayPalLoader.loadPayPalCore({ environment: this.options.environment });
 
         this.instance ??= await window.paypal!.createInstance({
-            clientToken: this.options.clientToken,
+            clientToken: await SwagPaypalBase.clientToken!,
             locale: this.options.languageIso.replace('_', '-'),
             pageType: this.options.pageType,
             partnerAttributionId: this.options.partnerAttributionId,
@@ -153,5 +161,25 @@ export default abstract class SwagPaypalBase extends Plugin {
             window.scrollTo(0, 0);
             window.location.reload();
         }
+    }
+
+    protected async fetchClientToken(): Promise<string> {
+        if (this.options.clientToken) {
+            SwagPaypalBase.clientToken ??= Promise.resolve(this.options.clientToken);
+
+            return this.options.clientToken;
+        }
+
+        const response = await fetch(this.options.clientTokenUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!response.ok) {
+            throw await PayPalPluginError.api('client-token', response);
+        }
+
+        const { token } = await response.json() as { token: string };
+        return token;
     }
 }

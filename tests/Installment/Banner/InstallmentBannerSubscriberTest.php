@@ -48,7 +48,6 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
-use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
@@ -58,6 +57,7 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -372,7 +372,7 @@ class InstallmentBannerSubscriberTest extends TestCase
                 $this->localeCodeProvider,
                 $settings,
                 new CredentialsUtil($settings),
-                $this->createMock(TokenResource::class),
+                $this->createMock(RouterInterface::class),
                 $this->paymentMethodUtil,
                 $this->languageRepository
             ),

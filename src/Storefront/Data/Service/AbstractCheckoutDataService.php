@@ -35,12 +35,12 @@ abstract class AbstractCheckoutDataService extends AbstractScriptDataService
     public function __construct(
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
         LocaleCodeProvider $localeCodeProvider,
-        private readonly RouterInterface $router,
+        RouterInterface $router,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
-        TokenResource $tokenResource,
+        private readonly TokenResource $tokenResource,
     ) {
-        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $tokenResource);
+        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $router);
         $this->methodData = $this->paymentMethodDataRegistry->getPaymentMethod($this->getMethodDataClass());
     }
 
@@ -63,6 +63,7 @@ abstract class AbstractCheckoutDataService extends AbstractScriptDataService
 
         $data = [
             ...parent::getBaseData($context, $order),
+            'clientToken' => $this->tokenResource->getClientToken($context)->getAccessToken(),
             'buttonShape' => $this->systemConfigService->getString(Settings::SPB_BUTTON_SHAPE, $salesChannelId),
             'paymentMethodId' => $paymentMethodId,
             'createOrderUrl' => $context->hasExtension('subscription')

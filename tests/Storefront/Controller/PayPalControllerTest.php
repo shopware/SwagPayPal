@@ -24,6 +24,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrder
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
+use Swag\PayPal\Checkout\SalesChannel\AbstractClientTokenRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -61,6 +62,7 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(AbstractContextSwitchRoute::class),
                 $this->createMock(AbstractCartDeleteRoute::class),
                 $this->createMock(AbstractClearVaultRoute::class),
+                $this->createMock(AbstractClientTokenRoute::class),
                 new Logger('test', [$this->logHandler]),
             ])
             ->getMock();
