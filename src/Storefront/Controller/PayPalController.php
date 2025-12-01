@@ -27,6 +27,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareChec
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsResponse;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
+use Swag\PayPal\Checkout\SalesChannel\AbstractClientTokenRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
 use Swag\PayPal\Checkout\TokenResponse;
@@ -58,8 +59,15 @@ class PayPalController extends StorefrontController
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly AbstractCartDeleteRoute $cartDeleteRoute,
         private readonly AbstractClearVaultRoute $clearVaultRoute,
+        private readonly AbstractClientTokenRoute $clientTokenRoute,
         private readonly LoggerInterface $logger,
     ) {
+    }
+
+    #[Route(path: '/paypal/client-token', name: 'frontend.paypal.client_token', methods: ['POST'], defaults: ['csrf_protected' => false])]
+    public function clientToken(Request $request, SalesChannelContext $salesChannelContext): Response
+    {
+        return $this->clientTokenRoute->getClientToken($request, $salesChannelContext);
     }
 
     #[Route(path: '/paypal/create-order', name: 'frontend.paypal.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false, AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true])]

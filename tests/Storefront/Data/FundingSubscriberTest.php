@@ -208,7 +208,6 @@ class FundingSubscriberTest extends TestCase
                 $credentialsUtil,
                 $systemConfig,
                 $localeCodeProvider,
-                $this->createMock(TokenResource::class),
                 $router,
                 $requestStack
             )

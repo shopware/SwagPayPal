@@ -41,7 +41,9 @@ class AbstractScriptData extends Struct
 
     protected string $intent;
 
-    protected string $clientToken;
+    protected ?string $clientToken = null;
+
+    protected string $clientTokenUrl;
 
     protected string $environment;
 
@@ -127,14 +129,24 @@ class AbstractScriptData extends Struct
         $this->intent = $intent;
     }
 
-    public function getClientToken(): string
+    public function getClientToken(): ?string
     {
         return $this->clientToken;
     }
 
-    public function setClientToken(string $clientToken): void
+    public function setClientToken(?string $clientToken): void
     {
         $this->clientToken = $clientToken;
+    }
+
+    public function getClientTokenUrl(): string
+    {
+        return $this->clientTokenUrl;
+    }
+
+    public function setClientTokenUrl(string $clientTokenUrl): void
+    {
+        $this->clientTokenUrl = $clientTokenUrl;
     }
 
     public function getEnvironment(): string

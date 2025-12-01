@@ -11,7 +11,6 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
-use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Storefront\Data\Struct\FundingEligibilityData;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -28,11 +27,10 @@ class FundingEligibilityDataService extends AbstractScriptDataService
         CredentialsUtilInterface $credentialsUtil,
         SystemConfigService $systemConfigService,
         LocaleCodeProvider $localeCodeProvider,
-        TokenResource $tokenResource,
-        private readonly RouterInterface $router,
+        RouterInterface $router,
         private readonly RequestStack $requestStack,
     ) {
-        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $tokenResource);
+        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $router);
     }
 
     public function buildData(SalesChannelContext $context): ?FundingEligibilityData

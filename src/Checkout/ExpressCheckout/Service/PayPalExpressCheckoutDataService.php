@@ -17,7 +17,6 @@ use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\AbstractScriptDataService;
@@ -37,15 +36,14 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService
     public function __construct(
         private readonly CartService $cartService,
         LocaleCodeProvider $localeCodeProvider,
-        private readonly RouterInterface $router,
+        RouterInterface $router,
         private readonly PaymentMethodUtil $paymentMethodUtil,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
-        TokenResource $tokenResource,
         private readonly CartPriceService $cartPriceService,
         private readonly PayLaterMethodData $payLaterMethodData,
     ) {
-        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $tokenResource);
+        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $router);
     }
 
     public function buildExpressCheckoutButtonData(

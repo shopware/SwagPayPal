@@ -14,6 +14,7 @@
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute"/>
             <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute"/>
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\ClientTokenRoute"/>
             <argument type="service" id="monolog.logger.paypal"/>
 
             <call method="setContainer">
@@ -62,7 +63,6 @@
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\TokenResource" />
             <argument type="service" id="router"/>
             <argument type="service" id="request_stack"/>
         </service>
