@@ -97,7 +97,7 @@ class ExpressCreateOrderRouteTest extends TestCase
     {
         $salesChannelContext = $this->getSalesChannelContext();
 
-        $response = $this->createRoute(false)->createPayPalOrder(new Request(), $salesChannelContext);
+        $response = $this->createRoute(true)->createPayPalOrder(new Request(), $salesChannelContext);
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
@@ -112,12 +112,12 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertNull($experienceContext->getOrderUpdateCallbackConfig());
     }
 
-    private function createRoute(bool $callbacks = true): ExpressCreateOrderRoute
+    private function createRoute(bool $callbacksDisabled = false): ExpressCreateOrderRoute
     {
         $systemConfig = $this->createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
-            Settings::PAYPAL_CALLBACKS => $callbacks,
+            Settings::PAYPAL_CALLBACKS_DISABLED => $callbacksDisabled,
         ]);
 
         $priceFormatter = new PriceFormatter();

@@ -83,7 +83,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
                 $experienceContext->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
 
                 // Configure shipping callback for dynamic price recalculation
-                if ($this->systemConfigService->getBool(Settings::PAYPAL_CALLBACKS)) {
+                if (!$this->systemConfigService->getBool(Settings::PAYPAL_CALLBACKS_DISABLED)) {
                     $callbackConfig = new OrderUpdateCallbackConfig();
                     $callbackUrl = $this->router->generate(
                         'store-api.paypal.express.shipping_callback',

@@ -38,7 +38,7 @@ class WebhookSystemConfigHelperTest extends TestCase
         Settings::CLIENT_ID => 'valid-client-id',
         Settings::CLIENT_SECRET => 'valid-client-secret',
         Settings::SANDBOX => false,
-        Settings::PAYPAL_CALLBACKS => true,
+        Settings::PAYPAL_CALLBACKS_DISABLED => false,
     ];
 
     private MockObject&WebhookServiceInterface $webhookService;
@@ -107,7 +107,7 @@ class WebhookSystemConfigHelperTest extends TestCase
 
         yield 'paypal callbacks disabled' => [
             true,
-            ['null' => [...self::VALID_SETTINGS, Settings::CLIENT_ID => 'new-client-id', Settings::PAYPAL_CALLBACKS => false]],
+            ['null' => [...self::VALID_SETTINGS, Settings::CLIENT_ID => 'new-client-id', Settings::PAYPAL_CALLBACKS_DISABLED => true]],
             ['null' => self::VALID_SETTINGS],
         ];
     }
@@ -144,7 +144,7 @@ class WebhookSystemConfigHelperTest extends TestCase
 
         yield 'paypal callbacks disabled' => [
             false,
-            ['null' => [...self::VALID_SETTINGS, Settings::PAYPAL_CALLBACKS => false]],
+            ['null' => [...self::VALID_SETTINGS, Settings::PAYPAL_CALLBACKS_DISABLED => true]],
         ];
     }
 

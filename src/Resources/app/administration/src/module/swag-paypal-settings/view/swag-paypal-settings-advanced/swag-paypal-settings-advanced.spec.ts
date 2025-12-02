@@ -55,7 +55,7 @@ describe('swag-paypal-settings-advanced', () => {
         expect(Object.keys(settings)).toEqual([
             'SwagPayPal.settings.crossBorderMessagingEnabled',
             'SwagPayPal.settings.crossBorderBuyerCountry',
-            'SwagPayPal.settings.paypalCallbacks',
+            'SwagPayPal.settings.paypalCallbacksDisabled',
         ]);
 
         expect(settings['SwagPayPal.settings.crossBorderBuyerCountry'].vm.$attrs.options)
