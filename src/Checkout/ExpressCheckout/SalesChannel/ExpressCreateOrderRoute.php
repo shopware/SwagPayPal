@@ -95,6 +95,8 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
                     $experienceContext->setOrderUpdateCallbackConfig($callbackConfig);
 
                     $this->logger->debug('Configured shipping callback', ['callbackUrl' => $callbackUrl]);
+                } else {
+                    $this->logger->debug('Skipped shipping callback due to being disabled in system config');
                 }
             }
 
