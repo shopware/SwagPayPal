@@ -21,15 +21,24 @@
             </call>
         </service>
 
+        <service id="Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber">
+            <argument type="service" id="payment_method.repository"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider"
                  decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
             <argument type="service" id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider.inner"/>
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="request_stack"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\Framework\Cookie\GooglePayCookieProvider"
                  decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
             <argument type="service" id="Swag\PayPal\Storefront\Framework\Cookie\GooglePayCookieProvider.inner"/>
             <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="request_stack"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\RequestSubscriber">
