@@ -106,7 +106,7 @@
     },
     "paypalCallbacks": {
       "title": "PayPal Callbacks",
-      "warning": "Wir empfehlen, diese Option nicht zu deaktivieren, da dies die Funktionalität der Erweiterung beeinträchtigen würde. Deaktiviere sie bitte nur, wenn dein Shop nicht öffentlich erreichbar ist.",
+      "warning": "Wir empfehlen, die PayPal Callbacks nicht zu deaktivieren, da dies die Funktionalität der Erweiterung beeinträchtigen würde. Deaktiviere sie bitte nur, wenn dein Shop nicht öffentlich erreichbar ist.",
       "info": "Callbacks ermöglichen es PayPal, den Shop für Bestellstatus-Aktualisierungen und Warenkorbkalkulationen im Express-Checkout-UI von PayPal zu kontaktieren."
     }
   },

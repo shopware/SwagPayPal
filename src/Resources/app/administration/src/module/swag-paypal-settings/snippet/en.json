@@ -106,7 +106,7 @@
     },
     "paypalCallbacks": {
       "title": "PayPal Callbacks",
-      "warning": "We recommend not disabling this option, as this would impair the functionality of the extension. Please only disable it if your shop is not publicly accessible.",
+      "warning": "We recommend not disabling PayPal Callbacks, as this would impair the functionality of the extension. Please only disable them if your shop is not publicly accessible.",
       "info": "Callbacks enable PayPal to contact the shop for order status updates and cart calculations in PayPal's Express Checkout UI."
     }
   },
