@@ -86,7 +86,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
             },
         } satisfies ApplePayJS.ApplePayPaymentRequest;
 
-        data.session = new window.ApplePaySession(4, paymentRequest);
+        data.session = new window.ApplePaySession!(4, paymentRequest);
 
         data.session.onvalidatemerchant = (event) => void this.handleValidateMerchant(data, event);
         data.session.onpaymentauthorized = (event) => void this.handlePaymentAuthorized(data, event);
@@ -122,7 +122,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
                 },
             });
 
-            session.completePayment(window.ApplePaySession.STATUS_SUCCESS);
+            session.completePayment(window.ApplePaySession!.STATUS_SUCCESS);
 
             this.onApprove({ orderId });
         } catch (e) {

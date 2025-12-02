@@ -1,8 +1,7 @@
-import { loadCoreSdkScript } from '@paypal/paypal-js/sdk-v6';
 import PayPalPluginError from '../base/paypal-plugin.error';
 
 export default class PayPalLoader {
-    private static paypal: Promise<PayPalCoreJS.Namespace>|null = null;
+    private static paypal: Promise<void>|null = null;
 
     private static googlePay: Promise<void>|null = null;
 
@@ -10,9 +9,12 @@ export default class PayPalLoader {
 
     private constructor() {}
 
-    public static async loadPayPalCore(script: PayPalCoreJS.LoadCoreScriptOptions): Promise<PayPalCoreJS.Namespace> {
+    public static async loadPayPalCore(script: PayPalCoreJS.LoadCoreScriptOptions): Promise<void> {
         try {
-            PayPalLoader.paypal ??= loadCoreSdkScript(script) as Promise<PayPalCoreJS.Namespace>;
+            PayPalLoader.paypal ??= PayPalLoader.loadCustomScript(
+                new URL('/web-sdk/v6/core', script.environment === 'sandbox' ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com'),
+                () => !!window.paypal?.createInstance,
+            );
             return await PayPalLoader.paypal;
         } catch (error) {
             PayPalLoader.paypal = null;

@@ -2,9 +2,9 @@
 {% set expressData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\SalesChannel\\ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
 {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData spbData #}
 {% set spbData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
-{# @var \Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutFieldData acdcFieldData #}
-{% set acdcFieldData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
-{# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData acdcFieldData #}
+{# @var \Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutFieldData acdcData #}
+{% set acdcData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
+{# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData puiFraudnetData #}
 {% set puiFraudnetData = page.extensions[constant('Swag\\PayPal\\Checkout\\PUI\\PUISubscriber::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID')] %}
 {# @var \Swag\PayPal\Storefront\Data\Struct\SEPACheckoutData sepaData #}
 {% set sepaData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\SEPAMethodData::PAYPAL_SEPA_FIELD_DATA_EXTENSION_ID')] %}
@@ -62,12 +62,12 @@
         </paypal-pay-later-button>
         {% endblock %}
 
-    {% elseif acdcFieldData and acdcFieldData.paymentMethodId is same as(context.paymentMethod.id) %}
+    {% elseif acdcData and acdcData.paymentMethodId is same as(context.paymentMethod.id) %}
 
         {% block swag_paypal_acdc %}
         <div
             data-swag-paypal-checkout-card-fields="true"
-            data-swag-paypal-checkout-card-fields-options="{{ acdcFieldData|json_encode }}"
+            data-swag-paypal-checkout-card-fields-options="{{ acdcData|json_encode }}"
         >
         </div>
         {% endblock %}

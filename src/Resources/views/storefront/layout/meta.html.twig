@@ -17,9 +17,9 @@
 {% block layout_head_meta_tags %}
     {{ parent() }}
 
-    {% block swag_paypal_script_preload %}
+    {% block swag_paypal_meta_tags %}
         {% if config('SwagPayPal.settings.sdkV6Enabled') %}
-            {% sw_include '@SwagPayPal/storefront/paypal/script-preload.html.twig' %}
+            {% sw_include '@SwagPayPal/storefront/paypal/meta-tags.html.twig' %}
         {% endif %}
     {% endblock %}
 {% endblock %}

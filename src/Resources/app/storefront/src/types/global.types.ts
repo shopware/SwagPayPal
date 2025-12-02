@@ -12,6 +12,10 @@ declare global {
     interface Window {
         PluginManager: PluginManager&(typeof PluginManager);
         ApplePayMerchandising: unknown;
-        ApplePaySession: ApplePaySession&(typeof ApplePaySession);
+        ApplePaySession?: ApplePaySession&(typeof ApplePaySession);
     }
 }
+
+declare module '@paypal/paypal-js/types' {
+    interface PayPalNamespace extends PayPalCoreJS.Namespace {}
+};

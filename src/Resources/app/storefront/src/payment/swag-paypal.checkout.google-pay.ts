@@ -57,7 +57,6 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
         this.el!.buttonType = 'checkout';
         this.el!.environment = this.options.environment === 'sandbox' ? 'TEST' : 'PRODUCTION';
         this.el!.onPaymentAuthorized = this.onPaymentAuthorized.bind(this, paymentSession);
-        this.el!.addEventListener('cancel', (event) => void this.onCancel(event.detail));
         this.el!.addEventListener('error', (event) => void this.onError(event.error));
         // Quote Docs: "If the browser supports Google Pay, isReadyToPay returns true"
         this.el!.addEventListener('readytopaychange', (event) => {
@@ -102,7 +101,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
         return super.afterSetup();
     }
 
-    async onPaymentAuthorized(session: PayPalCoreJS.PaymentSession<'googlepay'>, paymentData: google.payments.api.PaymentData): Promise<google.payments.api.PaymentAuthorizationResult> {
+    protected async onPaymentAuthorized(session: PayPalCoreJS.PaymentSession<'googlepay'>, paymentData: google.payments.api.PaymentData): Promise<google.payments.api.PaymentAuthorizationResult> {
         try {
             const { orderId } = await this.createOrder();
 
