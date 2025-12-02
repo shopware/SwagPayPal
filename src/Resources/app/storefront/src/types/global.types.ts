@@ -18,4 +18,4 @@ declare global {
 
 declare module '@paypal/paypal-js/types' {
     interface PayPalNamespace extends PayPalCoreJS.Namespace {}
-};
+}
