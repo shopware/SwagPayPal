@@ -84,9 +84,9 @@ PluginManager.register(
 );
 
 PluginManager.register(
-    'SwagPaypalCheckoutAcdc',
-    () => import('./payment/swag-paypal.checkout.acdc'),
-    '[data-swag-paypal-checkout-acdc]',
+    'SwagPaypalCheckoutCardFields',
+    () => import('./payment/swag-paypal.checkout.card-fields'),
+    '[data-swag-paypal-checkout-card-fields]',
 );
 
 

@@ -41,8 +41,9 @@
     {% if acdcFieldData and acdcFieldData.paymentMethodId is same as(payment.id) %}
         {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
         {% if config('SwagPayPal.settings.sdkV6Enabled') %}
-            {% sw_include '@SwagPayPal/storefront/paypal/acdc-form.html.twig' %}
+            {% sw_include '@SwagPayPal/storefront/paypal/card-fields-form.html.twig' %}
         {% else %}
+            {# @deprecated tag:v11.0.0 - Will be removed and is replaced by `@SwagPayPal/storefront/paypal/card-fields-form.html.twig` #}
             {% block swag_paypal_acdc_form %}
                 <div id="swag-paypal-acdc-form" class="mt-2 d-none">
                     <div class="row mb-1">

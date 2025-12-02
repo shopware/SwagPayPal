@@ -1,3 +1,11 @@
+// Button container
+.swag-paypal-express-buttons,
+.swag-paypal-checkout-buttons {
+    display: grid;
+    gap: 0.5rem;
+}
+
+// Payment button styles
 .swag-paypal-button {
     width: 100%;
 
@@ -23,12 +31,6 @@
     }
 }
 
-.swag-paypal-express-buttons,
-.swag-paypal-checkout-buttons {
-    display: grid;
-    gap: 0.5rem;
-}
-
 .swag-paypal-installment-banner {
     paypal-message {
         --paypal-message-font-size: 12px;
@@ -39,7 +41,7 @@
     }
 }
 
-.swag-paypal-acdc-form-field {
+.swag-paypal-card-field {
     height: $input-height;
 
     --paypal-card-field-font-family: var(--bs-body-font-family);

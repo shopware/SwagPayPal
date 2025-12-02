@@ -1,0 +1,26 @@
+{% block swag_paypal_card_fields_form %}
+<div id="swag-paypal-card-fields-form" class="swag-paypal-card-fields-form d-none mt-2">
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <label class="d-none" for="swag-paypal-card-field-cardholder">{{ "paypal.acdc.cardholderName"|trans|sw_sanitize }}</label>
+            <div id="swag-paypal-card-field-cardholder" class="swag-paypal-card-field" data-placeholder="{{ "paypal.acdc.cardholderName"|trans|striptags }}"></div>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12 swag-paypal-card-field-lg">
+            <label class="d-none" for="swag-paypal-card-field-cardnumber">{{ "paypal.acdc.cardNumber"|trans|sw_sanitize }}</label>
+            <div id="swag-paypal-card-field-cardnumber" class="swag-paypal-card-field" data-placeholder="{{ "paypal.acdc.cardNumber"|trans|striptags }}"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6 pe-sm-1">
+            <label class="d-none" for="swag-paypal-card-field-expiration">{{ "paypal.acdc.expiration"|trans|sw_sanitize }}</label>
+            <div id="swag-paypal-card-field-expiration" class="swag-paypal-card-field" data-placeholder="{{ "paypal.acdc.expiration"|trans|striptags }}"></div>
+        </div>
+        <div class="col-sm-6 ps-sm-1">
+            <label class="d-none" for="swag-paypal-card-field-cvv">{{ "paypal.acdc.cvv"|trans|sw_sanitize }}</label>
+            <div id="swag-paypal-card-field-cvv" class="swag-paypal-card-field" data-placeholder="{{ "paypal.acdc.cvv"|trans|striptags }}"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

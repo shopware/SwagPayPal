@@ -66,8 +66,8 @@
 
         {% block swag_paypal_acdc %}
         <div
-            data-swag-paypal-checkout-acdc="true"
-            data-swag-paypal-checkout-acdc-options="{{ acdcFieldData|json_encode }}"
+            data-swag-paypal-checkout-card-fields="true"
+            data-swag-paypal-checkout-card-fields-options="{{ acdcFieldData|json_encode }}"
         >
         </div>
         {% endblock %}

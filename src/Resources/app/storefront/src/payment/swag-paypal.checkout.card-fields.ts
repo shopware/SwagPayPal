@@ -29,27 +29,27 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
         /**
          * Selector of the card field form
          */
-        cardFieldFormSelector: '#swag-paypal-acdc-form',
+        cardFieldFormSelector: '#swag-paypal-card-fields-form',
 
         /**
          * Selector of the card number field
          */
-        cardNumberFieldSelector: '#swag-paypal-acdc-form-cardnumber',
+        cardNumberFieldSelector: '#swag-paypal-card-field-cardnumber',
 
         /**
          * Selector of the expiration field
          */
-        cardExpiryFieldSelector: '#swag-paypal-acdc-form-expiration',
+        cardExpiryFieldSelector: '#swag-paypal-card-field-expiration',
 
         /**
          * Selector of the cvv field
          */
-        cardCvvFieldSelector: '#swag-paypal-acdc-form-cvv',
+        cardCvvFieldSelector: '#swag-paypal-card-field-cvv',
 
         /**
          * Selector of the cardholder field
          */
-        cardNameFieldSelector: '#swag-paypal-acdc-form-cardholder',
+        cardNameFieldSelector: '#swag-paypal-card-field-cardholder',
 
         /**
          * selector for the fixed header element
