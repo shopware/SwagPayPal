@@ -1,5 +1,8 @@
 import SwagPayPalScriptBase from './swag-paypal.script-base';
 
+/**
+ * @deprecated tag:v11.0.0 - Will be removed and is replaced by `base/swag-paypal.payment.ts`
+ */
 export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
     static options = {
         ...super.options,
@@ -66,8 +69,9 @@ export default class SwagPaypalAbstractButtons extends SwagPayPalScriptBase {
             code = errorCode;
         }
 
+        console.error(`PayPal ${fatal ? 'fatal ' : ''}error occurred: ${code} - ${String(error ?? '')}`);
+
         if (!this.options.handleErrorUrl) {
-            console.error(`PayPal ${fatal ? 'fatal ' : ''}error occurred: ${code} - ${String(error ?? '')}`);
             return;
         }
 

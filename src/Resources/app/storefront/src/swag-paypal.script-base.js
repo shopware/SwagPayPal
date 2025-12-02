@@ -15,6 +15,9 @@ const availableAPMs = [
     'venmo',
 ];
 
+/**
+ * @deprecated tag:v11.0.0 - Will be removed and is replaced by `base/swag-paypal.base.ts`
+ */
 export default class SwagPayPalScriptBase extends Plugin {
     static options = {
         /**
@@ -134,7 +137,13 @@ export default class SwagPayPalScriptBase extends Plugin {
     }
 
     get scriptOptionsHash() {
-        return JSON.stringify(this.getScriptOptions());
+        let hash = 0;
+        for (const char of JSON.stringify(this.getScriptOptions())) {
+            hash = (hash << 5) - hash + char.charCodeAt(0);
+            hash |= 0; // Constrain to 32bit integer
+        }
+
+        return String(hash);
     }
 
     async createScript(callback) {
@@ -202,10 +211,6 @@ export default class SwagPayPalScriptBase extends Plugin {
 
         if (this.options.merchantPayerId) {
             config['merchant-id'] = this.options.merchantPayerId;
-        }
-
-        if (this.options.clientToken) {
-            config['data-client-token'] = this.options.clientToken;
         }
 
         if (this.options.userIdToken) {

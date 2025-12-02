@@ -1,6 +1,9 @@
 import SwagPaypalAbstractStandalone from './swag-paypal.abstract-standalone';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
+/**
+ * @deprecated tag:v11.0.0 - Will be removed and is replaced by `payment/swag-paypal.checkout.google-pay.ts`
+ */
 export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
     static options = {
         ...super.options,

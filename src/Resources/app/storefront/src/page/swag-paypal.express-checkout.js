@@ -3,6 +3,9 @@ import DomAccess from 'src/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
+/**
+ * @deprecated tag:v11.0.0 - Will be removed and is replaced by `payment/swag-paypal.express.*.ts`
+ */
 export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractButtons {
     static options = {
         ...super.options,
@@ -94,7 +97,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
         /**
          * Indicates whether the PayPal button is rendered within a checkout context.
-         * 
+         *
          * @type {boolean}
          */
         isCheckout: true,

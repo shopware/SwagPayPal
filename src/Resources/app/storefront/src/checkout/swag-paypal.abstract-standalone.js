@@ -5,6 +5,9 @@ import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
+/**
+ * @deprecated tag:v11.0.0 - Will be removed and is replaced by `base/swag-paypal.checkout.ts`
+ */
 export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButtons {
     static product = 'spb';
 
@@ -49,7 +52,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
 
         /**
          * Indicates whether the PayPal button is rendered within a checkout context.
-         * 
+         *
          * @type {boolean}
          */
         isCheckout: true,
