@@ -92,8 +92,10 @@ export default abstract class SwagPaypalBase extends Plugin {
     protected async beforeSetup(): Promise<void> {
         await PayPalLoader.loadPayPalCore({ environment: this.options.environment });
 
+        SwagPaypalBase.clientToken ??= this.fetchClientToken();
+
         this.instance ??= await window.paypal!.createInstance({
-            clientToken: await SwagPaypalBase.clientToken!,
+            clientToken: await SwagPaypalBase.clientToken,
             locale: this.options.languageIso.replace('_', '-'),
             pageType: this.options.pageType,
             partnerAttributionId: this.options.partnerAttributionId,
