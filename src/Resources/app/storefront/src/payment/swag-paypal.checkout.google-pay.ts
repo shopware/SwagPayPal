@@ -67,7 +67,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
 
         this.el!.addEventListener('click', (event) => {
             try {
-                this.beforeSubmit({ paymentSession });
+                this.submitValidation({ paymentSession });
             } catch {
                 event.preventDefault();
                 event.stopPropagation();

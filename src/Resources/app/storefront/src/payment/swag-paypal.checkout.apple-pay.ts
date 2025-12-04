@@ -48,8 +48,6 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
         if (!window.ApplePaySession?.supportsVersion(4) || !window.ApplePaySession?.canMakePayments()) {
             throw PayPalPluginError.browserUnsupported(this.metadata.fundingSource);
         }
-
-        return super.beforeSetup();
     }
 
     protected async setup(): Promise<void> {

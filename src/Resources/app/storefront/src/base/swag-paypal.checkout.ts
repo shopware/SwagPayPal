@@ -93,7 +93,7 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         return super.afterSetup();
     }
 
-    protected beforeSubmit(data: SubmissionData<FS>): void {
+    protected submitValidation(data: SubmissionData<FS>): void {
         if (!this.confirmOrderForm.reportValidity()) {
             throw new Error('Form is invalid');
         }

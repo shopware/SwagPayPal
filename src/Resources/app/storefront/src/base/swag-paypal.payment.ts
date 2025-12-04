@@ -39,7 +39,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
 
     protected async submissionFlow(data: SubmissionData<FS>): Promise<void> {
         try {
-            this.beforeSubmit(data);
+            this.submitValidation(data);
         } catch {
             return;
         }
@@ -55,7 +55,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
     /**
      * Validate submission. Any error will silently stop the submission flow.
      */
-    protected beforeSubmit(data: SubmissionData<FS>): void {}
+    protected submitValidation(data: SubmissionData<FS>): void {}
 
     protected submit(data: SubmissionData<FS>): void|Promise<void> {}
 
