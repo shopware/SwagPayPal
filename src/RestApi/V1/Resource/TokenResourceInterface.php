@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\V1\Token;
 
 #[Package('checkout')]
@@ -16,4 +17,6 @@ interface TokenResourceInterface
     public function getToken(?string $salesChannelId): Token;
 
     public function getUserIdToken(?string $salesChannelId, ?string $targetCustomerId = null): Token;
+
+    public function getClientToken(SalesChannelContext $salesChannelContext): Token;
 }

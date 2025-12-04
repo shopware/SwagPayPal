@@ -33,7 +33,11 @@
     {{ parent() }}
 
     {% block page_checkout_confirm_form_submit_paypal_container %}
-        {# {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %} #}
-        {% sw_include '@SwagPayPal/storefront/paypal/checkout-button.html.twig' %}
+        {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
+        {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+            {% sw_include '@SwagPayPal/storefront/paypal/checkout-button.html.twig' %}
+        {% else %}
+            {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
+        {% endif %}
     {% endblock %}
 {% endblock %}

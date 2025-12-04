@@ -16,7 +16,7 @@ use Swag\PayPal\Checkout\Exception\MissingCustomerVaultTokenException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
-use Swag\PayPal\RestApi\V1\Resource\TokenResource;
+use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -40,7 +40,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
         RouterInterface $router,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
-        TokenResource $tokenResource,
+        TokenResourceInterface $tokenResource,
         private readonly CustomerVaultTokenRoute $customerVaultTokenRoute,
     ) {
         parent::__construct($paymentMethodDataRegistry, $localeCodeProvider, $router, $systemConfigService, $credentialsUtil, $tokenResource);

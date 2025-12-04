@@ -106,8 +106,8 @@
     },
     "sdk": {
       "title": "PayPal SDK Version 6",
-      "info": "Dadurch wird die neueste Version der PayPal-Checkout-Integration, PayPal SDK v6, aktiviert. Version 6 bietet eine verbesserte Leistung und Sicherheit sowie eine bessere Kompatibilität mit modernen Zahlungsabläufen. Bitte beachten Sie, dass einige Anpassungen und Erweiterungen möglicherweise angepasst werden müssen.\nSDK v6 wird die Standardimplementierung in Version 11 des Plugins sein.",
-      "recommendation": "Wir empfehlen sehr, diese Option zu aktivieren, um von den neuesten Funktionen und Verbesserungen zu profitieren.",
+      "info": "Durch Aktivierung dieser Option wird die neueste Version der PayPal-Checkout-Integration, PayPal SDK v6, aktiviert. Version 6 bietet eine verbesserte Leistung und Sicherheit sowie eine bessere Kompatibilität mit modernen Zahlungsabläufen. Bitte beachten Sie, dass Theme-Anpassungen und Erweiterungen möglicherweise angepasst werden müssen.\nSDK v6 wird die Standardimplementierung ab Version 11 des PayPal-Plugins sein.",
+      "recommendation": "Wir empfehlen, diese Option zu aktivieren, um von den neuesten Funktionen und Verbesserungen zu profitieren.",
       "bannerText": "Aktiviere das neueste PayPal SDK v6 für verbesserte Leistung und Sicherheit in Deinem Shop."
     }
   },

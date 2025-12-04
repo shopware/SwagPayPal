@@ -21,7 +21,7 @@ class AbstractScriptData extends Struct
     public const PAGE_TYPE_PRODUCT_LISTING = 'product-listing';
     public const PAGE_TYPE_SEARCH_RESULTS = 'search-results';
 
-    protected bool $_v6Enabled;
+    protected bool $_v6Enabled = false;
 
     /**
      * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::clientToken}
