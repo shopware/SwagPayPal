@@ -21,7 +21,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 )]
 class Link extends PayPalApiStruct
 {
-    public const REL__SELF = 'rel';
+    public const REL__SELF = 'self';
     public const REL__UPDATE = 'update';
     public const REL__CHECKOUT = 'checkout';
 
