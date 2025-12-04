@@ -132,6 +132,7 @@
             button-size-mode="fill"
             data-swag-paypal-checkout-google-pay="true"
             data-swag-paypal-checkout-google-pay-options="{{ googlePayData|json_encode }}"
+            data-total-price-label="{{ 'checkout.summaryTotalPrice'|trans|sw_sanitize|striptags }}"
         >
         </google-pay-button>
         {% endblock %}

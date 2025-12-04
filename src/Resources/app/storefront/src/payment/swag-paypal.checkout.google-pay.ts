@@ -87,7 +87,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             transactionInfo: {
                 countryCode,
                 totalPriceStatus: 'ESTIMATED', // 'FINAL',
-                totalPriceLabel: 'Grand Total',
+                totalPriceLabel: this.el!.dataset.totalPriceLabel || 'Grand Total',
                 currencyCode: this.options.currency,
                 totalPrice: this.options.totalPrice,
                 displayItems: Object.values(this.options.displayItems),
