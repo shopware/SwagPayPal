@@ -7,8 +7,15 @@
 
 namespace Swag\PayPal\Storefront\Framework\Cookie;
 
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\PrefixFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 #[Package('checkout')]
 class PayPalCookieProvider implements CookieProviderInterface
@@ -18,8 +25,11 @@ class PayPalCookieProvider implements CookieProviderInterface
     /**
      * @internal
      */
-    public function __construct(CookieProviderInterface $cookieProvider)
-    {
+    public function __construct(
+        CookieProviderInterface $cookieProvider,
+        private readonly EntityRepository $paymentMethodRepository,
+        private readonly RequestStack $requestStack,
+    ) {
         $this->original = $cookieProvider;
     }
 
@@ -40,6 +50,10 @@ class PayPalCookieProvider implements CookieProviderInterface
                 continue;
             }
 
+            if (!$this->isPayPalPaymentActive()) {
+                continue;
+            }
+
             $cookie['entries'][] = [
                 'snippet_name' => 'paypal.cookie.name',
                 'cookie' => 'paypal-cookie-key',
@@ -53,5 +67,23 @@ class PayPalCookieProvider implements CookieProviderInterface
     {
         return (\array_key_exists('isRequired', $cookie) && $cookie['isRequired'] === true)
             && (\array_key_exists('snippet_name', $cookie) && $cookie['snippet_name'] === 'cookie.groupRequired');
+    }
+
+    private function isPayPalPaymentActive(): bool
+    {
+        $criteria = new Criteria();
+        $criteria->setLimit(1);
+        $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addFilter(new PrefixFilter('technicalName', 'swag_paypal_'));
+
+        $mainRequestAttributes = $this->requestStack->getMainRequest()?->attributes;
+        $context = $mainRequestAttributes?->get('sw-context') ?? Context::createDefaultContext();
+        $salesChannelId = $mainRequestAttributes?->getString('sw-sales-channel-id') ?? '';
+
+        if (Uuid::isValid($salesChannelId)) {
+            $criteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelId));
+        }
+
+        return $this->paymentMethodRepository->searchIds($criteria, $context)->firstId() !== null;
     }
 }
