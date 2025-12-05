@@ -39,7 +39,8 @@ class GooglePayCookieProviderTest extends TestCase
         $request->attributes->set('sw-sales-channel-id', Uuid::randomHex());
 
         $this->paymentMethodRepository = $this->createMock(EntityRepository::class);
-        $this->requestStack = new RequestStack([$request]);
+        $this->requestStack = new RequestStack();
+        $this->requestStack->push($request);
     }
 
     public function testGetCookieGroupsWithEmptyOriginalCookiesReturnsOriginalCookies(): void
