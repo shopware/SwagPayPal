@@ -61,7 +61,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         $this->getContainer()->get('country.repository')->upsert(\array_map(fn (string $id) => [
             'id' => $id,
             'salesChannels' => [['id' => TestDefaults::SALES_CHANNEL]],
-        ], $ids), Context::createDefaultContext());
+        ], \array_values($ids)), Context::createDefaultContext());
     }
 
     public function testPrepare(): void
