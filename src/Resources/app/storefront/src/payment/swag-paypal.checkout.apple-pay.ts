@@ -64,13 +64,11 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
     }
 
     protected submit(data: ApplePaySubmissionData): void {
-        const { countryCode, merchantCapabilities, supportedNetworks, currencyCode } = data.config;
-
         const paymentRequest = {
-            countryCode,
-            merchantCapabilities,
-            supportedNetworks,
-            currencyCode: this.options.currency,
+            merchantCapabilities: data.config.merchantCapabilities,
+            supportedNetworks: data.config.supportedNetworks,
+            countryCode: data.config.countryCode ?? data.config.merchantCountry,
+            currencyCode: data.config.currencyCode ?? this.options.currency,
             requiredShippingContactFields: [],
             requiredBillingContactFields: [],
             billingContact: {

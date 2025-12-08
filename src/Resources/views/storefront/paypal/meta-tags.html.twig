@@ -39,7 +39,7 @@
             {% endblock %}
         {% endif %}
 
-        {% if applePayData or fundingEligibilityData %}
+        {% if applePayData %}
             {% block swag_paypal_meta_tags_applepay_payments %}
             <link href="{{ baseUrl }}/web-sdk/v6/applepay-payments" rel="preload" as="script">
             <script src="https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js" async></script>

@@ -199,8 +199,8 @@ declare global {
                 supportedNetworks: string[];
                 merchantCapabilities: ApplePayJS.ApplePayMerchantCapability[];
                 tokenNotificationUrl: string;
-                currencyCode: string;
-                countryCode: string;
+                currencyCode?: string;
+                countryCode?: string;
             }
 
             export interface ConfirmOrderOptions {

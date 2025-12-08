@@ -40,17 +40,10 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
 
         const unavailable = Object.entries(this.fundingSources)
             .filter(([, source]) => !eligibleMethods.isEligible(source))
-            .map(([key]) => key);
+            .map(([key]) => key)
+            .sort();
 
-        try {
-            if (!window.ApplePaySession?.supportsVersion(4) || !window.ApplePaySession?.canMakePayments()) {
-                unavailable.push('APPLEPAY');
-            }
-        } catch (e) {
-            unavailable.push('APPLEPAY');
-        }
-
-        if (unavailable.sort().join(',') === this.options.filteredPaymentMethods.sort().join(',')) {
+        if (unavailable.join(',') === this.options.filteredPaymentMethods.sort().join(',')) {
             return;
         }
 
