@@ -38,8 +38,8 @@ export default class PayPalLoader {
     public static async loadApplePay(): Promise<void> {
         try {
             PayPalLoader.applePay ??= PayPalLoader.loadCustomScript(
-                new URL('https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js'),
-                () => !!window.ApplePayMerchandising,
+                new URL('https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js'),
+                () => !!window.ApplePaySDK,
             );
             return await PayPalLoader.applePay;
         } catch (error) {

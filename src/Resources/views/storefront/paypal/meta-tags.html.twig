@@ -5,12 +5,13 @@
 {% set applePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ApplePayMethodData::PAYPAL_APPLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
 {% set googlePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\GooglePayMethodData::PAYPAL_GOOGLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
 {% set installmentBannerData = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+{% set fundingEligibilityData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION')] %}
 
 {% set expressData = page.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
 {% set expressData = expressData ?? cmsPage.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
 {% set expressData = expressData ?? product.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
 
-{% set anyPresent = expressData or spbData or acdcData or puiFraudnetData or sepaData or venmoData or payLaterData or applePayData or googlePayData or installmentBannerData %}
+{% set anyPresent = expressData or spbData or acdcData or puiFraudnetData or sepaData or venmoData or payLaterData or applePayData or googlePayData or installmentBannerData or fundingEligibilityData %}
 
 {% set baseUrl = config('SwagPayPal.settings.sandbox') ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com' %}
 
@@ -38,17 +39,17 @@
             {% endblock %}
         {% endif %}
 
-        {% if applePayData %}
+        {% if applePayData or fundingEligibilityData %}
             {% block swag_paypal_meta_tags_applepay_payments %}
             <link href="{{ baseUrl }}/web-sdk/v6/applepay-payments" rel="preload" as="script">
-            <script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
+            <script src="https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js" async></script>
             {% endblock %}
         {% endif %}
 
         {% if googlePayData %}
             {% block swag_paypal_meta_tags_googlepay_payments %}
             <link href="{{ baseUrl }}/web-sdk/v6/googlepay-payments" rel="preload" as="script">
-            <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+            <script src="https://pay.google.com/gp/p/js/pay.js" async></script>
             {% endblock %}
         {% endif %}
 

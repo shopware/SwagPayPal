@@ -70,7 +70,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
             countryCode,
             merchantCapabilities,
             supportedNetworks,
-            currencyCode,
+            currencyCode: this.options.currency,
             requiredShippingContactFields: [],
             requiredBillingContactFields: [],
             billingContact: {

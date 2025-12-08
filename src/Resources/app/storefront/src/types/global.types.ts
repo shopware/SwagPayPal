@@ -9,10 +9,15 @@ declare global {
 
     type SwPlugin = Plugin;
 
-    interface Window {
-        PluginManager: PluginManager&(typeof PluginManager);
-        ApplePayMerchandising: unknown;
+    interface ApplePay {
+        ApplePayError?: ApplePayError;
+        ApplePaySDK?: unknown;
+        ApplePayWebOptions?: unknown;
         ApplePaySession?: ApplePaySession&(typeof ApplePaySession);
+    }
+
+    interface Window extends ApplePay {
+        PluginManager: PluginManager&(typeof PluginManager);
     }
 }
 
