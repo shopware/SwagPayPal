@@ -16,6 +16,9 @@ use Shopware\PayPalSDK\Struct\V1\Token;
 use Swag\PayPal\RestApi\ApiContextFactoryInterface;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 
+/**
+ * @deprecated tag:v11.0.0 - reason:remove-interface - Interface `TokenResourceInterface` will be removed without replacement
+ */
 #[Package('checkout')]
 class TokenResource implements TokenResourceInterface
 {

@@ -13,7 +13,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
@@ -38,7 +38,7 @@ abstract class AbstractCheckoutDataService extends AbstractScriptDataService
         RouterInterface $router,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
-        private readonly TokenResourceInterface $tokenResource,
+        private readonly TokenResource $tokenResource,
     ) {
         parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $router);
         $this->methodData = $this->paymentMethodDataRegistry->getPaymentMethod($this->getMethodDataClass());

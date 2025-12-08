@@ -27,6 +27,8 @@ class CustomerVaultTokenRoute
 {
     /**
      * @internal
+     *
+     * @deprecated tag:v11.0.0 - reason:remove-interface - Interface TokenResourceInterface will be replaced by TokenResource
      */
     public function __construct(
         private EntityRepository $vaultRepository,

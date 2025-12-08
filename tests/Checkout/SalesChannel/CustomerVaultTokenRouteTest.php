@@ -18,7 +18,7 @@ use Shopware\PayPalSDK\Struct\V1\Token;
 use Swag\PayPal\Checkout\Exception\MissingCustomerVaultTokenException;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
-use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 
 /**
  * @internal
@@ -28,14 +28,14 @@ class CustomerVaultTokenRouteTest extends TestCase
 {
     private EntityRepository&MockObject $repository;
 
-    private TokenResourceInterface&MockObject $tokenResource;
+    private TokenResource&MockObject $tokenResource;
 
     private CustomerVaultTokenRoute $route;
 
     protected function setUp(): void
     {
         $this->repository = $this->createMock(EntityRepository::class);
-        $this->tokenResource = $this->createMock(TokenResourceInterface::class);
+        $this->tokenResource = $this->createMock(TokenResource::class);
 
         $this->route = new CustomerVaultTokenRoute($this->repository, $this->tokenResource);
     }
