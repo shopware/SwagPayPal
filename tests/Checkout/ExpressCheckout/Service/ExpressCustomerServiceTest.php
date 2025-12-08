@@ -184,13 +184,10 @@ class ExpressCustomerServiceTest extends TestCase
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
-        /** @var EntityRepository $countryRepo */
+
         $countryRepo = $this->getContainer()->get('sales_channel.country.repository');
-        /** @var EntityRepository $countryStateRepo */
         $countryStateRepo = $this->getContainer()->get('country_state.repository');
-        /** @var EntityRepository $salutationRepo */
         $salutationRepo = $this->getContainer()->get('salutation.repository');
-        /** @var EntityRepository $customerRepo */
         $customerRepo = $this->getContainer()->get('customer.repository');
 
         return new ExpressCustomerService(
