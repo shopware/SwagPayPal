@@ -88,9 +88,9 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
                 );
                 $callbackConfig->setCallbackUrl($callbackUrl);
                 $callbackConfig->setCallbackEvents([OrderUpdateCallbackConfig::CALLBACK_EVENT_SHIPPING_OPTIONS]);
-                $experienceContext->setOrderUpdateCallbackConfig($callbackConfig);
+                // $experienceContext->setOrderUpdateCallbackConfig($callbackConfig);
 
-                $this->logger->debug('Configured shipping callback', ['callbackUrl' => $callbackUrl]);
+                // $this->logger->debug('Configured shipping callback', ['callbackUrl' => $callbackUrl]);
             }
 
             $orderResponse = $this->orderResource->create(

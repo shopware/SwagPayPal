@@ -24,6 +24,7 @@ use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V2\Order;
@@ -50,7 +51,7 @@ class ExpressCustomerService
      */
     public function __construct(
         private readonly AbstractRegisterRoute $registerRoute,
-        private readonly EntityRepository $countryRepository,
+        private readonly SalesChannelRepository $countryRepository,
         private readonly EntityRepository $countryStateRepository,
         private readonly EntityRepository $salutationRepository,
         private readonly EntityRepository $customerRepository,
@@ -214,9 +215,8 @@ class ExpressCustomerService
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('iso', $code));
-        $criteria->addFilter(new EqualsFilter('salesChannels.id', $context->getSalesChannelId()));
 
-        return $this->countryRepository->searchIds($criteria, $context->getContext())->firstId();
+        return $this->countryRepository->searchIds($criteria, $context)->firstId();
     }
 
     private function getCountryStateId(?string $countryId, string $countryCode, ?string $stateCode, Context $context): ?string
