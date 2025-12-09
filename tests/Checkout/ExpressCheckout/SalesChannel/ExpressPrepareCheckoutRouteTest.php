@@ -56,10 +56,11 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
     protected function setUp(): void
     {
         $criteria = (new Criteria())->setLimit(2)->addFilter(new EqualsAnyFilter('iso', ['US', 'NL']));
+        /** @var list<string> $ids */
         $ids = static::getContainer()->get('country.repository')->searchIds($criteria, Context::createDefaultContext())->getIds();
 
-        $this->getContainer()->get('country.repository')->upsert(\array_map(fn ($id) => [
-            'id' => (string) $id,
+        $this->getContainer()->get('country.repository')->upsert(\array_map(fn (string $id) => [
+            'id' => $id,
             'salesChannels' => [['id' => TestDefaults::SALES_CHANNEL]],
         ], \array_values($ids)), Context::createDefaultContext());
     }
