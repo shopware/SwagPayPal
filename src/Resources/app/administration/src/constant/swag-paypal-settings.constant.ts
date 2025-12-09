@@ -139,6 +139,8 @@ export const SYSTEM_CONFIGS = [
 
     'SwagPayPal.settings.webhookId',
     'SwagPayPal.settings.webhookExecuteToken',
+
+    'SwagPayPal.settings.isLocalEnvironment',
 ] as const;
 
 export type SYSTEM_CONFIG = typeof SYSTEM_CONFIGS[number];
