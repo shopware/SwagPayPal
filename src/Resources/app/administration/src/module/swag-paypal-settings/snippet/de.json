@@ -103,6 +103,10 @@
       "info": "Mit länderübergreifende Nachrichten für \"Später bezahlen\" wird die \"Später bezahlen\"-Nachricht in der Sprache des Kunden anzeigt. Diese Funktion ist nur für bestimmte Länder verfügbar. {0}",
       "buyerCountryAuto": "Automatische Bestimmung",
       "buyerCountryOverride": "Lokalisierung"
+    },
+    "environment": {
+      "title": "Umgebung",
+      "info": "PayPal sendet Bestellstatus-Updates über Webhooks an den Shop und fordert außerdem eine Neuberechnung des Warenkorbs an, wenn Kunden Änderungen in der PayPal Express Checkout-Benutzeroberfläche vornehmen. Wenn der Shop nicht öffentlich zugänglich ist (z. B. wenn es sich um eine Entwicklungs-/Staging-Umgebung handelt oder eine Authentifizierung erfordert), kannst du diese Instanz als \"lokale Umgebung\" kennzeichnen, um Verbindungsfehler zu vermeiden.\nBitte beachte, dass alle Webhook-Listener beim Speichern deregistriert werden."
     }
   },
   "swag-paypal-settings-sales-channel-switch": {
