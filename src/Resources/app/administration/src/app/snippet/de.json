@@ -84,7 +84,7 @@
       "vaultingEnabledVenmo": "Vaulting für Venmo-Zahlungen verwenden",
       "crossBorderMessagingEnabled" : "Länderübergreifende Lokalisierung der \"Später bezahlen\"-Nachricht aktivieren",
       "crossBorderBuyerCountry" : "Lokalisierung",
-      "isLocalEnvironment": "Als lokale Umbegung makieren"
+      "isLocalEnvironment": "Lokale Entwicklungsumgebung"
     },
     "helpText": {
       "clientId": "Die Client-ID der REST-API, die das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren.",
