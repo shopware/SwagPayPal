@@ -2,7 +2,7 @@ import SwagPaypalCheckout, { type SwagPaypalCheckoutOptions } from '../base/swag
 import PayPalPluginError from '../base/paypal-plugin.error';
 import '@google-pay/button-element';
 import type GooglePayButton from '@google-pay/button-element';
-import PayPalLoader from '../helper/paypal-loader.helper';
+import DependencyHelper from '../helper/dependency.helper';
 
 export interface SwagPaypalCheckoutGooglePayOptions extends SwagPaypalCheckoutOptions {
     totalPrice: string;
@@ -34,7 +34,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
     protected async beforeSetup(): Promise<void> {
         await Promise.all([
             super.beforeSetup(),
-            PayPalLoader.loadGooglePay(),
+            DependencyHelper.loadGooglePay(),
         ]);
     }
 
@@ -93,12 +93,8 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
                 displayItems: Object.values(this.options.displayItems),
             },
         } satisfies google.payments.api.PaymentDataRequest;
-    }
 
-    protected afterSetup(): Promise<void> {
         this.el!.buttonRadius = Number(window.getComputedStyle(this.el!).getPropertyValue('--google-pay-button-border-radius'));
-
-        return super.afterSetup();
     }
 
     protected async onPaymentAuthorized(session: PayPalCoreJS.PaymentSession<'googlepay'>, paymentData: google.payments.api.PaymentData): Promise<google.payments.api.PaymentAuthorizationResult> {

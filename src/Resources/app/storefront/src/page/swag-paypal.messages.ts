@@ -1,5 +1,5 @@
 import SwagPaypalBase, { type SwagPaypalBaseOptions } from '../base/swag-paypal.base';
-import { PaypalButtonHelper } from '../helper/paypal-button.helper';
+import { ElementHelper } from '../helper/element.helper';
 
 export interface SwagPaypalMessagesOptions extends SwagPaypalBaseOptions, PayPalCoreJS.Messages.ContentOptions {
     paymentMethodId: string;
@@ -54,6 +54,6 @@ export default class SwagPaypalMessages extends SwagPaypalBase {
     }
 
     protected afterSetup(): void {
-        PaypalButtonHelper.enable(this.el!);
+        ElementHelper.enable(this.el!);
     }
 }

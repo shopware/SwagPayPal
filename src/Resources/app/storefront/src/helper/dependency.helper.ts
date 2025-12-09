@@ -1,6 +1,6 @@
 import PayPalPluginError from '../base/paypal-plugin.error';
 
-export default class PayPalLoader {
+export default class DependencyHelper {
     private static paypal: Promise<void>|null = null;
 
     private static googlePay: Promise<void>|null = null;
@@ -11,39 +11,39 @@ export default class PayPalLoader {
 
     public static async loadPayPalCore(script: PayPalCoreJS.LoadCoreScriptOptions): Promise<void> {
         try {
-            PayPalLoader.paypal ??= PayPalLoader.loadCustomScript(
+            DependencyHelper.paypal ??= DependencyHelper.loadCustomScript(
                 new URL('/web-sdk/v6/core', script.environment === 'sandbox' ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com'),
                 () => !!window.paypal?.createInstance,
             );
-            return await PayPalLoader.paypal;
+            return await DependencyHelper.paypal;
         } catch (error) {
-            PayPalLoader.paypal = null;
+            DependencyHelper.paypal = null;
             throw PayPalPluginError.scriptLoad('paypal-core-js', error);
         }
     }
 
     public static async loadGooglePay(): Promise<void> {
         try {
-            PayPalLoader.googlePay ??= PayPalLoader.loadCustomScript(
+            DependencyHelper.googlePay ??= DependencyHelper.loadCustomScript(
                 new URL('https://pay.google.com/gp/p/js/pay.js'),
                 () => !!window?.google?.payments?.api?.PaymentsClient,
             );
-            return await PayPalLoader.googlePay;
+            return await DependencyHelper.googlePay;
         } catch (error) {
-            PayPalLoader.googlePay = null;
+            DependencyHelper.googlePay = null;
             throw PayPalPluginError.scriptLoad('google-pay-js', error);
         }
     }
 
     public static async loadApplePay(): Promise<void> {
         try {
-            PayPalLoader.applePay ??= PayPalLoader.loadCustomScript(
+            DependencyHelper.applePay ??= DependencyHelper.loadCustomScript(
                 new URL('https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js'),
                 () => !!window.ApplePaySDK,
             );
-            return await PayPalLoader.applePay;
+            return await DependencyHelper.applePay;
         } catch (error) {
-            PayPalLoader.applePay = null;
+            DependencyHelper.applePay = null;
             throw PayPalPluginError.scriptLoad('apple-pay-js', error);
         }
     }

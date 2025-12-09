@@ -14,7 +14,7 @@ export default class SwagPaypalExpressVenmo extends SwagPaypalExpress<'venmo'> {
     protected setup(): void {
         const paymentSession = this.instance!.createVenmoOneTimePaymentSession({
             onApprove: this.onApprove.bind(this),
-            onCancel: this.onCancel.bind(this),/*  */
+            onCancel: this.onCancel.bind(this),
             onError: this.onError.bind(this),
         });
 

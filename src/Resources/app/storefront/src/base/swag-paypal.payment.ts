@@ -1,6 +1,6 @@
 import SwagPaypalBase from './swag-paypal.base';
 import type { SwagPaypalBaseOptions } from './swag-paypal.base';
-import { PaypalButtonHelper } from '../helper/paypal-button.helper';
+import { ElementHelper } from '../helper/element.helper';
 import PayPalPluginError from './paypal-plugin.error';
 
 export interface SwagPaypalPaymentOptions extends SwagPaypalBaseOptions {
@@ -46,7 +46,6 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
 
         try {
             await this.submit(data);
-            await this.afterSubmit(data);
         } catch (error) {
             await this.handleError(PayPalPluginError.submitFlow(PayPalPluginError.CODE_GENERIC, error));
         }
@@ -58,8 +57,6 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
     protected submitValidation(data: SubmissionData<FS>): void {}
 
     protected submit(data: SubmissionData<FS>): void|Promise<void> {}
-
-    protected afterSubmit(data: SubmissionData<FS>): void|Promise<void> {}
 
     protected async onApprove(data: { orderId: string }): Promise<void> {}
 
@@ -84,7 +81,7 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
     }
 
     protected async handleError(error: PayPalPluginError): Promise<void> {
-        PaypalButtonHelper.disable(this.el!);
+        ElementHelper.disable(this.el!);
 
         await super.handleError(error);
     }

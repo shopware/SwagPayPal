@@ -3,7 +3,7 @@ import type { SubmissionData, SwagPaypalPaymentOptions } from './swag-paypal.pay
 import SwagPaypalPayment from './swag-paypal.payment';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import PayPalPluginError from './paypal-plugin.error';
-import { PaypalButtonHelper } from '../helper/paypal-button.helper';
+import { ElementHelper } from '../helper/element.helper';
 
 export interface SwagPaypalCheckoutOptions extends SwagPaypalPaymentOptions {
     orderId: string|null;
@@ -81,16 +81,14 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
     }
 
     protected async beforeSetup(): Promise<void> {
-        PaypalButtonHelper.load(this.confirmOrderButton);
+        ElementHelper.load(this.confirmOrderButton);
 
-        return super.beforeSetup();
+        await super.beforeSetup();
     }
 
-    protected async afterSetup(): Promise<void> {
-        PaypalButtonHelper.hide(this.confirmOrderButton);
-        PaypalButtonHelper.enable(this.el!);
-
-        return super.afterSetup();
+    protected afterSetup(): void {
+        ElementHelper.hide(this.confirmOrderButton);
+        ElementHelper.enable(this.el!);
     }
 
     protected submitValidation(data: SubmissionData<FS>): void {
@@ -99,7 +97,7 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         }
     }
 
-    protected async createOrder(): Promise<{ orderId: string; vaultSetupToken?: string }> {
+    protected async createOrder(): Promise<{ orderId: string }> {
         const formData = new FormData(this.confirmOrderForm);
         formData.set('product', this.metadata.product);
 

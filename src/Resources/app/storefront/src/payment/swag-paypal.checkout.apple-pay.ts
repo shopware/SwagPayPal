@@ -2,7 +2,7 @@ import type { SwagPaypalCheckoutOptions } from '../base/swag-paypal.checkout';
 import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 import PayPalPluginError from '../base/paypal-plugin.error';
 import type { SubmissionData } from '../base/swag-paypal.payment';
-import PayPalLoader from '../helper/paypal-loader.helper';
+import DependencyHelper from '../helper/dependency.helper';
 
 export interface SwagPaypalCheckoutApplePayOptions extends SwagPaypalCheckoutOptions {
     totalPrice: string;
@@ -42,15 +42,15 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
     protected async beforeSetup(): Promise<void> {
         await Promise.all([
             super.beforeSetup(),
-            PayPalLoader.loadApplePay(),
+            DependencyHelper.loadApplePay(),
         ]);
-
-        if (!window.ApplePaySession?.supportsVersion(4) || !window.ApplePaySession?.canMakePayments()) {
-            throw PayPalPluginError.browserUnsupported(this.metadata.fundingSource);
-        }
     }
 
     protected async setup(): Promise<void> {
+        if (!window.ApplePaySession?.supportsVersion(4) || !window.ApplePaySession?.canMakePayments()) {
+            throw PayPalPluginError.browserUnsupported(this.metadata.fundingSource);
+        }
+
         const paymentSession = this.instance!.createApplePayOneTimePaymentSession();
 
         const config = await paymentSession.config();

@@ -49,9 +49,7 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
 
         const response = await fetch(this.options.methodEligibilityUrl, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ paymentMethods: unavailable }),
         });
 

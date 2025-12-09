@@ -1,6 +1,5 @@
-import { PaypalButtonHelper } from '../helper/paypal-button.helper';
+import { ElementHelper } from '../helper/element.helper';
 import SwagPaypalCheckout, { type SwagPaypalCheckoutOptions } from '../base/swag-paypal.checkout';
-import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
 export interface SwagPaypalCheckoutAcdcOptions extends SwagPaypalCheckoutOptions {
     buttonColor: string;
@@ -92,10 +91,9 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
     }
 
     protected async beforeSetup(): Promise<void> {
-        this.wrapperCardFields.form!.classList.remove('d-none');
-        ElementLoadingIndicatorUtil.create(this.wrapperCardFields.form!);
+        ElementHelper.load(this.wrapperCardFields.form!);
 
-        return super.beforeSetup();
+        await super.beforeSetup();
     }
 
     protected setup(): void {
@@ -126,13 +124,9 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
         });
     }
 
-    protected async afterSetup(): Promise<void> {
-        ElementLoadingIndicatorUtil.remove(this.wrapperCardFields.form!);
-        this.wrapperCardFields.form?.classList.remove('d-none');
-
-        await super.afterSetup();
-
-        PaypalButtonHelper.enable(this.confirmOrderButton);
+    protected afterSetup(): void {
+        ElementHelper.enable(this.wrapperCardFields.form!);
+        ElementHelper.enable(this.confirmOrderButton);
     }
 
     protected async submit(data: { paymentSession: PayPalCoreJS.PaymentSession<'advanced_cards'> }): Promise<void> {

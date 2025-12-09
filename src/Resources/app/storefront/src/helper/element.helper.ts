@@ -1,6 +1,6 @@
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
-export class PaypalButtonHelper {
+export class ElementHelper {
     public static hide(el: HTMLElement): void {
         ElementLoadingIndicatorUtil.remove(el);
         el.setAttribute('disabled', 'true');

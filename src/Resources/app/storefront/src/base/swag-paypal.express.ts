@@ -1,4 +1,4 @@
-import { PaypalButtonHelper } from '../helper/paypal-button.helper';
+import { ElementHelper } from '../helper/element.helper';
 import type { SwagPaypalPaymentOptions } from './swag-paypal.payment';
 import SwagPaypalPayment from './swag-paypal.payment';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
@@ -71,23 +71,23 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
     protected afterSetup(): void {
         if (this.options.addProductToCart && this.buyButton) {
             if (this.buyButton?.disabled) {
-                PaypalButtonHelper.disable(this.el!);
+                ElementHelper.disable(this.el!);
             }
 
             const observer = new MutationObserver(this.buyButtonObserver.bind(this));
             observer.observe(this.buyButton, { attributes: true });
         }
 
-        PaypalButtonHelper.enable(this.el!);
+        ElementHelper.enable(this.el!);
     }
 
     protected buyButtonObserver(mutations: MutationRecord[]): void {
         mutations.forEach((mutation) => {
             if (mutation.attributeName === 'disabled') {
                 if ((mutation.target as HTMLButtonElement).disabled) {
-                    PaypalButtonHelper.disable(this.el!);
+                    ElementHelper.disable(this.el!);
                 } else {
-                    PaypalButtonHelper.enable(this.el!);
+                    ElementHelper.enable(this.el!);
                 }
             }
         });
@@ -151,7 +151,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
 
     protected handleError(error: PayPalPluginError): Promise<void> {
         if (error.code === PayPalPluginError.CODE_NOT_ELIGIBLE) {
-            PaypalButtonHelper.hide(this.el!);
+            ElementHelper.hide(this.el!);
             return Promise.resolve();
         }
 
