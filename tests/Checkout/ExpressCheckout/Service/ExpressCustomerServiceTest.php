@@ -12,10 +12,13 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
@@ -39,6 +42,17 @@ class ExpressCustomerServiceTest extends TestCase
     public const TEST_PAYMENT_ID_WITHOUT_STATE = 'testPaymentIdWithoutState';
     public const TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES = 'testPaymentIdWithCountryWithoutStates';
     public const TEST_PAYMENT_ID_WITH_STATE_NOT_FOUND = 'testPaymentIdWithStateNotFound';
+
+    protected function setUp(): void
+    {
+        $criteria = (new Criteria())->setLimit(1)->addFilter(new EqualsFilter('iso', 'US'));
+        $usCountryId = static::getContainer()->get('country.repository')->searchIds($criteria, Context::createDefaultContext())->firstId();
+
+        $this->getContainer()->get('country.repository')->upsert([[
+            'id' => $usCountryId,
+            'salesChannels' => [['id' => TestDefaults::SALES_CHANNEL]],
+        ]], Context::createDefaultContext());
+    }
 
     public function testLoginNewCustomer(): void
     {
@@ -134,7 +148,11 @@ class ExpressCustomerServiceTest extends TestCase
 
     private function doLogin(Order $order): CustomerEntity
     {
-        $contextToken = $this->createCustomerService()->loginCustomer($order, $this->getSalesChannelContext(), new RequestDataBag());
+        $context = $this->getContainer()->get(SalesChannelContextService::class)->get(
+            new SalesChannelContextServiceParameters(TestDefaults::SALES_CHANNEL, Uuid::randomHex())
+        );
+
+        $contextToken = $this->createCustomerService()->loginCustomer($order, $context, new RequestDataBag());
 
         $context = $this->getContainer()->get(SalesChannelContextService::class)->get(
             new SalesChannelContextServiceParameters(
@@ -166,13 +184,10 @@ class ExpressCustomerServiceTest extends TestCase
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
-        /** @var EntityRepository $countryRepo */
-        $countryRepo = $this->getContainer()->get('country.repository');
-        /** @var EntityRepository $countryStateRepo */
+
+        $countryRepo = $this->getContainer()->get('sales_channel.country.repository');
         $countryStateRepo = $this->getContainer()->get('country_state.repository');
-        /** @var EntityRepository $salutationRepo */
         $salutationRepo = $this->getContainer()->get('salutation.repository');
-        /** @var EntityRepository $customerRepo */
         $customerRepo = $this->getContainer()->get('customer.repository');
 
         return new ExpressCustomerService(
