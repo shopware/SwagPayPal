@@ -82,6 +82,6 @@ describe('swag-paypal-settings-advanced', () => {
         const info = wrapper.find('.swag-paypal-settings-environment__info-text');
 
         expect(info.exists()).toBe(true);
-        expect(info.text()).toBe('swag-paypal-settings.localEnvironment.info');
+        expect(info.text()).toBe('swag-paypal-settings.environment.info');
     });
 });
