@@ -140,6 +140,7 @@ export const SYSTEM_CONFIGS = [
     'SwagPayPal.settings.webhookId',
     'SwagPayPal.settings.webhookExecuteToken',
 
+    'SwagPayPal.settings.isLocalEnvironment',
 
     /**
      * @deprecated tag:v10.0.0 - Will be removed without replacement.
