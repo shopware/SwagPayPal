@@ -7,6 +7,8 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
@@ -41,6 +43,13 @@ class ExpressCreateOrderRouteTest extends TestCase
     use CheckoutRouteTrait;
     use IntegrationTestBehaviour;
 
+    private TestHandler $logger;
+
+    protected function setUp(): void
+    {
+        $this->logger = new TestHandler();
+    }
+
     public function testCreatePayment(): void
     {
         $salesChannelContext = $this->getSalesChannelContext();
@@ -61,11 +70,24 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
     }
 
-    private function createRoute(): ExpressCreateOrderRoute
+    public function testCreateWithoutShippingCallback(): void
+    {
+        $salesChannelContext = $this->getSalesChannelContext();
+
+        $response = $this->createRoute(true)->createPayPalOrder(new Request(), $salesChannelContext);
+
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        static::assertSame(CreateOrderCapture::ID, $response->getToken());
+
+        $this->logger->hasDebug(['message' => 'Skipped shipping callback due to being disabled in system config']);
+    }
+
+    private function createRoute(bool $callbacksDisabled = false): ExpressCreateOrderRoute
     {
         $systemConfig = $this->createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
+            Settings::IS_LOCAL_ENVIRONMENT => $callbacksDisabled,
         ]);
 
         $priceFormatter = new PriceFormatter();
@@ -87,8 +109,9 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->getContainer()->get(CartService::class),
             $paypalOrderBuilder,
             new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            $systemConfig,
             $this->createMock(RouterInterface::class),
-            new NullLogger(),
+            new Logger('test', [$this->logger]),
         );
     }
 }

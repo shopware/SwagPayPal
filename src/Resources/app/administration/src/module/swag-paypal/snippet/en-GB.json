@@ -400,6 +400,11 @@
                     "detail": "The locale code you provided doesn't match the format required by PayPal. A valid format is \"en_GB\"."
                 }
             },
+            "environment": {
+              "title": "Environment",
+              "label": "Local development environment",
+              "info": "PayPal will send order status updates to the shop via webhooks, and will also request cart recalculations when customers make changes in the PayPal Express Checkout UI. If the shop is not publicly accessible (e.g. if it is in a development/staging environment, or if it requires authentication), you can mark this instance as a \"local environment\" to prevent connection errors.\nPlease note that any webhook listener will be deregistered when saving."
+            },
             "messageSaveSuccess": "The PayPal settings have been saved.",
             "messageTestSuccess": "The API credentials have been validated.",
             "messageTestError": "The API credentials could not be validated",
