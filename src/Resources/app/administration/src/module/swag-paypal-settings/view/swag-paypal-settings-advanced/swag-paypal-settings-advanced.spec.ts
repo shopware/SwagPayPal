@@ -41,6 +41,7 @@ describe('swag-paypal-settings-advanced', () => {
             .filter((cl) => cl.startsWith('swag-paypal'));
 
         expect(cardClasses).toEqual([
+            'swag-paypal-settings-environment',
             'swag-paypal-settings-cross-border',
         ]);
     });
@@ -52,6 +53,7 @@ describe('swag-paypal-settings-advanced', () => {
         const settings = Object.fromEntries(components.map((el) => [el.props().path, el]));
 
         expect(Object.keys(settings)).toEqual([
+            'SwagPayPal.settings.isLocalEnvironment',
             'SwagPayPal.settings.crossBorderMessagingEnabled',
             'SwagPayPal.settings.crossBorderBuyerCountry',
         ]);
@@ -63,7 +65,7 @@ describe('swag-paypal-settings-advanced', () => {
     it('should have cross-border information', async () => {
         const wrapper = await createWrapper();
 
-        const alert = wrapper.find('.mt-banner');
+        const alert = wrapper.find('.swag-paypal-settings-cross-border .mt-banner');
 
         expect(alert.exists()).toBe(true);
         expect(alert.classes()).toContain('swag-paypal-settings-cross-border__warning-text');
@@ -72,5 +74,14 @@ describe('swag-paypal-settings-advanced', () => {
 
         expect(info.exists()).toBe(true);
         expect(info.text()).toBe('swag-paypal-settings.crossBorder.info');
+    });
+
+    it('should have paypal-callback information', async () => {
+        const wrapper = await createWrapper();
+
+        const info = wrapper.find('.swag-paypal-settings-environment__info-text');
+
+        expect(info.exists()).toBe(true);
+        expect(info.text()).toBe('swag-paypal-settings.environment.info');
     });
 });

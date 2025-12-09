@@ -74,7 +74,7 @@ class WebhookSystemConfigHelper
                 continue;
             }
 
-            if (!$this->configHasChangedSettings($newSettings, $oldActualSettings)) {
+            if (!$newData[Settings::IS_LOCAL_ENVIRONMENT] && !$this->configHasChangedSettings($newSettings, $oldActualSettings)) {
                 // No writing of new credentials in this Sales Channel
                 continue;
             }
@@ -103,6 +103,10 @@ class WebhookSystemConfigHelper
         foreach ($salesChannelIds as $salesChannelId) {
             if (!$salesChannelId || $salesChannelId === 'null') {
                 $salesChannelId = null;
+            }
+
+            if ($this->systemConfigService->get(Settings::IS_LOCAL_ENVIRONMENT, $salesChannelId)) {
+                continue;
             }
 
             $newSettings = $this->fetchSettings($salesChannelId);

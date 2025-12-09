@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where cookies are added even though associated payment methods are not active (shopware/SwagPayPal#457)
 - Fixes an issue, where the state of a country was not correctly transmitted to PayPal (shopware/SwagPayPal#469)
+- Added option to disable PayPal callbacks (shopware/SwagPayPal#463)
 
 # 10.3.0
 - Added compatibility with subscription mixed carts (shopware/shopware#10486)

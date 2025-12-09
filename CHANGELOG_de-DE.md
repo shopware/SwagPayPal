@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem Cookies geladen wurden, obwohl die zugehörigen Zahlungsarten nicht aktiv sind (shopware/SwagPayPal#457)
 - Behebt ein Problem, bei dem der Bundesstaat nicht korrekt an PayPal übermittelt wurde (shopware/SwagPayPal#469)
+- Fügt eine Option zum deaktiveren von PayPal Callbacks hinzu (shopware/SwagPayPal#463)
 
 # 10.3.0
 - Fügt Kompatibilität mit Abos in gemischten Warenkörben hinzu (shopware/shopware#10486)
