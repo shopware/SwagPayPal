@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where the express checkout could choose a customer country that was not assigned to the correct sales channel (shopware/SwagPayPal#479)
 - Fixes an issue, where cookies are added even though associated payment methods are not active (shopware/SwagPayPal#457)
 
 # 8.8.0
