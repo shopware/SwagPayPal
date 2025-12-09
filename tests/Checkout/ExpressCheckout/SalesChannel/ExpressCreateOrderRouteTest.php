@@ -117,7 +117,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         $systemConfig = $this->createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
-            Settings::PAYPAL_CALLBACKS_DISABLED => $callbacksDisabled,
+            Settings::IS_LOCAL_ENVIRONMENT => $callbacksDisabled,
         ]);
 
         $priceFormatter = new PriceFormatter();

@@ -1,3 +1,18 @@
+<mt-card
+    class="swag-paypal-settings-environment"
+    position-identifier="swag-paypal-settings-environment"
+    :title="$t('swag-paypal-settings.environment.title')"
+    :is-loading="settingsStore.isLoading"
+>
+    <div class="swag-paypal-settings-environment__content">
+        <span class="swag-paypal-settings-environment__info-text">
+            {{ $t('swag-paypal-settings.environment.info') }}
+        </span>
+
+        <swag-paypal-setting path="SwagPayPal.settings.isLocalEnvironment" />
+    </div>
+</mt-card>
+
 {% block swag_paypal_settings_webhook %}
 <swag-paypal-settings-webhook />
 {% endblock %}
@@ -23,24 +38,5 @@
             path="SwagPayPal.settings.crossBorderBuyerCountry"
             :options="countryOverrideOptions"
         />
-    </div>
-</mt-card>
-
-<mt-card
-    class="swag-paypal-settings-paypal-callbacks"
-    position-identifier="swag-paypal-settings-paypal-callbacks"
-    :title="$t('swag-paypal-settings.paypalCallbacks.title')"
-    :is-loading="settingsStore.isLoading"
->
-    <div class="swag-paypal-settings-paypal-callbacks__content">
-        <mt-banner class="swag-paypal-settings-paypal-callbacks__warning-text" variant="attention">
-            {{ $t('swag-paypal-settings.paypalCallbacks.warning') }}
-        </mt-banner>
-
-        <span class="swag-paypal-settings-paypal-callbacks__info-text">
-            {{ $t('swag-paypal-settings.paypalCallbacks.info') }}
-        </span>
-
-        <swag-paypal-setting path="SwagPayPal.settings.paypalCallbacksDisabled" />
     </div>
 </mt-card>

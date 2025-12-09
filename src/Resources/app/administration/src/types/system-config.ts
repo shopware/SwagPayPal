@@ -52,7 +52,7 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.crossBorderMessagingEnabled'?: boolean;
     'SwagPayPal.settings.crossBorderBuyerCountry'?: typeof COUNTRY_OVERRIDES[number] | null;
 
-    'SwagPayPal.settings.paypalCallbacksDisabled'?: boolean;
+    'SwagPayPal.settings.isLocalEnvironment'?: boolean;
 };
 
 /**
@@ -109,5 +109,5 @@ export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'password'
     'SwagPayPal.settings.crossBorderMessagingEnabled': 'boolean',
     'SwagPayPal.settings.crossBorderBuyerCountry': 'string',
 
-    'SwagPayPal.settings.paypalCallbacksDisabled': 'boolean',
+    'SwagPayPal.settings.isLocalEnvironment': 'boolean',
 };

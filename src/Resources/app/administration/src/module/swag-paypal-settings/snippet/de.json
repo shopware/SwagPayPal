@@ -104,10 +104,9 @@
       "buyerCountryAuto": "Automatische Bestimmung",
       "buyerCountryOverride": "Lokalisierung"
     },
-    "paypalCallbacks": {
-      "title": "PayPal Callbacks",
-      "warning": "Wir empfehlen, die PayPal Callbacks nicht zu deaktivieren, da dies die Funktionalität der Erweiterung beeinträchtigen würde. Deaktiviere sie bitte nur, wenn dein Shop nicht öffentlich erreichbar ist.",
-      "info": "Callbacks ermöglichen es PayPal, den Shop für Bestellstatus-Aktualisierungen und Warenkorbkalkulationen im Express-Checkout-UI von PayPal zu kontaktieren."
+    "environment": {
+      "title": "Umgebung",
+      "info": "PayPal sendet Bestellstatus-Updates über Webhooks an den Shop und fordert außerdem eine Neuberechnung des Warenkorbs an, wenn Kunden Änderungen in der PayPal Express Checkout-Benutzeroberfläche vornehmen. Wenn der Shop nicht öffentlich zugänglich ist (z. B. wenn es sich um eine Entwicklungs-/Staging-Umgebung handelt oder eine Authentifizierung erfordert), kannst du diese Instanz als \"lokale Umgebung\" kennzeichnen, um Verbindungsfehler zu vermeiden.\nBitte beachte, dass alle Webhook-Listener beim Speichern deregistriert werden."
     }
   },
   "swag-paypal-settings-sales-channel-switch": {

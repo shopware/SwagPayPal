@@ -104,10 +104,9 @@
       "buyerCountryAuto": "Automatic determination",
       "buyerCountryOverride": "Localization"
     },
-    "paypalCallbacks": {
-      "title": "PayPal Callbacks",
-      "warning": "We recommend not disabling PayPal Callbacks, as this would impair the functionality of the extension. Please only disable them if your shop is not publicly accessible.",
-      "info": "Callbacks enable PayPal to contact the shop for order status updates and cart calculations in PayPal's Express Checkout UI."
+    "environment": {
+      "title": "Environment",
+      "info": "PayPal will send order status updates to the shop via webhooks, and will also request cart recalculations when customers make changes in the PayPal Express Checkout UI. If the shop is not publicly accessible (e.g. if it is in a development/staging environment, or if it requires authentication), you can mark this instance as a \"local environment\" to prevent connection errors.\nPlease note that any webhook listener will be deregistered when saving."
     }
   },
   "swag-paypal-settings-sales-channel-switch": {
