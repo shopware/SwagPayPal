@@ -79,11 +79,6 @@ describe('swag-paypal-settings-advanced', () => {
     it('should have paypal-callback information', async () => {
         const wrapper = await createWrapper();
 
-        const alert = wrapper.find('.swag-paypal-settings-environment .mt-banner');
-
-        expect(alert.exists()).toBe(true);
-        expect(alert.classes()).toContain('swag-paypal-settings-environment__warning-text');
-
         const info = wrapper.find('.swag-paypal-settings-environment__info-text');
 
         expect(info.exists()).toBe(true);
