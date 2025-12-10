@@ -2,7 +2,7 @@
 - Fixes an issue, where the express checkout could choose a customer country that was not assigned to the correct sales channel (shopware/SwagPayPal#479)
 - Fixes an issue, where cookies are added even though associated payment methods are not active (shopware/SwagPayPal#457)
 - Fixes an issue, where the state of a country was not correctly transmitted to PayPal (shopware/SwagPayPal#469)
-- Added option to disable PayPal callbacks (shopware/SwagPayPal#463)
+- Added setting to mark the shop as local environment to preventing connection issues when testing in a non public accessable environment (shopware/SwagPayPal#463)
 
 # 10.3.0
 - Added compatibility with subscription mixed carts (shopware/shopware#10486)
