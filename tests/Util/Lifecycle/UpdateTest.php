@@ -428,7 +428,7 @@ class UpdateTest extends TestCase
         ));
 
         // override all media files
-        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext())->getEntities();
         $filePath = \sprintf('%s/src/Resources/icons/%s.svg', \dirname(__DIR__, 3), 'paypal');
         $stubMediaFile = new MediaFile(
             $filePath,
@@ -449,7 +449,7 @@ class UpdateTest extends TestCase
             );
         }
 
-        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext())->getEntities();
         $media = [];
         foreach ($paymentMethods as $paymentMethod) {
             static::assertNotNull($paymentMethod->getMedia());
@@ -476,13 +476,13 @@ class UpdateTest extends TestCase
         ], $media);
 
         // run update
-        $updateContext = $this->createUpdateContext('10.3.0', '10.4.0');
+        $updateContext = $this->createUpdateContext('9.9.0', '9.10.0');
         $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
 
         $updater = $this->createUpdateService($systemConfig);
         $updater->update($updateContext);
 
-        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext())->getEntities();
         $media = [];
         foreach ($paymentMethods as $paymentMethod) {
             static::assertNotNull($paymentMethod->getMedia());

@@ -152,8 +152,8 @@ class Update
             $this->updateTo961($updateContext->getContext());
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.4.0', '<')) {
-            $this->updateTo1040($updateContext->getContext());
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.10.0', '<')) {
+            $this->updateTo9100($updateContext->getContext());
         }
     }
 
@@ -576,7 +576,7 @@ class Update
         }
     }
 
-    private function updateTo1040(Context $context): void
+    private function updateTo9100(Context $context): void
     {
         $this->paymentMethodInstaller->updateAllMedia($context);
     }
