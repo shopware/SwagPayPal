@@ -73,7 +73,7 @@ class WebhookSystemConfigHelperTest extends TestCase
         }
 
         $this->webhookService
-            ->expects($expected ? $this->once() : $this->never())
+            ->expects($expected ? static::once() : static::never())
             ->method('deregisterWebhook');
 
         $this->helper->checkWebhookBefore($newConfig);
@@ -124,7 +124,7 @@ class WebhookSystemConfigHelperTest extends TestCase
         }
 
         $this->webhookService
-            ->expects($expected ? $this->once() : $this->never())
+            ->expects($expected ? static::once() : static::never())
             ->method('registerWebhook');
 
         $this->helper->checkWebhookAfter([null]);

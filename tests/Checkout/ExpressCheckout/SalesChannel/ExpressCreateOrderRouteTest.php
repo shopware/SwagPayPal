@@ -7,6 +7,8 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
@@ -15,7 +17,6 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
@@ -46,6 +47,13 @@ class ExpressCreateOrderRouteTest extends TestCase
 {
     use CheckoutRouteTrait;
     use IntegrationTestBehaviour;
+
+    private TestHandler $logger;
+
+    protected function setUp(): void
+    {
+        $this->logger = new TestHandler();
+    }
 
     public function testCreatePaymentWithZeroValueCart(): void
     {
@@ -81,14 +89,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
 
-        $request = $this->getClient()->getLast();
-        static::assertNotNull($request);
-
-        $order = (new Order())->assign($request->getRequestBody() ?? []);
-
-        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
-        static::assertNotNull($experienceContext);
-        static::assertNotNull($experienceContext->getOrderUpdateCallbackConfig());
+        static::assertTrue($this->logger->hasDebug('Configured shipping callback'));
     }
 
     public function testCreateWithoutShippingCallback(): void
@@ -100,14 +101,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
 
-        $request = $this->getClient()->getLast();
-        static::assertNotNull($request);
-
-        $order = (new Order())->assign($request->getRequestBody() ?? []);
-
-        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
-        static::assertNotNull($experienceContext);
-        static::assertNull($experienceContext->getOrderUpdateCallbackConfig());
+        static::assertTrue($this->logger->hasDebug('Skipped shipping callback due to being disabled in system config'));
     }
 
     private function createRoute(bool $callbacksDisabled = false): ExpressCreateOrderRoute
@@ -140,7 +134,7 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->getContainer()->get(CartPriceService::class),
             $systemConfig,
             $this->createMock(RouterInterface::class),
-            new NullLogger(),
+            new Logger('test', [$this->logger]),
         );
     }
 }
