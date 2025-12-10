@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodDefinition;
 use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
 use Shopware\Core\Content\Media\File\FileSaver;
+use Shopware\Core\Content\Media\File\MediaFile;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Framework\Context;
@@ -417,12 +418,6 @@ class UpdateTest extends TestCase
 
     public function testUpdateTo1040(): void
     {
-        $updateContext = $this->createUpdateContext('10.3.0', '10.4.0');
-        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
-
-        $updater = $this->createUpdateService($systemConfig);
-        $updater->update($updateContext);
-
         $paymentMethods = static::getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods();
 
         $criteria = new Criteria();
@@ -432,12 +427,66 @@ class UpdateTest extends TestCase
             \array_map(fn ($method) => $method->getHandler(), $paymentMethods),
         ));
 
+        // override all media files
         $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
+        $filePath = \sprintf('%s/src/Resources/icons/%s.svg', \dirname(__DIR__, 3), 'paypal');
+        $stubMediaFile = new MediaFile(
+            $filePath,
+            \mime_content_type($filePath) ?: '',
+            \pathinfo($filePath, \PATHINFO_EXTENSION),
+            \filesize($filePath) ?: 0
+        );
 
+        foreach ($paymentMethods as $paymentMethod) {
+            static::assertNotNull($paymentMethod->getMedia());
+            static::assertNotNull($paymentMethod->getMedia()->getFileName());
+
+            static::getContainer()->get(FileSaver::class)->persistFileToMedia(
+                $stubMediaFile,
+                $paymentMethod->getMedia()->getFileName(),
+                $paymentMethod->getMedia()->getId(),
+                Context::createDefaultContext(),
+            );
+        }
+
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
         $media = [];
-        foreach ($paymentMethods as $method) {
-            static::assertNotNull($method->getMedia());
-            $media[$method->getMedia()->getFileName()] = $method->getMedia()->getFileSize();
+        foreach ($paymentMethods as $paymentMethod) {
+            static::assertNotNull($paymentMethod->getMedia());
+            $media[$paymentMethod->getMedia()->getFileName()] = $paymentMethod->getMedia()->getFileSize();
+        }
+
+        static::assertEquals([
+            'swag_paypal_apm_bancontact' => 890,
+            'swag_paypal_apm_blik' => 890,
+            'swag_paypal_apm_eps' => 890,
+            'swag_paypal_apm_ideal' => 890,
+            'swag_paypal_apm_multibanco' => 890,
+            'swag_paypal_apm_mybank' => 890,
+            'swag_paypal_apm_oxxo' => 890,
+            'swag_paypal_apm_p24' => 890,
+            'swag_paypal_apm_trustly' => 890,
+            'swag_paypal_apple_pay' => 890,
+            'swag_paypal_card' => 890,
+            'swag_paypal_google_pay' => 890,
+            'swag_paypal_paypal' => 890,
+            'swag_paypal_pui' => 890,
+            'swag_paypal_sepa' => 890,
+            'swag_paypal_venmo' => 890,
+        ], $media);
+
+        // run update
+        $updateContext = $this->createUpdateContext('10.3.0', '10.4.0');
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
+
+        $updater = $this->createUpdateService($systemConfig);
+        $updater->update($updateContext);
+
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
+        $media = [];
+        foreach ($paymentMethods as $paymentMethod) {
+            static::assertNotNull($paymentMethod->getMedia());
+            $media[$paymentMethod->getMedia()->getFileName()] = $paymentMethod->getMedia()->getFileSize();
         }
 
         static::assertEquals([
