@@ -151,6 +151,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '9.6.1', '<')) {
             $this->updateTo961($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.10.0', '<')) {
+            $this->updateTo9100($updateContext->getContext());
+        }
     }
 
     private function updateTo130(): void
@@ -570,5 +574,10 @@ class Update
                 'technicalName' => 'swag_paypal_pos',
             ]], $context);
         }
+    }
+
+    private function updateTo9100(Context $context): void
+    {
+        $this->paymentMethodInstaller->updateAllMedia($context);
     }
 }
