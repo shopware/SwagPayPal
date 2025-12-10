@@ -9,5 +9,7 @@ return [
         \preg_quote('An enum expression Monolog\Level::Debug is not supported in class Monolog\Handler\AbstractHandler'),
         // Storefront package is not installed
         \preg_quote('"Shopware\Storefront\Framework\Cookie\CookieProviderInterface" could not be found in the located source'),
+        // Apple Pay it now available on third-party browsers
+        \preg_quote('Value of constant Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS changed from array ('),
     ],
 ];
