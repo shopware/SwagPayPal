@@ -2,6 +2,7 @@
 - Fixes an issue, where the express checkout could choose a customer country that was not assigned to the correct sales channel (shopware/SwagPayPal#479)
 - Fixes an issue, where cookies are added even though associated payment methods are not active (shopware/SwagPayPal#457)
 - Added Apple Pay support for third-party browsers (shopware/SwagPayPal#485)
+- Added setting to mark the shop as local environment to preventing connection issues when testing in a non-publicly accessible environment (shopware/SwagPayPal#463)
 
 # 8.8.0
 - Fixes an issue, where Paypal Express Checkout does not recalculate cart price after changing shipping country (shopware/SwagPayPal#342)

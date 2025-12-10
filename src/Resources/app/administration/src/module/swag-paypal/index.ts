@@ -20,6 +20,7 @@ Shopware.Component.register('swag-paypal-settings-icon', () => import('./compone
 Shopware.Component.register('swag-paypal-spb', () => import('./components/swag-paypal-spb'));
 Shopware.Component.register('swag-paypal-vaulting', () => import('./components/swag-paypal-vaulting'));
 Shopware.Component.register('swag-paypal-webhook', () => import('./components/swag-paypal-webhook'));
+Shopware.Component.register('swag-paypal-local-environment', () => import('./components/swag-paypal-local-environment'));
 Shopware.Component.register('swag-paypal', () => import('./page/swag-paypal'));
 
 const { Module } = Shopware;
