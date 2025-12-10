@@ -155,6 +155,16 @@
 
                 {% block swag_paypal_content_card_channel_config_cards %}
                 <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
+                    {% block swag_paypal_content_card_channel_config_local_environment %}
+                    <swag-paypal-local-environment
+                        v-if="tab === 'advanced'"
+                        :isLoading="isLoading"
+                        :actual-config-data="actualConfigData"
+                        :all-configs="allConfigs"
+                        :selected-sales-channel-id="selectedSalesChannelId"
+                    />
+                    {% endblock %}
+
                     {% block swag_paypal_content_card_channel_config_webhook %}
                     <swag-paypal-webhook
                         v-if="tab === 'advanced'"
