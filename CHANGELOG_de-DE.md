@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.4.0
 - Behebt ein Problem, bei dem beim Express-Checkout ein Kundenland ausgewählt werden konnte, das nicht dem richtigen Vertriebskanal zugeordnet war (shopware/SwagPayPal#479)
 - Behebt ein Problem, bei dem Cookies geladen wurden, obwohl die zugehörigen Zahlungsarten nicht aktiv sind (shopware/SwagPayPal#457)
 - Behebt ein Problem, bei dem der Bundesstaat nicht korrekt an PayPal übermittelt wurde (shopware/SwagPayPal#469)
