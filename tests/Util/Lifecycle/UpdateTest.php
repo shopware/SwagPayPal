@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodDefinition;
@@ -20,6 +21,7 @@ use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\RestrictDeleteViolationException;
 use Shopware\Core\Framework\Log\Package;
@@ -62,6 +64,7 @@ use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
@@ -394,11 +397,11 @@ class UpdateTest extends TestCase
         $criteria->addAssociation('media');
         $criteria->addFilter(new EqualsAnyFilter(
             'handlerIdentifier',
-            \array_map(fn ($method) => $method->getHandler(), $paymentMethods),
+            \array_map(fn (AbstractMethodData $method) => $method->getHandler(), $paymentMethods),
         ));
 
         // override all media files
-        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext())->getEntities();
         $filePath = \sprintf('%s/src/Resources/icons/%s.svg', \dirname(__DIR__, 3), 'paypal');
         $stubMediaFile = new MediaFile(
             $filePath,
@@ -419,7 +422,7 @@ class UpdateTest extends TestCase
             );
         }
 
-        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext())->getEntities();
         $media = [];
         foreach ($paymentMethods as $paymentMethod) {
             static::assertNotNull($paymentMethod->getMedia());
@@ -452,7 +455,7 @@ class UpdateTest extends TestCase
         $updater = $this->createUpdateService($systemConfig);
         $updater->update($updateContext);
 
-        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext())->getEntities();
         $media = [];
         foreach ($paymentMethods as $paymentMethod) {
             static::assertNotNull($paymentMethod->getMedia());
