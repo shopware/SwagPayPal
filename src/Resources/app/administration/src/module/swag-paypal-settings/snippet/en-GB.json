@@ -103,6 +103,10 @@
       "info": "Pay Later messaging is a feature that allows you to display a Pay Later message in the language of the customer. This feature is only available for certain countries. {0}",
       "buyerCountryAuto": "Automatic determination",
       "buyerCountryOverride": "Localization"
+    },
+    "environment": {
+      "title": "Environment",
+      "info": "PayPal will send order status updates to the shop via webhooks, and will also request cart recalculations when customers make changes in the PayPal Express Checkout UI. If the shop is not publicly accessible (e.g. if it is in a development/staging environment, or if it requires authentication), you can mark this instance as a \"local environment\" to prevent connection errors.\nPlease note that any webhook listener will be deregistered when saving."
     }
   },
   "swag-paypal-settings-sales-channel-switch": {

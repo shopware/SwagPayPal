@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\TokenResponse;
@@ -22,6 +23,7 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\OrderUpdateCallbackConfig;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Setting\Settings;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -40,6 +42,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
         private readonly PayPalOrderBuilder $paypalOrderBuilder,
         private readonly OrderResource $orderResource,
         private readonly CartPriceService $cartPriceService,
+        private readonly SystemConfigService $systemConfigService,
         private readonly RouterInterface $router,
         private readonly LoggerInterface $logger,
     ) {
@@ -80,17 +83,21 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
                 $experienceContext->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
 
                 // Configure shipping callback for dynamic price recalculation
-                $callbackConfig = new OrderUpdateCallbackConfig();
-                $callbackUrl = $this->router->generate(
-                    'store-api.paypal.express.shipping_callback',
-                    ['salesChannelId' => $salesChannelContext->getSalesChannelId(), 'token' => $salesChannelContext->getToken()],
-                    UrlGeneratorInterface::ABSOLUTE_URL,
-                );
-                $callbackConfig->setCallbackUrl($callbackUrl);
-                $callbackConfig->setCallbackEvents([OrderUpdateCallbackConfig::CALLBACK_EVENT_SHIPPING_OPTIONS]);
-                $experienceContext->setOrderUpdateCallbackConfig($callbackConfig);
+                if (!$this->systemConfigService->getBool(Settings::IS_LOCAL_ENVIRONMENT, $salesChannelContext->getSalesChannelId())) {
+                    $callbackConfig = new OrderUpdateCallbackConfig();
+                    $callbackUrl = $this->router->generate(
+                        'store-api.paypal.express.shipping_callback',
+                        ['salesChannelId' => $salesChannelContext->getSalesChannelId(), 'token' => $salesChannelContext->getToken()],
+                        UrlGeneratorInterface::ABSOLUTE_URL,
+                    );
+                    $callbackConfig->setCallbackUrl($callbackUrl);
+                    $callbackConfig->setCallbackEvents([OrderUpdateCallbackConfig::CALLBACK_EVENT_SHIPPING_OPTIONS]);
+                    $experienceContext->setOrderUpdateCallbackConfig($callbackConfig);
 
-                $this->logger->debug('Configured shipping callback', ['callbackUrl' => $callbackUrl]);
+                    $this->logger->debug('Configured shipping callback', ['callbackUrl' => $callbackUrl]);
+                } else {
+                    $this->logger->debug('Skipped shipping callback due to being disabled in system config');
+                }
             }
 
             $orderResponse = $this->orderResource->create(

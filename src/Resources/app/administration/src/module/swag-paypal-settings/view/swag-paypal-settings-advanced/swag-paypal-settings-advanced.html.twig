@@ -1,3 +1,16 @@
+<sw-card
+    class="swag-paypal-settings-environment"
+    position-identifier="swag-paypal-settings-environment"
+    :title="$t('swag-paypal-settings.environment.title')"
+    :is-loading="settingsStore.isLoading"
+>
+    <span class="swag-paypal-settings-environment__info-text">
+        {{ $t('swag-paypal-settings.environment.info') }}
+    </span>
+
+    <swag-paypal-setting path="SwagPayPal.settings.isLocalEnvironment" />
+</sw-card>
+
 {% block swag_paypal_settings_webhook %}
 <swag-paypal-settings-webhook />
 {% endblock %}
