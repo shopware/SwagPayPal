@@ -84,6 +84,7 @@
       "vaultingEnabledVenmo": "Vaulting für Venmo-Zahlungen verwenden",
       "crossBorderMessagingEnabled" : "Länderübergreifende Lokalisierung der \"Später bezahlen\"-Nachricht aktivieren",
       "crossBorderBuyerCountry" : "Lokalisierung",
+      "isLocalEnvironment": "Lokale Entwicklungsumgebung",
       "sdkV6Enabled": "PayPal SDK v6 verwenden"
     },
     "helpText": {

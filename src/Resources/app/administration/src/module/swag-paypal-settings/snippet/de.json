@@ -104,6 +104,10 @@
       "buyerCountryAuto": "Automatische Bestimmung",
       "buyerCountryOverride": "Lokalisierung"
     },
+    "environment": {
+      "title": "Umgebung",
+      "info": "PayPal sendet Bestellstatus-Updates über Webhooks an den Shop und fordert außerdem eine Neuberechnung des Warenkorbs an, wenn Kunden Änderungen in der PayPal Express Checkout-Benutzeroberfläche vornehmen. Wenn der Shop nicht öffentlich zugänglich ist (z. B. wenn es sich um eine Entwicklungs-/Staging-Umgebung handelt oder eine Authentifizierung erfordert), kannst du diese Instanz als \"lokale Umgebung\" kennzeichnen, um Verbindungsfehler zu vermeiden.\nBitte beachte, dass alle Webhook-Listener beim Speichern deregistriert werden."
+    },
     "sdk": {
       "title": "PayPal SDK Version 6",
       "info": "Durch Aktivierung dieser Option wird die neueste Version der PayPal-Checkout-Integration, PayPal SDK v6, aktiviert. Version 6 bietet eine verbesserte Leistung und Sicherheit sowie eine bessere Kompatibilität mit modernen Zahlungsabläufen. Bitte beachten Sie, dass Theme-Anpassungen und Erweiterungen möglicherweise angepasst werden müssen.\nSDK v6 wird die Standardimplementierung ab Version 11 des PayPal-Plugins sein.",

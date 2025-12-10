@@ -5,7 +5,7 @@
 
     {% if not config('SwagPayPal.settings.sdkV6Enabled') %}
         {% if page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ApplePayMethodData::PAYPAL_APPLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
-            <script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
+            <script src="https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js"></script>
         {% endif %}
 
         {% if page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\GooglePayMethodData::PAYPAL_GOOGLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
