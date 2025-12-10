@@ -88,6 +88,9 @@ class UpdateTest extends TestCase
     private const OTHER_CLIENT_ID = 'someOtherTestClientId';
     private const OTHER_CLIENT_SECRET = 'someOtherTestClientSecret';
 
+    /**
+     * @var EntityRepository<PaymentMethodCollection>
+     */
     private EntityRepository $paymentMethodRepository;
 
     private EntityRepository $salesChannelRepository;
@@ -410,6 +413,51 @@ class UpdateTest extends TestCase
         $updater->update($updateContext);
 
         static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
+    }
+
+    public function testUpdateTo1040(): void
+    {
+        $updateContext = $this->createUpdateContext('10.3.0', '10.4.0');
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
+
+        $updater = $this->createUpdateService($systemConfig);
+        $updater->update($updateContext);
+
+        $paymentMethods = static::getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods();
+
+        $criteria = new Criteria();
+        $criteria->addAssociation('media');
+        $criteria->addFilter(new EqualsAnyFilter(
+            'handlerIdentifier',
+            \array_map(fn ($method) => $method->getHandler(), $paymentMethods),
+        ));
+
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
+
+        $media = [];
+        foreach ($paymentMethods as $method) {
+            static::assertNotNull($method->getMedia());
+            $media[$method->getMedia()->getFileName()] = $method->getMedia()->getFileSize();
+        }
+
+        static::assertSame([
+            'swag_paypal_paypal' => 890,
+            'swag_paypal_pui' => 2163,
+            'swag_paypal_card' => 2397,
+            'swag_paypal_sepa' => 3567,
+            'swag_paypal_apm_bancontact' => 22830,
+            'swag_paypal_apm_blik' => 3335,
+            'swag_paypal_apm_eps' => 8596,
+            'swag_paypal_apm_ideal' => 6001,
+            'swag_paypal_apm_multibanco' => 13673,
+            'swag_paypal_apm_mybank' => 4899,
+            'swag_paypal_apm_oxxo' => 2372,
+            'swag_paypal_apm_p24' => 8755,
+            'swag_paypal_apm_trustly' => 12295,
+            'swag_paypal_venmo' => 494,
+            'swag_paypal_apple_pay' => 2815,
+            'swag_paypal_google_pay' => 2153,
+        ], $media);
     }
 
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext
