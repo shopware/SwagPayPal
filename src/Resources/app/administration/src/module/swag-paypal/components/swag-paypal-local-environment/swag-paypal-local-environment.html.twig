@@ -1,0 +1,27 @@
+<sw-card
+    class="swag-paypal-local-environment"
+    position-identifier="swag-paypal-local-environment"
+    :title="$t('swag-paypal-settings.environment.title')"
+    :is-loading="isLoading"
+>
+    <span class="swag-paypal-local-environment__info-text">
+        {{ $t('swag-paypal-settings.environment.info') }}
+    </span>
+
+    <swag-paypal-inherit-wrapper
+        v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+        path="SwagPayPal.settings.isLocalEnvironment"
+    >
+        <template #content="props">
+            <sw-switch-field
+                name="SwagPayPal.settings.isLocalEnvironment"
+                :mapInheritance="props"
+                :label="$tc('swag-paypal-setting.label.isLocalEnvironment')"
+                :disabled="isLoading || props.isInherited || !acl.can('swag_paypal.editor')"
+                :value="props.currentValue"
+                bordered
+                @update:value="props.updateCurrentValue"
+            />
+        </template>
+    </swag-paypal-inherit-wrapper>
+</sw-card>
