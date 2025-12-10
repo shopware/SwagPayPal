@@ -416,7 +416,7 @@ class UpdateTest extends TestCase
         static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
     }
 
-    public function testUpdateTo1040(): void
+    public function testUpdateTo9100(): void
     {
         $paymentMethods = static::getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods();
 
