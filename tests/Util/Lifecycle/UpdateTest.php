@@ -440,11 +440,7 @@ class UpdateTest extends TestCase
             $media[$method->getMedia()->getFileName()] = $method->getMedia()->getFileSize();
         }
 
-        static::assertSame([
-            'swag_paypal_paypal' => 890,
-            'swag_paypal_pui' => 2163,
-            'swag_paypal_card' => 2397,
-            'swag_paypal_sepa' => 3567,
+        static::assertEquals([
             'swag_paypal_apm_bancontact' => 22830,
             'swag_paypal_apm_blik' => 3335,
             'swag_paypal_apm_eps' => 8596,
@@ -454,9 +450,13 @@ class UpdateTest extends TestCase
             'swag_paypal_apm_oxxo' => 2372,
             'swag_paypal_apm_p24' => 8755,
             'swag_paypal_apm_trustly' => 12295,
-            'swag_paypal_venmo' => 494,
             'swag_paypal_apple_pay' => 2815,
+            'swag_paypal_card' => 2397,
             'swag_paypal_google_pay' => 2153,
+            'swag_paypal_paypal' => 890,
+            'swag_paypal_pui' => 2163,
+            'swag_paypal_sepa' => 3567,
+            'swag_paypal_venmo' => 494,
         ], $media);
     }
 
