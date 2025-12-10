@@ -11,5 +11,7 @@ return [
         \preg_quote('"Shopware\Storefront\Framework\Cookie\CookieProviderInterface" could not be found in the located source'),
         // internal const
         \preg_quote('Value of constant Swag\PayPal\Setting\Settings::DEFAULT_VALUES changed from array') . '.*',
+        // Apple Pay it now available on third-party browsers
+        \preg_quote('Value of constant Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS changed from array ('),
     ],
 ];
