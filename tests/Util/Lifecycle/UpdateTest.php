@@ -389,7 +389,7 @@ class UpdateTest extends TestCase
         static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfigServiceMock->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
     }
 
-    public function testUpdateTo1040(): void
+    public function testUpdateTo890(): void
     {
         $paymentMethods = static::getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods();
 
@@ -449,7 +449,7 @@ class UpdateTest extends TestCase
         ], $media);
 
         // run update
-        $updateContext = $this->createUpdateContext('10.3.0', '10.4.0');
+        $updateContext = $this->createUpdateContext('8.8.0', '8.9.0');
         $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
 
         $updater = $this->createUpdateService($systemConfig);
