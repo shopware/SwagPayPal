@@ -3,7 +3,7 @@
 - Behebt ein Problem, bei dem Cookies geladen wurden, obwohl die zugehörigen Zahlungsarten nicht aktiv sind (shopware/SwagPayPal#457)
 - Behebt ein Problem, bei dem der Bundesstaat nicht korrekt an PayPal übermittelt wurde (shopware/SwagPayPal#469)
 - Fügt Apple-Pay-Support für Drittanbieter-Browser hinzu (shopware/SwagPayPal#485)
-- Fügt eine Option zum deaktiveren von PayPal Callbacks hinzu (shopware/SwagPayPal#463)
+- Fügt eine Einstellung hinzu, um den Shop als lokale Umgebung zu kennzeichnen, um Verbindungsprobleme beim Testen in einer nicht öffentlich zugänglichen Umgebung zu vermeiden (shopware/SwagPayPal#463)
 - Symbole für Zahlungsmethoden aktualisiert und optimiert
 
 # 10.3.0
