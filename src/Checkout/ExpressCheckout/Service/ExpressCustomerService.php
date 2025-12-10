@@ -24,6 +24,7 @@ use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V2\Order;
@@ -45,43 +46,19 @@ class ExpressCustomerService
         'additionalAddressLine1',
     ];
 
-    private AbstractRegisterRoute $registerRoute;
-
-    private EntityRepository $countryRepository;
-
-    private EntityRepository $countryStateRepository;
-
-    private EntityRepository $salutationRepository;
-
-    private EntityRepository $customerRepository;
-
-    private AccountService $accountService;
-
-    private SystemConfigService $systemConfigService;
-
-    private LoggerInterface $logger;
-
     /**
      * @internal
      */
     public function __construct(
-        AbstractRegisterRoute $registerRoute,
-        EntityRepository $countryRepository,
-        EntityRepository $countryStateRepository,
-        EntityRepository $salutationRepository,
-        EntityRepository $customerRepository,
-        AccountService $accountService,
-        SystemConfigService $systemConfigService,
-        LoggerInterface $logger,
+        private readonly AbstractRegisterRoute $registerRoute,
+        private readonly SalesChannelRepository $countryRepository,
+        private readonly EntityRepository $countryStateRepository,
+        private readonly EntityRepository $salutationRepository,
+        private readonly EntityRepository $customerRepository,
+        private readonly AccountService $accountService,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly LoggerInterface $logger,
     ) {
-        $this->registerRoute = $registerRoute;
-        $this->countryRepository = $countryRepository;
-        $this->countryStateRepository = $countryStateRepository;
-        $this->salutationRepository = $salutationRepository;
-        $this->customerRepository = $customerRepository;
-        $this->accountService = $accountService;
-        $this->systemConfigService = $systemConfigService;
-        $this->logger = $logger;
     }
 
     public function loginCustomer(Order $paypalOrder, SalesChannelContext $salesChannelContext, RequestDataBag $data): string
@@ -164,7 +141,7 @@ class ExpressCustomerService
             'email' => $paypal->getEmailAddress(),
             'firstName' => $paypal->getName()->getGivenName(),
             'lastName' => $paypal->getName()->getSurname(),
-            'billingAddress' => $this->getAddressData($paypalOrder, $salesChannelContext->getContext(), $salutationId),
+            'billingAddress' => $this->getAddressData($paypalOrder, $salesChannelContext, $salutationId),
             'acceptedDataProtection' => true,
             self::EXPRESS_PAYER_ID => $paypal->isset('accountId') ? $paypal->getAccountId() : null,
         ]);
@@ -175,7 +152,7 @@ class ExpressCustomerService
     /**
      * @return array<string, string|null>
      */
-    private function getAddressData(Order $order, Context $context, ?string $salutationId = null): array
+    private function getAddressData(Order $order, SalesChannelContext $context, ?string $salutationId = null): array
     {
         $paypal = $order->getPaymentSource()?->getPaypal();
         if (!$paypal) {
@@ -196,7 +173,7 @@ class ExpressCustomerService
 
         $countryCode = $address->getCountryCode();
         $countryId = $this->getCountryId($countryCode, $context);
-        $countryStateId = $this->getCountryStateId($countryId, $countryCode, $address->getAdminArea1(), $context);
+        $countryStateId = $this->getCountryStateId($countryId, $countryCode, $address->getAdminArea1(), $context->getContext());
         $phone = $paypal->getPhoneNumber();
 
         return [
@@ -234,7 +211,7 @@ class ExpressCustomerService
         return $salutationId;
     }
 
-    private function getCountryId(string $code, Context $context): ?string
+    private function getCountryId(string $code, SalesChannelContext $context): ?string
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('iso', $code));
@@ -285,7 +262,7 @@ class ExpressCustomerService
     {
         $addressData = $this->getAddressData(
             $paypalOrder,
-            $salesChannelContext->getContext()
+            $salesChannelContext,
         );
 
         $matchingAddress = null;
