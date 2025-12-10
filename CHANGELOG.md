@@ -4,6 +4,7 @@
 - Fixes an issue, where the state of a country was not correctly transmitted to PayPal (shopware/SwagPayPal#469)
 - Added Apple Pay support for third-party browsers (shopware/SwagPayPal#485)
 - Added setting to mark the shop as local environment to preventing connection issues when testing in a non-publicly accessible environment (shopware/SwagPayPal#463)
+- Updated and optimized payment method icons
 
 # 8.8.0
 - Fixes an issue, where Paypal Express Checkout does not recalculate cart price after changing shipping country (shopware/SwagPayPal#342)

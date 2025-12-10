@@ -3,6 +3,10 @@
 .swag-paypal-checkout {
     padding: 30px;
 
+    &__avatar {
+        border-radius: 4px;
+    }
+
     &__banner {
         margin-top: 24px;
     }

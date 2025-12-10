@@ -9,16 +9,19 @@ namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodDefinition;
 use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
 use Shopware\Core\Content\Media\File\FileSaver;
+use Shopware\Core\Content\Media\File\MediaFile;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\RestrictDeleteViolationException;
 use Shopware\Core\Framework\Log\Package;
@@ -61,6 +64,7 @@ use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
@@ -87,6 +91,9 @@ class UpdateTest extends TestCase
     private const OTHER_CLIENT_ID = 'someOtherTestClientId';
     private const OTHER_CLIENT_SECRET = 'someOtherTestClientSecret';
 
+    /**
+     * @var EntityRepository<PaymentMethodCollection>
+     */
     private EntityRepository $paymentMethodRepository;
 
     private EntityRepository $salesChannelRepository;
@@ -380,6 +387,99 @@ class UpdateTest extends TestCase
         $updater->update($updateContext);
 
         static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfigServiceMock->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
+    }
+
+    public function testUpdateTo890(): void
+    {
+        $paymentMethods = static::getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods();
+
+        $criteria = new Criteria();
+        $criteria->addAssociation('media');
+        $criteria->addFilter(new EqualsAnyFilter(
+            'handlerIdentifier',
+            \array_map(fn (AbstractMethodData $method) => $method->getHandler(), $paymentMethods),
+        ));
+
+        // override all media files
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext())->getEntities();
+        $filePath = \sprintf('%s/src/Resources/icons/%s.svg', \dirname(__DIR__, 3), 'paypal');
+        $stubMediaFile = new MediaFile(
+            $filePath,
+            \mime_content_type($filePath) ?: '',
+            \pathinfo($filePath, \PATHINFO_EXTENSION),
+            \filesize($filePath) ?: 0
+        );
+
+        foreach ($paymentMethods as $paymentMethod) {
+            static::assertNotNull($paymentMethod->getMedia());
+            static::assertNotNull($paymentMethod->getMedia()->getFileName());
+
+            static::getContainer()->get(FileSaver::class)->persistFileToMedia(
+                $stubMediaFile,
+                $paymentMethod->getMedia()->getFileName(),
+                $paymentMethod->getMedia()->getId(),
+                Context::createDefaultContext(),
+            );
+        }
+
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext())->getEntities();
+        $media = [];
+        foreach ($paymentMethods as $paymentMethod) {
+            static::assertNotNull($paymentMethod->getMedia());
+            $media[$paymentMethod->getMedia()->getFileName()] = $paymentMethod->getMedia()->getFileSize();
+        }
+
+        static::assertEquals([
+            'swag_paypal_apm_bancontact' => 890,
+            'swag_paypal_apm_blik' => 890,
+            'swag_paypal_apm_eps' => 890,
+            'swag_paypal_apm_ideal' => 890,
+            'swag_paypal_apm_multibanco' => 890,
+            'swag_paypal_apm_mybank' => 890,
+            'swag_paypal_apm_oxxo' => 890,
+            'swag_paypal_apm_p24' => 890,
+            'swag_paypal_apm_trustly' => 890,
+            'swag_paypal_apple_pay' => 890,
+            'swag_paypal_card' => 890,
+            'swag_paypal_google_pay' => 890,
+            'swag_paypal_paypal' => 890,
+            'swag_paypal_pui' => 890,
+            'swag_paypal_sepa' => 890,
+            'swag_paypal_venmo' => 890,
+        ], $media);
+
+        // run update
+        $updateContext = $this->createUpdateContext('8.8.0', '8.9.0');
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
+
+        $updater = $this->createUpdateService($systemConfig);
+        $updater->update($updateContext);
+
+        $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext())->getEntities();
+        $media = [];
+        foreach ($paymentMethods as $paymentMethod) {
+            static::assertNotNull($paymentMethod->getMedia());
+            $media[$paymentMethod->getMedia()->getFileName()] = $paymentMethod->getMedia()->getFileSize();
+        }
+
+        static::assertEquals([
+            'swag_paypal_apm_bancontact' => 22830,
+            'swag_paypal_apm_blik' => 3335,
+            'swag_paypal_apm_eps' => 8596,
+            'swag_paypal_apm_ideal' => 6001,
+            'swag_paypal_apm_multibanco' => 13673,
+            'swag_paypal_apm_mybank' => 4899,
+            'swag_paypal_apm_oxxo' => 2372,
+            'swag_paypal_apm_p24' => 8755,
+            'swag_paypal_apm_trustly' => 12295,
+            'swag_paypal_apple_pay' => 2815,
+            'swag_paypal_card' => 2397,
+            'swag_paypal_google_pay' => 2153,
+            'swag_paypal_paypal' => 890,
+            'swag_paypal_pui' => 2163,
+            'swag_paypal_sepa' => 3567,
+            'swag_paypal_venmo' => 494,
+        ], $media);
     }
 
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext
