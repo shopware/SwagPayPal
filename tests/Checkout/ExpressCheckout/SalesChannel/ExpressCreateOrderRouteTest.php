@@ -79,7 +79,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
 
-        $this->logger->hasDebug(['message' => 'Skipped shipping callback due to being disabled in system config']);
+        static::assertTrue($this->logger->hasDebug(['message' => 'Skipped shipping callback due to being disabled in system config']));
     }
 
     private function createRoute(bool $callbacksDisabled = false): ExpressCreateOrderRoute
