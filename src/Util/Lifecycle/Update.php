@@ -176,6 +176,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '9.6.1', '<')) {
             $this->updateTo961($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.4.0', '<')) {
+            $this->updateTo1040($updateContext->getContext());
+        }
     }
 
     private function updateTo130(): void
@@ -550,5 +554,10 @@ class Update
             $this->paymentMethodStateService->setPaymentMethodState(TrustlyMethodData::class, false, $context);
         } catch (PaymentException) {
         }
+    }
+
+    private function updateTo1040(Context $context): void
+    {
+        $this->paymentMethodInstaller->updateAllMedia($context);
     }
 }
