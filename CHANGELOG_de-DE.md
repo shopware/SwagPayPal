@@ -1,3 +1,6 @@
+# 9.10.1
+- Behebt ein Problem, bei dem nicht von PayPal unterstützte Sprachen nicht auf eine unterstützte Sprache korrigiert wurden (shopware/shopware#13950)
+
 # 9.10.0
 - Behebt ein Problem, bei dem beim Express-Checkout ein Kundenland ausgewählt werden konnte, das nicht dem richtigen Vertriebskanal zugeordnet war (shopware/SwagPayPal#479)
 - Behebt ein Problem, bei dem Cookies geladen wurden, obwohl die zugehörigen Zahlungsarten nicht aktiv sind (shopware/SwagPayPal#457)
