@@ -42,11 +42,11 @@ class LocaleScraperCommand extends Command
                 return;
             }
 
-            $countryCode = trim($columns->eq(1)->text());
+            $countryCode = \trim($columns->eq(1)->text());
 
             $locales[$countryCode][] = [
-                self::PRIORITY => trim($columns->eq(2)->text()),
-                self::LOCALE_CODE_KEY => trim($columns->eq(3)->text()),
+                self::PRIORITY => \trim($columns->eq(2)->text()),
+                self::LOCALE_CODE_KEY => \trim($columns->eq(3)->text()),
             ];
         });
 
@@ -59,7 +59,7 @@ class LocaleScraperCommand extends Command
             $localesClassContent .= \sprintf(
                 "        '%s' => [\n%s\n        ],\n",
                 $countryCode,
-                trim($localeString, "\n")
+                \trim($localeString, "\n")
             );
         }
 
