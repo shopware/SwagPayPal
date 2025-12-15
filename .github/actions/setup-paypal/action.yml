@@ -124,7 +124,6 @@ runs:
         shopwareVersion: ${{ inputs.shopware-version }}
         phpVersion: ${{ inputs.php-version }}
         node-version: 18.x
-        npm-version: 9
         keep-composer-tools: true
         install: true
         install-admin: ${{ inputs.install-admin }}
