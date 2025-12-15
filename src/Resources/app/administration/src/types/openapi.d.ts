@@ -193,11 +193,15 @@ export interface components {
       value: string;
     };
     swag_paypal_v1_create_webhooks: {
+      id: string;
       url: string;
       event_types: components["schemas"]["swag_paypal_v1_create_webhooks_event_type"][];
     };
     swag_paypal_v1_create_webhooks_event_type: {
       name: string;
+    };
+    swag_paypal_v1_create_webhooks_list: {
+      webhooks: components["schemas"]["swag_paypal_v1_create_webhooks"][];
     };
     swag_paypal_v1_disputes: {
       items: components["schemas"]["swag_paypal_v1_disputes_item"][] | null;
@@ -1014,6 +1018,10 @@ export interface components {
     swag_paypal_v2_order_payment_source_common_attributes_customer: {
       id: string;
     };
+    swag_paypal_v2_order_payment_source_common_attributes_order_update_callback_config: {
+      callback_url: string;
+      callback_events: ("SHIPPING_ADDRESS" | "SHIPPING_OPTIONS")[];
+    };
     swag_paypal_v2_order_payment_source_common_attributes_vault: {
       id: string | null;
       store_in_vault: string;
@@ -1055,6 +1063,7 @@ export interface components {
       payment_method_preference: "UNRESTRICTED" | "IMMEDIATE_PAYMENT_REQUIRED";
       /** @description Only: PUI */
       customer_service_instructions: string[];
+      order_update_callback_config: components["schemas"]["swag_paypal_v2_order_payment_source_common_attributes_order_update_callback_config"];
     };
     swag_paypal_v2_order_payment_source_common_phone: {
       phone_type: string;
@@ -1173,6 +1182,7 @@ export interface components {
       items: components["schemas"]["swag_paypal_v2_order_purchase_unit_item"][] | null;
       shipping: components["schemas"]["swag_paypal_v2_order_purchase_unit_shipping"];
       payments: components["schemas"]["swag_paypal_v2_order_purchase_unit_payments"] | null;
+      shipping_options: components["schemas"]["swag_paypal_v2_order_purchase_unit_shipping_option"][] | null;
     };
     swag_paypal_v2_order_purchase_unit_amount: components["schemas"]["swag_paypal_v2_common_money"] & ({
       breakdown: components["schemas"]["swag_paypal_v2_order_purchase_unit_amount_breakdown"] | null;
@@ -1288,6 +1298,14 @@ export interface components {
       url: string | null;
       image_url: string | null;
     };
+    swag_paypal_v2_order_purchase_unit_shipping_option: {
+      id: string;
+      label: string;
+      amount: components["schemas"]["swag_paypal_v2_common_money"];
+      /** @enum {string} */
+      type: "SHIPPING" | "PICKUP";
+      selected: boolean;
+    };
     swag_paypal_v2_order_tracker: {
       capture_id: string;
       tracking_number: string;
@@ -1296,6 +1314,12 @@ export interface components {
       /** @default false */
       notify_payer: boolean;
       items: components["schemas"]["swag_paypal_v2_order_purchase_unit_shipping_tracker_item"][];
+    };
+    swag_paypal_v2_order_shipping_callback: {
+      id: string;
+      shipping_address: components["schemas"]["swag_paypal_v2_common_address"];
+      shipping_option: components["schemas"]["swag_paypal_v2_order_purchase_unit_shipping_option"];
+      purchase_units: components["schemas"]["swag_paypal_v2_order_purchase_unit"][];
     };
     swag_paypal_v2_patch: {
       op: string;

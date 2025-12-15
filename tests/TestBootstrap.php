@@ -7,21 +7,32 @@
 
 use Shopware\Core\TestBootstrapper;
 
-if (is_readable(__DIR__ . '/../vendor/shopware/platform/src/Core/TestBootstrapper.php')) {
-    require __DIR__ . '/../vendor/shopware/platform/src/Core/TestBootstrapper.php';
-} elseif (is_readable(__DIR__ . '/../vendor/shopware/core/TestBootstrapper.php')) {
-    require __DIR__ . '/../vendor/shopware/core/TestBootstrapper.php';
-} else {
-    // vendored from platform, only use local TestBootstrapper if not already defined in platform
-    require __DIR__ . '/TestBootstrapper.php';
+$_SERVER['PROJECT_ROOT'] ??= dirname(__DIR__, 4);
+
+function getPluginPath(string $name): ?string
+{
+    foreach (glob($_SERVER['PROJECT_ROOT'] . '/custom/*plugins/*', \GLOB_ONLYDIR) ?: [] as $pluginDir) {
+        if (is_file($pluginDir . '/composer.json') && is_file($pluginDir . '/src/' . $name . '.php')) {
+            return $pluginDir;
+        }
+    }
+
+    return null;
+};
+
+$bootstrapper = (new TestBootstrapper())->setProjectDir($_SERVER['PROJECT_ROOT']);
+
+$plugins = [];
+foreach (['SwagCmsExtensions', 'SwagCommercial'] as $pluginName) {
+    if (getPluginPath($pluginName)) {
+        $plugins[] = $pluginName;
+
+        echo "{$pluginName} detected, require being active." . \PHP_EOL;
+    }
 }
 
-return (new TestBootstrapper())
-    ->setProjectDir($_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4))
+return $bootstrapper
     ->setLoadEnvFile(true)
-    ->setForceInstallPlugins(true)
-    ->addActivePlugins('SwagCmsExtensions')
-    ->addCallingPlugin()
+    ->addActivePlugins(basename(dirname(__DIR__)), ...$plugins)
     ->bootstrap()
-    ->setClassLoader(require dirname(__DIR__) . '/vendor/autoload.php')
     ->getClassLoader();

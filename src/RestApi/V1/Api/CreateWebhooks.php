@@ -18,10 +18,23 @@ use Swag\PayPal\RestApi\V1\Api\CreateWebhooks\EventTypeCollection;
 class CreateWebhooks extends PayPalApiStruct
 {
     #[OA\Property(type: 'string')]
+    protected string $id;
+
+    #[OA\Property(type: 'string')]
     protected string $url;
 
     #[OA\Property(type: 'array', items: new OA\Items(ref: EventType::class))]
     protected EventTypeCollection $eventTypes;
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
 
     public function getUrl(): string
     {

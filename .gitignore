@@ -6,6 +6,7 @@ src/Resources/public/administration/
 src/Resources/public/static/
 src/Resources/app/storefront/dist
 phpstan.neon
+phpstan.dynamic.neon
 var/
 composer.lock
 node_modules

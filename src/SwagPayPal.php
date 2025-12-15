@@ -38,6 +38,7 @@ use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
+use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\Config\FileLocator;
@@ -243,6 +244,12 @@ class SwagPayPal extends Plugin
                 $this->container->get(SystemConfigService::class)
             ),
             new PosInstaller($this->container->get(Connection::class)),
+            new PosStateService(
+                $this->getRepository($this->container, SalesChannelDefinition::ENTITY_NAME),
+                $this->getRepository($this->container, SalesChannelTypeDefinition::ENTITY_NAME),
+                $this->getRepository($this->container, ShippingMethodDefinition::ENTITY_NAME),
+                $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
+            )
         );
     }
 

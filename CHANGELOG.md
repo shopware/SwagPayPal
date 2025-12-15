@@ -1,3 +1,28 @@
+# 8.9.0
+- Fixes an issue, where the express checkout could choose a customer country that was not assigned to the correct sales channel (shopware/SwagPayPal#479)
+- Fixes an issue, where cookies are added even though associated payment methods are not active (shopware/SwagPayPal#457)
+- Fixes an issue, where the state of a country was not correctly transmitted to PayPal (shopware/SwagPayPal#469)
+- Added Apple Pay support for third-party browsers (shopware/SwagPayPal#485)
+- Added setting to mark the shop as local environment to preventing connection issues when testing in a non-publicly accessible environment (shopware/SwagPayPal#463)
+- Updated and optimized payment method icons
+
+# 8.8.0
+- Fixes an issue, where Paypal Express Checkout does not recalculate cart price after changing shipping country (shopware/SwagPayPal#342)
+
+# 8.7.10
+- Fixes an issue, where the Smart Payment Buttons were not stretched to full width on the product detail page for digital products
+- Fixed an issue, where Paypal errors showing on category page in Storefront, which should only be showed on checkout pages (shopware/shopware#12701)
+- Fixes an issue, where the webhook registration could run into a loop, if the saved Webhook ID is invalid
+
+# 8.7.9
+- Fixes an issue, where the plugin could not be updated when Zettle Sales Channels were active (shopware/SwagPayPal#361)
+
+# 8.7.8
+- Fixes an issue, where Apple Pay could not handle unsupported characters (shopware/SwagPayPal#331)
+
+# 8.7.7
+- Fixes an issue, requests to PayPal could wait indefinitly. Requests are now limited to 30 seconds (shopware/SwagPayPal#262)
+
 # 8.7.6
 - Fixes an issue, where vaulted payments could not be processed in the after order payment process in certain situations
 - Fixes a problem where the Venmo Express button was not shown

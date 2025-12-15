@@ -23,7 +23,6 @@ class WebhookSystemConfigHelper
         Settings::CLIENT_ID_SANDBOX,
         Settings::CLIENT_SECRET_SANDBOX,
         Settings::SANDBOX,
-        Settings::WEBHOOK_ID,
     ];
 
     private LoggerInterface $logger;
@@ -75,7 +74,8 @@ class WebhookSystemConfigHelper
                 continue;
             }
 
-            if (!$this->configHasChangedSettings($newSettings, $oldActualSettings)) {
+            $isLocalEnvironment = $newSettings[Settings::IS_LOCAL_ENVIRONMENT] ?? $this->systemConfigService->getBool(Settings::IS_LOCAL_ENVIRONMENT, $salesChannelId);
+            if (!$isLocalEnvironment && !$this->configHasChangedSettings($newSettings, $oldActualSettings)) {
                 // No writing of new credentials in this Sales Channel
                 continue;
             }
@@ -104,6 +104,10 @@ class WebhookSystemConfigHelper
         foreach ($salesChannelIds as $salesChannelId) {
             if ($salesChannelId === 'null') {
                 $salesChannelId = null;
+            }
+
+            if ($this->systemConfigService->get(Settings::IS_LOCAL_ENVIRONMENT, $salesChannelId)) {
+                continue;
             }
 
             $newSettings = $this->fetchSettings($salesChannelId);
