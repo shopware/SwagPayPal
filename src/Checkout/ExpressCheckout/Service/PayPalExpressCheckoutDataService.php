@@ -118,15 +118,9 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService impleme
         ]);
     }
 
-    protected function getButtonLanguage(SalesChannelContext $context): string
+    protected function getButtonLanguageSetting(): string
     {
-        if ($settingsLocale = $this->systemConfigService->getString(Settings::ECS_BUTTON_LANGUAGE_ISO, $context->getSalesChannelId())) {
-            return $this->localeCodeProvider->getFormattedLocaleCode($settingsLocale);
-        }
-
-        return $this->localeCodeProvider->getFormattedLocaleCode(
-            $this->localeCodeProvider->getLocaleCodeFromContext($context->getContext())
-        );
+        return Settings::ECS_BUTTON_LANGUAGE_ISO;
     }
 
     private function showPayLater(string $salesChannelId, ?AvailabilityContext $availabilityContext): bool
