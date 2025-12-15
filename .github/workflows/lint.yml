@@ -87,9 +87,11 @@ jobs:
           install-admin: true
           install-storefront: true
 
+      - name: Composer prefer lowest SDK
+        run: composer require --prefer-lowest --with-all-dependencies shopware/paypal-sdk
+
       - working-directory: custom/plugins/${{ github.event.repository.name }}
         run: |
-          composer install
           composer init:admin
           composer openapi:generate
           git update-index --refresh || printf ''
