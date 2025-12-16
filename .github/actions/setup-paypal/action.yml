@@ -50,6 +50,12 @@ runs:
         mkdir -p ~/.config/composer
         yq e -n -o=json '.config.audit.block-insecure=false' > ~/.config/composer/config.json
 
+    - name: Fix npm 9 install
+      shell: bash
+      run: |
+        sudo mkdir /usr/local/share/man/man7
+        sudo chown "$(id -u):$(id -g)" /usr/local/share/man/man7
+
     - name: Prepare dependency list
       id: dependency-list
       shell: bash
@@ -124,6 +130,7 @@ runs:
         shopwareVersion: ${{ inputs.shopware-version }}
         phpVersion: ${{ inputs.php-version }}
         node-version: 18.x
+        npm-version: 9
         keep-composer-tools: true
         install: true
         install-admin: ${{ inputs.install-admin }}
