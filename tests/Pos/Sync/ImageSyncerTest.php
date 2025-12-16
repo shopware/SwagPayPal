@@ -199,7 +199,7 @@ class ImageSyncerTest extends TestCase
             new IdSearchResult(
                 1,
                 [
-                    [
+                    "{$salesChannelId}-{$mediaId}" => [
                         'primaryKey' => ['salesChannelId' => $salesChannelId, 'mediaId' => $mediaId],
                         'data' => [],
                     ],

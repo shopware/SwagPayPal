@@ -33,27 +33,15 @@ class ImageSyncer
 {
     use PosSalesChannelTrait;
 
-    private EntityRepository $posMediaRepository;
-
-    private MediaConverter $mediaConverter;
-
-    private ImageResource $imageResource;
-
-    private LoggerInterface $logger;
-
     /**
      * @internal
      */
     public function __construct(
-        EntityRepository $posMediaRepository,
-        MediaConverter $mediaConverter,
-        ImageResource $imageResource,
-        LoggerInterface $logger,
+        private readonly EntityRepository $posMediaRepository,
+        private readonly MediaConverter $mediaConverter,
+        private readonly ImageResource $imageResource,
+        private readonly LoggerInterface $logger,
     ) {
-        $this->posMediaRepository = $posMediaRepository;
-        $this->mediaConverter = $mediaConverter;
-        $this->imageResource = $imageResource;
-        $this->logger = $logger;
     }
 
     /**
@@ -141,6 +129,7 @@ class ImageSyncer
 
     public function cleanUp(string $salesChannelId, Context $context): void
     {
+        /** @var Criteria<array<string, string>> $criteria */
         $criteria = new Criteria();
         $criteria->addFilter(
             new EqualsFilter('salesChannelId', $salesChannelId),
@@ -150,8 +139,7 @@ class ImageSyncer
 
         $ids = $this->posMediaRepository->searchIds($criteria, $context)->getIds();
         if (!empty($ids)) {
-            $ids = \array_filter($ids, static fn ($id) => \is_array($id));
-            $this->posMediaRepository->delete(\array_filter($ids), $context);
+            $this->posMediaRepository->delete($ids, $context);
         }
     }
 

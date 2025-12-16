@@ -72,7 +72,7 @@ class PUIInstructionsFetchTaskHandlerTest extends TestCase
 
         $searchResult = new IdSearchResult(
             1,
-            [['primaryKey' => 'test-id', 'data' => []]],
+            ['test-id' => ['primaryKey' => 'test-id', 'data' => []]],
             $criteria,
             Context::createDefaultContext()
         );

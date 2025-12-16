@@ -66,7 +66,7 @@ class PaymentMethodStateServiceTest extends TestCase
 
                 return true;
             }), static::isInstanceOf(Context::class))
-            ->willReturn(new IdSearchResult(1, [['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext()));
+            ->willReturn(new IdSearchResult(1, ['test-id' => ['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext()));
 
         $this->paymentMethodRepository->expects($this->once())
             ->method('update')
@@ -112,7 +112,7 @@ class PaymentMethodStateServiceTest extends TestCase
 
                 return true;
             }), static::isInstanceOf(Context::class))
-            ->willReturn(new IdSearchResult(1, [['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext()));
+            ->willReturn(new IdSearchResult(1, ['test-id' => ['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext()));
 
         $this->paymentMethodRepository->expects($this->once())
             ->method('update')
