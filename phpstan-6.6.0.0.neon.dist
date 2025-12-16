@@ -59,3 +59,23 @@ parameters:
 			message: "#^Trying to mock an undefined method addDocumentPaymentMean\\(\\) on class horstoeko\\\\zugferd\\\\ZugferdDocumentBuilder\\.$#"
 			count: 1
 			path: tests/Checkout/Document/Zugferd/ZugferdSubscriberTest.php
+
+		-
+			message: "#^Call to method get\\(\\) on an unknown class Shopware\\\\Core\\\\Test\\\\Stub\\\\Framework\\\\IdsCollection\\.$#"
+			count: 5
+			path: tests/Checkout/ExpressCheckout/Service/ExpressShippingCallbackServiceTest.php
+
+		-
+			message: "#^Call to method set\\(\\) on an unknown class Shopware\\\\Core\\\\Test\\\\Stub\\\\Framework\\\\IdsCollection\\.$#"
+			count: 1
+			path: tests/Checkout/ExpressCheckout/Service/ExpressShippingCallbackServiceTest.php
+
+		-
+			message: "#^Instantiated class Shopware\\\\Core\\\\Test\\\\Stub\\\\Framework\\\\IdsCollection not found\\.$#"
+			count: 1
+			path: tests/Checkout/ExpressCheckout/Service/ExpressShippingCallbackServiceTest.php
+
+		-
+			message: "#^Property Swag\\\\PayPal\\\\Test\\\\Checkout\\\\ExpressCheckout\\\\Service\\\\ExpressShippingCallbackServiceTest\\:\\:\\$ids has unknown class Shopware\\\\Core\\\\Test\\\\Stub\\\\Framework\\\\IdsCollection as its type\\.$#"
+			count: 1
+			path: tests/Checkout/ExpressCheckout/Service/ExpressShippingCallbackServiceTest.php

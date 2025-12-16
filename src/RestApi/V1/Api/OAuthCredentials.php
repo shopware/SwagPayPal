@@ -12,7 +12,7 @@ use Shopware\Core\Framework\Log\Package;
 
 #[OA\Schema(schema: 'swag_paypal_v1_oauth_credentials')]
 #[Package('checkout')]
-class OAuthCredentials
+class OAuthCredentials implements \Stringable
 {
     #[OA\Property(type: 'string')]
     protected string $restId;

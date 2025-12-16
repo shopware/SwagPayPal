@@ -8,6 +8,13 @@
     <sw-alert v-if="doubleOptInConfig" variant="warning">
         {{ $t('swag-paypal-settings.express.alertMessage') }}
     </sw-alert>
+    <sw-alert v-if="phoneRequiredConfig" variant="warning">
+        <i18n-t keypath="swag-paypal-settings.express.alertMessagePhone" tag="p">
+            <template #url>
+                <a href="https://www.paypal.com/businessmanage/preferences/website" target="_blank">{{ $t('swag-paypal-settings.express.alertMessagePhoneLink') }}</a>
+            </template>
+        </i18n-t>
+    </sw-alert>
 
     <swag-paypal-setting path="SwagPayPal.settings.ecsDetailEnabled" />
     <swag-paypal-setting path="SwagPayPal.settings.ecsCartEnabled" />

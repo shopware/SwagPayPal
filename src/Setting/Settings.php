@@ -76,6 +76,7 @@ final class Settings
 
     public const VAULTING_ENABLED_VENMO = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledVenmo';
     public const AGENT_COMMERCE_ONBOARDED = self::SYSTEM_CONFIG_DOMAIN . 'agentCommerceOnboarded';
+    public const IS_LOCAL_ENVIRONMENT = self::SYSTEM_CONFIG_DOMAIN . 'isLocalEnvironment';
 
     /**
      * @internal these may change at any time
@@ -115,6 +116,7 @@ final class Settings
         self::VAULTING_ENABLED_VENMO => false,
         self::CROSS_BORDER_MESSAGING_ENABLED => false,
         self::CROSS_BORDER_BUYER_COUNTRY => null,
+        self::IS_LOCAL_ENVIRONMENT => false,
     ];
 
     /**

@@ -5404,6 +5404,28 @@
                 },
                 "type": "object"
             },
+            "swag_paypal_v2_order_payment_source_common_attributes_order_update_callback_config": {
+                "required": [
+                    "callback_url",
+                    "callback_events"
+                ],
+                "properties": {
+                    "callback_url": {
+                        "type": "string"
+                    },
+                    "callback_events": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "SHIPPING_ADDRESS",
+                                "SHIPPING_OPTIONS"
+                            ]
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "swag_paypal_v2_order_payment_source_common_attributes_vault": {
                 "required": [
                     "id",
@@ -5471,7 +5493,8 @@
                     "return_url",
                     "cancel_url",
                     "payment_method_preference",
-                    "customer_service_instructions"
+                    "customer_service_instructions",
+                    "order_update_callback_config"
                 ],
                 "properties": {
                     "locale": {
@@ -5529,6 +5552,9 @@
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "order_update_callback_config": {
+                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes_order_update_callback_config"
                     }
                 },
                 "type": "object"
@@ -5984,7 +6010,8 @@
                     "invoice_id",
                     "items",
                     "shipping",
-                    "payments"
+                    "payments",
+                    "shipping_options"
                 ],
                 "properties": {
                     "reference_id": {
@@ -6023,6 +6050,13 @@
                                 "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_payments"
                             }
                         ],
+                        "nullable": true
+                    },
+                    "shipping_options": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_shipping_option"
+                        },
                         "nullable": true
                     }
                 },
@@ -6585,6 +6619,37 @@
                 },
                 "type": "object"
             },
+            "swag_paypal_v2_order_purchase_unit_shipping_option": {
+                "required": [
+                    "id",
+                    "label",
+                    "amount",
+                    "type",
+                    "selected"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "$ref": "#/components/schemas/swag_paypal_v2_common_money"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "SHIPPING",
+                            "PICKUP"
+                        ]
+                    },
+                    "selected": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
             "swag_paypal_v2_order_tracker": {
                 "required": [
                     "capture_id",
@@ -6615,6 +6680,32 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_shipping_tracker_item"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "swag_paypal_v2_order_shipping_callback": {
+                "required": [
+                    "id",
+                    "shipping_address",
+                    "shipping_option",
+                    "purchase_units"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "shipping_address": {
+                        "$ref": "#/components/schemas/swag_paypal_v2_common_address"
+                    },
+                    "shipping_option": {
+                        "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit_shipping_option"
+                    },
+                    "purchase_units": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"
                         }
                     }
                 },

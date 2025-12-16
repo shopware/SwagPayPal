@@ -1,6 +1,6 @@
 import './acl';
 
-Shopware.Component.extend('swag-paypal-locale-field', 'sw-text-field', () => import('./components/swag-paypal-locale-field'));
+Shopware.Component.register('swag-paypal-locale-field', () => import('./components/swag-paypal-locale-field'));
 Shopware.Component.extend('swag-paypal-plugin-box-with-onboarding', 'sw-plugin-box', () => import('./components/swag-paypal-plugin-box-with-onboarding'));
 Shopware.Component.register('swag-paypal-acdc', () => import('./components/swag-paypal-acdc'));
 Shopware.Component.register('swag-paypal-behavior', () => import('./components/swag-paypal-behavior'));
@@ -20,6 +20,7 @@ Shopware.Component.register('swag-paypal-settings-icon', () => import('./compone
 Shopware.Component.register('swag-paypal-spb', () => import('./components/swag-paypal-spb'));
 Shopware.Component.register('swag-paypal-vaulting', () => import('./components/swag-paypal-vaulting'));
 Shopware.Component.register('swag-paypal-webhook', () => import('./components/swag-paypal-webhook'));
+Shopware.Component.register('swag-paypal-local-environment', () => import('./components/swag-paypal-local-environment'));
 Shopware.Component.register('swag-paypal', () => import('./page/swag-paypal'));
 
 const { Module } = Shopware;

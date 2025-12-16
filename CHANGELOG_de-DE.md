@@ -1,3 +1,17 @@
+# 9.10.1
+- Behebt ein Problem, bei dem nicht von PayPal unterstützte Sprachen nicht auf eine unterstützte Sprache korrigiert wurden (shopware/shopware#13950)
+
+# 9.10.0
+- Behebt ein Problem, bei dem beim Express-Checkout ein Kundenland ausgewählt werden konnte, das nicht dem richtigen Vertriebskanal zugeordnet war (shopware/SwagPayPal#479)
+- Behebt ein Problem, bei dem Cookies geladen wurden, obwohl die zugehörigen Zahlungsarten nicht aktiv sind (shopware/SwagPayPal#457)
+- Behebt ein Problem, bei dem der Bundesstaat nicht korrekt an PayPal übermittelt wurde (shopware/SwagPayPal#469)
+- Fügt Apple-Pay-Support für Drittanbieter-Browser hinzu (shopware/SwagPayPal#485)
+- Fügt eine Einstellung hinzu, um den Shop als lokale Umgebung zu kennzeichnen, um Verbindungsprobleme beim Testen in einer nicht öffentlich zugänglichen Umgebung zu vermeiden (shopware/SwagPayPal#463)
+- Symbole für Zahlungsmethoden aktualisiert und optimiert
+
+# 9.9.0
+- Behebt ein Problem, bei dem der Warenkorbpreis beim Verändern des Versandlandes im Express Checkout nicht angepasst wurde (shopware/SwagPayPal#342)
+
 # 9.8.4
 - Passt den Betrag an, für den Pay Later zur Verfügung steht, an die aktuellen Beschränkungen an (https://developer.paypal.com/studio/checkout/pay-later/de)
 - Behebt ein Problem, bei dem die Smart Payment Buttons auf der Produktdetailseite für digitale Produkte nicht über die volle Breite dargestellt wurden

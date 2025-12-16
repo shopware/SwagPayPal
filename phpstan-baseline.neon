@@ -201,21 +201,6 @@ parameters:
 			path: tests/Storefront/Data/CheckoutSubscriberTest.php
 
 		-
-			message: "#^Class like namespace \"Shopware\\\\Core\" does not follow PSR\\-4 configuration in composer\\.json$#"
-			count: 1
-			path: tests/TestBootstrapper.php
-
-		-
-			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\Kernel\" over abstract one$#"
-			count: 1
-			path: tests/TestBootstrapper.php
-
-		-
-			message: "#^Provide more specific return type \"Shopware\\\\Core\\\\TestBootstrapper\" over abstract one$#"
-			count: 11
-			path: tests/TestBootstrapper.php
-
-		-
 			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Util\\\\Lifecycle\" does not follow PSR\\-4 configuration in composer\\.json$#"
 			count: 1
 			path: tests/Util/Availability/AvailabilityServiceTest.php

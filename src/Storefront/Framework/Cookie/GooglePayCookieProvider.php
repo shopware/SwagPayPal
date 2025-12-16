@@ -12,8 +12,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Swag\PayPal\Checkout\Payment\Method\GooglePayHandler;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 #[Package('checkout')]
 class GooglePayCookieProvider implements CookieProviderInterface
@@ -26,6 +28,7 @@ class GooglePayCookieProvider implements CookieProviderInterface
     public function __construct(
         CookieProviderInterface $cookieProvider,
         private readonly EntityRepository $paymentMethodRepository,
+        private readonly RequestStack $requestStack,
     ) {
         $this->original = $cookieProvider;
     }
@@ -67,9 +70,18 @@ class GooglePayCookieProvider implements CookieProviderInterface
     private function isGooglePayActive(): bool
     {
         $criteria = new Criteria();
+        $criteria->setLimit(1);
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('handlerIdentifier', GooglePayHandler::class));
 
-        return $this->paymentMethodRepository->searchIds($criteria, Context::createDefaultContext())->firstId() !== null;
+        $mainRequestAttributes = $this->requestStack->getMainRequest()?->attributes;
+        $context = $mainRequestAttributes?->get('sw-context') ?? Context::createDefaultContext();
+        $salesChannelId = $mainRequestAttributes?->getString('sw-sales-channel-id') ?? '';
+
+        if (Uuid::isValid($salesChannelId)) {
+            $criteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelId));
+        }
+
+        return $this->paymentMethodRepository->searchIds($criteria, $context)->firstId() !== null;
     }
 }
