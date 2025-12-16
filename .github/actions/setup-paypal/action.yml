@@ -54,7 +54,7 @@ runs:
       shell: bash
       run: |
         sudo mkdir -p /usr/local/share/man
-        sudo chown "$(id -u):$(id -g)" /usr/local/share/man
+        sudo chown -R "$(id -u):$(id -g)" /usr/local/share/man
 
     - name: Prepare dependency list
       id: dependency-list
