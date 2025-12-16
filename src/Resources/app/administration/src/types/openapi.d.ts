@@ -1853,7 +1853,7 @@ export interface components {
        * @description Link relationship type
        * @enum {string}
        */
-      rel: "rel" | "update" | "checkout";
+      rel: "self" | "update" | "checkout";
       /**
        * @description Target URL for the link
        *
