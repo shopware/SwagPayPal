@@ -8106,7 +8106,7 @@
                         "description": "Link relationship type",
                         "type": "string",
                         "enum": [
-                            "rel",
+                            "self",
                             "update",
                             "checkout"
                         ]
