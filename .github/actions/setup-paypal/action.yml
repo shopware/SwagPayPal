@@ -53,8 +53,8 @@ runs:
     - name: Fix npm 9 install
       shell: bash
       run: |
-        sudo mkdir /usr/local/share/man/man7
-        sudo chown "$(id -u):$(id -g)" /usr/local/share/man/man7
+        sudo mkdir -p /usr/local/share/man
+        sudo chown "$(id -u):$(id -g)" /usr/local/share/man
 
     - name: Prepare dependency list
       id: dependency-list
