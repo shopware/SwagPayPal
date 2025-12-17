@@ -43,7 +43,6 @@ class PaymentMethodUtilTest extends TestCase
     protected function setUp(): void
     {
         $this->paymentMethodUtil = static::getContainer()->get(PaymentMethodUtil::class);
-        $this->paymentMethodUtil->reset();
         $this->paymentMethodDataRegistry = static::getContainer()->get(PaymentMethodDataRegistry::class);
     }
 

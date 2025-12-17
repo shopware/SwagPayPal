@@ -171,9 +171,9 @@ class CookieProviderSubscriberTest extends TestCase
         $paymentMethodUtil
             ->expects($this->exactly(2))
             ->method('isPaymentMethodActive')
-            ->willReturnCallback(static function (SalesChannelContext $context, array $handlers) {
+            ->willReturnCallback(static function (SalesChannelContext $context, ?array $handlers = null) {
                 // GooglePayHandler is checked first
-                return \count($handlers) > 1;
+                return $handlers === null;
             });
 
         (new CookieProviderSubscriber($paymentMethodUtil))
