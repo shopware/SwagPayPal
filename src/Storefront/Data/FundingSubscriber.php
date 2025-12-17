@@ -9,9 +9,11 @@ namespace Swag\PayPal\Storefront\Data;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
+use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Storefront\Data\Service\FundingEligibilityDataService;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -22,16 +24,11 @@ class FundingSubscriber implements EventSubscriberInterface
 {
     public const FUNDING_ELIGIBILITY_EXTENSION = 'swagPayPalFundingEligibility';
 
-    private FundingEligibilityDataService $fundingEligibilityDataService;
-
-    private SettingsValidationServiceInterface $settingsValidationService;
-
     public function __construct(
-        SettingsValidationServiceInterface $settingsValidationService,
-        FundingEligibilityDataService $fundingEligibilityDataService,
+        private readonly SettingsValidationServiceInterface $settingsValidationService,
+        private readonly FundingEligibilityDataService $fundingEligibilityDataService,
+        private readonly PaymentMethodUtil $paymentMethodUtil,
     ) {
-        $this->settingsValidationService = $settingsValidationService;
-        $this->fundingEligibilityDataService = $fundingEligibilityDataService;
     }
 
     public static function getSubscribedEvents(): array
@@ -43,9 +40,13 @@ class FundingSubscriber implements EventSubscriberInterface
 
     public function addFundingAvailabilityData(FooterPageletLoadedEvent $event): void
     {
+        if (!$this->paymentMethodUtil->isPaymentMethodActive($event->getSalesChannelContext(), \array_values(MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS))) {
+            return;
+        }
+
         try {
             $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannelId());
-        } catch (PayPalSettingsInvalidException $e) {
+        } catch (PayPalSettingsInvalidException) {
             return;
         }
 
