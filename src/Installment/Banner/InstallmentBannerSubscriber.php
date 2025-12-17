@@ -9,6 +9,7 @@ namespace Swag\PayPal\Installment\Banner;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -29,6 +30,7 @@ use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Installment\Banner\Service\BannerDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -82,13 +84,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
     public function addInstallmentBanner(PageLoadedEvent $pageLoadedEvent): void
     {
         $salesChannelContext = $pageLoadedEvent->getSalesChannelContext();
-        if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext) === false) {
-            return;
-        }
-
-        try {
-            $this->settingsValidationService->validate($salesChannelContext->getSalesChannel()->getId());
-        } catch (PayPalSettingsInvalidException $e) {
+        if (!$this->checkSettings($salesChannelContext)) {
             return;
         }
 
@@ -127,13 +123,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
     public function addInstallmentBannerPagelet(PageletLoadedEvent $pageletLoadedEvent): void
     {
         $salesChannelContext = $pageletLoadedEvent->getSalesChannelContext();
-        if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext) === false) {
-            return;
-        }
-
-        try {
-            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
-        } catch (PayPalSettingsInvalidException $e) {
+        if (!$this->checkSettings($salesChannelContext)) {
             return;
         }
 
@@ -151,5 +141,20 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
             self::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID,
             $bannerData
         );
+    }
+
+    private function checkSettings(SalesChannelContext $salesChannelContext): bool
+    {
+        if (!$this->paymentMethodUtil->isPaymentMethodActive($salesChannelContext, [PayPalMethodData::class])) {
+            return false;
+        }
+
+        try {
+            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
+        } catch (PayPalSettingsInvalidException) {
+            return false;
+        }
+
+        return true;
     }
 }
