@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\DefaultPayment;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -82,7 +83,7 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testIsPaymentMethodActiveWithoutAssignedPaymentMethods(): void
     {
-        $paypalPaymentMethods = $this->getSalesChannelPaymentMethods()->filter(fn ($pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal'));
+        $paypalPaymentMethods = $this->getSalesChannelPaymentMethods()->filter(fn (PaymentMethodEntity $pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal'));
 
         static::assertCount(0, $paypalPaymentMethods);
 
@@ -95,7 +96,7 @@ class PaymentMethodUtilTest extends TestCase
 
         $scPaymentMethods = $this->getSalesChannelPaymentMethods();
 
-        static::assertCount(17, $scPaymentMethods->filter(fn ($pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal')));
+        static::assertCount(17, $scPaymentMethods->filter(fn (PaymentMethodEntity $pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal')));
 
         static::assertFalse($this->paymentMethodUtil->isPaymentMethodActive(Generator::generateSalesChannelContext(), null));
     }
@@ -108,7 +109,7 @@ class PaymentMethodUtilTest extends TestCase
 
         static::assertCount(
             \count($this->paymentMethodDataRegistry->getPaymentMethods()),
-            $scPaymentMethods->filter(fn ($pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal')),
+            $scPaymentMethods->filter(fn (PaymentMethodEntity $pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal')),
         );
 
         foreach ($this->paymentMethodDataRegistry->getPaymentMethods() as $methodData) {
