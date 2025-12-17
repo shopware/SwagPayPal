@@ -8,6 +8,7 @@
         <service id="Swag\PayPal\Util\PaymentMethodUtil">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
         </service>
 
         <service id="Swag\PayPal\Util\PaymentStatusUtil">

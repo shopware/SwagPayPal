@@ -121,13 +121,6 @@ parameters:
 			path: src/Storefront/Data/CheckoutDataSubscriber.php
 
 		-
-			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
-			identifier: staticMethod.internal
-			paths:
-				- src/Storefront/Framework/Cookie/GooglePayCookieProvider.php
-				- src/Storefront/Framework/Cookie/PayPalCookieProvider.php
-
-		-
 			message: '#^Mixed variable in a `\$criteria\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
 			identifier: typePerfect.noMixedMethodCaller
 			count: 1

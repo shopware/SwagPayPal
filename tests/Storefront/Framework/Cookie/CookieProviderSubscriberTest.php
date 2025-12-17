@@ -15,15 +15,12 @@ use Shopware\Core\Content\Cookie\Struct\CookieEntry;
 use Shopware\Core\Content\Cookie\Struct\CookieEntryCollection;
 use Shopware\Core\Content\Cookie\Struct\CookieGroup;
 use Shopware\Core\Content\Cookie\Struct\CookieGroupCollection;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Checkout\Payment\Method\GooglePayHandler;
 use Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -50,7 +47,12 @@ class CookieProviderSubscriberTest extends TestCase
             static::markTestSkipped('CookieGroupCollectEvent does not exist');
         }
 
-        (new CookieProviderSubscriber($this->createMock(EntityRepository::class)))
+        $paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
+        $paymentMethodUtil
+            ->expects($this->never())
+            ->method('isPaymentMethodActive');
+
+        (new CookieProviderSubscriber($paymentMethodUtil))
             ->onCookieGroupCollect(new CookieGroupCollectEvent(
                 $cookieGroupCollection,
                 new Request(),
@@ -95,7 +97,13 @@ class CookieProviderSubscriberTest extends TestCase
         $groupCollection = new CookieGroupCollection();
         $groupCollection->add($group);
 
-        (new CookieProviderSubscriber($this->createMock(EntityRepository::class)))
+        $paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
+        $paymentMethodUtil
+            ->expects($this->exactly(2))
+            ->method('isPaymentMethodActive')
+            ->willReturn(false);
+
+        (new CookieProviderSubscriber($paymentMethodUtil))
             ->onCookieGroupCollect(new CookieGroupCollectEvent(
                 $groupCollection,
                 new Request(),
@@ -122,13 +130,14 @@ class CookieProviderSubscriberTest extends TestCase
         $groupCollection = new CookieGroupCollection();
         $groupCollection->add($group);
 
-        $repository = $this->createMock(EntityRepository::class);
-        $repository
-            ->expects($this->once())
-            ->method('searchIds')
-            ->willReturn(new IdSearchResult(1, [Uuid::randomHex() => ['primaryKey' => 'token-id', 'data' => []]], new Criteria(), Context::createCLIContext()));
+        $paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
+        $paymentMethodUtil
+            ->expects($this->exactly(1))
+            ->method('isPaymentMethodActive')
+            ->with(static::isInstanceOf(SalesChannelContext::class), [GooglePayHandler::class])
+            ->willReturn(true);
 
-        (new CookieProviderSubscriber($repository))
+        (new CookieProviderSubscriber($paymentMethodUtil))
             ->onCookieGroupCollect(new CookieGroupCollectEvent(
                 $groupCollection,
                 new Request(),
@@ -158,16 +167,16 @@ class CookieProviderSubscriberTest extends TestCase
         $groupCollection = new CookieGroupCollection();
         $groupCollection->add($group);
 
-        $repository = $this->createMock(EntityRepository::class);
-        $repository
+        $paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
+        $paymentMethodUtil
             ->expects($this->exactly(2))
-            ->method('searchIds')
-            ->willReturnOnConsecutiveCalls(
-                new IdSearchResult(0, [], new Criteria(), Context::createCLIContext()),
-                new IdSearchResult(1, [Uuid::randomHex() => ['primaryKey' => 'token-id', 'data' => []]], new Criteria(), Context::createCLIContext())
-            );
+            ->method('isPaymentMethodActive')
+            ->willReturnCallback(static function (SalesChannelContext $context, array $handlers) {
+                // GooglePayHandler is checked first
+                return \count($handlers) > 1;
+            });
 
-        (new CookieProviderSubscriber($repository))
+        (new CookieProviderSubscriber($paymentMethodUtil))
             ->onCookieGroupCollect(new CookieGroupCollectEvent(
                 $groupCollection,
                 new Request(),

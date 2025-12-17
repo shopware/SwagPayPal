@@ -1,3 +1,6 @@
+# 10.4.1
+- Behebt ein Problem, bei dem erforderliche Cookies nicht im Banner angezeigt wurden, obwohl PayPal-Skripte geladen wurden (shopware/SwagPayPal#506)
+
 # 10.4.0
 - Behebt ein Problem, bei dem beim Express-Checkout ein Kundenland ausgewählt werden konnte, das nicht dem richtigen Vertriebskanal zugeordnet war (shopware/SwagPayPal#479)
 - Behebt ein Problem, bei dem Cookies geladen wurden, obwohl die zugehörigen Zahlungsarten nicht aktiv sind (shopware/SwagPayPal#457)

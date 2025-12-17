@@ -34,6 +34,7 @@ use Swag\PayPal\Storefront\Data\Service\FundingEligibilityDataService;
 use Swag\PayPal\Storefront\Data\Struct\FundingEligibilityData;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -209,7 +210,8 @@ class FundingSubscriberTest extends TestCase
                 $localeCodeProvider,
                 $router,
                 $requestStack
-            )
+            ),
+            $this->createMock(PaymentMethodUtil::class),
         );
     }
 
