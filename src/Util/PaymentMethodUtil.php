@@ -173,7 +173,7 @@ class PaymentMethodUtil implements ResetInterface
         }
 
         // get all active sales channel payment method ids mapped by their handler identifier
-        /** @var array<string, string> $oms */
+        /** @var array<string, string> $pms */
         $pms = $this->connection->fetchAllKeyValue(
             'SELECT pm.`handler_identifier`, LOWER(HEX(sc_pm.`payment_method_id`))
                 FROM `sales_channel_payment_method` AS sc_pm
@@ -194,7 +194,7 @@ class PaymentMethodUtil implements ResetInterface
             return $this->paymentMethodIds;
         }
 
-        /** @var array<string, string> $ids */
+        /** @var array<class-string, string> $ids */
         $ids = $this->connection->fetchAllKeyValue('SELECT `handler_identifier`, LOWER(HEX(`id`)) FROM `payment_method`');
 
         return $this->paymentMethodIds = $ids;
