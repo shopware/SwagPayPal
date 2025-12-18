@@ -18,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -58,9 +59,9 @@ class PaymentMethodUtilTest extends TestCase
                 )
                 ->firstId();
 
-            static::assertNotNull($fetchedId);
-            static::assertNotNull($expectedId);
-            static::assertSame($expectedId, $fetchedId);
+            static::assertNotNull($fetchedId, 'Failed to fetch payment method id for ' . $methodData->getHandler());
+            static::assertNotNull($expectedId, 'Failed to fetch expected payment method id for ' . $methodData->getHandler());
+            static::assertSame($expectedId, $fetchedId, 'Fetched payment method id returned from util does not match expected for ' . $methodData->getHandler());
         }
     }
 
@@ -86,7 +87,7 @@ class PaymentMethodUtilTest extends TestCase
 
         static::assertCount(0, $paypalPaymentMethods);
 
-        static::assertFalse($this->paymentMethodUtil->isPaymentMethodActive(Generator::createSalesChannelContext(), null));
+        static::assertFalse($this->paymentMethodUtil->isPaymentMethodActive($this->getSalesChannelContext(), null));
     }
 
     public function testIsPaymentMethodActiveWithoutActivePaymentMethods(): void
@@ -97,7 +98,7 @@ class PaymentMethodUtilTest extends TestCase
 
         static::assertCount(17, $scPaymentMethods->filter(fn (PaymentMethodEntity $pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal')));
 
-        static::assertFalse($this->paymentMethodUtil->isPaymentMethodActive(Generator::createSalesChannelContext(), null));
+        static::assertFalse($this->paymentMethodUtil->isPaymentMethodActive($this->getSalesChannelContext(), null));
     }
 
     public function testIsPaymentMethodActiveWithActivePaymentMethods(): void
@@ -112,7 +113,10 @@ class PaymentMethodUtilTest extends TestCase
         );
 
         foreach ($this->paymentMethodDataRegistry->getPaymentMethods() as $methodData) {
-            static::assertTrue($this->paymentMethodUtil->isPaymentMethodActive(Generator::createSalesChannelContext(), [$methodData->getHandler()]));
+            static::assertTrue(
+                $this->paymentMethodUtil->isPaymentMethodActive($this->getSalesChannelContext(), [$methodData->getHandler()]),
+                'Failed asserting that payment method ' . $methodData->getHandler() . ' is active',
+            );
         }
     }
 
@@ -154,7 +158,7 @@ class PaymentMethodUtilTest extends TestCase
     {
         $this->assignPaymentMethods($this->paymentMethodDataRegistry->getPaymentMethods(), true);
 
-        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext = $this->getSalesChannelContext();
         static::assertTrue($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext));
     }
 
@@ -206,6 +210,15 @@ class PaymentMethodUtilTest extends TestCase
         $paypalPaymentMethod = $scPaymentMethods->get($paypalPaymentMethodId);
         static::assertNotNull($paypalPaymentMethod);
         static::assertTrue($paypalPaymentMethod->getSalesChannelDefaultAssignments()?->has(TestDefaults::SALES_CHANNEL));
+    }
+
+    private function getSalesChannelContext(): SalesChannelContext
+    {
+        return Generator::createSalesChannelContext(
+            salesChannel: (new SalesChannelEntity())->assign([
+                'id' => TestDefaults::SALES_CHANNEL,
+            ]),
+        );
     }
 
     private function getSalesChannelPaymentMethods(): PaymentMethodCollection

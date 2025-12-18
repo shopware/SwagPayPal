@@ -36,10 +36,13 @@ class GooglePayCookieProviderTest extends TestCase
         $request = new Request();
         $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, Generator::createSalesChannelContext());
 
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
+
         $this->googlePayCookieProvider = new GooglePayCookieProvider(
             $this->cookieProvider = $this->createMock(CookieProviderInterface::class),
             $this->paymentMethodUtil = $this->createMock(PaymentMethodUtil::class),
-            new RequestStack([$request]),
+            $requestStack,
         );
     }
 
