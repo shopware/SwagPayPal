@@ -47,8 +47,6 @@ class PaymentMethodUtil implements ResetInterface
 
     /**
      * @internal
-     *
-     * @param EntityRepository<SalesChannelCollection> $salesChannelRepository
      */
     public function __construct(
         Connection $connection,
@@ -159,7 +157,10 @@ class PaymentMethodUtil implements ResetInterface
 
         $criteria->addAssociation('paymentMethods');
 
-        return $this->salesChannelRepository->search($criteria, $context)->getEntities();
+        /** @var SalesChannelCollection $salesChannels */
+        $salesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
+
+        return $salesChannels;
     }
 
     private function intoHandlerIdentifier(string|AbstractMethodData|PaymentMethodEntity $pm): string
