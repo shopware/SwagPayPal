@@ -38,10 +38,13 @@ class PayPalCookieProviderTest extends TestCase
         $request = new Request();
         $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, Generator::createSalesChannelContext());
 
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
+
         $this->payPalCookieProvider = new PayPalCookieProvider(
             $this->cookieProvider = $this->createMock(CookieProviderInterface::class),
             $this->paymentMethodUtil = $this->createMock(PaymentMethodUtil::class),
-            new RequestStack([$request]),
+            $requestStack,
         );
     }
 

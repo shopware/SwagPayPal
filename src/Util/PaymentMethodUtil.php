@@ -168,14 +168,21 @@ class PaymentMethodUtil implements ResetInterface
      */
     private function getAllPaymentMethodIdsPerSalesChannel(string $salesChannelId): array
     {
+        if (isset($this->salesChannels[$salesChannelId])) {
+            return $this->salesChannels[$salesChannelId];
+        }
+
         // get all active sales channel payment method ids mapped by their handler identifier
-        return $this->salesChannels[$salesChannelId] ??= $this->connection->fetchAllKeyValue(
+        /** @var array<string, string> $oms */
+        $pms = $this->connection->fetchAllKeyValue(
             'SELECT pm.`handler_identifier`, LOWER(HEX(sc_pm.`payment_method_id`))
                 FROM `sales_channel_payment_method` AS sc_pm
                 LEFT JOIN `payment_method` AS pm ON pm.`id` = sc_pm.`payment_method_id`
                 WHERE sc_pm.`sales_channel_id` = ? AND pm.`active` = 1',
             [Uuid::fromHexToBytes($salesChannelId)]
         );
+
+        return $this->salesChannels[$salesChannelId] = $pms;
     }
 
     /**
@@ -183,6 +190,13 @@ class PaymentMethodUtil implements ResetInterface
      */
     private function getAllPaymentMethodIds(): array
     {
-        return $this->paymentMethodIds ??= $this->connection->fetchAllKeyValue('SELECT `handler_identifier`, LOWER(HEX(`id`)) FROM `payment_method`');
+        if ($this->paymentMethodIds !== null) {
+            return $this->paymentMethodIds;
+        }
+
+        /** @var array<string, string> $ids */
+        $ids = $this->connection->fetchAllKeyValue('SELECT `handler_identifier`, LOWER(HEX(`id`)) FROM `payment_method`');
+
+        return $this->paymentMethodIds = $ids;
     }
 }
