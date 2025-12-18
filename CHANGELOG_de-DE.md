@@ -1,4 +1,5 @@
 # 8.9.1
+- Behebt ein Problem, bei dem erforderliche Cookies nicht im Banner angezeigt wurden, obwohl PayPal-Skripte geladen wurden (shopware/SwagPayPal#506)
 - Behebt ein Problem, bei dem nicht von PayPal unterstützte Sprachen nicht auf eine unterstützte Sprache korrigiert wurden (shopware/shopware#13950)
 
 # 8.9.0
