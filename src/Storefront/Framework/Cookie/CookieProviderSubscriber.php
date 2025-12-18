@@ -7,16 +7,11 @@
 
 namespace Swag\PayPal\Storefront\Framework\Cookie;
 
-use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Content\Cookie\Event\CookieGroupCollectEvent;
 use Shopware\Core\Content\Cookie\Struct\CookieEntry;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\PrefixFilter;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\Method\GooglePayHandler;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -25,11 +20,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 #[Package('checkout')]
 class CookieProviderSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @param EntityRepository<PaymentMethodCollection> $paymentMethodRepository
-     */
     public function __construct(
-        private readonly EntityRepository $paymentMethodRepository,
+        private readonly PaymentMethodUtil $paymentMethodUtil,
     ) {
     }
 
@@ -50,36 +42,14 @@ class CookieProviderSubscriber implements EventSubscriberInterface
         $payPalCookie = new CookieEntry('paypal-cookie-key');
         $payPalCookie->name = 'paypal.cookie.name';
 
-        if ($this->isGooglePayActive($event->getSalesChannelContext())) {
+        if ($this->paymentMethodUtil->isPaymentMethodActive($event->getSalesChannelContext(), [GooglePayHandler::class])) {
             $googleCookie = new CookieEntry('paypal-google-pay-cookie-key');
             $googleCookie->name = 'paypal.cookie.googlePay';
 
             $entries->add($payPalCookie);
             $entries->add($googleCookie);
-        } elseif ($this->isPayPalPaymentActive($event->getSalesChannelContext())) {
+        } elseif ($this->paymentMethodUtil->isPaymentMethodActive($event->getSalesChannelContext())) {
             $entries->add($payPalCookie);
         }
-    }
-
-    private function isPayPalPaymentActive(SalesChannelContext $salesChannelContext): bool
-    {
-        $criteria = new Criteria();
-        $criteria->setLimit(1);
-        $criteria->addFilter(new EqualsFilter('active', true));
-        $criteria->addFilter(new PrefixFilter('technicalName', 'swag_paypal_'));
-        $criteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelContext->getSalesChannelId()));
-
-        return $this->paymentMethodRepository->searchIds($criteria, $salesChannelContext->getContext())->firstId() !== null;
-    }
-
-    private function isGooglePayActive(SalesChannelContext $salesChannelContext): bool
-    {
-        $criteria = new Criteria();
-        $criteria->setLimit(1);
-        $criteria->addFilter(new EqualsFilter('active', true));
-        $criteria->addFilter(new EqualsFilter('handlerIdentifier', GooglePayHandler::class));
-        $criteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelContext->getSalesChannelId()));
-
-        return $this->paymentMethodRepository->searchIds($criteria, $salesChannelContext->getContext())->firstId() !== null;
     }
 }

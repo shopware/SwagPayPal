@@ -8,13 +8,17 @@
 namespace Swag\PayPal\Storefront\Data;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
+use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Storefront\Data\Service\FundingEligibilityDataService;
+use Swag\PayPal\Storefront\Data\Struct\FundingEligibilityData;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -25,16 +29,11 @@ class FundingSubscriber implements EventSubscriberInterface
 {
     public const FUNDING_ELIGIBILITY_EXTENSION = 'swagPayPalFundingEligibility';
 
-    private FundingEligibilityDataService $fundingEligibilityDataService;
-
-    private SettingsValidationServiceInterface $settingsValidationService;
-
     public function __construct(
-        SettingsValidationServiceInterface $settingsValidationService,
-        FundingEligibilityDataService $fundingEligibilityDataService,
+        private readonly SettingsValidationServiceInterface $settingsValidationService,
+        private readonly FundingEligibilityDataService $fundingEligibilityDataService,
+        private readonly PaymentMethodUtil $paymentMethodUtil,
     ) {
-        $this->settingsValidationService = $settingsValidationService;
-        $this->fundingEligibilityDataService = $fundingEligibilityDataService;
     }
 
     public static function getSubscribedEvents(): array
@@ -52,13 +51,7 @@ class FundingSubscriber implements EventSubscriberInterface
      */
     public function addFundingAvailabilityDataToFooter(FooterPageletLoadedEvent $event): void
     {
-        try {
-            $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannelId());
-        } catch (PayPalSettingsInvalidException $e) {
-            return;
-        }
-
-        $data = $this->fundingEligibilityDataService->buildData($event->getSalesChannelContext());
+        $data = $this->getFundingEligiblityData($event->getSalesChannelContext());
         if ($data === null) {
             return;
         }
@@ -68,13 +61,7 @@ class FundingSubscriber implements EventSubscriberInterface
 
     public function addFundingAvailabilityDataToPage(GenericPageLoadedEvent $event): void
     {
-        try {
-            $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannelId());
-        } catch (PayPalSettingsInvalidException $e) {
-            return;
-        }
-
-        $data = $this->fundingEligibilityDataService->buildData($event->getSalesChannelContext());
+        $data = $this->getFundingEligiblityData($event->getSalesChannelContext());
         if ($data === null) {
             return;
         }
@@ -85,5 +72,20 @@ class FundingSubscriber implements EventSubscriberInterface
     public function removeFundingAvailabilityDataFromPage(CheckoutConfirmPageLoadedEvent|CheckoutRegisterPageLoadedEvent $event): void
     {
         $event->getPage()->removeExtension(self::FUNDING_ELIGIBILITY_EXTENSION);
+    }
+
+    private function getFundingEligiblityData(SalesChannelContext $salesChannelContext): ?FundingEligibilityData
+    {
+        if (!$this->paymentMethodUtil->isPaymentMethodActive($salesChannelContext, \array_values(MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS))) {
+            return null;
+        }
+
+        try {
+            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
+        } catch (PayPalSettingsInvalidException) {
+            return null;
+        }
+
+        return $this->fundingEligibilityDataService->buildData($salesChannelContext);
     }
 }
