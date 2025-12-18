@@ -295,7 +295,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         }
 
         $confirmPage = $event->getPage();
-        $payPalMethod = $confirmPage->getPaymentMethods()->firstWhere(static fn (PaymentMethodEntity $paymentMethod) => $paymentMethod->getHandlerIdentifier() === PayPalPaymentHandler::class);
+        $payPalMethod = $confirmPage->getPaymentMethods()->filter(static fn (PaymentMethodEntity $paymentMethod) => $paymentMethod->getHandlerIdentifier() === PayPalPaymentHandler::class)->first();
         if (!$payPalMethod) {
             return;
         }

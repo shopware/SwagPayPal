@@ -78,7 +78,7 @@ class PaymentMethodUtil implements ResetInterface
         $handlerIdentifier = \array_flip($handlerIdentifier);
 
         if ($paymentMethods = $salesChannelContext->getSalesChannel()->getPaymentMethods()) {
-            return (bool) $paymentMethods->firstWhere(static fn (PaymentMethodEntity $pm) => $pm->getActive() && isset($handlerIdentifier[$pm->getHandlerIdentifier()]));
+            return (bool) $paymentMethods->filter(static fn (PaymentMethodEntity $pm) => $pm->getActive() && isset($handlerIdentifier[$pm->getHandlerIdentifier()]))->first();
         }
 
         $paymentMethodIds = $this->getAllPaymentMethodIdsPerSalesChannel($salesChannelContext->getSalesChannelId());
@@ -182,7 +182,7 @@ class PaymentMethodUtil implements ResetInterface
         }
 
         // get all active sales channel payment method ids mapped by their handler identifier
-        /** @var array<string, string> $oms */
+        /** @var array<string, string> $pms */
         $pms = $this->connection->fetchAllKeyValue(
             'SELECT pm.`handler_identifier`, LOWER(HEX(sc_pm.`payment_method_id`))
                 FROM `sales_channel_payment_method` AS sc_pm
@@ -203,7 +203,7 @@ class PaymentMethodUtil implements ResetInterface
             return $this->paymentMethodIds;
         }
 
-        /** @var array<string, string> $ids */
+        /** @var array<class-string, string> $ids */
         $ids = $this->connection->fetchAllKeyValue('SELECT `handler_identifier`, LOWER(HEX(`id`)) FROM `payment_method`');
 
         return $this->paymentMethodIds = $ids;
