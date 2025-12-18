@@ -58,9 +58,9 @@ class PaymentMethodUtilTest extends TestCase
                 )
                 ->firstId();
 
-            static::assertNotNull($fetchedId);
-            static::assertNotNull($expectedId);
-            static::assertSame($expectedId, $fetchedId);
+            static::assertNotNull($fetchedId, 'Failed to fetch payment method id for ' . $methodData->getHandler());
+            static::assertNotNull($expectedId, 'Failed to fetch expected payment method id for ' . $methodData->getHandler());
+            static::assertSame($expectedId, $fetchedId, 'Fetched payment method id returned from util does not match expected for ' . $methodData->getHandler());
         }
     }
 
@@ -112,7 +112,10 @@ class PaymentMethodUtilTest extends TestCase
         );
 
         foreach ($this->paymentMethodDataRegistry->getPaymentMethods() as $methodData) {
-            static::assertTrue($this->paymentMethodUtil->isPaymentMethodActive(Generator::generateSalesChannelContext(), [$methodData->getHandler()]));
+            static::assertTrue(
+                $this->paymentMethodUtil->isPaymentMethodActive(Generator::generateSalesChannelContext(), [$methodData->getHandler()]),
+                'Failed asserting that payment method ' . $methodData->getHandler() . ' is active',
+            );
         }
     }
 
