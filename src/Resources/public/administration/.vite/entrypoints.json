@@ -1,0 +1,48 @@
+{
+  "base": "/bundles/swagpaypal/administration/",
+  "entryPoints": {
+    "swag-pay-pal": {
+      "css": [
+        "/bundles/swagpaypal/administration/assets/swag-pay-pal-Bl65a9xJ.css"
+      ],
+      "dynamic": [
+        "/bundles/swagpaypal/administration/assets/index-BziGdwzm.js",
+        "/bundles/swagpaypal/administration/assets/index-82QMdBWK.js",
+        "/bundles/swagpaypal/administration/assets/index-DVkGKjlB.js",
+        "/bundles/swagpaypal/administration/assets/index-DxLTd4xV.js",
+        "/bundles/swagpaypal/administration/assets/index-R7pIpB7B.js",
+        "/bundles/swagpaypal/administration/assets/index-BsFzNe0C.js",
+        "/bundles/swagpaypal/administration/assets/index-DT6hpUCH.js",
+        "/bundles/swagpaypal/administration/assets/index-NSbpapJx.js",
+        "/bundles/swagpaypal/administration/assets/index-DnLidD0f.js",
+        "/bundles/swagpaypal/administration/assets/index-DW5rY_2a.js",
+        "/bundles/swagpaypal/administration/assets/index-D8Q_Oavj.js",
+        "/bundles/swagpaypal/administration/assets/index-BJtQKoRZ.js",
+        "/bundles/swagpaypal/administration/assets/index-QD0Oy9I0.js",
+        "/bundles/swagpaypal/administration/assets/index-COETuq5G.js",
+        "/bundles/swagpaypal/administration/assets/index-CsBAAWMw.js",
+        "/bundles/swagpaypal/administration/assets/index-BCZeh6ai.js",
+        "/bundles/swagpaypal/administration/assets/index-CjRcIrtF.js",
+        "/bundles/swagpaypal/administration/assets/index-CzUkyfh1.js",
+        "/bundles/swagpaypal/administration/assets/index-CTAXISfe.js",
+        "/bundles/swagpaypal/administration/assets/index-B6HE4bLc.js",
+        "/bundles/swagpaypal/administration/assets/index-B_pWpqqy.js",
+        "/bundles/swagpaypal/administration/assets/index-CnMEVSY-.js"
+      ],
+      "js": [
+        "/bundles/swagpaypal/administration/assets/swag-pay-pal-BxgVI1dx.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}
