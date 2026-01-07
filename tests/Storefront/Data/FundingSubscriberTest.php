@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
@@ -25,6 +26,7 @@ use Swag\PayPal\Storefront\Data\Service\FundingEligibilityDataService;
 use Swag\PayPal\Storefront\Data\Struct\FundingEligibilityData;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -59,6 +61,18 @@ class FundingSubscriberTest extends TestCase
         static::assertFalse($event->getPagelet()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
     }
 
+    public function testAddNoActivePaymentMethods(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
+        $subscriber = $this->createSubscriber($systemConfigService, false);
+        $event = $this->createFooterPageletLoadedEvent();
+        $subscriber->addFundingAvailabilityData($event);
+
+        static::assertFalse($event->getPagelet()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+    }
+
     public function testAdd(): void
     {
         $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
@@ -79,7 +93,7 @@ class FundingSubscriberTest extends TestCase
         static::assertSame(['SEPA'], $extension->getFilteredPaymentMethods());
     }
 
-    private function createSubscriber(SystemConfigService $systemConfig): FundingSubscriber
+    private function createSubscriber(SystemConfigService $systemConfig, bool $paymentMethodsActive = true): FundingSubscriber
     {
         $credentialsUtil = new CredentialsUtil($systemConfig);
 
@@ -96,6 +110,12 @@ class FundingSubscriberTest extends TestCase
         $requestStack = new RequestStack();
         $requestStack->push($request);
 
+        $paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
+        $paymentMethodUtil
+            ->method('isPaymentMethodActive')
+            ->with(static::isInstanceOf(SalesChannelContext::class), \array_values(MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS))
+            ->willReturn($paymentMethodsActive);
+
         return new FundingSubscriber(
             new SettingsValidationService($systemConfig, new NullLogger()),
             new FundingEligibilityDataService(
@@ -104,7 +124,8 @@ class FundingSubscriberTest extends TestCase
                 $localeCodeProvider,
                 $router,
                 $requestStack
-            )
+            ),
+            $paymentMethodUtil,
         );
     }
 

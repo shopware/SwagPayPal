@@ -46,12 +46,17 @@ abstract class AbstractScriptDataService
 
     protected function getButtonLanguage(SalesChannelContext $context): string
     {
-        if ($settingsLocale = $this->systemConfigService->getString(Settings::SPB_BUTTON_LANGUAGE_ISO, $context->getSalesChannelId())) {
+        if ($settingsLocale = $this->systemConfigService->getString($this->getButtonLanguageSetting(), $context->getSalesChannelId())) {
             return $this->localeCodeProvider->getFormattedLocaleCode($settingsLocale);
         }
 
         return $this->localeCodeProvider->getFormattedLocaleCode(
             $this->localeCodeProvider->getLocaleCodeFromContext($context->getContext())
         );
+    }
+
+    protected function getButtonLanguageSetting(): string
+    {
+        return Settings::SPB_BUTTON_LANGUAGE_ISO;
     }
 }
