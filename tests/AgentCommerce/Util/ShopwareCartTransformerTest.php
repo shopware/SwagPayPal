@@ -15,9 +15,15 @@ use Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateCollection;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
+use Shopware\Core\System\Country\CountryCollection;
+use Shopware\Core\System\Country\CountryDefinition;
+use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Struct\V1\Coupon;
@@ -36,10 +42,33 @@ class ShopwareCartTransformerTest extends TestCase
         $overallRandomId = Uuid::randomHex();
         $idResult = new IdSearchResult(1, [['primaryKey' => $overallRandomId]], new Criteria(), Context::createDefaultContext());
 
+        $state1 = new CountryStateEntity();
+        $state1->setId(Uuid::randomHex());
+        $state1->setShortCode('CACA');
+
+        $caId = Uuid::randomHex();
+        $state2 = new CountryStateEntity();
+        $state2->setId($caId);
+        $state2->setShortCode('CA');
+
+        $nyId = Uuid::randomHex();
+        $state3 = new CountryStateEntity();
+        $state3->setId($nyId);
+        $state3->setShortCode('US-NY');
+
+        $country = new CountryEntity();
+        $country->setId($overallRandomId);
+        $country->setStates(new CountryStateCollection([$state1, $state2, $state3]));
+
+        $result = new EntitySearchResult(CountryDefinition::ENTITY_NAME, 1, new CountryCollection([$country]), null, new Criteria(), Context::createDefaultContext());
+
         $repository = $this->createMock(EntityRepository::class);
         $repository
             ->method('searchIds')
             ->willReturn($idResult);
+        $repository
+            ->method('search')
+            ->willReturn($result);
 
         $transformer = new ShopwareCartTransformer(
             $repository,
@@ -59,13 +88,19 @@ class ShopwareCartTransformerTest extends TestCase
         static::assertSame($overallRandomId, $customerData['groupId']);
         static::assertSame($overallRandomId, $customerData['shippingAddress']['salutationId']);
         static::assertSame($overallRandomId, $customerData['shippingAddress']['countryId']);
+        static::assertSame($caId, $customerData['shippingAddress']['countryStateId']);
+        static::assertArrayHasKey('billingAddress', $customerData);
+        static::assertSame($overallRandomId, $customerData['billingAddress']['salutationId']);
+        static::assertSame($overallRandomId, $customerData['billingAddress']['countryId']);
+        static::assertSame($nyId, $customerData['billingAddress']['countryStateId']);
+
         static::assertSame('John', $customerData['shippingAddress']['firstName']);
         static::assertSame('Smith', $customerData['shippingAddress']['lastName']);
         static::assertSame('12345', $customerData['shippingAddress']['zipcode']);
         static::assertSame('San Jose', $customerData['shippingAddress']['city']);
         static::assertSame('123 Main Street', $customerData['shippingAddress']['street']);
         static::assertSame('+1 12345-6789', $customerData['shippingAddress']['phoneNumber']);
-        static::assertArrayHasKey('billingAddress', $customerData);
+
         static::assertSame('John', $customerData['billingAddress']['firstName']);
         static::assertSame('Smith', $customerData['billingAddress']['lastName']);
         static::assertSame('10001', $customerData['billingAddress']['zipcode']);

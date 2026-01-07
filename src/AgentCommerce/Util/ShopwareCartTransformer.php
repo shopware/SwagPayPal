@@ -15,9 +15,12 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\SuffixFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateCollection;
 use Shopware\Core\System\Country\CountryCollection;
+use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Salutation\SalutationCollection;
 use Shopware\Core\System\Salutation\SalutationDefinition;
@@ -101,9 +104,14 @@ class ShopwareCartTransformer
     private function formatAddress(Address $address, CustomerName $name, ?Phone $phone, Context $context): array
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('iso', $address->getCountryCode()));
-        $countryId = $this->countryRepository->searchIds($criteria, $context)->firstId();
 
-        if (!$countryId) {
+        if ($address->getAdminArea1()) {
+            $criteria->getAssociation('states')
+                ->addFilter(new SuffixFilter('shortCode', $address->getAdminArea1()));
+        }
+
+        $country = $this->countryRepository->search($criteria, $context)->first();
+        if (!$country instanceof CountryEntity) {
             throw AgentException::requiredFieldInvalid('address.countryCode', 'Country not found');
         }
 
@@ -113,7 +121,8 @@ class ShopwareCartTransformer
         return [
             'id' => Uuid::randomHex(),
             'salutationId' => $salutationId,
-            'countryId' => $countryId,
+            'countryId' => $country->getId(),
+            'countryStateId' => $this->getStateId($country->getStates(), $address->getAdminArea1()),
             'firstName' => $name->getGivenName(),
             'lastName' => $name->getSurname(),
             'zipcode' => $address->getPostalCode(),
@@ -136,5 +145,18 @@ class ShopwareCartTransformer
         }
 
         return $items;
+    }
+
+    private function getStateId(?CountryStateCollection $states, ?string $adminArea1): ?string
+    {
+        if ($states) {
+            foreach ($states as $state) {
+                if ($state->getShortCode() === $adminArea1 || str_ends_with($state->getShortCode(), '-' . $adminArea1)) {
+                    return $state->getId();
+                }
+            }
+        }
+
+        return null;
     }
 }
