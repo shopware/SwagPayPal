@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\ExpressCheckout;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -44,6 +45,7 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -272,17 +274,12 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         }
 
         $confirmPage = $event->getPage();
-        $payPalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($event->getContext());
-        if ($payPalPaymentMethodId === null) {
+        $payPalMethod = $confirmPage->getPaymentMethods()->firstWhere(static fn (PaymentMethodEntity $paymentMethod) => $paymentMethod->getHandlerIdentifier() === PayPalPaymentHandler::class);
+        if (!$payPalMethod) {
             return;
         }
 
-        $paymentMethods = $confirmPage->getPaymentMethods();
-        if ($paymentMethods->has($payPalPaymentMethodId) === false) {
-            return;
-        }
-
-        $filtered = $paymentMethods->filterByProperty('id', $payPalPaymentMethodId);
+        $filtered = $confirmPage->getPaymentMethods()->filterByProperty('id', $payPalMethod->getId());
         $confirmPage->setPaymentMethods($filtered);
         $this->logger->debug('Removed other payment methods from selection for Express Checkout');
     }
@@ -322,13 +319,13 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     private function checkSettings(SalesChannelContext $context, string $eventName): bool
     {
-        if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($context) === false) {
+        if ($this->paymentMethodUtil->isPaymentMethodActive($context, [PayPalMethodData::class]) === false) {
             return false;
         }
 
         try {
             $this->settingsValidationService->validate($context->getSalesChannelId());
-        } catch (PayPalSettingsInvalidException $e) {
+        } catch (PayPalSettingsInvalidException) {
             return false;
         }
 
