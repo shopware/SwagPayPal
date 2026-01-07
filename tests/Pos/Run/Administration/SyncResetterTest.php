@@ -34,12 +34,15 @@ class SyncResetterTest extends TestCase
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
 
+        /** @var IdSearchResult<array<string, string>> $idSearchResult */
+        $idSearchResult = new IdSearchResult(1, ["{$salesChannelId}-{$entityId}" => ['primaryKey' => ['salesChannelId' => $salesChannelId, 'productId' => $entityId], 'data' => []]], $criteria, $context);
+
         $productRepo = $this->createMock(EntityRepository::class);
         $productRepo
             ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo($criteria), $context)
-            ->willReturn(new IdSearchResult(1, [['primaryKey' => ['salesChannelId' => $salesChannelId, 'productId' => $entityId], 'data' => []]], $criteria, $context));
+            ->willReturn($idSearchResult);
         $productRepo
             ->expects($this->once())
             ->method('delete')
@@ -50,18 +53,20 @@ class SyncResetterTest extends TestCase
             ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo($criteria), $context)
-            ->willReturn(new IdSearchResult(1, [['primaryKey' => ['salesChannelId' => $salesChannelId, 'productId' => $entityId], 'data' => []]], $criteria, $context));
+            ->willReturn($idSearchResult);
         $inventoryRepo
             ->expects($this->once())
             ->method('delete')
             ->with([['salesChannelId' => $salesChannelId, 'productId' => $entityId]], $context);
 
+        /** @var IdSearchResult<array<string, string>> $idSearchResult */
+        $idSearchResult = new IdSearchResult(1, ["{$salesChannelId}-{$entityId}" => ['primaryKey' => ['salesChannelId' => $salesChannelId, 'mediaId' => $entityId], 'data' => []]], $criteria, $context);
         $mediaRepo = $this->createMock(EntityRepository::class);
         $mediaRepo
             ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo($criteria), $context)
-            ->willReturn(new IdSearchResult(1, [['primaryKey' => ['salesChannelId' => $salesChannelId, 'mediaId' => $entityId], 'data' => []]], $criteria, $context));
+            ->willReturn($idSearchResult);
         $mediaRepo
             ->expects($this->once())
             ->method('delete')
@@ -72,7 +77,7 @@ class SyncResetterTest extends TestCase
             ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo($criteria), $context)
-            ->willReturn(new IdSearchResult(1, [['primaryKey' => $entityId, 'data' => []]], $criteria, $context));
+            ->willReturn(new IdSearchResult(1, [$entityId => ['primaryKey' => $entityId, 'data' => []]], $criteria, $context));
         $runRepo
             ->expects($this->once())
             ->method('delete')

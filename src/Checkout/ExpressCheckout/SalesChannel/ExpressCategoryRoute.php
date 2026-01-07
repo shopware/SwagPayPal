@@ -17,6 +17,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataServic
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -82,7 +83,7 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
 
     private function checkSettings(SalesChannelContext $context): bool
     {
-        if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($context) === false) {
+        if ($this->paymentMethodUtil->isPaymentMethodActive($context, [PayPalMethodData::class]) === false) {
             return false;
         }
 

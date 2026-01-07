@@ -7,16 +7,19 @@
 
 namespace Swag\PayPal\Test\Storefront\Framework\Cookie;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Content\Cookie\Event\CookieGroupCollectEvent;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\PlatformRequest;
+use Shopware\Core\Test\Generator;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Swag\PayPal\Storefront\Framework\Cookie\GooglePayCookieProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @internal
@@ -24,57 +27,77 @@ use Swag\PayPal\Storefront\Framework\Cookie\GooglePayCookieProvider;
  * @deprecated tag:v11.0.0 - Will be removed. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
  */
 #[Package('checkout')]
+#[CoversClass(GooglePayCookieProvider::class)]
 class GooglePayCookieProviderTest extends TestCase
 {
-    private EntityRepository&MockObject $paymentMethodRepository;
+    private CookieProviderInterface&MockObject $cookieProvider;
+
+    private PaymentMethodUtil&MockObject $paymentMethodUtil;
+
+    private GooglePayCookieProvider $googlePayCookieProvider;
 
     protected function setUp(): void
     {
-        $this->paymentMethodRepository = $this->createMock(EntityRepository::class);
+        $request = new Request();
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, Generator::generateSalesChannelContext());
+
+        $this->googlePayCookieProvider = new GooglePayCookieProvider(
+            $this->cookieProvider = $this->createMock(CookieProviderInterface::class),
+            $this->paymentMethodUtil = $this->createMock(PaymentMethodUtil::class),
+            new RequestStack([$request]),
+        );
     }
 
     public function testGetCookieGroupsWithEmptyOriginalCookiesReturnsOriginalCookies(): void
     {
-        $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
+        if (\class_exists(CookieGroupCollectEvent::class)) {
+            static::markTestSkipped('Deprecated. Logic moved to Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber');
+        }
+
         $cookies = [];
-        $cookieProviderMock->expects($this->once())
+        $this->cookieProvider->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $result = (new GooglePayCookieProvider($cookieProviderMock, $this->paymentMethodRepository))->getCookieGroups();
+        $result = $this->googlePayCookieProvider->getCookieGroups();
         static::assertSame($cookies, $result);
     }
 
     public function testGetCookieGroupsWithOriginalCookiesNotInSubArraysReturnsOriginalCookies(): void
     {
-        $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
+        if (\class_exists(CookieGroupCollectEvent::class)) {
+            static::markTestSkipped('Deprecated. Logic moved to Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber');
+        }
+
         $cookies = [
             'snippet_name' => 'cookie.example.name',
             'cookie' => 'example-cookie-key',
         ];
-        $cookieProviderMock->expects($this->once())
+        $this->cookieProvider->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $result = (new GooglePayCookieProvider($cookieProviderMock, $this->paymentMethodRepository))->getCookieGroups();
+        $result = $this->googlePayCookieProvider->getCookieGroups();
         static::assertSame($cookies, $result);
     }
 
     #[DataProvider('dataTestGetCookieGroupsWithRequiredCookieGroup')]
     public function testGetCookieGroupsWithRequiredCookieGroup(array $cookies, bool $cookieAdded): void
     {
-        $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
-        $cookieProviderMock->expects($this->once())
+        if (\class_exists(CookieGroupCollectEvent::class)) {
+            static::markTestSkipped('Deprecated. Logic moved to Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber');
+        }
+
+        $this->cookieProvider->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $searchResult = new IdSearchResult(0, [['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext());
+        $this->paymentMethodUtil
+            ->expects($cookieAdded ? $this->once() : $this->never())
+            ->method('isPaymentMethodActive')
+            ->willReturn(true);
 
-        $this->paymentMethodRepository->expects($cookieAdded ? $this->once() : $this->never())
-            ->method('searchIds')
-            ->willReturn($searchResult);
-
-        $result = (new GooglePayCookieProvider($cookieProviderMock, $this->paymentMethodRepository))->getCookieGroups();
+        $result = $this->googlePayCookieProvider->getCookieGroups();
 
         if (!$cookieAdded) {
             static::assertSame($cookies, $result);
@@ -150,5 +173,27 @@ class GooglePayCookieProviderTest extends TestCase
             ],
             true,
         ];
+    }
+
+    public function testEarlyReturnsEmptyCookieGroups(): void
+    {
+        if (!\class_exists(CookieGroupCollectEvent::class)) {
+            static::markTestSkipped('Deprecated. Logic moved to Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber');
+        }
+
+        $cookies = [
+            'isRequired' => true,
+            'snippet_name' => 'cookie.groupRequired',
+            'cookie' => 'example-cookie-key',
+            'entries' => [],
+        ];
+
+        $this->cookieProvider->expects($this->once())
+            ->method('getCookieGroups')
+            ->willReturn($cookies);
+
+        $result = $this->googlePayCookieProvider->getCookieGroups();
+
+        static::assertSame($cookies, $result);
     }
 }

@@ -1,13 +1,13 @@
 @import "~scss/variables";
 
-.swag-paypal-settings-cross-border {
+.swag-paypal-settings-cross-border, .swag-paypal-settings-environment {
     &__warning-text {
         width: 100%;
     }
 
     &__content {
         display: grid;
-        gap: 8px;
+        gap: 16px;
         font-size: $font-size-xs;
         line-height: $line-height-sm;
     }

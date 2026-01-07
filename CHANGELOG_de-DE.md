@@ -1,3 +1,17 @@
+# 10.4.1
+- Behebt ein Problem, bei dem erforderliche Cookies nicht im Banner angezeigt wurden, obwohl PayPal-Skripte geladen wurden (shopware/SwagPayPal#506)
+
+# 10.4.0
+- Behebt ein Problem, bei dem beim Express-Checkout ein Kundenland ausgewählt werden konnte, das nicht dem richtigen Vertriebskanal zugeordnet war (shopware/SwagPayPal#479)
+- Behebt ein Problem, bei dem Cookies geladen wurden, obwohl die zugehörigen Zahlungsarten nicht aktiv sind (shopware/SwagPayPal#457)
+- Behebt ein Problem, bei dem der Bundesstaat nicht korrekt an PayPal übermittelt wurde (shopware/SwagPayPal#469)
+- Fügt Apple-Pay-Support für Drittanbieter-Browser hinzu (shopware/SwagPayPal#485)
+- Fügt eine Einstellung hinzu, um den Shop als lokale Umgebung zu kennzeichnen, um Verbindungsprobleme beim Testen in einer nicht öffentlich zugänglichen Umgebung zu vermeiden (shopware/SwagPayPal#463)
+- Symbole für Zahlungsmethoden aktualisiert und optimiert
+
+# 10.3.0
+- Fügt Kompatibilität mit Abos in gemischten Warenkörben hinzu (shopware/shopware#10486)
+
 # 10.2.0
 - Passt den Betrag an, für den Pay Later zur Verfügung steht, an die aktuellen Beschränkungen an (https://developer.paypal.com/studio/checkout/pay-later/de)
 - Behebt ein Problem, bei dem der Warenkorbpreis beim Verändern des Versandlandes im Express Checkout nicht angepasst wurde (shopware/SwagPayPal#342)

@@ -11,7 +11,6 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Shipping\Cart\Error\ShippingMethodBlockedError;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
@@ -20,6 +19,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\CountryCollection;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\V2\Order;
@@ -34,11 +34,11 @@ class ExpressShippingCallbackService
     /**
      * @internal
      *
-     * @param EntityRepository<CountryCollection> $countryRepository
+     * @param SalesChannelRepository<CountryCollection> $countryRepository
      */
     public function __construct(
         private readonly CartService $cartService,
-        private readonly EntityRepository $countryRepository,
+        private readonly SalesChannelRepository $countryRepository,
         private readonly AbstractOrderBuilder $orderBuilder,
         private readonly ShippingOptionsProvider $shippingOptionsProvider,
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
@@ -109,7 +109,7 @@ class ExpressShippingCallbackService
             ]))
             ->setLimit(1);
 
-        $country = $this->countryRepository->search($criteria, $salesChannelContext->getContext())->getEntities()->first();
+        $country = $this->countryRepository->search($criteria, $salesChannelContext)->getEntities()->first();
         if (!$country) {
             throw ExpressShippingCallbackException::countryError($callback);
         }

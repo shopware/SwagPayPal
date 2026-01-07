@@ -50,6 +50,19 @@ class PaymentMethodInstaller
         $this->mediaInstaller = $mediaInstaller;
     }
 
+    public function updateAllMedia(Context $context): void
+    {
+        $paymentMethods = $this->methodDataRegistry->getPaymentMethods();
+        foreach ($paymentMethods as $method) {
+            $entity = $this->methodDataRegistry->getEntityFromData($method, $context);
+            if ($entity === null) {
+                continue;
+            }
+
+            $this->mediaInstaller->installPaymentMethodMedia($method, $entity->getId(), $context, true);
+        }
+    }
+
     public function installAll(Context $context): void
     {
         $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(SwagPayPal::class, $context);

@@ -89,13 +89,7 @@ class LogCleaner
         $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
         $runIds = $this->runRepository->searchIds($criteria, $context)->getIds();
         if (!empty($runIds)) {
-            $this->runRepository->delete(\array_filter(\array_map(static function ($id) {
-                if (!\is_string($id)) {
-                    return null;
-                }
-
-                return ['id' => $id];
-            }, $runIds)), $context);
+            $this->runRepository->delete(\array_map(static fn ($id) => ['id' => $id], $runIds), $context);
         }
     }
 }

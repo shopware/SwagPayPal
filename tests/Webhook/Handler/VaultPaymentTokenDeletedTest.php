@@ -46,7 +46,7 @@ class VaultPaymentTokenDeletedTest extends TestCase
             ->expects($this->once())
             ->method('searchIds')
             ->with(static::equalTo((new Criteria())->addFilter(new EqualsFilter('token', 'hatoken'))))
-            ->willReturn(new IdSearchResult(1, [['primaryKey' => 'token-id', 'data' => []]], new Criteria(), $context));
+            ->willReturn(new IdSearchResult(1, ['token-id' => ['primaryKey' => 'token-id', 'data' => []]], new Criteria(), $context));
 
         $vaultRepo
             ->expects($this->once())

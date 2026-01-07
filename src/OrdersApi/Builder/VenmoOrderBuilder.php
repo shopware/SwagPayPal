@@ -71,11 +71,7 @@ class VenmoOrderBuilder extends AbstractOrderBuilder
             $venmo->setEmailAddress($customer->getEmail());
         }
 
-        if ($this->vaultTokenService->getSubscription($paymentTransaction)) {
-            $this->vaultTokenService->requestVaulting($venmo);
-        }
-
-        if ($request->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+        if ($this->vaultTokenService->shouldRequestVaulting(bag: $request->request, paymentTransaction: $paymentTransaction)) {
             $this->vaultTokenService->requestVaulting($venmo);
         }
     }
@@ -94,11 +90,7 @@ class VenmoOrderBuilder extends AbstractOrderBuilder
 
         $venmo->setEmailAddress($customer->getEmail());
 
-        if ($salesChannelContext->hasExtension('subscription')) {
-            $this->vaultTokenService->requestVaulting($venmo);
-        }
-
-        if ($requestDataBag->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+        if ($this->vaultTokenService->shouldRequestVaulting($salesChannelContext, $requestDataBag)) {
             $this->vaultTokenService->requestVaulting($venmo);
         }
     }

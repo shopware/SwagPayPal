@@ -68,3 +68,53 @@ parameters:
               - tests/Checkout/PUI/PUISubscriberTest.php
               - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
               - tests/Storefront/Data/CheckoutSubscriberTest.php
+
+        - identifier: argument.type
+          message: '#Shopware\\Core\\Framework\\Struct\\Struct::addExtension\(\) expects Shopware\\Core\\Framework\\Struct\\Struct.*PlanIntervalMappingStruct.*given.#'
+          path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
+        - message: '#PHPDoc tag .* but class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\(Criteria|IdSearchResult) is not generic.#'
+          paths:
+            - src/Pos/Run/Administration/SyncResetter.php
+            - src/Pos/Sync/ImageSyncer.php
+            - tests/Mock/Repositories/AbstractRepoMock.php
+            - tests/Pos/Run/Administration/SyncResetterTest.php
+
+        - message: '#Parameter .* \$ids of method Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository.*::delete\(\)#'
+          paths:
+            - src/Pos/Run/Administration/SyncResetter.php
+            - src/Pos/Sync/ImageSyncer.php
+
+        - message: '#Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionsRecurringDataStruct#'
+          paths:
+            - src/Checkout/Payment/Service/VaultTokenService.php
+            - tests/Checkout/Method/ACDCHandlerTest.php
+            - tests/Checkout/Method/VenmoHandlerTest.php
+            - tests/Checkout/Payment/Service/VaultTokenServiceTest.php
+
+        - message: '#(Call to an undefined method.*)?Shopware\\Core\\Framework\\Struct\\Struct::(all|getExtensionOfType)\(\).*(, string given)?#'
+          path: src/Checkout/Payment/Service/VaultTokenService.php
+
+        - message: '#Shopware\\Core\\Content\\Cookie\\Event\\CookieGroupCollectEvent#'
+          paths:
+            - src/Storefront/Framework/Cookie/CookieProviderSubscriber.php
+            - tests/Storefront/Framework/Cookie/CookieProviderSubscriberTest.php
+
+        - message: '#Shopware\\Core\\Content\\Cookie\\Struct\\CookieEntry#'
+          paths:
+            - src/Storefront/Framework/Cookie/CookieProviderSubscriber.php
+            - tests/Storefront/Framework/Cookie/CookieProviderSubscriberTest.php
+
+        - message: '#Shopware\\Core\\Content\\Cookie\\Struct\\CookieGroup#'
+          path: tests/Storefront/Framework/Cookie/CookieProviderSubscriberTest.php
+
+        - message: '#^Mixed variable in a `\$(required|entries)\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
+          identifier: typePerfect.noMixedMethodCaller
+          paths:
+            - src/Storefront/Framework/Cookie/CookieProviderSubscriber.php
+            - tests/Storefront/Framework/Cookie/CookieProviderSubscriberTest.php
+
+        - message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+          identifier: staticMethod.internal
+          paths:
+            - src/Storefront/Framework/Cookie/GooglePayCookieProvider.php
+            - src/Storefront/Framework/Cookie/PayPalCookieProvider.php

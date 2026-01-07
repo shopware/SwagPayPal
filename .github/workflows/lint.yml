@@ -87,9 +87,11 @@ jobs:
           install-admin: true
           install-storefront: true
 
+      - name: Composer prefer lowest SDK
+        run: composer require --prefer-lowest --with-all-dependencies shopware/paypal-sdk
+
       - working-directory: custom/plugins/${{ github.event.repository.name }}
         run: |
-          composer install
           composer init:admin
           composer openapi:generate
           git update-index --refresh || printf ''
@@ -136,10 +138,23 @@ jobs:
         run: composer run lint:admin:ci
 
   admin-jest:
-    uses: shopware/github-actions/.github/workflows/admin-jest.yml@main
-    with:
-      extensionName: ${{ github.event.repository.name }}
-      uploadCoverage: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+        with:
+          install-admin: true
+
+      - name: Run ESLint
+        env:
+          ADMIN_PATH: ${{ github.workspace }}/src/Administration/Resources/app/administration
+        working-directory: custom/plugins/${{ github.event.repository.name }}
+        run: composer run jest
 
   storefront-eslint:
     runs-on: ubuntu-latest

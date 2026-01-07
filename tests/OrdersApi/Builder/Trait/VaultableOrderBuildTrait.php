@@ -9,8 +9,7 @@ namespace Swag\PayPal\Test\OrdersApi\Builder\Trait;
 
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\MockObject\MockObject;
-use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
-use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
+use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionDefinition;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\Recurring\RecurringDataStruct;
 use Shopware\Core\Framework\Context;
@@ -32,7 +31,7 @@ trait VaultableOrderBuildTrait
 
     public function testGetOrderRequestsVaultingWithSubscription(): void
     {
-        if (!\class_exists(SubscriptionRecurringDataStruct::class) || !\class_exists(SubscriptionEntity::class)) {
+        if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not installed');
         }
 
@@ -40,8 +39,8 @@ trait VaultableOrderBuildTrait
         $order = $this->createOrder();
         $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
 
+        $this->vaultTokenService->expects(static::once())->method('shouldRequestVaulting')->willReturn(true);
         $this->vaultTokenService->expects(static::once())->method('getAvailableToken')->willReturn(null);
-        $this->vaultTokenService->expects(static::once())->method('getSubscription')->willReturn(new SubscriptionEntity());
         $this->vaultTokenService->expects(static::once())->method('requestVaulting');
 
         $this->getBuilder()->getOrder(
@@ -59,6 +58,7 @@ trait VaultableOrderBuildTrait
         $order = $this->createOrder();
         $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId(), null, new RecurringDataStruct(Uuid::randomHex(), new \DateTime()));
 
+        $this->vaultTokenService->expects(static::once())->method('shouldRequestVaulting')->willReturn(true);
         $this->vaultTokenService->expects(static::once())->method('getAvailableToken')->willReturn(null);
         $this->vaultTokenService->expects(static::once())->method('requestVaulting');
 

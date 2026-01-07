@@ -8,8 +8,10 @@
 namespace Swag\PayPal\Checkout\Payment\Service;
 
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
+use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionsRecurringDataStruct;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionCollection;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
+use Shopware\Commercial\Subscription\Framework\Struct\PlanIntervalMappingStruct;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -20,15 +22,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultablePaymentSourceInterface;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\Vault;
-use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Token;
 use Swag\PayPal\Checkout\Exception\SubscriptionTypeNotSupportedException;
 use Swag\PayPal\DataAbstractionLayer\Extension\CustomerExtension;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 #[Package('checkout')]
 class VaultTokenService
@@ -58,15 +61,22 @@ class VaultTokenService
         }
 
         $criteria = new Criteria();
+        $criteria->setLimit(1);
         $criteria->addFilter(new EqualsFilter('customerId', $customerId));
         $criteria->addFilter(new EqualsFilter('paymentMethodId', $orderTransaction->getPaymentMethodId()));
 
-        if ($subscription = $this->getSubscription($struct)) {
-            // try to get the token from the subscription
-            $tokenId = ($subscription->getCustomFields() ?? [])[$this->getSubscriptionCustomFieldKey($orderTransaction->getPaymentMethodId())] ?? null;
+        if ($subscriptions = $this->getSubscriptions($struct)) {
+            $customFieldKey = $this->getSubscriptionCustomFieldKey($orderTransaction->getPaymentMethodId());
+            $tokenIds = \array_unique(\array_values(
+                $subscriptions->fmap(fn (SubscriptionEntity $subscription): string => (string) $subscription->getCustomFieldsValue($customFieldKey))
+            ));
 
-            if ($tokenId) {
-                $criteria->setIds([$tokenId]);
+            if (\count($tokenIds) > 1) {
+                throw new SubscriptionTypeNotSupportedException('recurring data struct containing multiple subscriptions');
+            }
+
+            if ($tokenIds) {
+                $criteria->setIds($tokenIds);
             }
         }
 
@@ -101,23 +111,36 @@ class VaultTokenService
 
         $this->saveTokenToCustomer($tokenId, $orderTransaction->getPaymentMethodId(), $customerId, $context);
 
-        if ($subscription = $this->getSubscription($struct)) {
-            $this->saveTokenToSubscription($subscription, $tokenId, $orderTransaction->getPaymentMethodId(), $context);
+        if ($subscriptions = $this->getSubscriptions($struct)) {
+            $this->saveTokenToSubscriptions($subscriptions, $tokenId, $orderTransaction->getPaymentMethodId(), $context);
         }
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::getSubscriptions}
+     */
     public function getSubscription(PaymentTransactionStruct $struct): ?SubscriptionEntity
+    {
+        return $this->getSubscriptions($struct)?->first();
+    }
+
+    public function getSubscriptions(PaymentTransactionStruct $struct): ?SubscriptionCollection
     {
         $recurring = $struct->getRecurring();
         if ($recurring === null) {
             return null;
         }
 
-        if (!$recurring instanceof SubscriptionRecurringDataStruct) {
-            throw new SubscriptionTypeNotSupportedException($recurring::class);
+        if (\class_exists(SubscriptionsRecurringDataStruct::class) && $recurring instanceof SubscriptionsRecurringDataStruct) {
+            return $recurring->getSubscriptions();
         }
 
-        return $recurring->getSubscription();
+        /** @deprecated tag:v11.0.0 - Will be removed with 6.8.0.0 */
+        if ($recurring instanceof SubscriptionRecurringDataStruct) {
+            return new SubscriptionCollection([$recurring->getSubscription()]);
+        }
+
+        throw new SubscriptionTypeNotSupportedException($recurring::class);
     }
 
     public function requestVaulting(VaultablePaymentSourceInterface $paymentSource): void
@@ -132,18 +155,41 @@ class VaultTokenService
         $paymentSource->setAttributes($attributes);
     }
 
-    private function saveTokenToSubscription(SubscriptionEntity $subscription, string $tokenId, string $paymentMethodId, Context $context): void
+    /**
+     * @internal
+     */
+    public function shouldRequestVaulting(
+        ?SalesChannelContext $context = null,
+        ?ParameterBag $bag = null,
+        ?PaymentTransactionStruct $paymentTransaction = null,
+    ): bool {
+        if ($context && ($context->hasExtension('subscription') || (\class_exists(PlanIntervalMappingStruct::class) && $context->getExtensionOfType('subscriptionManagedContexts', PlanIntervalMappingStruct::class)?->all()))) {
+            return true;
+        }
+
+        if ($bag && $bag->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+            return true;
+        }
+
+        if ($paymentTransaction && $this->getSubscriptions($paymentTransaction)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function saveTokenToSubscriptions(SubscriptionCollection $subscriptions, string $tokenId, string $paymentMethodId, Context $context): void
     {
         if ($this->subscriptionRepository === null) {
             throw new ServiceNotFoundException('subscription.repository');
         }
 
-        $this->subscriptionRepository->upsert([[
+        $this->subscriptionRepository->upsert(\array_values($subscriptions->map(fn (SubscriptionEntity $subscription) => [
             'id' => $subscription->getId(),
             'customFields' => [
                 $this->getSubscriptionCustomFieldKey($paymentMethodId) => $tokenId,
             ],
-        ]], $context);
+        ])), $context);
     }
 
     private function saveTokenToCustomer(string $tokenId, string $paymentMethodId, string $customerId, Context $context): void

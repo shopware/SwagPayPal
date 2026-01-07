@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Helper;
 
-use Doctrine\DBAL\Connection;
 use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
@@ -65,9 +64,7 @@ trait CheckoutRouteTrait
         $container = $this->getContainer();
         /** @var EntityRepository $salesChannelRepo */
         $salesChannelRepo = $container->get('sales_channel.repository');
-        /** @var Connection $connection */
-        $connection = $container->get(Connection::class);
-        $paymentMethodUtil = new PaymentMethodUtil($connection, $salesChannelRepo);
+        $paymentMethodUtil = $container->get(PaymentMethodUtil::class);
 
         $salesChannelId = TestDefaults::SALES_CHANNEL;
         $countryId = $this->getValidCountryId();
