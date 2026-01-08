@@ -79,7 +79,7 @@ class CreateCartRoute extends AbstractAgentCommerceRoute
 
     private function registerAndLoginCustomer(PayPalCart $payPalCart, SalesChannelContext $salesChannelContext): SalesChannelContext
     {
-        $customerData = $this->shopwareCartTransformer->extractCustomerData($payPalCart, $salesChannelContext->getSalesChannelId(), $salesChannelContext->getContext());
+        $customerData = $this->shopwareCartTransformer->extractCustomerData($payPalCart, $salesChannelContext->getSalesChannelId(), $salesChannelContext);
 
         $this->registerRoute->register(new RequestDataBag($customerData), $salesChannelContext, false);
 
