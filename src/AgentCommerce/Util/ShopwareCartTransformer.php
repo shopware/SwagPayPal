@@ -14,10 +14,10 @@ use Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\SuffixFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateCollection;
 use Shopware\Core\System\Country\CountryCollection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -106,7 +106,11 @@ class ShopwareCartTransformer
 
         if ($address->getAdminArea1()) {
             $criteria->getAssociation('states')
-                ->addFilter(new SuffixFilter('shortCode', $address->getAdminArea1()));
+                ->setLimit(1)
+                ->addFilter(new OrFilter([
+                    new EqualsFilter('shortCode', $address->getAdminArea1()),
+                    new SuffixFilter('shortCode', '-' . $address->getAdminArea1()),
+                ]));
         }
 
         $country = $this->countryRepository->search($criteria, $context)->first();
@@ -121,7 +125,7 @@ class ShopwareCartTransformer
             'id' => Uuid::randomHex(),
             'salutationId' => $salutationId,
             'countryId' => $country->getId(),
-            'countryStateId' => $this->getStateId($country->getStates(), $address->getAdminArea1()),
+            'countryStateId' => $country->getStates()?->first()?->getId(),
             'firstName' => $name->getGivenName(),
             'lastName' => $name->getSurname(),
             'zipcode' => $address->getPostalCode(),
@@ -144,18 +148,5 @@ class ShopwareCartTransformer
         }
 
         return $items;
-    }
-
-    private function getStateId(?CountryStateCollection $states, ?string $adminArea1): ?string
-    {
-        if ($states) {
-            foreach ($states as $state) {
-                if ($state->getShortCode() === $adminArea1 || str_ends_with($state->getShortCode(), '-' . $adminArea1)) {
-                    return $state->getId();
-                }
-            }
-        }
-
-        return null;
     }
 }
