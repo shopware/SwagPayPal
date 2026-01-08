@@ -89,7 +89,7 @@
         </service>
 
         <service id="Swag\PayPal\AgentCommerce\Util\ShopwareCartTransformer">
-            <argument type="service" id="country.repository"/>
+            <argument type="service" id="sales_channel.country.repository"/>
             <argument type="service" id="salutation.repository"/>
             <argument type="service" id="customer_group.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory"/>

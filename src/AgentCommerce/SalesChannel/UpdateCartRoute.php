@@ -95,7 +95,7 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
             );
         }
 
-        $customerData = $this->shopwareCartTransformer->extractCustomerData($payPalCart, $salesChannelContext->getSalesChannelId(), $salesChannelContext->getContext());
+        $customerData = $this->shopwareCartTransformer->extractCustomerData($payPalCart, $salesChannelContext->getSalesChannelId(), $salesChannelContext);
         $customerData['id'] = $customer->getId();
         $customerData['shippingAddress']['id'] = $customer->getDefaultShippingAddressId();
         $customerData['defaultShippingAddress'] = $customerData['shippingAddress'];

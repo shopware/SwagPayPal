@@ -11,16 +11,16 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
 use Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\SuffixFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateCollection;
 use Shopware\Core\System\Country\CountryCollection;
 use Shopware\Core\System\Country\CountryEntity;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Salutation\SalutationCollection;
 use Shopware\Core\System\Salutation\SalutationDefinition;
@@ -41,12 +41,12 @@ use Swag\PayPal\AgentCommerce\Struct\V1\ShippingAddress;
 class ShopwareCartTransformer
 {
     /**
-     * @param EntityRepository<CountryCollection> $countryRepository
+     * @param SalesChannelRepository<CountryCollection> $countryRepository
      * @param EntityRepository<SalutationCollection> $salutationRepository
      * @param EntityRepository<CustomerGroupCollection> $groupRepository
      */
     public function __construct(
-        private readonly EntityRepository $countryRepository,
+        private readonly SalesChannelRepository $countryRepository,
         private readonly EntityRepository $salutationRepository,
         private readonly EntityRepository $groupRepository,
         private readonly ProductLineItemFactory $lineItemFactory,
@@ -57,7 +57,7 @@ class ShopwareCartTransformer
     /**
      * @return array{firstName: string, lastName: string, email: string|null, salesChannelId: string, groupId: string|null, shippingAddress: array, guest: true, billingAddress?: array}
      */
-    public function extractCustomerData(PayPalCart $cart, string $salesChannelId, Context $context): array
+    public function extractCustomerData(PayPalCart $cart, string $salesChannelId, SalesChannelContext $context): array
     {
         /** @var Customer $customer */
         $customer = $cart->getCustomer();
@@ -72,7 +72,7 @@ class ShopwareCartTransformer
             'lastName' => $customer->getName()->getSurname(),
             'email' => $customer->getEmailAddress(),
             'salesChannelId' => $salesChannelId,
-            'groupId' => $this->groupRepository->searchIds($groupCriteria, $context)->firstId(),
+            'groupId' => $this->groupRepository->searchIds($groupCriteria, $context->getContext())->firstId(),
             'shippingAddress' => $this->formatAddress($shippingAddress, $customer->getName(), $customer->getPhone(), $context),
             'guest' => true,
         ];
@@ -101,13 +101,17 @@ class ShopwareCartTransformer
         return $lineItems;
     }
 
-    private function formatAddress(Address $address, CustomerName $name, ?Phone $phone, Context $context): array
+    private function formatAddress(Address $address, CustomerName $name, ?Phone $phone, SalesChannelContext $context): array
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('iso', $address->getCountryCode()));
 
         if ($address->getAdminArea1()) {
             $criteria->getAssociation('states')
-                ->addFilter(new SuffixFilter('shortCode', $address->getAdminArea1()));
+                ->setLimit(1)
+                ->addFilter(new OrFilter([
+                    new EqualsFilter('shortCode', $address->getAdminArea1()),
+                    new SuffixFilter('shortCode', '-' . $address->getAdminArea1()),
+                ]));
         }
 
         $country = $this->countryRepository->search($criteria, $context)->first();
@@ -116,13 +120,13 @@ class ShopwareCartTransformer
         }
 
         $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', SalutationDefinition::NOT_SPECIFIED));
-        $salutationId = $this->salutationRepository->searchIds($criteria, $context)->firstId();
+        $salutationId = $this->salutationRepository->searchIds($criteria, $context->getContext())->firstId();
 
         return [
             'id' => Uuid::randomHex(),
             'salutationId' => $salutationId,
             'countryId' => $country->getId(),
-            'countryStateId' => $this->getStateId($country->getStates(), $address->getAdminArea1()),
+            'countryStateId' => $country->getStates()?->first()?->getId(),
             'firstName' => $name->getGivenName(),
             'lastName' => $name->getSurname(),
             'zipcode' => $address->getPostalCode(),
@@ -145,18 +149,5 @@ class ShopwareCartTransformer
         }
 
         return $items;
-    }
-
-    private function getStateId(?CountryStateCollection $states, ?string $adminArea1): ?string
-    {
-        if ($states) {
-            foreach ($states as $state) {
-                if ($state->getShortCode() === $adminArea1 || str_ends_with($state->getShortCode(), '-' . $adminArea1)) {
-                    return $state->getId();
-                }
-            }
-        }
-
-        return null;
     }
 }

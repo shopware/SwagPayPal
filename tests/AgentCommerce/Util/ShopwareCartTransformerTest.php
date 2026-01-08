@@ -24,6 +24,7 @@ use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryCollection;
 use Shopware\Core\System\Country\CountryDefinition;
 use Shopware\Core\System\Country\CountryEntity;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Struct\V1\Coupon;
@@ -42,43 +43,45 @@ class ShopwareCartTransformerTest extends TestCase
         $overallRandomId = Uuid::randomHex();
         $idResult = new IdSearchResult(1, [['primaryKey' => $overallRandomId]], new Criteria(), Context::createDefaultContext());
 
-        $state1 = new CountryStateEntity();
-        $state1->setId(Uuid::randomHex());
-        $state1->setShortCode('CACA');
-
         $caId = Uuid::randomHex();
-        $state2 = new CountryStateEntity();
-        $state2->setId($caId);
-        $state2->setShortCode('CA');
+        $state1 = new CountryStateEntity();
+        $state1->setId($caId);
+        $state1->setShortCode('CA');
 
         $nyId = Uuid::randomHex();
-        $state3 = new CountryStateEntity();
-        $state3->setId($nyId);
-        $state3->setShortCode('US-NY');
+        $state2 = new CountryStateEntity();
+        $state2->setId($nyId);
+        $state2->setShortCode('US-NY');
 
-        $country = new CountryEntity();
-        $country->setId($overallRandomId);
-        $country->setStates(new CountryStateCollection([$state1, $state2, $state3]));
+        $country1 = new CountryEntity();
+        $country1->setId($overallRandomId);
+        $country1->setStates(new CountryStateCollection([$state1]));
+        $country2 = new CountryEntity();
+        $country2->setId($overallRandomId);
+        $country2->setStates(new CountryStateCollection([$state2]));
 
-        $result = new EntitySearchResult(CountryDefinition::ENTITY_NAME, 1, new CountryCollection([$country]), null, new Criteria(), Context::createDefaultContext());
+        $salesChannelRepository = $this->createMock(SalesChannelRepository::class);
+        $salesChannelRepository
+            ->method('search')
+            ->willReturnOnConsecutiveCalls(
+                new EntitySearchResult(CountryDefinition::ENTITY_NAME, 1, new CountryCollection([$country1]), null, new Criteria(), Context::createDefaultContext()),
+                new EntitySearchResult(CountryDefinition::ENTITY_NAME, 1, new CountryCollection([$country2]), null, new Criteria(), Context::createDefaultContext())
+            );
 
         $repository = $this->createMock(EntityRepository::class);
         $repository
             ->method('searchIds')
             ->willReturn($idResult);
-        $repository
-            ->method('search')
-            ->willReturn($result);
 
         $transformer = new ShopwareCartTransformer(
-            $repository,
+            $salesChannelRepository,
             $repository,
             $repository,
             $this->createMock(ProductLineItemFactory::class),
             $this->createMock(PromotionItemBuilder::class),
         );
 
-        $customerData = $transformer->extractCustomerData((new PayPalCart())->assign(self::requestCustomerData()), $overallRandomId, Context::createDefaultContext());
+        $customerData = $transformer->extractCustomerData((new PayPalCart())->assign(self::requestCustomerData()), $overallRandomId, $this->createMock(SalesChannelContext::class));
 
         static::assertSame('John', $customerData['firstName']);
         static::assertSame('Smith', $customerData['lastName']);
@@ -118,14 +121,14 @@ class ShopwareCartTransformerTest extends TestCase
         $this->expectExceptionMessage($exception->getMessage());
 
         $transformer = new ShopwareCartTransformer(
-            $this->createMock(EntityRepository::class),
+            $this->createMock(SalesChannelRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(ProductLineItemFactory::class),
             $this->createMock(PromotionItemBuilder::class),
         );
 
-        $transformer->extractCustomerData((new PayPalCart())->assign(self::requestCustomerData()), Uuid::randomHex(), Context::createDefaultContext());
+        $transformer->extractCustomerData((new PayPalCart())->assign(self::requestCustomerData()), Uuid::randomHex(), $this->createMock(SalesChannelContext::class));
     }
 
     public function testGetLineItems(): void
@@ -138,7 +141,7 @@ class ShopwareCartTransformerTest extends TestCase
             ->willReturn(new LineItem($itemId, LineItem::PRODUCT_LINE_ITEM_TYPE, $itemId, 2));
 
         $transformer = new ShopwareCartTransformer(
-            $this->createMock(EntityRepository::class),
+            $this->createMock(SalesChannelRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
             $itemFactory,
