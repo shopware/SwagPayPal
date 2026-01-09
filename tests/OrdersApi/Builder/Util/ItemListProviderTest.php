@@ -21,10 +21,12 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\State;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\Core\Test\Annotation\DisabledFeatures;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Item;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\Util\PriceFormatter;
@@ -53,6 +55,26 @@ class ItemListProviderTest extends TestCase
     }
 
     public function testDigitalProduct(): void
+    {
+        $order = $this->createOrder('Test Product Name', 10);
+
+        /** @deprecated tag:v6.8.0 - state will be removed without replacement */
+        /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
+        $order->getLineItems()?->first()?->setStates([State::IS_DOWNLOAD]);
+        if (defined(ProductDefinition::class . '::TYPE_DIGITAL')) {
+            $order->getLineItems()?->first()?->setPayloadValue('productType', ProductDefinition::TYPE_DIGITAL);
+        }
+
+        $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
+        static::assertCount(1, $itemList);
+        static::assertSame(Item::CATEGORY_DIGITAL_GOODS, $itemList->first()?->getCategory());
+    }
+
+    /**
+     * @deprecated tag:v6.8.0 - Will be removed
+     */
+    #[DisabledFeatures(['v6.8.0.0'])]
+    public function testLegacyDigitalProduct(): void
     {
         $order = $this->createOrder('Test Product Name', 10);
         $order->getLineItems()?->first()?->setStates([State::IS_DOWNLOAD]);
@@ -177,7 +199,10 @@ class ItemListProviderTest extends TestCase
         static::assertSame($expectedItemSku, $itemList->first()?->getSku());
     }
 
-    public static function dataProviderTaxConstellation(): iterable
+    /**
+     * @return array<string, bool[]>
+     */
+    public static function dataProviderTaxConstellation(): array
     {
         return [
             'gross' => [false],
@@ -185,7 +210,10 @@ class ItemListProviderTest extends TestCase
         ];
     }
 
-    public static function dataProviderQuantityConstellation(): iterable
+    /**
+     * @return array<array{float, int, string, int, string, string, bool}>
+     */
+    public static function dataProviderQuantityConstellation(): array
     {
         return [
             [10.002, 1, 'test', 1, '10.00', '1.90', true],

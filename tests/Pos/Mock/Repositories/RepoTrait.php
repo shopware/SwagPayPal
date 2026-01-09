@@ -119,7 +119,7 @@ trait RepoTrait
 
                 return [
                     'primaryKey' => $key,
-                    'data' => $entity,
+                    'data' => [$entity->getUniqueIdentifier() => $entity],
                 ];
             }),
             $criteria,
