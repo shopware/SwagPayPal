@@ -29,11 +29,16 @@ final class AvailabilityContextBuilder
 
     public static function buildFromCart(Cart $cart, SalesChannelContext $salesChannelContext): AvailabilityContext
     {
-        /** @deprecated tag:v6.8.0 - state will be removed without replacement */
+        $lineItems = $cart->getLineItems();
+        /** @deprecated tag:v12.0.0 - state will be removed without replacement */
         /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
-        $hasDigitalProduct = $cart->getLineItems()->hasLineItemWithState(State::IS_DOWNLOAD);
-        if (Feature::isActive('v6.8.0.0') && defined(ProductDefinition::class . '::TYPE_DIGITAL')) {
-            $hasDigitalProduct = $cart->getLineItems()->hasLineItemWithProductType(ProductDefinition::TYPE_DIGITAL);
+        $hasDigitalProduct = $lineItems->hasLineItemWithState(State::IS_DOWNLOAD);
+        if (
+            Feature::isActive('v6.8.0.0')
+            && \defined(ProductDefinition::class . '::TYPE_DIGITAL')
+            && \method_exists($lineItems, 'hasLineItemWithProductType') // @phpstan-ignore function.alreadyNarrowedType
+        ) {
+            $hasDigitalProduct = $lineItems->hasLineItemWithProductType(ProductDefinition::TYPE_DIGITAL);
         }
 
         return self::buildContext(
@@ -46,11 +51,14 @@ final class AvailabilityContextBuilder
 
     public static function buildFromProduct(SalesChannelProductEntity $product, SalesChannelContext $salesChannelContext): AvailabilityContext
     {
-        /** @deprecated tag:v6.8.0 - state will be removed without replacement */
+        /** @deprecated tag:v12.0.0 - state will be removed without replacement */
         /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
         $isDigital = \in_array(State::IS_DOWNLOAD, $product->getStates(), true);
-        /** @phpstan-ignore function.alreadyNarrowedType */
-        if (Feature::isActive('v6.8.0.0') && method_exists($product, 'getType')) {
+        if (
+            Feature::isActive('v6.8.0.0')
+            && \defined(ProductDefinition::class . '::TYPE_DIGITAL')
+            && \method_exists($product, 'getType') // @phpstan-ignore function.alreadyNarrowedType
+        ) {
             $isDigital = $product->getType() === ProductDefinition::TYPE_DIGITAL;
         }
 
@@ -64,18 +72,26 @@ final class AvailabilityContextBuilder
 
     public static function buildFromOrder(OrderEntity $order, SalesChannelContext $salesChannelContext): AvailabilityContext
     {
-        /** @deprecated tag:v6.8.0 - state will be removed without replacement */
-        /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
-        $hasDigitalProduct = $order->getLineItems()?->hasLineItemWithState(State::IS_DOWNLOAD);
-        if (Feature::isActive('v6.8.0.0') && defined(ProductDefinition::class . '::TYPE_DIGITAL')) {
-            $hasDigitalProduct = $order->getLineItems()?->hasLineItemWithType(ProductDefinition::TYPE_DIGITAL);
+        $hasDigitalProduct = false;
+        $lineItems = $order->getLineItems();
+        if ($lineItems) {
+            /** @deprecated tag:v12.0.0 - state will be removed without replacement */
+            /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
+            $hasDigitalProduct = $lineItems->hasLineItemWithState(State::IS_DOWNLOAD);
+            if (
+                Feature::isActive('v6.8.0.0')
+                && \defined(ProductDefinition::class . '::TYPE_DIGITAL')
+                && \method_exists($lineItems, 'hasLineItemWithType') // @phpstan-ignore function.alreadyNarrowedType
+            ) {
+                $hasDigitalProduct = $lineItems->hasLineItemWithType(ProductDefinition::TYPE_DIGITAL);
+            }
         }
 
         return self::buildContext(
             $salesChannelContext,
             $order->getPrice()->getTotalPrice(),
             $order->getExtensionOfType('foreignKeys', ArrayStruct::class)?->get('subscriptionId') !== null,
-            (bool) $hasDigitalProduct
+            $hasDigitalProduct
         );
     }
 

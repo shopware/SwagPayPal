@@ -23,10 +23,10 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\State;
+use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Shopware\Core\Test\Annotation\DisabledFeatures;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Item;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\Util\PriceFormatter;
@@ -58,11 +58,15 @@ class ItemListProviderTest extends TestCase
     {
         $order = $this->createOrder('Test Product Name', 10);
 
-        /** @deprecated tag:v6.8.0 - state will be removed without replacement */
-        /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
-        $order->getLineItems()?->first()?->setStates([State::IS_DOWNLOAD]);
-        if (defined(ProductDefinition::class . '::TYPE_DIGITAL')) {
-            $order->getLineItems()?->first()?->setPayloadValue('productType', ProductDefinition::TYPE_DIGITAL);
+        $lineItem = $order->getLineItems()?->first();
+        if ($lineItem) {
+            /** @deprecated tag:v12.0.0 - state will be removed without replacement */
+            /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
+            $lineItem->setStates([State::IS_DOWNLOAD]);
+
+            if (\defined(ProductDefinition::class . '::TYPE_DIGITAL') && method_exists($lineItem, 'setPayloadValue')) {
+                $lineItem->setPayloadValue('productType', ProductDefinition::TYPE_DIGITAL);
+            }
         }
 
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
@@ -71,11 +75,12 @@ class ItemListProviderTest extends TestCase
     }
 
     /**
-     * @deprecated tag:v6.8.0 - Will be removed
+     * @deprecated tag:v12.0.0 - Will be removed
      */
-    #[DisabledFeatures(['v6.8.0.0'])]
     public function testLegacyDigitalProduct(): void
     {
+        Feature::skipTestIfActive('v6.8.0.0', $this);
+
         $order = $this->createOrder('Test Product Name', 10);
         $order->getLineItems()?->first()?->setStates([State::IS_DOWNLOAD]);
 

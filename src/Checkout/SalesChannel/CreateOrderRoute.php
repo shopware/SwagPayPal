@@ -20,7 +20,6 @@ use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
-use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -163,17 +162,10 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         $criteria->addAssociation('subscription');
         $criteria->addAssociation('currency');
         $criteria->addAssociation('salesChannel');
-        $criteria->getAssociation('primaryOrderTransaction');
-
-        // Method is not available for version 6.7.0.0
-        /** @phpstan-ignore function.alreadyNarrowedType */
-        $primaryTransactionActive = Feature::isActive('v6.8.0.0') && \method_exists(OrderEntity::class, 'getPrimaryOrderTransaction');
-        if (!$primaryTransactionActive) {
-            $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
-        }
-
+        $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->first();
+
         if ($order === null) {
             throw OrderException::orderNotFound($orderId);
         }
@@ -183,12 +175,12 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             throw OrderException::orderNotFound($orderId);
         }
 
-        if (!$primaryTransactionActive) {
-            $transaction = $order->getTransactions()?->last();
-        } else {
-            $transaction = $order->getPrimaryOrderTransaction();
+        $transactionCollection = $order->getTransactions();
+        if ($transactionCollection === null) {
+            throw PaymentException::invalidOrder($orderId);
         }
 
+        $transaction = $transactionCollection->last();
         if ($transaction === null) {
             throw PaymentException::invalidOrder($orderId);
         }

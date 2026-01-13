@@ -20,7 +20,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * @template T of EntityCollection
+ * @template TEntityCollection of EntityCollection
  *
  * @internal
  */
@@ -28,13 +28,13 @@ use Shopware\Core\Framework\Uuid\Uuid;
 trait RepoTrait
 {
     /**
-     * @var T
+     * @var TEntityCollection
      */
     protected EntityCollection $entityCollection;
 
     public function __construct()
     {
-        /** @var class-string<T> $collectionClass */
+        /** @var class-string<TEntityCollection> $collectionClass */
         $collectionClass = $this->getDefinition()->getCollectionClass();
         $this->entityCollection = new $collectionClass([]);
     }
@@ -47,7 +47,7 @@ trait RepoTrait
     }
 
     /**
-     * @return T
+     * @return TEntityCollection
      */
     public function getCollection(): EntityCollection
     {
@@ -103,7 +103,7 @@ trait RepoTrait
     }
 
     /**
-     * @param T $entityCollection
+     * @param TEntityCollection $entityCollection
      */
     protected function searchCollectionIds(EntityCollection $entityCollection, Criteria $criteria, Context $context): IdSearchResult
     {
@@ -128,7 +128,7 @@ trait RepoTrait
     }
 
     /**
-     * @param T $entityCollection
+     * @param TEntityCollection $entityCollection
      */
     protected function searchCollection(EntityCollection $entityCollection, Criteria $criteria, Context $context): EntitySearchResult
     {
