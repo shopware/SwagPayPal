@@ -44,10 +44,12 @@ use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Type;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @internal
@@ -66,13 +68,13 @@ class AgentRequestContextResolver implements RequestContextResolverInterface
      * @var non-empty-string
      */
     public static string $PAYPAL_JWT = '-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvv7Pi1nWWrJj4n5+6gX9
-B7BQpctaPEg9VdVK1kzc9xBNwZobeWEgEmiUGtkrn8S5R6Q4NmB4hnb8F5jeCX5O
-kyA49mgzw4wNXUPGTGMY5Eoxt9zu1Heaivkljh4+wN6d01oIFkHT6E7VjEJOG2RA
-49t7fgQ1phJIUK39B0RAXIG2pYicbujeiiJ12iQipMjY/TVD0KZgUc2Vj2apk7Dv
-1YBqFG+HlSG5hWu880IzGQE9Pds5qekIawJJyed08otq29hDHlFd28B0fFhdzcu8
-cN83NxddXBlh77b8+a7gaWC5/Iw45THRpIsiG41uX0r0INEDcnR3qCUkz6m9LOVW
-kQIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu1SU1LfVLPHCozMxH2Mo
+4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0/IzW7yWR7QkrmBL7jTKEn5u
++qKhbwKfBstIs+bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyeh
+kd3qqGElvW/VDL5AaWTg0nLVkjRo9z+40RQzuVaE8AkAFmxZzow3x+VJYKdjykkJ
+0iT9wCS0DRTXu269V264Vf/3jvredZiKRkgwlL9xNAwxXFg0x/XFw005UWVRIkdg
+cKWTjpBP2dPwVZ4WWC+9aGVd+Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbc
+mwIDAQAB
 -----END PUBLIC KEY-----';
 
     /**
@@ -179,11 +181,25 @@ kQIDAQAB
 
         $definition = new DataValidationDefinition('paypal.agent_source');
         $definition
-            ->add('external_id', new NotBlank(), new Type('array'), new All([new NotBlank(), new Type('string'), new Regex('/^PayPal:.+$/')]))
+            ->add(
+                'external_id',
+                new NotBlank(),
+                new Type('array'),
+                new Callback((static function ($value, ExecutionContextInterface $context) {
+                    foreach ($value as $entry) {
+                        if (is_string($entry) && str_starts_with($entry, 'PayPal:')) {
+                            return;
+                        }
+                    }
+
+                    $context
+                        ->buildViolation('external_id must contain at least one PayPal:* entry.')
+                        ->addViolation();
+                })))
             ->add('sub', new NotBlank(), new Type('string'), new Uuid())
             ->add('iat', new NotBlank(), new Type(\DateTimeInterface::class))
             ->add('exp', new NotBlank(), new Type(\DateTimeInterface::class))
-            ->add('scope', new Type('array'), new All([new Type('string'), new NotBlank()]))
+            ->add('scope', new Type('array'), new All(constraints: [new Type('string'), new NotBlank()]))
             ->add('debug_id', new Optional([new Type('string')]));
 
         try {
