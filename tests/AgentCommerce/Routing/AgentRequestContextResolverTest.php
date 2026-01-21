@@ -462,6 +462,34 @@ mwIDAQAB
         static::assertSame($salesChannelContext, $resultedSalesChannelContext);
     }
 
+    public function testResolveWithMissingPayPalMerchantId(): void
+    {
+        $jwt = self::encodeJWT(
+            null,
+            new \DateTimeImmutable(),
+            new \DateTimeImmutable('+1 hour'),
+            ['cart', 'checkout'],
+            'SALES_CHANNEL_ID'
+        );
+
+        $request = new Request();
+        $request->headers->set('Authorization', $jwt);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
+        $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
+
+        $resolver = new AgentRequestContextResolver(
+            $this->createMock(DataValidator::class),
+            $this->createMock(EntityRepository::class),
+            new JWTDecoder(),
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $this->createMock(SalesChannelContextService::class),
+        );
+
+        $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
+
+        $resolver->resolve($request);
+    }
+
     /**
      * @param non-empty-string|null $paypalMerchantId
      * @param list<string>|null $scopes
