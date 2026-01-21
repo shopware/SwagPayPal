@@ -103,7 +103,7 @@ class ExpressCustomerServiceTest extends TestCase
         $order->assign(GetOrderCapture::get());
         $firstCustomer = $this->doLogin($order);
 
-        $order->getPurchaseUnits()->first()?->getShipping()->getAddress()->setPostalCode('abcde');
+        $order->getPurchaseUnits()->first()?->getShipping()?->getAddress()->setPostalCode('abcde');
         $secondCustomer = $this->doLogin($order);
 
         static::assertSame($firstCustomer->getId(), $secondCustomer->getId());
