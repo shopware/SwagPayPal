@@ -113,6 +113,20 @@ class ExpressCustomerServiceTest extends TestCase
         static::assertCount(2, $addresses);
     }
 
+    public function testLoginWithoutShippingAddress(): void
+    {
+        $orderData = GetOrderCapture::get();
+        $orderData['payment_source']['paypal']['name']['given_name'] = 'Test Given';
+        $orderData['payment_source']['paypal']['name']['surname'] = 'Test Surname';
+
+        $order = new Order()->assign($orderData);
+        $order->getPurchaseUnits()->first()?->setShipping(null);
+        $customer = $this->doLogin($order);
+
+        static::assertSame('Test Surname', $customer->getLastName());
+        static::assertSame('Test Given', $customer->getFirstName());
+    }
+
     public function testLoginDifferentAccountSameEmail(): void
     {
         $order = new Order();
