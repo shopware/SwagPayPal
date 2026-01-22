@@ -465,7 +465,7 @@ mwIDAQAB
             new \DateTimeImmutable(),
             new \DateTimeImmutable('+1 hour'),
             ['cart', 'checkout'],
-            'SALES_CHANNEL_ID'
+            Uuid::randomHex()
         );
 
         $request = new Request();
@@ -473,12 +473,8 @@ mwIDAQAB
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
-        $resolver = new AgentRequestContextResolver(
-            $this->createMock(DataValidator::class),
-            $this->createMock(EntityRepository::class),
-            new RouteScopeRegistry([new AgentRouteScope()]),
-            $this->createMock(SalesChannelContextService::class),
-        );
+        $resolver = $this->getContainer()->get(AgentRequestContextResolver::class);
+        static::assertInstanceOf(AgentRequestContextResolver::class, $resolver);
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
 
