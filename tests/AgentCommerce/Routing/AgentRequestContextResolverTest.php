@@ -476,7 +476,6 @@ mwIDAQAB
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $this->createMock(EntityRepository::class),
-            new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
         );
