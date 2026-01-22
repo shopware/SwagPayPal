@@ -193,7 +193,7 @@ mwIDAQAB
 
                     $context
                         ->buildViolation('external_id must contain at least one PayPal:* entry.')
-                        ->setCode('NO_VALID_EXTERNAL_ID')
+                        ->setCode(Type::INVALID_TYPE_ERROR)
                         ->addViolation();
                 })
             )
