@@ -119,7 +119,7 @@ class ExpressCustomerServiceTest extends TestCase
         $orderData['payment_source']['paypal']['name']['given_name'] = 'Test Given';
         $orderData['payment_source']['paypal']['name']['surname'] = 'Test Surname';
 
-        $order = new Order()->assign($orderData);
+        $order = (new Order())->assign($orderData);
         $order->getPurchaseUnits()->first()?->setShipping(null);
         $customer = $this->doLogin($order);
 
