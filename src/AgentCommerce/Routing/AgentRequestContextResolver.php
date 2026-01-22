@@ -47,7 +47,6 @@ use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Optional;
-use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -185,9 +184,9 @@ mwIDAQAB
                 'external_id',
                 new NotBlank(),
                 new Type('array'),
-                new Callback((static function ($value, ExecutionContextInterface $context) {
+                new Callback(static function ($value, ExecutionContextInterface $context): void {
                     foreach ($value as $entry) {
-                        if (is_string($entry) && str_starts_with($entry, 'PayPal:')) {
+                        if (\is_string($entry) && str_starts_with($entry, 'PayPal:')) {
                             return;
                         }
                     }
@@ -196,7 +195,8 @@ mwIDAQAB
                         ->buildViolation('external_id must contain at least one PayPal:* entry.')
                         ->setCode('NO_VALID_EXTERNAL_ID')
                         ->addViolation();
-                })))
+                })
+            )
             ->add('sub', new NotBlank(), new Type('string'), new Uuid())
             ->add('iat', new NotBlank(), new Type(\DateTimeInterface::class))
             ->add('exp', new NotBlank(), new Type(\DateTimeInterface::class))
