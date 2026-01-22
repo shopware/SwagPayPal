@@ -1,3 +1,6 @@
+# 9.10.2
+- Fixes an issue, where required cookies were not displayed in the banner even though PayPal scripts had been loaded (shopware/SwagPayPal#506)
+
 # 9.10.1
 - Fixes an issue, where languages not supported by PayPal did not fall back to a supported language (shopware/shopware#13950)
 
