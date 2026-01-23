@@ -237,8 +237,8 @@ class ValidationIssuesTest extends TestCase
     {
         $code = ValidationIssue::CODE__BUSINESS_RULE_ERROR;
 
-        yield AddressValidationError::class => [new AddressValidationError(true, new ConstraintViolationList()), ValidationIssue::CODE__SHIPPING_ERROR];
-        yield BillingAddressBlockedError::class => [new BillingAddressBlockedError('foo'), ValidationIssue::CODE__SHIPPING_ERROR];
+        yield AddressValidationError::class => [new AddressValidationError(true, new ConstraintViolationList(), Uuid::randomHex()), ValidationIssue::CODE__SHIPPING_ERROR]; // @phpstan-ignore method.deprecated
+        yield BillingAddressBlockedError::class => [new BillingAddressBlockedError('foo', Uuid::randomHex()), ValidationIssue::CODE__SHIPPING_ERROR]; // @phpstan-ignore method.deprecated
         yield BillingAddressCountryRegionMissingError::class => [new BillingAddressCountryRegionMissingError(self::createCustomerAddress()), $code];
         yield BillingAddressSalutationMissingError::class => [new BillingAddressSalutationMissingError(self::createCustomerAddress()), $code];
         yield ShippingAddressBlockedError::class => [new ShippingAddressBlockedError('foo'), ValidationIssue::CODE__SHIPPING_ERROR];
