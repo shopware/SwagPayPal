@@ -43,6 +43,7 @@
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\SetPaymentOrderRoute"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute" public="true">
