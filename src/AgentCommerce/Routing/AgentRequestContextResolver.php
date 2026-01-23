@@ -66,13 +66,13 @@ class AgentRequestContextResolver implements RequestContextResolverInterface
      * @var non-empty-string
      */
     public static string $PAYPAL_JWT = '-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu1SU1LfVLPHCozMxH2Mo
-4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0/IzW7yWR7QkrmBL7jTKEn5u
-+qKhbwKfBstIs+bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyeh
-kd3qqGElvW/VDL5AaWTg0nLVkjRo9z+40RQzuVaE8AkAFmxZzow3x+VJYKdjykkJ
-0iT9wCS0DRTXu269V264Vf/3jvredZiKRkgwlL9xNAwxXFg0x/XFw005UWVRIkdg
-cKWTjpBP2dPwVZ4WWC+9aGVd+Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbc
-mwIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvv7Pi1nWWrJj4n5+6gX9
+B7BQpctaPEg9VdVK1kzc9xBNwZobeWEgEmiUGtkrn8S5R6Q4NmB4hnb8F5jeCX5O
+kyA49mgzw4wNXUPGTGMY5Eoxt9zu1Heaivkljh4+wN6d01oIFkHT6E7VjEJOG2RA
+49t7fgQ1phJIUK39B0RAXIG2pYicbujeiiJ12iQipMjY/TVD0KZgUc2Vj2apk7Dv
+1YBqFG+HlSG5hWu880IzGQE9Pds5qekIawJJyed08otq29hDHlFd28B0fFhdzcu8
+cN83NxddXBlh77b8+a7gaWC5/Iw45THRpIsiG41uX0r0INEDcnR3qCUkz6m9LOVW
+kQIDAQAB
 -----END PUBLIC KEY-----';
 
     /**
@@ -112,7 +112,6 @@ mwIDAQAB
             new EqualsFilter('storefrontSalesChannel.active', true),
             new EqualsFilter('salesChannel.active', true),
             new EqualsFilter('salesChannel.typeId', SwagPayPal::SALES_CHANNEL_TYPE_AGENT_COMMERCE),
-            new EqualsFilter('salesChannel.id', $source->salesChannelId),
         );
 
         /** @var ProductExportEntity|null $productExport */
@@ -141,6 +140,7 @@ mwIDAQAB
             // this is a workaround for the JWTDecoder which does not catch RequiredConstraintsViolated exceptions in 6.7.0.0
             throw AgentException::unauthorized('Invalid JWT token', $e);
         } catch (JWTException $e) {
+            dd($e);
             throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
         }
     }
