@@ -42,7 +42,6 @@ use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Optional;
-use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -102,6 +101,8 @@ kQIDAQAB
             throw AgentException::unauthorized('Missing Authorization header');
         }
 
+        $token = $this->extractJwtFromAuthorizationHeader($token);
+
         $source = $this->resolveContextSource($token);
         $context = new Context($source);
 
@@ -137,7 +138,6 @@ kQIDAQAB
             // this is a workaround for the JWTDecoder which does not catch RequiredConstraintsViolated exceptions in 6.7.0.0
             throw AgentException::unauthorized('Invalid JWT token', $e);
         } catch (JWTException $e) {
-            dd($e);
             throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
         }
     }
@@ -165,10 +165,22 @@ kQIDAQAB
         $this->JWTDecoder->validate($jwt, ...$constraints);
     }
 
+    private function extractJwtFromAuthorizationHeader(string $authorization): string
+    {
+        $authorization = trim($authorization);
+
+        // Accept both: "Bearer <jwt>" and "<jwt>" (backward compatible)
+        if (\preg_match('/^Bearer\s+(.+)$/i', $authorization, $m) === 1) {
+            return trim($m[1]);
+        }
+
+        return $authorization;
+    }
+
     private function resolveContextSource(string $token): AgentSource
     {
         try {
-            /** @var array{external_id: array{0: string}, sub: string, iat: \DateTimeInterface, exp: \DateTimeInterface, scope: list<string>, debug_id?: string} $decoded */
+            /** @var array{external_id: list<mixed>, sub: string, iat: \DateTimeInterface, exp: \DateTimeInterface, scope: list<string>, debug_id?: string} $decoded */
             $decoded = $this->JWTDecoder->decode($token); // @phpstan-ignore varTag.type
         } catch (JWTException $e) {
             throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
@@ -180,9 +192,9 @@ kQIDAQAB
                 'external_id',
                 new NotBlank(),
                 new Type('array'),
-                new Callback((static function ($value, ExecutionContextInterface $context) {
+                new Callback(static function ($value, ExecutionContextInterface $context): void {
                     foreach ($value as $entry) {
-                        if (is_string($entry) && str_starts_with($entry, 'PayPal:')) {
+                        if (\is_string($entry) && str_starts_with($entry, 'PayPal:')) {
                             return;
                         }
                     }
@@ -190,7 +202,8 @@ kQIDAQAB
                     $context
                         ->buildViolation('external_id must contain at least one PayPal:* entry.')
                         ->addViolation();
-                })))
+                })
+            )
             ->add('sub', new NotBlank(), new Type('string'), new Uuid())
             ->add('iat', new NotBlank(), new Type(\DateTimeInterface::class))
             ->add('exp', new NotBlank(), new Type(\DateTimeInterface::class))
@@ -203,13 +216,24 @@ kQIDAQAB
             throw AgentException::unauthorized('Invalid JWT token', $e);
         }
 
-        return new AgentSource(self::extractPayPalMerchantId($decoded['external_id'][0]), $decoded['iat'], $decoded['exp'], $decoded['scope'], $decoded['sub'], $decoded['debug_id'] ?? null);
+        return new AgentSource(self::extractPayPalMerchantId($decoded['external_id']), $decoded['iat'], $decoded['exp'], $decoded['scope'], $decoded['sub'], $decoded['debug_id'] ?? null);
     }
 
-    private static function extractPayPalMerchantId(string $externalId): string
+    /**
+     * @param list<mixed> $externalIds
+     */
+    private static function extractPayPalMerchantId(array $externalIds): string
     {
-        \preg_match('/^PayPal:\s*(.+)$/', $externalId, $matches);
+        foreach ($externalIds as $entry) {
+            if (!\is_string($entry) || !\str_starts_with($entry, 'PayPal:')) {
+                continue;
+            }
 
-        return $matches[1];
+            if (\preg_match('/^PayPal:\s*(.+)$/', $entry, $m) === 1) {
+                return $m[1];
+            }
+        }
+
+        throw AgentException::unauthorized('external_id must contain at least one PayPal:* entry.');
     }
 }
