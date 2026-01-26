@@ -39,6 +39,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParamete
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Exception\JWTException;
 use Swag\PayPal\AgentCommerce\Validation\CartTokenValidator;
+use Swag\PayPal\AgentCommerce\Validation\Constraint\PayPalExternalId;
 use Swag\PayPal\AgentCommerce\Validation\HasScopes;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Clock\NativeClock;
@@ -193,22 +194,7 @@ kQIDAQAB
 
         $definition = new DataValidationDefinition('paypal.agent_source');
         $definition
-            ->add(
-                'external_id',
-                new NotBlank(),
-                new Type('array'),
-                new Callback(static function ($value, ExecutionContextInterface $context): void {
-                    foreach ($value as $entry) {
-                        if (\is_string($entry) && str_starts_with($entry, 'PayPal:')) {
-                            return;
-                        }
-                    }
-
-                    $context
-                        ->buildViolation('external_id must contain at least one PayPal:* entry.')
-                        ->addViolation();
-                })
-            )
+            ->add('external_id', new NotBlank(), new Type('array'), new PayPalExternalId())
             ->add('sub', new NotBlank(), new Type('string'), new Uuid())
             ->add('iat', new NotBlank(), new Type(\DateTimeInterface::class))
             ->add('exp', new NotBlank(), new Type(\DateTimeInterface::class))
