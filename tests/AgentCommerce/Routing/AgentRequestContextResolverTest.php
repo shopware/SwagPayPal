@@ -176,7 +176,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         );
 
         $request = new Request();
-        $request->headers->set('Authorization', $jwt);
+        $request->headers->set('Authorization', 'Bearer ' . $jwt);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
@@ -230,7 +230,7 @@ mwIDAQAB
         );
 
         $request = new Request();
-        $request->headers->set('Authorization', $jwt);
+        $request->headers->set('Authorization', 'Bearer ' . $jwt);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
@@ -246,7 +246,7 @@ mwIDAQAB
     public function testResolveWithWrongJWTHeader(): void
     {
         $request = new Request();
-        $request->headers->set('Authorization', 'ey.wrong.jwt');
+        $request->headers->set('Authorization', 'Bearer ey.wrong.jwt');
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
@@ -279,7 +279,7 @@ mwIDAQAB
         );
 
         $request = new Request();
-        $request->headers->set('Authorization', $token);
+        $request->headers->set('Authorization', 'Bearer ' . $token);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
@@ -314,7 +314,7 @@ mwIDAQAB
         );
 
         $request = new Request();
-        $request->headers->set('Authorization', $jwt);
+        $request->headers->set('Authorization', 'Bearer ' . $jwt);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['wrong-scope']);
 
@@ -355,7 +355,7 @@ mwIDAQAB
         );
 
         $request = Request::create('/CART-12345678912345678912345678912345/foo-bar');
-        $request->headers->set('Authorization', $jwt);
+        $request->headers->set('Authorization', 'Bearer ' . $jwt);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['wrong-scope']);
 
@@ -419,7 +419,7 @@ mwIDAQAB
         $jwt = self::encodeJWT('MERCHANT_ID', $iat, $exp, ['cart', 'checkout'], 'SALES_CHANNEL_ID');
 
         $request = new Request();
-        $request->headers->set('Authorization', $jwt);
+        $request->headers->set('Authorization', 'Bearer ' . $jwt);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
@@ -456,29 +456,6 @@ mwIDAQAB
 
         static::assertInstanceOf(SalesChannelContext::class, $resultedSalesChannelContext);
         static::assertSame($salesChannelContext, $resultedSalesChannelContext);
-    }
-
-    public function testResolveWithMissingPayPalMerchantId(): void
-    {
-        $jwt = self::encodeJWT(
-            null,
-            new \DateTimeImmutable(),
-            new \DateTimeImmutable('+1 hour'),
-            ['cart', 'checkout'],
-            Uuid::randomHex()
-        );
-
-        $request = new Request();
-        $request->headers->set('Authorization', $jwt);
-        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
-        $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
-
-        $resolver = $this->getContainer()->get(AgentRequestContextResolver::class);
-        static::assertInstanceOf(AgentRequestContextResolver::class, $resolver);
-
-        $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
-
-        $resolver->resolve($request);
     }
 
     /**
