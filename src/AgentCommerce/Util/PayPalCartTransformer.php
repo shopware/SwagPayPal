@@ -134,6 +134,14 @@ class PayPalCartTransformer
         $shippingCriteria->addAssociations(['appShippingMethod.app', 'deliveryTime']);
         $shippingMethods = $this->shippingMethodRoute->load(new Request(), $context, $shippingCriteria)->getShippingMethods();
         foreach ($shippingMethods as $shippingMethod) {
+            // TODO: for now we remove all non selected shipping methods
+            // TODO: paypal needs prices for all shipping methods, otherwise it will fail
+            // TODO: only the selected shipping method has a calculated price (rule-system issue)
+            // TODO: should be removed, once we figure out a solution
+            if (!\array_key_exists($shippingMethod->getId(), $selectedMethods)) {
+                continue;
+            }
+
             $shippingOption = new ShippingOption();
             $shippingOption->setId($shippingMethod->getId());
             $shippingOption->setName($shippingMethod->getTranslation('name'));

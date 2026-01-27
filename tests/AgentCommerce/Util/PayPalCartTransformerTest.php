@@ -249,10 +249,15 @@ class PayPalCartTransformerTest extends TestCase
         $second = $availableShippingMethods->get(1);
         $third = $availableShippingMethods->get(2);
 
-        static::assertCount(3, $availableShippingMethods);
+        // TODO: reintroduce once we have a solution for providing all shipping methods including prices
+        // static::assertCount(3, $availableShippingMethods);
+        static::assertCount(2, $availableShippingMethods);
+
         static::assertInstanceOf(ShippingOption::class, $first);
         static::assertInstanceOf(ShippingOption::class, $second);
-        static::assertInstanceOf(ShippingOption::class, $third);
+        // TODO: reintroduce once we have a solution for providing all shipping methods including prices
+        // static::assertInstanceOf(ShippingOption::class, $third);
+        static::assertNull($third);
 
         static::assertSame($shippingMethodId1, $first->getId());
         static::assertSame('Label 1 (DeliveryTime)', $first->getName());
@@ -272,12 +277,13 @@ class PayPalCartTransformerTest extends TestCase
         static::assertSame('EUR', $second->getPrice()->getCurrencyCode());
         static::assertNotNull($second->getEstimatedDelivery());
 
-        static::assertSame($shippingMethodId3, $third->getId());
-        static::assertSame('Label 3 (DeliveryTime)', $third->getName());
-        static::assertSame('Description 3', $third->getDescription());
-        static::assertFalse($third->isset('price'));
-        static::assertFalse($third->isSelected());
-        static::assertNotNull($third->getEstimatedDelivery());
+        // TODO: reintroduce once we have a solution for providing all shipping methods including prices
+        // static::assertSame($shippingMethodId3, $third->getId());
+        // static::assertSame('Label 3 (DeliveryTime)', $third->getName());
+        // static::assertSame('Description 3', $third->getDescription());
+        // static::assertFalse($third->isset('price'));
+        // static::assertFalse($third->isSelected());
+        // static::assertNotNull($third->getEstimatedDelivery());
     }
 
     public function testConvertNullCustomer(): void
