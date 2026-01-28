@@ -45,11 +45,9 @@ use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\All;
-use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Constraints\Type;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @internal

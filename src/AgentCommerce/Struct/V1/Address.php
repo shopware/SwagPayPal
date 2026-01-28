@@ -30,14 +30,14 @@ class Address extends PayPalApiStruct
         maxLength: 300,
         minLength: 0,
     )]
-    protected ?string $addressLine1 = null;
+    protected ?string $addressLine_1 = null;
 
     #[OA\Property(
         type: 'string',
         maxLength: 300,
         minLength: 0,
     )]
-    protected ?string $addressLine2 = null;
+    protected ?string $addressLine_2 = null;
 
     /**
      * The highest-level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision.
@@ -49,7 +49,7 @@ class Address extends PayPalApiStruct
         maxLength: 300,
         minLength: 0,
     )]
-    protected ?string $adminArea1 = null;
+    protected ?string $adminArea_1 = null;
 
     /**
      * A city, town, or village. Smaller than admin_area_level_1.
@@ -59,7 +59,7 @@ class Address extends PayPalApiStruct
         maxLength: 120,
         minLength: 0,
     )]
-    protected ?string $adminArea2 = null;
+    protected ?string $adminArea_2 = null;
 
     /**
      * The postal code, which is the ZIP code or equivalent.
@@ -85,42 +85,42 @@ class Address extends PayPalApiStruct
 
     public function getAddressLine1(): ?string
     {
-        return $this->addressLine1;
+        return $this->addressLine_1;
     }
 
     public function setAddressLine1(?string $addressLine1): void
     {
-        $this->addressLine1 = $addressLine1;
+        $this->addressLine_1 = $addressLine1;
     }
 
     public function getAddressLine2(): ?string
     {
-        return $this->addressLine2;
+        return $this->addressLine_2;
     }
 
     public function setAddressLine2(?string $addressLine2): void
     {
-        $this->addressLine2 = $addressLine2;
+        $this->addressLine_2 = $addressLine2;
     }
 
     public function getAdminArea1(): ?string
     {
-        return $this->adminArea1;
+        return $this->adminArea_1;
     }
 
     public function setAdminArea1(?string $adminArea1): void
     {
-        $this->adminArea1 = $adminArea1;
+        $this->adminArea_1 = $adminArea1;
     }
 
     public function getAdminArea2(): ?string
     {
-        return $this->adminArea2;
+        return $this->adminArea_2;
     }
 
     public function setAdminArea2(?string $adminArea2): void
     {
-        $this->adminArea2 = $adminArea2;
+        $this->adminArea_2 = $adminArea2;
     }
 
     public function getPostalCode(): ?string
