@@ -102,6 +102,7 @@ class ShopwareCartTransformerTest extends TestCase
         static::assertSame('12345', $customerData['shippingAddress']['zipcode']);
         static::assertSame('San Jose', $customerData['shippingAddress']['city']);
         static::assertSame('123 Main Street', $customerData['shippingAddress']['street']);
+        static::assertSame('Apt 4B', $customerData['shippingAddress']['additionalAddressLine1']);
         static::assertSame('+1 12345-6789', $customerData['shippingAddress']['phoneNumber']);
 
         static::assertSame('John', $customerData['billingAddress']['firstName']);
@@ -109,6 +110,7 @@ class ShopwareCartTransformerTest extends TestCase
         static::assertSame('10001', $customerData['billingAddress']['zipcode']);
         static::assertSame('New York', $customerData['billingAddress']['city']);
         static::assertSame('456 Payment Boulevard', $customerData['billingAddress']['street']);
+        static::assertSame('Suite 789', $customerData['billingAddress']['additionalAddressLine1']);
         static::assertSame('+1 12345-6789', $customerData['billingAddress']['phoneNumber']);
         static::assertTrue($customerData['guest']);
     }

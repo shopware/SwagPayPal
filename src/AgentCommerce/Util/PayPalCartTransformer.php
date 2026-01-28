@@ -308,6 +308,8 @@ class PayPalCartTransformer
         $address->setCountryCode($iso);
         $address->setPostalCode($addressEntity->__isset('zipcode') ? $addressEntity->getZipcode() : null);
         $address->setAddressLine1($addressEntity->__isset('street') ? $addressEntity->getStreet() : null);
+        $address->setAddressLine2($addressEntity->__isset('additionalAddressLine1') ? $addressEntity->getAdditionalAddressLine1() : null);
+        $address->setAdminArea1($addressEntity->__isset('countryState') ? $addressEntity->getCountryState()?->getShortCode() : null);
         $address->setAdminArea2($addressEntity->__isset('city') ? $addressEntity->getCity() : null);
 
         return $address;

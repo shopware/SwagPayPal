@@ -132,6 +132,7 @@ class ShopwareCartTransformer
             'zipcode' => $address->getPostalCode(),
             'city' => $address->getAdminArea2(),
             'street' => $address->getAddressLine1(),
+            'additionalAddressLine1' => $address->getAddressLine2(),
             'phoneNumber' => $phone?->getFullPhoneNumber(),
         ];
     }
