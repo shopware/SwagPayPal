@@ -40,6 +40,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\DeliveryTime\DeliveryTimeEntity;
@@ -439,11 +440,16 @@ class PayPalCartTransformerTest extends TestCase
             $this->createMock(ValidationIssues::class),
         );
 
+        $countryState = new CountryStateEntity();
+        $countryState->setShortCode('DE-NW');
+
         $address = new CustomerAddressEntity();
         $address->setCountryId(Uuid::randomHex());
         $address->setZipcode('12345');
         $address->setStreet('Mainstreet 1');
         $address->setCity('City 1');
+        $address->setAdditionalAddressLine1('Address line 1');
+        $address->setCountryState($countryState);
 
         $shippingAddress = $transformer->convertAddress($address, ShippingAddress::class, Context::createCLIContext());
         $billingAddress = $transformer->convertAddress($address, BillingAddress::class, Context::createCLIContext());
@@ -459,6 +465,15 @@ class PayPalCartTransformerTest extends TestCase
 
         static::assertSame('City 1', $shippingAddress->getAdminArea2());
         static::assertSame('City 1', $billingAddress->getAdminArea2());
+
+        static::assertSame('Address line 1', $shippingAddress->getAddressLine2());
+        static::assertSame('Address line 1', $billingAddress->getAddressLine2());
+
+        static::assertSame('DE', $shippingAddress->getCountryCode());
+        static::assertSame('DE', $billingAddress->getCountryCode());
+
+        static::assertSame('DE-NW', $shippingAddress->getAdminArea1());
+        static::assertSame('DE-NW', $billingAddress->getAdminArea1());
     }
 
     public function testConvertToValidationIssuesNoIssues(): void

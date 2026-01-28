@@ -30,7 +30,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @internal
  */
 #[Package('checkout')]
-#[Route(defaults: ['_routeScope' => ['paypal-agent'], '_agentScope' => [AgentSource::SCOPE_CART, AgentSource::SCOPE_CHECKOUT]])]
+#[Route(defaults: ['_routeScope' => ['paypal-agent'], '_agentScope' => [AgentSource::SCOPE_CHECKOUT]])]
 class CheckoutRoute extends AbstractAgentCommerceRoute
 {
     public function __construct(
