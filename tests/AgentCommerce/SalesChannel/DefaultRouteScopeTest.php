@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Tests\AgentCommerce\Routing;
+namespace Swag\PayPal\Test\AgentCommerce\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
@@ -40,9 +40,9 @@ class DefaultRouteScopeTest extends TestCase
 
             /** @var Route $routeAttribute */
             $routeAttribute = $attributes[0]->newInstance();
-            static::assertArrayHasKey('_agentScope', $routeAttribute->defaults);
+            static::assertArrayHasKey('_agentScope', $routeAttribute->getDefaults());
 
-            static::assertEquals($expectedDefaults, $routeAttribute->defaults['_agentScope'], \sprintf('Incorrect _agentScope defaults for class %s', $class));
+            static::assertEquals($expectedDefaults, $routeAttribute->getDefaults()['_agentScope'], \sprintf('Incorrect _agentScope defaults for class %s', $class));
         }
     }
 }

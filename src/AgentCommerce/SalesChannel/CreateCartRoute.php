@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Routing\AgentSource;
@@ -37,7 +37,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class CreateCartRoute extends AbstractAgentCommerceRoute
 {
     public function __construct(
-        protected SalesChannelContextService $contextService,
+        protected SalesChannelContextServiceInterface $contextService,
         private readonly CartService $cartService,
         private readonly PayPalCartTransformer $payPalCartTransformer,
         private readonly ShopwareCartTransformer $shopwareCartTransformer,

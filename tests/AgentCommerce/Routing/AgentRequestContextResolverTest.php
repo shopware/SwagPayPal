@@ -168,7 +168,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
     public function testResolveWithWrongPublicJWT(): void
     {
         $jwt = self::encodeJWT(
-            'MERCHANT_ID',
+            ['PayPal:MERCHANT_ID'],
             new \DateTimeImmutable(),
             new \DateTimeImmutable('+1 hour'),
             ['cart', 'checkout'],
@@ -222,7 +222,7 @@ mwIDAQAB
         $exp = new \DateTimeImmutable('-1 hour');
 
         $jwt = self::encodeJWT(
-            'MERCHANT_ID',
+            ['PayPal:MERCHANT_ID'],
             $iat,
             $exp,
             ['cart', 'checkout'],
@@ -300,13 +300,14 @@ mwIDAQAB
         yield 'Missing iat' => [['paypalMerchantId' => 'MERCHANT_ID', 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
         yield 'Missing exp' => [['paypalMerchantId' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
 
-        yield 'Empty salesChannelId' => [['paypalMerchantId' => 'MERCHANT_ID', 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => []]];
+        yield 'Empty salesChannelId' => [['paypalMerchantId' => ['PayPal:MERCHANT_ID'], 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => []]];
+        yield 'salesChannelId not valid uuid' => [['paypalMerchantId' => ['PayPal:MERCHANT_ID'], 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => [], 'shopwareMerchantId' => 'random_string']];
     }
 
     public function testResolveWithWrongAgentScopeInRoute(): void
     {
         $jwt = self::encodeJWT(
-            'MERCHANT_ID',
+            ['PayPal:MERCHANT_ID'],
             new \DateTimeImmutable(),
             new \DateTimeImmutable('+1 hour'),
             ['cart', 'checkout'],
@@ -347,7 +348,7 @@ mwIDAQAB
         $exp = new \DateTimeImmutable('+1 hour');
 
         $jwt = self::encodeJWT(
-            'MERCHANT_ID',
+            ['PayPal:MERCHANT_ID'],
             $iat,
             $exp,
             ['these', 'are', 'wrong', 'scopes'],
@@ -416,7 +417,7 @@ mwIDAQAB
         $iat = new \DateTimeImmutable();
         $exp = new \DateTimeImmutable('+1 hour');
 
-        $jwt = self::encodeJWT('MERCHANT_ID', $iat, $exp, ['cart', 'checkout'], 'SALES_CHANNEL_ID');
+        $jwt = self::encodeJWT(['PayPal:MERCHANT_ID'], $iat, $exp, ['cart', 'checkout'], 'SALES_CHANNEL_ID');
 
         $request = new Request();
         $request->headers->set('Authorization', 'Bearer ' . $jwt);
@@ -459,11 +460,11 @@ mwIDAQAB
     }
 
     /**
-     * @param non-empty-string|null $paypalMerchantId
+     * @param non-empty-string|non-empty-string[]|null $paypalMerchantId
      * @param list<string>|null $scopes
      * @param non-empty-string|null $salesChannelId
      */
-    private static function encodeJWT(?string $paypalMerchantId = null, ?\DateTimeImmutable $iat = null, ?\DateTimeImmutable $exp = null, ?array $scopes = null, ?string $salesChannelId = null): string
+    private static function encodeJWT(mixed $paypalMerchantId = null, ?\DateTimeImmutable $iat = null, ?\DateTimeImmutable $exp = null, ?array $scopes = null, ?string $salesChannelId = null): string
     {
         $configuration = Configuration::forAsymmetricSigner(
             new Sha256(),
@@ -475,7 +476,7 @@ mwIDAQAB
         $builder = $builder->issuedBy(AgentRequestContextResolver::JWT_EXPECTED_ISSUER);
 
         if ($paypalMerchantId !== null) {
-            $builder = $builder->withClaim('external_id', [\sprintf('PayPal:%s', $paypalMerchantId)]);
+            $builder = $builder->withClaim('external_id', $paypalMerchantId);
         }
 
         if ($scopes !== null) {

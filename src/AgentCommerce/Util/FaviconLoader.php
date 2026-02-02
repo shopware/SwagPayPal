@@ -10,7 +10,7 @@ namespace Swag\PayPal\AgentCommerce\Util;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Util\Random;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Storefront\Theme\AbstractResolvedConfigLoader;
 use Shopware\Storefront\Theme\ConfigLoader\AbstractAvailableThemeProvider;
@@ -25,7 +25,7 @@ class FaviconLoader
     public function __construct(
         private readonly AbstractAvailableThemeProvider $themeLoader,
         private readonly AbstractResolvedConfigLoader $configService,
-        private readonly SalesChannelContextService $contextService
+        private readonly SalesChannelContextServiceInterface $contextService
     ) {
     }
 
