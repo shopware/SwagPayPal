@@ -25,8 +25,8 @@ class Migration1626082072AddStatusAndMessageCountToRun extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        if ($this->columnExists($connection, PosSalesChannelRunDefinition::ENTITY_NAME, 'status')
-         || $this->columnExists($connection, PosSalesChannelRunDefinition::ENTITY_NAME, 'message_count')) {
+        if ($this->columnExists($connection, PosSalesChannelRunDefinition::ENTITY_NAME, 'status') // @phpstan-ignore method.deprecated
+         || $this->columnExists($connection, PosSalesChannelRunDefinition::ENTITY_NAME, 'message_count')) { // @phpstan-ignore method.deprecated
             return;
         }
 
