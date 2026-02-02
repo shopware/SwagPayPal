@@ -16,6 +16,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
@@ -40,7 +41,7 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
      * @param EntityRepository<CustomerAddressCollection> $customerAddressRepository
      */
     public function __construct(
-        protected SalesChannelContextService $contextService,
+        protected SalesChannelContextServiceInterface $contextService,
         private readonly ShopwareCartTransformer $shopwareCartTransformer,
         private readonly CreateCartRoute $createCartRoute,
         private readonly EntityRepository $customerRepository,

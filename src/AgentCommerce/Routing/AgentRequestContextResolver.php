@@ -30,7 +30,7 @@ use Shopware\Core\Framework\Validation\DataValidationDefinition;
 use Shopware\Core\Framework\Validation\DataValidator;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\PlatformRequest;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
 use Swag\PayPal\AgentCommerce\Validation\CartTokenValidator;
@@ -43,6 +43,7 @@ use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Constraints\Type;
+use Symfony\Component\Validator\Exception\InvalidArgumentException;
 
 /**
  * @internal
@@ -80,7 +81,7 @@ kQIDAQAB
         private readonly EntityRepository $productExportRepository,
         private readonly JWTDecoder $JWTDecoder,
         private readonly RouteScopeRegistry $routeScopeRegistry,
-        private readonly SalesChannelContextService $contextService,
+        private readonly SalesChannelContextServiceInterface $contextService,
     ) {
     }
 
@@ -197,6 +198,9 @@ kQIDAQAB
         try {
             $this->validator->validate($decoded, $definition);
         } catch (ConstraintViolationException $e) {
+            throw AgentException::unauthorized('Invalid JWT token', $e);
+        } catch (InvalidArgumentException $e) {
+            /** @deprecated tag:v11.0.0 - With Shopware v6.7.2.0 this exception will be caught and processed */
             throw AgentException::unauthorized('Invalid JWT token', $e);
         }
 

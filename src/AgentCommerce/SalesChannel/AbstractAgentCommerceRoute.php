@@ -10,7 +10,7 @@ namespace Swag\PayPal\AgentCommerce\SalesChannel;
 use Shopware\Core\Framework\Api\Context\AdminSalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PaymentMethod;
@@ -21,7 +21,7 @@ use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PaymentMethod;
 #[Package('checkout')]
 abstract class AbstractAgentCommerceRoute
 {
-    protected SalesChannelContextService $contextService;
+    protected SalesChannelContextServiceInterface $contextService;
 
     protected function createSalesChannelContext(string $token, string $salesChannelId, Context $context): SalesChannelContext
     {

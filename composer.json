@@ -42,6 +42,10 @@
             "npm run unit-setup --prefix ../../../src/Administration/Resources/app/administration",
             "npm run unit-watch --prefix src/Resources/app/administration"
         ],
+        "init:testdb": [
+            "@putenv FORCE_INSTALL=true",
+            "@phpunit --group=none --testsuite migration,unit,integration,devops"
+        ],
         "lint": [
             "@ecs-fix",
             "@phpstan",

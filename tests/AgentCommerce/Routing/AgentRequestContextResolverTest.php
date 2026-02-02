@@ -304,13 +304,13 @@ mwIDAQAB
         yield 'Missing exp' => [['paypalMerchantId' => ['PayPal:MERCHANT_ID'], 'iat' => new \DateTimeImmutable(), 'scope' => ['cart', 'checkout'], 'shopwareMerchantId' => Uuid::randomHex()]];
 
         yield 'Empty salesChannelId' => [['paypalMerchantId' => ['PayPal:MERCHANT_ID'], 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => []]];
-        yield 'salesChannelId not valid uuid' => [['paypalMerchantId' => ['PayPal:MERCHANT_ID'], 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => []], 'shopwareMerchantId' => 'random_string'];
+        yield 'salesChannelId not valid uuid' => [['paypalMerchantId' => ['PayPal:MERCHANT_ID'], 'iat' => new \DateTimeImmutable(), 'exp' => new \DateTimeImmutable('+1 hour'), 'scope' => [], 'shopwareMerchantId' => 'random_string']];
     }
 
     public function testResolveWithWrongAgentScopeInRoute(): void
     {
         $jwt = self::encodeJWT(
-            'MERCHANT_ID',
+            ['PayPal:MERCHANT_ID'],
             new \DateTimeImmutable(),
             new \DateTimeImmutable('+1 hour'),
             ['cart', 'checkout'],
@@ -352,7 +352,7 @@ mwIDAQAB
         $exp = new \DateTimeImmutable('+1 hour');
 
         $jwt = self::encodeJWT(
-            'MERCHANT_ID',
+            ['PayPal:MERCHANT_ID'],
             $iat,
             $exp,
             ['these', 'are', 'wrong', 'scopes'],
@@ -422,7 +422,7 @@ mwIDAQAB
         $iat = new \DateTimeImmutable();
         $exp = new \DateTimeImmutable('+1 hour');
 
-        $jwt = self::encodeJWT('MERCHANT_ID', $iat, $exp, ['cart', 'checkout'], 'SALES_CHANNEL_ID');
+        $jwt = self::encodeJWT(['PayPal:MERCHANT_ID'], $iat, $exp, ['cart', 'checkout'], 'SALES_CHANNEL_ID');
 
         $request = new Request();
         $request->headers->set('Authorization', 'Bearer ' . $jwt);
