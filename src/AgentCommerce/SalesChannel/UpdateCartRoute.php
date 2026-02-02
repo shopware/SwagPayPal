@@ -16,7 +16,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
+use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgentCommerce\Exception\AgentException;
@@ -32,7 +32,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @internal
  */
 #[Package('checkout')]
-#[Route(defaults: ['_routeScope' => ['paypal-agent'], '_agentScope' => [AgentSource::SCOPE_CHECKOUT]])]
+#[Route(defaults: ['_routeScope' => ['paypal-agent'], '_agentScope' => [AgentSource::SCOPE_CART]])]
 class UpdateCartRoute extends AbstractAgentCommerceRoute
 {
     /**
@@ -46,7 +46,7 @@ class UpdateCartRoute extends AbstractAgentCommerceRoute
         private readonly EntityRepository $customerRepository,
         private readonly EntityRepository $customerAddressRepository,
         private readonly CartService $cartService,
-        private readonly ContextSwitchRoute $contextSwitchRoute,
+        private readonly AbstractContextSwitchRoute $contextSwitchRoute,
     ) {
     }
 

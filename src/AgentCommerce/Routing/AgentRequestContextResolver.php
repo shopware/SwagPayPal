@@ -61,13 +61,13 @@ class AgentRequestContextResolver implements RequestContextResolverInterface
      * @var non-empty-string
      */
     public static string $PAYPAL_JWT = '-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu1SU1LfVLPHCozMxH2Mo
-4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0/IzW7yWR7QkrmBL7jTKEn5u
-+qKhbwKfBstIs+bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyeh
-kd3qqGElvW/VDL5AaWTg0nLVkjRo9z+40RQzuVaE8AkAFmxZzow3x+VJYKdjykkJ
-0iT9wCS0DRTXu269V264Vf/3jvredZiKRkgwlL9xNAwxXFg0x/XFw005UWVRIkdg
-cKWTjpBP2dPwVZ4WWC+9aGVd+Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbc
-mwIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvv7Pi1nWWrJj4n5+6gX9
+B7BQpctaPEg9VdVK1kzc9xBNwZobeWEgEmiUGtkrn8S5R6Q4NmB4hnb8F5jeCX5O
+kyA49mgzw4wNXUPGTGMY5Eoxt9zu1Heaivkljh4+wN6d01oIFkHT6E7VjEJOG2RA
+49t7fgQ1phJIUK39B0RAXIG2pYicbujeiiJ12iQipMjY/TVD0KZgUc2Vj2apk7Dv
+1YBqFG+HlSG5hWu880IzGQE9Pds5qekIawJJyed08otq29hDHlFd28B0fFhdzcu8
+cN83NxddXBlh77b8+a7gaWC5/Iw45THRpIsiG41uX0r0INEDcnR3qCUkz6m9LOVW
+kQIDAQAB
 -----END PUBLIC KEY-----';
 
     /**
@@ -100,6 +100,8 @@ mwIDAQAB
             throw AgentException::unauthorized('Missing Authorization header');
         }
 
+        $token = $this->extractJwtFromAuthorizationHeader($token);
+
         $source = $this->resolveContextSource($token);
         $context = new Context($source);
 
@@ -108,7 +110,6 @@ mwIDAQAB
             new EqualsFilter('storefrontSalesChannel.active', true),
             new EqualsFilter('salesChannel.active', true),
             new EqualsFilter('salesChannel.typeId', SwagPayPal::SALES_CHANNEL_TYPE_AGENT_COMMERCE),
-            new EqualsFilter('salesChannel.id', $source->salesChannelId),
         );
 
         $productExport = $this->productExportRepository->search($criteria, $context)->first();
@@ -163,10 +164,22 @@ mwIDAQAB
         $this->JWTDecoder->validate($jwt, ...$constraints);
     }
 
+    private function extractJwtFromAuthorizationHeader(string $authorization): string
+    {
+        $authorization = trim($authorization);
+
+        // Accept both: "Bearer <jwt>" and "<jwt>" (backward compatible)
+        if (\preg_match('/^Bearer\s+(.+)$/i', $authorization, $m) === 1) {
+            return trim($m[1]);
+        }
+
+        return $authorization;
+    }
+
     private function resolveContextSource(string $token): AgentSource
     {
         try {
-            /** @var array{external_id: array{0: string}, sub: string, iat: \DateTimeInterface, exp: \DateTimeInterface, scope: list<string>, debug_id?: string} $decoded */
+            /** @var array{external_id: list<mixed>, sub: string, iat: \DateTimeInterface, exp: \DateTimeInterface, scope: list<string>, debug_id?: string} $decoded */
             $decoded = $this->JWTDecoder->decode($token); // @phpstan-ignore varTag.type
         } catch (JWTException $e) {
             throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
@@ -187,13 +200,24 @@ mwIDAQAB
             throw AgentException::unauthorized('Invalid JWT token', $e);
         }
 
-        return new AgentSource(self::extractPayPalMerchantId($decoded['external_id'][0]), $decoded['iat'], $decoded['exp'], $decoded['scope'], $decoded['sub'], $decoded['debug_id'] ?? null);
+        return new AgentSource(self::extractPayPalMerchantId($decoded['external_id']), $decoded['iat'], $decoded['exp'], $decoded['scope'], $decoded['sub'], $decoded['debug_id'] ?? null);
     }
 
-    private static function extractPayPalMerchantId(string $externalId): string
+    /**
+     * @param list<mixed> $externalIds
+     */
+    private static function extractPayPalMerchantId(array $externalIds): string
     {
-        \preg_match('/^PayPal:\s*(.+)$/', $externalId, $matches);
+        foreach ($externalIds as $entry) {
+            if (!\is_string($entry) || !\str_starts_with($entry, 'PayPal:')) {
+                continue;
+            }
 
-        return $matches[1];
+            if (\preg_match('/^PayPal:\s*(.+)$/', $entry, $m) === 1) {
+                return $m[1];
+            }
+        }
+
+        throw AgentException::unauthorized('external_id must contain at least one PayPal:* entry.');
     }
 }
