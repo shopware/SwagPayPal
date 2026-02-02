@@ -237,8 +237,8 @@ class ValidationIssuesTest extends TestCase
     {
         $code = ValidationIssue::CODE__BUSINESS_RULE_ERROR;
 
-        yield AddressValidationError::class => [new AddressValidationError(true, new ConstraintViolationList(), Uuid::randomHex()), ValidationIssue::CODE__SHIPPING_ERROR]; // @phpstan-ignore method.deprecated
-        yield BillingAddressBlockedError::class => [new BillingAddressBlockedError('foo', Uuid::randomHex()), ValidationIssue::CODE__SHIPPING_ERROR]; // @phpstan-ignore method.deprecated
+        yield AddressValidationError::class => [new AddressValidationError(true, new ConstraintViolationList()), ValidationIssue::CODE__SHIPPING_ERROR];
+        yield BillingAddressBlockedError::class => [new BillingAddressBlockedError('foo'), ValidationIssue::CODE__SHIPPING_ERROR];
         yield BillingAddressCountryRegionMissingError::class => [new BillingAddressCountryRegionMissingError(self::createCustomerAddress()), $code];
         yield BillingAddressSalutationMissingError::class => [new BillingAddressSalutationMissingError(self::createCustomerAddress()), $code];
         yield ShippingAddressBlockedError::class => [new ShippingAddressBlockedError('foo'), ValidationIssue::CODE__SHIPPING_ERROR];
@@ -247,7 +247,7 @@ class ValidationIssuesTest extends TestCase
         yield GenericCartError::class => [new GenericCartError('foo', 'bar', [], Error::LEVEL_ERROR, false, false, false), $code];
         yield IncompleteLineItemError::class => [new IncompleteLineItemError('foo', 'bar'), $code];
         yield CheckoutGatewayError::class => [new CheckoutGatewayError('foo', Error::LEVEL_NOTICE, true), $code];
-        yield PaymentMethodBlockedError::class => [new PaymentMethodBlockedError('foo', 'reason', Uuid::randomHex()), $code]; // @phpstan-ignore method.deprecated
+        yield PaymentMethodBlockedError::class => [new PaymentMethodBlockedError('foo', 'reason', Uuid::randomHex()), $code];
         yield AutoPromotionNotFoundError::class => [new AutoPromotionNotFoundError('foo'), $code];
         yield PromotionExcludedError::class => [new PromotionExcludedError('foo'), $code];
         yield PromotionNotEligibleError::class => [new PromotionNotEligibleError('foo'), $code];
@@ -255,14 +255,14 @@ class ValidationIssuesTest extends TestCase
         yield PromotionsOnCartPriceZeroError::class => [new PromotionsOnCartPriceZeroError(['foo', 'bar']), $code];
         yield PromotionCartAddedInformationError::class => [new PromotionCartAddedInformationError(self::createLineItem()), $code];
         yield PromotionCartDeletedInformationError::class => [new PromotionCartDeletedInformationError(self::createLineItem()), $code];
-        yield ShippingMethodBlockedError::class => [new ShippingMethodBlockedError('foo', Uuid::randomHex(), 'reason'), $code]; // @phpstan-ignore method.deprecated
+        yield ShippingMethodBlockedError::class => [new ShippingMethodBlockedError('foo', Uuid::randomHex(), 'reason'), $code];
         yield MinOrderQuantityError::class => [new MinOrderQuantityError(Uuid::randomHex(), 'foo', 5), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield ProductNotFoundError::class => [new ProductNotFoundError(Uuid::randomHex()), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield ProductOutOfStockError::class => [new ProductOutOfStockError(Uuid::randomHex(), 'foo'), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield ProductStockReachedError::class => [new ProductStockReachedError(Uuid::randomHex(), 'foo', 1), ValidationIssue::CODE__INVENTORY_ISSUE];
         yield PurchaseStepsError::class => [new PurchaseStepsError(Uuid::randomHex(), 'foo', 5), ValidationIssue::CODE__INVENTORY_ISSUE];
-        yield PaymentMethodChangedError::class => [new PaymentMethodChangedError('foo', 'bar', Uuid::randomHex(), Uuid::randomHex(), 'reason'), $code]; // @phpstan-ignore method.deprecated
-        yield ShippingMethodChangedError::class => [new ShippingMethodChangedError('foo', 'bar', Uuid::randomHex(), Uuid::randomHex(), 'reason'), $code]; // @phpstan-ignore method.deprecated
+        yield PaymentMethodChangedError::class => [new PaymentMethodChangedError('foo', 'bar', Uuid::randomHex(), Uuid::randomHex(), 'reason'), $code];
+        yield ShippingMethodChangedError::class => [new ShippingMethodChangedError('foo', 'bar', Uuid::randomHex(), Uuid::randomHex(), 'reason'), $code];
     }
 
     private static function createCustomerAddress(): CustomerAddressEntity

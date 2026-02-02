@@ -24,7 +24,6 @@ class Migration1706111604AddCustomerIdToVault extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        // @phpstan-ignore method.deprecated
         if ($this->columnExists($connection, 'swag_paypal_vault_token', 'token_customer')) {
             return;
         }

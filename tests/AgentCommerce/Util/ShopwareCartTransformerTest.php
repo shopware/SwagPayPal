@@ -41,7 +41,7 @@ class ShopwareCartTransformerTest extends TestCase
     public function testExtractCustomerData(): void
     {
         $overallRandomId = Uuid::randomHex();
-        $idResult = new IdSearchResult(1, [Uuid::randomHex() => ['primaryKey' => $overallRandomId, 'data' => []]], new Criteria(), Context::createDefaultContext());
+        $idResult = new IdSearchResult(1, [$overallRandomId => ['primaryKey' => $overallRandomId, 'data' => []]], new Criteria(), Context::createDefaultContext());
 
         $caId = Uuid::randomHex();
         $state1 = new CountryStateEntity();

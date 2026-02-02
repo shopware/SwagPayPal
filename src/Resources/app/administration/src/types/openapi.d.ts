@@ -1360,6 +1360,7 @@ export interface components {
             invoice_number: string;
             links: components["schemas"]["paypal_v1_common_link"][];
             state: string;
+            tracking_id: string | null;
             merchant_id: string | null;
         };
         paypal_v1_webhook_list: {
@@ -1555,13 +1556,14 @@ export interface components {
             venmo: components["schemas"]["paypal_v2_order_payment_source_venmo"] | null;
         };
         paypal_v2_order_payment_source_afterpay: {
-            name: string;
-            country_code: string;
             experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
-            email: string;
+            name: components["schemas"]["paypal_v2_common_name"];
+            email_address: string;
             phone: string;
             /** Format: date */
             birth_date: string;
+            billing_address: components["schemas"]["paypal_v2_common_address"] | null;
+            country_code: string;
         };
         paypal_v2_order_payment_source_apple_pay: {
             name: string;
@@ -1670,6 +1672,7 @@ export interface components {
             user_action: "CONTINUE" | "PAY_NOW";
             return_url: string;
             cancel_url: string;
+            acquiring_channel: string;
             /**
              * @description Only: PayPal Wallet
              * @enum {string}
@@ -1699,11 +1702,16 @@ export interface components {
             experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
         };
         paypal_v2_order_payment_source_klarna: {
-            name: string;
-            country_code: string;
             experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
-            email: string;
+            email_address: string;
             phone: string;
+            name: components["schemas"]["paypal_v2_common_name"];
+            billing_address: components["schemas"]["paypal_v2_common_address"] | null;
+            country_code: string;
+            authorization_context: components["schemas"]["paypal_v2_order_payment_source_klarna_authorization_context"] | null;
+        };
+        paypal_v2_order_payment_source_klarna_authorization_context: {
+            authorization_expiry: string;
         };
         paypal_v2_order_payment_source_multibanco: {
             name: string;
@@ -2040,6 +2048,64 @@ export interface components {
         paypal_v2_referral_partner_config_override: {
             return_url: string;
             partner_logo_url: string;
+        };
+        paypal_v3_common_email: {
+            id: string;
+            email: string;
+        };
+        paypal_v3_common_name: {
+            id: string;
+            given_name: string;
+            surname: string;
+            business_name: string | null;
+            type: string;
+        };
+        paypal_v3_common_phone_number: {
+            id: string;
+            national_number: string;
+            country_code: string;
+            type: string;
+        };
+        paypal_v3_managed_account: {
+            account_id: string;
+            legal_country_code: string;
+            individual_owners: components["schemas"]["paypal_v3_managed_account_individual_owner"][];
+            business_entity: components["schemas"]["paypal_v3_managed_account_business_entity"];
+            external_id: string;
+            organization: string;
+            primary_currency_code: string;
+            soft_descriptor: string;
+            capabilities: components["schemas"]["paypal_v1_merchant_integrations_capability"][];
+            links: components["schemas"]["paypal_v2_common_link"][];
+        };
+        paypal_v3_managed_account_business_entity: {
+            type: string;
+            merchant_category_code: string;
+            incorporation_details: components["schemas"]["paypal_v3_managed_account_business_entity_incorporation_details"];
+            names: components["schemas"]["paypal_v3_common_name"][];
+            emails: components["schemas"]["paypal_v3_common_email"][];
+            website: string;
+            registered_business_address: components["schemas"]["paypal_v2_common_address"];
+            phone_numbers: components["schemas"]["paypal_v3_common_phone_number"][];
+        };
+        paypal_v3_managed_account_business_entity_incorporation_details: unknown;
+        paypal_v3_managed_account_individual_owner: {
+            id: string;
+            names: components["schemas"]["paypal_v3_common_name"][];
+            primary_residence: components["schemas"]["paypal_v2_common_address"];
+            phone_numbers: components["schemas"]["paypal_v3_common_phone_number"][];
+            birth_details: components["schemas"]["paypal_v3_managed_account_individual_owner_birth_details"];
+            identification_documents: components["schemas"]["paypal_v3_managed_account_individual_owner_identification_document"][];
+            emails: components["schemas"]["paypal_v3_common_email"][];
+        };
+        paypal_v3_managed_account_individual_owner_birth_details: {
+            date_of_birth: string;
+        };
+        paypal_v3_managed_account_individual_owner_identification_document: {
+            id: string;
+            identification_number: string;
+            issuing_country_code: string;
+            type: string;
         };
         paypal_v3_payment_token: {
             id: string;

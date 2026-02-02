@@ -109,7 +109,7 @@ class PayPalCartTransformer
             // itemId will be removed in the future.
             $cartItem->setItemId($lineItem->getReferencedId());
             $cartItem->setVariantId($lineItem->getReferencedId());
-            $cartItem->setParentId($lineItem->getPayloadValue('parentId')); // @phpstan-ignore method.deprecated
+            $cartItem->setParentId($lineItem->getPayloadValue('parentId'));
             $cartItem->setQuantity($lineItem->getQuantity());
             $cartItem->setName($lineItem->getLabel());
             $cartItem->setPrice($itemPrice);
@@ -212,7 +212,7 @@ class PayPalCartTransformer
         }
 
         foreach ($lineItems as $lineItem) {
-            $stock = $lineItem->getPayloadValue('stock'); // @phpstan-ignore method.deprecated
+            $stock = $lineItem->getPayloadValue('stock');
             if ($stock !== null && $stock < $lineItem->getQuantity()) {
                 $issue = $this->validationIssues->outOfStock($lineItem, $restockProducts[$lineItem->getReferencedId()] ?? null, $context->getCurrency());
 
@@ -351,7 +351,7 @@ class PayPalCartTransformer
             $discount->setCurrencyCode($context->getCurrency()->getIsoCode());
 
             $coupon = new AppliedCoupon();
-            $coupon->setCode($lineItem->getPayloadValue('code')); // @phpstan-ignore method.deprecated
+            $coupon->setCode($lineItem->getPayloadValue('code'));
             $coupon->setDescription($lineItem->getDescription());
             $coupon->setDiscountAmount($discount);
 
