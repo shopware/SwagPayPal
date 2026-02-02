@@ -75,8 +75,8 @@ class WebhookSubscriberTest extends TestCase
                 static::assertSame([$deleteId, $activateId, $deactiveId], $criteria->getIds());
 
                 $data = [
-                    ['primaryKey' => $activateId, 'data' => []],
-                    ['primaryKey' => $deactiveId, 'data' => []],
+                    Uuid::randomHex() => ['primaryKey' => $activateId, 'data' => []],
+                    Uuid::randomHex() => ['primaryKey' => $deactiveId, 'data' => []],
                 ];
 
                 return new IdSearchResult(2, $data, $criteria, Context::createCLIContext());

@@ -466,7 +466,7 @@ mwIDAQAB
     }
 
     /**
-     * @param non-empty-string|null $paypalMerchantId
+     * @param non-empty-string|non-empty-string[]|null $paypalMerchantId
      * @param list<string>|null $scopes
      * @param non-empty-string|null $salesChannelId
      */
