@@ -95,8 +95,8 @@ jobs:
           composer init:admin
           composer openapi:generate
           git update-index --refresh || printf ''
-          git diff --exit-code src/Resources/app/administration/src/types/openapi.d.ts || (echo "Please run 'composer openapi:generate' to update openapi.d.ts" && exit 1)
           git diff --exit-code src/Resources/Schema || (echo "Please run 'composer openapi:generate' to update Resources/Schema files" && exit 1)
+          git diff --exit-code src/Resources/app/administration/src/types/openapi.d.ts || (echo "Please run 'composer openapi:generate' to update openapi.d.ts" && exit 1)
 
   bc-check:
     runs-on: ubuntu-latest
