@@ -59,12 +59,12 @@ class CrawlWebhookEventNamesCommand extends Command
             foreach ($webhookTable as $webhooks) {
                 $webhooksString .= "\n";
                 foreach ($webhooks as $webhook) {
-                    $webhookName = $webhook[self::WEBHOOK_NAME_KEY];
+                    $webhookName = $webhook[self::WEBHOOK_NAME_KEY] ?? '';
                     if (\mb_strpos($webhooksString, $webhookName) !== false) {
                         continue;
                     }
 
-                    $webhookDescription = $webhook[self::WEBHOOK_DESCRIPTION_KEY];
+                    $webhookDescription = $webhook[self::WEBHOOK_DESCRIPTION_KEY] ?? '';
                     $webhookConstName = \str_replace(['.', '-'], '_', $webhookName);
                     $webhooksString .= \sprintf(
                         "    /* %s */\n    public const %s = '%s';\n",

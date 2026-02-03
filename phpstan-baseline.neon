@@ -204,3 +204,137 @@ parameters:
 			message: "#^Class like namespace \"Swag\\\\PayPal\\\\Test\\\\Util\\\\Lifecycle\" does not follow PSR\\-4 configuration in composer\\.json$#"
 			count: 1
 			path: tests/Util/Availability/AvailabilityServiceTest.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			identifier: staticMethod.internal
+			paths:
+				- src/Pos/Sync/Context/InventoryContext.php
+				- src/Checkout/Order/Shipping/MessageQueue/ShippingInformationMessageHandler.php
+				- src/Checkout/PUI/MessageQueue/PUIInstructionsFetchMessageHandler.php
+				- src/Checkout/Payment/MessageQueue/TransactionStatusSyncMessageHandler.php
+				- src/Pos/MessageQueue/Message/AbstractSyncMessage.php
+				- src/Pos/MessageQueue/Message/InventoryUpdateMessage.php
+				- src/Pos/MessageQueue/MessageHydrator.php
+
+		-
+			message: '#^Call to method getEntityName\(\) of internal class Shopware\\Core\\Framework\\DataAbstractionLayer\\Write\\Command\\WriteCommand from outside its root namespace Shopware\.$#'
+			identifier: method.internalClass
+			count: 1
+			path: src/Checkout/Order/Shipping/ShippingSubscriber.php
+
+		-
+			message: '#^Call to method getPayload\(\) of internal class Shopware\\Core\\Framework\\DataAbstractionLayer\\Write\\Command\\WriteCommand from outside its root namespace Shopware\.$#'
+			identifier: method.internalClass
+			count: 1
+			path: src/Checkout/Order/Shipping/ShippingSubscriber.php
+
+		-
+			message: '#^Call to method requestChangeSet\(\) of internal interface Shopware\\Core\\Framework\\DataAbstractionLayer\\Write\\Command\\ChangeSetAware from outside its root namespace Shopware\.$#'
+			identifier: method.internalInterface
+			count: 1
+			path: src/Checkout/Order/Shipping/ShippingSubscriber.php
+
+		-
+			message: '#^Instanceof references internal interface Shopware\\Core\\Framework\\DataAbstractionLayer\\Write\\Command\\ChangeSetAware\.$#'
+			identifier: instanceof.internalInterface
+			count: 1
+			path: src/Checkout/Order/Shipping/ShippingSubscriber.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			identifier: staticMethod.internal
+			paths:
+				- src/Checkout/Order/Shipping/MessageQueue/ShippingInformationMessageHandler.php
+				- src/Checkout/PUI/MessageQueue/PUIInstructionsFetchMessageHandler.php
+				- src/Checkout/Payment/MessageQueue/TransactionStatusSyncMessageHandler.php
+				- src/Pos/MessageQueue/Message/AbstractSyncMessage.php
+				- src/Pos/MessageQueue/Message/InventoryUpdateMessage.php
+				- src/Pos/MessageQueue/MessageHydrator.php
+				- src/Pos/Sync/Context/InventoryContext.php
+				- src/Checkout/PUI/ScheduledTask/PUIInstructionsFetchTaskHandler.php
+				- src/Checkout/Payment/ScheduledTask/TransactionStatusSyncTaskHandler.php
+				- src/Pos/Command/AbstractPosCommand.php
+				- src/Pos/Schedule/AbstractSyncTaskHandler.php
+				- src/Reporting/ScheduledTask/TurnoverReportingTaskHandler.php
+				- src/Storefront/Framework/Cookie/GooglePayCookieProvider.php
+
+		-
+			message: '#^Parameter \$systemConfigValidator of method Swag\\PayPal\\Webhook\\Registration\\WebhookSystemConfigController\:\:__construct\(\) has typehint with internal class Shopware\\Core\\System\\SystemConfig\\Validation\\SystemConfigValidator\.$#'
+			identifier: parameter.internalClass
+			count: 1
+			path: src/Webhook/Registration/WebhookSystemConfigController.php
+
+		-
+			message: '#^Call to internal method Shopware\\Core\\System\\SystemConfig\\Api\\SystemConfigController\:\:__construct\(\) from outside its root namespace Shopware\.$#'
+			identifier: method.internal
+			count: 1
+			path: src/Webhook/Registration/WebhookSystemConfigController.php
+
+		-
+			message: '#^Access to constant .*_CODE_KEY of internal class Shopware\\Storefront\\Framework\\AffiliateTracking\\AffiliateTrackingListener from outside its root namespace Shopware\.$#'
+			identifier: classConstant.internalClass
+			count: 4
+			path: src/Storefront/Controller/PayPalController.php
+		-
+			message: '''
+				#^Call to deprecated method get\(\) of class Symfony\\Component\\HttpFoundation\\Request\:
+				since Symfony 7\.4, use properties `\-\>attributes`, `query` or `request` directly instead$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Storefront/Controller/PayPalController.php
+
+		-
+			message: '#^Parameter \$systemConfigValidator of method Swag\\PayPal\\Setting\\SettingsController\:\:__construct\(\) has typehint with internal class Shopware\\Core\\System\\SystemConfig\\Validation\\SystemConfigValidator\.$#'
+			identifier: parameter.internalClass
+			count: 1
+			path: src/Setting/SettingsController.php
+
+		-
+			message: '#^Property \$systemConfigValidator references internal class Shopware\\Core\\System\\SystemConfig\\Validation\\SystemConfigValidator in its type\.$#'
+			identifier: property.internalClass
+			count: 1
+			path: src/Setting/SettingsController.php
+
+		-
+			message: '#^Call to method validate\(\) of internal class Shopware\\Core\\System\\SystemConfig\\Validation\\SystemConfigValidator from outside its root namespace Shopware\.$#'
+			identifier: method.internalClass
+			count: 1
+			path: src/Setting/SettingsController.php
+
+		-
+			message: '#^Parameter \$salesChannelContextService of method Swag\\PayPal\\Pos\\MessageQueue\\MessageHydrator\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			identifier: parameter.internalInterface
+			count: 1
+			path: src/Pos/MessageQueue/MessageHydrator.php
+
+		-
+			message: '#^Property \$salesChannelContextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
+			identifier: property.internalInterface
+			count: 1
+			path: src/Pos/MessageQueue/MessageHydrator.php
+
+		-
+			message: '#^Call to method get\(\) of internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface from outside its root namespace Shopware\.$#'
+			identifier: method.internalInterface
+			count: 1
+			path: src/Pos/MessageQueue/MessageHydrator.php
+
+		-
+			message: '#^Property \$.*Controller references internal class Shopware\\Storefront\\Controller\\.*Controller in its type\.$#'
+			identifier: property.internalClass
+			count: 2
+			path: src/Checkout/Plus/PlusPaymentHandleController.php
+
+		-
+			message: '#^Parameter \$.*Controller of method Swag\\PayPal\\Checkout\\Plus\\PlusPaymentHandleController\:\:__construct\(\) has typehint with internal class Shopware\\Storefront\\Controller\\.*Controller\.$#'
+			identifier: parameter.internalClass
+			count: 2
+			path: src/Checkout/Plus/PlusPaymentHandleController.php
+
+		-
+			message: '#^Call to method .*\(\) of internal class Shopware\\Storefront\\Controller\\.*Controller from outside its root namespace Shopware\.$#'
+			identifier: method.internalClass
+			count: 2
+			path: src/Checkout/Plus/PlusPaymentHandleController.php
