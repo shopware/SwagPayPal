@@ -100,7 +100,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->willReturn($payPalOrder);
 
         $this->transactionDataService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('setResourceId')
             ->with($payPalOrder, 'transaction-id');
 
@@ -169,7 +169,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->willReturn($payPalOrder);
 
         $this->transactionDataService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('setResourceId')
             ->with($payPalOrder, 'transaction-id');
 
@@ -356,7 +356,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->willReturn($payPalOrder);
 
         $this->transactionDataService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('setResourceId')
             ->with($payPalOrder, 'transaction-id');
 
