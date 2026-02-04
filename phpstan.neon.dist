@@ -120,6 +120,14 @@ parameters:
                 - tests/Checkout/Method/ACDCHandlerTest.php
                 - tests/Checkout/Method/VenmoHandlerTest.php
 
+        - # 6.8 deprecation - reason:exception-change
+            identifier: method.deprecated
+            message: '#Call to deprecated method columnExists\(\) of class .*\\MigrationStep#'
+            paths:
+                - src/Migration/Migration1706111604AddCustomerIdToVault.php
+                - src/Migration/Migration1675420139AddManagerDataToRun.php
+                - src/Migration/Migration1626082072AddStatusAndMessageCountToRun.php
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
@@ -131,4 +139,3 @@ rules:
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\PackageAnnotationRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Migration\NoAfterStatementRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\NoNewRequestInStorefrontRule
-
