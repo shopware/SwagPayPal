@@ -43,7 +43,7 @@ class ValidationIssues
 
     public function outOfStock(LineItem $item, ?ProductEntity $restockProduct, CurrencyEntity $currency): ValidationIssue
     {
-        $stock = $item->getPayloadValue('stock'); // @phpstan-ignore method.deprecated
+        $stock = $item->getPayloadValue('stock');
 
         $builder = new ValidationIssueBuilder();
         $builder

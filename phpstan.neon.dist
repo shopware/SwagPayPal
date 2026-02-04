@@ -134,12 +134,13 @@ parameters:
 
         - # 6.8 deprecation - Parameter order still has to be changed
             identifier: method.deprecated
-            message: '#Call to deprecated method __construct\(\) of class .*\\PaymentMethodBlockedError#'
+            message: '#Call to deprecated method __construct\(\) of class .*\\(PaymentMethodBlockedError|ShippingMethodBlockedError|PaymentMethodChangedError|ShippingMethodChangedError)#'
             paths:
                 - src/Checkout/Cart/Validation/CartValidator.php
                 - tests/Checkout/PUI/PUISubscriberTest.php
                 - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
                 - tests/Storefront/Data/CheckoutSubscriberTest.php
+                - tests/AgentCommerce/Validation/ValidationIssuesTest.php
 
         - # 6.8 deprecation - Will be removed
             message: '#Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct#'
@@ -148,6 +149,31 @@ parameters:
                 - tests/Checkout/Payment/Service/VaultTokenServiceTest.php
                 - tests/Checkout/Method/ACDCHandlerTest.php
                 - tests/Checkout/Method/VenmoHandlerTest.php
+
+        - # 6.8 deprecation - new parameter addressId will be required
+            identifier: method.deprecated
+            message: '#Call to deprecated method __construct\(\) of class .*\\(AddressValidationError|BillingAddressBlockedError)#'
+            path: tests/AgentCommerce/Validation/ValidationIssuesTest.php
+
+        - # 6.8 deprecation - reason:exception-change
+            identifier: method.deprecated
+            message: '#Call to deprecated method columnExists\(\) of class .*\\MigrationStep#'
+            paths:
+                - src/Migration/Migration1706111604AddCustomerIdToVault.php
+                - src/Migration/Migration1675420139AddManagerDataToRun.php
+                - src/Migration/Migration1626082072AddStatusAndMessageCountToRun.php
+
+        - # 6.8 deprecation - reason:return-type-change - will use "strong" return type `mixed`
+            identifier: method.deprecated
+            message: '#Call to deprecated method getPayloadValue\(\) of class .*\\LineItem#'
+            paths:
+                - src/AgentCommerce/Util/PayPalCartTransformer.php
+                - src/AgentCommerce/Validation/ValidationIssues.php
+
+        - # 6.8 deprecation - Use the "defaults" property instead
+            identifier: method.deprecated
+            message: '#Call to deprecated method getDefaults\(\) of class Symfony\\Component\\Routing\\Attribute\\Route#'
+            path: tests/AgentCommerce/SalesChannel/DefaultRouteScopeTest.php
 
 rules:
     # Shopware core rules

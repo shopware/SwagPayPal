@@ -25,8 +25,8 @@ class Migration1675420139AddManagerDataToRun extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        if ($this->columnExists($connection, PosSalesChannelRunDefinition::ENTITY_NAME, 'step_index') // @phpstan-ignore method.deprecated
-            || $this->columnExists($connection, PosSalesChannelRunDefinition::ENTITY_NAME, 'steps')) { // @phpstan-ignore method.deprecated
+        if ($this->columnExists($connection, PosSalesChannelRunDefinition::ENTITY_NAME, 'step_index')
+            || $this->columnExists($connection, PosSalesChannelRunDefinition::ENTITY_NAME, 'steps')) {
             return;
         }
 
