@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where the HTTP cache was unnecessarily disturbed by creating a session
+
 # 10.4.2
 - Fixes an issue, where if an order was edited in the Administration, the payment amount could differ from the newly calculated total
 - Fixes an issue, where accessing an uninitialized object during express checkout (shopware/SwagPayPal#512)

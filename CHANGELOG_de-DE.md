@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem der HTTP-Cache durch das Erstellen einer Sitzung unnötig gestört wurde
+
 # 10.4.2
 - Behebt ein Problem, bei dem nach Bestelländerungen in der Administration Zahlungs- und Bestellsumme voneinander abweichen konnten.
 - Behebt ein Problem, bei dem im PayPal Express Checkout der Zugriff auf ein nicht initialisiertes Objekt erfolgte (shopware/SwagPayPal#521)
