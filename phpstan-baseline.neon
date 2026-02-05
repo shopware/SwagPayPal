@@ -227,20 +227,63 @@ parameters:
 
 		-
 			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
-			count: 12
-			paths:
-				- src/Checkout/Order/Shipping/MessageQueue/ShippingInformationMessageHandler.php
-				- src/Checkout/Payment/MessageQueue/TransactionStatusSyncMessageHandler.php
-				- src/Checkout/Payment/ScheduledTask/TransactionStatusSyncTaskHandler.php
-				- src/Checkout/PUI/MessageQueue/PUIInstructionsFetchMessageHandler.php
-				- src/Checkout/PUI/ScheduledTask/PUIInstructionsFetchTaskHandler.php
-				- src/Pos/Command/AbstractPosCommand.php
-				- src/Pos/MessageQueue/Message/AbstractSyncMessage.php
-				- src/Pos/MessageQueue/Message/InventoryUpdateMessage.php
-				- src/Pos/MessageQueue/MessageHydrator.php
-				- src/Pos/Schedule/AbstractSyncTaskHandler.php
-				- src/Pos/Sync/Context/InventoryContext.php
-				- src/Reporting/ScheduledTask/TurnoverReportingTaskHandler.php
+			count: 1
+			path: src/Checkout/Order/Shipping/MessageQueue/ShippingInformationMessageHandler.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Checkout/Payment/MessageQueue/TransactionStatusSyncMessageHandler.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Checkout/Payment/ScheduledTask/TransactionStatusSyncTaskHandler.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Checkout/PUI/MessageQueue/PUIInstructionsFetchMessageHandler.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Checkout/PUI/ScheduledTask/PUIInstructionsFetchTaskHandler.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Pos/Command/AbstractPosCommand.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Pos/MessageQueue/Message/AbstractSyncMessage.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Pos/MessageQueue/Message/InventoryUpdateMessage.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Pos/MessageQueue/MessageHydrator.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Pos/Schedule/AbstractSyncTaskHandler.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Pos/Sync/Context/InventoryContext.php
+
+		-
+			message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Reporting/ScheduledTask/TurnoverReportingTaskHandler.php
 
 		-
 			message: '#^Parameter \$systemConfigValidator of method Swag\\PayPal\\Webhook\\Registration\\WebhookSystemConfigController\:\:__construct\(\) has typehint with internal class Shopware\\Core\\System\\SystemConfig\\Validation\\SystemConfigValidator\.$#'
