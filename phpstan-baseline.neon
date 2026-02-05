@@ -351,3 +351,48 @@ parameters:
 			message: '#^Call to method .*\(\) of internal class Shopware\\Storefront\\Controller\\.*Controller from outside its root namespace Shopware\.$#'
 			count: 2
 			path: src/Checkout/Plus/PlusPaymentHandleController.php
+
+		-
+			message: '#^Call to method numberOfInvocations\(\) of internal class PHPUnit\\Framework\\MockObject\\Rule\\InvocationOrder from outside its root namespace PHPUnit\.$#'
+			count: 2
+			path: tests/Checkout/Order/Shipping/MessageQueue/ShippingInformationMessageHandlerTest.php
+
+		-
+			message: '#^Call to method numberOfInvocations\(\) of internal class PHPUnit\\Framework\\MockObject\\Rule\\InvocationOrder from outside its root namespace PHPUnit\.$#'
+			count: 1
+			path: tests/Checkout/Payment/ScheduledTask/TransactionStatusSyncTaskHandlerTest.php
+
+		-
+			message: '#^Call to method numberOfInvocations\(\) of internal class PHPUnit\\Framework\\MockObject\\Rule\\InvocationOrder from outside its root namespace PHPUnit\.$#'
+			count: 1
+			path: tests/Pos/Sync/ImageSyncerTest.php#
+
+		-
+			message: '#^Call to method numberOfInvocations\(\) of internal class PHPUnit\\Framework\\MockObject\\Rule\\InvocationOrder from outside its root namespace PHPUnit\.$#'
+			count: 1
+			path: tests/Storefront/Controller/PayPalControllerTest.php
+
+		-
+			message: '#^Call to method numberOfInvocations\(\) of internal class PHPUnit\\Framework\\MockObject\\Rule\\InvocationOrder from outside its root namespace PHPUnit\.$#'
+			count: 1
+			path: tests/Pos/Sync/ImageSyncerTest.php
+
+		-
+			message: '#internal interface Shopware\\Core\\Framework\\DataAbstractionLayer\\Write\\Command\\ChangeSetAware#'
+			count: 4
+			path: tests/Checkout/Order/Shipping/ShippingSubscriberTest.php
+
+		-
+			message: '#^Return type of method Swag\\PayPal\\Test\\Checkout\\Order\\Shipping\\MessageQueue\\ShippingInformationMessageHandlerTest::exactlyIf\(\) has typehint with internal class PHPUnit\\Framework\\MockObject\\Rule\\InvokedCount\.$#'
+			count: 1
+			path: tests/Checkout/Order/Shipping/MessageQueue/ShippingInformationMessageHandlerTest.php
+
+		-
+			message: '#internal class Symfony\\#'
+			count: 3
+			path: tests/ServiceDefinitionTest.php
+
+		-
+			message: '#^Call to static method getContainer\(\) of internal class ShopwarePluginClassTest\.$#'
+			count: 2
+			path: tests/ShopwarePluginClassTest.php
