@@ -16,6 +16,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
