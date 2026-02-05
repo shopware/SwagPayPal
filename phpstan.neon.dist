@@ -28,58 +28,72 @@ parameters:
 
     ignoreErrors:
         - # in tests, we can use internal methods
+            message: '#.*#'
             identifier: staticMethod.internal
             path: tests/*.php
 
         - # in tests, we can instantiate internal classes
+            message: '#.*#'
             identifier: new.internalClass
             path: tests/*.php
 
         - # in tests, we can use internal classes and its static methods
+            message: '#.*#'
             identifier: staticMethod.internalClass
             path: tests/*.php
 
         - # in tests, we can use internal classes and its methods
+            message: '#.*#'
             identifier: method.internalClass
             path: tests/*.php
 
         - # in tests, we can use internal interfaces
+            message: '#.*#'
             identifier: method.internalInterface
             path: tests/*.php
 
         - # in tests, we can use internal methods
+            message: '#.*#'
             identifier: method.internal
             path: tests/*.php
 
         - # in tests, we can use constants of internal classes
+            message: '#.*#'
             identifier: classConstant.internalClass
             path: tests/*.php
 
         - # in tests, we can use constants of internal interfaces
+            message: '#.*#'
             identifier: classConstant.internalInterface
             path: tests/*.php
 
         - # in tests, we can use instanceof of internal interfaces
+            message: '#.*#'
             identifier: instanceof.internalInterface
             path: tests/*.php
 
         - # in tests, we can use attribute of internal interfaces
+            message: '#.*#'
             identifier: attribute.internalClass
             path: tests/*.php
 
         - # in tests, we can use parameter of internal interfaces
+            message: '#.*#'
             identifier: parameter.internalClass
             path: tests/*.php
 
         - # in tests, we can use property of internal interfaces
+            message: '#.*#'
             identifier: property.internalClass
             path: tests/*.php
 
         - # in tests, we can use return of internal class
+            message: '#.*#'
             identifier: return.internalClass
             path: tests/*.php
 
         - # in tests, we can use tag of internal class
+            message: '#.*#'
             identifier: varTag.internalClass
             path: tests/*.php
 
