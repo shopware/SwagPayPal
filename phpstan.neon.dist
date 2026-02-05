@@ -100,7 +100,7 @@ parameters:
         - # ignore package annotation, as it is required
             message: '#Attribute references internal class Shopware\\Core\\Framework\\Log\\Package\.#'
             identifier: attribute.internalClass
-            path: *.php
+            path: '*.php'
 
         # Will be fixed in v6.7
         - '#Do not use md5 function, use class Shopware\\Core\\Framework\\Util\\Hasher instead.#'
