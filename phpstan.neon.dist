@@ -27,6 +27,14 @@ parameters:
         constantHassers: false
 
     ignoreErrors:
+        - # in tests, we can use internal methods
+            message: '#(internal.*from outside its root namespace Shopware\.)|(internal class Shopware\\Core)#'
+            path: tests/*.php
+
+        - # ignore package annotation, as it is required
+            message: '#Attribute references internal class Shopware\\Core\\Framework\\Log\\Package\.#'
+            path: '*.php'
+
         # Will be fixed in v6.7
         - '#Do not use md5 function, use class Shopware\\Core\\Framework\\Util\\Hasher instead.#'
 
