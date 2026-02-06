@@ -8,7 +8,7 @@
 namespace Swag\PayPal\AgentCommerce\Util;
 
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory;
+use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\LineItemFactoryInterface;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
 use Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -49,7 +49,7 @@ class ShopwareCartTransformer
         private readonly SalesChannelRepository $countryRepository,
         private readonly EntityRepository $salutationRepository,
         private readonly EntityRepository $groupRepository,
-        private readonly ProductLineItemFactory $lineItemFactory,
+        private readonly LineItemFactoryInterface $lineItemFactory,
         private readonly PromotionItemBuilder $promotionItemBuilder,
     ) {
     }

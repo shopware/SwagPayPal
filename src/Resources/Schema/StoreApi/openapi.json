@@ -5550,24 +5550,24 @@
                     "countryCode"
                 ],
                 "properties": {
-                    "address_line1": {
+                    "address_line_1": {
                         "description": "The first line of the address, such as number and street, for example, 173 Drury Lane.\nNeeded for data entry, and Compliance and Risk checks. This field needs to pass the full address.",
                         "type": "string",
                         "maxLength": 300,
                         "minLength": 0
                     },
-                    "address_line2": {
+                    "address_line_2": {
                         "type": "string",
                         "maxLength": 300,
                         "minLength": 0
                     },
-                    "admin_area1": {
+                    "admin_area_1": {
                         "description": "The highest-level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision.\nThis data is formatted for postal delivery, for example, CA and not California. Value, by country, is UK.\nA county. US. A state. Canada. A province. Japan. A prefecture. Switzerland. A kanton.",
                         "type": "string",
                         "maxLength": 300,
                         "minLength": 0
                     },
-                    "admin_area2": {
+                    "admin_area_2": {
                         "description": "A city, town, or village. Smaller than admin_area_level_1.",
                         "type": "string",
                         "maxLength": 120,
