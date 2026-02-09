@@ -1389,6 +1389,92 @@ export interface components {
             type: string;
             code: string;
         };
+        paypal_v2_eligible_methods_data: {
+            eligible_methods: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods"];
+            supplementary_data: components["schemas"]["paypal_v2_eligible_methods_data_supplementary_data"];
+        };
+        paypal_v2_eligible_methods_data_eligible_methods: {
+            paypal: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_paypal"];
+            paypal_pay_later: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_paypal_pay_later"];
+            apple_pay: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_apple_pay"];
+            google_pay: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_google_pay"];
+            advanced_cards: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_advanced_cards"];
+            eps: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_eps"];
+            p_2_4: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_p24"];
+            blik: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_blik"];
+            ideal: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_ideal"];
+            bizum: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_bizum"];
+            bancontact: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_bancontact"];
+            klarna: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_klarna"];
+        };
+        paypal_v2_eligible_methods_data_eligible_methods_advanced_cards: {
+            supports_installements: boolean;
+            cobranded_enabled: boolean;
+            vendors: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_advanced_cards_vendor"][];
+        };
+        paypal_v2_eligible_methods_data_eligible_methods_advanced_cards_vendor: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_paypal"] & {
+            eligible: boolean;
+            network: string;
+            branded: boolean;
+        };
+        paypal_v2_eligible_methods_data_eligible_methods_apple_pay: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_paypal"] & {
+            config: Record<string, unknown>[];
+        };
+        paypal_v2_eligible_methods_data_eligible_methods_bancontact: unknown;
+        paypal_v2_eligible_methods_data_eligible_methods_bizum: unknown;
+        paypal_v2_eligible_methods_data_eligible_methods_blik: unknown;
+        paypal_v2_eligible_methods_data_eligible_methods_eps: unknown;
+        paypal_v2_eligible_methods_data_eligible_methods_google_pay: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_paypal"] & {
+            config: Record<string, unknown>[];
+        };
+        paypal_v2_eligible_methods_data_eligible_methods_ideal: unknown;
+        paypal_v2_eligible_methods_data_eligible_methods_klarna: unknown;
+        paypal_v2_eligible_methods_data_eligible_methods_p24: unknown;
+        paypal_v2_eligible_methods_data_eligible_methods_paypal: {
+            can_be_vaulted: boolean;
+        };
+        paypal_v2_eligible_methods_data_eligible_methods_paypal_pay_later: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_paypal"] & {
+            /** @description ISO 3166-1 alpha-2 country code */
+            country_code: string;
+            product_code: string;
+        };
+        paypal_v2_eligible_methods_data_supplementary_data: {
+            /** @description ISO 3166-1 alpha-2 country code */
+            buyer_country_code: string;
+        };
+        paypal_v2_find_eligible_methods: {
+            customer: components["schemas"]["paypal_v2_find_eligible_methods_customer"];
+            preferences: components["schemas"]["paypal_v2_find_eligible_methods_preferences"];
+            /**
+             * @description Does not have to be a full purchase unit.
+             *     `[{"amount":{"currency_code":"<iso-4217-code>"},"payee":{"merchant_id":"<merchant-id>"}}]` is enough.
+             */
+            purchase_units: components["schemas"]["paypal_v2_order_purchase_unit"][];
+        };
+        paypal_v2_find_eligible_methods_customer: {
+            /** @description ISO 3166-1 alpha-2 country code */
+            country_code: string;
+            channel: components["schemas"]["paypal_v2_find_eligible_methods_customer_channel"];
+        };
+        paypal_v2_find_eligible_methods_customer_channel: {
+            browser_type: string | null;
+            client_os: string | null;
+            device_type: string | null;
+        };
+        paypal_v2_find_eligible_methods_preferences: {
+            /** @enum {string} */
+            payment_flow: "ONE_TIME_PAYMENT";
+            commit: boolean;
+            /** @enum {string} */
+            intent: "CAPTURE" | "AUTHORIZE";
+            vault: boolean;
+            payment_source_constraint: components["schemas"]["paypal_v2_find_eligible_methods_preferences_payment_source_constraint"];
+        };
+        paypal_v2_find_eligible_methods_preferences_payment_source_constraint: {
+            /** @enum {string} */
+            constraint_type: "INCLUDE";
+            payment_sources: string[];
+        };
         paypal_v2_order: {
             create_time: string;
             update_time: string;
@@ -1431,6 +1517,7 @@ export interface components {
             address: components["schemas"]["paypal_v2_common_address"];
         };
         paypal_v2_order_payment_source: {
+            afterpay: components["schemas"]["paypal_v2_order_payment_source_afterpay"] | null;
             apple_pay: components["schemas"]["paypal_v2_order_payment_source_apple_pay"];
             pay_upon_invoice: components["schemas"]["paypal_v2_order_payment_source_pay_upon_invoice"] | null;
             bancontact: components["schemas"]["paypal_v2_order_payment_source_bancontact"] | null;
@@ -1439,15 +1526,26 @@ export interface components {
             card: components["schemas"]["paypal_v2_order_payment_source_card"] | null;
             eps: components["schemas"]["paypal_v2_order_payment_source_eps"] | null;
             ideal: components["schemas"]["paypal_v2_order_payment_source_ideal"] | null;
+            klarna: components["schemas"]["paypal_v2_order_payment_source_klarna"] | null;
             multibanco: components["schemas"]["paypal_v2_order_payment_source_multibanco"] | null;
             my_bank: components["schemas"]["paypal_v2_order_payment_source_my_bank"] | null;
             oxxo: components["schemas"]["paypal_v2_order_payment_source_oxxo"] | null;
             p_2_4: components["schemas"]["paypal_v2_order_payment_source_p24"] | null;
             paypal: components["schemas"]["paypal_v2_order_payment_source_paypal"] | null;
+            swish: components["schemas"]["paypal_v2_order_payment_source_swish"] | null;
             token: components["schemas"]["paypal_v2_order_payment_source_token"] | null;
             trustly: components["schemas"]["paypal_v2_order_payment_source_trustly"] | null;
             google_pay: components["schemas"]["paypal_v2_order_payment_source_google_pay"] | null;
             venmo: components["schemas"]["paypal_v2_order_payment_source_venmo"] | null;
+        };
+        paypal_v2_order_payment_source_afterpay: {
+            name: string;
+            country_code: string;
+            experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
+            email: string;
+            phone: string;
+            /** Format: date */
+            birth_date: string;
         };
         paypal_v2_order_payment_source_apple_pay: {
             name: string;
@@ -1584,6 +1682,13 @@ export interface components {
             country_code: string;
             experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
         };
+        paypal_v2_order_payment_source_klarna: {
+            name: string;
+            country_code: string;
+            experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
+            email: string;
+            phone: string;
+        };
         paypal_v2_order_payment_source_multibanco: {
             name: string;
             country_code: string;
@@ -1634,6 +1739,12 @@ export interface components {
             birth_date: string;
             phone_type: string;
             attributes: components["schemas"]["paypal_v2_order_payment_source_common_attributes"] | null;
+        };
+        paypal_v2_order_payment_source_swish: {
+            name: string;
+            country_code: string;
+            experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
+            phone: string;
         };
         paypal_v2_order_payment_source_token: {
             experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
@@ -1874,6 +1985,7 @@ export interface components {
             capabilities: string[];
             legal_consents: components["schemas"]["paypal_v2_referral_legal_consent"][];
             links: components["schemas"]["paypal_v2_common_link"][];
+            legal_country_code: string;
         };
         paypal_v2_referral_business_entity: {
             addresses: components["schemas"]["paypal_v2_referral_business_entity_address"][];
@@ -1904,7 +2016,10 @@ export interface components {
             third_party_details: components["schemas"]["paypal_v2_referral_operation_api_integration_preference_rest_api_integration_third_party_details"];
         };
         paypal_v2_referral_operation_api_integration_preference_rest_api_integration_third_party_details: {
+            /** @deprecated */
             features: string[];
+            signup_mode: string;
+            organization: string;
         };
         paypal_v2_referral_partner_config_override: {
             return_url: string;
