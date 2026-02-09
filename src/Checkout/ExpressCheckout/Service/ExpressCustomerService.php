@@ -158,9 +158,9 @@ class ExpressCustomerService
         if (!$paypal) {
             throw new MissingPayloadException($order->getId(), 'paymentSource.paypal');
         }
-        $purchaseUnit = $order->getPurchaseUnits()->first();
-        if ($purchaseUnit) {
-            $shipping = $purchaseUnit->getShipping();
+
+        $shipping = $order->getPurchaseUnits()->first()?->getShipping();
+        if ($shipping) {
             $address = $shipping->getAddress();
             $names = \explode(' ', $shipping->getName()->getFullName());
             $lastName = \array_pop($names);
