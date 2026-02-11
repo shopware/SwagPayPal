@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "lib": ["ES2022"],
-    "module": "Preserve",
+    "module": "esnext",
+    "moduleResolution": "node",
     "skipLibCheck": true,
     "allowJs": false,
     "baseUrl": ".",

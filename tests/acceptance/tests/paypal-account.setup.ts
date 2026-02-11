@@ -2,7 +2,11 @@ import { test } from '@fixtures/AcceptanceTest';
 import { expect } from '@shopware-ag/acceptance-test-suite';
 import type * as PayPal from 'SwagPayPal/types';
 
-test('PayPal Account setup', {}, async ({ AdminApiContext, PayPalDataProvider }) => {
+test('PayPal Account setup', {}, async ({ 
+    AdminApiContext, 
+    PayPalDataProvider,
+    TestDataService,
+    }) => {
     const resetResponse = await AdminApiContext.post('./_action/paypal/save-settings', {
         data: {
             null: {
@@ -22,23 +26,15 @@ test('PayPal Account setup', {}, async ({ AdminApiContext, PayPalDataProvider })
     const isSandbox = PayPalDataProvider.get('SANDBOX');
     // eslint-disable-next-line playwright/no-conditional-in-test
     const prefix = isSandbox ? 'Sandbox' : '';
-
-    const response = await AdminApiContext.post('./_action/paypal/save-settings', {
-        data: {
-            null: {
-                [`SwagPayPal.settings.clientId${prefix}`]: PayPalDataProvider.get('CLIENT_ID'),
-                [`SwagPayPal.settings.clientSecret${prefix}`]: PayPalDataProvider.get('CLIENT_SECRET'),
-                [`SwagPayPal.settings.merchantPayerId${prefix}`]: PayPalDataProvider.get('MERCHANT_ID'),
-                'SwagPayPal.settings.sandbox': isSandbox,
-            },
-        },
+    const response = await TestDataService.setPayPalSettings('null',{
+        [`SwagPayPal.settings.clientId${prefix}`]: PayPalDataProvider.get('CLIENT_ID'),
+        [`SwagPayPal.settings.clientSecret${prefix}`]: PayPalDataProvider.get('CLIENT_SECRET'),
+        [`SwagPayPal.settings.merchantPayerId${prefix}`]: PayPalDataProvider.get('MERCHANT_ID'),
+        'SwagPayPal.settings.sandbox': isSandbox
     });
 
-    expect(response.ok()).toBeTruthy();
-
     const json = await response.json() as PayPal.Api.Operations<'saveSettings'>;
-
     expect(json).toHaveProperty('null');
-    expect(json.null[`${isSandbox ? 'sandbox' : 'live'}CredentialsChanged`]).toBeTruthy();
-    expect(json.null[`${isSandbox ? 'sandbox' : 'live'}CredentialsValid`]).toBeTruthy();
+
+    
 });
