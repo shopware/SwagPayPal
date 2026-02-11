@@ -166,6 +166,7 @@ class IntrospectionProcessor implements ProcessorInterface
             $context['errorCode'] = $exception->getErrorCode();
         }
 
+        // Order class, file and line at the end to make the exception & the most important information more readable in logs
         $context['class'] = $this->traceToClassString($exception->getTrace()[0]);
         $context['file'] = $exception->getFile();
         $context['line'] = $exception->getLine();
