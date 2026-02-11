@@ -12,6 +12,7 @@ use Monolog\Logger;
 use Monolog\LogRecord;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\Kernel;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Pos\Api\Exception\PosException;
@@ -21,6 +22,8 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Storefront\Controller\PayPalController;
 use Swag\PayPal\Util\IntrospectionProcessor;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 /**
  * @internal
@@ -268,6 +271,24 @@ class IntrospectionProcessorTest extends TestCase
                 'message' => 'The error "test-name" occurred with the following message: test-message',
                 'parameters' => ['name' => 'test-name', 'message' => 'test-message'],
                 'errorCode' => 'SWAG_PAYPAL__POS_EXCEPTION',
+            ]],
+        ];
+
+        yield 'ConstraintViolationException' => [
+            ['exception' => new ConstraintViolationException(new ConstraintViolationList([new ConstraintViolation(
+                'test message',
+                'test message template with {{ type }}',
+                ['{{ type }}' => 'testParameter'],
+                '/root',
+                'testProperty',
+                'VIOLATION_TESTPROPERTY_INVALID'
+            )]), [])],
+            ['exception' => [
+                'message' => 'Caught 1 violation errors.',
+                'parameters' => [
+                    'count' => 1,
+                    'violations' => ["/root.testProperty:\n    test message"],
+                ],
             ]],
         ];
     }

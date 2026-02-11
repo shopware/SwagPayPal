@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where causes for validation errors were not logged correctly
+
 # 8.9.1
 - Fixes an issue, where required cookies were not displayed in the banner even though PayPal scripts had been loaded (shopware/SwagPayPal#506)
 - Fixes an issue, where languages not supported by PayPal did not fall back to a supported language (shopware/shopware#13950)
