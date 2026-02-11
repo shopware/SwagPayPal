@@ -8,12 +8,14 @@
 namespace Swag\PayPal\Test\Checkout\SalesChannel;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\OrderCollection;
+use Shopware\Core\Checkout\Order\SalesChannel\AbstractSetPaymentOrderRoute;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -68,10 +70,12 @@ class CreateOrderRouteTest extends TestCase
 
     private CreateOrderRoute $route;
 
+    private MockObject&AbstractSetPaymentOrderRoute $paymentOrderRoute;
+
     protected function setUp(): void
     {
         $this->orderRepository = new StaticEntityRepository([]);
-        $systemConfig = $this->createSystemConfigServiceMock([
+        $systemConfig = self::createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
@@ -127,6 +131,7 @@ class CreateOrderRouteTest extends TestCase
             new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
             new NullLogger(),
             new PaymentTransactionStructFactory(),
+            $this->paymentOrderRoute = $this->createMock(AbstractSetPaymentOrderRoute::class),
         );
     }
 
@@ -163,6 +168,10 @@ class CreateOrderRouteTest extends TestCase
         $orderId = Uuid::randomHex();
         $request = new Request([], ['orderId' => $orderId]);
 
+        $this->paymentOrderRoute
+            ->expects($this->once())
+            ->method('setPayment');
+
         $orderEntity = $this->createOrderEntity($orderId);
         $orderTransaction = $this->createOrderTransaction();
         $orderTransaction->setOrderId($orderEntity->getId());
@@ -185,6 +194,10 @@ class CreateOrderRouteTest extends TestCase
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $this->orderRepository->addSearch(new OrderCollection());
 
+        $this->paymentOrderRoute
+            ->expects($this->once())
+            ->method('setPayment');
+
         $request = new Request([], ['orderId' => 'no-order-id']);
 
         $this->expectException(ShopwareHttpException::class);
@@ -195,6 +208,10 @@ class CreateOrderRouteTest extends TestCase
     public function testCreatePaymentWithOrderWithoutTransactions(): void
     {
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+
+        $this->paymentOrderRoute
+            ->expects($this->once())
+            ->method('setPayment');
 
         $orderEntity = $this->createOrderEntity('no-order-transactions-id');
         $this->orderRepository->addSearch(new OrderCollection([$orderEntity]));
@@ -209,6 +226,10 @@ class CreateOrderRouteTest extends TestCase
     public function testCreatePaymentWithOrderWithoutTransaction(): void
     {
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+
+        $this->paymentOrderRoute
+            ->expects($this->once())
+            ->method('setPayment');
 
         $orderEntity = $this->createOrderEntity('no-order-transaction-id');
         $orderEntity->setTransactions(new OrderTransactionCollection());

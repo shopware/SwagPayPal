@@ -14,7 +14,9 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\State;
+use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\PayPalSDK\Struct\V2\Common\Money;
@@ -55,7 +57,19 @@ class ItemListProvider
             $item = new Item();
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
-            $item->setCategory(\in_array(State::IS_DOWNLOAD, $lineItem->getStates(), true) ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS);
+
+            /** @deprecated tag:v12.0.0 - state will be removed without replacement */
+            /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
+            $category = \in_array(State::IS_DOWNLOAD, $lineItem->getStates(), true) ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS;
+            if (
+                Feature::isActive('v6.8.0.0')
+                && \defined(ProductDefinition::class . '::TYPE_DIGITAL')
+                && \method_exists($lineItem, 'getPayloadValue') // @phpstan-ignore function.alreadyNarrowedType
+            ) {
+                $category = $lineItem->getPayloadValue('productType') === ProductDefinition::TYPE_DIGITAL ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS;
+            }
+
+            $item->setCategory($category);
             $this->buildPriceData($lineItem, $item, $currencyCode, $isNet);
 
             $event = new PayPalV2ItemFromOrderEvent($item, $lineItem);
@@ -77,7 +91,17 @@ class ItemListProvider
             $item = new Item();
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
-            $item->setCategory(\in_array(State::IS_DOWNLOAD, $lineItem->getStates(), true) ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS);
+
+            /** @deprecated tag:v12.0.0 - state will be removed without replacement */
+            /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
+            $category = \in_array(State::IS_DOWNLOAD, $lineItem->getStates(), true) ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS;
+            if (Feature::isActive('v6.8.0.0') && \defined(ProductDefinition::class . '::TYPE_DIGITAL')) {
+                /** @deprecated tag:v12.0.0 - reason:return-type-change - will use "strong" return type `mixed` */
+                /** @phpstan-ignore method.deprecated */
+                $category = $lineItem->getPayloadValue('productType') === ProductDefinition::TYPE_DIGITAL ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS;
+            }
+
+            $item->setCategory($category);
             $this->buildPriceData($lineItem, $item, $currencyCode, $isNet);
 
             $event = new PayPalV2ItemFromCartEvent($item, $lineItem);

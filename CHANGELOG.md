@@ -1,3 +1,11 @@
+# 10.4.3
+- Fixes an issue, where causes for validation errors were not logged correctly
+
+# 10.4.2
+- Fixes an issue, where if an order was edited in the Administration, the payment amount could differ from the newly calculated total
+- Fixes an issue, where accessing an uninitialized object during express checkout (shopware/SwagPayPal#512)
+- Fixes an issue, where the HTTP cache was unnecessarily disturbed by creating a session (shopware/SwagPayPal#529)
+
 # 10.4.1
 - Fixes an issue, where required cookies were not displayed in the banner even though PayPal scripts had been loaded (shopware/SwagPayPal#506)
 

@@ -1,3 +1,11 @@
+# 10.4.3
+- Behebt ein Problem, bei dem Ursachen für Validierungsfehler nicht korrekt protokolliert wurden
+
+# 10.4.2
+- Behebt ein Problem, bei dem nach Bestelländerungen in der Administration Zahlungs- und Bestellsumme voneinander abweichen konnten
+- Behebt ein Problem, bei dem im PayPal Express Checkout der Zugriff auf ein nicht initialisiertes Objekt erfolgte (shopware/SwagPayPal#521)
+- Behebt ein Problem, bei dem der HTTP-Cache durch das Erstellen einer Sitzung unnötig gestört wurde (shopware/SwagPayPal#529)
+
 # 10.4.1
 - Behebt ein Problem, bei dem erforderliche Cookies nicht im Banner angezeigt wurden, obwohl PayPal-Skripte geladen wurden (shopware/SwagPayPal#506)
 
