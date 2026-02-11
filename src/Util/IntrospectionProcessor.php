@@ -15,6 +15,7 @@ use Psr\Log\LogLevel;
 use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
+use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\PayPalSDK\Contract\Gateway\GatewayInterface;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
@@ -149,20 +150,25 @@ class IntrospectionProcessor implements ProcessorInterface
      */
     private function exceptionToContext(\Throwable $exception): array
     {
-        $context = [
-            'message' => $exception->getMessage(),
-            'class' => $this->traceToClassString($exception->getTrace()[0]),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-        ];
+        $context = ['message' => $exception->getMessage()];
 
         if ($exception instanceof ShopwareHttpException) {
             $context['parameters'] = $exception->getParameters();
         }
 
+        if ($exception instanceof ConstraintViolationException) {
+            foreach ($exception->getViolations() as $violation) {
+                $context['parameters']['violations'][] = (string) $violation;
+            }
+        }
+
         if ($exception instanceof HttpException || $exception instanceof PosException) {
             $context['errorCode'] = $exception->getErrorCode();
         }
+
+        $context['class'] = $this->traceToClassString($exception->getTrace()[0]);
+        $context['file'] = $exception->getFile();
+        $context['line'] = $exception->getLine();
 
         if ($exception->getPrevious()) {
             $context['previous'] = $this->exceptionToContext($exception->getPrevious());
