@@ -92,9 +92,16 @@ parameters:
           paths:
             - src/Storefront/Framework/Cookie/CookieProviderSubscriber.php
             - tests/Storefront/Framework/Cookie/CookieProviderSubscriberTest.php
+            - tests/Migration/Migration1692001928VaultTokenTest.php
+            - tests/Migration/Migration1706111604AddCustomerIdToVaultTest.php
 
         - message: '#^Call to internal static method Shopware\\Core\\Framework\\Context\:\:createDefaultContext\(\) from outside its root namespace Shopware\.$#'
           identifier: staticMethod.internal
           paths:
             - src/Storefront/Framework/Cookie/GooglePayCookieProvider.php
             - src/Storefront/Framework/Cookie/PayPalCookieProvider.php
+
+        - message: '#Call to an undefined method Doctrine\\DBAL\\Schema\\AbstractSchemaManager::introspectTable(Columns|Indexes)ByUnquotedName\(\)#'
+          paths:
+            - tests/Migration/Migration1692001928VaultTokenTest.php
+            - tests/Migration/Migration1706111604AddCustomerIdToVaultTest.php
