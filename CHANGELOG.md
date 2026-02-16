@@ -1,5 +1,6 @@
 # 10.4.3
 - Fixes an issue, where causes for validation errors were not logged correctly
+- Correct refund ACL permission check in admin (shopware/SwagPayPal#556)
 
 # 10.4.2
 - Fixes an issue, where if an order was edited in the Administration, the payment amount could differ from the newly calculated total
