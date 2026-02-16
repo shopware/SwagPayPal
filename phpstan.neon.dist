@@ -140,7 +140,6 @@ parameters:
             message: '#Call to deprecated method listTableIndexes\(\) of class Doctrine\\DBAL\\Schema\\AbstractSchemaManager#'
             paths:
                 - tests/Migration/Migration1692001928VaultTokenTest.php
-                - tests/Migration/Migration1706111604AddCustomerIdToVaultTest.php
 
 rules:
     # Shopware core rules

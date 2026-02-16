@@ -8,6 +8,10 @@
 namespace Swag\PayPal\Test\Migration;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Column;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Feature;
@@ -26,6 +30,9 @@ class Migration1706111604AddCustomerIdToVaultTest extends TestCase
     use DatabaseTransactionBehaviour;
     use KernelTestBehaviour;
 
+    /**
+     * @throws Exception
+     */
     public function testMigration(): void
     {
         $connection = $this->getContainer()->get(Connection::class);
@@ -41,16 +48,31 @@ class Migration1706111604AddCustomerIdToVaultTest extends TestCase
 
         $manager = $connection->createSchemaManager();
 
-        if (Feature::isActive('v6.8.0.0')) {
-            $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token');
-        } else {
-            $columns = $manager->listTableColumns('swag_paypal_vault_token');
-        }
-
+        $columns = $this->getTableColumns($manager, 'swag_paypal_vault_token');
         static::assertCount(8, $columns);
         static::assertArrayHasKey('token_customer', $columns);
     }
 
+    /**
+     * @param AbstractSchemaManager<AbstractPlatform> $manager
+     * @param non-empty-string $table
+     *
+     * @throws Exception
+     *
+     * @return array<string, Column>|list<Column>
+     */
+    private function getTableColumns(AbstractSchemaManager $manager, string $table): array
+    {
+        if (Feature::isActive('v6.8.0.0')) {
+            return $manager->introspectTableColumnsByUnquotedName($table);
+        }
+
+        return $manager->listTableColumns($table);
+    }
+
+    /**
+     * @throws Exception
+     */
     private function rollback(Connection $connection): void
     {
         $connection->executeStatement('ALTER TABLE `swag_paypal_vault_token` DROP COLUMN `token_customer`');

@@ -8,6 +8,11 @@
 namespace Swag\PayPal\Test\Migration;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\Index;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Feature;
@@ -27,12 +32,15 @@ class Migration1692001928VaultTokenTest extends TestCase
     use DatabaseTransactionBehaviour;
     use KernelTestBehaviour;
 
+    /**
+     * @throws Exception
+     */
     public function testMigration(): void
     {
         $connection = $this->getContainer()->get(Connection::class);
         $connection->rollBack();
 
-        $this->rollback($connection);
+        $this->dropTables($connection);
 
         $migration = new Migration1692001928VaultToken();
         $migration->update($connection);
@@ -42,61 +50,78 @@ class Migration1692001928VaultTokenTest extends TestCase
 
         static::assertTrue($manager->tablesExist(['swag_paypal_vault_token', 'swag_paypal_vault_token_mapping']));
 
-        if (Feature::isActive('v6.8.0.0')) {
-            $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token');
-        } else {
-            $columns = $manager->listTableColumns('swag_paypal_vault_token');
-        }
+        $vaultTokenColumns = $this->getTableColumns($manager, 'swag_paypal_vault_token');
+        static::assertCount(7, $vaultTokenColumns);
+        static::assertArrayHasKey('id', $vaultTokenColumns);
+        static::assertArrayHasKey('customer_id', $vaultTokenColumns);
+        static::assertArrayHasKey('payment_method_id', $vaultTokenColumns);
+        static::assertArrayHasKey('token', $vaultTokenColumns);
+        static::assertArrayHasKey('identifier', $vaultTokenColumns);
+        static::assertArrayHasKey('created_at', $vaultTokenColumns);
+        static::assertArrayHasKey('updated_at', $vaultTokenColumns);
 
-        static::assertCount(7, $columns);
-        static::assertArrayHasKey('id', $columns);
-        static::assertArrayHasKey('customer_id', $columns);
-        static::assertArrayHasKey('payment_method_id', $columns);
-        static::assertArrayHasKey('token', $columns);
-        static::assertArrayHasKey('identifier', $columns);
-        static::assertArrayHasKey('created_at', $columns);
-        static::assertArrayHasKey('updated_at', $columns);
+        $vaultTokenIndexes = $this->getTableIndexes($manager, 'swag_paypal_vault_token');
+        static::assertCount(3, $vaultTokenIndexes);
+        static::assertArrayHasKey('primary', $vaultTokenIndexes);
+        static::assertArrayHasKey('fk.swag_paypal_vault_token.customer_id', $vaultTokenIndexes);
+        static::assertArrayHasKey('fk.swag_paypal_vault_token.payment_method_id', $vaultTokenIndexes);
 
-        if (Feature::isActive('v6.8.0.0')) {
-            $indexes = $manager->introspectTableIndexesByUnquotedName('swag_paypal_vault_token');
-        } else {
-            $indexes = $manager->listTableIndexes('swag_paypal_vault_token');
-        }
+        $mappingColumns = $this->getTableColumns($manager, 'swag_paypal_vault_token_mapping');
+        static::assertCount(5, $mappingColumns);
+        static::assertArrayHasKey('customer_id', $mappingColumns);
+        static::assertArrayHasKey('payment_method_id', $mappingColumns);
+        static::assertArrayHasKey('token_id', $mappingColumns);
+        static::assertArrayHasKey('created_at', $mappingColumns);
+        static::assertArrayHasKey('updated_at', $mappingColumns);
 
-        static::assertCount(3, $indexes);
-        static::assertArrayHasKey('primary', $indexes);
-        static::assertArrayHasKey('fk.swag_paypal_vault_token.customer_id', $indexes);
-        static::assertArrayHasKey('fk.swag_paypal_vault_token.payment_method_id', $indexes);
-
-        if (Feature::isActive('v6.8.0.0')) {
-            $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token_mapping');
-        } else {
-            $columns = $manager->listTableColumns('swag_paypal_vault_token_mapping');
-        }
-
-        static::assertCount(5, $columns);
-        static::assertArrayHasKey('customer_id', $columns);
-        static::assertArrayHasKey('payment_method_id', $columns);
-        static::assertArrayHasKey('token_id', $columns);
-        static::assertArrayHasKey('created_at', $columns);
-        static::assertArrayHasKey('updated_at', $columns);
-
-        if (Feature::isActive('v6.8.0.0')) {
-            $indexes = $manager->introspectTableIndexesByUnquotedName('swag_paypal_vault_token_mapping');
-        } else {
-            $indexes = $manager->listTableIndexes('swag_paypal_vault_token_mapping');
-        }
-
-        static::assertCount(3, $indexes);
-        static::assertArrayHasKey('primary', $indexes);
-        static::assertArrayHasKey('fk.swag_paypal_vault_token_mapping.payment_method_id', $indexes);
-        static::assertArrayHasKey('uniq.swag_paypal_vault_token_mapping.token_id', $indexes);
+        $mappingIndexes = $this->getTableIndexes($manager, 'swag_paypal_vault_token_mapping');
+        static::assertCount(3, $mappingIndexes);
+        static::assertArrayHasKey('primary', $mappingIndexes);
+        static::assertArrayHasKey('fk.swag_paypal_vault_token_mapping.payment_method_id', $mappingIndexes);
+        static::assertArrayHasKey('uniq.swag_paypal_vault_token_mapping.token_id', $mappingIndexes);
 
         (new Migration1706111604AddCustomerIdToVault())->update($connection);
         $connection->beginTransaction();
     }
 
-    private function rollback(Connection $connection): void
+    /**
+     * @param AbstractSchemaManager<AbstractPlatform> $manager
+     * @param non-empty-string $table
+     *
+     * @throws Exception
+     *
+     * @return array<string, Column>|list<Column>
+     */
+    private function getTableColumns(AbstractSchemaManager $manager, string $table): array
+    {
+        if (Feature::isActive('v6.8.0.0')) {
+            return $manager->introspectTableColumnsByUnquotedName($table);
+        }
+
+        return $manager->listTableColumns($table);
+    }
+
+    /**
+     * @param AbstractSchemaManager<AbstractPlatform> $manager
+     * @param non-empty-string $table
+     *
+     * @throws Exception
+     *
+     * @return array<string, Index>|list<Index>
+     */
+    private function getTableIndexes(AbstractSchemaManager $manager, string $table): array
+    {
+        if (Feature::isActive('v6.8.0.0')) {
+            return $manager->introspectTableIndexesByUnquotedName($table);
+        }
+
+        return $manager->listTableIndexes($table);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function dropTables(Connection $connection): void
     {
         $connection->executeStatement('DROP TABLE IF EXISTS `swag_paypal_vault_token_mapping`');
         $connection->executeStatement('DROP TABLE IF EXISTS `swag_paypal_vault_token`');
