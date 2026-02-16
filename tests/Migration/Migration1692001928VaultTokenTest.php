@@ -40,7 +40,7 @@ class Migration1692001928VaultTokenTest extends TestCase
         $connection = $this->getContainer()->get(Connection::class);
         $connection->rollBack();
 
-        $this->dropTables($connection);
+        $this->rollback($connection);
 
         $migration = new Migration1692001928VaultToken();
         $migration->update($connection);
@@ -90,14 +90,18 @@ class Migration1692001928VaultTokenTest extends TestCase
      *
      * @throws Exception
      *
-     * @return array<string, Column>|list<Column>
+     * @return list<Column>|array<string, Column>
      */
     private function getTableColumns(AbstractSchemaManager $manager, string $table): array
     {
-        if (Feature::isActive('v6.8.0.0')) {
+        if (
+            Feature::isActive('v6.8.0.0')
+            && \method_exists($manager, 'introspectTableColumnsByUnquotedName') // @phpstan-ignore function.alreadyNarrowedType
+        ) {
             return $manager->introspectTableColumnsByUnquotedName($table);
         }
 
+        /** @phpstan-ignore method.deprecated */
         return $manager->listTableColumns($table);
     }
 
@@ -107,21 +111,25 @@ class Migration1692001928VaultTokenTest extends TestCase
      *
      * @throws Exception
      *
-     * @return array<string, Index>|list<Index>
+     * @return list<Index>|array<string, Index>
      */
     private function getTableIndexes(AbstractSchemaManager $manager, string $table): array
     {
-        if (Feature::isActive('v6.8.0.0')) {
+        if (
+            Feature::isActive('v6.8.0.0')
+            && \method_exists($manager, 'introspectTableIndexesByUnquotedName') // @phpstan-ignore function.alreadyNarrowedType
+        ) {
             return $manager->introspectTableIndexesByUnquotedName($table);
         }
 
+        /** @phpstan-ignore method.deprecated */
         return $manager->listTableIndexes($table);
     }
 
     /**
      * @throws Exception
      */
-    private function dropTables(Connection $connection): void
+    private function rollback(Connection $connection): void
     {
         $connection->executeStatement('DROP TABLE IF EXISTS `swag_paypal_vault_token_mapping`');
         $connection->executeStatement('DROP TABLE IF EXISTS `swag_paypal_vault_token`');

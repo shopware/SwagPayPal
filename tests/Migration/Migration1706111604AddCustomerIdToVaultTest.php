@@ -59,14 +59,18 @@ class Migration1706111604AddCustomerIdToVaultTest extends TestCase
      *
      * @throws Exception
      *
-     * @return array<string, Column>|list<Column>
+     * @return list<Column>|array<string, Column>
      */
     private function getTableColumns(AbstractSchemaManager $manager, string $table): array
     {
-        if (Feature::isActive('v6.8.0.0')) {
+        if (
+            Feature::isActive('v6.8.0.0')
+            && \method_exists($manager, 'introspectTableColumnsByUnquotedName') // @phpstan-ignore function.alreadyNarrowedType
+        ) {
             return $manager->introspectTableColumnsByUnquotedName($table);
         }
 
+        /** @phpstan-ignore method.deprecated */
         return $manager->listTableColumns($table);
     }
 
