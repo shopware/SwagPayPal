@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Migration;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -41,7 +42,11 @@ class Migration1692001928VaultTokenTest extends TestCase
 
         static::assertTrue($manager->tablesExist(['swag_paypal_vault_token', 'swag_paypal_vault_token_mapping']));
 
-        $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token');
+        if (Feature::isActive('v6.8.0.0')) {
+            $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token');
+        } else {
+            $columns = $manager->listTableColumns('swag_paypal_vault_token');
+        }
 
         static::assertCount(7, $columns);
         static::assertArrayHasKey('id', $columns);
@@ -52,14 +57,22 @@ class Migration1692001928VaultTokenTest extends TestCase
         static::assertArrayHasKey('created_at', $columns);
         static::assertArrayHasKey('updated_at', $columns);
 
-        $indexes = $manager->introspectTableIndexesByUnquotedName('swag_paypal_vault_token');
+        if (Feature::isActive('v6.8.0.0')) {
+            $indexes = $manager->introspectTableIndexesByUnquotedName('swag_paypal_vault_token');
+        } else {
+            $indexes = $manager->listTableIndexes('swag_paypal_vault_token');
+        }
 
         static::assertCount(3, $indexes);
         static::assertArrayHasKey('primary', $indexes);
         static::assertArrayHasKey('fk.swag_paypal_vault_token.customer_id', $indexes);
         static::assertArrayHasKey('fk.swag_paypal_vault_token.payment_method_id', $indexes);
 
-        $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token_mapping');
+        if (Feature::isActive('v6.8.0.0')) {
+            $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token_mapping');
+        } else {
+            $columns = $manager->listTableColumns('swag_paypal_vault_token_mapping');
+        }
 
         static::assertCount(5, $columns);
         static::assertArrayHasKey('customer_id', $columns);
@@ -68,7 +81,11 @@ class Migration1692001928VaultTokenTest extends TestCase
         static::assertArrayHasKey('created_at', $columns);
         static::assertArrayHasKey('updated_at', $columns);
 
-        $indexes = $manager->introspectTableIndexesByUnquotedName('swag_paypal_vault_token_mapping');
+        if (Feature::isActive('v6.8.0.0')) {
+            $indexes = $manager->introspectTableIndexesByUnquotedName('swag_paypal_vault_token_mapping');
+        } else {
+            $indexes = $manager->listTableIndexes('swag_paypal_vault_token_mapping');
+        }
 
         static::assertCount(3, $indexes);
         static::assertArrayHasKey('primary', $indexes);

@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Migration;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -40,7 +41,11 @@ class Migration1706111604AddCustomerIdToVaultTest extends TestCase
 
         $manager = $connection->createSchemaManager();
 
-        $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token');
+        if (Feature::isActive('v6.8.0.0')) {
+            $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token');
+        } else {
+            $columns = $manager->listTableColumns('swag_paypal_vault_token');
+        }
 
         static::assertCount(8, $columns);
         static::assertArrayHasKey('token_customer', $columns);

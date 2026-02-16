@@ -128,6 +128,20 @@ parameters:
                 - src/Migration/Migration1675420139AddManagerDataToRun.php
                 - src/Migration/Migration1626082072AddStatusAndMessageCountToRun.php
 
+        - # 6.8 deprecation - DBAL backward compat: deprecated listTableColumns/listTableIndexes used for 6.7
+            identifier: method.deprecated
+            message: '#Call to deprecated method listTableColumns\(\) of class Doctrine\\DBAL\\Schema\\AbstractSchemaManager#'
+            path:
+                - tests/Migration/Migration1692001928VaultTokenTest.php
+                - tests/Migration/Migration1706111604AddCustomerIdToVaultTest.php
+
+        - # 6.8 deprecation - DBAL backward compat: deprecated listTableColumns/listTableIndexes used for 6.7
+            identifier: method.deprecated
+            message: '#Call to deprecated method listTableIndexes\(\) of class Doctrine\\DBAL\\Schema\\AbstractSchemaManager#'
+            path:
+                - tests/Migration/Migration1692001928VaultTokenTest.php
+                - tests/Migration/Migration1706111604AddCustomerIdToVaultTest.php
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
