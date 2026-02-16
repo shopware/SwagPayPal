@@ -41,7 +41,8 @@ class Migration1692001928VaultTokenTest extends TestCase
 
         static::assertTrue($manager->tablesExist(['swag_paypal_vault_token', 'swag_paypal_vault_token_mapping']));
 
-        $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token');
+        $vaultTokenTable = $manager->introspectTable('swag_paypal_vault_token');
+        $columns = $vaultTokenTable->getColumns();
 
         static::assertCount(7, $columns);
         static::assertArrayHasKey('id', $columns);
@@ -52,14 +53,15 @@ class Migration1692001928VaultTokenTest extends TestCase
         static::assertArrayHasKey('created_at', $columns);
         static::assertArrayHasKey('updated_at', $columns);
 
-        $indexes = $manager->introspectTableIndexesByUnquotedName('swag_paypal_vault_token');
+        $indexes = $vaultTokenTable->getIndexes();
 
         static::assertCount(3, $indexes);
         static::assertArrayHasKey('primary', $indexes);
         static::assertArrayHasKey('fk.swag_paypal_vault_token.customer_id', $indexes);
         static::assertArrayHasKey('fk.swag_paypal_vault_token.payment_method_id', $indexes);
 
-        $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token_mapping');
+        $mappingTable = $manager->introspectTable('swag_paypal_vault_token_mapping');
+        $columns = $mappingTable->getColumns();
 
         static::assertCount(5, $columns);
         static::assertArrayHasKey('customer_id', $columns);
@@ -68,7 +70,7 @@ class Migration1692001928VaultTokenTest extends TestCase
         static::assertArrayHasKey('created_at', $columns);
         static::assertArrayHasKey('updated_at', $columns);
 
-        $indexes = $manager->introspectTableIndexesByUnquotedName('swag_paypal_vault_token_mapping');
+        $indexes = $mappingTable->getIndexes();
 
         static::assertCount(3, $indexes);
         static::assertArrayHasKey('primary', $indexes);

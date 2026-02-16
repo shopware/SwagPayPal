@@ -40,7 +40,8 @@ class Migration1706111604AddCustomerIdToVaultTest extends TestCase
 
         $manager = $connection->createSchemaManager();
 
-        $columns = $manager->introspectTableColumnsByUnquotedName('swag_paypal_vault_token');
+        $table = $manager->introspectTable('swag_paypal_vault_token');
+        $columns = $table->getColumns();
 
         static::assertCount(8, $columns);
         static::assertArrayHasKey('token_customer', $columns);
