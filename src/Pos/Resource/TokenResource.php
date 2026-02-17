@@ -83,7 +83,11 @@ class TokenResource
     private function setToken(Token $token, string $cacheId): void
     {
         $item = $this->cache->getItem(self::CACHE_ID . $cacheId);
-        $item->set(\json_encode($token->jsonSerialize()));
+        $item->set(\json_encode([
+            'accessToken' => $token->getAccessToken(),
+            'refreshToken' => $token->getRefreshToken(),
+            'expireDateTime' => $token->getExpireDateTime()->format(\DATE_ATOM),
+        ]));
         $this->cache->save($item);
     }
 
