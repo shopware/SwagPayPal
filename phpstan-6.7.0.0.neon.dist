@@ -100,6 +100,4 @@ parameters:
             - src/Storefront/Framework/Cookie/PayPalCookieProvider.php
 
         - message: '#Call to an undefined method Doctrine\\DBAL\\Schema\\AbstractSchemaManager<Doctrine\\DBAL\\Platforms\\AbstractPlatform>::introspectTable(Columns|Indexes)ByUnquotedName\(\)#'
-          paths:
-            - tests/Migration/Migration1692001928VaultTokenTest.php
-            - tests/Migration/Migration1706111604AddCustomerIdToVaultTest.php
+          path: tests/Migration/CompatTestCase.php
