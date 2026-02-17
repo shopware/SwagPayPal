@@ -21,7 +21,7 @@ use Swag\PayPal\Migration\Migration1706111604AddCustomerIdToVault;
  */
 #[Package('checkout')]
 #[CoversClass(Migration1692001928VaultToken::class)]
-class Migration1692001928VaultTokenTest extends CompatTestCase
+class Migration1692001928VaultTokenTest extends CompatMigrationTestCase
 {
     use DatabaseTransactionBehaviour;
     use KernelTestBehaviour;

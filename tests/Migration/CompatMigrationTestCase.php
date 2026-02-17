@@ -20,7 +20,7 @@ use Shopware\Core\Framework\Log\Package;
  * @internal
  */
 #[Package('checkout')]
-class CompatTestCase extends TestCase
+abstract class CompatMigrationTestCase extends TestCase
 {
     /**
      * @param AbstractSchemaManager<AbstractPlatform> $manager
@@ -40,8 +40,10 @@ class CompatTestCase extends TestCase
             return $manager->listTableColumns($table);
         }
 
+        /** @var list<Column> $columns */
         $columns = $manager->introspectTableColumnsByUnquotedName($table);
 
+        /** @var array<string, Column> $byName */
         $byName = [];
         foreach ($columns as $column) {
             $byName[$column->getObjectName()->toString()] = $column;
@@ -68,8 +70,10 @@ class CompatTestCase extends TestCase
             return $manager->listTableIndexes($table);
         }
 
+        /** @var list<Index> $indexes */
         $indexes = $manager->introspectTableIndexesByUnquotedName($table);
 
+        /** @var array<string, Index> $byName */
         $byName = [];
         foreach ($indexes as $index) {
             $byName[$index->getObjectName()->toString()] = $index;

@@ -20,7 +20,7 @@ use Swag\PayPal\Migration\Migration1706111604AddCustomerIdToVault;
  */
 #[Package('checkout')]
 #[CoversClass(Migration1706111604AddCustomerIdToVault::class)]
-class Migration1706111604AddCustomerIdToVaultTest extends CompatTestCase
+class Migration1706111604AddCustomerIdToVaultTest extends CompatMigrationTestCase
 {
     use DatabaseTransactionBehaviour;
     use KernelTestBehaviour;

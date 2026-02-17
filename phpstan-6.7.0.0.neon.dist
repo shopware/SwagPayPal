@@ -100,4 +100,4 @@ parameters:
             - src/Storefront/Framework/Cookie/PayPalCookieProvider.php
 
         - message: '#Call to an undefined method Doctrine\\DBAL\\Schema\\AbstractSchemaManager<Doctrine\\DBAL\\Platforms\\AbstractPlatform>::introspectTable(Columns|Indexes)ByUnquotedName\(\)#'
-          path: tests/Migration/CompatTestCase.php
+          path: tests/Migration/CompatMigrationTestCase.php
