@@ -317,6 +317,7 @@ class IntrospectionProcessorTest extends TestCase
                     ],
                 ],
             ]],
+        ];
 
         yield 'ConstraintViolationException' => [
             ['exception' => new ConstraintViolationException(new ConstraintViolationList([new ConstraintViolation(
