@@ -72,12 +72,8 @@ class TokenResource
         }
 
         $token = new Token();
-        $token->assign($data);
-        if (isset($data['expireDateTime']) && \is_string($data['expireDateTime'])) {
-            $token->setExpireDateTime(new \DateTime($data['expireDateTime']));
-        }
 
-        return $token;
+        return $token->assign($data);
     }
 
     private function setToken(Token $token, string $cacheId): void
@@ -86,7 +82,7 @@ class TokenResource
         $item->set(\json_encode([
             'accessToken' => $token->getAccessToken(),
             'refreshToken' => $token->getRefreshToken(),
-            'expireDateTime' => $token->getExpireDateTime()->format(\DATE_ATOM),
+            'expiresIn' => $token->getExpiresIn(),
         ]));
         $this->cache->save($item);
     }

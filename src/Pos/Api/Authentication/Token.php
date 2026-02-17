@@ -19,7 +19,7 @@ final class Token extends PosStruct
      */
     protected string $accessToken;
 
-    protected string $refreshToken;
+    protected ?string $refreshToken = null;
 
     /**
      * The lifetime of the access token, in seconds.
@@ -60,7 +60,7 @@ final class Token extends PosStruct
         $this->accessToken = $accessToken;
     }
 
-    public function getRefreshToken(): string
+    public function getRefreshToken(): ?string
     {
         return $this->refreshToken;
     }
