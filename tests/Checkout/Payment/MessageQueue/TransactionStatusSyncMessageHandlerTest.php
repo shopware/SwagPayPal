@@ -25,6 +25,7 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 use Shopware\Core\System\StateMachine\StateMachineException;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessage;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessageHandler;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -44,6 +45,8 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     private OrderResource&MockObject $orderResource;
 
+    private TransactionDataService&MockObject $transactionDataService;
+
     private LoggerInterface&MockObject $logger;
 
     private TransactionStatusSyncMessageHandler $handler;
@@ -53,12 +56,14 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         $this->orderTransactionRepository = $this->createMock(EntityRepository::class);
         $this->orderTransactionStateHandler = $this->createMock(OrderTransactionStateHandler::class);
         $this->orderResource = $this->createMock(OrderResource::class);
+        $this->transactionDataService = $this->createMock(TransactionDataService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->handler = new TransactionStatusSyncMessageHandler(
             $this->orderTransactionRepository,
             $this->orderTransactionStateHandler,
             $this->orderResource,
+            $this->transactionDataService,
             $this->logger,
         );
     }
@@ -93,6 +98,11 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willReturn($payPalOrder);
+
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setResourceId')
+            ->with($payPalOrder, 'transaction-id');
 
         $this->orderTransactionStateHandler
             ->expects($stateHandlerMethod ? static::once() : static::never())
@@ -157,6 +167,11 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willReturn($payPalOrder);
+
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setResourceId')
+            ->with($payPalOrder, 'transaction-id');
 
         $exception = StateMachineException::illegalStateTransition(
             'invalid-state',
@@ -339,6 +354,11 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willReturn($payPalOrder);
+
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setResourceId')
+            ->with($payPalOrder, 'transaction-id');
 
         $this->orderTransactionStateHandler
             ->expects(static::never())
