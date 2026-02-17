@@ -5,14 +5,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Migration;
+namespace Swag\PayPal\Test\Helper;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Index;
-use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
 
@@ -20,7 +19,7 @@ use Shopware\Core\Framework\Log\Package;
  * @internal
  */
 #[Package('checkout')]
-abstract class CompatMigrationTestCase extends TestCase
+trait CompatSchemaTrait
 {
     /**
      * @param AbstractSchemaManager<AbstractPlatform> $manager
@@ -30,7 +29,7 @@ abstract class CompatMigrationTestCase extends TestCase
      *
      * @return array<string, Column>
      */
-    public function getTableColumns(AbstractSchemaManager $manager, string $table): array
+    protected function getTableColumns(AbstractSchemaManager $manager, string $table): array
     {
         if (
             !Feature::isActive('v6.8.0.0')
@@ -60,7 +59,7 @@ abstract class CompatMigrationTestCase extends TestCase
      *
      * @return array<string, Index>
      */
-    public function getTableIndexes(AbstractSchemaManager $manager, string $table): array
+    protected function getTableIndexes(AbstractSchemaManager $manager, string $table): array
     {
         if (
             !Feature::isActive('v6.8.0.0')
