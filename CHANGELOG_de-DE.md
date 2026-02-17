@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Behebt ein Problem, bei dem ACL-Berechtigungen nicht korrekt festgelegt waren (shopware/SwagPayPal#556)
+- Behebt ein Problem, bei dem Rückerstattungen als Bestell-Editor möglich waren, obwohl der Rückerstattungs-Editor der Bestellung bevorzugt werden sollte (shopware/SwagPayPal#556)
 
 # 10.4.3
 - Behebt ein Problem, bei dem Ursachen für Validierungsfehler nicht korrekt protokolliert wurden
