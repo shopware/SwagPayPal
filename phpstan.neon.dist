@@ -155,7 +155,7 @@ parameters:
             message: '#Call to deprecated method __construct\(\) of class .*\\(AddressValidationError|BillingAddressBlockedError)#'
             path: tests/AgentCommerce/Validation/ValidationIssuesTest.php
 
-        - # 6.8 deprecation - reason:exception-change
+        - # 6.8 deprecation - reason:exception-change - Will throw \Shopware\Core\Framework\Util\UtilException instead of \Doctrine\DBAL\Exception\TableNotFoundException
             identifier: method.deprecated
             message: '#Call to deprecated method columnExists\(\) of class .*\\MigrationStep#'
             paths:
@@ -186,4 +186,3 @@ rules:
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\PackageAnnotationRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Migration\NoAfterStatementRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\NoNewRequestInStorefrontRule
-
