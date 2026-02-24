@@ -37,7 +37,7 @@ final class AvailabilityContextBuilder
         ) {
             $hasDigitalProduct = $lineItems->hasLineItemWithProductType(ProductDefinition::TYPE_DIGITAL);
         } else {
-            /** @deprecated tag:v12.0.0 - state will be removed without replacement */
+            /** @deprecated tag:v11.0.0 - state will be removed without replacement */
             /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
             $hasDigitalProduct = $lineItems->hasLineItemWithState(State::IS_DOWNLOAD);
         }
@@ -59,7 +59,7 @@ final class AvailabilityContextBuilder
         ) {
             $isDigital = $product->getType() === ProductDefinition::TYPE_DIGITAL;
         } else {
-            /** @deprecated tag:v12.0.0 - state will be removed without replacement */
+            /** @deprecated tag:v11.0.0 - state will be removed without replacement */
             /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
             $isDigital = \in_array(State::IS_DOWNLOAD, $product->getStates(), true);
         }
@@ -84,7 +84,7 @@ final class AvailabilityContextBuilder
             ) {
                 $hasDigitalProduct = $lineItems->hasLineItemWithType(ProductDefinition::TYPE_DIGITAL);
             } else {
-                /** @deprecated tag:v12.0.0 - state will be removed without replacement */
+                /** @deprecated tag:v11.0.0 - state will be removed without replacement */
                 /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
                 $hasDigitalProduct = $lineItems->hasLineItemWithState(State::IS_DOWNLOAD);
             }

@@ -60,7 +60,7 @@ class ItemListProviderTest extends TestCase
 
         $lineItem = $order->getLineItems()?->first();
         if ($lineItem) {
-            /** @deprecated tag:v12.0.0 - state will be removed without replacement */
+            /** @deprecated tag:v11.0.0 - state will be removed without replacement */
             /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
             $lineItem->setStates([State::IS_DOWNLOAD]);
 
@@ -75,7 +75,7 @@ class ItemListProviderTest extends TestCase
     }
 
     /**
-     * @deprecated tag:v12.0.0 - Will be removed
+     * @deprecated tag:v11.0.0 - Will be removed
      */
     public function testLegacyDigitalProduct(): void
     {

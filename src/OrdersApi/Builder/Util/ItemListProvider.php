@@ -58,7 +58,7 @@ class ItemListProvider
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
 
-            /** @deprecated tag:v12.0.0 - state will be removed without replacement */
+            /** @deprecated tag:v11.0.0 - state will be removed without replacement */
             /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
             $category = \in_array(State::IS_DOWNLOAD, $lineItem->getStates(), true) ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS;
             if (
@@ -92,11 +92,11 @@ class ItemListProvider
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
 
-            /** @deprecated tag:v12.0.0 - state will be removed without replacement */
+            /** @deprecated tag:v11.0.0 - state will be removed without replacement */
             /** @phpstan-ignore classConstant.deprecatedClass, method.deprecated */
             $category = \in_array(State::IS_DOWNLOAD, $lineItem->getStates(), true) ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS;
             if (Feature::isActive('v6.8.0.0') && \defined(ProductDefinition::class . '::TYPE_DIGITAL')) {
-                /** @deprecated tag:v12.0.0 - reason:return-type-change - will use "strong" return type `mixed` */
+                /** @deprecated tag:v11.0.0 - reason:return-type-change - will use "strong" return type `mixed` */
                 /** @phpstan-ignore method.deprecated */
                 $category = $lineItem->getPayloadValue('productType') === ProductDefinition::TYPE_DIGITAL ? Item::CATEGORY_DIGITAL_GOODS : Item::CATEGORY_PHYSICAL_GOODS;
             }
