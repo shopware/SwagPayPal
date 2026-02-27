@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem Rückerstattungen als Bestell-Editor möglich waren, obwohl der Rückerstattungs-Editor der Bestellung bevorzugt werden sollte (shopware/SwagPayPal#556)
+
 # 8.9.1
 - Behebt ein Problem, bei dem erforderliche Cookies nicht im Banner angezeigt wurden, obwohl PayPal-Skripte geladen wurden (shopware/SwagPayPal#506)
 - Behebt ein Problem, bei dem nicht von PayPal unterstützte Sprachen nicht auf eine unterstützte Sprache korrigiert wurden (shopware/shopware#13950)
