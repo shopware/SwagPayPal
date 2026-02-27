@@ -30,7 +30,7 @@
         <sw-button
             variant="primary"
             size="small"
-            :disabled="refundableAmount <= 0 || !acl.can('order.editor')"
+            :disabled="refundableAmount <= 0 || !acl.can('order_refund.editor')"
             @click="spawnModal('refund')"
         >
             {{ $tc('swag-paypal-payment.buttons.label.refund') }}
