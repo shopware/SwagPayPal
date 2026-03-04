@@ -1,6 +1,6 @@
 import type { Page, Locator } from '@shopware-ag/acceptance-test-suite';
 import { StorefrontPageObjects } from '@shopware-ag/acceptance-test-suite';
-import { PayPalExpressButton } from 'types/PayPalTypes';
+import type { PayPalExpressButton } from '../../../types/PayPalTypes';
 
 export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
     public readonly paymentACDC: Locator;

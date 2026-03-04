@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "skipLibCheck": true,
     "allowJs": false,
-    "baseUrl": ".",
 
     /* Interop Constraints */
     "isolatedModules": true,
@@ -21,14 +20,15 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "strictNullChecks": true,
-    "types": ["node"],
+
 
     "paths": {
-      "@fixtures/*": ["fixtures/*"],
-      "@page-objects/*": ["page-objects/*"],
-      "@tasks/*": ["tasks/*"],
-      "@data/*": ["test-data/*"],
-      "@services/*": ["services/*"],
+      "@fixtures/*": ["./fixtures/*"],
+      "@page-objects/*": ["./page-objects/*"],
+      "@tasks/*": ["./tasks/*"],
+      "@types/*": ["./types/*"],
+      "@data/*": ["./test-data/*"],
+      "@services/*": ["./services/*"],
       "SwagPayPal/*": ["../../src/Resources/app/administration/src/*"],
     }
   }
