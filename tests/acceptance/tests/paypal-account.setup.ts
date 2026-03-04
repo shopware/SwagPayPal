@@ -36,5 +36,7 @@ test('PayPal Account setup', {}, async ({
     const json = await response.json() as PayPal.Api.Operations<'saveSettings'>;
     expect(json).toHaveProperty('null');
 
-    
+    const payPalPaymentMethod = await TestDataService.getPaymentMethod('PayPal');
+    TestDataService.setCleanUp(false);
+    await TestDataService.assignSalesChannelPaymentMethod(TestDataService.defaultSalesChannel.id, payPalPaymentMethod.id);
 });
