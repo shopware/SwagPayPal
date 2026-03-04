@@ -1,5 +1,5 @@
-import { PageObject } from "@shopware-ag/acceptance-test-suite";
-import type { Page, Locator } from "playwright-core";
+import { PageObject } from '@shopware-ag/acceptance-test-suite';
+import type { Page, Locator } from 'playwright-core';
 
 
 export class PayPalLogin implements PageObject {
@@ -22,6 +22,6 @@ export class PayPalLogin implements PageObject {
     }
 
     url(): string {
-        throw new Error("PayPalLogin page can't be called directly.");
+        throw new Error('PayPalLogin page can\'t be called directly.');
     }
 }
