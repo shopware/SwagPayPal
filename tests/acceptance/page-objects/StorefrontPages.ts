@@ -16,7 +16,7 @@ export const test = base.extend<FixtureTypes>({
         await use(new CheckoutConfirm(page));
     },
 
-    StorefrontOffCanvasCart: async ({ StorefrontPage }, use)=> {
+    StorefrontOffCanvasCart: async ({ StorefrontPage }, use) => {
         await use(new OffCanvasCart(StorefrontPage));
     },
 

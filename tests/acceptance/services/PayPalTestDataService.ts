@@ -41,9 +41,7 @@ const defaultPayPalConfig: SystemConfig = {
     'SwagPayPal.settings.vaultingEnabledVenmo': false,
     'SwagPayPal.settings.crossBorderMessagingEnabled': false,
     'SwagPayPal.settings.crossBorderBuyerCountry': null,
-};
-
-        
+};  
 
 export class PayPalTestDataService extends TestDataService {
     public readonly namePrefix: string = 'Test-';
@@ -51,7 +49,7 @@ export class PayPalTestDataService extends TestDataService {
         public readonly defaultCountryId: string;
       
         /**
-         * Configuration of higher priority entities for the cleanup operation in commercial.
+         * Configuration of higher priority entities for the cleanup operation in PayPal.
          * These entities will be deleted before others.
          * This will prevent restricted delete operations of associated entities.
          *
@@ -60,7 +58,7 @@ export class PayPalTestDataService extends TestDataService {
         private payPalHighPriorityEntities: any[]  = [];
 
     /**
-     * A registry of all created records in commercial.
+     * A registry of all created records in PayPal.
      *
      * @private
      */
@@ -120,7 +118,7 @@ export class PayPalTestDataService extends TestDataService {
     
 
     /**
-     * Adds an entity reference to the registry of created records in commercial.
+     * Adds an entity reference to the registry of created records in PayPal.
      * All entities added to the registry will be deleted by the cleanup call.
      *
      * @param resource - The resource name of the entity.

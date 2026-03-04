@@ -21,7 +21,7 @@ export const test = base.extend<FixtureTypes & CommercialTestDataFixtureTypes>({
 
         await use(DataService);
 
-        // Commercial specific cleanup
+        // PayPal specific cleanup
         await DataService.cleanUpPayPalEntities();
 
         // General cleanup
