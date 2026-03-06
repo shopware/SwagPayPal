@@ -3,6 +3,7 @@ import { test } from '@fixtures/AcceptanceTest';
 test('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, async ({
     ShopCustomer,
     StorefrontProductDetail,
+    StorefrontHeader,
     StorefrontOffCanvasCart,
     TestDataService,
     AddProductToCart,
@@ -25,7 +26,7 @@ test('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, async
     await ShopCustomer.goesTo(StorefrontProductDetail.url(product));
     await ShopCustomer.attemptsTo(AddProductToCart(product));
     await ShopCustomer.attemptsTo(CloseTheOffCanvasCart());
-    await StorefrontOffCanvasCart.page.locator('.header-cart-total').click();   
+    await StorefrontHeader.cartTotal.click();
     await ShopCustomer.expects(StorefrontOffCanvasCart.offcanvasContainer).toBeVisible();
     await ShopCustomer.expects(await StorefrontOffCanvasCart.paypalButton('paypal')).toBeVisible();
     await ShopCustomer.expects(await StorefrontOffCanvasCart.paypalButton('paylater')).toBeVisible();
