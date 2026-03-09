@@ -8,7 +8,7 @@
 // Payment button styles
 .swag-paypal-button {
     width: 100%;
-    height: calc($btn-line-height + $btn-padding-y * 2 + $btn-border-width * 2);
+    height: calc(#{$btn-line-height} + #{$btn-padding-y * 2} + #{$btn-border-width * 2});
 
     &.shape-sharp {
         --paypal-button-border-radius: 0px;
