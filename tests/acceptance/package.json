@@ -26,5 +26,8 @@
     "@shopware-ag/acceptance-test-suite": "12.8.0",
     "@shopware/api-client": "1.4.0",
     "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@playwright/test": "1.58.2"
   }
 }
