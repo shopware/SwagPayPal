@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 9.10.3
 - Behebt ein Problem, bei dem Ursachen für Validierungsfehler nicht korrekt protokolliert wurden
 - Behebt ein Problem, bei dem Rückerstattungen als Bestell-Editor möglich waren, obwohl der Rückerstattungs-Editor der Bestellung bevorzugt werden sollte (shopware/SwagPayPal#556)
 
