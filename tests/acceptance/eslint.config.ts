@@ -8,7 +8,7 @@ export default tseslint.config(
     eslint.configs.recommended,
     tseslint.configs.recommendedTypeChecked,
     playwright.configs['flat/recommended'],
-    stylistic.configs['recommended-flat'],
+    stylistic.configs['recommended'],
     {
         languageOptions: {
             ecmaVersion: 'latest',
