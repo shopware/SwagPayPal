@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["ES2024"],
+    "lib": ["ES2022"],
     "module": "Preserve",
     "skipLibCheck": true,
     "allowJs": false,
@@ -20,6 +20,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "strictNullChecks": true,
+
+    "types": ["node"],
 
     "paths": {
       "@fixtures/*": ["fixtures/*"],
