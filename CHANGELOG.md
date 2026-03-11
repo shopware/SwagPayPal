@@ -1,6 +1,8 @@
+# 9.11.0
+- Added Austria to the countries where Pay Later is available
+
 # 9.10.3
 - Fixes an issue, where causes for validation errors were not logged correctly
-- Fixes an issue, where refunds where possible as order editor, whereas order refund editor should be prefered (shopware/SwagPayPal#556)
 
 # 9.10.2
 - Fixes an issue, where required cookies were not displayed in the banner even though PayPal scripts had been loaded (shopware/SwagPayPal#506)
