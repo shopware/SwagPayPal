@@ -56,7 +56,7 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
         return ($availabilityContext->getCurrencyCode() === 'EUR'
-                && \in_array($availabilityContext->getBillingCountryCode(), ['DE', 'ES', 'FR', 'IT'], true))
+                && \in_array($availabilityContext->getBillingCountryCode(), ['AT', 'DE', 'ES', 'FR', 'IT'], true))
             || ($availabilityContext->getCurrencyCode() === 'GBP'
                 && $availabilityContext->getBillingCountryCode() === 'GB')
             || ($availabilityContext->getCurrencyCode() === 'AUD'
