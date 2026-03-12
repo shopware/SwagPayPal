@@ -1,3 +1,6 @@
+# 10.5.0
+- Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
+
 # 10.4.4
 - Behebt ein Problem, bei dem Rückerstattungen als Bestell-Editor möglich waren, obwohl der Rückerstattungs-Editor der Bestellung bevorzugt werden sollte (shopware/SwagPayPal#556)
 
