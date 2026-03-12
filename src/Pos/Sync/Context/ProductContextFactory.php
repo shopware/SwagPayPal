@@ -42,7 +42,7 @@ class ProductContextFactory
         $posProductCollection = $this->getPosProductCollection(
             $salesChannel->getId(),
             $context,
-            $productCollection !== null ? $productCollection->fmap(function (ProductEntity $product) {
+            $productCollection !== null ? $productCollection->fmap(static function (ProductEntity $product) {
                 return $product->getId();
             }) : null
         );
@@ -50,7 +50,7 @@ class ProductContextFactory
         $posMediaCollection = $this->getPosMediaCollection(
             $salesChannel->getId(),
             $context,
-            $productCollection !== null ? $productCollection->fmap(function (ProductEntity $product) {
+            $productCollection !== null ? $productCollection->fmap(static function (ProductEntity $product) {
                 $cover = $product->getCover();
 
                 return $cover !== null ? $cover->getMediaId() : null;

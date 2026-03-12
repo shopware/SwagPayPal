@@ -41,7 +41,7 @@ class StockSubscriberTest extends TestCase
 
     public function testAddInventoryMessage(): void
     {
-        $this->process(function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
+        $this->process(static function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
             $event = new ProductStockAlteredEvent([
                 ConstantsForTesting::PRODUCT_A_ID,
                 ConstantsForTesting::PRODUCT_B_ID,
@@ -54,7 +54,7 @@ class StockSubscriberTest extends TestCase
 
     public function testEmptyProductIds(): void
     {
-        $this->process(function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
+        $this->process(static function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
             $stockSubscriber->updateInventory(new ProductStockAlteredEvent([], $context->getContext()));
         }, false);
     }
@@ -66,7 +66,7 @@ class StockSubscriberTest extends TestCase
             ->method('searchIds')
             ->willReturn(new IdSearchResult(0, [], new Criteria(), Context::createDefaultContext()));
 
-        $this->process(function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
+        $this->process(static function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
             $event = new ProductStockAlteredEvent([
                 ConstantsForTesting::PRODUCT_A_ID,
                 ConstantsForTesting::PRODUCT_B_ID,
@@ -79,7 +79,7 @@ class StockSubscriberTest extends TestCase
 
     public function testNotLiveContext(): void
     {
-        $this->process(function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
+        $this->process(static function (StockSubscriber $stockSubscriber, SalesChannelContext $context): void {
             $event = new ProductStockAlteredEvent([
                 ConstantsForTesting::PRODUCT_A_ID,
                 ConstantsForTesting::PRODUCT_B_ID,

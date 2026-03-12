@@ -88,6 +88,10 @@ parameters:
             identifier: method.deprecated
             message: '#__construct.*Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition.*#'
 
+        - # 6.8 deprecation
+            identifier: method.deprecated
+            message: '#arameter \$silent will be added in v6\.8\.0.*#'
+
         - # 6.8 deprecation - only type change
             identifier: method.deprecated
             message: '#(setActiveBillingAddress|setActiveShippingAddress).*Shopware\\Core\\Checkout\\Customer\\CustomerEntity.*#'
