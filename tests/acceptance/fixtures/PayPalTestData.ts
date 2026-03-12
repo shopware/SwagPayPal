@@ -2,11 +2,11 @@ import { test as base } from '@playwright/test';
 import { PayPalTestDataService } from '../services/PayPalTestDataService';
 import { FixtureTypes } from './AcceptanceTest';
 
-export interface CommercialTestDataFixtureTypes {
+export interface PayPalTestDataFixtureTypes {
     TestDataService: PayPalTestDataService
 }
 
-export const test = base.extend<FixtureTypes & CommercialTestDataFixtureTypes>({
+export const test = base.extend<FixtureTypes & PayPalTestDataFixtureTypes>({
 
     TestDataService: async ({ AdminApiContext, IdProvider, DefaultSalesChannel, SalesChannelBaseConfig }, use) => {
         const DataService = new PayPalTestDataService(AdminApiContext, IdProvider, {
