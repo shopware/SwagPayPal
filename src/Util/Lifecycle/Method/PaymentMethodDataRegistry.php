@@ -93,7 +93,7 @@ class PaymentMethodDataRegistry
     public function getPaymentHandlers(): array
     {
         return \array_map(
-            fn (AbstractMethodData $method) => $method->getHandler(),
+            static fn (AbstractMethodData $method) => $method->getHandler(),
             $this->getPaymentMethods()
         );
     }

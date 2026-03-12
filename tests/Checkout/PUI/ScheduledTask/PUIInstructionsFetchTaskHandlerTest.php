@@ -80,7 +80,7 @@ class PUIInstructionsFetchTaskHandlerTest extends TestCase
         $this->orderTransactionRepository
             ->expects($this->once())
             ->method('searchIds')
-            ->willReturnCallback(function ($newCriteria) use (&$criteria, $searchResult) {
+            ->willReturnCallback(static function ($newCriteria) use (&$criteria, $searchResult) {
                 $criteria = $newCriteria;
 
                 return $searchResult;
@@ -88,7 +88,7 @@ class PUIInstructionsFetchTaskHandlerTest extends TestCase
 
         $this->bus->expects($this->once())
             ->method('dispatch')
-            ->willReturnCallback(function (PUIInstructionsFetchMessage $message) {
+            ->willReturnCallback(static function (PUIInstructionsFetchMessage $message) {
                 static::assertSame('test-id', $message->getTransactionId());
 
                 return new Envelope($message);
