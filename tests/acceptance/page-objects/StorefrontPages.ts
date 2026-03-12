@@ -6,25 +6,25 @@ import { PayPalPayment } from './Storefront/Checkout/PayPalPayment';
 
 export interface StorefrontPageTypes {
     StorefrontCheckoutConfirm: CheckoutConfirm
-    StorefrontOffCanvasCart: OffCanvasCart;
-    StorefrontPayPalLogin: PayPalLogin;
-    StorefrontPayPalPayment: PayPalPayment;
+    StorefrontOffCanvasCart: OffCanvasCart
+    StorefrontPayPalLogin: PayPalLogin
+    StorefrontPayPalPayment: PayPalPayment
 }
 
 export const test = base.extend<FixtureTypes>({
-    StorefrontCheckoutConfirm: async ({ page }, use) => {
-        await use(new CheckoutConfirm(page));
+    StorefrontCheckoutConfirm: async ({ StorefrontPage }, use) => {
+        await use(new CheckoutConfirm(StorefrontPage));
     },
 
     StorefrontOffCanvasCart: async ({ StorefrontPage }, use) => {
         await use(new OffCanvasCart(StorefrontPage));
     },
 
-    StorefrontPayPalLogin: async ({ page }, use) => {
-        await use(new PayPalLogin(page));
+    StorefrontPayPalLogin: async ({ StorefrontPage }, use) => {
+        await use(new PayPalLogin(StorefrontPage));
     },
 
-    StorefrontPayPalPayment: async ({ page }, use) => {
-        await use(new PayPalPayment(page));
+    StorefrontPayPalPayment: async ({ StorefrontPage }, use) => {
+        await use(new PayPalPayment(StorefrontPage));
     },
 });

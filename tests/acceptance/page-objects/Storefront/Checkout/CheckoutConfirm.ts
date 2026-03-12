@@ -13,7 +13,6 @@ export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
 
     public readonly cartActionsContainer: Locator;
 
-
     constructor(page: Page) {
         super(page);
 
@@ -25,17 +24,13 @@ export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
         this.paymentPUI = page.getByLabel('Pay upon invoice');
         this.paymentSepa = page.getByLabel('SEPA direct debit');
 
-        this.cartActionsContainer = page.locator('.checkout-aside-container');
+        this.cartActionsContainer = page.locator('.checkout-aside-action');
     }
 
-    public async paypalButton(type: PayPalExpressButton): Promise<Locator> {
-            const iframeLocator = this.cartActionsContainer
-                .locator(`iframe.component-frame[title*="PayPal-${type}"]`)
-                .first();
-    
-            const iframe = await iframeLocator.elementHandle();
-            const frame = await iframe?.contentFrame();
-            if (!frame) throw new Error('PayPal frame not available');
-            return frame.getByRole('link');
-        }
+    public paypalButton(type: PayPalExpressButton): Locator {
+        const frame = this.cartActionsContainer
+            .frameLocator('iframe.component-frame[title="PayPal"]');
+
+        return frame.locator(`[data-funding-source="${type}"]`);
+    }
 }

@@ -3,7 +3,6 @@ import type { Page, Locator } from '@shopware-ag/acceptance-test-suite';
 import { PayPalExpressButton } from 'types/PayPalTypes';
 
 export class OffCanvasCart extends StorefrontPageObjects.OffCanvasCart {
-
     public readonly offcanvasContainer: Locator;
 
     constructor(page: Page) {

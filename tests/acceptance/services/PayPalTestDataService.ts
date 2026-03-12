@@ -1,4 +1,4 @@
-import { 
+import {
     FixtureTypes,
     TestDataService,
     CreatedRecord,
@@ -41,21 +41,21 @@ const defaultPayPalConfig: SystemConfig = {
     'SwagPayPal.settings.vaultingEnabledVenmo': false,
     'SwagPayPal.settings.crossBorderMessagingEnabled': false,
     'SwagPayPal.settings.crossBorderBuyerCountry': null,
-};  
+};
 
 export class PayPalTestDataService extends TestDataService {
     public readonly namePrefix: string = 'Test-';
-        public readonly nameSuffix: string = '';
-        public readonly defaultCountryId: string;
-      
-        /**
+    public readonly nameSuffix: string = '';
+    public readonly defaultCountryId: string;
+
+    /**
          * Configuration of higher priority entities for the cleanup operation in PayPal.
          * These entities will be deleted before others.
          * This will prevent restricted delete operations of associated entities.
          *
          * @private
          */
-        private payPalHighPriorityEntities: any[]  = [];
+    private payPalHighPriorityEntities: unknown[] = [];
 
     /**
      * A registry of all created records in PayPal.
@@ -73,13 +73,13 @@ export class PayPalTestDataService extends TestDataService {
      * @param shouldCleanUp - The config setting for the automated data clean up. Default is "true".
      */
     setCleanUp(shouldCleanUp = true) {
-    super.setCleanUp(shouldCleanUp);
+        super.setCleanUp(shouldCleanUp);
     }
 
     constructor(
         AdminApiClient: FixtureTypes['AdminApiContext'],
         IdProvider: FixtureTypes['IdProvider'],
-        options: DataServiceOptions
+        options: DataServiceOptions,
     ) {
         super(AdminApiClient, IdProvider, options);
 
@@ -98,7 +98,7 @@ export class PayPalTestDataService extends TestDataService {
      *
      * @param configs - Key value pairs to set
      */
-    async setPayPalSettings(salesChannelId: string | 'null',  overrides: Partial<SystemConfig> = {}): Promise<APIResponse> {
+    async setPayPalSettings(salesChannelId: string, overrides: Partial<SystemConfig> = {}): Promise<APIResponse> {
         const mergedConfig: SystemConfig = {
             ...defaultPayPalConfig,
             ...overrides,
@@ -115,7 +115,6 @@ export class PayPalTestDataService extends TestDataService {
         }
         return configResponse;
     }
-    
 
     /**
      * Adds an entity reference to the registry of created records in PayPal.
@@ -132,7 +131,8 @@ export class PayPalTestDataService extends TestDataService {
                 resource: res,
                 payload: { id: payload },
             });
-        } else {
+        }
+        else {
             this.createdPayPalRecords.push({ resource: res, payload });
         }
     }
@@ -149,7 +149,6 @@ export class PayPalTestDataService extends TestDataService {
         const priorityDeleteOperations: Record<string, SyncApiOperation> = {};
 
         this.createdPayPalRecords.forEach((record) => {
-
             if (this.payPalHighPriorityEntities.includes(record.resource)) {
                 if (!priorityDeleteOperations[`delete-${record.resource}`]) {
                     priorityDeleteOperations[`delete-${record.resource}`] = {
@@ -159,7 +158,8 @@ export class PayPalTestDataService extends TestDataService {
                     };
                 }
                 priorityDeleteOperations[`delete-${record.resource}`].payload.push(record.payload);
-            } else {
+            }
+            else {
                 if (!deleteOperations[`delete-${record.resource}`]) {
                     deleteOperations[`delete-${record.resource}`] = {
                         entity: record.resource,
@@ -192,4 +192,3 @@ export class PayPalTestDataService extends TestDataService {
         return deleteOperationsResponse;
     }
 }
-

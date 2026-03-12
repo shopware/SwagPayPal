@@ -3,7 +3,7 @@ import { PayPalTestDataService } from '../services/PayPalTestDataService';
 import { FixtureTypes } from './AcceptanceTest';
 
 export interface CommercialTestDataFixtureTypes {
-    TestDataService: PayPalTestDataService;
+    TestDataService: PayPalTestDataService
 }
 
 export const test = base.extend<FixtureTypes & CommercialTestDataFixtureTypes>({
