@@ -82,7 +82,7 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testIsPaymentMethodActiveWithoutAssignedPaymentMethods(): void
     {
-        $paypalPaymentMethods = $this->getSalesChannelPaymentMethods()->filter(fn (PaymentMethodEntity $pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal'));
+        $paypalPaymentMethods = $this->getSalesChannelPaymentMethods()->filter(static fn (PaymentMethodEntity $pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal'));
 
         static::assertCount(0, $paypalPaymentMethods);
 
@@ -95,7 +95,7 @@ class PaymentMethodUtilTest extends TestCase
 
         $scPaymentMethods = $this->getSalesChannelPaymentMethods();
 
-        static::assertCount(17, $scPaymentMethods->filter(fn (PaymentMethodEntity $pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal')));
+        static::assertCount(17, $scPaymentMethods->filter(static fn (PaymentMethodEntity $pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal')));
 
         static::assertFalse($this->paymentMethodUtil->isPaymentMethodActive(Generator::generateSalesChannelContext(), null));
     }
@@ -108,7 +108,7 @@ class PaymentMethodUtilTest extends TestCase
 
         static::assertCount(
             \count($this->paymentMethodDataRegistry->getPaymentMethods()),
-            $scPaymentMethods->filter(fn (PaymentMethodEntity $pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal')),
+            $scPaymentMethods->filter(static fn (PaymentMethodEntity $pm) => \str_starts_with($pm->getHandlerIdentifier(), 'Swag\\PayPal')),
         );
 
         foreach ($this->paymentMethodDataRegistry->getPaymentMethods() as $methodData) {

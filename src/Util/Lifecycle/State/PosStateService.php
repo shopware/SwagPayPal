@@ -99,7 +99,7 @@ class PosStateService
         $result = $this->salesChannelRepository->search($criteria, $context);
 
         if ($result->getTotal() > 0) {
-            $names = $result->getEntities()->map(function (SalesChannelEntity $item): string {
+            $names = $result->getEntities()->map(static function (SalesChannelEntity $item): string {
                 return (string) $item->getName();
             });
 

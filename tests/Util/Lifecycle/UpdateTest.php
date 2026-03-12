@@ -424,7 +424,7 @@ class UpdateTest extends TestCase
         $criteria->addAssociation('media');
         $criteria->addFilter(new EqualsAnyFilter(
             'handlerIdentifier',
-            \array_map(fn ($method) => $method->getHandler(), $paymentMethods),
+            \array_map(static fn ($method) => $method->getHandler(), $paymentMethods),
         ));
 
         // override all media files

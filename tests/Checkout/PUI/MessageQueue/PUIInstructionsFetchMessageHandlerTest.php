@@ -74,7 +74,7 @@ class PUIInstructionsFetchMessageHandlerTest extends TestCase
         $this->orderTransactionRepository
             ->expects($this->once())
             ->method('search')
-            ->willReturnCallback(function ($newCriteria) use (&$criteria, $searchResult) {
+            ->willReturnCallback(static function ($newCriteria) use (&$criteria, $searchResult) {
                 $criteria = $newCriteria;
 
                 return $searchResult;

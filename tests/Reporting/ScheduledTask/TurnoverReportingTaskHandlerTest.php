@@ -320,7 +320,7 @@ class TurnoverReportingTaskHandlerTest extends TestCase
         static::assertIsArray($history);
 
         return \array_map(
-            function (array $entry) {
+            static function (array $entry) {
                 $body = \json_decode($entry['request']->getBody()->getContents(), true);
                 static::assertIsArray($body);
 
