@@ -76,7 +76,7 @@ class ProductVisibilityRepoMock extends AbstractRepoMock
     {
         $entityCollection = $this->entityCollection;
 
-        return $entityCollection->filter(function (ProductVisibilityEntity $productVisibility) use ($id) {
+        return $entityCollection->filter(static function (ProductVisibilityEntity $productVisibility) use ($id) {
             return $productVisibility->getSalesChannelId() === $id;
         });
     }

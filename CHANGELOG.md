@@ -1,3 +1,6 @@
+# 10.5.0
+- Added Austria to the countries where Pay Later is available
+
 # 10.4.4
 - Fixes an issue, where refunds where possible as order editor, whereas order refund editor should be prefered (shopware/SwagPayPal#556)
 

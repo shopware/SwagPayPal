@@ -58,7 +58,7 @@ class PaymentMethodStateServiceTest extends TestCase
         $this->paymentMethodRepository
             ->expects($this->once())
             ->method('searchIds')
-            ->with(static::callback(function (Criteria $criteria): bool {
+            ->with(static::callback(static function (Criteria $criteria): bool {
                 static::assertCount(1, $criteria->getFilters());
                 static::assertInstanceOf(EqualsAnyFilter::class, $criteria->getFilters()[0]);
                 static::assertSame('handlerIdentifier', $criteria->getFilters()[0]->getField());
@@ -82,7 +82,7 @@ class PaymentMethodStateServiceTest extends TestCase
         $this->paymentMethodRepository
             ->expects($this->once())
             ->method('searchIds')
-            ->with(static::callback(function (Criteria $criteria): bool {
+            ->with(static::callback(static function (Criteria $criteria): bool {
                 static::assertCount(1, $criteria->getFilters());
                 static::assertInstanceOf(EqualsAnyFilter::class, $criteria->getFilters()[0]);
                 static::assertSame('handlerIdentifier', $criteria->getFilters()[0]->getField());
@@ -104,7 +104,7 @@ class PaymentMethodStateServiceTest extends TestCase
         $this->paymentMethodRepository
             ->expects($this->once())
             ->method('searchIds')
-            ->with(static::callback(function (Criteria $criteria): bool {
+            ->with(static::callback(static function (Criteria $criteria): bool {
                 static::assertCount(1, $criteria->getFilters());
                 static::assertInstanceOf(EqualsAnyFilter::class, $criteria->getFilters()[0]);
                 static::assertSame('handlerIdentifier', $criteria->getFilters()[0]->getField());

@@ -87,7 +87,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
         $this->orderTransactionRepository
             ->expects($this->once())
             ->method('search')
-            ->willReturnCallback(function (Criteria $criteria, Context $context) use ($collection) {
+            ->willReturnCallback(static function (Criteria $criteria, Context $context) use ($collection) {
                 static::assertCount(3, $criteria->getFilters());
 
                 static::assertInstanceOf(EqualsAnyFilter::class, $criteria->getFilters()[0]);
@@ -130,7 +130,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
         $this->bus
             ->expects($matcher)
             ->method('dispatch')
-            ->willReturnCallback(function (TransactionStatusSyncMessage $message) use ($matcher) {
+            ->willReturnCallback(static function (TransactionStatusSyncMessage $message) use ($matcher) {
                 switch ($matcher->numberOfInvocations()) {
                     case 1:
                         static::assertSame('first-transaction-id', $message->getTransactionId());
@@ -168,7 +168,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
         $this->orderTransactionRepository
             ->expects($this->once())
             ->method('search')
-            ->willReturnCallback(function (Criteria $criteria, Context $context) use ($collection) {
+            ->willReturnCallback(static function (Criteria $criteria, Context $context) use ($collection) {
                 static::assertCount(3, $criteria->getFilters());
 
                 static::assertInstanceOf(EqualsAnyFilter::class, $criteria->getFilters()[0]);
@@ -210,7 +210,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
         $this->bus
             ->expects($this->once())
             ->method('dispatch')
-            ->willReturnCallback(function (TransactionStatusSyncMessage $message) {
+            ->willReturnCallback(static function (TransactionStatusSyncMessage $message) {
                 static::assertNull($message->getPayPalOrderId());
 
                 return new Envelope($message);

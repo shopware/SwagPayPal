@@ -124,11 +124,11 @@ class BannerDataServiceTest extends TestCase
 
         $this->languageRepository
             ->method('search')
-            ->willReturnCallback(fn (Criteria $criteria) => new EntitySearchResult(
+            ->willReturnCallback(static fn (Criteria $criteria) => new EntitySearchResult(
                 'language',
                 1,
                 new EntityCollection(
-                    \array_map(fn ($id) => (new LanguageEntity())->assign([
+                    \array_map(static fn ($id) => (new LanguageEntity())->assign([
                         'id' => $id,
                         'locale' => (new LocaleEntity())->assign(['code' => $id]),
                     ]), $criteria->getIds()),
