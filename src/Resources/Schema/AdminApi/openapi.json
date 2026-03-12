@@ -4830,6 +4830,345 @@
                 },
                 "type": "object"
             },
+            "paypal_v2_eligible_methods_data": {
+                "required": [
+                    "eligible_methods",
+                    "supplementary_data"
+                ],
+                "properties": {
+                    "eligible_methods": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods"
+                    },
+                    "supplementary_data": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_supplementary_data"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods": {
+                "required": [
+                    "paypal",
+                    "paypal_pay_later",
+                    "apple_pay",
+                    "google_pay",
+                    "advanced_cards",
+                    "eps",
+                    "p_2_4",
+                    "blik",
+                    "ideal",
+                    "bizum",
+                    "bancontact",
+                    "klarna"
+                ],
+                "properties": {
+                    "paypal": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_paypal"
+                    },
+                    "paypal_pay_later": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_paypal_pay_later"
+                    },
+                    "apple_pay": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_apple_pay"
+                    },
+                    "google_pay": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_google_pay"
+                    },
+                    "advanced_cards": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_advanced_cards"
+                    },
+                    "eps": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_eps"
+                    },
+                    "p_2_4": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_p24"
+                    },
+                    "blik": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_blik"
+                    },
+                    "ideal": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_ideal"
+                    },
+                    "bizum": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_bizum"
+                    },
+                    "bancontact": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_bancontact"
+                    },
+                    "klarna": {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_klarna"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_advanced_cards": {
+                "required": [
+                    "supports_installements",
+                    "cobranded_enabled",
+                    "vendors"
+                ],
+                "properties": {
+                    "supports_installements": {
+                        "type": "boolean"
+                    },
+                    "cobranded_enabled": {
+                        "type": "boolean"
+                    },
+                    "vendors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_advanced_cards_vendor"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_advanced_cards_vendor": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_paypal"
+                    },
+                    {
+                        "required": [
+                            "eligible",
+                            "network",
+                            "branded"
+                        ],
+                        "properties": {
+                            "eligible": {
+                                "type": "boolean"
+                            },
+                            "network": {
+                                "type": "string"
+                            },
+                            "branded": {
+                                "type": "boolean"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_apple_pay": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_paypal"
+                    },
+                    {
+                        "required": [
+                            "config"
+                        ],
+                        "properties": {
+                            "config": {
+                                "type": "array",
+                                "items": {
+                                    "type": "mixed"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_bancontact": {},
+            "paypal_v2_eligible_methods_data_eligible_methods_bizum": {},
+            "paypal_v2_eligible_methods_data_eligible_methods_blik": {},
+            "paypal_v2_eligible_methods_data_eligible_methods_eps": {},
+            "paypal_v2_eligible_methods_data_eligible_methods_google_pay": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_paypal"
+                    },
+                    {
+                        "required": [
+                            "config"
+                        ],
+                        "properties": {
+                            "config": {
+                                "type": "array",
+                                "items": {
+                                    "type": "mixed"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_ideal": {},
+            "paypal_v2_eligible_methods_data_eligible_methods_klarna": {},
+            "paypal_v2_eligible_methods_data_eligible_methods_p24": {},
+            "paypal_v2_eligible_methods_data_eligible_methods_paypal": {
+                "required": [
+                    "can_be_vaulted"
+                ],
+                "properties": {
+                    "can_be_vaulted": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_paypal_pay_later": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/paypal_v2_eligible_methods_data_eligible_methods_paypal"
+                    },
+                    {
+                        "required": [
+                            "country_code",
+                            "product_code"
+                        ],
+                        "properties": {
+                            "country_code": {
+                                "description": "ISO 3166-1 alpha-2 country code",
+                                "type": "string",
+                                "maxLength": 2,
+                                "minLength": 2
+                            },
+                            "product_code": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "paypal_v2_eligible_methods_data_supplementary_data": {
+                "required": [
+                    "buyer_country_code"
+                ],
+                "properties": {
+                    "buyer_country_code": {
+                        "description": "ISO 3166-1 alpha-2 country code",
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_find_eligible_methods": {
+                "required": [
+                    "customer",
+                    "preferences",
+                    "purchase_units"
+                ],
+                "properties": {
+                    "customer": {
+                        "$ref": "#/components/schemas/paypal_v2_find_eligible_methods_customer"
+                    },
+                    "preferences": {
+                        "$ref": "#/components/schemas/paypal_v2_find_eligible_methods_preferences"
+                    },
+                    "purchase_units": {
+                        "description": "Does not have to be a full purchase unit.\n`[{\"amount\":{\"currency_code\":\"<iso-4217-code>\"},\"payee\":{\"merchant_id\":\"<merchant-id>\"}}]` is enough.",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_find_eligible_methods_customer": {
+                "required": [
+                    "country_code",
+                    "channel"
+                ],
+                "properties": {
+                    "country_code": {
+                        "description": "ISO 3166-1 alpha-2 country code",
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
+                    },
+                    "channel": {
+                        "$ref": "#/components/schemas/paypal_v2_find_eligible_methods_customer_channel"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_find_eligible_methods_customer_channel": {
+                "required": [
+                    "browser_type",
+                    "client_os",
+                    "device_type"
+                ],
+                "properties": {
+                    "browser_type": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "client_os": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "device_type": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_find_eligible_methods_preferences": {
+                "required": [
+                    "payment_flow",
+                    "commit",
+                    "intent",
+                    "vault",
+                    "payment_source_constraint"
+                ],
+                "properties": {
+                    "payment_flow": {
+                        "type": "string",
+                        "enum": [
+                            "ONE_TIME_PAYMENT"
+                        ]
+                    },
+                    "commit": {
+                        "type": "boolean"
+                    },
+                    "intent": {
+                        "type": "string",
+                        "enum": [
+                            "CAPTURE",
+                            "AUTHORIZE"
+                        ]
+                    },
+                    "vault": {
+                        "type": "boolean"
+                    },
+                    "payment_source_constraint": {
+                        "$ref": "#/components/schemas/paypal_v2_find_eligible_methods_preferences_payment_source_constraint"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_find_eligible_methods_preferences_payment_source_constraint": {
+                "required": [
+                    "constraint_type",
+                    "payment_sources"
+                ],
+                "properties": {
+                    "constraint_type": {
+                        "type": "string",
+                        "enum": [
+                            "INCLUDE"
+                        ]
+                    },
+                    "payment_sources": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v2_order": {
                 "required": [
                     "create_time",
@@ -4976,6 +5315,7 @@
             },
             "paypal_v2_order_payment_source": {
                 "required": [
+                    "afterpay",
                     "apple_pay",
                     "pay_upon_invoice",
                     "bancontact",
@@ -4984,17 +5324,27 @@
                     "card",
                     "eps",
                     "ideal",
+                    "klarna",
                     "multibanco",
                     "my_bank",
                     "oxxo",
                     "p_2_4",
                     "paypal",
+                    "swish",
                     "token",
                     "trustly",
                     "google_pay",
                     "venmo"
                 ],
                 "properties": {
+                    "afterpay": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_afterpay"
+                            }
+                        ],
+                        "nullable": true
+                    },
                     "apple_pay": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_apple_pay"
                     },
@@ -5054,6 +5404,14 @@
                         ],
                         "nullable": true
                     },
+                    "klarna": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_klarna"
+                            }
+                        ],
+                        "nullable": true
+                    },
                     "multibanco": {
                         "oneOf": [
                             {
@@ -5094,6 +5452,14 @@
                         ],
                         "nullable": true
                     },
+                    "swish": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_swish"
+                            }
+                        ],
+                        "nullable": true
+                    },
                     "token": {
                         "oneOf": [
                             {
@@ -5125,6 +5491,42 @@
                             }
                         ],
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_payment_source_afterpay": {
+                "required": [
+                    "name",
+                    "country_code",
+                    "experience_context",
+                    "email",
+                    "phone",
+                    "birth_date"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
+                    },
+                    "country_code": {
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
+                    },
+                    "experience_context": {
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "phone": {
+                        "type": "string"
+                    },
+                    "birth_date": {
+                        "type": "string",
+                        "format": "date"
                     }
                 },
                 "type": "object"
@@ -5696,6 +6098,37 @@
                 },
                 "type": "object"
             },
+            "paypal_v2_order_payment_source_klarna": {
+                "required": [
+                    "name",
+                    "country_code",
+                    "experience_context",
+                    "email",
+                    "phone"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
+                    },
+                    "country_code": {
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
+                    },
+                    "experience_context": {
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "phone": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v2_order_payment_source_multibanco": {
                 "required": [
                     "name",
@@ -5915,6 +6348,33 @@
                             }
                         ],
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_payment_source_swish": {
+                "required": [
+                    "name",
+                    "country_code",
+                    "experience_context",
+                    "phone"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 3
+                    },
+                    "country_code": {
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2
+                    },
+                    "experience_context": {
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
+                    },
+                    "phone": {
+                        "type": "string"
                     }
                 },
                 "type": "object"
@@ -6988,7 +7448,8 @@
                     "products",
                     "capabilities",
                     "legal_consents",
-                    "links"
+                    "links",
+                    "legal_country_code"
                 ],
                 "properties": {
                     "business_entity": {
@@ -7032,6 +7493,9 @@
                         "items": {
                             "$ref": "#/components/schemas/paypal_v2_common_link"
                         }
+                    },
+                    "legal_country_code": {
+                        "type": "string"
                     }
                 },
                 "type": "object"
@@ -7127,14 +7591,23 @@
             },
             "paypal_v2_referral_operation_api_integration_preference_rest_api_integration_third_party_details": {
                 "required": [
-                    "features"
+                    "features",
+                    "signup_mode",
+                    "organization"
                 ],
                 "properties": {
                     "features": {
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "deprecated": true
+                    },
+                    "signup_mode": {
+                        "type": "string"
+                    },
+                    "organization": {
+                        "type": "string"
                     }
                 },
                 "type": "object"

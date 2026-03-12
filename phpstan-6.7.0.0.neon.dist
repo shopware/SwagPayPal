@@ -98,3 +98,14 @@ parameters:
           paths:
             - src/Storefront/Framework/Cookie/GooglePayCookieProvider.php
             - src/Storefront/Framework/Cookie/PayPalCookieProvider.php
+
+        - identifier: typePerfect.noMixedMethodCaller
+          message: '#^Mixed variable in a `\$(column|index)(->getObjectName\(\))?->\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
+          path: tests/Helper/CompatSchemaTrait.php
+
+        - message: '#Call to an undefined method Doctrine\\DBAL\\Schema\\(Column|Index)::getObjectName\(\)#'
+          identifier: method.notFound
+          path: tests/Helper/CompatSchemaTrait.php
+
+        - message: '#Call to an undefined method Doctrine\\DBAL\\Schema\\AbstractSchemaManager<Doctrine\\DBAL\\Platforms\\AbstractPlatform>::introspectTable(Columns|Indexes)ByUnquotedName\(\)#'
+          path: tests/Helper/CompatSchemaTrait.php

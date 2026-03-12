@@ -27,24 +27,20 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler(handles: ImageSyncMessage::class)]
 class ImageSyncHandler extends AbstractSyncHandler
 {
-    private EntityRepository $posMediaRepository;
-
-    private ImageSyncer $imageSyncer;
-
     /**
      * @internal
+     *
+     * @param EntityRepository<PosSalesChannelMediaCollection> $posMediaRepository
      */
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
         MessageDispatcher $messageBus,
         MessageHydrator $messageHydrator,
-        EntityRepository $posMediaRepository,
-        ImageSyncer $imageSyncer,
+        private EntityRepository $posMediaRepository,
+        private ImageSyncer $imageSyncer,
     ) {
         parent::__construct($runService, $logger, $messageBus, $messageHydrator);
-        $this->posMediaRepository = $posMediaRepository;
-        $this->imageSyncer = $imageSyncer;
     }
 
     /**
@@ -57,7 +53,6 @@ class ImageSyncHandler extends AbstractSyncHandler
         $criteria->setOffset($message->getOffset());
         $criteria->setLimit($message->getLimit());
 
-        /** @var PosSalesChannelMediaCollection $posMediaCollection */
         $posMediaCollection = $this->posMediaRepository
             ->search($criteria, $message->getContext())
             ->getEntities()

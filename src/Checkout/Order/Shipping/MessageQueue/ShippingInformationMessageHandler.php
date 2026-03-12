@@ -84,7 +84,7 @@ class ShippingInformationMessageHandler
             return;
         }
 
-        $orderTrackers = $order->getPurchaseUnits()->first()?->getShipping()->getTrackers()?->getTrackerCodes() ?? [];
+        $orderTrackers = $order->getPurchaseUnits()->first()?->getShipping()?->getTrackers()?->getTrackerCodes() ?? [];
         $deliveryTrackers = $this->trimTrackers($orderDelivery->getTrackingCodes());
         $itemCollection = $this->createItemCollection($orderLineItems);
 
