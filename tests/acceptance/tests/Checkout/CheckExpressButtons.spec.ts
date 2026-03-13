@@ -25,11 +25,15 @@ test('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, async
 
     await ShopCustomer.goesTo(StorefrontProductDetail.url(product));
     await ShopCustomer.attemptsTo(AddProductToCart(product));
+    
+    // We need to close the off canvas cart and open it again,somehow the express buttons are not visible on the first open. But this only occurs inplaywright
     await ShopCustomer.attemptsTo(CloseTheOffCanvasCart());
+    await ShopCustomer.presses(StorefrontHeader.cartTotal);
     await StorefrontHeader.cartTotal.click();
     await ShopCustomer.expects(StorefrontOffCanvasCart.offcanvasContainer).toBeVisible();
     await ShopCustomer.expects(await StorefrontOffCanvasCart.paypalButton('paypal')).toBeVisible();
     await ShopCustomer.expects(await StorefrontOffCanvasCart.paypalButton('paylater')).toBeVisible();
+    
 });
 
 test('Check Express Buttons in Checkout Confirm', { tag: ['@Storefront'] }, async ({
