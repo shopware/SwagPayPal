@@ -106,7 +106,7 @@ export default abstract class SwagPaypalBase extends Plugin {
      */
     protected async beforeSetup(): Promise<void> {
         const [credentials] = await Promise.all([
-            this.fetchCredentials(),
+            this._fetchCredentials(),
             DependencyHelper.loadPayPalCore({ environment: this.options.environment }),
         ]);
 
@@ -181,7 +181,7 @@ export default abstract class SwagPaypalBase extends Plugin {
         }
     }
 
-    protected async fetchClientToken(): Promise<string> {
+    protected async _fetchClientToken(): Promise<string> {
         if (this.options.clientToken) {
             SwagPaypalBase.clientToken ??= Promise.resolve(this.options.clientToken);
 
@@ -201,12 +201,12 @@ export default abstract class SwagPaypalBase extends Plugin {
         return token;
     }
 
-    protected async fetchCredentials(): Promise<Credentials> {
+    protected async _fetchCredentials(): Promise<Credentials> {
         if (this.options.clientId && this.options.merchantPayerId) {
             return { clientId: this.options.clientId, merchantId: this.options.merchantPayerId };
         }
 
-        SwagPaypalBase.clientToken ??= this.fetchClientToken();
+        SwagPaypalBase.clientToken ??= this._fetchClientToken();
         return { clientToken: await SwagPaypalBase.clientToken };
     }
 }
