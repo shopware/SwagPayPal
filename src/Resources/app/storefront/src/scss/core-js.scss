@@ -52,8 +52,8 @@
     --paypal-card-field-padding: $input-padding-y $input-padding-x;
     --paypal-card-field-border: var(--bs-border-width) solid var(--bs-border-color);
     --paypal-card-field-border-radius: var(--bs-border-radius);
-    --paypal-card-field-color: $input-color;
-    --paypal-card-field-color-placeholder: $input-placeholder-color;
+    --paypal-card-field-color: #{$input-color};
+    --paypal-card-field-color-placeholder: #{$input-placeholder-color};
 
     --paypal-card-field-invalid-color: var(--bs-form-invalid-color);
     /* prettier-ignore */
