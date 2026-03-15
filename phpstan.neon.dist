@@ -91,6 +91,10 @@ parameters:
             identifier: method.deprecated
             message: '#__construct.*Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition.*#'
 
+        - # 6.8 deprecation
+            identifier: method.deprecated
+            message: '#arameter \$silent will be added in v6\.8\.0.*#'
+
         - # 6.8 deprecation - only type change
             identifier: method.deprecated
             message: '#(setActiveBillingAddress|setActiveShippingAddress).*Shopware\\Core\\Checkout\\Customer\\CustomerEntity.*#'
@@ -123,6 +127,14 @@ parameters:
                 - tests/Checkout/Method/ACDCHandlerTest.php
                 - tests/Checkout/Method/VenmoHandlerTest.php
 
+        - # 6.8 deprecation - reason:exception-change - Will throw \Shopware\Core\Framework\Util\UtilException instead of \Doctrine\DBAL\Exception\TableNotFoundException
+            identifier: method.deprecated
+            message: '#Call to deprecated method columnExists\(\) of class .*\\MigrationStep#'
+            paths:
+                - src/Migration/Migration1706111604AddCustomerIdToVault.php
+                - src/Migration/Migration1675420139AddManagerDataToRun.php
+                - src/Migration/Migration1626082072AddStatusAndMessageCountToRun.php
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
@@ -134,4 +146,3 @@ rules:
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\PackageAnnotationRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Migration\NoAfterStatementRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\NoNewRequestInStorefrontRule
-

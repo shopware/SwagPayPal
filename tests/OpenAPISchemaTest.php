@@ -116,10 +116,10 @@ class OpenAPISchemaTest extends TestCase
                 continue;
             }
 
-            $routes = \array_map(fn ($r) => $r->getArguments(), $routeAttributes);
+            $routes = \array_map(static fn ($r) => $r->getArguments(), $routeAttributes);
             $routeMethods = \array_unique(\array_merge(...\array_column($routes, 'methods')));
             $routePaths = \array_column($routes, 'path');
-            $routePathsWithoutPrefix = \array_map(fn ($path) => \str_replace(['/api', '/store-api'], '', $path), $routePaths);
+            $routePathsWithoutPrefix = \array_map(static fn ($path) => \str_replace(['/api', '/store-api'], '', $path), $routePaths);
 
             if (!\in_array($annotation->method, $routeMethods, true)) {
                 $failures[] = $fqdn . ' was expected to have a method of "' . \implode('" or "', $routeMethods) . '", but found "' . $annotation->method . '" in OpenAPI Schema';

@@ -44,16 +44,15 @@ class FundingEligibilityDataService extends AbstractScriptDataService
 
     private function getFilteredPaymentMethods(): array
     {
-        $handlers = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY, []);
-        if (!$handlers) {
+        if (!$this->requestStack->getCurrentRequest()?->hasSession() || !$this->requestStack->getSession()->isStarted()) {
             return [];
         }
 
-        $methods = [];
-        foreach ($handlers as $handler) {
-            $methods[] = \array_search($handler, MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS, true);
-        }
+        $handlers = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY, []);
 
-        return \array_filter($methods);
+        return \array_keys(\array_filter(\array_intersect(
+            MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS,
+            $handlers,
+        )));
     }
 }

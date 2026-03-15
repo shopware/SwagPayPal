@@ -8,14 +8,10 @@
 namespace Swag\PayPal\Storefront\Framework\Cookie;
 
 use Shopware\Core\Content\Cookie\Event\CookieGroupCollectEvent;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\PrefixFilter;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\PlatformRequest;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -33,7 +29,7 @@ class PayPalCookieProvider implements CookieProviderInterface
      */
     public function __construct(
         CookieProviderInterface $cookieProvider,
-        private readonly EntityRepository $paymentMethodRepository,
+        private readonly PaymentMethodUtil $paymentMethodUtil,
         private readonly RequestStack $requestStack,
     ) {
         $this->original = $cookieProvider;
@@ -83,19 +79,11 @@ class PayPalCookieProvider implements CookieProviderInterface
 
     private function isPayPalPaymentActive(): bool
     {
-        $criteria = new Criteria();
-        $criteria->setLimit(1);
-        $criteria->addFilter(new EqualsFilter('active', true));
-        $criteria->addFilter(new PrefixFilter('technicalName', 'swag_paypal_'));
-
-        $mainRequestAttributes = $this->requestStack->getMainRequest()?->attributes;
-        $context = $mainRequestAttributes?->get('sw-context') ?? Context::createDefaultContext();
-        $salesChannelId = $mainRequestAttributes?->getString('sw-sales-channel-id') ?? '';
-
-        if (Uuid::isValid($salesChannelId)) {
-            $criteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelId));
+        $salesChannelContext = $this->requestStack->getMainRequest()?->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+        if (!$salesChannelContext) {
+            return false;
         }
 
-        return $this->paymentMethodRepository->searchIds($criteria, $context)->firstId() !== null;
+        return $this->paymentMethodUtil->isPaymentMethodActive($salesChannelContext);
     }
 }

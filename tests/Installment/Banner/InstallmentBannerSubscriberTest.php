@@ -111,7 +111,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerPayPalNotInSalesChannel(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent(false);
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(false);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(false);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
@@ -121,7 +121,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerInvalidSettings(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::CLIENT_ID => null,
@@ -134,7 +134,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerCheckoutCartDisabled(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::INSTALLMENT_BANNER_CART_ENABLED => false,
@@ -149,7 +149,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerCheckoutCart(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
@@ -172,7 +172,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerCheckoutCartExcludedProduct(): void
     {
         $event = $this->createCheckoutCartPageLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
         $this->excludedProductValidator->expects($this->once())->method('cartContainsExcludedProduct')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
@@ -183,7 +183,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerOffCanvasCartDisabled(): void
     {
         $event = $this->createOffCanvasCartPageLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED => false,
@@ -198,7 +198,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerProductPage(): void
     {
         $event = $this->createProductPageLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
@@ -212,7 +212,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerProductPageDisabled(): void
     {
         $event = $this->createProductPageLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED => false,
@@ -227,7 +227,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerProductPageExcludedProduct(): void
     {
         $event = $this->createProductPageLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
         $this->excludedProductValidator->expects($this->once())->method('isProductExcluded')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
@@ -238,7 +238,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerProductPageWithAdvancedPrices(): void
     {
         $event = $this->createProductPageLoadedEvent(true);
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
@@ -252,7 +252,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerFooterPayPalNotInSalesChannel(): void
     {
         $event = $this->createFooterPageletLoadedEvent(false);
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(false);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(false);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBannerPagelet($event);
 
@@ -262,7 +262,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerFooterInvalidSettings(): void
     {
         $event = $this->createFooterPageletLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::CLIENT_ID => null,
@@ -275,7 +275,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerFooterDisabled(): void
     {
         $event = $this->createFooterPageletLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::INSTALLMENT_BANNER_FOOTER_ENABLED => false,
@@ -290,7 +290,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerFooterPagelet(): void
     {
         $event = $this->createFooterPageletLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBannerPagelet($event);
 
@@ -304,7 +304,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerAccountLoginPageDisabled(): void
     {
         $event = $this->createCheckoutRegisterPageLoadedEvent();
-        $this->paymentMethodUtil->expects($this->once())->method('isPaypalPaymentMethodInSalesChannel')->willReturn(true);
+        $this->paymentMethodUtil->expects($this->once())->method('isPaymentMethodActive')->willReturn(true);
 
         $this->createInstallmentBannerSubscriber([
             Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED => false,

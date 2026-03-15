@@ -103,7 +103,7 @@ class ExpressCustomerServiceTest extends TestCase
         $order->assign(GetOrderCapture::get());
         $firstCustomer = $this->doLogin($order);
 
-        $order->getPurchaseUnits()->first()?->getShipping()->getAddress()->setPostalCode('abcde');
+        $order->getPurchaseUnits()->first()?->getShipping()?->getAddress()->setPostalCode('abcde');
         $secondCustomer = $this->doLogin($order);
 
         static::assertSame($firstCustomer->getId(), $secondCustomer->getId());
@@ -111,6 +111,20 @@ class ExpressCustomerServiceTest extends TestCase
         $addresses = $secondCustomer->getAddresses();
         static::assertNotNull($addresses);
         static::assertCount(2, $addresses);
+    }
+
+    public function testLoginWithoutShippingAddress(): void
+    {
+        $orderData = GetOrderCapture::get();
+        $orderData['payment_source']['paypal']['name']['given_name'] = 'Test Given';
+        $orderData['payment_source']['paypal']['name']['surname'] = 'Test Surname';
+
+        $order = (new Order())->assign($orderData);
+        $order->getPurchaseUnits()->first()?->setShipping(null);
+        $customer = $this->doLogin($order);
+
+        static::assertSame('Test Surname', $customer->getLastName());
+        static::assertSame('Test Given', $customer->getFirstName());
     }
 
     public function testLoginDifferentAccountSameEmail(): void

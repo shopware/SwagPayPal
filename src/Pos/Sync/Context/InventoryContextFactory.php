@@ -98,7 +98,7 @@ class InventoryContextFactory
             $criteria->addFilter(new EqualsAnyFilter('productId', $productIds));
         }
         $inventory = $this->inventoryRepository->search($criteria, $inventoryContext->getContext())->getEntities();
-        if (!($inventory instanceof PosSalesChannelInventoryCollection)) {
+        if (!$inventory instanceof PosSalesChannelInventoryCollection) {
             throw new EntityRepositoryNotFoundException('swag_paypal_pos_sales_channel_inventory');
         }
 

@@ -66,7 +66,7 @@ class PUICustomerDataService
     {
         $birthdayArray = $dataBag->get(self::PUI_CUSTOMER_DATA_BIRTHDAY);
 
-        if (!($birthdayArray instanceof DataBag)) {
+        if (!$birthdayArray instanceof DataBag) {
             return null;
         }
 

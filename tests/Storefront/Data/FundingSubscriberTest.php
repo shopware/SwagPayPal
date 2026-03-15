@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Generator;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
@@ -34,6 +35,7 @@ use Swag\PayPal\Storefront\Data\Service\FundingEligibilityDataService;
 use Swag\PayPal\Storefront\Data\Struct\FundingEligibilityData;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -48,7 +50,55 @@ class FundingSubscriberTest extends TestCase
 {
     private const TEST_CLIENT_ID = 'testClientId';
 
+    private SystemConfigService $systemConfigService;
+
     private Session $session;
+
+    private RequestStack $requestStack;
+
+    private FundingSubscriber $subscriber;
+
+    private FundingEligibilityDataService $dataService;
+
+    protected function setUp(): void
+    {
+        $this->systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+
+        $credentialsUtil = new CredentialsUtil($this->systemConfigService);
+
+        $localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
+        $localeCodeProvider->method('getFormattedLocaleCode')->willReturn('en_GB');
+
+        $router = $this->createMock(RouterInterface::class);
+        $router->expects($this->atMost(2))->method('generate')->willReturn('/paypal/payment-method-eligibility');
+
+        $this->session = new Session(new MockArraySessionStorage());
+        $this->session->set(MethodEligibilityRoute::SESSION_KEY, [SEPAHandler::class]);
+
+        $request = new Request();
+        $request->setSession($this->session);
+
+        $this->requestStack = new RequestStack();
+        $this->requestStack->push($request);
+
+        $paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
+        $paymentMethodUtil
+            ->method('isPaymentMethodActive')
+            ->with(static::isInstanceOf(SalesChannelContext::class), \array_values(MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS))
+            ->willReturn(true);
+
+        $this->subscriber = new FundingSubscriber(
+            new SettingsValidationService($this->systemConfigService, new NullLogger()),
+            $this->dataService = new FundingEligibilityDataService(
+                $credentialsUtil,
+                $this->systemConfigService,
+                $localeCodeProvider,
+                $router,
+                $this->requestStack
+            ),
+            $paymentMethodUtil,
+        );
+    }
 
     public function testGetSubscribedEvents(): void
     {
@@ -64,11 +114,9 @@ class FundingSubscriberTest extends TestCase
 
     public function testAddNoSettings(): void
     {
-        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
-        $subscriber = $this->createSubscriber($systemConfigService);
         $event = $this->createFooterPageletLoadedEvent();
         // @deprecated tag:v11.0.0 - Remove this line below.
-        $subscriber->addFundingAvailabilityDataToFooter($event);
+        $this->subscriber->addFundingAvailabilityDataToFooter($event);
 
         static::assertFalse($event->getPagelet()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
     }
@@ -78,12 +126,11 @@ class FundingSubscriberTest extends TestCase
      */
     public function testAddFundingAvailabilityDataToFooter(): void
     {
-        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
-        $systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
-        $systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
-        $subscriber = $this->createSubscriber($systemConfigService);
+        $this->systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
         $event = $this->createFooterPageletLoadedEvent();
-        $subscriber->addFundingAvailabilityDataToFooter($event);
+
+        $this->subscriber->addFundingAvailabilityDataToFooter($event);
 
         $extension = $event->getPagelet()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION);
 
@@ -98,22 +145,42 @@ class FundingSubscriberTest extends TestCase
 
     public function testAddFundingAvailabilityDataToPageNoSettings(): void
     {
-        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
-        $subscriber = $this->createSubscriber($systemConfigService);
         $event = $this->createGenericPageLoadedEvent();
-        $subscriber->addFundingAvailabilityDataToPage($event);
+
+        $this->subscriber->addFundingAvailabilityDataToPage($event);
+
+        static::assertFalse($event->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+    }
+
+    public function testAddFundingAvailabilityDataToPageNoActivePaymentMethods(): void
+    {
+        $this->systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
+
+        $paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
+        $paymentMethodUtil
+            ->method('isPaymentMethodActive')
+            ->willReturn(false);
+
+        $this->subscriber = new FundingSubscriber(
+            new SettingsValidationService($this->systemConfigService, new NullLogger()),
+            $this->dataService,
+            $paymentMethodUtil,
+        );
+
+        $event = $this->createGenericPageLoadedEvent();
+        $this->subscriber->addFundingAvailabilityDataToPage($event);
 
         static::assertFalse($event->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
     }
 
     public function testAddFundingAvailabilityDataToPage(): void
     {
-        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
-        $systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
-        $systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
-        $subscriber = $this->createSubscriber($systemConfigService);
+        $this->systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
         $event = $this->createGenericPageLoadedEvent();
-        $subscriber->addFundingAvailabilityDataToPage($event);
+
+        $this->subscriber->addFundingAvailabilityDataToPage($event);
 
         $extension = $event->getPage()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION);
 
@@ -126,16 +193,31 @@ class FundingSubscriberTest extends TestCase
         static::assertSame(['SEPA'], $extension->getFilteredPaymentMethods());
     }
 
+    public function testAddFundingAvailabilityDataToPageWithoutSession(): void
+    {
+        $this->systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
+        $event = $this->createGenericPageLoadedEvent();
+
+        $this->requestStack->pop();
+        $this->requestStack->push(new Request());
+
+        $this->subscriber->addFundingAvailabilityDataToPage($event);
+
+        $extension = $event->getPage()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION);
+
+        static::assertInstanceOf(FundingEligibilityData::class, $extension);
+        static::assertSame([], $extension->getFilteredPaymentMethods());
+    }
+
     public function testRemoveFundingAvailabilityDataFromCheckoutConfirmPage(): void
     {
-        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
-        $systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
-        $systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
-        $subscriber = $this->createSubscriber($systemConfigService);
+        $this->systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
 
         // Add the extension via GenericPageLoadedEvent
         $genericEvent = $this->createGenericPageLoadedEvent();
-        $subscriber->addFundingAvailabilityDataToPage($genericEvent);
+        $this->subscriber->addFundingAvailabilityDataToPage($genericEvent);
         static::assertTrue($genericEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
 
         // Create CheckoutConfirmPage with the extension
@@ -150,21 +232,19 @@ class FundingSubscriberTest extends TestCase
         );
 
         // Remove the extension
-        $subscriber->removeFundingAvailabilityDataFromPage($confirmEvent);
+        $this->subscriber->removeFundingAvailabilityDataFromPage($confirmEvent);
 
         static::assertFalse($confirmEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
     }
 
     public function testRemoveFundingAvailabilityDataFromCheckoutRegisterPage(): void
     {
-        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
-        $systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
-        $systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
-        $subscriber = $this->createSubscriber($systemConfigService);
+        $this->systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
 
         // First add the extension via GenericPageLoadedEvent
         $genericEvent = $this->createGenericPageLoadedEvent();
-        $subscriber->addFundingAvailabilityDataToPage($genericEvent);
+        $this->subscriber->addFundingAvailabilityDataToPage($genericEvent);
         static::assertTrue($genericEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
 
         // Create CheckoutRegisterPage with the extension
@@ -179,38 +259,9 @@ class FundingSubscriberTest extends TestCase
         );
 
         // Remove the extension
-        $subscriber->removeFundingAvailabilityDataFromPage($registerEvent);
+        $this->subscriber->removeFundingAvailabilityDataFromPage($registerEvent);
 
         static::assertFalse($registerEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
-    }
-
-    private function createSubscriber(SystemConfigService $systemConfig): FundingSubscriber
-    {
-        $credentialsUtil = new CredentialsUtil($systemConfig);
-
-        $localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
-        $localeCodeProvider->method('getFormattedLocaleCode')->willReturn('en_GB');
-
-        $router = $this->createMock(RouterInterface::class);
-        $router->expects($this->atMost(2))->method('generate')->willReturn('/paypal/payment-method-eligibility');
-
-        $this->session = new Session(new MockArraySessionStorage());
-        $this->session->set(MethodEligibilityRoute::SESSION_KEY, [SEPAHandler::class]);
-        $request = new Request();
-        $request->setSession($this->session);
-        $requestStack = new RequestStack();
-        $requestStack->push($request);
-
-        return new FundingSubscriber(
-            new SettingsValidationService($systemConfig, new NullLogger()),
-            new FundingEligibilityDataService(
-                $credentialsUtil,
-                $systemConfig,
-                $localeCodeProvider,
-                $router,
-                $requestStack
-            )
-        );
     }
 
     private function createFooterPageletLoadedEvent(): FooterPageletLoadedEvent

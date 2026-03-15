@@ -84,7 +84,7 @@ class ShippingInformationMessageHandler
             return;
         }
 
-        $orderTrackers = $order->getPurchaseUnits()->first()?->getShipping()->getTrackers()?->getTrackerCodes() ?? [];
+        $orderTrackers = $order->getPurchaseUnits()->first()?->getShipping()?->getTrackers()?->getTrackerCodes() ?? [];
         $deliveryTrackers = $this->trimTrackers($orderDelivery->getTrackingCodes());
         $itemCollection = $this->createItemCollection($orderLineItems);
 
@@ -150,7 +150,7 @@ class ShippingInformationMessageHandler
     private function trimTrackers(array $trackers): array
     {
         return \array_filter(\array_map(
-            fn (string $tracker) => \mb_substr($tracker, 0, Tracker::MAX_LENGTH_TRACKING_NUMBER),
+            static fn (string $tracker) => \mb_substr($tracker, 0, Tracker::MAX_LENGTH_TRACKING_NUMBER),
             $trackers
         ));
     }

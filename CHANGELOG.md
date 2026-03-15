@@ -1,4 +1,21 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.5.0
+- Added Austria to the countries where Pay Later is available
+
+# 10.4.4
+- Fixes an issue, where refunds where possible as order editor, whereas order refund editor should be prefered (shopware/SwagPayPal#556)
+
+# 10.4.3
+- Fixes an issue, where causes for validation errors were not logged correctly
+
+# 10.4.2
+- Fixes an issue, where if an order was edited in the Administration, the payment amount could differ from the newly calculated total
+- Fixes an issue, where accessing an uninitialized object during express checkout (shopware/SwagPayPal#512)
+- Fixes an issue, where the HTTP cache was unnecessarily disturbed by creating a session (shopware/SwagPayPal#529)
+
+# 10.4.1
+- Fixes an issue, where required cookies were not displayed in the banner even though PayPal scripts had been loaded (shopware/SwagPayPal#506)
+
+# 10.4.0
 - Fixes an issue, where the express checkout could choose a customer country that was not assigned to the correct sales channel (shopware/SwagPayPal#479)
 - Fixes an issue, where cookies are added even though associated payment methods are not active (shopware/SwagPayPal#457)
 - Fixes an issue, where the state of a country was not correctly transmitted to PayPal (shopware/SwagPayPal#469)

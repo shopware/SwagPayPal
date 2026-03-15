@@ -21,15 +21,17 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * @template T of EntityCollection
- *
  * @internal
+ *
+ * @template TEntityCollection of EntityCollection
+ *
+ * @extends EntityRepository<TEntityCollection>
  */
 #[Package('checkout')]
 abstract class AbstractRepoMock extends EntityRepository
 {
     /**
-     * @use RepoTrait<T>
+     * @use RepoTrait<TEntityCollection>
      */
     use RepoTrait;
 
@@ -44,7 +46,7 @@ abstract class AbstractRepoMock extends EntityRepository
     }
 
     /**
-     * @return EntitySearchResult<T>
+     * @return EntitySearchResult<TEntityCollection>
      */
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {

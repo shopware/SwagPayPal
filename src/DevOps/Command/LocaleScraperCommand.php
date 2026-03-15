@@ -36,7 +36,7 @@ class LocaleScraperCommand extends Command
         $crawler = new Crawler($html);
         $locales = [];
 
-        $crawler->filter('table tbody tr')->each(function (Crawler $row) use (&$locales): void {
+        $crawler->filter('table tbody tr')->each(static function (Crawler $row) use (&$locales): void {
             $columns = $row->filter('td');
             if ($columns->count() < 3) {
                 return;

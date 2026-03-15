@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderException;
+use Shopware\Core\Checkout\Order\SalesChannel\AbstractSetPaymentOrderRoute;
 use Shopware\Core\Checkout\Payment\Cart\AbstractPaymentTransactionStructFactory;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -57,6 +58,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         private readonly OrderResource $orderResource,
         private readonly LoggerInterface $logger,
         private readonly AbstractPaymentTransactionStructFactory $paymentTransactionStructFactory,
+        private readonly AbstractSetPaymentOrderRoute $paymentOrderRoute
     ) {
     }
 
@@ -151,6 +153,8 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         Request $request,
         SalesChannelContext $salesChannelContext,
     ): Order {
+        $this->paymentOrderRoute->setPayment($request, $salesChannelContext);
+
         $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('transactions');
         $criteria->addAssociation('lineItems');

@@ -1,4 +1,21 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.5.0
+- Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
+
+# 10.4.4
+- Behebt ein Problem, bei dem Rückerstattungen als Bestell-Editor möglich waren, obwohl der Rückerstattungs-Editor der Bestellung bevorzugt werden sollte (shopware/SwagPayPal#556)
+
+# 10.4.3
+- Behebt ein Problem, bei dem Ursachen für Validierungsfehler nicht korrekt protokolliert wurden
+
+# 10.4.2
+- Behebt ein Problem, bei dem nach Bestelländerungen in der Administration Zahlungs- und Bestellsumme voneinander abweichen konnten
+- Behebt ein Problem, bei dem im PayPal Express Checkout der Zugriff auf ein nicht initialisiertes Objekt erfolgte (shopware/SwagPayPal#521)
+- Behebt ein Problem, bei dem der HTTP-Cache durch das Erstellen einer Sitzung unnötig gestört wurde (shopware/SwagPayPal#529)
+
+# 10.4.1
+- Behebt ein Problem, bei dem erforderliche Cookies nicht im Banner angezeigt wurden, obwohl PayPal-Skripte geladen wurden (shopware/SwagPayPal#506)
+
+# 10.4.0
 - Behebt ein Problem, bei dem beim Express-Checkout ein Kundenland ausgewählt werden konnte, das nicht dem richtigen Vertriebskanal zugeordnet war (shopware/SwagPayPal#479)
 - Behebt ein Problem, bei dem Cookies geladen wurden, obwohl die zugehörigen Zahlungsarten nicht aktiv sind (shopware/SwagPayPal#457)
 - Behebt ein Problem, bei dem der Bundesstaat nicht korrekt an PayPal übermittelt wurde (shopware/SwagPayPal#469)
