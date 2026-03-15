@@ -3,6 +3,8 @@ import DependencyHelper from '../helper/dependency.helper';
 import PayPalPluginError from './paypal-plugin.error';
 
 export interface SwagPaypalBaseOptions {
+    clientId: string | null;
+    merchantPayerId: string | null;
     clientToken: string | null;
     clientTokenUrl: string;
     environment: 'production' | 'sandbox';
@@ -12,6 +14,8 @@ export interface SwagPaypalBaseOptions {
     currency: string;
     handleErrorUrl: string;
 }
+
+type Credentials = { clientId: string; merchantId: string } | { clientToken: string };
 
 /**
  * Base class for all PayPal plugins.
@@ -23,12 +27,23 @@ export default abstract class SwagPaypalBase extends Plugin {
 
     static options: SwagPaypalBaseOptions = {
         /**
+         * This option holds the client id for the PayPal SDK
+         */
+        clientId: null,
+
+        /**
+         * This option holds the merchant payer id for the PayPal SDK
+         */
+        merchantPayerId: null,
+
+        /**
          * This option holds the client token required for field rendering
          */
         clientToken: null,
 
         /**
-         * This option holds the client token required for field rendering
+         * This option holds the url to fetch the client token if
+         * {@link clientToken} or {@link clientId} and {@link merchantPayerId} are not provided
          */
         clientTokenUrl: '',
 
@@ -90,12 +105,13 @@ export default abstract class SwagPaypalBase extends Plugin {
      * Override in child classes to handle pre-SDK loading logic.
      */
     protected async beforeSetup(): Promise<void> {
-        SwagPaypalBase.clientToken ??= this.fetchClientToken();
-
-        await DependencyHelper.loadPayPalCore({ environment: this.options.environment });
+        const [credentials] = await Promise.all([
+            this.fetchCredentials(),
+            DependencyHelper.loadPayPalCore({ environment: this.options.environment }),
+        ]);
 
         this.instance ??= await window.paypal!.createInstance({
-            clientToken: await SwagPaypalBase.clientToken,
+            ...credentials,
             locale: this.options.languageIso.replace('_', '-'),
             pageType: this.options.pageType,
             partnerAttributionId: this.options.partnerAttributionId,
@@ -183,5 +199,14 @@ export default abstract class SwagPaypalBase extends Plugin {
 
         const { token } = await response.json() as { token: string };
         return token;
+    }
+
+    protected async fetchCredentials(): Promise<Credentials> {
+        if (this.options.clientId && this.options.merchantPayerId) {
+            return { clientId: this.options.clientId, merchantId: this.options.merchantPayerId };
+        }
+
+        SwagPaypalBase.clientToken ??= this.fetchClientToken();
+        return { clientToken: await SwagPaypalBase.clientToken };
     }
 }
