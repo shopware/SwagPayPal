@@ -5,6 +5,7 @@ import {
     SyncApiOperation,
     DataServiceOptions,
     APIResponse,
+    SalesChannel,
 } from '@shopware-ag/acceptance-test-suite';
 import { expect } from '@playwright/test';
 import { SystemConfig } from 'SwagPayPal/types';
@@ -190,5 +191,50 @@ export class PayPalTestDataService extends TestDataService {
         expect(deleteOperationsResponse.ok()).toBeTruthy();
 
         return deleteOperationsResponse;
+    }
+
+    async getDefaultData(salesChannel: SalesChannel) {
+        const resp = await this.AdminApiClient.post('search/country', {
+            data: {
+                limit: 1,
+                filter: [
+                    {
+                        type: 'equals',
+                        field: 'id',
+                        value: salesChannel.countryId,
+                    },
+                ],
+            },
+        });
+
+        const result = await resp.json();
+
+        if (result.data.length === 0) {
+            throw new Error(`Currency ${salesChannel.currencyId} not found`);
+        }
+        const country = result.data[0].name;
+
+        const resp2 = await this.AdminApiClient.post('search/currency', {
+            data: {
+                limit: 1,
+                filter: [
+                    {
+                        type: 'equals',
+                        field: 'id',
+                        value: salesChannel.currencyId,
+                    },
+                ],
+            },
+        });
+
+        const result2 = await resp2.json();
+
+        if (result2.data.length === 0) {
+            throw new Error(`Currency ${salesChannel.currencyId} not found`);
+        }
+        const currency = result2.data[0].name;
+
+
+        return { country, currency };
     }
 }

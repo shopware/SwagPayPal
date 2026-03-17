@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@currents/playwright": "^1.22.0",
-    "@shopware-ag/acceptance-test-suite": "12.8.0",
+    "@shopware-ag/acceptance-test-suite": "12.8.1",
     "@shopware/api-client": "1.4.0",
     "typescript": "^5.9.3"
   }
