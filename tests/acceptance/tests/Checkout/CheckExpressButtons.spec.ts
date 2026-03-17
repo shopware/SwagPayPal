@@ -14,7 +14,8 @@ test('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, async
     
 
     
-    console.log('Default Country: ', country);
+    console.log('Defaults: ', country);
+    console.log('Default iso: ', TestDataService.defaultSalesChannel);
     
     const product = await TestDataService.createBasicProduct(
         {

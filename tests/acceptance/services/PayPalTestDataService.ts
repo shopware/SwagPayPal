@@ -234,7 +234,27 @@ export class PayPalTestDataService extends TestDataService {
         }
         const currency = result2.data[0].name;
 
+        const resp3 = await this.AdminApiClient.post('search/language', {
+            data: {
+                limit: 1,
+                filter: [
+                    {
+                        type: 'equals',
+                        field: 'id',
+                        value: salesChannel.languageId,
+                    },
+                ],
+            },
+        });
 
-        return { country, currency };
+        const result3 = await resp3.json();
+
+        if (result3.data.length === 0) {
+            throw new Error(`Language ${salesChannel.languageId} not found`);
+        }
+        const language = result3.data[0].name;
+
+
+        return { country, currency, language };
     }
 }
