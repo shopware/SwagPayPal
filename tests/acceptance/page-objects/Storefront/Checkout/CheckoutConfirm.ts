@@ -1,5 +1,6 @@
 import type { Page, Locator } from '@shopware-ag/acceptance-test-suite';
 import { StorefrontPageObjects } from '@shopware-ag/acceptance-test-suite';
+import type { PayPalExpressButton } from '../../../types/PayPalTypes';
 
 export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
     public readonly paymentACDC: Locator;
@@ -9,6 +10,8 @@ export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
     public readonly paymentPayPal: Locator;
     public readonly paymentPUI: Locator;
     public readonly paymentSepa: Locator;
+
+    public readonly cartActionsContainer: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -20,5 +23,14 @@ export class CheckoutConfirm extends StorefrontPageObjects.CheckoutConfirm {
         this.paymentPayPal = page.getByLabel('PayPal');
         this.paymentPUI = page.getByLabel('Pay upon invoice');
         this.paymentSepa = page.getByLabel('SEPA direct debit');
+
+        this.cartActionsContainer = page.locator('.checkout-aside-action');
+    }
+
+    public paypalButton(type: PayPalExpressButton): Locator {
+        const frame = this.cartActionsContainer
+            .frameLocator('iframe.component-frame[title="PayPal"]');
+
+        return frame.locator(`[data-funding-source="${type}"]`);
     }
 }
