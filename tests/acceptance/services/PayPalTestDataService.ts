@@ -5,7 +5,6 @@ import {
     SyncApiOperation,
     DataServiceOptions,
     APIResponse,
-    SalesChannel,
 } from '@shopware-ag/acceptance-test-suite';
 import { expect } from '@playwright/test';
 import { SystemConfig } from 'SwagPayPal/types';

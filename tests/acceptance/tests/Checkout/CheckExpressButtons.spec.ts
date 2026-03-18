@@ -10,7 +10,6 @@ test('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, async
     CloseTheOffCanvasCart,
 
 }) => {
-    
     const product = await TestDataService.createBasicProduct(
         {
             price: [
@@ -25,7 +24,7 @@ test('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, async
     );
 
     await ShopCustomer.goesTo(StorefrontProductDetail.url(product));
-    
+
     await ShopCustomer.attemptsTo(AddProductToCart(product));
 
     // We need to close the off canvas cart and open it again,somehow the express buttons are not visible on the first open. But this only occurs inplaywright
