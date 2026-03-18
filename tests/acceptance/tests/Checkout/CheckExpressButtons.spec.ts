@@ -1,6 +1,6 @@
 import { test } from '@fixtures/AcceptanceTest';
 
-test.skip('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, async ({
+test('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, async ({
     ShopCustomer,
     StorefrontProductDetail,
     StorefrontHeader,
@@ -10,12 +10,6 @@ test.skip('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, 
     CloseTheOffCanvasCart,
 
 }) => {
-    const country = await TestDataService.getDefaultData(TestDataService.defaultSalesChannel);
-    
-
-    
-    console.log('Defaults: ', country);
-    console.log('Default iso: ', TestDataService.defaultSalesChannel);
     
     const product = await TestDataService.createBasicProduct(
         {
@@ -42,7 +36,7 @@ test.skip('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, 
     await ShopCustomer.expects(await StorefrontOffCanvasCart.paypalButton('paylater')).toBeVisible();
 });
 
-test.skip('Check Express Buttons in Checkout Confirm', { tag: ['@Storefront'] }, async ({
+test('Check Express Buttons in Checkout Confirm', { tag: ['@Storefront'] }, async ({
     ShopCustomer,
     StorefrontProductDetail,
     StorefrontCheckoutConfirm,
@@ -82,37 +76,4 @@ test.skip('Check Express Buttons in Checkout Confirm', { tag: ['@Storefront'] },
     await ShopCustomer.expects(StorefrontCheckoutConfirm.cartActionsContainer).toBeVisible();
     await ShopCustomer.expects(StorefrontCheckoutConfirm.paypalButton('paypal')).toBeVisible();
     await ShopCustomer.expects(StorefrontCheckoutConfirm.paypalButton('paylater')).toBeVisible();
-});
-
-test('Check Admin', { tag: ['@Admin'] }, async ({
-    ShopAdmin,
-    AdminSalesChannelDetail,
-    TestDataService
-
-}) => {
-    const country = await TestDataService.getDefaultData(TestDataService.defaultSalesChannel);
-    
-
-    
-    console.log('Defaults: ', country);
-    console.log('Default iso: ', TestDataService.defaultSalesChannel);
-    
-    const product = await TestDataService.createBasicProduct(
-        {
-            price: [
-                {
-                    currencyId: TestDataService.defaultCurrencyId,
-                    gross: 50,
-                    linked: false,
-                    net: 42.01,
-                },
-            ],
-        },
-    );
-
-    await ShopAdmin.goesTo(AdminSalesChannelDetail.url(TestDataService.defaultSalesChannel.id));
-    await AdminSalesChannelDetail.page.waitForTimeout(10000);
-    await ShopAdmin.expects(AdminSalesChannelDetail.addDomainButton).toBeVisible();
-    
-    throw new Error('Not implemented');
 });
