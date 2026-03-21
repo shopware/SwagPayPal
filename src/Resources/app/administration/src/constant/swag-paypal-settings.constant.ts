@@ -110,6 +110,7 @@ export const SYSTEM_CONFIGS = [
     'SwagPayPal.settings.ecsButtonShape',
     'SwagPayPal.settings.ecsButtonLanguageIso',
     'SwagPayPal.settings.ecsShowPayLater',
+    'SwagPayPal.settings.ecsShippingCallbackEnabled',
 
     'SwagPayPal.settings.spbButtonColor',
     'SwagPayPal.settings.spbButtonShape',
