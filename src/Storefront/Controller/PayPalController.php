@@ -123,7 +123,7 @@ class PayPalController extends StorefrontController
         return new NoContentResponse();
     }
 
-    #[Route(path: '/paypal/express/shipping-callback/{token}', name: 'frontend.paypal.express.shipping_callback', methods: ['POST'], defaults: ['csrf_protected' => false])]
+    #[Route(path: '/paypal/express/shipping-callback/{salesChannelId}/{token}', name: 'frontend.paypal.express.shipping_callback', methods: ['POST'], defaults: ['csrf_protected' => false])]
     public function expressShippingCallback(Request $request, SalesChannelContext $context): Response
     {
         return $this->expressShippingCallbackRoute->handleCallback($request, $context);
