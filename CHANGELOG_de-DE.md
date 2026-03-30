@@ -1,3 +1,7 @@
+# 10.6.0
+- Fügt eine Einstellung hinzu, um den Versand-Callback für Express-Checkouts zu deaktivieren
+- Behebt ein Problem, bei dem der Versand-Callback die Offenlegung der Store-API erforderte
+
 # 10.5.0
 - Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
 
