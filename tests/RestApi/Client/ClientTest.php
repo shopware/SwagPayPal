@@ -14,7 +14,6 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\Client;
@@ -23,7 +22,6 @@ use Swag\PayPal\RestApi\Client\Client;
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(Client::class)]
 class ClientTest extends TestCase
 {
     protected TestHandler $logger;

@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
@@ -21,7 +20,6 @@ use Swag\PayPal\Test\Helper\CompatSchemaTrait;
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(Migration1706111604AddCustomerIdToVault::class)]
 class Migration1706111604AddCustomerIdToVaultTest extends TestCase
 {
     use CompatSchemaTrait;

@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Storefront\Framework\Cookie;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Cookie\Event\CookieGroupCollectEvent;
@@ -26,7 +25,6 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @internal
  */
-#[CoversClass(CookieProviderSubscriber::class)]
 #[Package('checkout')]
 class CookieProviderSubscriberTest extends TestCase
 {

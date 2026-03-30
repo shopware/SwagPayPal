@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Checkout\Payment\ScheduledTask;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -35,7 +34,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(TransactionStatusSyncTaskHandler::class)]
 class TransactionStatusSyncTaskHandlerTest extends TestCase
 {
     private EntityRepository&MockObject $orderTransactionRepository;

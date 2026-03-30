@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Checkout\Method;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
@@ -38,7 +37,6 @@ use Symfony\Component\HttpFoundation\Request;
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(GooglePayHandler::class)]
 class GooglePayHandlerTest extends TestCase
 {
     private MockObject&OrderResource $orderResource;

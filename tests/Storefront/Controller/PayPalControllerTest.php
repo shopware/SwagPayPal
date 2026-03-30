@@ -10,7 +10,6 @@ namespace Swag\PayPal\Test\Storefront\Controller;
 use Monolog\Handler\TestHandler;
 use Monolog\Level;
 use Monolog\Logger;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -35,7 +34,6 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 /**
  * @internal
  */
-#[CoversClass(PayPalController::class)]
 #[Package('checkout')]
 class PayPalControllerTest extends TestCase
 {

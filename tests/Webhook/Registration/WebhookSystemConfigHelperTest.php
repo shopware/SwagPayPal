@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Webhook\Registration;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +22,6 @@ use Swag\PayPal\Webhook\WebhookServiceInterface;
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(WebhookSystemConfigHelper::class)]
 class WebhookSystemConfigHelperTest extends TestCase
 {
     private const WEBHOOK_KEYS = [
