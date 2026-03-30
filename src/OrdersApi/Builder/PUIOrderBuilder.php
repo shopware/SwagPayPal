@@ -87,8 +87,7 @@ class PUIOrderBuilder extends AbstractAPMOrderBuilder
 
         $countryCodeMatches = [];
         $countryCode = '49';
-        \preg_match('/^(\+|00)(\d{1,3})\s+/', $phoneNumber, $countryCodeMatches);
-        if (!empty($countryCodeMatches) && isset($countryCodeMatches[2])) {
+        if (\preg_match('/^(\+|00)(\d{1,3})\s+/', $phoneNumber, $countryCodeMatches) === 1) {
             $countryCode = $countryCodeMatches[2];
         }
 
