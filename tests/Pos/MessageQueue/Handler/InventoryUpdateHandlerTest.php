@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\MessageQueue\Handler;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -28,6 +29,7 @@ use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
  * @internal
  */
 #[Package('checkout')]
+#[CoversClass(InventoryUpdateHandler::class)]
 class InventoryUpdateHandlerTest extends TestCase
 {
     use KernelTestBehaviour;

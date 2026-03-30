@@ -104,6 +104,9 @@ parameters:
                 - src/Pos/DataAbstractionLayer
                 - src/Reporting/DataAbstractionLayer
 
+        - # Shopware trunk classifies these plugin tests as non-Unit by namespace
+            identifier: shopware.unexpectedTestCovers
+
         - # v11.0.0 deprecation - addFundingAvailabilityDataToFooter will be removed
             identifier: method.deprecated
             message: '#Call to deprecated method addFundingAvailabilityDataToFooter\(\) of class Swag\\PayPal\\Storefront\\Data\\FundingSubscriber#'

@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Util;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\LogRecord;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
@@ -30,6 +31,7 @@ use Symfony\Component\Validator\ConstraintViolationList;
  * @internal
  */
 #[Package('checkout')]
+#[CoversClass(IntrospectionProcessor::class)]
 class IntrospectionProcessorTest extends TestCase
 {
     private const TRACE_MONOLOG = [

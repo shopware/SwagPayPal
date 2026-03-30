@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Payment\Service;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -24,6 +25,7 @@ use Swag\PayPal\SwagPayPal;
  * @internal
  */
 #[Package('checkout')]
+#[CoversClass(TransactionDataService::class)]
 class TransactionDataServiceTest extends TestCase
 {
     private EntityRepository&MockObject $transactionRepository;

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Storefront\Data\Service;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -37,6 +38,7 @@ use Symfony\Component\Routing\RouterInterface;
  * @internal
  */
 #[Package('checkout')]
+#[CoversClass(VenmoCheckoutDataService::class)]
 class VenmoCheckoutDataServiceTest extends TestCase
 {
     use CartTrait;

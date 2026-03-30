@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Storefront\Framework\Cookie;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -26,6 +27,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * @deprecated tag:v11.0.0 - Will be removed. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
  */
 #[Package('checkout')]
+#[CoversClass(PayPalCookieProvider::class)]
 class PayPalCookieProviderTest extends TestCase
 {
     private CookieProviderInterface&MockObject $cookieProvider;

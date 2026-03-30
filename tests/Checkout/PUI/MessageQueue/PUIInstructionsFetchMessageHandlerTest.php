@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\PUI\MessageQueue;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -28,6 +29,7 @@ use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
  * @internal
  */
 #[Package('checkout')]
+#[CoversClass(PUIInstructionsFetchMessageHandler::class)]
 class PUIInstructionsFetchMessageHandlerTest extends TestCase
 {
     private EntityRepository&MockObject $orderTransactionRepository;

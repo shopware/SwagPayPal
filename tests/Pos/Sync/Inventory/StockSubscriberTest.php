@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\Events\ProductStockAlteredEvent;
@@ -30,6 +31,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
  * @internal
  */
 #[Package('checkout')]
+#[CoversClass(StockSubscriber::class)]
 class StockSubscriberTest extends TestCase
 {
     use KernelTestBehaviour;

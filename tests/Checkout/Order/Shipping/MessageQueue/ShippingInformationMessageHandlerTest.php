@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Order\Shipping\MessageQueue;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -37,6 +38,7 @@ use Swag\PayPal\SwagPayPal;
  * @internal
  */
 #[Package('checkout')]
+#[CoversClass(ShippingInformationMessageHandler::class)]
 class ShippingInformationMessageHandlerTest extends TestCase
 {
     private EntityRepository&MockObject $orderDeliveryRepository;

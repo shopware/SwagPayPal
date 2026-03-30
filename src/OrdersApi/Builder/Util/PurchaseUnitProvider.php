@@ -86,10 +86,10 @@ class PurchaseUnitProvider
             $purchaseUnit->setCustomId($this->customIdProvider->createCustomId($orderTransaction, $context));
         }
 
-        $orderNumber = $order?->getOrderNumber();
-        if ($orderNumber !== null) {
+        if ($order !== null) {
+            $orderNumber = $order->getOrderNumber();
             $salesChannelId = $order->getSalesChannelId();
-            if ($this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelId)) {
+            if ($orderNumber !== null && $this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelId)) {
                 $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelId);
                 $orderNumberSuffix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_SUFFIX, $salesChannelId);
                 $orderNumber = $orderNumberPrefix . $orderNumber . $orderNumberSuffix;
