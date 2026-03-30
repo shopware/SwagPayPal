@@ -90,7 +90,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
                 $salesChannelContext->getSalesChannel()->getId()
             );
 
-            $cart = $this->cartService->getCart($newSalesChannelContext->getToken(), $salesChannelContext);
+            $cart = $this->cartService->getCart($newSalesChannelContext->getToken(), $salesChannelContext, taxed: true);
 
             $expressCheckoutData = new ExpressCheckoutData($paypalOrderId);
             $cart->addExtension(self::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, $expressCheckoutData);
