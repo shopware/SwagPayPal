@@ -27,6 +27,7 @@ use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
@@ -51,9 +52,12 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     private TestHandler $logger;
 
+    private PayPalClientFactoryMock $clientFactory;
+
     protected function setUp(): void
     {
         $this->logger = new TestHandler();
+        $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
     }
 
     public function testCreatePaymentWithZeroValueCart(): void
@@ -133,10 +137,8 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
 
-        $request = $this->getClient()->getLast();
-        static::assertNotNull($request);
-
-        $order = (new Order())->assign($request->getRequestBody() ?? []);
+        $data = $this->clientFactory->getClient()->getData();
+        $order = (new Order())->assign($data);
 
         $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
         static::assertNotNull($experienceContext);
@@ -162,10 +164,8 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
 
-        $request = $this->getClient()->getLast();
-        static::assertNotNull($request);
-
-        $order = (new Order())->assign($request->getRequestBody() ?? []);
+        $data = $this->clientFactory->getClient()->getData();
+        $order = (new Order())->assign($data);
 
         $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
         static::assertNotNull($experienceContext);
@@ -204,7 +204,7 @@ class ExpressCreateOrderRouteTest extends TestCase
         return new ExpressCreateOrderRoute(
             $this->getContainer()->get(CartService::class),
             $paypalOrderBuilder,
-            new OrderResource(new PayPalClientFactoryMock(new NullLogger())),
+            new OrderResource($this->clientFactory),
             $this->getContainer()->get(CartPriceService::class),
             $systemConfig,
             $this->createMock(RouterInterface::class),
