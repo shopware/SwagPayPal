@@ -1,3 +1,6 @@
+# 9.12.0
+- Fixes an issue, where the cart was not correctly detected as free, resulting in errors during the PayPal checkout (shopware/SwagPayPal#591)
+
 # 9.11.0
 - Added Austria to the countries where Pay Later is available
 

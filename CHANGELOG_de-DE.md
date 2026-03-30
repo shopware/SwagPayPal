@@ -1,3 +1,6 @@
+# 9.12.0
+- Behebt ein Problem, bei dem Warenkorbe nicht korrekt als kostenlos erkannt wurden, was zu Fehlern beim PayPal-Checkout führte (shopware/SwagPayPal#591)
+
 # 9.11.0
 - Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
 

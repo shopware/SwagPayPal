@@ -71,7 +71,7 @@ class CartValidator implements CartValidatorInterface
             return;
         }
 
-        if ($this->cartPriceService->isZeroValueCart($cart)) {
+        if ($this->cartPriceService->hasZeroPrice($cart, $context)) {
             $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
 
             return;

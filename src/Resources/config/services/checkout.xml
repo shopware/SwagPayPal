@@ -26,7 +26,9 @@
             <tag name="shopware.cart.validator"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
+        <service id="Swag\PayPal\Checkout\Cart\Service\CartPriceService">
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
+        </service>
 
         <service id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute" public="true">
             <argument type="service" id="monolog.logger.paypal"/>
