@@ -55,11 +55,11 @@ export default Shopware.Component.wrapComponentConfig({
             return this.ecsSettingsDisabled || !!this.settingsStore.getActual('SwagPayPal.settings.isLocalEnvironment');
         },
 
-        ecsShippingCallbackSettingTooltip(): { message: string; showOnDisabled?: boolean; disabled?: boolean } {
+        ecsShippingCallbackSettingTooltip(): { message: string; showOnDisabledElements?: boolean; disabled?: boolean } {
             if (this.settingsStore.getActual('SwagPayPal.settings.isLocalEnvironment')) {
                 return {
                     message: this.$t('swag-paypal-settings.express.ecsShippingCallbackSettingDisabledTooltip'),
-                    showOnDisabled: true,
+                    showOnDisabledElements: true,
                     disabled: false,
                 };
             }
