@@ -54,9 +54,11 @@
             "unknown": "Laden...",
             "missing": "Fehlend",
             "invalid": "Registriert, aber mit abweichender Domain",
-            "valid": "Gültig"
+            "valid": "Gültig",
+            "disabled": "Deaktiviert"
           },
-          "infoText": "Der Webhook dient dazu, den Status einer Transaktion asynchron zu aktualisieren. Falsch registrierte Webhooks, z.B. auf einem anderen oder nicht öffentlich zugänglichen Server, können zu unbestätigten Transaktionen führen, unabhängig davon, ob die Transaktion von PayPal verarbeitet wurde."
+          "infoText": "Der Webhook dient dazu, den Status einer Transaktion asynchron zu aktualisieren. Falsch registrierte Webhooks, z.B. auf einem anderen oder nicht öffentlich zugänglichen Server, können zu unbestätigten Transaktionen führen, unabhängig davon, ob die Transaktion von PayPal verarbeitet wurde.",
+          "tooltipDisabled": "Der Webhook kann nicht aktualisiert werden, da \"Lokale Entwicklungsumgebung\" aktiviert ist"
         },
         "cross-border": {
             "cardTitle": "Später bezahlen - Länderübergreifende Nachrichten",
@@ -301,6 +303,11 @@
                 "ecsShowPayLater": {
                     "label": "'Später Bezahlen' neben dem 'PayPal Checkout'-Button anzeigen",
                     "helpText": "Die Schaltfläche 'Später Bezahlen' wird auf denselben Seiten und im selben Design wie die Schaltfläche 'Direkt zu PayPal' angezeigt."
+                },
+                "ecsShippingCallbackEnabled": {
+                    "label": "Versandarten im PayPal-Dialog auswählbar",
+                    "helpText": "Wenn diese Option aktiviert ist, wird während des Express-Dialogs ein Callback implementiert, um die Versandkosten basierend auf der vom Kunden ausgewählten Versandart zu aktualisieren.",
+                    "tooltipDisabled": "Der Shipping Callback kann nicht aktiviert werden, da \"Lokale Entwicklungsumgebung\" aktiviert ist"
                 }
             },
             "installment": {

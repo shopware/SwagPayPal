@@ -180,6 +180,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '8.9.0', '<')) {
             $this->updateTo890($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.6.0', '<')) {
+            $this->updateTo1060();
+        }
     }
 
     private function updateTo130(): void
@@ -559,5 +563,10 @@ class Update
     private function updateTo890(Context $context): void
     {
         $this->paymentMethodInstaller->updateAllMedia($context);
+    }
+
+    private function updateTo1060(): void
+    {
+        $this->systemConfig->set(Settings::ECS_SHIPPING_CALLBACK_ENABLED, true);
     }
 }

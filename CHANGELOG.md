@@ -1,3 +1,7 @@
+# 8.11.0
+- Added setting to disable the shipping callback for express checkouts.
+- Fixes an issue, where the shiiping callback required the store-api to be exposed.
+
 # 8.10.0
 - Added Austria to the countries where Pay Later is available
 
