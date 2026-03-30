@@ -39,7 +39,7 @@ class CartPriceService
     }
 
     /**
-     * @deprecated tag:v12.0.0 - Will be removed and is replaced by {@see self::hasZeroPrice}
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::hasZeroPrice}
      */
     public function isZeroValueCart(Cart $cart): bool
     {

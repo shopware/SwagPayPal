@@ -20,16 +20,22 @@ class PriceFormatter
         'TWD' => 0,
     ];
 
-    public function formatPrice(float $price, ?string $currencyIso = null): string
+    /**
+     * @deprecated tag:v11.0.0 reason:parameter-type-change - `$countryCode` will be renamed to `$currencyIso`
+     */
+    public function formatPrice(float $price, ?string $countryCode = null): string
     {
-        $decimals = $this->getDecimals($currencyIso);
+        $decimals = $this->getDecimals($countryCode);
 
-        return \number_format($this->roundPrice($price, $currencyIso), $decimals, '.', '');
+        return \number_format($this->roundPrice($price, $countryCode), $decimals, '.', '');
     }
 
-    public function roundPrice(float $price, ?string $currencyIso = null): float
+    /**
+     * @deprecated tag:v11.0.0 reason:parameter-type-change - `$countryCode` will be renamed to `$currencyIso`
+     */
+    public function roundPrice(float $price, ?string $countryCode = null): float
     {
-        $decimals = $this->getDecimals($currencyIso);
+        $decimals = $this->getDecimals($countryCode);
 
         return \round($price, $decimals);
     }
