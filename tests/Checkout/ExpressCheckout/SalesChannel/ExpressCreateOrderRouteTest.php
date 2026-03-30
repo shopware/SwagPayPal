@@ -107,7 +107,6 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     public function testCreateWithShippingCallbackDisabled(): void
     {
-
         $salesChannelContext = $this->getSalesChannelContext();
 
         $response = $this->createRoute([Settings::ECS_SHIPPING_CALLBACK_ENABLED => false])->createPayPalOrder(new Request(), $salesChannelContext);
@@ -124,7 +123,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
         $router = $this->createMock(RouterInterface::class);
         $router
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('generate')
             ->with('store-api.paypal.express.shipping_callback')
             ->willReturn('generatedUrl');
@@ -150,7 +149,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
         $router = $this->createMock(RouterInterface::class);
         $router
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('generate')
             ->with('frontend.paypal.express.shipping_callback')
             ->willReturn('generatedUrl');
