@@ -55,7 +55,7 @@
         "init:storefront": "npm ci --no-audit --prefer-offline --prefix src/Resources/app/storefront",
         "lint:storefront": "@lint:storefront:ci --fix",
         "lint:storefront:ci": [
-            "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/.eslintrc.js ./src",
+            "cd src/Resources/app/storefront && if [ -f ../../../../../../../src/Storefront/Resources/app/storefront/eslint.config.js ]; then ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/eslint.config.js ./src; else ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/.eslintrc.js ./src; fi",
             "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/stylelint --config ../../../../../../../src/Storefront/Resources/app/storefront/stylelint.config.js ./src/scss"
         ],
         "phpunit": "../../../vendor/bin/phpunit",

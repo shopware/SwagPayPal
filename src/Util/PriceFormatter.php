@@ -22,15 +22,24 @@ class PriceFormatter
 
     public function formatPrice(float $price, ?string $countryCode = null): string
     {
-        $decimals = self::OTHER_DECIMALS[$countryCode] ?? self::DEFAULT_DECIMALS;
+        $decimals = $this->getDecimals($countryCode);
 
         return \number_format($this->roundPrice($price, $countryCode), $decimals, '.', '');
     }
 
     public function roundPrice(float $price, ?string $countryCode = null): float
     {
-        $decimals = self::OTHER_DECIMALS[$countryCode] ?? self::DEFAULT_DECIMALS;
+        $decimals = $this->getDecimals($countryCode);
 
         return \round($price, $decimals);
+    }
+
+    private function getDecimals(?string $countryCode): int
+    {
+        if ($countryCode === null) {
+            return self::DEFAULT_DECIMALS;
+        }
+
+        return self::OTHER_DECIMALS[$countryCode] ?? self::DEFAULT_DECIMALS;
     }
 }

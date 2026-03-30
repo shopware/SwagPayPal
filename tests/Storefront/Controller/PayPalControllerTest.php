@@ -36,8 +36,8 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 /**
  * @internal
  */
-#[CoversClass(PayPalController::class)]
 #[Package('checkout')]
+#[CoversClass(PayPalController::class)]
 class PayPalControllerTest extends TestCase
 {
     private AbstractCreateOrderRoute&MockObject $createOrderRoute;

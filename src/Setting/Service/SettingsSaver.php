@@ -55,7 +55,7 @@ class SettingsSaver implements SettingsSaverInterface
         }
 
         if ($information->getLiveCredentialsValid() || $information->getSandboxCredentialsValid()) {
-            $webhookErrors = $this->webhookSystemConfigHelper->checkWebhookBefore([$salesChannelId => $settings]);
+            $webhookErrors = $this->webhookSystemConfigHelper->checkWebhookBefore([($salesChannelId ?? '') => $settings]);
         }
 
         $this->systemConfigService->setMultiple($settings, $salesChannelId);
@@ -63,7 +63,7 @@ class SettingsSaver implements SettingsSaverInterface
         if ($information->getLiveCredentialsValid() || $information->getSandboxCredentialsValid()) {
             $webhookErrors = \array_merge(
                 $webhookErrors ?? [],
-                $this->webhookSystemConfigHelper->checkWebhookAfter([$salesChannelId]),
+                $this->webhookSystemConfigHelper->checkWebhookAfter([$salesChannelId ?? '']),
             );
         }
 
