@@ -96,6 +96,17 @@ parameters:
             identifier: method.deprecated
             message: '#(setActiveBillingAddress|setActiveShippingAddress).*Shopware\\Core\\Checkout\\Customer\\CustomerEntity.*#'
 
+        - # 6.8 deprecation - DAL field API will return static natively
+            identifier: method.deprecated
+            message: '#Call to deprecated method (addFlags|removeFlag)\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Field\\Field\:\s+tag\:v6\.8\.0 - reason\:return-type-change - Will return static natively#'
+            paths:
+                - src/DataAbstractionLayer
+                - src/Pos/DataAbstractionLayer
+                - src/Reporting/DataAbstractionLayer
+
+        - # Shopware trunk classifies these plugin tests as non-Unit by namespace
+            identifier: shopware.unexpectedTestCovers
+
         - # v11.0.0 deprecation - addFundingAvailabilityDataToFooter will be removed
             identifier: method.deprecated
             message: '#Call to deprecated method addFundingAvailabilityDataToFooter\(\) of class Swag\\PayPal\\Storefront\\Data\\FundingSubscriber#'
