@@ -20,26 +20,26 @@ class PriceFormatter
         'TWD' => 0,
     ];
 
-    public function formatPrice(float $price, ?string $countryCode = null): string
+    public function formatPrice(float $price, ?string $currencyIso = null): string
     {
-        $decimals = $this->getDecimals($countryCode);
+        $decimals = $this->getDecimals($currencyIso);
 
-        return \number_format($this->roundPrice($price, $countryCode), $decimals, '.', '');
+        return \number_format($this->roundPrice($price, $currencyIso), $decimals, '.', '');
     }
 
-    public function roundPrice(float $price, ?string $countryCode = null): float
+    public function roundPrice(float $price, ?string $currencyIso = null): float
     {
-        $decimals = $this->getDecimals($countryCode);
+        $decimals = $this->getDecimals($currencyIso);
 
         return \round($price, $decimals);
     }
 
-    private function getDecimals(?string $countryCode): int
+    private function getDecimals(?string $currencyIso): int
     {
-        if ($countryCode === null) {
+        if ($currencyIso === null) {
             return self::DEFAULT_DECIMALS;
         }
 
-        return self::OTHER_DECIMALS[$countryCode] ?? self::DEFAULT_DECIMALS;
+        return self::OTHER_DECIMALS[$currencyIso] ?? self::DEFAULT_DECIMALS;
     }
 }
