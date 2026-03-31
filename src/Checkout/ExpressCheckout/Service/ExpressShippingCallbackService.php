@@ -68,6 +68,7 @@ class ExpressShippingCallbackService
 
         if ((int) $order->getPurchaseUnits()->first()?->getShippingOptions()?->count() === 0) {
             $this->logger->debug('Shipping callback: no shipping methods available', ['order' => $order]);
+
             throw ExpressShippingCallbackException::addressError($callback);
         }
 
@@ -114,6 +115,7 @@ class ExpressShippingCallbackService
         $country = $this->countryRepository->search($criteria, $salesChannelContext)->getEntities()->first();
         if (!$country) {
             $this->logger->debug('Shipping callback: country not available');
+
             throw ExpressShippingCallbackException::countryError($callback);
         }
 
