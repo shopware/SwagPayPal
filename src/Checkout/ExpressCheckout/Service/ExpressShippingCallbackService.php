@@ -66,10 +66,12 @@ class ExpressShippingCallbackService
         $order->getPurchaseUnits()->first()?->setShippingOptions($this->shippingOptionsProvider->getShippingOptions($cart, $salesChannelContext));
 
         if ((int) $order->getPurchaseUnits()->first()?->getShippingOptions()?->count() === 0) {
+            $this->logger->debug('Shipping callback: no shipping methods available', ['order' => $order]);
             throw ExpressShippingCallbackException::addressError($callback);
         }
 
         if ($error = $cart->getErrors()->filterInstance(ShippingMethodBlockedError::class)->first()) {
+            $this->logger->debug('Shipping callback: selected shipping method blocked', ['order' => $order]);
             /** @var ShippingMethodBlockedError $error */
             throw ExpressShippingCallbackException::methodUnavailable($callback, $error);
         }
@@ -110,6 +112,7 @@ class ExpressShippingCallbackService
 
         $country = $this->countryRepository->search($criteria, $salesChannelContext)->getEntities()->first();
         if (!$country) {
+            $this->logger->debug('Shipping callback: country not available');
             throw ExpressShippingCallbackException::countryError($callback);
         }
 

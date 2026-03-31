@@ -52,6 +52,12 @@
         path="SwagPayPal.settings.ecsShowPayLater"
         :disabled="ecsSettingsDisabled"
     />
+
+    <swag-paypal-setting
+        v-tooltip="ecsShippingCallbackSettingTooltip"
+        path="SwagPayPal.settings.ecsShippingCallbackEnabled"
+        :disabled="ecsShippingCallbackSettingDisabled"
+    />
 </sw-card>
 
 <sw-card

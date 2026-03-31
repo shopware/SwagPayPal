@@ -55,7 +55,8 @@
             "unknown": "Laden ...",
             "missing": "Fehlend",
             "invalid": "Registriert, aber mit abweichender Domain",
-            "valid": "Gültig"
+            "valid": "Gültig",
+            "disabled": "Deaktiviert"
           },
           "infoText": "Der Webhook dient dazu, den Status einer Transaktion asynchron zu aktualisieren. Falsch registrierte Webhooks, z.B. auf einem anderen oder nicht öffentlich zugänglichen Server, können zu unbestätigten Transaktionen führen, unabhängig davon, ob die Transaktion von PayPal verarbeitet wurde."
         },

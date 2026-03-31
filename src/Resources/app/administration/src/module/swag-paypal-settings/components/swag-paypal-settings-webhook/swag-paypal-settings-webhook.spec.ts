@@ -17,6 +17,8 @@ async function createWrapper() {
                         status: jest.fn(() => Promise.resolve({ result: null })),
                         register: jest.fn(() => Promise.resolve()),
                     },
+                    SwagPayPalSettingsService: {},
+                    settingsStoreSavingSettings: Shopware.Vue.ref('none'),
                 },
                 stubs: {
                     'sw-button': await wrapTestComponent('sw-button', { sync: true }),
@@ -147,5 +149,18 @@ describe('swag-paypal-settings-webhook', () => {
 
         expect(wrapper.vm.status).toBe('refreshing');
         expect(wrapper.vm.createNotificationError).toBeCalled();
+    });
+
+    it('should fetch webhook status on save', async () => {
+        const wrapper = await createWrapper();
+
+        const spyFetch = jest.spyOn(wrapper.vm, 'fetchWebhookStatus');
+
+        // @ts-expect-error - property does exist, it got injected
+        wrapper.vm.settingsStoreSavingSettings = 'success';
+
+        await wrapper.vm.$nextTick();
+
+        expect(spyFetch).toHaveBeenCalled();
     });
 });

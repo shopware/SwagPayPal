@@ -294,7 +294,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     public function mapShippingCallbackContextToken(ControllerEvent $event): void
     {
-        if ($event->getRequest()->attributes->get('_route') !== 'store-api.paypal.express.shipping_callback') {
+        if (!\in_array($event->getRequest()->attributes->get('_route'), ['store-api.paypal.express.shipping_callback', 'frontend.paypal.express.shipping_callback'], true)) {
             return;
         }
 

@@ -24,6 +24,7 @@
     </span>
 
     <sw-button
+        v-tooltip="refreshTooltip"
         class="swag-paypal-settings-webhook__refresh-button"
         variant=""
         :disabled="status !== 'none' || !allowRefresh || !acl.can('swag_paypal.editor')"
