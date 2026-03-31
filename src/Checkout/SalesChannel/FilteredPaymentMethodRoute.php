@@ -97,7 +97,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
             return $response;
         }
         $cart = $this->cartService->getCart($context->getToken(), $context);
-        if ($this->cartPriceService->isZeroValueCart($cart)) {
+        if ($this->cartPriceService->hasZeroPrice($cart, $context)) {
             $this->removeAllPaymentMethods($response->getPaymentMethods());
 
             return $response;

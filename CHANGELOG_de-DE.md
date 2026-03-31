@@ -3,6 +3,7 @@
 - Behebt ein Problem, bei dem der Versand-Callback die Offenlegung der Store-API erforderte
 - Behebt ein Problem, bei dem die PayPal-Bestellerstellung und Express-Checkout-Flows nicht den besteuerten Warenkorb mit Tax-Provider-Verarbeitung verwendet haben
 - Behebt ein Problem, bei dem PayPal-Webhooks mit einem `custom_id`-Payload ohne `orderTransactionId` eine Warnung wegen eines undefinierten Array-Keys ausloesen konnten
+- Behebt ein Problem, bei dem Warenkorbe nicht korrekt als kostenlos erkannt wurden, was zu Fehlern beim PayPal-Checkout führte (shopware/SwagPayPal#591)
 
 # 9.11.0
 - Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist

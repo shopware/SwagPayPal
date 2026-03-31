@@ -47,6 +47,7 @@ use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -98,7 +99,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $this->paymentMethodUtil,
             $this->systemConfigService,
             new CredentialsUtil($this->systemConfigService),
-            new CartPriceService(),
+            new CartPriceService(new PriceFormatter()),
             $this->payLaterMethodData
         );
 

@@ -106,6 +106,10 @@ parameters:
             paths:
                 - src/Checkout/TokenResponse.php
 
+        - # Only name change
+          message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
+          path: '**/*.php'
+
 services:
     -   # register the class, so we can decorate it, but don't tag it as a rule, so only our decorator is used by PHPStan
         class: Symplify\PHPStanRules\Rules\NoReturnSetterMethodRule
