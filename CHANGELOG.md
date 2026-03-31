@@ -1,3 +1,6 @@
+# 9.12.0
+- Fixes an issue, where PayPal webhooks with a `custom_id` payload that does not contain an `orderTransactionId` could trigger an undefined array key warning
+
 # 9.11.0
 - Added Austria to the countries where Pay Later is available
 
