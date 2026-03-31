@@ -138,7 +138,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
     ): Order {
-        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
 
         return $orderBuilder->getOrderFromCart($cart, $salesChannelContext, $requestDataBag);
     }
