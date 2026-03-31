@@ -1,4 +1,5 @@
 # 8.11.0
+- Fixes an issue, where PayPal order creation and express checkout flows did not use the taxed cart with tax provider processing
 - Fixes an issue, where PayPal webhooks with a `custom_id` payload that does not contain an `orderTransactionId` could trigger an undefined array key warning
 
 # 8.10.0
