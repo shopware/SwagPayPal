@@ -66,7 +66,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
     {
         try {
             $this->logger->debug('Started');
-            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
             $this->logger->debug('Building order');
             $order = $this->paypalOrderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag($request->request->all()));
             $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
