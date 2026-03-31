@@ -1,4 +1,5 @@
 # 10.6.0
+- Behebt ein Problem, bei dem PayPal-Webhooks mit einem `custom_id`-Payload ohne `orderTransactionId` eine Warnung wegen eines undefinierten Array-Keys ausloesen konnten
 - Fügt eine Einstellung hinzu, um den Versand-Callback für Express-Checkouts zu deaktivieren
 - Behebt ein Problem, bei dem der Versand-Callback die Offenlegung der Store-API erforderte
 

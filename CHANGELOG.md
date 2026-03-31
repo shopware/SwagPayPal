@@ -1,4 +1,5 @@
 # 10.6.0
+- Fixes an issue, where PayPal webhooks with a `custom_id` payload that does not contain an `orderTransactionId` could trigger an undefined array key warning
 - Added setting to disable the shipping callback for express checkouts.
 - Fixes an issue, where the shiiping callback required the store-api to be exposed.
 
