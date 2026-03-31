@@ -143,6 +143,11 @@ parameters:
                 - src/Migration/Migration1675420139AddManagerDataToRun.php
                 - src/Migration/Migration1626082072AddStatusAndMessageCountToRun.php
 
+        - # Only name change
+          identifier: method.deprecated
+          message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
+          path: '**/*.php'
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule

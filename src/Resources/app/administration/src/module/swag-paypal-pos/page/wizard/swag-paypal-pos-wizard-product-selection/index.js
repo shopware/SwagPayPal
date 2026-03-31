@@ -104,9 +104,12 @@ Component.register('swag-paypal-pos-wizard-product-selection', {
 
         updateClone() {
             this.$emit('update-clone-sales-channel', null);
-            this.forceUpdate();
+            this.updateButtons();
         },
 
+        /**
+         * @deprecated tag:v11.0.0 - will be removed without replacement
+         */
         forceUpdate() {
             this.$forceUpdate();
             this.updateButtons();

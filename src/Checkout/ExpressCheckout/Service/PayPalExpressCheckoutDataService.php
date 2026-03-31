@@ -57,7 +57,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService
             return null;
         }
 
-        if (!$addProductToCart && $this->cartPriceService->isZeroValueCart($cart)) {
+        if (!$addProductToCart && $this->cartPriceService->hasZeroPrice($cart, $salesChannelContext)) {
             return null;
         }
 
