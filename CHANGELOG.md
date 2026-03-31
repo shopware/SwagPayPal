@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where PayPal order creation and express checkout flows did not use the taxed cart with tax provider processing
+
 # 8.10.0
 - Added Austria to the countries where Pay Later is available
 

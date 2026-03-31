@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem die PayPal-Bestellerstellung und Express-Checkout-Flows nicht den besteuerten Warenkorb mit Tax-Provider-Verarbeitung verwendet haben
+
 # 8.10.0
 - Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
 
