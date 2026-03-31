@@ -1,9 +1,7 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Behebt ein Problem, bei dem POS-Token nicht aus dem Cache abgerufen werden konnten (shopware/SwagPayPal#594).
-
 # 10.6.0
 - Fügt eine Einstellung hinzu, um den Versand-Callback für Express-Checkouts zu deaktivieren
 - Behebt ein Problem, bei dem der Versand-Callback die Offenlegung der Store-API erforderte
+- Behebt ein Problem, bei dem die Zettle-Verbindung nur für einige Stunden funktionierte (shopware/SwagPayPal#594)
 
 # 10.5.0
 - Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
