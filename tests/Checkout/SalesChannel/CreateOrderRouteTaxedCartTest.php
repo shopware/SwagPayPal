@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Checkout\SalesChannel;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\AbstractCartPersister;
@@ -23,7 +22,6 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Cart\TaxProvider\TaxProviderProcessor;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Order\SalesChannel\AbstractSetPaymentOrderRoute;
 use Shopware\Core\Checkout\Payment\Cart\AbstractPaymentTransactionStructFactory;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -43,7 +41,6 @@ use Symfony\Component\HttpFoundation\Request;
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(CreateOrderRoute::class)]
 class CreateOrderRouteTaxedCartTest extends TestCase
 {
     public function testCreatePaymentLoadsTaxedCartThroughCartLoadRoute(): void
@@ -87,7 +84,6 @@ class CreateOrderRouteTaxedCartTest extends TestCase
             $this->createMock(OrderResource::class),
             new NullLogger(),
             $this->createMock(AbstractPaymentTransactionStructFactory::class),
-            $this->createMock(AbstractSetPaymentOrderRoute::class),
         );
 
         static::expectExceptionObject($exception);

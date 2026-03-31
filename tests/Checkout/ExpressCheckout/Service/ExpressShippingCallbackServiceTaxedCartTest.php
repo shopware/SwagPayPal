@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\Service;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\AbstractCartPersister;
@@ -49,7 +48,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(ExpressShippingCallbackService::class)]
 class ExpressShippingCallbackServiceTaxedCartTest extends TestCase
 {
     public function testCalculationWithoutChangesLoadsTaxedCartThroughCartLoadRoute(): void

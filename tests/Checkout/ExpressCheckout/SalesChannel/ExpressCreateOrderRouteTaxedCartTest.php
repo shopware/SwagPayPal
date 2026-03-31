@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\AbstractCartPersister;
@@ -25,8 +24,6 @@ use Shopware\Core\Checkout\Cart\TaxProvider\TaxProviderProcessor;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
-use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -38,7 +35,6 @@ use Symfony\Component\Routing\RouterInterface;
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(ExpressCreateOrderRoute::class)]
 class ExpressCreateOrderRouteTaxedCartTest extends TestCase
 {
     public function testCreatePaymentLoadsTaxedCartThroughCartLoadRoute(): void
@@ -56,24 +52,25 @@ class ExpressCreateOrderRouteTaxedCartTest extends TestCase
             ->method('process')
             ->with($cart, $salesChannelContext);
 
-        $cartPriceService = $this->createMock(CartPriceService::class);
-        $cartPriceService
+        $exception = new \RuntimeException('stop after taxed cart load');
+
+        $payPalOrderBuilder = $this->createMock(PayPalOrderBuilder::class);
+        $payPalOrderBuilder
             ->expects(static::once())
-            ->method('isZeroValueCart')
-            ->with($cart)
-            ->willReturn(true);
+            ->method('getOrderFromCart')
+            ->with($cart, $salesChannelContext, static::isInstanceOf(RequestDataBag::class))
+            ->willThrowException($exception);
 
         $route = new ExpressCreateOrderRoute(
             $this->createTaxedCartService($cart, $salesChannelContext, $taxProviderProcessor),
-            $this->createMock(PayPalOrderBuilder::class),
+            $payPalOrderBuilder,
             $this->createMock(OrderResource::class),
-            $cartPriceService,
             $this->createMock(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
             new NullLogger(),
         );
 
-        static::expectException(OrderZeroValueException::class);
+        static::expectExceptionObject($exception);
 
         $route->createPayPalOrder(new Request(), $salesChannelContext);
     }

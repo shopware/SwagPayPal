@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\AbstractCartPersister;
@@ -29,6 +28,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -38,7 +38,6 @@ use Symfony\Component\HttpFoundation\Request;
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(ExpressPrepareCheckoutRoute::class)]
 class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
 {
     public function testPrepareLoadsTaxedCartThroughCartLoadRoute(): void
@@ -94,7 +93,7 @@ class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
         );
 
         $response = $route->prepareCheckout($salesChannelContext, new Request([], [
-            ExpressPrepareCheckoutRoute::PAYPAL_REQUEST_PARAMETER_TOKEN => 'paypal-order-id',
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => 'paypal-order-id',
         ]));
 
         static::assertSame($newToken, $response->getToken());
