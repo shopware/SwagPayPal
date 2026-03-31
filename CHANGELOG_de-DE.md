@@ -1,4 +1,5 @@
 # 8.10.0
+- Behebt ein Problem, bei dem PayPal-Webhooks mit einem `custom_id`-Payload ohne `orderTransactionId` eine Warnung wegen eines undefinierten Array-Keys ausloesen konnten
 - Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
 
 # 8.9.2
