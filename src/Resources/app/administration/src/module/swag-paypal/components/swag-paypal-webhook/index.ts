@@ -5,6 +5,7 @@ import './swag-paypal-webhook.scss';
 const STATUS_WEBHOOK_MISSING = 'missing';
 const STATUS_WEBHOOK_INVALID = 'invalid';
 const STATUS_WEBHOOK_VALID = 'valid';
+const STATUS_WEBHOOK_DISABLED = 'disabled';
 
 export default Shopware.Component.wrapComponentConfig({
     template,
@@ -68,6 +69,21 @@ export default Shopware.Component.wrapComponentConfig({
         allowRefresh(): boolean {
             return [STATUS_WEBHOOK_INVALID, STATUS_WEBHOOK_MISSING]
                 .includes(this.webhookStatus ?? '');
+        },
+
+        refreshTooltip(): { message: string; showOnDisabledElements?: boolean; disabled?: boolean } {
+            if (this.webhookStatus === STATUS_WEBHOOK_DISABLED) {
+                return {
+                    message: this.$t('swag-paypal.webhook.tooltipDisabled'),
+                    showOnDisabledElements: true,
+                    disabled: false,
+                };
+            }
+
+            return {
+                message: '',
+                disabled: true,
+            };
         },
     },
 

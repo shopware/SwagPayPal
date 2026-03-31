@@ -24,6 +24,7 @@ use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Framework\AffiliateTracking\AffiliateTrackingListener;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsResponse;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
@@ -54,6 +55,7 @@ class PayPalController extends StorefrontController
         private readonly AbstractPUIPaymentInstructionsRoute $puiPaymentInstructionsRoute,
         private readonly AbstractExpressPrepareCheckoutRoute $expressPrepareCheckoutRoute,
         private readonly AbstractExpressCreateOrderRoute $expressCreateOrderRoute,
+        private readonly AbstractExpressShippingCallbackRoute $expressShippingCallbackRoute,
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly AbstractCartDeleteRoute $cartDeleteRoute,
         private readonly AbstractClearVaultRoute $clearVaultRoute,
@@ -119,6 +121,12 @@ class PayPalController extends StorefrontController
         }
 
         return new NoContentResponse();
+    }
+
+    #[Route(path: '/paypal/express/shipping-callback/{salesChannelId}/{token}', name: 'frontend.paypal.express.shipping_callback', methods: ['POST'], defaults: ['csrf_protected' => false])]
+    public function expressShippingCallback(Request $request, SalesChannelContext $context): Response
+    {
+        return $this->expressShippingCallbackRoute->handleCallback($request, $context);
     }
 
     #[Route(path: '/paypal/vault/clear', name: 'frontend.paypal.vault.clear', methods: ['GET'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
