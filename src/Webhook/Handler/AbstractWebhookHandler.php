@@ -83,7 +83,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         if (!\is_array($customIdArray)) {
             $orderTransactionId = $customId;
         } else {
-            $orderTransactionId = $customIdArray['orderTransactionId'];
+            $orderTransactionId = $customIdArray['orderTransactionId'] ?? null;
         }
 
         if ($orderTransactionId === null) {
