@@ -1,4 +1,8 @@
 # 9.12.0
+- Added setting to disable the shipping callback for express checkouts.
+- Fixes an issue, where the shiiping callback required the store-api to be exposed.
+- Fixes an issue, where PayPal order creation and express checkout flows did not use the taxed cart with tax provider processing
+- Fixes an issue, where PayPal webhooks with a `custom_id` payload that does not contain an `orderTransactionId` could trigger an undefined array key warning
 - Fixes an issue, where the cart was not correctly detected as free, resulting in errors during the PayPal checkout (shopware/SwagPayPal#591)
 
 # 9.11.0

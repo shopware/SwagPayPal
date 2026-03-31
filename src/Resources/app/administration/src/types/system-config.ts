@@ -39,6 +39,7 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.ecsButtonLanguageIso'?: string | null;
 
     'SwagPayPal.settings.ecsShowPayLater'?: boolean;
+    'SwagPayPal.settings.ecsShippingCallbackEnabled'?: boolean;
     'SwagPayPal.settings.spbButtonColor'?: typeof BUTTON_COLORS[number];
     'SwagPayPal.settings.spbButtonShape'?: typeof BUTTON_SHAPES[number];
     'SwagPayPal.settings.spbButtonLanguageIso'?: string | null;
@@ -107,6 +108,7 @@ export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'boolean' 
     'SwagPayPal.settings.ecsButtonLanguageIso': 'string',
 
     'SwagPayPal.settings.ecsShowPayLater': 'boolean',
+    'SwagPayPal.settings.ecsShippingCallbackEnabled': 'boolean',
     'SwagPayPal.settings.spbButtonColor': 'string',
     'SwagPayPal.settings.spbButtonShape': 'string',
     'SwagPayPal.settings.spbButtonLanguageIso': 'string',

@@ -203,6 +203,27 @@
             </template>
         </swag-paypal-inherit-wrapper>
         {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_express_settings_shipping_callback_enabled %}
+        <swag-paypal-inherit-wrapper
+            v-bind="{ actualConfigData, allConfigs, selectedSalesChannelId }"
+            path="SwagPayPal.settings.ecsShippingCallbackEnabled"
+        >
+            <template #content="props">
+                <sw-switch-field
+                    v-tooltip="ecsShippingCallbackSettingTooltip"
+                    name="SwagPayPal.settings.ecsShippingCallbackEnabled"
+                    bordered
+                    :mapInheritance="props"
+                    :label="$tc('swag-paypal-setting.label.ecsShippingCallbackEnabled')"
+                    :helpText="$tc('swag-paypal-setting.helpText.ecsShippingCallbackEnabled')"
+                    :disabled="props.isInherited || ecsShippingCallbackSettingDisabled"
+                    :value="props.currentValue"
+                    @update:value="props.updateCurrentValue"
+                />
+            </template>
+        </swag-paypal-inherit-wrapper>
+        {% endblock %}
     </div>
     {% endblock %}
 </sw-card>

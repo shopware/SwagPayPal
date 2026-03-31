@@ -10,6 +10,12 @@ export default Shopware.Mixin.register('swag-paypal-settings', Shopware.Componen
         Shopware.Mixin.getByName('swag-paypal-notification'),
     ],
 
+    provide() {
+        return {
+            settingsStoreSavingSettings: Shopware.Vue.computed(() => this.savingSettings),
+        };
+    },
+
     data(): {
         savingSettings: 'none' | 'loading' | 'success';
     } {
