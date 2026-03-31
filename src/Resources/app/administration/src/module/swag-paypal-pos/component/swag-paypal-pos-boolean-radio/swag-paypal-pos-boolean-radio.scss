@@ -15,6 +15,11 @@
         }
     }
 
+    &.sw-field--radio .sw-field__radio-option-label {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
     .sw-field__radio-option-checked {
         background-color: transparentize($color-shopware-brand-500, 0.95);
         border: 1px solid $color-shopware-brand-500;
