@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 9.12.0
 - Fixes an issue, where PayPal webhooks with a `custom_id` payload that does not contain an `orderTransactionId` could trigger an undefined array key warning
 
 # 9.11.0
