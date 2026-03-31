@@ -70,7 +70,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
     {
         try {
             $this->logger->debug('Started');
-            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
 
             if ($this->cartPriceService->hasZeroPrice($cart, $salesChannelContext)) {
                 throw new OrderZeroValueException();
