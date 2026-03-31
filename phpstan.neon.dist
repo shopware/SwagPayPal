@@ -107,7 +107,6 @@ parameters:
                 - src/Checkout/TokenResponse.php
 
         - # Only name change
-          identifier: method.deprecated
           message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
           path: '**/*.php'
 
