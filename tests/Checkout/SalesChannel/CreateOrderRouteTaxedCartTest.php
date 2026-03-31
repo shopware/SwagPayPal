@@ -23,7 +23,6 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Cart\TaxProvider\TaxProviderProcessor;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Order\SalesChannel\AbstractSetPaymentOrderRoute;
 use Shopware\Core\Checkout\Payment\Cart\AbstractPaymentTransactionStructFactory;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -87,7 +86,6 @@ class CreateOrderRouteTaxedCartTest extends TestCase
             $this->createMock(OrderResource::class),
             new NullLogger(),
             $this->createMock(AbstractPaymentTransactionStructFactory::class),
-            $this->createMock(AbstractSetPaymentOrderRoute::class),
         );
 
         static::expectExceptionObject($exception);
