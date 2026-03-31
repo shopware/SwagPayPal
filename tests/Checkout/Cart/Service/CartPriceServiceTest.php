@@ -115,6 +115,6 @@ class CartPriceServiceTest extends TestCase
         $currency = new CurrencyEntity();
         $currency->setIsoCode($currencyIso);
 
-        return Generator::generateSalesChannelContext(currency: $currency);
+        return Generator::createSalesChannelContext(currency: $currency);
     }
 }
