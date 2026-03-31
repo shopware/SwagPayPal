@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 9.12.0
 - Fixes an issue, where PayPal order creation and express checkout flows did not use the taxed cart with tax provider processing
 
 # 9.11.0
