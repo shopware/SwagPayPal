@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 8.11.0
 - Behebt ein Problem, bei dem die PayPal-Bestellerstellung und Express-Checkout-Flows nicht den besteuerten Warenkorb mit Tax-Provider-Verarbeitung verwendet haben
 
 # 8.10.0
