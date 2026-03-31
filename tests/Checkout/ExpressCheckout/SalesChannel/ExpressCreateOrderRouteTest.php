@@ -207,7 +207,7 @@ class ExpressCreateOrderRouteTest extends TestCase
             new OrderResource($this->clientFactory),
             $this->getContainer()->get(CartPriceService::class),
             $systemConfig,
-            $this->createMock(RouterInterface::class),
+            $router,
             new Logger('test', [$this->logger]),
         );
     }
