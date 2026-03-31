@@ -33,16 +33,16 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Struct\V2\Common\Address;
-use Shopware\PayPalSDK\Struct\V2\Order;
-use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit;
-use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\ShippingOption;
-use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\ShippingOptionCollection;
-use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnitCollection;
-use Shopware\PayPalSDK\Struct\V2\OrderShippingCallback;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
+use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ShippingOption;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ShippingOptionCollection;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
+use Swag\PayPal\RestApi\V2\Api\OrderShippingCallback;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
