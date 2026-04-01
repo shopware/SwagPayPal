@@ -85,20 +85,20 @@ class SettingsSaverTest extends TestCase
         $this->webhookSystemConfigHelper
             ->expects($this->exactly((int) ($liveValid || $sandboxValid)))
             ->method('checkWebhookBefore')
-            ->with([$salesChannelId => $newSettings])
+            ->with([($salesChannelId ?? '') => $newSettings])
             ->willReturn([]);
 
         $this->webhookSystemConfigHelper
             ->expects($liveValid || $sandboxValid ? $this->once() : $this->never())
             ->method('checkWebhookAfter')
-            ->with([$salesChannelId])
+            ->with([$salesChannelId ?? ''])
             ->willReturn([]);
 
         $this->systemConfigService
             ->expects($this->atLeast(6))
             ->method('get')
             ->willReturnCallback(static function (string $key, ?string $salesChannelId) use ($oldSettings) {
-                return $oldSettings[$salesChannelId][$key] ?? null;
+                return $oldSettings[$salesChannelId ?? ''][$key] ?? null;
             });
 
         $this->systemConfigService
@@ -146,7 +146,7 @@ class SettingsSaverTest extends TestCase
     {
         yield 'save simple settings' => [
             'newSettings' => [Settings::BRAND_NAME => 'testBrandName'],
-            'oldSettings' => [null => []],
+            'oldSettings' => ['' => []],
             'salesChannelId' => null,
             'liveChanged' => false,
             'liveValid' => null,
@@ -156,7 +156,7 @@ class SettingsSaverTest extends TestCase
 
         yield 'added live credentials' => [
             'newSettings' => self::VALID_LIVE_CREDENTIALS_1,
-            'oldSettings' => [null => []],
+            'oldSettings' => ['' => []],
             'salesChannelId' => null,
             'liveChanged' => true,
             'liveValid' => true,
@@ -166,7 +166,7 @@ class SettingsSaverTest extends TestCase
 
         yield 'added sandbox credentials' => [
             'newSettings' => self::VALID_SANDBOX_CREDENTIALS_1,
-            'oldSettings' => [null => []],
+            'oldSettings' => ['' => []],
             'salesChannelId' => null,
             'liveChanged' => false,
             'liveValid' => null,
@@ -179,7 +179,7 @@ class SettingsSaverTest extends TestCase
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
             ],
-            'oldSettings' => [null => []],
+            'oldSettings' => ['' => []],
             'salesChannelId' => null,
             'liveChanged' => true,
             'liveValid' => true,
@@ -192,7 +192,7 @@ class SettingsSaverTest extends TestCase
                 ...self::VALID_LIVE_CREDENTIALS_2,
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
             ],
-            'oldSettings' => [null => [
+            'oldSettings' => ['' => [
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
             ]],
@@ -208,7 +208,7 @@ class SettingsSaverTest extends TestCase
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 ...self::VALID_SANDBOX_CREDENTIALS_2,
             ],
-            'oldSettings' => [null => [
+            'oldSettings' => ['' => [
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
             ]],
@@ -224,7 +224,7 @@ class SettingsSaverTest extends TestCase
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
             ],
-            'oldSettings' => [null => [
+            'oldSettings' => ['' => [
                 ...self::VALID_LIVE_CREDENTIALS_2,
                 ...self::VALID_SANDBOX_CREDENTIALS_2,
             ]],
@@ -241,7 +241,7 @@ class SettingsSaverTest extends TestCase
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
                 Settings::CLIENT_ID => null,
             ],
-            'oldSettings' => [null => [
+            'oldSettings' => ['' => [
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
             ]],
@@ -258,7 +258,7 @@ class SettingsSaverTest extends TestCase
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
                 Settings::CLIENT_ID_SANDBOX => null,
             ],
-            'oldSettings' => [null => [
+            'oldSettings' => ['' => [
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
             ]],
@@ -276,7 +276,7 @@ class SettingsSaverTest extends TestCase
                 Settings::CLIENT_ID => null,
                 Settings::CLIENT_ID_SANDBOX => null,
             ],
-            'oldSettings' => [null => [
+            'oldSettings' => ['' => [
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
             ]],
@@ -291,7 +291,7 @@ class SettingsSaverTest extends TestCase
             'newSettings' => [
                 Settings::CLIENT_ID => 'valid-client-id',
             ],
-            'oldSettings' => [null => [
+            'oldSettings' => ['' => [
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 Settings::CLIENT_ID => null,
             ]],
@@ -306,7 +306,7 @@ class SettingsSaverTest extends TestCase
             'newSettings' => [
                 Settings::CLIENT_ID_SANDBOX => 'valid-client-id-sandbox',
             ],
-            'oldSettings' => [null => [
+            'oldSettings' => ['' => [
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
                 Settings::CLIENT_ID_SANDBOX => null,
             ]],
@@ -322,7 +322,7 @@ class SettingsSaverTest extends TestCase
                 Settings::CLIENT_ID => 'valid-client-id',
                 Settings::CLIENT_ID_SANDBOX => 'valid-client-id-sandbox',
             ],
-            'oldSettings' => [null => [
+            'oldSettings' => ['' => [
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
                 Settings::CLIENT_ID => null,
@@ -340,7 +340,7 @@ class SettingsSaverTest extends TestCase
                 Settings::CLIENT_ID => 'incorrect',
                 Settings::CLIENT_ID_SANDBOX => 'incorrect',
             ],
-            'oldSettings' => [null => [
+            'oldSettings' => ['' => [
                 ...self::VALID_LIVE_CREDENTIALS_1,
                 ...self::VALID_SANDBOX_CREDENTIALS_1,
             ]],
@@ -362,13 +362,13 @@ class SettingsSaverTest extends TestCase
         $this->webhookSystemConfigHelper
             ->expects($this->once())
             ->method('checkWebhookBefore')
-            ->with([$salesChannelId => $newSettings])
+            ->with(['' => $newSettings])
             ->willReturn($errorsBefore);
 
         $this->webhookSystemConfigHelper
             ->expects($this->once())
             ->method('checkWebhookAfter')
-            ->with([$salesChannelId])
+            ->with([''])
             ->willReturn($errorsAfter);
 
         $this->systemConfigService
@@ -400,13 +400,13 @@ class SettingsSaverTest extends TestCase
         $this->webhookSystemConfigHelper
             ->expects($this->never())
             ->method('checkWebhookBefore')
-            ->with([$salesChannelId => $newSettings])
+            ->with(['' => $newSettings])
             ->willReturn([]);
 
         $this->webhookSystemConfigHelper
             ->expects($this->never())
             ->method('checkWebhookAfter')
-            ->with([$salesChannelId])
+            ->with([''])
             ->willReturn([]);
 
         $this->systemConfigService

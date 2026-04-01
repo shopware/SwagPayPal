@@ -67,7 +67,7 @@ class WebhookSubscriber implements EventSubscriberInterface
     public function checkWebhookBefore(BeforeSystemConfigMultipleChangedEvent $event): void
     {
         if ($config = $this->getConfigToCheck($event)) {
-            $this->webhookSystemConfigHelper->checkWebhookBefore([$event->getSalesChannelId() => $config]);
+            $this->webhookSystemConfigHelper->checkWebhookBefore([($event->getSalesChannelId() ?? '') => $config]);
         }
     }
 
@@ -78,7 +78,7 @@ class WebhookSubscriber implements EventSubscriberInterface
     public function checkWebhookAfter(SystemConfigMultipleChangedEvent $event): void
     {
         if ($this->getConfigToCheck($event)) {
-            $this->webhookSystemConfigHelper->checkWebhookAfter([$event->getSalesChannelId()]);
+            $this->webhookSystemConfigHelper->checkWebhookAfter([$event->getSalesChannelId() ?? '']);
         }
     }
 
