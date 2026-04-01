@@ -2,18 +2,22 @@ import { PageObject } from '@shopware-ag/acceptance-test-suite';
 import type { Page, Locator } from 'playwright-core';
 
 export class PayPalLogin implements PageObject {
-    public readonly eMailInput: Locator;
-    public readonly passwordInput: Locator;
+    public eMailInput!: Locator;
+    public passwordInput!: Locator;
 
-    public readonly nextButton: Locator;
-    public readonly loginButton: Locator;
+    public nextButton!: Locator;
+    public loginButton!: Locator;
 
-    public readonly page: Page;
+    public page!: Page;
 
     constructor(page: Page) {
+        this.setPage(page);
+    }
+
+    setPage(page: Page): void {
         this.page = page;
-        this.eMailInput = page.locator('[id^="email"]');
-        this.passwordInput = page.locator('[id^="password"]');
+        this.eMailInput = page.locator('[id^="email"]').first();
+        this.passwordInput = page.locator('[id^="password"]').first();
         this.nextButton = page.getByRole('button', { name: 'Next' });
         this.loginButton = page.getByRole('button', { name: 'Log In' });
     }
