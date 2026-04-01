@@ -125,6 +125,9 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
             });
         },
 
+        /**
+         * @deprecated tag:v11.0.0 - will be removed without replacement
+         */
         forceUpdate() {
             this.$forceUpdate();
             this.updateButtons();

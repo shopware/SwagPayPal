@@ -26,8 +26,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @internal
  */
-#[CoversClass(CookieProviderSubscriber::class)]
 #[Package('checkout')]
+#[CoversClass(CookieProviderSubscriber::class)]
 class CookieProviderSubscriberTest extends TestCase
 {
     use IntegrationTestBehaviour;

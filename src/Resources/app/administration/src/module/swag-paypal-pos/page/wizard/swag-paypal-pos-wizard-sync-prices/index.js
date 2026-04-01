@@ -90,6 +90,9 @@ Component.register('swag-paypal-pos-wizard-sync-prices', {
             });
         },
 
+        /**
+         * @deprecated tag:v11.0.0 - will be removed without replacement
+         */
         forceUpdate() {
             this.$forceUpdate();
         },

@@ -108,6 +108,9 @@ Component.register('swag-paypal-pos-wizard-customization', {
             });
         },
 
+        /**
+         * @deprecated tag:v11.0.0 - will be removed without replacement
+         */
         forceUpdate() {
             this.$forceUpdate();
             this.$nextTick().then(() => {
@@ -120,7 +123,6 @@ Component.register('swag-paypal-pos-wizard-customization', {
             this.salesChannel.languages.push({
                 id: this.salesChannel.languageId,
             });
-            this.$forceUpdate();
         },
 
         toggleLoadingState(state) {
