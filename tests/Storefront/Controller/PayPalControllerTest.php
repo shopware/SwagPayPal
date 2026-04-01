@@ -22,6 +22,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
@@ -35,8 +36,8 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 /**
  * @internal
  */
-#[CoversClass(PayPalController::class)]
 #[Package('checkout')]
+#[CoversClass(PayPalController::class)]
 class PayPalControllerTest extends TestCase
 {
     private AbstractCreateOrderRoute&MockObject $createOrderRoute;
@@ -58,6 +59,7 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(AbstractPUIPaymentInstructionsRoute::class),
                 $this->createMock(AbstractExpressPrepareCheckoutRoute::class),
                 $this->createMock(AbstractExpressCreateOrderRoute::class),
+                $this->createMock(AbstractExpressShippingCallbackRoute::class),
                 $this->createMock(AbstractContextSwitchRoute::class),
                 $this->createMock(AbstractCartDeleteRoute::class),
                 $this->createMock(AbstractClearVaultRoute::class),

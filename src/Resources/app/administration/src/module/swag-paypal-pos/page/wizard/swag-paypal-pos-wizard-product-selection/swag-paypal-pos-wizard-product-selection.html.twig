@@ -24,7 +24,7 @@
                     :criteria="salesChannelCriteria"
                     :disabled="!hasClone"
                     :label="$t('swag-paypal-pos.wizard.productSelection.labelSelect')"
-                    @update:value="forceUpdate" />
+                    @update:value="updateButtons" />
         {% endblock %}
     </div>
 {% endblock %}
