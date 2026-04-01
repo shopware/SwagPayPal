@@ -103,6 +103,9 @@ class LocaleCodeProvider implements ResetInterface
     private function findMatchingSupportedLocale(string $localeCode, array $locales): ?string
     {
         $localeCode = \Locale::getRegion($localeCode);
+        if (!\is_string($localeCode) || $localeCode === '') {
+            return null;
+        }
 
         return $locales[$localeCode][0] ?? null;
     }
