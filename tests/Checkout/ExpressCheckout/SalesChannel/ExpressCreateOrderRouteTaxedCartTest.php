@@ -59,8 +59,8 @@ class ExpressCreateOrderRouteTaxedCartTest extends TestCase
         $cartPriceService = $this->createMock(CartPriceService::class);
         $cartPriceService
             ->expects($this->once())
-            ->method('isZeroValueCart')
-            ->with($cart)
+            ->method('hasZeroPrice')
+            ->with($cart, $salesChannelContext)
             ->willReturn(true);
 
         $route = new ExpressCreateOrderRoute(
