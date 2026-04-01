@@ -54,9 +54,11 @@
             "unknown": "Loading...",
             "missing": "Not registered",
             "invalid": "Registered, but possible domain mismatch",
-            "valid": "Registered"
+            "valid": "Registered",
+            "disabled": "Disabled"
           },
-          "infoText": "The webhook is used for updating the status of a transaction asynchronously. Incorrectly registered webhooks, e.g. on a different or not publicly available server, may result in unconfirmed transactions, regardless whether the transaction has been processed by PayPal."
+          "infoText": "The webhook is used for updating the status of a transaction asynchronously. Incorrectly registered webhooks, e.g. on a different or not publicly available server, may result in unconfirmed transactions, regardless whether the transaction has been processed by PayPal.",
+          "tooltipDisabled": "Webhook can not be refreshed as \"Local development environment\" is active"
         },
         "cross-border": {
           "cardTitle": "Pay Later cross-border messaging",
@@ -301,6 +303,11 @@
                 "ecsShowPayLater": {
                     "label": "Display 'Pay Later' button next to the 'PayPal Checkout' button",
                     "helpText": "The 'Pay Later' button will be displayed on the same pages and in the same design as the 'PayPal Checkout' button."
+                },
+                "ecsShippingCallbackEnabled": {
+                    "label": "Shipping method choice in PayPal dialog",
+                    "helpText": "If this option is active, a callback will be implemented during Express dialog to update the shipping costs based on the shipping method selected by the customer.",
+                    "tooltipDisabled": "The shipping callback can not be enabled as \"Local development environment\" is active"
                 }
             },
             "installment": {

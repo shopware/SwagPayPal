@@ -20,6 +20,7 @@ use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
@@ -57,6 +58,7 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(AbstractPUIPaymentInstructionsRoute::class),
                 $this->createMock(AbstractExpressPrepareCheckoutRoute::class),
                 $this->createMock(AbstractExpressCreateOrderRoute::class),
+                $this->createMock(AbstractExpressShippingCallbackRoute::class),
                 $this->createMock(AbstractContextSwitchRoute::class),
                 $this->createMock(AbstractCartDeleteRoute::class),
                 $this->createMock(AbstractClearVaultRoute::class),

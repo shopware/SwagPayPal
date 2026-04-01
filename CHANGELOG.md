@@ -1,5 +1,15 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 8.11.0
+- Added setting to disable the shipping callback for express checkouts.
+- Fixes an issue, where the shiiping callback required the store-api to be exposed.
+- Fixes an issue, where PayPal order creation and express checkout flows did not use the taxed cart with tax provider processing
+- Fixes an issue, where PayPal webhooks with a `custom_id` payload that does not contain an `orderTransactionId` could trigger an undefined array key warning
 - Fixes an issue, where causes for validation errors were not logged correctly
+
+# 8.10.0
+- Added Austria to the countries where Pay Later is available
+
+# 8.9.2
+- Fixes an issue, where refunds where possible as order editor, whereas order refund editor should be prefered (shopware/SwagPayPal#556)
 
 # 8.9.1
 - Fixes an issue, where required cookies were not displayed in the banner even though PayPal scripts had been loaded (shopware/SwagPayPal#506)
