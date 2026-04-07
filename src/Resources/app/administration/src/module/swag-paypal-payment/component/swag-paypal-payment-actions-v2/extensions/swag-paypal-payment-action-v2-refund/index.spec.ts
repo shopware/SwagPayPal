@@ -9,6 +9,8 @@ import {
     ORDER_CAPTURE_REFUNDED,
 } from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
 
+Shopware.Component.register('swag-paypal-payment-action-v2-refund', Promise.resolve(SwagPayPalPaymentActionV2Refund));
+
 function createCapture(id: string, status: string, value = '100.00') {
     return {
         id,
@@ -37,7 +39,9 @@ async function createWrapper(
     captures: Array<Record<string, unknown>>,
     refundableAmount = 200,
 ) {
-    return mount(SwagPayPalPaymentActionV2Refund, {
+    return mount(
+        await Shopware.Component.build('swag-paypal-payment-action-v2-refund') as typeof SwagPayPalPaymentActionV2Refund,
+        {
         props: {
             paypalOrder: createPayPalOrder(captures),
             orderTransactionId: 'order-transaction-id',
@@ -63,7 +67,8 @@ async function createWrapper(
                 'sw-loader': true,
             },
         },
-    });
+        },
+    );
 }
 
 describe('swag-paypal-payment-action-v2-refund', () => {
@@ -77,7 +82,9 @@ describe('swag-paypal-payment-action-v2-refund', () => {
             createCapture('refunded', ORDER_CAPTURE_REFUNDED),
         ]);
 
-        expect(wrapper.vm.captures.map(({ id }: { id: string }) => id)).toStrictEqual([
+        const captures = wrapper.vm.captures as Array<{ id: string }>;
+
+        expect(captures.map(({ id }) => id)).toStrictEqual([
             'completed',
             'partially-refunded',
         ]);

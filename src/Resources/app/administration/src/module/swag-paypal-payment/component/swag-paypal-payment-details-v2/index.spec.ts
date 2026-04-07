@@ -1,6 +1,8 @@
 import { mount } from '@vue/test-utils';
 import SwagPayPalPaymentDetailsV2 from '.';
 
+Shopware.Component.register('swag-paypal-payment-details-v2', Promise.resolve(SwagPayPalPaymentDetailsV2));
+
 function createPayPalOrder(captures: Array<Record<string, unknown>>) {
     return {
         id: 'paypal-order-id',
@@ -25,7 +27,9 @@ function createPayPalOrder(captures: Array<Record<string, unknown>>) {
 }
 
 async function createWrapper(paypalOrder: Record<string, unknown>) {
-    return mount(SwagPayPalPaymentDetailsV2, {
+    return mount(
+        await Shopware.Component.build('swag-paypal-payment-details-v2') as typeof SwagPayPalPaymentDetailsV2,
+        {
         props: {
             paypalOrder,
             orderTransaction: {
@@ -45,7 +49,8 @@ async function createWrapper(paypalOrder: Record<string, unknown>) {
                 'sw-data-grid': true,
             },
         },
-    });
+        },
+    );
 }
 
 describe('swag-paypal-payment-details-v2', () => {
