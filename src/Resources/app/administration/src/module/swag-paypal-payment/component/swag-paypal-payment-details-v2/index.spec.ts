@@ -30,25 +30,25 @@ async function createWrapper(paypalOrder: Record<string, unknown>) {
     return mount(
         await Shopware.Component.build('swag-paypal-payment-details-v2') as typeof SwagPayPalPaymentDetailsV2,
         {
-        props: {
-            paypalOrder,
-            orderTransaction: {
-                customFields: {},
+            props: {
+                paypalOrder,
+                orderTransaction: {
+                    customFields: {},
+                },
             },
-        },
-        global: {
-            mocks: {
-                $t: (key: string) => key,
+            global: {
+                mocks: {
+                    $t: (key: string) => key,
+                },
+                stubs: {
+                    'mt-card': true,
+                    'sw-card-section': true,
+                    'swag-paypal-payment-actions-v2': true,
+                    'sw-description-list': true,
+                    'swag-paypal-pui-details': true,
+                    'sw-data-grid': true,
+                },
             },
-            stubs: {
-                'mt-card': true,
-                'sw-card-section': true,
-                'swag-paypal-payment-actions-v2': true,
-                'sw-description-list': true,
-                'swag-paypal-pui-details': true,
-                'sw-data-grid': true,
-            },
-        },
         },
     );
 }

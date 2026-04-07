@@ -42,31 +42,31 @@ async function createWrapper(
     return mount(
         await Shopware.Component.build('swag-paypal-payment-action-v2-refund') as typeof SwagPayPalPaymentActionV2Refund,
         {
-        props: {
-            paypalOrder: createPayPalOrder(captures),
-            orderTransactionId: 'order-transaction-id',
-            paypalPartnerAttributionId: 'partner-attribution-id',
-            refundableAmount,
-        },
-        global: {
-            mocks: {
-                $t: (key: string) => key,
+            props: {
+                paypalOrder: createPayPalOrder(captures),
+                orderTransactionId: 'order-transaction-id',
+                paypalPartnerAttributionId: 'partner-attribution-id',
+                refundableAmount,
             },
-            provide: {
-                SwagPayPalOrderService: {
-                    refundCapture: jest.fn(),
+            global: {
+                mocks: {
+                    $t: (key: string) => key,
+                },
+                provide: {
+                    SwagPayPalOrderService: {
+                        refundCapture: jest.fn(),
+                    },
+                },
+                stubs: {
+                    'sw-modal': true,
+                    'mt-select': true,
+                    'mt-text-field': true,
+                    'mt-number-field': true,
+                    'mt-textarea': true,
+                    'mt-button': true,
+                    'sw-loader': true,
                 },
             },
-            stubs: {
-                'sw-modal': true,
-                'mt-select': true,
-                'mt-text-field': true,
-                'mt-number-field': true,
-                'mt-textarea': true,
-                'mt-button': true,
-                'sw-loader': true,
-            },
-        },
         },
     );
 }
