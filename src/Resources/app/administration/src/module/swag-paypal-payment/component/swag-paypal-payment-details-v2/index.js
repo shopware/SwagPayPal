@@ -3,6 +3,7 @@ import {
     ORDER_AUTHORIZATION_CREATED,
     ORDER_AUTHORIZATION_PARTIALLY_CAPTURED,
     ORDER_AUTHORIZATION_PENDING,
+    isRefundableCaptureStatus,
 } from './swag-paypal-order-consts';
 
 const { Component, Filter } = Shopware;
@@ -133,7 +134,11 @@ Component.register('swag-paypal-payment-details-v2', {
                 rawCaptures.forEach((capture) => {
                     this.pushPayment('capture', capture);
                     const captureAmount = Number(capture.amount.value);
-                    this.refundableAmount += captureAmount;
+
+                    if (isRefundableCaptureStatus(capture.status)) {
+                        this.refundableAmount += captureAmount;
+                    }
+
                     this.captureableAmount -= captureAmount;
                 });
             }
