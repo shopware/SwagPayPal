@@ -1,0 +1,314 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\Test\Checkout\Order\Shipping\MessageQueue;
+
+use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
+use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Exception\ApiException;
+use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessage;
+use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationRetryStrategy;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\RequestService;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
+use Symfony\Component\Messenger\EventListener\SendFailedMessageForRetryListener;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
+use Symfony\Component\Messenger\Retry\MultiplierRetryStrategy;
+use Symfony\Component\Messenger\Retry\RetryStrategyInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
+use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
+use Symfony\Component\Messenger\Transport\Sender\SenderInterface;
+
+/**
+ * @internal
+ */
+#[Package('checkout')]
+#[CoversClass(ShippingInformationRetryStrategy::class)]
+class ShippingInformationRetryStrategyTest extends TestCase
+{
+    public function testIsRetryableDelegatesToDecoratedStrategy(): void
+    {
+        $envelope = new Envelope(new ShippingInformationMessage('order-delivery-id'));
+        $throwable = new \RuntimeException('Failed');
+        $decorated = $this->createMock(RetryStrategyInterface::class);
+        $decorated
+            ->expects($this->once())
+            ->method('isRetryable')
+            ->with($envelope, $throwable)
+            ->willReturn(false);
+
+        $strategy = new ShippingInformationRetryStrategy($decorated);
+
+        static::assertFalse($strategy->isRetryable($envelope, $throwable));
+    }
+
+    public function testUsesRetryAfterDelayForRateLimitedShippingMessage(): void
+    {
+        $decorated = $this->createMock(RetryStrategyInterface::class);
+        $decorated
+            ->expects($this->once())
+            ->method('getWaitingTime')
+            ->willReturn(1000);
+        $strategy = new ShippingInformationRetryStrategy($decorated);
+
+        $delay = $strategy->getWaitingTime(
+            new Envelope(new ShippingInformationMessage('order-delivery-id')),
+            new PayPalApiException(
+                ApiException::CODE_RATE_LIMIT_REACHED,
+                'Rate limit reached',
+                429,
+                retryDelay: 120000,
+            ),
+        );
+
+        static::assertGreaterThanOrEqual(110000, $delay);
+        static::assertLessThanOrEqual(120000, $delay);
+    }
+
+    public function testUsesRetryAfterDelayForShippingMessageWhenErrorCodeDiffers(): void
+    {
+        $decorated = $this->createMock(RetryStrategyInterface::class);
+        $decorated
+            ->expects($this->once())
+            ->method('getWaitingTime')
+            ->willReturn(1000);
+        $strategy = new ShippingInformationRetryStrategy($decorated);
+
+        $delay = $strategy->getWaitingTime(
+            new Envelope(new ShippingInformationMessage('order-delivery-id')),
+            self::createRateLimitExceptionFromResponse('120', 'OTHER_RATE_LIMIT'),
+        );
+
+        static::assertGreaterThanOrEqual(110000, $delay);
+        static::assertLessThanOrEqual(120000, $delay);
+    }
+
+    public function testUsesRetryAfterDelayForWrappedRateLimitedShippingMessage(): void
+    {
+        $decorated = $this->createMock(RetryStrategyInterface::class);
+        $decorated
+            ->expects($this->once())
+            ->method('getWaitingTime')
+            ->willReturn(1000);
+        $strategy = new ShippingInformationRetryStrategy($decorated);
+        $envelope = new Envelope(new ShippingInformationMessage('order-delivery-id'));
+        $payPalException = new PayPalApiException(
+            ApiException::CODE_RATE_LIMIT_REACHED,
+            'Rate limit reached',
+            429,
+            retryDelay: 120000,
+        );
+
+        $delay = $strategy->getWaitingTime(
+            $envelope,
+            new HandlerFailedException($envelope, [$payPalException]),
+        );
+
+        static::assertGreaterThanOrEqual(110000, $delay);
+        static::assertLessThanOrEqual(120000, $delay);
+    }
+
+    public function testKeepsDecoratedWaitingTimeWhenItIsGreaterThanRetryAfterDelay(): void
+    {
+        $decorated = $this->createMock(RetryStrategyInterface::class);
+        $decorated
+            ->expects($this->once())
+            ->method('getWaitingTime')
+            ->willReturn(180000);
+        $strategy = new ShippingInformationRetryStrategy($decorated);
+
+        $delay = $strategy->getWaitingTime(
+            new Envelope(new ShippingInformationMessage('order-delivery-id')),
+            new PayPalApiException(
+                ApiException::CODE_RATE_LIMIT_REACHED,
+                'Rate limit reached',
+                429,
+                retryDelay: 120000,
+            ),
+        );
+
+        static::assertSame(180000, $delay);
+    }
+
+    public function testMessengerRetryUsesRetryAfterDelayFromResponse(): void
+    {
+        $payPalException = self::createRateLimitExceptionFromResponse('120');
+        $envelope = new Envelope(new ShippingInformationMessage('order-delivery-id'));
+        $event = new WorkerMessageFailedEvent(
+            $envelope,
+            'async',
+            new HandlerFailedException($envelope, [$payPalException]),
+        );
+        $sentEnvelope = null;
+
+        $sender = $this->createMock(SenderInterface::class);
+        $sender
+            ->expects($this->once())
+            ->method('send')
+            ->willReturnCallback(static function (Envelope $envelope) use (&$sentEnvelope): Envelope {
+                $sentEnvelope = $envelope;
+
+                return $envelope;
+            });
+
+        $listener = $this->createRetryListener(
+            $sender,
+            new ShippingInformationRetryStrategy(new MultiplierRetryStrategy(3, 1000, 2, 0, 0)),
+        );
+        $listener->onMessageFailed($event);
+
+        static::assertTrue($event->willRetry());
+        static::assertInstanceOf(Envelope::class, $sentEnvelope);
+        $delayStamp = $sentEnvelope->last(DelayStamp::class);
+        $redeliveryStamp = $sentEnvelope->last(RedeliveryStamp::class);
+        static::assertInstanceOf(DelayStamp::class, $delayStamp);
+        static::assertInstanceOf(RedeliveryStamp::class, $redeliveryStamp);
+        static::assertGreaterThanOrEqual(110000, $delayStamp->getDelay());
+        static::assertLessThanOrEqual(120000, $delayStamp->getDelay());
+        static::assertSame(1, $redeliveryStamp->getRetryCount());
+    }
+
+    public function testMessengerRetryStopsWhenMaxRetriesAreReachedEvenWithRetryAfterResponse(): void
+    {
+        $payPalException = self::createRateLimitExceptionFromResponse('120');
+        $envelope = (new Envelope(new ShippingInformationMessage('order-delivery-id')))
+            ->with(new RedeliveryStamp(3));
+        $event = new WorkerMessageFailedEvent(
+            $envelope,
+            'async',
+            new HandlerFailedException($envelope, [$payPalException]),
+        );
+
+        $sender = $this->createMock(SenderInterface::class);
+        $sender
+            ->expects($this->never())
+            ->method('send');
+
+        $listener = $this->createRetryListener(
+            $sender,
+            new ShippingInformationRetryStrategy(new MultiplierRetryStrategy(3, 1000, 2, 0, 0)),
+        );
+        $listener->onMessageFailed($event);
+
+        static::assertFalse($event->willRetry());
+    }
+
+    public function testFallsBackToDecoratedStrategyForOtherMessages(): void
+    {
+        $envelope = new Envelope(new \stdClass());
+        $payPalException = new PayPalApiException(
+            ApiException::CODE_RATE_LIMIT_REACHED,
+            'Rate limit reached',
+            429,
+            retryDelay: 120000,
+        );
+        $decorated = $this->createMock(RetryStrategyInterface::class);
+        $decorated
+            ->expects($this->once())
+            ->method('getWaitingTime')
+            ->with($envelope, $payPalException)
+            ->willReturn(1000);
+        $strategy = new ShippingInformationRetryStrategy($decorated);
+
+        $delay = $strategy->getWaitingTime($envelope, $payPalException);
+
+        static::assertSame(1000, $delay);
+    }
+
+    public function testFallsBackToDecoratedStrategyWithoutRetryDelay(): void
+    {
+        $envelope = new Envelope(new ShippingInformationMessage('order-delivery-id'));
+        $payPalException = new PayPalApiException(
+            ApiException::CODE_RATE_LIMIT_REACHED,
+            'Rate limit reached',
+            429,
+        );
+        $decorated = $this->createMock(RetryStrategyInterface::class);
+        $decorated
+            ->expects($this->once())
+            ->method('getWaitingTime')
+            ->with($envelope, $payPalException)
+            ->willReturn(1000);
+        $strategy = new ShippingInformationRetryStrategy($decorated);
+
+        $delay = $strategy->getWaitingTime($envelope, $payPalException);
+
+        static::assertSame(1000, $delay);
+    }
+
+    public function testFallsBackToDecoratedStrategyForOtherPayPalErrors(): void
+    {
+        $envelope = new Envelope(new ShippingInformationMessage('order-delivery-id'));
+        $payPalException = new PayPalApiException(
+            PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND,
+            'Not found',
+            404,
+        );
+        $decorated = $this->createMock(RetryStrategyInterface::class);
+        $decorated
+            ->expects($this->once())
+            ->method('getWaitingTime')
+            ->with($envelope, $payPalException)
+            ->willReturn(1000);
+        $strategy = new ShippingInformationRetryStrategy($decorated);
+
+        $delay = $strategy->getWaitingTime($envelope, $payPalException);
+
+        static::assertSame(1000, $delay);
+    }
+
+    private static function createRateLimitExceptionFromResponse(string $retryAfter, string $name = ApiException::CODE_RATE_LIMIT_REACHED): PayPalApiException
+    {
+        $response = new Response(
+            429,
+            ['Retry-After' => $retryAfter],
+            \json_encode([
+                'name' => $name,
+                'message' => 'Rate limit reached',
+            ], \JSON_THROW_ON_ERROR),
+        );
+
+        try {
+            (new RequestService())->handleResponse($response);
+        } catch (PayPalApiException $e) {
+            return $e;
+        }
+
+        static::fail('Expected PayPal API exception was not thrown.');
+    }
+
+    private function createRetryListener(
+        SenderInterface $sender,
+        RetryStrategyInterface $retryStrategy,
+    ): SendFailedMessageForRetryListener {
+        $sendersLocator = $this->createMock(ContainerInterface::class);
+        $sendersLocator
+            ->method('has')
+            ->with('async')
+            ->willReturn(true);
+        $sendersLocator
+            ->method('get')
+            ->with('async')
+            ->willReturn($sender);
+
+        $retryStrategyLocator = $this->createMock(ContainerInterface::class);
+        $retryStrategyLocator
+            ->method('has')
+            ->with('async')
+            ->willReturn(true);
+        $retryStrategyLocator
+            ->method('get')
+            ->with('async')
+            ->willReturn($retryStrategy);
+
+        return new SendFailedMessageForRetryListener($sendersLocator, $retryStrategyLocator);
+    }
+}

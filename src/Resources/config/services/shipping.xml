@@ -18,5 +18,10 @@
 
             <tag name="messenger.message_handler" />
         </service>
+
+        <service id="Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationRetryStrategy"
+                 decorates="messenger.retry.multiplier_retry_strategy.async">
+            <argument type="service" id=".inner"/>
+        </service>
     </services>
 </container>

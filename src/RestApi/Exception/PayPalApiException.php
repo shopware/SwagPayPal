@@ -11,6 +11,7 @@ use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\Exception\ErrorApiException;
+use Shopware\PayPalSDK\Exception\RetryAfterApiException;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
@@ -25,6 +26,8 @@ class PayPalApiException extends PaymentException
     public const ISSUE_INVALID_PARAMETER_VALUE = 'INVALID_PARAMETER_VALUE';
     public const ISSUE_INVALID_RESOURCE_ID = 'INVALID_RESOURCE_ID';
 
+    private readonly ?\DateTimeImmutable $retryAt;
+
     /**
      * @param string $name - The general name of the error, groups multiple issues
      * @param string|null $issue - The specific issue which caused the error
@@ -34,6 +37,8 @@ class PayPalApiException extends PaymentException
         string $message,
         int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
         private ?string $issue = null,
+        ?int $retryDelay = null,
+        ?\DateTimeImmutable $retryAt = null,
     ) {
         parent::__construct(
             $payPalApiStatusCode,
@@ -45,6 +50,8 @@ class PayPalApiException extends PaymentException
                 'issue' => $issue,
             ]
         );
+
+        $this->retryAt = $retryAt ?? self::createRetryAt($retryDelay);
     }
 
     /**
@@ -64,6 +71,25 @@ class PayPalApiException extends PaymentException
     }
 
     /**
+     * @return int|null Retry delay in milliseconds
+     */
+    public function getRetryDelay(): ?int
+    {
+        if ($this->retryAt === null) {
+            return null;
+        }
+
+        $retryDelay = ($this->retryAt->getTimestamp() - \time()) * 1000;
+
+        return $retryDelay > 0 ? $retryDelay : null;
+    }
+
+    public function getRetryAt(): ?\DateTimeImmutable
+    {
+        return $this->retryAt;
+    }
+
+    /**
      * Is error code or issue one of the given codes/issues?
      *
      * @param self::ERROR_CODE_*|self::ISSUE_*|string $codes
@@ -77,6 +103,22 @@ class PayPalApiException extends PaymentException
 
     public static function from(ApiException $e): self
     {
+        ['message' => $message, 'issue' => $issue] = self::extractMessageAndIssue($e);
+
+        return new self(
+            $e->getErrorCode(),
+            $message,
+            $e->getStatusCode(),
+            $issue,
+            retryAt: $e instanceof RetryAfterApiException ? $e->getRetryAt() : null,
+        );
+    }
+
+    /**
+     * @return array{message: string, issue: string|null}
+     */
+    protected static function extractMessageAndIssue(ApiException $e): array
+    {
         $message = $e->getReason();
         $issue = null;
 
@@ -86,11 +128,20 @@ class PayPalApiException extends PaymentException
             $issue = \array_slice($e->getDetails()->getIssues(), -1)[0] ?? null;
         }
 
-        return new self(
-            $e->getErrorCode(),
-            $message,
-            $e->getStatusCode(),
-            $issue,
-        );
+        return [
+            'message' => $message,
+            'issue' => $issue,
+        ];
+    }
+
+    private static function createRetryAt(?int $retryDelay): ?\DateTimeImmutable
+    {
+        if ($retryDelay === null || $retryDelay <= 0) {
+            return null;
+        }
+
+        $retryAt = (new \DateTimeImmutable())->modify(\sprintf('+%d seconds', (int) \ceil($retryDelay / 1000)));
+
+        return $retryAt ?: null;
     }
 }
