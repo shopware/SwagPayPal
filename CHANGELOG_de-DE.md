@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem abgelehnte PayPal-Zahlungen in der Administration weiterhin als erstattungsfaehig angezeigt wurden (shopware/SwagPayPal#547)
+
 # 8.11.0
 - Fügt eine Einstellung hinzu, um den Versand-Callback für Express-Checkouts zu deaktivieren
 - Behebt ein Problem, bei dem der Versand-Callback die Offenlegung der Store-API erforderte
