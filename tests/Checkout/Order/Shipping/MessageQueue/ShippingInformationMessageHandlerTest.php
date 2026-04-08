@@ -33,6 +33,7 @@ use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessageH
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
+use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
 
 /**
  * @internal
@@ -380,6 +381,87 @@ class ShippingInformationMessageHandlerTest extends TestCase
             ->method('warning');
 
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+    }
+
+    public function testRateLimitedGetThrowsRecoverableExceptionWithRetryDelay(): void
+    {
+        $orderDelivery = self::createOrderDelivery(self::createOrder(), trackingCodes: ['code-a']);
+        $payPalException = new PayPalApiException(
+            PayPalApiException::ERROR_CODE_RATE_LIMIT_REACHED,
+            'RATE_LIMIT_REACHED',
+            retryDelay: 120000,
+        );
+
+        $this->orderDeliveryRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturn(self::createSearchResult($orderDelivery));
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('get')
+            ->willThrowException($payPalException);
+
+        $this->orderResource
+            ->expects($this->never())
+            ->method('removeTracker');
+
+        $this->orderResource
+            ->expects($this->never())
+            ->method('addTracker');
+
+        $this->logger
+            ->expects($this->never())
+            ->method('warning');
+
+        try {
+            ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+            static::fail('Expected recoverable exception was not thrown.');
+        } catch (RecoverableMessageHandlingException $e) {
+            static::assertSame(120000, $e->getRetryDelay());
+            static::assertSame($payPalException, $e->getPrevious());
+        }
+    }
+
+    public function testRateLimitedAddTrackerThrowsRecoverableExceptionWithDefaultRetryDelay(): void
+    {
+        $orderDelivery = self::createOrderDelivery(self::createOrder(), trackingCodes: ['code-a']);
+        $payPalOrder = self::createPayPalOrder();
+        $payPalException = new PayPalApiException(
+            PayPalApiException::ERROR_CODE_RATE_LIMIT_REACHED,
+            'RATE_LIMIT_REACHED',
+        );
+
+        $this->orderDeliveryRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturn(self::createSearchResult($orderDelivery));
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn($payPalOrder);
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('addTracker')
+            ->willThrowException($payPalException);
+
+        $this->orderResource
+            ->expects($this->never())
+            ->method('removeTracker');
+
+        $this->logger
+            ->expects($this->never())
+            ->method('error');
+
+        try {
+            ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+            static::fail('Expected recoverable exception was not thrown.');
+        } catch (RecoverableMessageHandlingException $e) {
+            static::assertSame(60000, $e->getRetryDelay());
+            static::assertSame($payPalException, $e->getPrevious());
+        }
     }
 
     private static function createPayPalOrder(
