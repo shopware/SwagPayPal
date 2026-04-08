@@ -19,6 +19,7 @@ use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Shipping\Tracker\Item;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Shipping\Tracker\ItemCollection;
 use Shopware\PayPalSDK\Struct\V2\Order\Tracker;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\Exception\RetryAfterPayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -64,6 +65,8 @@ class ShippingInformationMessageHandler
 
         try {
             $order = $this->orderResource->get($orderId, $salesChannelId);
+        } catch (RetryAfterPayPalApiException $e) {
+            $this->throwRecoverableOnRateLimit($e);
         } catch (PayPalApiException $e) {
             if ($e->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
                 $this->logger->warning(
@@ -77,8 +80,6 @@ class ShippingInformationMessageHandler
 
                 return;
             }
-
-            $this->throwRecoverableOnRateLimit($e);
 
             throw $e;
         }
@@ -101,6 +102,8 @@ class ShippingInformationMessageHandler
 
             try {
                 $this->orderResource->addTracker($tracker, $orderId, $salesChannelId, $partnerAttributionId);
+            } catch (RetryAfterPayPalApiException $e) {
+                $this->throwRecoverableOnRateLimit($e);
             } catch (PayPalApiException $e) {
                 $this->handleInvalidCarrierException($e, $tracker, $shippingMethodName);
 
@@ -109,10 +112,8 @@ class ShippingInformationMessageHandler
 
                 try {
                     $this->orderResource->addTracker($tracker, $orderId, $salesChannelId, $partnerAttributionId);
-                } catch (PayPalApiException $e) {
+                } catch (RetryAfterPayPalApiException $e) {
                     $this->throwRecoverableOnRateLimit($e);
-
-                    throw $e;
                 }
             }
         }
@@ -129,10 +130,8 @@ class ShippingInformationMessageHandler
 
             try {
                 $this->orderResource->removeTracker($tracker, $orderId, $salesChannelId, $partnerAttributionId);
-            } catch (PayPalApiException $e) {
+            } catch (RetryAfterPayPalApiException $e) {
                 $this->throwRecoverableOnRateLimit($e);
-
-                throw $e;
             }
         }
 
@@ -146,8 +145,6 @@ class ShippingInformationMessageHandler
 
     private function handleInvalidCarrierException(PayPalApiException $e, Tracker &$tracker, string $shippingMethodName): void
     {
-        $this->throwRecoverableOnRateLimit($e);
-
         if ($e->is(PayPalApiException::ISSUE_INVALID_PARAMETER_VALUE) && \str_contains($e->getMessage(), '(/carrier)')) {
             $this->logger->error('Carrier "{carrier}" of shipping method "{methodName}" is not supported by PayPal.', [
                 'carrier' => $tracker->getCarrier(),
@@ -161,12 +158,8 @@ class ShippingInformationMessageHandler
         }
     }
 
-    private function throwRecoverableOnRateLimit(PayPalApiException $e): void
+    private function throwRecoverableOnRateLimit(RetryAfterPayPalApiException $e): never
     {
-        if (!$e->is(PayPalApiException::ERROR_CODE_RATE_LIMIT_REACHED)) {
-            return;
-        }
-
         throw new RecoverableMessageHandlingException(
             $e->getMessage(),
             previous: $e,

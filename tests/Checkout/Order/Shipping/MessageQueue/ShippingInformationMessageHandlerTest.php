@@ -31,6 +31,7 @@ use Shopware\PayPalSDK\Struct\V2\Order\Tracker;
 use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessage;
 use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessageHandler;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\Exception\RetryAfterPayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
@@ -386,10 +387,12 @@ class ShippingInformationMessageHandlerTest extends TestCase
     public function testRateLimitedGetThrowsRecoverableExceptionWithRetryDelay(): void
     {
         $orderDelivery = self::createOrderDelivery(self::createOrder(), trackingCodes: ['code-a']);
-        $payPalException = new PayPalApiException(
+        $payPalException = new RetryAfterPayPalApiException(
             PayPalApiException::ERROR_CODE_RATE_LIMIT_REACHED,
             'RATE_LIMIT_REACHED',
-            retryDelay: 120000,
+            429,
+            null,
+            120000,
         );
 
         $this->orderDeliveryRepository
@@ -427,9 +430,12 @@ class ShippingInformationMessageHandlerTest extends TestCase
     {
         $orderDelivery = self::createOrderDelivery(self::createOrder(), trackingCodes: ['code-a']);
         $payPalOrder = self::createPayPalOrder();
-        $payPalException = new PayPalApiException(
+        $payPalException = new RetryAfterPayPalApiException(
             PayPalApiException::ERROR_CODE_RATE_LIMIT_REACHED,
             'RATE_LIMIT_REACHED',
+            429,
+            null,
+            null,
         );
 
         $this->orderDeliveryRepository

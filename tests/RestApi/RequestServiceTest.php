@@ -12,6 +12,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\Exception\RetryAfterPayPalApiException;
 use Swag\PayPal\RestApi\RequestService;
 
 /**
@@ -38,6 +39,7 @@ class RequestServiceTest extends TestCase
             $requestService->handleResponse($response);
             static::fail('Expected PayPalApiException was not thrown.');
         } catch (PayPalApiException $e) {
+            static::assertInstanceOf(RetryAfterPayPalApiException::class, $e);
             static::assertTrue($e->is(PayPalApiException::ERROR_CODE_RATE_LIMIT_REACHED));
             static::assertSame(120000, $e->getRetryDelay());
         }
@@ -61,6 +63,7 @@ class RequestServiceTest extends TestCase
             $requestService->handleResponse($response);
             static::fail('Expected PayPalApiException was not thrown.');
         } catch (PayPalApiException $e) {
+            static::assertInstanceOf(RetryAfterPayPalApiException::class, $e);
             static::assertTrue($e->is(PayPalApiException::ERROR_CODE_RATE_LIMIT_REACHED));
             static::assertNotNull($e->getRetryDelay());
             static::assertGreaterThanOrEqual(110000, $e->getRetryDelay());

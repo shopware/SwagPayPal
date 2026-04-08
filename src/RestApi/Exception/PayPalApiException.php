@@ -35,7 +35,6 @@ class PayPalApiException extends PaymentException
         string $message,
         int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
         private ?string $issue = null,
-        private ?int $retryDelay = null,
     ) {
         parent::__construct(
             $payPalApiStatusCode,
@@ -66,14 +65,6 @@ class PayPalApiException extends PaymentException
     }
 
     /**
-     * @return int|null - Retry delay in milliseconds
-     */
-    public function getRetryDelay(): ?int
-    {
-        return $this->retryDelay;
-    }
-
-    /**
      * Is error code or issue one of the given codes/issues?
      *
      * @param self::ERROR_CODE_*|self::ISSUE_*|string $codes
@@ -85,7 +76,22 @@ class PayPalApiException extends PaymentException
             || \in_array($this->name, $codes, true);
     }
 
-    public static function from(ApiException $e, ?string $retryAfter = null): self
+    public static function from(ApiException $e): self
+    {
+        ['message' => $message, 'issue' => $issue] = self::extractMessageAndIssue($e);
+
+        return new self(
+            $e->getErrorCode(),
+            $message,
+            $e->getStatusCode(),
+            $issue,
+        );
+    }
+
+    /**
+     * @return array{message: string, issue: string|null}
+     */
+    protected static function extractMessageAndIssue(ApiException $e): array
     {
         $message = $e->getReason();
         $issue = null;
@@ -96,34 +102,9 @@ class PayPalApiException extends PaymentException
             $issue = \array_slice($e->getDetails()->getIssues(), -1)[0] ?? null;
         }
 
-        return new self(
-            $e->getErrorCode(),
-            $message,
-            $e->getStatusCode(),
-            $issue,
-            self::parseRetryDelay($retryAfter),
-        );
-    }
-
-    private static function parseRetryDelay(?string $retryAfter): ?int
-    {
-        if ($retryAfter === null || ($retryAfter = \trim($retryAfter)) === '') {
-            return null;
-        }
-
-        if (\ctype_digit($retryAfter)) {
-            $retryDelay = (int) $retryAfter * 1000;
-
-            return $retryDelay > 0 ? $retryDelay : null;
-        }
-
-        $retryAt = \strtotime($retryAfter);
-        if ($retryAt === false) {
-            return null;
-        }
-
-        $retryDelay = ($retryAt - \time()) * 1000;
-
-        return $retryDelay > 0 ? $retryDelay : null;
+        return [
+            'message' => $message,
+            'issue' => $issue,
+        ];
     }
 }

@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\RequestService as SDKRequestService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\Exception\RetryAfterPayPalApiException;
 
 /**
  * Wrap ApiExceptions into PayPalApiExceptions
@@ -27,7 +28,11 @@ class RequestService extends SDKRequestService
         try {
             return parent::handleResponse($response);
         } catch (ApiException $e) {
-            throw PayPalApiException::from($e, $response->getHeaderLine('Retry-After') ?: null);
+            if ($e->is(PayPalApiException::ERROR_CODE_RATE_LIMIT_REACHED)) {
+                throw RetryAfterPayPalApiException::from($e, $response->getHeaderLine('Retry-After') ?: null);
+            }
+
+            throw PayPalApiException::from($e);
         }
     }
 }
