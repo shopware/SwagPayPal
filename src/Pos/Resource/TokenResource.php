@@ -62,19 +62,25 @@ class TokenResource
     private function getTokenFromCache(string $cacheId): ?Token
     {
         $raw = $this->cache->getItem(self::CACHE_ID . $cacheId)->get();
-        if ($raw === null || $raw === '') {
+
+        if (!\is_string($raw) || $raw === '') {
             return null;
         }
 
         $data = \json_decode($raw, true);
-        if (!\is_array($data)) {
-            return null;
-        }
+
+        return \is_array($data) ? $this->hydrateToken($data) : null;
+    }
+
+    private function hydrateToken(array $data): Token
+    {
+        $expireDateTime = $data['expireDateTime'] ?? null;
+        unset($data['expireDateTime']);
 
         $token = (new Token())->assign($data);
 
-        if (isset($data['expireDateTime']) && \is_string($data['expireDateTime'])) {
-            $token->setExpireDateTime(new \DateTime($data['expireDateTime']));
+        if (\is_string($expireDateTime)) {
+            $token->setExpireDateTime(new \DateTime($expireDateTime));
         }
 
         return $token;
@@ -83,7 +89,12 @@ class TokenResource
     private function setToken(Token $token, string $cacheId): void
     {
         $item = $this->cache->getItem(self::CACHE_ID . $cacheId);
-        $item->set(\json_encode($token->jsonSerialize()));
+
+        $item->set(\json_encode([
+            ...$token->jsonSerialize(),
+            'expireDateTime' => $token->getExpireDateTime()->format(\DateTimeInterface::ATOM),
+        ]));
+
         $this->cache->save($item);
     }
 
