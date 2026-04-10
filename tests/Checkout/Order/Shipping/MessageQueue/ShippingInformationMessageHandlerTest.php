@@ -125,7 +125,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             );
 
         $this->logger
-            ->expects($hasCapture && $isDataComplete ? $this->exactly(((int) !empty($addedTrackers)) + ((int) !empty($removedTrackers))) : $this->never())
+            ->expects($hasCapture && $isDataComplete ? $this->exactly(((int) ($addedTrackers !== [])) + ((int) ($removedTrackers !== []))) : $this->never())
             ->method('info');
 
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
