@@ -58,7 +58,7 @@ class StockSubscriber implements EventSubscriberInterface
 
     private function startSync(array $productIds, Context $context): void
     {
-        if (empty($productIds)) {
+        if ($productIds === []) {
             return;
         }
 
