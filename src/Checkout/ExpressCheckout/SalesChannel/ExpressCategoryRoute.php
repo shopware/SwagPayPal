@@ -50,7 +50,7 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
 
         $route = $request->attributes->get('_route');
 
-        if (!\is_string($route) || empty($route)) {
+        if (!\is_string($route) || $route === '') {
             return $response;
         }
 
