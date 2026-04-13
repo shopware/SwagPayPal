@@ -12,6 +12,7 @@
         {% else %}
         v-model="selectedCaptureId"
         {% endif %}
+        :disabled="captures.length === 0"
         :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
         {% if VUE3 %}
         @update:value="setCapture"
@@ -47,11 +48,12 @@
         {% endif %}
         :max="refundableAmountForSelectedCapture"
         :min="0"
+        :disabled="!selectedCaptureId"
         :label="$tc('swag-paypal-payment.refundAction.refundAmount.label')"
         :helpText="$tc('swag-paypal-payment.refundAction.refundAmount.helpText')"
     >
         <template #suffix>
-            {{ selectedCapture.amount.currency_code }}
+            {{ selectedCaptureCurrencyCode }}
         </template>
     </sw-number-field>
     {% endblock %}
@@ -71,7 +73,7 @@
 
     {% block swag_paypal_payment_action_refund_v2_confirm_button %}
     <template #modal-footer>
-        <sw-button variant="primary" @click="refund">
+        <sw-button variant="primary" :disabled="!selectedCaptureId || isLoading" @click="refund">
             {{ $tc('swag-paypal-payment.refundAction.confirmButton.text') }}
         </sw-button>
     </template>
