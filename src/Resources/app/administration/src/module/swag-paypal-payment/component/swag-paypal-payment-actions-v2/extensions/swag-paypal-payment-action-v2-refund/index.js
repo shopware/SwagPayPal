@@ -1,5 +1,5 @@
 import template from './swag-paypal-payment-action-v2-refund.html.twig';
-import { isRefundableCaptureStatus } from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
+import { REFUNDABLE_CAPTURE_STATUSES } from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
 
 const { Component, Filter } = Shopware;
 
@@ -98,7 +98,7 @@ Component.register('swag-paypal-payment-action-v2-refund', {
             const refundableCaptures = [];
 
             rawCaptures.forEach((capture) => {
-                if (isRefundableCaptureStatus(capture.status)) {
+                if (REFUNDABLE_CAPTURE_STATUSES.includes(capture.status)) {
                     refundableCaptures.push(capture);
                 }
             });
