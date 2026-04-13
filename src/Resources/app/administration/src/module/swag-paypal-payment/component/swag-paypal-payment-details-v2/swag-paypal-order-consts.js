@@ -17,10 +17,6 @@ export const REFUNDABLE_CAPTURE_STATUSES = [
     ORDER_CAPTURE_PARTIALLY_REFUNDED,
 ];
 
-export function isRefundableCaptureStatus(status) {
-    return REFUNDABLE_CAPTURE_STATUSES.includes(status);
-}
-
 export const ORDER_AUTHORIZATION_CREATED = 'CREATED';
 export const ORDER_AUTHORIZATION_CAPTURED = 'CAPTURED';
 export const ORDER_AUTHORIZATION_DENIED = 'DENIED';
@@ -48,7 +44,6 @@ export default {
     ORDER_CAPTURE_PENDING,
     ORDER_CAPTURE_REFUNDED,
     REFUNDABLE_CAPTURE_STATUSES,
-    isRefundableCaptureStatus,
 
     ORDER_AUTHORIZATION_CREATED,
     ORDER_AUTHORIZATION_CAPTURED,
