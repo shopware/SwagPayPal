@@ -245,7 +245,7 @@ class ImageSyncerTest extends TestCase
             ['count' => 2]
         );
         $matcher = static::exactly(3);
-        $logger->expects($matcher)->method('warning')->willReturnCallback(function (string $message, array $context) use ($matcher): void {
+        $logger->expects($matcher)->method('warning')->willReturnCallback(static function (string $message, array $context) use ($matcher): void {
             switch ($matcher->numberOfInvocations()) {
                 case 1:
                     static::assertSame('Media Type {mimeType} is not supported by Zettle. Skipping image {fileName}.', $message);
