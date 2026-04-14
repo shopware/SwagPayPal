@@ -52,6 +52,6 @@ class VaultPaymentTokenDeleted extends AbstractWebhookHandler
             return;
         }
 
-        $this->vaultTokenRepository->delete(\array_map(fn ($id) => ['id' => $id], $ids), $context);
+        $this->vaultTokenRepository->delete(\array_map(static fn ($id) => ['id' => $id], $ids), $context);
     }
 }

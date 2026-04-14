@@ -49,7 +49,7 @@ class PosInventoryRepoMock extends AbstractRepoMock
     public function filterByProduct(SalesChannelProductEntity $productEntity): ?PosSalesChannelInventoryEntity
     {
         return $this->entityCollection->filter(
-            function (PosSalesChannelInventoryEntity $inventory) use ($productEntity) {
+            static function (PosSalesChannelInventoryEntity $inventory) use ($productEntity) {
                 return $inventory->getProductId() === $productEntity->getId()
                     && $inventory->getProductVersionId() === $productEntity->getVersionId();
             }

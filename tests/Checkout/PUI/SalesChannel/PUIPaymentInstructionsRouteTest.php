@@ -62,7 +62,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         $this->orderTransactionRepository
             ->expects(static::once())
             ->method('search')
-            ->willReturnCallback(function ($criteria) use ($searchResult) {
+            ->willReturnCallback(static function ($criteria) use ($searchResult) {
                 static::assertEquals(['test-id'], $criteria->getIds());
 
                 return $searchResult;
