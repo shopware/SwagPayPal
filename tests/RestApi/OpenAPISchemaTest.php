@@ -128,7 +128,7 @@ class OpenAPISchemaTest extends TestCase
     {
         $parts = \explode('\\', $fqdn); // split fqdn into parts
         $parts = \array_map(fn ($part) => $this->camelToSnakeCase($part), $parts); // normalize each part to snake_case
-        $parts = \array_filter($parts, fn ($part) => (bool) $part); // remove empty parts
+        $parts = \array_filter($parts, static fn ($part) => (bool) $part); // remove empty parts
 
         return \implode('_', $parts);
     }

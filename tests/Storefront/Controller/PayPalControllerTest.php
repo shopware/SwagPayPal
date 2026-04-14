@@ -99,7 +99,7 @@ class PayPalControllerTest extends TestCase
         $this->controller
             ->expects($matcher)
             ->method('trans')
-            ->willReturnCallback(function (string $key) use (&$matcher) {
+            ->willReturnCallback(static function (string $key) use (&$matcher) {
                 match ($matcher->numberOfInvocations()) {
                     1 => static::assertSame('paypal.error.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', $key),
                     2 => static::assertSame('paypal.error.test_handler.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', $key),
@@ -155,7 +155,7 @@ class PayPalControllerTest extends TestCase
         $this->controller
             ->expects(static::exactly(3))
             ->method('trans')
-            ->willReturnCallback(fn (string $key) => $key);
+            ->willReturnCallback(static fn (string $key) => $key);
 
         $this->controller
             ->expects(static::once())

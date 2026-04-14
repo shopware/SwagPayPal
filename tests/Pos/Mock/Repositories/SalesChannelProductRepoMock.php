@@ -101,7 +101,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
             return $this->searchCollectionIds($this->entityCollection, $criteria, $salesChannelContext->getContext());
         }
 
-        $collection = $this->entityCollection->filter(function (ProductEntity $product) use ($criteria) {
+        $collection = $this->entityCollection->filter(static function (ProductEntity $product) use ($criteria) {
             return \in_array($product->getId(), $criteria->getIds(), true);
         });
 

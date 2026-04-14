@@ -75,7 +75,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->expects(static::once())
             ->method('search')
             ->willReturnCallback(
-                function (Criteria $criteria, Context $context): EntitySearchResult {
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
 
@@ -143,7 +143,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->expects(static::once())
             ->method('search')
             ->willReturnCallback(
-                function (Criteria $criteria, Context $context): EntitySearchResult {
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
 
@@ -209,7 +209,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->expects(static::once())
             ->method('search')
             ->willReturnCallback(
-                function (Criteria $criteria, Context $context): EntitySearchResult {
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
 
@@ -251,7 +251,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->expects(static::once())
             ->method('search')
             ->willReturnCallback(
-                function (Criteria $criteria, Context $context): EntitySearchResult {
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
 
@@ -289,7 +289,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->expects(static::once())
             ->method('search')
             ->willReturnCallback(
-                fn (Criteria $criteria, Context $context) => new EntitySearchResult('order_transaction', 0, new EntityCollection(), null, $criteria, $context)
+                static fn (Criteria $criteria, Context $context) => new EntitySearchResult('order_transaction', 0, new EntityCollection(), null, $criteria, $context)
             );
 
         $this->orderResource->expects(static::never())->method('get');
@@ -331,7 +331,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->expects(static::once())
             ->method('search')
             ->willReturnCallback(
-                function (Criteria $criteria, Context $context): EntitySearchResult {
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
                     $orderTransactionEntity->setStateMachineState(new StateMachineStateEntity());
