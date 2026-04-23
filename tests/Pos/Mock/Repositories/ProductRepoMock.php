@@ -13,6 +13,7 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\Pos\Sync\Inventory\ProductStockAccessor;
 
 /**
  * @internal
@@ -35,7 +36,7 @@ class ProductRepoMock extends AbstractRepoMock
         $entity->setUniqueIdentifier($this->getUniqueIdentifier($entity));
         $entity->setName($name);
         $entity->setStock($stock);
-        $entity->setAvailableStock($availableStock);
+        ProductStockAccessor::set($entity, $availableStock);
         $this->entityCollection->add($entity);
 
         return $entity;

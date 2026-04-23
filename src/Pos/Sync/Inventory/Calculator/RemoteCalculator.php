@@ -13,6 +13,7 @@ use Swag\PayPal\Pos\Api\Inventory\BulkChanges\ProductChange;
 use Swag\PayPal\Pos\Api\Inventory\BulkChanges\ProductChange\VariantChange;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
+use Swag\PayPal\Pos\Sync\Inventory\ProductStockAccessor;
 
 #[Package('checkout')]
 class RemoteCalculator
@@ -31,7 +32,7 @@ class RemoteCalculator
         ProductEntity $productEntity,
         InventoryContext $inventoryContext,
     ): ?ProductChange {
-        $currentStock = $productEntity->getAvailableStock();
+        $currentStock = ProductStockAccessor::get($productEntity);
         $previousStock = $inventoryContext->getLocalInventory($productEntity);
 
         $isTracked = $inventoryContext->isTracked($productEntity);
@@ -40,7 +41,7 @@ class RemoteCalculator
             $previousStock = $inventoryContext->getSingleRemoteInventory($productEntity, true);
         }
 
-        $difference = (int) $currentStock - (int) $previousStock;
+        $difference = $currentStock - (int) $previousStock;
 
         if ($difference === 0 && $isTracked) {
             return null;

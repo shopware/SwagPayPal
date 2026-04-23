@@ -18,6 +18,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
+use Swag\PayPal\Pos\Sync\Inventory\ProductStockAccessor;
 
 /**
  * @internal
@@ -44,7 +45,7 @@ trait UpdaterTrait
         $product->setVersionId('7c1da595-2b4c-4c25-afa7-8dcf5d3adca0');
         $product->setChildCount(2);
         $product->setStock(1);
-        $product->setAvailableStock(1);
+        ProductStockAccessor::set($product, 1);
 
         return $product;
     }

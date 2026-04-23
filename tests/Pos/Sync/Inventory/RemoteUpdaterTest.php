@@ -23,6 +23,7 @@ use Swag\PayPal\Pos\Api\Inventory\Status\Variant;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\RemoteCalculator;
+use Swag\PayPal\Pos\Sync\Inventory\ProductStockAccessor;
 use Swag\PayPal\Pos\Sync\Inventory\RemoteUpdater;
 
 /**
@@ -54,7 +55,7 @@ class RemoteUpdaterTest extends TestCase
     public function testUpdateRemoteInventoryVariant(int $localInventory, int $newLocalInventory, int $change): void
     {
         $product = $this->getVariantProduct();
-        $product->setAvailableStock($newLocalInventory);
+        ProductStockAccessor::set($product, $newLocalInventory);
 
         $inventoryContext = $this->createInventoryContext($product, $localInventory, 0);
 
@@ -89,7 +90,7 @@ class RemoteUpdaterTest extends TestCase
     public function testUpdateRemoteInventorySingle(int $localInventory, int $newLocalInventory, int $change): void
     {
         $product = $this->getSingleProduct();
-        $product->setAvailableStock($newLocalInventory);
+        ProductStockAccessor::set($product, $newLocalInventory);
 
         $inventoryContext = $this->createInventoryContext($product, $localInventory, 0);
 
@@ -130,7 +131,7 @@ class RemoteUpdaterTest extends TestCase
     public function testUpdateRemoteInventoryWithError(): void
     {
         $product = $this->getSingleProduct();
-        $product->setAvailableStock(2);
+        ProductStockAccessor::set($product, 2);
 
         $inventoryContext = $this->createInventoryContext($product, 1, 0);
 

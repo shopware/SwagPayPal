@@ -54,7 +54,7 @@ class RemoteUpdater
 
             $remoteChanges->addProductChange($productChange);
 
-            $changeAmount = (int) $productEntity->getAvailableStock() - (int) $inventoryContext->getLocalInventory($productEntity);
+            $changeAmount = ProductStockAccessor::get($productEntity) - (int) $inventoryContext->getLocalInventory($productEntity);
             $productEntity->addExtension(StockChange::STOCK_CHANGE_EXTENSION, new StockChange($changeAmount));
 
             $changedProducts->add($productEntity);

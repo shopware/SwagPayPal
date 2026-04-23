@@ -19,6 +19,7 @@ use Swag\PayPal\Pos\Api\Inventory\Status\Variant;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
+use Swag\PayPal\Pos\Sync\Inventory\ProductStockAccessor;
 use Swag\PayPal\Test\Pos\Mock\Repositories\PosInventoryRepoMock;
 
 /**
@@ -74,7 +75,7 @@ class InventoryContextFactoryTest extends TestCase
         $variant->assign([
             'productUuid' => $uuidConverter->convertUuidToV1((string) $product->getParentId()),
             'variantUuid' => $uuidConverter->convertUuidToV1($product->getId()),
-            'balance' => (string) $product->getAvailableStock(),
+            'balance' => (string) ProductStockAccessor::get($product),
         ]);
         $status->addVariant($variant);
         $status->assign(['trackedProducts' => [$uuidConverter->convertUuidToV1((string) $product->getParentId())]]);
@@ -83,7 +84,7 @@ class InventoryContextFactoryTest extends TestCase
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
 
-        static::assertSame($product->getAvailableStock(), $inventoryContext->getSingleRemoteInventory($product));
+        static::assertSame(ProductStockAccessor::get($product), $inventoryContext->getSingleRemoteInventory($product));
     }
 
     public function testPosInventorySingle(): void
@@ -95,7 +96,7 @@ class InventoryContextFactoryTest extends TestCase
         $variant->assign([
             'productUuid' => $uuidConverter->convertUuidToV1($product->getId()),
             'variantUuid' => $uuidConverter->convertUuidToV1($uuidConverter->incrementUuid($product->getId())),
-            'balance' => (string) $product->getAvailableStock(),
+            'balance' => (string) ProductStockAccessor::get($product),
         ]);
         $status->addVariant($variant);
         $status->assign(['trackedProducts' => [$uuidConverter->convertUuidToV1($product->getId())]]);
@@ -104,7 +105,7 @@ class InventoryContextFactoryTest extends TestCase
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
 
-        static::assertSame($product->getAvailableStock(), $inventoryContext->getSingleRemoteInventory($product));
+        static::assertSame(ProductStockAccessor::get($product), $inventoryContext->getSingleRemoteInventory($product));
     }
 
     public function testPosInventoryUntracked(): void
@@ -116,7 +117,7 @@ class InventoryContextFactoryTest extends TestCase
             [
                 'productUuid' => $uuidConverter->convertUuidToV1((string) $product->getParentId()),
                 'variantUuid' => $uuidConverter->convertUuidToV1($product->getId()),
-                'balance' => (string) $product->getAvailableStock(),
+                'balance' => (string) ProductStockAccessor::get($product),
             ],
         ]]);
 
@@ -130,15 +131,15 @@ class InventoryContextFactoryTest extends TestCase
     public function testLocalInventory(): void
     {
         $singleProduct = $this->getSingleProduct();
-        $this->inventoryRepository->createMockEntity($singleProduct, TestDefaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
+        $this->inventoryRepository->createMockEntity($singleProduct, TestDefaults::SALES_CHANNEL, ProductStockAccessor::get($singleProduct));
         $variantProduct = $this->getVariantProduct();
-        $this->inventoryRepository->createMockEntity($variantProduct, TestDefaults::SALES_CHANNEL, (int) $variantProduct->getAvailableStock() + 2);
+        $this->inventoryRepository->createMockEntity($variantProduct, TestDefaults::SALES_CHANNEL, ProductStockAccessor::get($variantProduct) + 2);
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
         $this->inventoryContextFactory->updateLocal($inventoryContext);
 
-        static::assertSame($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
-        static::assertSame((int) $variantProduct->getAvailableStock() + 2, $inventoryContext->getLocalInventory($variantProduct));
+        static::assertSame(ProductStockAccessor::get($singleProduct), $inventoryContext->getLocalInventory($singleProduct));
+        static::assertSame(ProductStockAccessor::get($variantProduct) + 2, $inventoryContext->getLocalInventory($variantProduct));
     }
 
     public function testLocalInventoryEmpty(): void
@@ -156,9 +157,9 @@ class InventoryContextFactoryTest extends TestCase
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
         static::assertNull($inventoryContext->getLocalInventory($singleProduct));
 
-        $this->inventoryRepository->createMockEntity($singleProduct, TestDefaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
+        $this->inventoryRepository->createMockEntity($singleProduct, TestDefaults::SALES_CHANNEL, ProductStockAccessor::get($singleProduct));
         $this->inventoryContextFactory->updateLocal($inventoryContext);
-        static::assertSame($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
+        static::assertSame(ProductStockAccessor::get($singleProduct), $inventoryContext->getLocalInventory($singleProduct));
     }
 
     private function getPosLocations(): array
