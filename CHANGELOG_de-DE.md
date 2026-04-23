@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 8.11.1
 - Behebt ein Problem, bei dem abgelehnte PayPal-Zahlungen in der Administration weiterhin als erstattungsfaehig angezeigt wurden (shopware/SwagPayPal#547)
+- Behebt ein Problem, bei dem die PayPal-Bestellerstellung für Abonnements nicht den Subscription-Cart-Service verwendet hat und ACDC für Abonnements ohne Wallet-Vaulting verfügbar war
 
 # 8.11.0
 - Fügt eine Einstellung hinzu, um den Versand-Callback für Express-Checkouts zu deaktivieren
