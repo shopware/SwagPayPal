@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where declined PayPal payments were still shown as refundable in the Administration (shopware/SwagPayPal#547)
+- Fixes an issue, where the express checkout shipping callback returned unsupported order fields.
 
 # 8.11.0
 - Added setting to disable the shipping callback for express checkouts.
