@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Pos\Api\Authentication;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Util\Hasher;
 
 #[Package('checkout')]
 class OAuthCredentials
@@ -22,5 +23,10 @@ class OAuthCredentials
     public function setApiKey(string $apiKey): void
     {
         $this->apiKey = $apiKey;
+    }
+
+    public function getCacheKey(): string
+    {
+        return Hasher::hash(['apiKey' => $this->apiKey]);
     }
 }
