@@ -16,7 +16,6 @@ updates:
     labels:
       - 'dependencies'
       - 'javascript'
-      - 'run/acceptance'
 
   - package-ecosystem: npm
     directory: '/src/Resources/app/storefront'
@@ -31,7 +30,6 @@ updates:
     labels:
       - 'dependencies'
       - 'javascript'
-      - 'run/acceptance'
 
   - package-ecosystem: npm
     directory: '/tests/acceptance'
@@ -46,4 +44,3 @@ updates:
     labels:
       - 'dependencies'
       - 'javascript'
-      - 'run/acceptance'
