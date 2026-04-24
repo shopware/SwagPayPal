@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Pos\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Util\Hasher;
 use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Resource\TokenResource;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
@@ -29,10 +28,11 @@ class TokenResourceTest extends TestCase
     {
         $cache = new ArrayAdapter();
         $resource = new TokenResource($cache, new TokenClientFactoryMock());
+        $credentials = $this->createCredentials();
 
-        $resource->getToken($this->createCredentials());
+        $resource->getToken($credentials);
 
-        $cacheKey = self::CACHE_ID . Hasher::hash(ConstantsForTesting::VALID_API_KEY);
+        $cacheKey = self::CACHE_ID . $credentials->getCacheKey();
         $raw = $cache->getItem($cacheKey)->get();
         static::assertIsString($raw);
 
@@ -73,7 +73,7 @@ class TokenResourceTest extends TestCase
 
         $resource->getToken($credentials);
 
-        $cacheKey = self::CACHE_ID . Hasher::hash(ConstantsForTesting::VALID_API_KEY);
+        $cacheKey = self::CACHE_ID . $credentials->getCacheKey();
         $item = $cache->getItem($cacheKey);
 
         $data = \json_decode($item->get(), true);
