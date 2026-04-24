@@ -60,8 +60,11 @@ class ExpressShippingCallbackService
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
         }
 
-        $order = $this->orderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
+        $fullOrder = $this->orderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
+        $order = new Order();
+        $order->unset('intent');
         $order->setId($callback->getId());
+        $order->setPurchaseUnits($fullOrder->getPurchaseUnits());
         $order->getPurchaseUnits()->first()?->setReferenceId((string) $callback->getPurchaseUnits()->first()?->getReferenceId());
         $order->getPurchaseUnits()->first()?->setShippingOptions($this->shippingOptionsProvider->getShippingOptions($cart, $salesChannelContext));
 

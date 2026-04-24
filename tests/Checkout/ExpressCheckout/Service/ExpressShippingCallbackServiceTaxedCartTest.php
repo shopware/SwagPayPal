@@ -96,7 +96,11 @@ class ExpressShippingCallbackServiceTaxedCartTest extends TestCase
 
         $result = $service->recalculateCart($this->createCallback(), $salesChannelContext);
 
-        static::assertSame('paypal-order-id', $result->getId());
+        $serialized = \json_decode((string) \json_encode($result, \JSON_THROW_ON_ERROR), true, flags: \JSON_THROW_ON_ERROR);
+
+        static::assertSame(['id', 'purchase_units'], \array_keys($serialized));
+        static::assertSame('paypal-order-id', $serialized['id']);
+        static::assertSame('default', $serialized['purchase_units'][0]['reference_id']);
         static::assertCount(1, $result->getPurchaseUnits()->first()?->getShippingOptions() ?? []);
     }
 
