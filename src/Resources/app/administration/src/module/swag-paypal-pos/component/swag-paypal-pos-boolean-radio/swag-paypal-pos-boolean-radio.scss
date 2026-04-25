@@ -4,7 +4,7 @@
     margin-bottom: 16px;
 
     .sw-field__radio-option {
-        border: 1px solid #d9dfe5;
+        border: 1px solid var(--color-border-primary-default);
         border-radius: 4px;
         padding: 16px;
         margin: 16px 0;
@@ -21,7 +21,7 @@
     }
 
     .sw-field__radio-option-checked {
-        background-color: transparentize($color-shopware-brand-500, 0.95);
-        border: 1px solid $color-shopware-brand-500;
+        background-color: var(--color-background-brand-default);
+        border: 1px solid var(--color-border-brand-default);
     }
 }
