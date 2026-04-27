@@ -56,6 +56,10 @@ class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInt
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
+        if ($availabilityContext->isSubscription()) {
+            return $this->container->get(SystemConfigService::class)->getBool(Settings::VAULTING_ENABLED_ACDC, $availabilityContext->getSalesChannelId());
+        }
+
         return true;
     }
 
