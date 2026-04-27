@@ -19,6 +19,8 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
 use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\RestApi\V2\Api\OrderShippingCallback;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -60,15 +62,25 @@ class ExpressShippingCallbackRouteTest extends TestCase
         $callback = (new OrderShippingCallback())->assign($payload);
         $request = new Request(request: $payload);
         $salesChannelContext = Generator::createSalesChannelContext();
+        $order = new Order();
+        $purchaseUnit = new PurchaseUnit();
+        $purchaseUnit->setReferenceId('default');
+        $order->unset('intent');
+        $order->setId('paypal-order-id');
+        $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
 
         $this->service
             ->expects(static::once())
             ->method('recalculateCart')
             ->with(static::equalTo($callback), $salesChannelContext)
-            ->willReturn(new Order());
+            ->willReturn($order);
 
         $response = $this->route->handleCallback($request, $salesChannelContext);
-        static::assertEquals(\json_encode(new Order()), $response->getContent());
+        $responsePayload = \json_decode((string) $response->getContent(), true, flags: \JSON_THROW_ON_ERROR);
+
+        static::assertSame(['id', 'purchase_units'], \array_keys($responsePayload));
+        static::assertSame('paypal-order-id', $responsePayload['id']);
+        static::assertSame('default', $responsePayload['purchase_units'][0]['reference_id']);
 
         static::assertCount(1, $this->logger->getRecords());
         static::assertTrue($this->logger->hasDebug(['message' => 'Shipping callback received']));
