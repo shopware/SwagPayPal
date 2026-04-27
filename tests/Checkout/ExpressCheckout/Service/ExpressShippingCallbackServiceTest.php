@@ -32,6 +32,7 @@ use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ShippingOption;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
@@ -102,9 +103,8 @@ class ExpressShippingCallbackServiceTest extends TestCase
 
         $order = $this->service->recalculateCart($this->createCallback($country), $this->salesChannelContext);
 
-        static::assertSame('paypal-order-id', $order->getId());
-        static::assertSame('default', $order->getPurchaseUnits()->first()?->getReferenceId());
-        static::assertCount(2, $order->getPurchaseUnits()->first()->getShippingOptions() ?? []);
+        $this->assertMinimalOrderPayload($order);
+        static::assertCount(2, $order->getPurchaseUnits()->first()?->getShippingOptions() ?? []);
         static::assertNotSame($cart, $this->getCart());
 
         $this->assertContextParameters([
@@ -123,9 +123,8 @@ class ExpressShippingCallbackServiceTest extends TestCase
 
         $order = $this->service->recalculateCart($this->createCallback($country), $this->salesChannelContext);
 
-        static::assertSame('paypal-order-id', $order->getId());
-        static::assertSame('default', $order->getPurchaseUnits()->first()?->getReferenceId());
-        static::assertCount(2, $order->getPurchaseUnits()->first()->getShippingOptions() ?? []);
+        $this->assertMinimalOrderPayload($order);
+        static::assertCount(2, $order->getPurchaseUnits()->first()?->getShippingOptions() ?? []);
         static::assertNotSame($cart, $this->getCart());
 
         $this->assertContextParameters([
@@ -141,9 +140,8 @@ class ExpressShippingCallbackServiceTest extends TestCase
 
         $order = $this->service->recalculateCart($this->createCallback($country, $shippingMethod->getId()), $this->salesChannelContext);
 
-        static::assertSame('paypal-order-id', $order->getId());
-        static::assertSame('default', $order->getPurchaseUnits()->first()?->getReferenceId());
-        static::assertCount(2, $order->getPurchaseUnits()->first()->getShippingOptions() ?? []);
+        $this->assertMinimalOrderPayload($order);
+        static::assertCount(2, $order->getPurchaseUnits()->first()?->getShippingOptions() ?? []);
         static::assertNotSame($cart, $this->getCart());
 
         $this->assertContextParameters([
@@ -157,9 +155,8 @@ class ExpressShippingCallbackServiceTest extends TestCase
         $country = $this->getCountry('DE');
         $order = $this->service->recalculateCart($this->createCallback($country), $this->salesChannelContext);
 
-        static::assertSame('paypal-order-id', $order->getId());
-        static::assertSame('default', $order->getPurchaseUnits()->first()?->getReferenceId());
-        static::assertCount(2, $order->getPurchaseUnits()->first()->getShippingOptions() ?? []);
+        $this->assertMinimalOrderPayload($order);
+        static::assertCount(2, $order->getPurchaseUnits()->first()?->getShippingOptions() ?? []);
         static::assertSame($cart, $this->getCart());
 
         $this->assertContextParameters([
@@ -222,6 +219,15 @@ class ExpressShippingCallbackServiceTest extends TestCase
         $params = static::getContainer()->get(SalesChannelContextPersister::class)->load($this->ids->get('token'), TestDefaults::SALES_CHANNEL);
 
         static::assertEquals($expectedParams, \array_intersect_key($expectedParams, $params));
+    }
+
+    private function assertMinimalOrderPayload(Order $order): void
+    {
+        $serialized = \json_decode((string) \json_encode($order, \JSON_THROW_ON_ERROR), true, flags: \JSON_THROW_ON_ERROR);
+
+        static::assertSame(['id', 'purchase_units'], \array_keys($serialized));
+        static::assertSame('paypal-order-id', $serialized['id']);
+        static::assertSame('default', $serialized['purchase_units'][0]['reference_id']);
     }
 
     private function createCallback(
