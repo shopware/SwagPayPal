@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Util\Lifecycle\Method;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
@@ -20,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * @internal
  */
-#[Package('checkout'), CoversClass(ACDCMethodData::class)]
+#[Package('checkout')]
 class ACDCMethodDataTest extends TestCase
 {
     private ACDCMethodData $acdcMethodData;
