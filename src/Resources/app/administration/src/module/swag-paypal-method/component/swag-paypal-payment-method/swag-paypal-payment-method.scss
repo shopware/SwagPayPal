@@ -4,7 +4,7 @@
     display: grid;
     grid-template-columns: auto 1fr auto auto;
     align-items: center;
-    border: 1px solid $color-gray-300;
+    border: 1px solid var(--color-border-primary-default);
     border-radius: $border-radius-default;
     gap: 16px 12px;
     padding: 16px 16px;

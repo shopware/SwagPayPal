@@ -2,7 +2,7 @@
 
 .swag-paypal-pos {
     &__disclaimer {
-        color: $color-gray-500;
+        color: var(--color-text-secondary-default);
         font-size: $font-size-xxs;
         text-align: center;
 
