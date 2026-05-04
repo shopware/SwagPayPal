@@ -41,7 +41,7 @@ class ZugferdSubscriberTest extends TestCase
 
         $builderMock = $this->createMock(ZugferdDocumentBuilder::class);
         $builderMock
-            ->expects(empty($expected) ? $this->never() : $this->once())
+            ->expects($expected === [] ? $this->never() : $this->once())
             ->method('addDocumentPaymentMean')
             ->willReturnCallback(static function (...$arguments) use ($expected, $builderMock): ZugferdDocumentBuilder {
                 foreach ($expected as $value) {

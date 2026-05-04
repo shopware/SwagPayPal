@@ -18,14 +18,14 @@
         }
 
         &__code {
-            color: $color-gray-600;
+            color: var(--color-text-secondary-default);
         }
 
         &__common {
             display: inline-block;
             font-size: $font-size-xxs;
-            background-color: $color-shopware-brand-50;
-            color: $color-shopware-brand-500;
+            background-color: var(--color-background-brand-default);
+            color: var(--color-text-brand-default);
             border-radius: 4px;
             padding: 1px 4px;
             margin-left: 4px;
@@ -35,6 +35,6 @@
 
 .sw-select-result.is--active {
     .swag-paypal-settings-shipping-carrier__carrier_info__common {
-        background-color: $color-white;
+        background-color: var(--color-background-primary-default);
     }
 }

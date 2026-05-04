@@ -52,7 +52,7 @@
         min-width: 100%;
         padding: 24px;
         margin-right: 25%;
-        border-right: 1px solid $color-gray-300;
+        border-right: 1px solid var(--color-border-primary-default);
     }
 
     .swag-paypal-pos-wizard__page {

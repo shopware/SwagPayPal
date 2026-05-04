@@ -76,6 +76,7 @@ describe('swag-paypal-settings-storefront', () => {
             'SwagPayPal.settings.ecsButtonShape',
             'SwagPayPal.settings.ecsButtonLanguageIso',
             'SwagPayPal.settings.ecsShowPayLater',
+            'SwagPayPal.settings.ecsShippingCallbackEnabled',
             'SwagPayPal.settings.installmentBannerDetailPageEnabled',
             'SwagPayPal.settings.installmentBannerCartEnabled',
             'SwagPayPal.settings.installmentBannerOffCanvasCartEnabled',

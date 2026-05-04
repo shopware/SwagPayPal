@@ -28,23 +28,24 @@
 
                         {% block swag_paypal_pos_wizard_modal_content_page %}
                             <div class="swag-paypal-pos-wizard__page">
-                                    <router-view
-                                        v-slot="{ Component }"
-                                    >
-                                        <component
-                                            :is="Component"
-                                            :salesChannel="salesChannel"
-                                            :cloneSalesChannelId="cloneSalesChannelId"
-                                            :saveSalesChannel="save"
-                                            :isLoading="isLoading"
-                                            @buttons-update="updateButtons"
-                                            @frw-set-title="setTitle"
-                                            @frw-finish="onFinishWizard"
-                                            @toggle-loading="toggleLoading"
-                                            @recreate-sales-channel="createNewSalesChannel"
-                                            @update-clone-sales-channel="updateCloneSalesChannel"
-                                        />
-                                    </router-view>
+                                <router-view
+                                    v-if="posSalesChannel"
+                                    v-slot="{ Component }"
+                                >
+                                    <component
+                                        :is="Component"
+                                        :salesChannel="salesChannel"
+                                        :cloneSalesChannelId="cloneSalesChannelId"
+                                        :saveSalesChannel="save"
+                                        :isLoading="isLoading"
+                                        @buttons-update="updateButtons"
+                                        @frw-set-title="setTitle"
+                                        @frw-finish="onFinishWizard"
+                                        @toggle-loading="toggleLoading"
+                                        @recreate-sales-channel="createNewSalesChannel"
+                                        @update-clone-sales-channel="updateCloneSalesChannel"
+                                    />
+                                </router-view>
                             </div>
                         {% endblock %}
                     </sw-container>

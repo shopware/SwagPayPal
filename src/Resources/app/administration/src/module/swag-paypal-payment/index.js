@@ -16,7 +16,7 @@ Module.register('swag-paypal-payment', {
     description: 'swag-paypal-payment.general.descriptionTextModule',
     version: '1.0.0',
     targetVersion: '1.0.0',
-    color: '#2b52ff',
+    color: 'var(--color-icon-brand-default)',
 
     routeMiddleware(next, currentRoute) {
         if (currentRoute.name === 'sw.order.detail') {

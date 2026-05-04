@@ -13,7 +13,7 @@
         display: inline-block;
         margin: 16px;
 
-        background-color: $color-emerald-50;
+        background-color: var(--color-background-positive-default);
         border-radius: 50%;
     }
 
@@ -49,8 +49,7 @@
     }
 
     .swag-paypal-pos-wizard-connection-success__disclaimer {
-        color: $color-gray-500;
+        color: var(--color-text-secondary-default);
         font-size: $font-size-xs;
     }
 }
-

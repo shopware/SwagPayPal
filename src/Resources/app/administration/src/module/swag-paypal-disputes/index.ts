@@ -12,7 +12,7 @@ Shopware.Module.register('swag-paypal-disputes', {
     description: 'swag-paypal-disputes.general.descriptionTextModule',
     version: '1.0.0',
     targetVersion: '1.0.0',
-    color: '#F88962',
+    color: 'var(--color-pumpkin-500)',
     icon: 'regular-comments',
     favicon: 'icon-module-customers.png',
 

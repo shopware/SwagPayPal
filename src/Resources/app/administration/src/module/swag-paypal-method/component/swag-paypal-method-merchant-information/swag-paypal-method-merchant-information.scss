@@ -1,8 +1,8 @@
 @import "~scss/variables";
 
 .swag-paypal-merchant-information {
-    background-color: $color-gray-50;
-    border: 1px solid $color-gray-300;
+    background-color: var(--color-background-secondary-default);
+    border: 1px solid var(--color-border-primary-default);
     border-radius: $border-radius-default;
     padding: 32px;
 

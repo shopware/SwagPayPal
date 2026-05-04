@@ -99,7 +99,7 @@ class SyncManagerHandler
                 $context
             );
 
-            if (empty($messages)) {
+            if ($messages === []) {
                 $this->runService->increaseStep($runId, $currentStep, $context);
                 $message->setCurrentStep($currentStep + 1);
                 $this->messageBus->dispatch($message);
