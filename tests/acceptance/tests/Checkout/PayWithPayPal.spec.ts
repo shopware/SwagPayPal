@@ -17,7 +17,7 @@ test('Customer buys a product and pays via PayPal', { tag: ['@Storefront'] }, as
     SelectShippingMethod,
 
 }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(30_000);
     const product = await TestDataService.createBasicProduct(
         {
             price: [
