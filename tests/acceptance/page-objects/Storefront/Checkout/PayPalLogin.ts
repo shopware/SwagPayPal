@@ -16,8 +16,8 @@ export class PayPalLogin implements PageObject {
 
     setPage(page: Page): void {
         this.page = page;
-        this.eMailInput = page.locator('[id^="email"]').first();
-        this.passwordInput = page.locator('[id^="password"]').first();
+        this.eMailInput = page.getByRole('textbox', { name: 'email' }).first();
+        this.passwordInput = page.getByRole('textbox', { name: 'password' }).first();
         this.nextButton = page.getByRole('button', { name: 'Next' });
         this.loginButton = page.getByRole('button', { name: 'Log In' });
     }

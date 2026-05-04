@@ -2,19 +2,23 @@ import { PageObject } from '@shopware-ag/acceptance-test-suite';
 import type { Page, Locator } from 'playwright-core';
 
 export class PayPalPayment implements PageObject {
-    public readonly cartTotal: Locator;
-    public readonly changeShippingAddressButton: Locator;
+    public cartTotal!: Locator;
+    public changeShippingAddressButton!: Locator;
 
-    public readonly seeMoreButton: Locator;
+    public seeMoreButton!: Locator;
 
-    public readonly paymentMethodRadioGroup: Locator;
-    public readonly payLaterRadioGroup: Locator;
+    public paymentMethodRadioGroup!: Locator;
+    public payLaterRadioGroup!: Locator;
 
-    public readonly payButton: Locator;
+    public payButton!: Locator;
 
-    public readonly page: Page;
+    public page!: Page;
 
     constructor(page: Page) {
+        this.setPage(page);
+    }
+
+    setPage(page: Page): void {
         this.page = page;
         this.cartTotal = page.getByTestId('header-cart-total');
         this.changeShippingAddressButton = page.getByTestId('change-shipping');
