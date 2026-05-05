@@ -17,7 +17,7 @@ test('Customer buys a product and pays via PayPal.', { tag: ['@Storefront'] }, a
     SelectShippingMethod,
 
 }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(45_000);
     const product = await TestDataService.createBasicProduct(
         {
             price: [
@@ -43,7 +43,7 @@ test('Customer buys a product and pays via PayPal.', { tag: ['@Storefront'] }, a
     await StorefrontCheckoutConfirm.page.waitForLoadState('domcontentloaded');
     await ShopCustomer.expects(StorefrontCheckoutConfirm.paypalButton('paypal')).toBeVisible();
 
-    const popupPromise = StorefrontCheckoutConfirm.page.waitForEvent('popup');
+    const popupPromise = StorefrontCheckoutConfirm.page.waitForEvent('popup', { timeout: 30_000 });
     await StorefrontCheckoutConfirm.paypalButton('paypal').click();
     const paypalPopup = await popupPromise;
     await paypalPopup.waitForLoadState('domcontentloaded');
