@@ -1,6 +1,6 @@
 import { test } from '@fixtures/AcceptanceTest';
 
-test('Customer buys a product and pays via PayPal', { tag: ['@Storefront'] }, async ({
+test('Customer buys a product and pays via PayPal.', { tag: ['@Storefront'] }, async ({
     ShopCustomer,
     StorefrontProductDetail,
     StorefrontCheckoutConfirm,
