@@ -31,12 +31,13 @@ test('PayPal Account setup', {}, async ({
         [`SwagPayPal.settings.clientSecret${prefix}`]: PayPalDataProvider.get('CLIENT_SECRET'),
         [`SwagPayPal.settings.merchantPayerId${prefix}`]: PayPalDataProvider.get('MERCHANT_ID'),
         'SwagPayPal.settings.sandbox': isSandbox,
+        'SwagPayPal.settings.isLocalEnvironment': true,
     });
 
     const json = await response.json() as PayPal.Api.Operations<'saveSettings'>;
     expect(json).toHaveProperty('null');
 
-    const payPalPaymentMethod = await TestDataService.getPaymentMethod('PayPal');
+    const payPalPaymentMethod = await TestDataService.getPaymentMethodByDistinguishableName('PayPal | PayPal', false);
     TestDataService.setCleanUp(false);
     await TestDataService.assignSalesChannelPaymentMethod(TestDataService.defaultSalesChannel.id, payPalPaymentMethod.id);
 });
