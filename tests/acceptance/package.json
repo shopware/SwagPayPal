@@ -22,7 +22,7 @@
     "typescript-eslint": "^8.59.0"
   },
   "dependencies": {
-    "@currents/playwright": "^1.23.2",
+    "@currents/playwright": "^1.23.3",
     "@shopware-ag/acceptance-test-suite": "12.10.1",
     "@shopware/api-client": "1.5.0",
     "typescript": "^6.0.3"
