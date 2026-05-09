@@ -1,10 +1,13 @@
 const DataDefinition = {
-    CLIENT_ID: String,
-    CLIENT_SECRET: String,
-    SANDBOX: Boolean,
+    CLIENT_ID: (value: string | undefined) => value ?? '',
+    CLIENT_SECRET: (value: string | undefined) => value ?? '',
+    MERCHANT_ID: (value: string | undefined) => value ?? '',
+    CUSTOMER_ID: (value: string | undefined) => value ?? '',
+    CUSTOMER_PASSWORD: (value: string | undefined) => value ?? '',
+    SANDBOX: (value: string | undefined) => value ?? 'true',
 };
 
-export type Data = Record<string, string> & {
+export type Data = {
     [key in keyof typeof DataDefinition]: ReturnType<(typeof DataDefinition)[key]>;
 };
 
@@ -17,8 +20,14 @@ export class PayPalDataProvider {
                 continue;
             }
 
-            const key = String(env).replace(/^PAYPAL_/, '') as keyof typeof DataDefinition;
-            const preprocessor = DataDefinition[key] ?? String;
+            const rawKey = String(env).replace(/^PAYPAL_/, '');
+
+            if (!(rawKey in DataDefinition)) {
+                continue;
+            }
+
+            const key = rawKey as keyof typeof DataDefinition;
+            const preprocessor = DataDefinition[key];
 
             this.data[key] = preprocessor(process.env[env]);
         }
