@@ -68,7 +68,7 @@ class VaultTokenService
         if ($subscriptions = $this->getSubscriptions($struct)) {
             $customFieldKey = $this->getSubscriptionCustomFieldKey($orderTransaction->getPaymentMethodId());
             $tokenIds = \array_unique(\array_values(
-                $subscriptions->fmap(fn (SubscriptionEntity $subscription): string => (string) $subscription->getCustomFieldsValue($customFieldKey))
+                $subscriptions->fmap(static fn (SubscriptionEntity $subscription): string => (string) $subscription->getCustomFieldsValue($customFieldKey))
             ));
 
             if (\count($tokenIds) > 1) {

@@ -42,6 +42,7 @@ export default {
         '^@shopware-ag/meteor-component-library$': `${process.env.ADMIN_PATH}/node_modules/@shopware-ag/meteor-component-library/dist/common/index.js`,
         vue$: `${process.env.ADMIN_PATH}/node_modules/vue/dist/vue.cjs.js`,
         '^@vue/test-utils$': `${process.env.ADMIN_PATH}/node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js`,
+        '^lodash-es/(.*)$': 'lodash/$1',
     },
 
     testEnvironmentOptions: {

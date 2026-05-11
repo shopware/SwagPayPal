@@ -16,7 +16,7 @@ Shopware.Module.register('swag-paypal-settings', {
     description: 'swag-paypal-settings.module.description',
     version: '1.0.0',
     targetVersion: '1.0.0',
-    color: '#9AA8B5',
+    color: 'var(--color-icon-secondary-default)',
     icon: 'regular-cog',
 
     routes: {

@@ -12,14 +12,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Cookie\Event\CookieGroupCollectEvent;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\PlatformRequest;
+use Shopware\Core\Test\Generator;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -28,21 +26,26 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *
  * @deprecated tag:v11.0.0 - Will be removed. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
  */
-#[CoversClass(PayPalCookieProvider::class)]
 #[Package('checkout')]
+#[CoversClass(PayPalCookieProvider::class)]
 class PayPalCookieProviderTest extends TestCase
 {
-    private EntityRepository&MockObject $paymentMethodRepository;
+    private CookieProviderInterface&MockObject $cookieProvider;
 
-    private RequestStack $requestStack;
+    private PaymentMethodUtil&MockObject $paymentMethodUtil;
+
+    private PayPalCookieProvider $payPalCookieProvider;
 
     protected function setUp(): void
     {
         $request = new Request();
-        $request->attributes->set('sw-sales-channel-id', Uuid::randomHex());
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, Generator::generateSalesChannelContext());
 
-        $this->paymentMethodRepository = $this->createMock(EntityRepository::class);
-        $this->requestStack = new RequestStack([$request]);
+        $this->payPalCookieProvider = new PayPalCookieProvider(
+            $this->cookieProvider = $this->createMock(CookieProviderInterface::class),
+            $this->paymentMethodUtil = $this->createMock(PaymentMethodUtil::class),
+            new RequestStack([$request]),
+        );
     }
 
     public function testGetCookieGroupsWithEmptyOriginalCookiesReturnsOriginalCookies(): void
@@ -51,13 +54,12 @@ class PayPalCookieProviderTest extends TestCase
             static::markTestSkipped('Deprecated. Logic moved to Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber');
         }
 
-        $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
         $cookies = [];
-        $cookieProviderMock->expects($this->once())
+        $this->cookieProvider->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $result = (new PayPalCookieProvider($cookieProviderMock, $this->paymentMethodRepository, $this->requestStack))->getCookieGroups();
+        $result = $this->payPalCookieProvider->getCookieGroups();
         static::assertSame($cookies, $result);
     }
 
@@ -67,16 +69,15 @@ class PayPalCookieProviderTest extends TestCase
             static::markTestSkipped('Deprecated. Logic moved to Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber');
         }
 
-        $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
         $cookies = [
             'snippet_name' => 'cookie.example.name',
             'cookie' => 'example-cookie-key',
         ];
-        $cookieProviderMock->expects($this->once())
+        $this->cookieProvider->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $result = (new PayPalCookieProvider($cookieProviderMock, $this->paymentMethodRepository, $this->requestStack))->getCookieGroups();
+        $result = $this->payPalCookieProvider->getCookieGroups();
         static::assertSame($cookies, $result);
     }
 
@@ -87,22 +88,16 @@ class PayPalCookieProviderTest extends TestCase
             static::markTestSkipped('Deprecated. Logic moved to Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber');
         }
 
-        $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
-        $cookieProviderMock->expects($this->once())
+        $this->cookieProvider->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $searchResult = new IdSearchResult(0, [Uuid::randomHex() => ['primaryKey' => 'test-id', 'data' => []]], new Criteria(), Context::createDefaultContext());
+        $this->paymentMethodUtil
+            ->expects($payPalCookieAdded ? $this->once() : $this->never())
+            ->method('isPaymentMethodActive')
+            ->willReturn(true);
 
-        $this->paymentMethodRepository->expects($payPalCookieAdded ? $this->once() : $this->never())
-            ->method('searchIds')
-            ->willReturnCallback(static function (Criteria $criteria) use ($searchResult) {
-                static::assertCount(3, $criteria->getFilters());
-
-                return $searchResult;
-            });
-
-        $result = (new PayPalCookieProvider($cookieProviderMock, $this->paymentMethodRepository, $this->requestStack))->getCookieGroups();
+        $result = $this->payPalCookieProvider->getCookieGroups();
         if (!$payPalCookieAdded) {
             static::assertSame($cookies, $result);
 
@@ -124,8 +119,7 @@ class PayPalCookieProviderTest extends TestCase
     public static function dataTestGetCookieGroupsWithRequiredCookieGroup(): array
     {
         return [
-            // Matching snippet name, missing is required flag
-            [
+            'Matching snippet name, missing is required flag' => [
                 [
                     [
                         'snippet_name' => 'cookie.groupRequired',
@@ -135,8 +129,7 @@ class PayPalCookieProviderTest extends TestCase
                 false,
             ],
 
-            // Matching snippet name, required flag false
-            [
+            'Matching snippet name, required flag false' => [
                 [
                     [
                         'isRequired' => false,
@@ -147,8 +140,7 @@ class PayPalCookieProviderTest extends TestCase
                 false,
             ],
 
-            // Required flag, wrong snippet name
-            [
+            'Required flag, wrong snippet name' => [
                 [
                     [
                         'isRequired' => true,
@@ -159,8 +151,7 @@ class PayPalCookieProviderTest extends TestCase
                 false,
             ],
 
-            // With required group, without entries
-            [
+            'With required group, without entries' => [
                 [
                     [
                         'isRequired' => true,
@@ -171,8 +162,7 @@ class PayPalCookieProviderTest extends TestCase
                 false,
             ],
 
-            // With required group, with entries
-            [
+            'With required group, with entries' => [
                 [
                     [
                         'isRequired' => true,
@@ -199,12 +189,11 @@ class PayPalCookieProviderTest extends TestCase
             'entries' => [],
         ];
 
-        $cookieProviderMock = $this->getMockBuilder(CookieProviderInterface::class)->getMock();
-        $cookieProviderMock->expects($this->once())
+        $this->cookieProvider->expects($this->once())
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $result = (new PayPalCookieProvider($cookieProviderMock, $this->paymentMethodRepository, $this->requestStack))->getCookieGroups();
+        $result = $this->payPalCookieProvider->getCookieGroups();
 
         static::assertSame($cookies, $result);
     }

@@ -11,13 +11,13 @@
 
     &__stage-inquiry {
         input {
-            color: $color-module-yellow-900;
+            color: var(--color-text-attention-default);
         }
     }
 
     &__stage-other {
         input {
-            color: $color-crimson-900;
+            color: var(--color-text-critical-default);
         }
     }
 }

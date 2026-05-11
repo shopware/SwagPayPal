@@ -110,6 +110,7 @@ export const SYSTEM_CONFIGS = [
     'SwagPayPal.settings.ecsButtonShape',
     'SwagPayPal.settings.ecsButtonLanguageIso',
     'SwagPayPal.settings.ecsShowPayLater',
+    'SwagPayPal.settings.ecsShippingCallbackEnabled',
 
     'SwagPayPal.settings.spbButtonColor',
     'SwagPayPal.settings.spbButtonShape',
@@ -139,6 +140,8 @@ export const SYSTEM_CONFIGS = [
 
     'SwagPayPal.settings.webhookId',
     'SwagPayPal.settings.webhookExecuteToken',
+
+    'SwagPayPal.settings.isLocalEnvironment',
 ] as const;
 
 export type SYSTEM_CONFIG = typeof SYSTEM_CONFIGS[number];

@@ -1,6 +1,41 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.6.1
+- Behebt ein Problem, bei dem abgelehnte PayPal-Zahlungen in der Administration weiterhin als erstattungsfähig angezeigt wurden (shopware/SwagPayPal#547)
+- Behebt ein Problem, bei dem die Antwort des Versand-Callbacks im Express Checkout nicht unterstützte Bestellfelder enthielt
+- Behebt ein Problem, bei dem ACDC für Abonnements ohne Wallet-Vaulting verfügbar war
+
+# 10.6.0
+- Behebt ein Problem, bei dem PayPal-Webhooks mit einem `custom_id`-Payload ohne `orderTransactionId` eine Warnung wegen eines undefinierten Array-Keys ausloesen konnten
+- Behebt ein Problem, bei dem die PayPal-Bestellerstellung und Express-Checkout-Flows nicht den besteuerten Warenkorb mit Tax-Provider-Verarbeitung verwendet haben
+- Fügt eine Einstellung hinzu, um den Versand-Callback für Express-Checkouts zu deaktivieren
+- Behebt ein Problem, bei dem der Versand-Callback die Offenlegung der Store-API erforderte
+- Behebt ein Problem, bei dem das OpenAPI-Schema nicht generiert werden konnte
+- Behebt ein Problem, bei dem Warenkorbe nicht korrekt als kostenlos erkannt wurden, was zu Fehlern beim PayPal-Checkout führte (shopware/SwagPayPal#591)
+- Behebt ein Problem, bei dem die Zettle-Verbindung nur für einige Stunden funktionierte (shopware/SwagPayPal#594)
+
+# 10.5.0
+- Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
+
+# 10.4.4
+- Behebt ein Problem, bei dem Rückerstattungen als Bestell-Editor möglich waren, obwohl der Rückerstattungs-Editor der Bestellung bevorzugt werden sollte (shopware/SwagPayPal#556)
+
+# 10.4.3
+- Behebt ein Problem, bei dem Ursachen für Validierungsfehler nicht korrekt protokolliert wurden
+
+# 10.4.2
+- Behebt ein Problem, bei dem nach Bestelländerungen in der Administration Zahlungs- und Bestellsumme voneinander abweichen konnten
+- Behebt ein Problem, bei dem im PayPal Express Checkout der Zugriff auf ein nicht initialisiertes Objekt erfolgte (shopware/SwagPayPal#521)
+- Behebt ein Problem, bei dem der HTTP-Cache durch das Erstellen einer Sitzung unnötig gestört wurde (shopware/SwagPayPal#529)
+
+# 10.4.1
+- Behebt ein Problem, bei dem erforderliche Cookies nicht im Banner angezeigt wurden, obwohl PayPal-Skripte geladen wurden (shopware/SwagPayPal#506)
+
+# 10.4.0
+- Behebt ein Problem, bei dem beim Express-Checkout ein Kundenland ausgewählt werden konnte, das nicht dem richtigen Vertriebskanal zugeordnet war (shopware/SwagPayPal#479)
 - Behebt ein Problem, bei dem Cookies geladen wurden, obwohl die zugehörigen Zahlungsarten nicht aktiv sind (shopware/SwagPayPal#457)
 - Behebt ein Problem, bei dem der Bundesstaat nicht korrekt an PayPal übermittelt wurde (shopware/SwagPayPal#469)
+- Fügt Apple-Pay-Support für Drittanbieter-Browser hinzu (shopware/SwagPayPal#485)
+- Fügt eine Einstellung hinzu, um den Shop als lokale Umgebung zu kennzeichnen, um Verbindungsprobleme beim Testen in einer nicht öffentlich zugänglichen Umgebung zu vermeiden (shopware/SwagPayPal#463)
+- Symbole für Zahlungsmethoden aktualisiert und optimiert
 
 # 10.3.0
 - Fügt Kompatibilität mit Abos in gemischten Warenkörben hinzu (shopware/shopware#10486)

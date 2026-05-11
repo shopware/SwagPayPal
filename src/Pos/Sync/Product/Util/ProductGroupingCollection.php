@@ -21,7 +21,7 @@ class ProductGroupingCollection extends Collection
     public function addProducts(ProductCollection $products): void
     {
         foreach ($products as $product) {
-            if (!($product instanceof SalesChannelProductEntity)) {
+            if (!$product instanceof SalesChannelProductEntity) {
                 continue;
             }
 

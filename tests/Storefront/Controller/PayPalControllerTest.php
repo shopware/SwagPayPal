@@ -22,6 +22,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
@@ -35,8 +36,8 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 /**
  * @internal
  */
-#[CoversClass(PayPalController::class)]
 #[Package('checkout')]
+#[CoversClass(PayPalController::class)]
 class PayPalControllerTest extends TestCase
 {
     private AbstractCreateOrderRoute&MockObject $createOrderRoute;
@@ -58,6 +59,7 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(AbstractPUIPaymentInstructionsRoute::class),
                 $this->createMock(AbstractExpressPrepareCheckoutRoute::class),
                 $this->createMock(AbstractExpressCreateOrderRoute::class),
+                $this->createMock(AbstractExpressShippingCallbackRoute::class),
                 $this->createMock(AbstractContextSwitchRoute::class),
                 $this->createMock(AbstractCartDeleteRoute::class),
                 $this->createMock(AbstractClearVaultRoute::class),
@@ -97,7 +99,7 @@ class PayPalControllerTest extends TestCase
         $this->controller
             ->expects($matcher)
             ->method('trans')
-            ->willReturnCallback(function (string $key) use (&$matcher) {
+            ->willReturnCallback(static function (string $key) use (&$matcher) {
                 match ($matcher->numberOfInvocations()) {
                     1 => static::assertSame('paypal.error.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', $key),
                     2 => static::assertSame('paypal.error.test_handler.SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE', $key),
@@ -153,7 +155,7 @@ class PayPalControllerTest extends TestCase
         $this->controller
             ->expects($this->exactly(3))
             ->method('trans')
-            ->willReturnCallback(fn (string $key) => $key);
+            ->willReturnCallback(static fn (string $key) => $key);
 
         $this->controller
             ->expects($this->once())

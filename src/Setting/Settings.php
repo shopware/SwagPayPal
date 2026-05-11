@@ -41,6 +41,7 @@ final class Settings
     public const ECS_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonShape';
     public const ECS_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonLanguageIso';
     public const ECS_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'ecsShowPayLater';
+    public const ECS_SHIPPING_CALLBACK_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'ecsShippingCallbackEnabled';
     public const SPB_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonColor';
     public const SPB_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonShape';
     public const SPB_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonLanguageIso';
@@ -61,6 +62,7 @@ final class Settings
     public const VAULTING_ENABLED_WALLET = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledWallet';
     public const VAULTING_ENABLED_ACDC = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledACDC';
     public const VAULTING_ENABLED_VENMO = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledVenmo';
+    public const IS_LOCAL_ENVIRONMENT = self::SYSTEM_CONFIG_DOMAIN . 'isLocalEnvironment';
 
     /**
      * @internal these may change at any time
@@ -79,6 +81,7 @@ final class Settings
         self::ECS_BUTTON_COLOR => 'gold',
         self::ECS_BUTTON_SHAPE => 'sharp',
         self::ECS_SHOW_PAY_LATER => true,
+        self::ECS_SHIPPING_CALLBACK_ENABLED => true,
         self::SPB_CHECKOUT_ENABLED => true,
         self::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED => false,
         self::SPB_BUTTON_COLOR => 'gold',
@@ -98,6 +101,7 @@ final class Settings
         self::VAULTING_ENABLED_VENMO => false,
         self::CROSS_BORDER_MESSAGING_ENABLED => false,
         self::CROSS_BORDER_BUYER_COUNTRY => null,
+        self::IS_LOCAL_ENVIRONMENT => false,
     ];
 
     public const LIVE_CREDENTIAL_KEYS = [

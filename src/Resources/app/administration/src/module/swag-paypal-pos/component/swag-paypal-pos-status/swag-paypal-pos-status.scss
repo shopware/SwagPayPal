@@ -13,7 +13,7 @@
         width: 80px;
         height: 80px;
         border-radius: 40px;
-        background-color: $color-gray-50;
+        background-color: var(--color-background-secondary-default);
     }
 
     .swag-paypal-pos-status__icon-animated {
@@ -34,14 +34,14 @@
         margin-top: $font-size-s;
         padding-bottom: $font-size-s;
         font-size: $font-size-xs;
-        border-bottom: $color-gray-200 solid 1px;
+        border-bottom: var(--color-border-primary-default) solid 1px;
     }
 
     .swag-paypal-pos-status__substatus {
         margin-top: $font-size-s;
         font-size: $font-size-xs;
         padding-bottom: $font-size-s;
-        border-bottom: $color-gray-200 solid 1px;
+        border-bottom: var(--color-border-primary-default) solid 1px;
 
         span {
             vertical-align: middle;
@@ -54,7 +54,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: var(--color-elevation-surface-overlay);
         border-radius: $border-radius-default;
         padding-top: 9*$font-size-s;
     }
@@ -65,59 +65,59 @@
 
     &.swag-paypal-pos-status--warning {
         .mt-card__content {
-            border-color: $color-pumpkin-spice-200;
+            border-color: var(--color-border-attention-default);
         }
 
         .swag-paypal-pos-status__icon {
-            color: $color-pumpkin-spice-500;
+            color: var(--color-icon-attention-default);
         }
     }
 
     &.swag-paypal-pos-status--error {
         .mt-card__content {
-            border-color: $color-crimson-200;
+            border-color: var(--color-border-critical-default);
         }
 
         .swag-paypal-pos-status__icon {
-            color: $color-crimson-500;
+            color: var(--color-icon-critical-default);
         }
     }
 
     &.swag-paypal-pos-status--success {
         .mt-card__content {
-            border-color: $color-emerald-200;
+            border-color: var(--color-border-positive-default);
         }
 
         .swag-paypal-pos-status__icon {
-            color: $color-emerald-500;
+            color: var(--color-icon-positive-default);
         }
     }
 
     &.swag-paypal-pos-status--info {
         .mt-card__content {
-            border-color: $color-shopware-brand-200;
+            border-color: var(--color-border-brand-default);
         }
 
         .swag-paypal-pos-status__icon {
-            color: $color-shopware-brand-500;
+            color: var(--color-icon-brand-default);
         }
     }
 
     .swag-paypal-pos-status__subicon {
         &.swag-paypal-pos-status--success {
-            color: $color-emerald-500;
+            color: var(--color-icon-positive-default);
         }
 
         &.swag-paypal-pos-status--info {
-            color: $color-shopware-brand-500;
+            color: var(--color-icon-brand-default);
         }
 
         &.swag-paypal-pos-status--warning {
-            color: $color-pumpkin-spice-500;
+            color: var(--color-icon-attention-default);
         }
 
         &.swag-paypal-pos-status--error {
-            color: $color-crimson-500;
+            color: var(--color-icon-critical-default);
         }
     }
 }

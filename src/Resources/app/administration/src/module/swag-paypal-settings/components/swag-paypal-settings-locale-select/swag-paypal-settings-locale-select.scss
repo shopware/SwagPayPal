@@ -8,6 +8,6 @@
     }
 
     &__locale {
-        color: $color-gray-600;
+        color: var(--color-text-secondary-default);
     }
 }

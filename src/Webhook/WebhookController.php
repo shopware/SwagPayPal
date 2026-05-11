@@ -171,7 +171,7 @@ class WebhookController extends AbstractController
         $postData = $request->request->all();
         $this->logger->debug('Received webhook', ['payload' => $postData]);
 
-        if (empty($postData)) {
+        if ($postData === []) {
             throw new BadRequestHttpException('No webhook data sent');
         }
 

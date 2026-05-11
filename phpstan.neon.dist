@@ -88,9 +88,32 @@ parameters:
             identifier: method.deprecated
             message: '#__construct.*Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition.*#'
 
+        - # 6.8 deprecation
+            identifier: method.deprecated
+            message: '#arameter \$silent will be added in v6\.8\.0.*#'
+
         - # 6.8 deprecation - only type change
             identifier: method.deprecated
             message: '#(setActiveBillingAddress|setActiveShippingAddress).*Shopware\\Core\\Checkout\\Customer\\CustomerEntity.*#'
+
+        - # 6.8 deprecation - DAL field API will return static natively
+            identifier: method.deprecated
+            message: '#Call to deprecated method (addFlags|removeFlag)\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Field\\Field\:\s+tag\:v6\.8\.0 - reason\:return-type-change - Will return static natively#'
+            paths:
+                - src/DataAbstractionLayer
+                - src/Pos/DataAbstractionLayer
+                - src/Reporting/DataAbstractionLayer
+
+        - # 6.8 deprecation - POS inventory sync still relies on available stock semantics
+            identifier: method.deprecated
+            message: '#Call to deprecated method (getAvailableStock|setAvailableStock)\(\) of class .*ProductEntity#'
+            paths:
+                - src/Pos/Sync/Inventory
+                - tests/Pos/Mock/Repositories/ProductRepoMock.php
+                - tests/Pos/Sync/Inventory
+
+        - # Shopware trunk classifies these plugin tests as non-Unit by namespace
+            identifier: shopware.unexpectedTestCovers
 
         - # v11.0.0 deprecation - addFundingAvailabilityDataToFooter will be removed
             identifier: method.deprecated
@@ -120,6 +143,19 @@ parameters:
                 - tests/Checkout/Method/ACDCHandlerTest.php
                 - tests/Checkout/Method/VenmoHandlerTest.php
 
+        - # 6.8 deprecation - reason:exception-change - Will throw \Shopware\Core\Framework\Util\UtilException instead of \Doctrine\DBAL\Exception\TableNotFoundException
+            identifier: method.deprecated
+            message: '#Call to deprecated method columnExists\(\) of class .*\\MigrationStep#'
+            paths:
+                - src/Migration/Migration1706111604AddCustomerIdToVault.php
+                - src/Migration/Migration1675420139AddManagerDataToRun.php
+                - src/Migration/Migration1626082072AddStatusAndMessageCountToRun.php
+
+        - # Only name change
+          identifier: method.deprecated
+          message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
+          path: '**/*.php'
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
@@ -131,4 +167,3 @@ rules:
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\PackageAnnotationRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Migration\NoAfterStatementRule
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\NoNewRequestInStorefrontRule
-

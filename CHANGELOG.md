@@ -1,7 +1,44 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Fixes an issue, where stale `PAYMENT.AUTHORIZATION.VOIDED` webhooks could cancel unrelated order transactions
 - Fixes an issue, where cookies are added even though associated payment methods are not active (shopware/SwagPayPal#457)
 - Fixes an issue, where the state of a country was not correctly transmitted to PayPal (shopware/SwagPayPal#469)
+- Added Apple Pay support for third-party browsers (shopware/SwagPayPal#485)
+- Added setting to mark the shop as local environment to preventing connection issues when testing in a non-publicly accessible environment (shopware/SwagPayPal#463)
+- Updated and optimized payment method icons
+- Fixes an issue, where stale `PAYMENT.AUTHORIZATION.VOIDED` webhooks could cancel unrelated order transactions
+
+# 10.6.1
+- Fixes an issue, where declined PayPal payments were still shown as refundable in the Administration (shopware/SwagPayPal#547)
+- Fixes an issue, where the express checkout shipping callback returned unsupported order fields.
+- Fixes an issue, where ACDC was available for subscriptions without wallet vaulting
+
+# 10.6.0
+- Added setting to disable the shipping callback for express checkouts.
+- Fixes an issue, where the shipping callback required the store-api to be exposed.
+- Fixes an issue, where PayPal webhooks with a `custom_id` payload that does not contain an `orderTransactionId` could trigger an undefined array key warning
+- Fixes an issue, where PayPal order creation and express checkout flows did not use the taxed cart with tax provider processing
+- Fixes an issue, where the OpenAPI schema could not be generated
+- Fixes an issue, where the cart was not correctly detected as free, resulting in errors during the PayPal checkout (shopware/SwagPayPal#591)
+- Fixes an issue, where the Zettle connection was only working for a few hours (shopware/SwagPayPal#594)
+
+# 10.5.0
+- Added Austria to the countries where Pay Later is available
+
+# 10.4.4
+- Fixes an issue, where refunds where possible as order editor, whereas order refund editor should be prefered (shopware/SwagPayPal#556)
+
+# 10.4.3
+- Fixes an issue, where causes for validation errors were not logged correctly
+
+# 10.4.2
+- Fixes an issue, where if an order was edited in the Administration, the payment amount could differ from the newly calculated total
+- Fixes an issue, where accessing an uninitialized object during express checkout (shopware/SwagPayPal#512)
+- Fixes an issue, where the HTTP cache was unnecessarily disturbed by creating a session (shopware/SwagPayPal#529)
+
+# 10.4.1
+- Fixes an issue, where required cookies were not displayed in the banner even though PayPal scripts had been loaded (shopware/SwagPayPal#506)
+
+# 10.4.0
+- Fixes an issue, where the express checkout could choose a customer country that was not assigned to the correct sales channel (shopware/SwagPayPal#479)
 
 # 10.3.0
 - Added compatibility with subscription mixed carts (shopware/shopware#10486)

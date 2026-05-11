@@ -35,23 +35,23 @@ class SyncResetter
         $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannel->getId()));
 
         $ids = $this->posProductRepository->searchIds($criteria, $context)->getIds();
-        if (!empty($ids)) {
+        if ($ids !== []) {
             $this->posProductRepository->delete(\array_filter($ids), $context);
         }
 
         $ids = $this->posInventoryRepository->searchIds($criteria, $context)->getIds();
-        if (!empty($ids)) {
+        if ($ids !== []) {
             $this->posInventoryRepository->delete(\array_filter($ids), $context);
         }
 
         $ids = $this->posMediaRepository->searchIds($criteria, $context)->getIds();
-        if (!empty($ids)) {
+        if ($ids !== []) {
             $this->posMediaRepository->delete(\array_filter($ids), $context);
         }
 
         /** @phpstan-ignore varTag.type */ /** @var Criteria<string> $criteria */
         $ids = $this->posRunRepository->searchIds($criteria, $context)->getIds();
-        if (!empty($ids)) {
+        if ($ids !== []) {
             $ids = \array_map(static fn ($id) => ['id' => $id], $ids);
             $this->posRunRepository->delete(\array_filter($ids), $context);
         }

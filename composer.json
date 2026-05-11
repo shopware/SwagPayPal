@@ -1,7 +1,7 @@
 {
     "name": "swag/paypal",
     "description": "PayPal integration for Shopware 6",
-    "version": "10.3.0",
+    "version": "10.6.1",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
@@ -11,7 +11,7 @@
     ],
     "require": {
         "shopware/core": "~6.7.0@dev",
-        "shopware/paypal-sdk": "^1.5.1"
+        "shopware/paypal-sdk": "^1.6.3"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
@@ -55,7 +55,7 @@
         "init:storefront": "npm ci --no-audit --prefer-offline --prefix src/Resources/app/storefront",
         "lint:storefront": "@lint:storefront:ci --fix",
         "lint:storefront:ci": [
-            "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/.eslintrc.js ./src",
+            "cd src/Resources/app/storefront && if [ -f ../../../../../../../src/Storefront/Resources/app/storefront/eslint.config.js ]; then ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/eslint.config.js ./src; else ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/.eslintrc.js ./src; fi",
             "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/stylelint --config ../../../../../../../src/Storefront/Resources/app/storefront/stylelint.config.js ./src/scss"
         ],
         "phpunit": "../../../vendor/bin/phpunit",

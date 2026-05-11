@@ -8,10 +8,8 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Shipping\Cart\Error\ShippingMethodBlockedError;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
@@ -20,6 +18,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\CountryCollection;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\V2\Order;
@@ -34,11 +33,11 @@ class ExpressShippingCallbackService
     /**
      * @internal
      *
-     * @param EntityRepository<CountryCollection> $countryRepository
+     * @param SalesChannelRepository<CountryCollection> $countryRepository
      */
     public function __construct(
         private readonly CartService $cartService,
-        private readonly EntityRepository $countryRepository,
+        private readonly SalesChannelRepository $countryRepository,
         private readonly AbstractOrderBuilder $orderBuilder,
         private readonly ShippingOptionsProvider $shippingOptionsProvider,
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
@@ -55,22 +54,27 @@ class ExpressShippingCallbackService
             $salesChannelContext = $this->switchSalesChannelContext($callback, $salesChannelContext);
 
             $this->logger->debug('Shipping callback: recalculating cart with new context');
-            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, false);
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, false, true);
         } else {
             $this->logger->debug('Shipping callback: use existing cart');
-            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
         }
 
-        $order = $this->orderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
+        $fullOrder = $this->orderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
+        $order = new Order();
+        $order->unset('intent');
         $order->setId($callback->getId());
+        $order->setPurchaseUnits($fullOrder->getPurchaseUnits());
         $order->getPurchaseUnits()->first()?->setReferenceId((string) $callback->getPurchaseUnits()->first()?->getReferenceId());
         $order->getPurchaseUnits()->first()?->setShippingOptions($this->shippingOptionsProvider->getShippingOptions($cart, $salesChannelContext));
 
         if ((int) $order->getPurchaseUnits()->first()?->getShippingOptions()?->count() === 0) {
+            $this->logger->debug('Shipping callback: no shipping methods available', ['order' => $order]);
             throw ExpressShippingCallbackException::addressError($callback);
         }
 
         if ($error = $cart->getErrors()->filterInstance(ShippingMethodBlockedError::class)->first()) {
+            $this->logger->debug('Shipping callback: selected shipping method blocked', ['order' => $order]);
             /** @var ShippingMethodBlockedError $error */
             throw ExpressShippingCallbackException::methodUnavailable($callback, $error);
         }
@@ -109,8 +113,9 @@ class ExpressShippingCallbackService
             ]))
             ->setLimit(1);
 
-        $country = $this->countryRepository->search($criteria, $salesChannelContext->getContext())->getEntities()->first();
+        $country = $this->countryRepository->search($criteria, $salesChannelContext)->getEntities()->first();
         if (!$country) {
+            $this->logger->debug('Shipping callback: country not available');
             throw ExpressShippingCallbackException::countryError($callback);
         }
 

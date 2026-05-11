@@ -63,7 +63,7 @@ class WebhookSystemConfigHelper
             }
 
             $oldDistinctSettings = $this->fetchSettings($salesChannelId);
-            if (empty($oldDistinctSettings)) {
+            if ($oldDistinctSettings === []) {
                 // Sales Channel previously had no own configuration
                 continue;
             }
@@ -74,7 +74,8 @@ class WebhookSystemConfigHelper
                 continue;
             }
 
-            if (!$this->configHasChangedSettings($newSettings, $oldActualSettings)) {
+            $isLocalEnvironment = $newSettings[Settings::IS_LOCAL_ENVIRONMENT] ?? $this->systemConfigService->getBool(Settings::IS_LOCAL_ENVIRONMENT, $salesChannelId);
+            if (!$isLocalEnvironment && !$this->configHasChangedSettings($newSettings, $oldActualSettings)) {
                 // No writing of new credentials in this Sales Channel
                 continue;
             }
@@ -105,8 +106,12 @@ class WebhookSystemConfigHelper
                 $salesChannelId = null;
             }
 
+            if ($this->systemConfigService->get(Settings::IS_LOCAL_ENVIRONMENT, $salesChannelId)) {
+                continue;
+            }
+
             $newSettings = $this->fetchSettings($salesChannelId);
-            if (empty(\array_filter($newSettings))) {
+            if (\array_filter($newSettings) === []) {
                 // has no own valid configuration
                 continue;
             }
@@ -133,7 +138,7 @@ class WebhookSystemConfigHelper
      */
     public function needsCheck(array $config): bool
     {
-        return !empty($this->filterSettings($config));
+        return $this->filterSettings($config) !== [];
     }
 
     private function fetchSettings(?string $salesChannelId, bool $inherit = false): array
@@ -154,7 +159,7 @@ class WebhookSystemConfigHelper
 
     private function configHasChangedSettings(array $newSettings, array $oldSettings): bool
     {
-        return !empty(\array_diff_assoc($this->filterSettings($newSettings), $oldSettings));
+        return \array_diff_assoc($this->filterSettings($newSettings), $oldSettings) !== [];
     }
 
     /**

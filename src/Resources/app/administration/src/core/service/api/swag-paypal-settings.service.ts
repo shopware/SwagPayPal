@@ -32,7 +32,7 @@ export default class SwagPayPalSettingsService extends ApiService {
         sandboxActive: boolean,
         params: object = {},
         additionalHeaders: object = {},
-    ) {
+    ): Promise<PayPal.Api.Operations<'getApiCredentials'>> {
         return this.httpClient.post<PayPal.Api.Operations<'getApiCredentials'>>(
             `_action/${this.getApiBasePath()}/get-api-credentials`,
             { authCode, sharedId, nonce, sandboxActive },

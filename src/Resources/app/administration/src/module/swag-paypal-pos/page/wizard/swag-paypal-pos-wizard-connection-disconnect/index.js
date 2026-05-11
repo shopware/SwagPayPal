@@ -105,7 +105,7 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
                     key: 'next',
                     label: this.$t('swag-paypal-pos.wizard.connectionDisconnect.disconnectButton'),
                     position: 'right',
-                    variant: 'danger',
+                    variant: 'critical',
                     action: this.onDisconnect,
                     disabled: this.isFetchingInformation,
                 },
@@ -128,7 +128,7 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
                 Shopware.Utils.EventBus.emit('sw-sales-channel-detail-sales-channel-change');
 
                 this.$emit('recreate-sales-channel');
-                this.forceUpdate();
+                this.updateButtons();
 
                 this.$router.push({ name: 'swag.paypal.pos.wizard.connection' });
             }).catch(() => {
@@ -138,6 +138,9 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
             });
         },
 
+        /**
+         * @deprecated tag:v11.0.0 - will be removed without replacement
+         */
         forceUpdate() {
             this.$forceUpdate();
             this.updateButtons();
