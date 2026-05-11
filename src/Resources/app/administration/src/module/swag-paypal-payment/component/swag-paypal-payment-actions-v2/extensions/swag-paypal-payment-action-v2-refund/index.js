@@ -1,5 +1,5 @@
 import template from './swag-paypal-payment-action-v2-refund.html.twig';
-import { ORDER_CAPTURE_REFUNDED } from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
+import { REFUNDABLE_CAPTURE_STATUSES } from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
 
 const { Component, Filter } = Shopware;
 
@@ -55,6 +55,10 @@ Component.register('swag-paypal-payment-action-v2-refund', {
         },
 
         refundableAmountForSelectedCapture() {
+            if (!this.selectedCapture?.amount) {
+                return 0;
+            }
+
             if (this.selectedCapture.amount.value > this.refundableAmount) {
                 return Number(this.refundableAmount);
             }
@@ -69,6 +73,10 @@ Component.register('swag-paypal-payment-action-v2-refund', {
                 label: `${this.dateFilter(capture.create_time)} (${capture.amount.value} ${capture.amount.currency_code}) - ${capture.id} [${capture.status}]`,
             }));
         },
+
+        selectedCaptureCurrencyCode() {
+            return this.selectedCapture.amount?.currency_code ?? '';
+        },
     },
 
     created() {
@@ -79,6 +87,16 @@ Component.register('swag-paypal-payment-action-v2-refund', {
         createdComponent() {
             this.getRefundableCaptures();
             const firstCapture = this.captures[0];
+
+            if (!firstCapture) {
+                this.selectedCaptureId = '';
+                this.selectedCapture = {};
+                this.refundAmount = 0;
+                this.isLoading = false;
+
+                return;
+            }
+
             this.selectedCaptureId = firstCapture.id;
             this.selectedCapture = firstCapture;
             this.refundAmount = this.refundableAmountForSelectedCapture;
@@ -90,7 +108,7 @@ Component.register('swag-paypal-payment-action-v2-refund', {
             const refundableCaptures = [];
 
             rawCaptures.forEach((capture) => {
-                if (capture.status !== ORDER_CAPTURE_REFUNDED) {
+                if (REFUNDABLE_CAPTURE_STATUSES.includes(capture.status)) {
                     refundableCaptures.push(capture);
                 }
             });
@@ -101,12 +119,16 @@ Component.register('swag-paypal-payment-action-v2-refund', {
         setCapture() {
             this.selectedCapture = this.captures.find((selectedCapture) => {
                 return selectedCapture.id === this.selectedCaptureId;
-            });
+            }) ?? {};
 
             this.refundAmount = this.refundableAmountForSelectedCapture;
         },
 
         refund() {
+            if (!this.selectedCaptureId) {
+                return;
+            }
+
             this.isLoading = true;
 
             let refundAmount = this.refundAmount;

@@ -1073,7 +1073,7 @@ export interface components {
         paypal_v1_payment_transaction_item_list_shipping_address: components["schemas"]["paypal_v1_common_address"] & {
             recipient_name: string;
         };
-        paypal_v1_payment_transaction_item_list_shipping_option: unknown;
+        paypal_v1_payment_transaction_item_list_shipping_option: Record<string, unknown>;
         paypal_v1_payment_transaction_payee: {
             merchant_id: string;
             email: string;
@@ -1437,16 +1437,16 @@ export interface components {
         paypal_v2_eligible_methods_data_eligible_methods_apple_pay: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_paypal"] & {
             config: Record<string, unknown>[];
         };
-        paypal_v2_eligible_methods_data_eligible_methods_bancontact: unknown;
-        paypal_v2_eligible_methods_data_eligible_methods_bizum: unknown;
-        paypal_v2_eligible_methods_data_eligible_methods_blik: unknown;
-        paypal_v2_eligible_methods_data_eligible_methods_eps: unknown;
+        paypal_v2_eligible_methods_data_eligible_methods_bancontact: Record<string, unknown>;
+        paypal_v2_eligible_methods_data_eligible_methods_bizum: Record<string, unknown>;
+        paypal_v2_eligible_methods_data_eligible_methods_blik: Record<string, unknown>;
+        paypal_v2_eligible_methods_data_eligible_methods_eps: Record<string, unknown>;
         paypal_v2_eligible_methods_data_eligible_methods_google_pay: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods_paypal"] & {
             config: Record<string, unknown>[];
         };
-        paypal_v2_eligible_methods_data_eligible_methods_ideal: unknown;
-        paypal_v2_eligible_methods_data_eligible_methods_klarna: unknown;
-        paypal_v2_eligible_methods_data_eligible_methods_p24: unknown;
+        paypal_v2_eligible_methods_data_eligible_methods_ideal: Record<string, unknown>;
+        paypal_v2_eligible_methods_data_eligible_methods_klarna: Record<string, unknown>;
+        paypal_v2_eligible_methods_data_eligible_methods_p24: Record<string, unknown>;
         paypal_v2_eligible_methods_data_eligible_methods_paypal: {
             can_be_vaulted: boolean;
         };

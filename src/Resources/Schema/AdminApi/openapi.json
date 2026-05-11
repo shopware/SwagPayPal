@@ -3539,7 +3539,8 @@
                 ]
             },
             "paypal_v1_payment_transaction_item_list_shipping_option": {
-                "properties": {}
+                "properties": {},
+                "type": "object"
             },
             "paypal_v1_payment_transaction_payee": {
                 "required": [
@@ -5016,10 +5017,18 @@
                     }
                 ]
             },
-            "paypal_v2_eligible_methods_data_eligible_methods_bancontact": {},
-            "paypal_v2_eligible_methods_data_eligible_methods_bizum": {},
-            "paypal_v2_eligible_methods_data_eligible_methods_blik": {},
-            "paypal_v2_eligible_methods_data_eligible_methods_eps": {},
+            "paypal_v2_eligible_methods_data_eligible_methods_bancontact": {
+                "type": "object"
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_bizum": {
+                "type": "object"
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_blik": {
+                "type": "object"
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_eps": {
+                "type": "object"
+            },
             "paypal_v2_eligible_methods_data_eligible_methods_google_pay": {
                 "type": "object",
                 "allOf": [
@@ -5042,9 +5051,15 @@
                     }
                 ]
             },
-            "paypal_v2_eligible_methods_data_eligible_methods_ideal": {},
-            "paypal_v2_eligible_methods_data_eligible_methods_klarna": {},
-            "paypal_v2_eligible_methods_data_eligible_methods_p24": {},
+            "paypal_v2_eligible_methods_data_eligible_methods_ideal": {
+                "type": "object"
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_klarna": {
+                "type": "object"
+            },
+            "paypal_v2_eligible_methods_data_eligible_methods_p24": {
+                "type": "object"
+            },
             "paypal_v2_eligible_methods_data_eligible_methods_paypal": {
                 "required": [
                     "can_be_vaulted"

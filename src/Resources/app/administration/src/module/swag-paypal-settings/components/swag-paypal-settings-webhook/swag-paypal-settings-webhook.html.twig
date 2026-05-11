@@ -27,6 +27,7 @@
         </span>
 
         <mt-button
+            v-tooltip="refreshTooltip"
             class="swag-paypal-settings-webhook__refresh-button"
             variant="secondary"
             :disabled="status !== 'none' || !allowRefresh || !acl.can('swag_paypal.editor')"

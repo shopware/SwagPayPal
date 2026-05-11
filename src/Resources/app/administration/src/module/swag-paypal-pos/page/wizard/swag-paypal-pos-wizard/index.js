@@ -101,6 +101,10 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
             return params.reverse().join(' | ');
         },
+
+        posSalesChannel() {
+            return this.salesChannel?.extensions?.paypalPosSalesChannel;
+        },
     },
 
     watch: {
@@ -216,7 +220,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
                 this.createNotificationError({
                     message: this.$t('sw-sales-channel.detail.messageSaveError', 0, {
-                        name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name'),
+                        name: this.salesChannel.translated.name || this.salesChannel.name || this.placeholder(this.salesChannel, 'name'),
                     }),
                 });
             });
@@ -249,22 +253,22 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
             });
         },
 
-        createNewSalesChannel() {
+        async createNewSalesChannel() {
             if (Context.api.languageId !== Context.api.systemLanguageId) {
                 Context.api.languageId = Context.api.systemLanguageId;
             }
 
             this.previousApiKey = null;
-            this.salesChannel = this.salesChannelRepository.create(Context.api);
-            this.salesChannel.typeId = PAYPAL_POS_SALES_CHANNEL_TYPE_ID;
-            this.salesChannel.name = this.$t('swag-paypal-pos.wizard.salesChannelPrototypeName');
-            this.salesChannel.active = false;
+            const salesChannel = this.salesChannelRepository.create(Context.api);
+            salesChannel.typeId = PAYPAL_POS_SALES_CHANNEL_TYPE_ID;
+            salesChannel.name = this.$t('swag-paypal-pos.wizard.salesChannelPrototypeName');
+            salesChannel.active = false;
 
-            this.salesChannel.extensions.paypalPosSalesChannel
+            salesChannel.extensions.paypalPosSalesChannel
                 = this.paypalPosSalesChannelRepository.create(Context.api);
 
             Object.assign(
-                this.salesChannel.extensions.paypalPosSalesChannel,
+                salesChannel.extensions.paypalPosSalesChannel,
                 {
                     mediaDomain: '',
                     apiKey: '',
@@ -275,19 +279,21 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
                 },
             );
 
-            this.salesChannelService.generateKey().then((response) => {
-                this.salesChannel.accessKey = response.accessKey;
-            }).catch(() => {
+            try {
+                salesChannel.accessKey = (await this.salesChannelService.generateKey()).accessKey;
+            } catch {
                 this.createNotificationError({
                     message: this.$t('sw-sales-channel.detail.messageAPIError'),
                 });
-            });
+            }
+
+            this.salesChannel = salesChannel;
         },
 
         loadSalesChannel() {
             const salesChannelId = this.$route.params.id || this.salesChannel.id;
             if (!salesChannelId) {
-                return new Promise((resolve) => { resolve(); });
+                return Promise.resolve();
             }
 
             this.isLoading = true;

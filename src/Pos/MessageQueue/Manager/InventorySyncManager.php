@@ -63,7 +63,7 @@ class InventorySyncManager extends AbstractSyncManager
         }
 
         $productIds = $this->productRepository->searchIds($criteria, $salesChannelContext)->getIds();
-        if (empty($productIds)) {
+        if ($productIds === []) {
             return [];
         }
 

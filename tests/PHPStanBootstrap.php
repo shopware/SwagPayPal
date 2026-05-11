@@ -32,9 +32,12 @@ $bootstrapper = $bootstrapper
     ->addActivePlugins(...$plugins);
 
 $pluginLoader = new StaticKernelPluginLoader($bootstrapper->getClassLoader(), plugins: \array_map(
-    function (string $plugin) use ($bootstrapper) {
-        /** @var array{autoload: array{}, version: string, extra: array{}} $composer */
-        $composer = \json_decode(\file_get_contents($bootstrapper->getPluginPath($plugin) . '/composer.json') ?: '', true, flags: \JSON_THROW_ON_ERROR);
+    static function (string $plugin) use ($bootstrapper) {
+        $pluginPath = $bootstrapper->getPluginPath($plugin);
+        \assert($pluginPath !== null);
+
+        /** @var array{name: string, autoload: array<string, string[]>, version: string, extra: array{shopware-plugin-class?: string}} $composer */
+        $composer = \json_decode(\file_get_contents($pluginPath . '/composer.json') ?: '', true, flags: \JSON_THROW_ON_ERROR);
 
         return [
             'name' => $plugin,
@@ -42,8 +45,9 @@ $pluginLoader = new StaticKernelPluginLoader($bootstrapper->getClassLoader(), pl
             'version' => $composer['version'],
             'baseClass' => $composer['extra']['shopware-plugin-class'] ?? '',
             'managedByComposer' => false, // even though some are, namespaces wouldn't load if set true
+            'composerName' => $composer['name'],
             'autoload' => $composer['autoload'],
-            'path' => $bootstrapper->getPluginPath($plugin),
+            'path' => $pluginPath,
         ];
     },
     $plugins,

@@ -5,6 +5,7 @@ import './swag-paypal-settings-webhook.scss';
 const STATUS_WEBHOOK_MISSING = 'missing';
 const STATUS_WEBHOOK_INVALID = 'invalid';
 const STATUS_WEBHOOK_VALID = 'valid';
+const STATUS_WEBHOOK_DISABLED = 'disabled';
 
 export default Shopware.Component.wrapComponentConfig({
     template,
@@ -12,6 +13,7 @@ export default Shopware.Component.wrapComponentConfig({
     inject: [
         'acl',
         'SwagPayPalWebhookService',
+        'settingsStoreSavingSettings',
     ],
 
     mixins: [
@@ -61,6 +63,21 @@ export default Shopware.Component.wrapComponentConfig({
             return [STATUS_WEBHOOK_INVALID, STATUS_WEBHOOK_MISSING]
                 .includes(this.webhookStatus ?? '');
         },
+
+        refreshTooltip(): { message: string; showOnDisabledElements?: boolean; disabled?: boolean } {
+            if (this.webhookStatus === STATUS_WEBHOOK_DISABLED) {
+                return {
+                    message: this.$t('swag-paypal-settings.webhook.tooltipDisabled'),
+                    showOnDisabledElements: true,
+                    disabled: false,
+                };
+            }
+
+            return {
+                message: '',
+                disabled: true,
+            };
+        },
     },
 
     watch: {
@@ -68,6 +85,14 @@ export default Shopware.Component.wrapComponentConfig({
             immediate: true,
             handler() {
                 this.fetchWebhookStatus(this.settingsStore.salesChannel);
+            },
+        },
+        settingsStoreSavingSettings: {
+            handler(savingSettings) {
+                if (savingSettings === 'success') {
+                    delete this.allWebhookStatus[String(this.settingsStore.salesChannel)];
+                    this.fetchWebhookStatus(this.settingsStore.salesChannel);
+                }
             },
         },
     },

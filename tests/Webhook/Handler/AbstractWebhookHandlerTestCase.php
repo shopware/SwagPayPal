@@ -125,6 +125,16 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $this->webhookHandler->invoke($webhook, $context);
     }
 
+    protected function assertInvokeWithoutOrderTransactionIdInCustomId(string $resourceType): void
+    {
+        $webhook = $this->createWebhookV2WithoutOrderTransactionId($resourceType);
+        $context = Context::createDefaultContext();
+
+        $this->expectException(WebhookException::class);
+        $this->expectExceptionMessage('Given webhook resource data does not contain needed custom ID');
+        $this->webhookHandler->invoke($webhook, $context);
+    }
+
     protected function createWebhookV1(?string $parentPayment = OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID): Event
     {
         return (new Event())->assign(['resource' => ['parent_payment' => $parentPayment]]);
@@ -134,6 +144,21 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
     {
         $customId = \json_encode(['orderTransactionId' => $orderTransactionId]);
 
+        return $this->createWebhookV2WithCustomId($resourceType, $customId ?: '{}');
+    }
+
+    protected function createWebhookV2WithoutOrderTransactionId(string $resourceType): Event
+    {
+        return $this->createWebhookV2WithCustomId($resourceType, '{}');
+    }
+
+    /**
+     * @return AbstractWebhookHandler
+     */
+    abstract protected function createWebhookHandler();
+
+    private function createWebhookV2WithCustomId(string $resourceType, string $customId): Event
+    {
         $webhook = new Event();
         $webhook->assign(['resource_type' => $resourceType, 'resource_version' => '2.0', 'resource' => ['custom_id' => $customId]]);
         $resource = $webhook->getResource();
@@ -149,9 +174,4 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
 
         return $webhook;
     }
-
-    /**
-     * @return AbstractWebhookHandler
-     */
-    abstract protected function createWebhookHandler();
 }

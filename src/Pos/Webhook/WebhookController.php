@@ -147,7 +147,7 @@ class WebhookController extends AbstractController
 
         $this->logger->debug('[Zettle Webhook] Received webhook', ['payload' => $postData]);
 
-        if (empty($postData)) {
+        if ($postData === []) {
             throw new BadRequestHttpException('No webhook data sent');
         }
 

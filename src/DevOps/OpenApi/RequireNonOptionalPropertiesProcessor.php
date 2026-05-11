@@ -56,6 +56,6 @@ class RequireNonOptionalPropertiesProcessor
             $required[] = $property->property;
         }
 
-        $schema->required = empty($required) ? $schema->required : $required;
+        $schema->required = $required === [] ? $schema->required : $required;
     }
 }

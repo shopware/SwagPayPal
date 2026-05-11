@@ -16,27 +16,27 @@ export interface AdminPageTypes {
 }
 
 export const test = base.extend<FixtureTypes>({
-    AdminOrderDetail: async ({ page }, use) => {
-        await use(new OrderDetail(page));
+    AdminOrderDetail: async ({ AdminPage }, use) => {
+        await use(new OrderDetail(AdminPage));
     },
 
-    AdminPaymentListing: async ({ page }, use) => {
-        await use(new PaymentListing(page));
+    AdminPaymentListing: async ({ AdminPage }, use) => {
+        await use(new PaymentListing(AdminPage));
     },
 
-    AdminPayPalDisputesDetail: async ({ page }, use) => {
-        await use(new PayPalDisputesDetail(page));
+    AdminPayPalDisputesDetail: async ({ AdminPage }, use) => {
+        await use(new PayPalDisputesDetail(AdminPage));
     },
 
-    AdminPayPalDisputesListing: async ({ page }, use) => {
-        await use(new PayPalDisputesListing(page));
+    AdminPayPalDisputesListing: async ({ AdminPage }, use) => {
+        await use(new PayPalDisputesListing(AdminPage));
     },
 
-    AdminPayPalSettings: async ({ page }, use) => {
-        await use(new PayPalSettings(page));
+    AdminPayPalSettings: async ({ AdminPage }, use) => {
+        await use(new PayPalSettings(AdminPage));
     },
 
-    AdminShippingDetail: async ({ page }, use) => {
-        await use(new ShippingDetail(page));
+    AdminShippingDetail: async ({ AdminPage }, use) => {
+        await use(new ShippingDetail(AdminPage));
     },
 });

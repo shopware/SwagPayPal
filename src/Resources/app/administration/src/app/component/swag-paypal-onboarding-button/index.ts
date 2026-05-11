@@ -272,7 +272,7 @@ export default Shopware.Component.wrapComponentConfig({
                 sharedId,
                 this.requestParams.sellerNonce,
                 this.isSandbox,
-            ).catch((error: PayPal.ServiceError) => {
+            ).catch((error: PayPal.ServiceError): PayPal.Api.Operations<'getApiCredentials'> => {
                 this.createNotificationError({
                     title: this.$t('swag-paypal.notifications.credentials.title'),
                     message: this.$t('swag-paypal.notifications.credentials.errorMessage', {
@@ -280,7 +280,7 @@ export default Shopware.Component.wrapComponentConfig({
                     }),
                 });
 
-                return {} as Record<string, string>;
+                return {};
             });
 
             this.setConfig(response.client_id, response.client_secret, response.payer_id);

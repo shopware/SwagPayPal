@@ -75,7 +75,7 @@ class CartValidator implements CartValidatorInterface
             return;
         }
 
-        if ($this->cartPriceService->isZeroValueCart($cart)) {
+        if ($this->cartPriceService->hasZeroPrice($cart, $context)) {
             /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
             $errors->add(new PaymentMethodBlockedError($name, 'zero value cart', $id));
 

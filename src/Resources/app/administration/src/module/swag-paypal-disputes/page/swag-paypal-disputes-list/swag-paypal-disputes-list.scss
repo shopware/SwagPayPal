@@ -10,10 +10,10 @@
     }
 
     &__stage-inquiry {
-        color: $color-module-yellow-900;
+        color: var(--color-text-attention-default);
     }
 
     &__stage-other {
-        color: $color-crimson-900;
+        color: var(--color-text-critical-default);
     }
 }

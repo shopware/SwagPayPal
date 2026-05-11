@@ -10,7 +10,7 @@
                 required
                 :label="$t('swag-paypal-pos.wizard.customization.salesChannelLabel')"
                 :placeholder="$t('sw-sales-channel.detail.placeholderName')"
-                @update:model-value="forceUpdate" />
+                @update:model-value="updateButtons" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_customization_language %}
@@ -30,7 +30,7 @@
                 :label="$t('swag-paypal-pos.wizard.customization.labelDomain')"
                 :placeholder="$t('swag-paypal-pos.wizard.customization.placeholderDomain')"
                 :model-value="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
-                @update:model-value="forceUpdate" />
+                @update:model-value="updateButtons" />
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_connection_success_disclaimer %}
