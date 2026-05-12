@@ -9,6 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 
@@ -18,30 +19,27 @@ use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 #[Package('checkout')]
 class ActivateDeactivate
 {
-    private PaymentMethodStateService $paymentMethodStateService;
-
-    private PosStateService $posStateService;
-
     /**
      * @internal
      */
     public function __construct(
-        PaymentMethodStateService $paymentMethodStateService,
-        PosStateService $posStateService,
+        private readonly PaymentMethodStateService $paymentMethodStateService,
+        private readonly PosStateService $posStateService,
+        private readonly AgenticCommerceService $agenticCommerceService,
     ) {
-        $this->paymentMethodStateService = $paymentMethodStateService;
-        $this->posStateService = $posStateService;
     }
 
     public function activate(Context $context): void
     {
         $this->paymentMethodStateService->setAllPaymentMethodsState(true, $context);
         $this->posStateService->addPosSalesChannelType($context);
+        $this->agenticCommerceService->addAgenticSalesChannelType($context);
     }
 
     public function deactivate(Context $context): void
     {
         $this->paymentMethodStateService->setAllPaymentMethodsState(false, $context);
         $this->posStateService->setPosSalesChannelState(false, $context);
+        $this->agenticCommerceService->deactivateAgenticSalesChannelState($context);
     }
 }
