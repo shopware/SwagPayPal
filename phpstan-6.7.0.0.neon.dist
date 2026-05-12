@@ -30,7 +30,7 @@ parameters:
           identifier: function.impossibleType
           paths:
             - tests/Checkout/Document/Zugferd/ZugferdSubscriberTest.php
-            - tests/AgentCommerce/SalesChannel/CheckoutRouteTest.php
+            - tests/AgenticCommerce/SalesChannel/CheckoutRouteTest.php
 
         - identifier: symplify.noDynamicName
           path: tests/Pos/Mock/MessageBusMock.php
@@ -46,22 +46,22 @@ parameters:
         - message: '#^Class Shopware\\Core\\Checkout\\Payment\\Cart\\Error\\PaymentMethodBlockedError constructor invoked with 3 parameters, 1\-2 required\.$#'
           identifier: arguments.count
           count: 1
-          path: tests/AgentCommerce/Validation/ValidationIssuesTest.php
+          path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
 
         - message: '#^Class Shopware\\Core\\Checkout\\Shipping\\Cart\\Error\\ShippingMethodBlockedError constructor invoked with 3 parameters, 1 required\.$#'
           identifier: arguments.count
           count: 1
-          path: tests/AgentCommerce/Validation/ValidationIssuesTest.php
+          path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
 
         - message: '#^Class Shopware\\Storefront\\Checkout\\Cart\\Error\\PaymentMethodChangedError constructor invoked with 5 parameters, 2 required\.$#'
           identifier: arguments.count
           count: 1
-          path: tests/AgentCommerce/Validation/ValidationIssuesTest.php
+          path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
 
         - message: '#^Class Shopware\\Storefront\\Checkout\\Cart\\Error\\ShippingMethodChangedError constructor invoked with 5 parameters, 2 required\.$#'
           identifier: arguments.count
           count: 1
-          path: tests/AgentCommerce/Validation/ValidationIssuesTest.php
+          path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
 
         - identifier: arguments.count
           message: '#.*PaymentMethodBlockedError.*#'

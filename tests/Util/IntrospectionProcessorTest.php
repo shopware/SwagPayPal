@@ -20,7 +20,7 @@ use Shopware\PayPalSDK\Gateway\OrderGateway;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetail;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\AgentErrorDetailCollection;
 use Shopware\PayPalSDK\Struct\Struct;
-use Swag\PayPal\AgentCommerce\Exception\AgentException;
+use Swag\PayPal\AgenticCommerce\Exception\AgentException;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient;

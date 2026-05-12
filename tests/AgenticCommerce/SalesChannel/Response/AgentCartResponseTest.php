@@ -1,0 +1,32 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\Tests\AgenticCommerce\SalesChannel\Response;
+
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
+use Swag\PayPal\AgenticCommerce\SalesChannel\Response\AgentCartResponse;
+
+/**
+ * @internal
+ */
+#[Package('checkout')]
+#[CoversClass(AgentCartResponse::class)]
+class AgentCartResponseTest extends TestCase
+{
+    public function testConstruct(): void
+    {
+        $cart = new PayPalCart();
+        $cart->setId('test-token');
+
+        $response = new AgentCartResponse($cart);
+
+        static::assertSame(['id' => 'test-token'], $response->getObject()->all());
+    }
+}

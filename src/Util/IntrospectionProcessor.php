@@ -17,7 +17,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\PayPalSDK\Contract\Gateway\GatewayInterface;
-use Swag\PayPal\AgentCommerce\Exception\AgentHttpException;
+use Swag\PayPal\AgenticCommerce\Exception\AgentHttpException;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

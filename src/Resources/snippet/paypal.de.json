@@ -85,7 +85,7 @@
             "orderId": "Auftragsnummer: %orderId%"
         }
     },
-    "agentCommerce": {
+    "agenticCommerce": {
         "validationIssue": {
             "userMessage": {
                 "outOfStock": "{0} Das Produkt \"%name%\" ist nicht mehr auf Lager | [1,Inf[ Das Produkt \"%name%\" ist nur noch %count% mal auf Lager",

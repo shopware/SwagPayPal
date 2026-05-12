@@ -163,7 +163,7 @@ parameters:
                 - tests/Checkout/PUI/PUISubscriberTest.php
                 - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
                 - tests/Storefront/Data/CheckoutSubscriberTest.php
-                - tests/AgentCommerce/Validation/ValidationIssuesTest.php
+                - tests/AgenticCommerce/Validation/ValidationIssuesTest.php
 
         - # 6.8 deprecation - Will be removed
             message: '#Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct#'
@@ -176,7 +176,7 @@ parameters:
         - # 6.8 deprecation - new parameter addressId will be required
             identifier: method.deprecated
             message: '#Call to deprecated method __construct\(\) of class .*\\(AddressValidationError|BillingAddressBlockedError)#'
-            path: tests/AgentCommerce/Validation/ValidationIssuesTest.php
+            path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
 
         - # 6.8 deprecation - reason:exception-change - Will throw \Shopware\Core\Framework\Util\UtilException instead of \Doctrine\DBAL\Exception\TableNotFoundException
             identifier: method.deprecated
@@ -195,13 +195,13 @@ parameters:
             identifier: method.deprecated
             message: '#Call to deprecated method getPayloadValue\(\) of class .*\\LineItem#'
             paths:
-                - src/AgentCommerce/Util/PayPalCartTransformer.php
-                - src/AgentCommerce/Validation/ValidationIssues.php
+                - src/AgenticCommerce/Util/PayPalCartTransformer.php
+                - src/AgenticCommerce/Validation/ValidationIssues.php
 
         - # 6.8 deprecation - Use the "defaults" property instead
             identifier: method.deprecated
             message: '#Call to deprecated method getDefaults\(\) of class Symfony\\Component\\Routing\\Attribute\\Route#'
-            path: tests/AgentCommerce/SalesChannel/DefaultRouteScopeTest.php
+            path: tests/AgenticCommerce/SalesChannel/DefaultRouteScopeTest.php
 
 rules:
     # Shopware core rules
