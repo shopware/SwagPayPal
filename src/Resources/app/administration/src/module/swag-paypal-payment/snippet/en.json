@@ -1,0 +1,151 @@
+{
+    "swag-paypal-payment": {
+        "general": {
+            "title": "Orders"
+        },
+        "tabs": {
+            "order": "PayPal",
+            "overview": "Overview"
+        },
+        "paymentDetails": {
+            "cardTitle": "Payment",
+            "invoice": {
+                "heading": "Invoice amount",
+                "totalAmount": "Total amount:",
+                "subTotal": "Subtotal:",
+                "shipping": "Shipping:",
+                "discount": "Discount:",
+                "handling": "Handling fee:",
+                "insurance": "Insurance:",
+                "shipping_discount": "Shipping discount:"
+            },
+            "payment": {
+                "heading": "Payment details",
+                "intent": "Intent:",
+                "paymentId": "Payment ID:",
+                "cartId": "Cart ID:",
+                "state": "State:",
+                "createTime": "Create time:",
+                "updateTime": "Update time:"
+            },
+            "customer": {
+                "heading": "Customer",
+                "payerId": "Payer ID:"
+            },
+            "error": {
+                "title": "Error fetching payment details from PayPal"
+            }
+        },
+        "puiDetails": {
+            "cardTitle": "Invoice payment data",
+            "buttonCopy": "Copy",
+            "bank": "Bank:",
+            "iban": "IBAN:",
+            "bic": "BIC:",
+            "accountHolder": "Account holder:",
+            "amount": "Amount:",
+            "reference": "Reference:"
+        },
+        "transactionHistory": {
+            "cardTitle": "Payment History",
+            "states": {
+                "authorization": "Authorization",
+                "sale": "Sale",
+                "refund": "Refund",
+                "capture": "Capture",
+                "order": "Order"
+            },
+            "types": {
+                "type": "Type",
+                "amount": "Amount",
+                "createTime": "Created",
+                "updateTime": "Updated",
+                "state": "State",
+                "trackingId": "Tracking ID",
+                "transactionFee": "Transaction fee",
+                "paymentMode": "Payment mode"
+            }
+        },
+        "buttons": {
+            "label": {
+                "refund": "Create a new refund",
+                "capture": "Capture",
+                "void": "Cancel authorization"
+            }
+        },
+        "modal": {
+            "title": {
+                "refund": "New refund",
+                "capture": "Capture",
+                "void": "Cancel authorization"
+            }
+        },
+        "refundAction": {
+            "successMessage": "Your refund was successful.",
+            "invoiceSelect": {
+                "label": "Select capture"
+            },
+            "refundAmount": {
+                "label": "Amount",
+                "helpText": "An amount of '0' will cause the refund of the complete payment"
+            },
+            "refundDescription": {
+                "label": "Description",
+                "placeholder": "Enter a description"
+            },
+            "refundReason": {
+                "label": "Reason",
+                "placeholder": "Enter a reason"
+            },
+            "refundNoteToPayer": {
+                "label": "Note to payer",
+                "placeholder": "Enter a note to payer"
+            },
+            "refundInvoiceNumber": {
+                "label": "Invoice number",
+                "placeholder": "Enter an invoice number"
+            },
+            "confirmButton": {
+                "text": "Execute"
+            }
+        },
+        "captureAction": {
+            "successMessage": "Your capture was successful.",
+            "maxAmount": "Maximum amount",
+            "currentAmount": "Amount",
+            "captureInvoiceNumber": {
+                "label": "Invoice number",
+                "placeholder": "Enter an invoice number"
+            },
+            "captureNoteToPayer": {
+                "label": "Note to payer",
+                "placeholder": "Enter a note to payer"
+            },
+            "isFinal": "This is the final capture",
+            "isFinalHint": "Hint: Marked as final capture, although not the entire amount is to be captured.",
+            "button": {
+                "text": "Capture payment"
+            }
+        },
+        "voidAction": {
+            "successMessage": "The payment was successfully voided.",
+            "confirm": {
+                "message": "Do you really want to cancel this payment?",
+                "button": {
+                    "confirm": "Cancel authorization"
+                }
+            }
+        },
+        "errorPage": {
+            "title": "Payment details not available",
+            "canceledPaymentContent": "If you see this message, it was probably a payment that was cancelled by the customer. Cancelled payments will be deleted by PayPal after a while and are then no longer available.",
+            "other": "It is likely that the payment was not completed by the customer, or was created with sandbox enabled and has now been requested with live data. Details for uncompleted payments are only available for about 6 hours on the PayPal side."
+        }
+    },
+    "sw-order-detail": {
+        "payPalCarrierLabel": "Default shipping carrier",
+        "payPalCarrierPlaceholder": "not set",
+        "payPalCarrierHelpText": "You can set and change the default shipping carrier for PayPal in the <a class=\"sw-internal-link sw-internal-link--inline\" href=\"#/sw/settings/shipping/index\">shipping methods<sw-icon name=\"regular-long-arrow-right\" small /></a>. However, this will have no effect on orders that have already been placed.",
+        "payPalCarrierDescription": "If you want to change the carrier for this PayPal order, <a target=\"_blank\" href=\"{orderLink}\">click here</a>"
+    }
+}

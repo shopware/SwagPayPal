@@ -1,0 +1,15 @@
+{
+    "swag-paypal-settings-shipping-carrier": {
+        "cardTitle": "Standard-Versanddienstleister",
+        "cardHelpText": "Sendungsverfolgungsinformationen werden an PayPal übermittelt",
+        "description": "PayPal bietet eine Sendungsverfolgung für Bestellungen an, die über PayPal abgewickelt werden. Um diese zu nutzen, geben Sie einen Standard-Versanddienstleister an, der in den Bestellungen überschrieben werden kann. Eine Liste aller Versanddienstleister finden Sie <a target=\"_blank\" href=\"https://developer.paypal.com/docs/tracking/reference/carriers/\">hier</a>",
+        "inputLabel": "Versanddienstleister",
+        "inputPlaceholder": "PayPal-Versanddienstleister auswählen (z.B. DE_DHL) ...",
+        "inputHelpText": "Wähle \"Other\", um einen benutzerdefinierten Versanddienstleister einzugeben.",
+        "inputLabelOther": "Versanddienstleister Name",
+        "inputPlaceholderOther": "Name des Versanddienstleisters eingeben ...",
+        "inputHelpTextOther": "Wenn Dein Versanddienstleister nicht in der Liste enthalten ist, geben Sie hier den Namen ein. Leer lassen um den Namen der Versandart zu verwenden.",
+        "invalid": "Der angegebene Versanddienstleister ist ungültig. Bitte wähle einen aus der Liste aus oder wähle \"Other\".",
+        "commonCarrierBadge": "Häufig verwendet"
+    }
+}

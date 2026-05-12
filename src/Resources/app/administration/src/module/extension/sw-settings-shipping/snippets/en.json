@@ -1,0 +1,15 @@
+{
+    "swag-paypal-settings-shipping-carrier": {
+        "cardTitle": "Standard shipping carrier",
+        "cardHelpText": "Tracking information will be sent to PayPal",
+        "description": "PayPal offers tracking for orders processed through PayPal. To use this, specify a default shipping carrier, which can be overwritten in the orders. Find a list of all shipping providers <a target=\"_blank\" href=\"https://developer.paypal.com/docs/tracking/reference/carriers/\">here</a>",
+        "inputLabel": "Carrier code",
+        "inputPlaceholder": "Select a PayPal carrier code (e.g. DHL)...",
+        "inputHelpText": "Select \"Other\" to enter a custom carrier name.",
+        "inputLabelOther": "Carrier name",
+        "inputPlaceholderOther": "Enter a carrier name...",
+        "inputHelpTextOther": "If your carrier is not included in the list, enter the name here. Leave empty to use the name of the shipping method.",
+        "invalid": "The provided carrier code is invalid. Please choose one from the list or select \"Other\".",
+        "commonCarrierBadge": "Commonly used"
+    }
+}

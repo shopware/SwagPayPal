@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Pos\Setting\SettingsController" public="true">
+            <argument type="service" id="Swag\PayPal\Pos\Setting\Service\ApiCredentialService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Setting\Service\InformationFetchService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Setting\Service\InformationDefaultService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Setting\Service\ProductVisibilityCloneService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Setting\Service\ProductCountService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\Service\ApiCredentialService">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\TokenResource"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\ApiKeyDecoder"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\Service\InformationFetchService">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\UserResource"/>
+            <argument type="service" id="country.repository"/>
+            <argument type="service" id="currency.repository"/>
+            <argument type="service" id="language.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\Service\ProductCountService">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="sales_channel.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\Service\InformationDefaultService" public="true">
+            <argument type="service" id="customer_group.repository"/>
+            <argument type="service" id="category.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="rule.repository"/>
+            <argument type="service" id="delivery_time.repository"/>
+            <argument type="service" id="shipping_method.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\Service\ProductVisibilityCloneService">
+            <argument type="service" id="Swag\PayPal\Pos\MessageQueue\MessageDispatcher"/>
+            <argument type="service" id="product_visibility.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
+            <argument type="service" id="sales_channel.repository"/>
+        </service>
+    </services>
+</container>

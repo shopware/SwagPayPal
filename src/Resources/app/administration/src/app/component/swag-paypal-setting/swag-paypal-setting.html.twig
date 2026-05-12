@@ -1,0 +1,69 @@
+<sw-inherit-wrapper
+    v-bind="wrapperAttrs"
+    class="swag-paypal-setting"
+    :class="wrapperClasses"
+    :value="value"
+    :inherited-value="inheritedValue"
+    :custom-inheritation-check-function="customInheritationCheckFunction"
+    :has-parent="hasParent"
+    @update:value="setValue"
+>
+    <template #content="props">
+        <slot
+            name="content"
+            v-bind="{
+                ...props,
+                disabled: props.isInherited || disabled,
+                path: path,
+            }"
+        >
+            <mt-switch
+                v-if="type === 'boolean'"
+                v-bind="formAttrs"
+                :name="path"
+                :disabled="props.isInherited || disabled"
+                :model-value="props.currentValue"
+                @update:model-value="props.updateCurrentValue"
+            />
+
+            <sw-single-select
+                v-else-if="type === 'string' && formAttrs.hasOwnProperty('options')"
+                v-bind="formAttrs"
+                :name="path"
+                :disabled="props.isInherited || disabled"
+                :value="props.currentValue ?? null"
+                @update:value="props.updateCurrentValue"
+            >
+                <template v-if="attrs.hasOwnProperty('hintText')" #hint>
+                    {{ attrs.hintText }}
+                </template>
+            </sw-single-select>
+
+            <mt-password-field
+                v-else-if="type === 'password'"
+                v-bind="formAttrs"
+                :name="path"
+                :disabled="props.isInherited || disabled"
+                :model-value="props.currentValue"
+                @update:model-value="props.updateCurrentValue"
+            >
+                <template v-if="attrs.hasOwnProperty('hintText')" #hint>
+                    {{ attrs.hintText }}
+                </template>
+            </mt-password-field>
+
+            <mt-text-field
+                v-else-if="type === 'string'"
+                v-bind="formAttrs"
+                :name="path"
+                :disabled="props.isInherited || disabled"
+                :model-value="props.currentValue"
+                @update:model-value="props.updateCurrentValue"
+            >
+                <template v-if="attrs.hasOwnProperty('hintText')" #hint>
+                    {{ attrs.hintText }}
+                </template>
+            </mt-text-field>
+        </slot>
+    </template>
+</sw-inherit-wrapper>

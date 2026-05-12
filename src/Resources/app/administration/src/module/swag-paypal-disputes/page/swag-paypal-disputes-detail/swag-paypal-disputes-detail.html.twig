@@ -1,0 +1,157 @@
+{% block swag_paypal_disputes_detail %}
+<sw-page class="swag-paypal-disputes-detail">
+
+    {% block swag_paypal_disputes_detail_smart_bar_header %}
+    <template #smart-bar-header>
+
+        {% block swag_paypal_disputes_detail_smart_bar_header_title %}
+        <h2>
+
+            {% block swag_paypal_disputes_detail_smart_bar_header_title %}
+                {{ $t('swag-paypal-disputes.detail.title') }}
+            {% endblock %}
+
+            {% block swag_paypal_disputes_detail_smart_bar_header_dispute_id %}
+                {{ disputeId }}
+            {% endblock %}
+
+            {% block swag_paypal_disputes_detail_smart_bar_header_title_addition %}
+                {{ $t('swag-paypal-disputes.detail.titleAddition') }}
+            {% endblock %}
+
+        </h2>
+        {% endblock %}
+
+    </template>
+    {% endblock %}
+
+    {% block swag_paypal_disputes_detail_content %}
+    <template #content>
+        <sw-card-view>
+
+            {% block swag_paypal_disputes_detail_content_details %}
+            <mt-card
+                position-identifier="swag-paypal-disputes-detail-content-details"
+                :isLoading="isLoading"
+                :title="$t('swag-paypal-disputes.detail.mainFieldsCardTitle')"
+            >
+
+                {% block swag_paypal_disputes_detail_content_details_fields %}
+                <template v-if="dispute">
+
+                    {% block swag_paypal_disputes_detail_content_details_fields_external_link %}
+                    <div class="swag-paypal-disputes-detail__links">
+                        <sw-external-link :href="externalDetailPageLink">
+                            {{ $t('swag-paypal-disputes.detail.externalLinkText') }}
+                        </sw-external-link>
+                    </div>
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_detail_content_details_fields_order_module_link %}
+                    <div class="swag-paypal-disputes-detail__links">
+                        <router-link
+                            v-if="orderModuleLink"
+                            :to="orderModuleLink"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            {{ $t('swag-paypal-disputes.detail.orderModuleLinkText') }}
+                        </router-link>
+                    </div>
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_detail_content_details_fields_separator %}
+                    <hr class="swag-paypal-disputes-detail__separator">
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_detail_content_details_fields_id %}
+                    <mt-text-field
+                        :modelValue="dispute.dispute_id"
+                        :label="$t('swag-paypal-disputes.common.dispute_id')"
+                        disabled
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_detail_content_details_fields_update_time %}
+                    <mt-text-field
+                        :modelValue="formatDate(dispute.update_time)"
+                        :label="$t('swag-paypal-disputes.common.update_time')"
+                        disabled
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_detail_content_details_fields_due_date %}
+                    <mt-text-field
+                        v-if="dispute.seller_response_due_date || dispute.buyer_response_due_date"
+                        :modelValue="getDueDate(dispute.seller_response_due_date, dispute.buyer_response_due_date)"
+                        :label="$t('swag-paypal-disputes.common.response_due_date.label')"
+                        disabled
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_detail_content_details_fields_status %}
+                    <mt-text-field
+                        :modelValue="`${formatTechnicalText(dispute.status)} (${formatTechnicalText(dispute.reason)})`"
+                        :label="$t('swag-paypal-disputes.common.status')"
+                        disabled
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_detail_content_details_fields_dispute_life_cycle_stage %}
+                    <mt-text-field
+                        :modelValue="formatTechnicalText(dispute.dispute_life_cycle_stage)"
+                        :label="$t('swag-paypal-disputes.common.dispute_life_cycle_stage')"
+                        :class="getInquiryClass(dispute.dispute_life_cycle_stage)"
+                        disabled
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_detail_content_details_fields_dispute_amount %}
+                    <mt-text-field
+                        :modelValue="`${dispute.dispute_amount.value} ${dispute.dispute_amount.currency_code}`"
+                        :label="$t('swag-paypal-disputes.common.dispute_amount')"
+                        disabled
+                    />
+                    {% endblock %}
+
+                </template>
+                {% endblock %}
+
+            </mt-card>
+            {% endblock %}
+
+            {% block swag_paypal_disputes_detail_content_raw_data %}
+            <mt-card
+                position-identifier="swag-paypal-disputes-detail-content-raw-data"
+                :isLoading="isLoading"
+                :title="$t('swag-paypal-disputes.detail.rawDataCardTitle')"
+            >
+
+                {% block swag_paypal_disputes_detail_content_raw_data_content %}
+                <template v-if="dispute">
+
+                    {% block swag_paypal_disputes_detail_content_raw_data_text %}
+                    <mt-textarea
+                        :modelValue="JSON.stringify(dispute, null, 2)"
+                        disabled
+                    />
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_detail_content_raw_data_copy_button %}
+                    <mt-button variant="secondary" @click="copyToClipboard">
+                        {{ $t('swag-paypal-disputes.detail.copyButtonLabel') }}
+                    </mt-button>
+                    {% endblock %}
+
+                </template>
+                {% endblock %}
+
+            </mt-card>
+            {% endblock %}
+
+        </sw-card-view>
+    </template>
+    {% endblock %}
+
+</sw-page>
+{% endblock %}

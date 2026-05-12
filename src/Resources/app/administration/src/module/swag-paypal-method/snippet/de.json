@@ -1,0 +1,67 @@
+{
+  "swag-paypal-method": {
+    "cardTitle": "PayPal Checkout",
+    "settingsLink": "Einstellungen",
+    "header": "Mehr Zahlungsmöglichkeiten in einer Lösung von PayPal",
+    "description": "PayPal Checkout ist die neue All-in-One-Lösung, mit der Sie leistungsstarke und flexible Funktionen zur Zahlungsabwicklung auf Marktplätzen und anderen Handelsplattformen anbieten können.",
+    "banner": "Mit PayPal Checkout Kannst Du Deinen Kunden die Bezahlung per Rechnung, Kreditkarte und viele andere lokale Zahlungsmethoden anbieten. PayPal Checkout unterstützt Dich mit der neuesten Technologie und bringt Dir höchste Flexibilität. Du behältst Deine bisherigen Zahlungsarten und die Gebühren bleiben gleich! Aktiviere PayPal Checkout und deaktiviere PayPal PLUS, um doppelte Zahlungsmethoden in Deinem Shop zu vermeiden.",
+    "bannerLink": "Mehr Informationen",
+    "sandbox": {
+      "label": "Sandbox",
+      "onlySandboxTooltip": "Du bist bisher nur mit einem PayPal-Sandbox-Konto verbunden.",
+      "onlyLiveTooltip": "Du bist bisher nur mit einem PayPal-Live-Konto verbunden.",
+      "helpText": "Aktiviere diese Option, um die Integration zu testen."
+    },
+    "switch": {
+      "label": "Aktiv",
+      "active": "Zahlungsart \"{name}\" ist jetzt aktiv.",
+      "inactive": "Zahlungsart \"{name}\" ist jetzt inaktiv."
+    },
+    "domainAssociation": {
+      "title": "Bitte vergewissere dich, dass die Domain korrekt eingestellt ist, damit Apple Pay funktioniert. Die Domain-Zuordnungsdatei ist bereits hinterlegt.",
+      "link": "Domain-Einstellungen öffnen"
+    },
+    "paymentMethodText": "Zahlungsmöglichkeiten",
+    "appImageAlt": "PayPal",
+    "ratePayLabel": "von Ratepay",
+    "editDetail": "Details bearbeiten",
+    "availabilityToolTip": {
+      "bancontactapmhandler": "Bancontact ist für die folgenden Länder verfügbar: Belgien",
+      "blikapmhandler": "BLIK ist für die folgenden Länder verfügbar: Polen",
+      "boletobancarioapmhandler": "Boleto Bancário ist für die folgenden Länder verfügbar: Brasilien",
+      "epsapmhandler": "eps ist für die folgenden Länder verfügbar: Österreich",
+      "idealapmhandler": "iDEAL ist für die folgenden Länder verfügbar: Niederlande",
+      "multibancoapmhandler": "Multibanco ist für die folgenden Länder verfügbar: Portugal",
+      "mybankapmhandler": "MyBank ist für die folgenden Länder verfügbar: Italien",
+      "oxxoapmhandler": "OXXO ist für die folgenden Länder verfügbar: Mexiko",
+      "p24apmhandler": "Przelewy24 ist für die folgenden Länder verfügbar: Polen",
+      "paylaterhandler": "Später Bezahlen ist für die folgenden Länder verfügbar: Australien, Deutschland, Frankreich, Italien, Spanien, Vereinigte Staaten, Vereinigtes Königreich",
+      "puihandler": "Rechnungskauf ist für die folgenden Länder verfügbar: Deutschland",
+      "sepahandler": "SEPA Lastschrift ist für die folgenden Länder verfügbar: Deutschland",
+      "venmohandler": "Venmo ist für die folgenden Länder verfügbar: USA",
+      "trustlyapmhandler": "Trustly ist für die folgenden Länder verfügbar: Estland, Finnland, Niederlande, Schweden"
+    },
+    "onboardingStatusText": {
+      "active": "Autorisiert",
+      "limited": "Limitiert",
+      "pending": "Authorisierung ausstehend",
+      "ineligible": "Gesperrt",
+      "inactive": "Onboarding benötigt",
+      "mybank": "Limitiert",
+      "test": "Test Modus"
+    },
+    "onboardingStatusTooltip": {
+      "ineligible": "PayPal hat uns informiert, dass diese Zahlungsmethode aktuell für Ihren Account nicht freigeschaltet ist.",
+      "limited": "PayPal hat uns informiert, dass Einschränkugen dieser Zahlungsart für Ihren Account bestehen.",
+      "mybank": "Händler, die MyBank nach Februar 2023 aktivieren, benötigen eine manuelle Genehmigung von PayPal. Wenden Sie sich an den PayPal-Support, um weitere Informationen zu erhalten."
+    },
+    "merchantStatusText": {
+      "emailUnconfirmed": "E-Mail unbestätigt",
+      "paymentsUnreceivable": "Zahlungen nicht empfangbar",
+      "onboardingNeeded": "Erneutes Onboarding benötigt",
+      "connected": "Verbunden",
+      "notConnected": "Nicht verbunden"
+    },
+    "paymentActivateSwitchTooltip": "Gehen Sie zu den <a class=\"swag-paypal-go-to-settings-link\" href=\"#/swag/paypal/index\">Einstellungen der PayPal-Erweiterung →</a> und aktivieren Sie PayPal Commerce Platform, um diese Zahlungsmethode zu aktivieren."
+  }
+}

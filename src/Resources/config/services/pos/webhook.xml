@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Pos\Webhook\WebhookController" public="true">
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Swag\PayPal\Pos\Webhook\WebhookService"/>
+            <argument type="service" id="sales_channel.repository"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Webhook\WebhookService" public="true">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\SubscriptionResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Webhook\WebhookRegistry"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+            <argument type="service" id="router"/>
+        </service>
+
+        <!-- handler registry -->
+        <service id="Swag\PayPal\Pos\Webhook\WebhookRegistry">
+            <argument type="tagged_iterator" tag="swag.paypal.pos.webhook.handler"/>
+        </service>
+
+        <!-- handler -->
+        <service id="Swag\PayPal\Pos\Webhook\Handler\InventoryChangedHandler">
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\ApiKeyDecoder"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalWebhookCalculator"/>
+            <argument type="service" id="swag.paypal.pos.sync.inventory.local_webhook_updater"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\InventorySyncer"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Context\InventoryContextFactory"/>
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+            <argument>%shopware.stock.enable_stock_management%</argument>
+            <tag name="swag.paypal.pos.webhook.handler"/>
+        </service>
+    </services>
+</container>

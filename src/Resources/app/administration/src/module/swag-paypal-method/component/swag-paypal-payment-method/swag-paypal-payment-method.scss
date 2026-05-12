@@ -1,0 +1,64 @@
+@import "~scss/variables";
+
+.swag-paypal-payment-method {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    border: 1px solid var(--color-border-primary-default);
+    border-radius: $border-radius-default;
+    gap: 16px 12px;
+    padding: 16px 16px;
+    font-size: $font-size-xs;
+
+    &__name {
+        font-weight: $font-weight-semi-bold;
+    }
+
+    &__icon {
+        width: 32px;
+        max-height: 24px;
+    }
+
+    &__dynamic {
+        display: flex;
+        align-items: center;
+        justify-items: end;
+        gap: 12px;
+
+        .sw-label {
+            margin: 0;
+        }
+    }
+
+    &__status-label {
+        border: none;
+        font-weight: $font-weight-semi-bold;
+
+        .sw-color-badge {
+            margin: 0;
+        }
+
+        .sw-label__caption {
+            // sw-label will not center the text vertically
+            display: grid;
+            grid-template-columns: auto auto;
+            place-items: center;
+            height: 100%;
+
+            gap: 4px;
+
+            overflow-y: visible; // g's and p's are cut off
+        }
+    }
+
+    & > .sw-skeleton-bar {
+        height: 24px;
+        margin: 0;
+        width: 150px;
+    }
+
+    .mt-switch {
+        margin: 0;
+        min-height: 0;
+    }
+}

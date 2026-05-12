@@ -1,0 +1,155 @@
+{% block swag_paypal_pos_detail_runs %}
+    <div class="swag-paypal-pos-detail-runs">
+
+        {% block swag_paypal_pos_detail_runs_card %}
+            <mt-card position-identifier="swag-paypal-pos-detail-runs"
+                     :title="$t('swag-paypal-pos.detail.runs.title')"
+                     :isLoading="isLoading">
+
+                {% block swag_paypal_pos_detail_runs_card_grid %}
+                    <template #grid>
+
+                        <sw-data-grid v-if="total > 0"
+                                      identifier="swag-paypal-pos-detail-runs"
+                                      :columns="columns"
+                                      :dataSource="runs"
+                                      :isLoading="isLoading || total === 0"
+                                      :showActions="true"
+                                      :showSelection="false"
+                                      :showSettings="true"
+                                      :allowColumnEdit="true"
+                                      :sortBy="sortBy"
+                                      :sortDirection="sortDirection"
+                                      :skeletonItemAmount="limit"
+                                      @column-sort="onSortColumn">
+
+                            {% block swag_paypal_pos_detail_runs_card_grid_pagination %}
+                                <template #pagination>
+                                    <sw-pagination :limit="limit"
+                                                   :page="page"
+                                                   :total="total"
+                                                   :total-visible="7"
+                                                   @page-change="onPageChange" />
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_detail_runs_other_grid_column_log %}
+                                <template #column-task="{ item }">
+                                    {{ $t(`swag-paypal-pos.detail.runs.${item.task}Task`) }}
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_detail_runs_card_grid_column_state %}
+                                <template #column-state="{ item }">
+
+                                    {% block swag_paypal_pos_detail_runs_card_grid_column_state_label %}
+                                        <sw-label appearance="pill"
+                                                  :variant="getLabelVariant(item)">
+                                            {{ $t(getLabel(item)) }}
+                                        </sw-label>
+                                    {% endblock %}
+
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_detail_runs_card_grid_column_date %}
+                                <template #column-date="{ item }">
+
+                                    {% block swag_paypal_pos_detail_runs_card_grid_column_date_formatted %}
+                                        {{ dateFilter(item.finishedAt, {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: '2-digit'
+                                        }) }}
+                                    {% endblock %}
+
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_detail_runs_card_grid_actions %}
+                                <template #actions="{ item }">
+
+                                    {% block swag_paypal_pos_detail_runs_card_grid_actions_details %}
+                                        <sw-context-menu-item :disabled="item.logs.length <= 0"
+                                                              @click="onShowModal(item.id)">
+                                            {{ $t('swag-paypal-pos.detail.runs.actions.showDetails') }}
+                                        </sw-context-menu-item>
+                                    {% endblock %}
+
+                                </template>
+                            {% endblock %}
+
+                        </sw-data-grid>
+                    </template>
+                {% endblock %}
+
+                {% block swag_paypal_pos_detail_runs_card_empty_state %}
+                    <template #default>
+                        <sw-empty-state v-if="total < 1"
+                                        class="swag-paypal-pos-detail-runs__empty-state"
+                                        :title="$t('swag-paypal-pos.detail.runs.emptyState.title')"
+                                        :subline="$t('swag-paypal-pos.detail.runs.emptyState.message')" />
+                    </template>
+                {% endblock %}
+
+                {% block swag_paypal_pos_detail_runs_card_toolbar %}
+                    <template v-if="total > 0" #toolbar>
+
+                        {% block swag_paypal_pos_detail_runs_card_toolbar_container %}
+                            <sw-container columns="1fr min-content"
+                                          align="center">
+
+                                {% block swag_paypal_pos_detail_runs_card_toolbar_container_text %}
+                                    <p>{{ $t('swag-paypal-pos.detail.runs.toolbarText') }}</p>
+                                {% endblock %}
+
+                                {% block swag_paypal_pos_detail_runs_card_toolbar_container_button %}
+                                    <mt-button
+                                            :disabled="!acl.can('sales_channel.editor')"
+                                            variant="secondary"
+                                            @click="onClearLogs">
+                                        {{ $t('swag-paypal-pos.detail.cleanLog') }}
+                                    </mt-button>
+                                {% endblock %}
+
+                            </sw-container>
+                        {% endblock %}
+
+                    </template>
+                {% endblock %}
+
+            </mt-card>
+        {% endblock %}
+
+        {% block swag_paypal_pos_detail_runs_log_modal %}
+            <sw-modal v-if="showModal"
+                      class="swag-paypal-pos-detail-runs__modal"
+                      :title="$t('swag-paypal-pos.detail.runs.title')"
+                      :isLoading="isLoading"
+                      variant="large"
+                      @modal-close="onCloseModal">
+
+                {% block swag_paypal_pos_detail_runs_log_modal_logs %}
+                    <swag-paypal-pos-detail-logs :runId="currentRunId" />
+                {% endblock %}
+
+                {% block swag_paypal_pos_detail_runs_log_modal_footer %}
+                    <template #modal-footer>
+
+                        {% block swag_paypal_pos_detail_runs_log_modal_footer_close_modal_button %}
+                            <mt-button variant="primary"
+                                       @click="onCloseModal">
+                                {{ $t('global.default.cancel') }}
+                            </mt-button>
+                        {% endblock %}
+
+                    </template>
+                {% endblock %}
+
+            </sw-modal>
+        {% endblock %}
+
+    </div>
+{% endblock %}

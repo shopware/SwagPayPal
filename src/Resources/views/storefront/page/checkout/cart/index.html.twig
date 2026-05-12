@@ -1,0 +1,44 @@
+{% sw_extends '@Storefront/storefront/page/checkout/cart/index.html.twig' %}
+
+{% block page_checkout_cart_table_items %}
+    {{ parent() }}
+
+    {% block page_checkout_cart_table_items_paypal_installment_banner %}
+        {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
+        {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_CART_PAGE_EXTENSION_ID')] %}
+
+        {% if installmentBanner.cartEnabled %}
+            <div class="form-row">
+                <div class="col"
+                     data-swag-paypal-installment-banner="true"
+                     data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
+                </div>
+            </div>
+        {% endif %}
+    {% endblock %}
+{% endblock %}
+
+{% block page_checkout_aside_actions %}
+    {{ parent() }}
+
+    {% block page_checkout_aside_actions_paypal_express_button %}
+        {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData expressSettings #}
+        {% set expressSettings = page.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+
+        {% if expressSettings.cartEnabled %}
+            {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'checkout-aside-action'} %}
+        {% endif %}
+    {% endblock %}
+
+    {% block page_checkout_aside_actions_paypal_installment_banner %}
+        {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
+        {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+
+        {% if installmentBanner.cartEnabled %}
+            <div class="checkout-aside-action"
+                 data-swag-paypal-installment-banner="true"
+                 data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
+            </div>
+        {% endif %}
+    {% endblock %}
+{% endblock %}

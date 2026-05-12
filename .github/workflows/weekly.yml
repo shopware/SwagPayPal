@@ -1,0 +1,49 @@
+name: weekly
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+jobs:
+  locale-scraper:
+    permissions:
+      contents: write
+      id-token: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v4
+        with:
+          path: custom/plugins/${{ github.event.repository.name }}
+
+      - name: Setup SwagPayPal
+        uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
+
+      - uses: shopware/octo-sts-action@main
+        id: create-pr-token
+        with:
+          scope: shopware
+          identity: CreatePR
+
+      - name: Scrape PayPal locale codes
+        run: bin/console swag:paypal:scrape:locales
+
+      - name: Check for changes
+        id: git_diff
+        run: |
+          cd custom/plugins/SwagPayPal
+          git diff --exit-code src/Util/SupportedLocales.php || echo "changed=true" >> $GITHUB_ENV
+
+      - name: Create Pull Request
+        if: env.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "chore: Update PayPal locales"
+          body: "Automated update of supported PayPal locales list."
+          branch: update-paypal-locales
+          token: ${{ steps.create-pr-token.outputs.token }}
+          path: custom/plugins/SwagPayPal
+          commit-message: "chore: auto update of paypal locales"

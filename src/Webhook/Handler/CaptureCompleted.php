@@ -1,0 +1,81 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\Webhook\Handler;
+
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Swag\PayPal\Util\PaymentStatusUtilV2;
+use Swag\PayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\WebhookEventTypes;
+
+#[Package('checkout')]
+class CaptureCompleted extends AbstractWebhookHandler
+{
+    /**
+     * @internal
+     */
+    public function __construct(
+        EntityRepository $orderTransactionRepository,
+        OrderTransactionStateHandler $orderTransactionStateHandler,
+        private readonly PaymentStatusUtilV2 $paymentStatusUtil,
+        private readonly PaymentMethodDataRegistry $methodDataRegistry,
+        private readonly PUIInstructionsFetchService $instructionsFetchService,
+        private readonly TransactionDataService $transactionDataService,
+        private readonly OrderResource $orderResource,
+    ) {
+        parent::__construct($orderTransactionRepository, $orderTransactionStateHandler);
+    }
+
+    public function getEventType(): string
+    {
+        return WebhookEventTypes::PAYMENT_CAPTURE_COMPLETED;
+    }
+
+    public function invoke(Event $webhook, Context $context): void
+    {
+        $capture = $webhook->getResource();
+        if (!$capture instanceof Capture) {
+            throw new WebhookException($this->getEventType(), 'Given webhook does not have needed resource data');
+        }
+        $orderTransaction = $this->getOrderTransactionV2($capture, $context);
+
+        $puiMethodId = $this->methodDataRegistry->getEntityIdFromData(
+            $this->methodDataRegistry->getPaymentMethod(PUIMethodData::class),
+            $context
+        );
+
+        if ($orderTransaction->getPaymentMethodId() === $puiMethodId) {
+            // AbstractWebhookHandler::getOrderTransactionV2 ensures a present order
+            $salesChannelId = (string) $orderTransaction->getOrder()?->getSalesChannelId();
+            $this->instructionsFetchService->fetchPUIInstructions($orderTransaction, $salesChannelId, $context);
+
+            return;
+        }
+
+        $this->paymentStatusUtil->applyCaptureState($orderTransaction->getId(), $capture, $context);
+
+        // Fetch the PayPal order and set the resource ID
+        $paypalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
+        if ($paypalOrderId && \is_string($paypalOrderId)) {
+            $salesChannelId = (string) $orderTransaction->getOrder()?->getSalesChannelId();
+            $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelId);
+
+            $this->transactionDataService->setResourceId($paypalOrder, $orderTransaction->getId(), $context);
+        }
+    }
+}

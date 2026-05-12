@@ -1,0 +1,10 @@
+{
+  "name": "swag-paypal-storefront",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shopware Storefront PayPal",
+  "license": "MIT",
+  "dependencies": {
+    "@paypal/paypal-js": "~9"
+  }
+}

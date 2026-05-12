@@ -1,0 +1,27 @@
+@import "~scss/variables";
+
+.swag-paypal-pos-boolean-radio {
+    margin-bottom: 16px;
+
+    .sw-field__radio-option {
+        border: 1px solid var(--color-border-primary-default);
+        border-radius: 4px;
+        padding: 16px;
+        margin: 16px 0;
+
+        & > label > span {
+            font-size: 16px;
+            font-weight: $font-weight-bold;
+        }
+    }
+
+    &.sw-field--radio .sw-field__radio-option-label {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .sw-field__radio-option-checked {
+        background-color: var(--color-background-brand-default);
+        border: 1px solid var(--color-border-brand-default);
+    }
+}

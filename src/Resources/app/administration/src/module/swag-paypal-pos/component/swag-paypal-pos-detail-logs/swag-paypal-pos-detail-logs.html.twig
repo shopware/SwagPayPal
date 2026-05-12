@@ -1,0 +1,66 @@
+{% block swag_paypal_pos_detail_logs %}
+    {% block swag_paypal_pos_detail_logs_grid %}
+        <sw-data-grid identifier="swag-paypal-pos-detail-logs"
+                      :columns="columns"
+                      :dataSource="logs"
+                      :isLoading="isLoading || loadingLogs"
+                      :showActions="true"
+                      :showSelection="false"
+                      :showSettings="true"
+                      :allowColumnEdit="true"
+                      :sortBy="sortBy"
+                      :sortDirection="sortDirection"
+                      :skeletonItemAmount="limit"
+                      @column-sort="onSortColumn">
+
+            {% block swag_paypal_pos_detail_logs_grid_pagination %}
+                <template #pagination>
+                    <sw-pagination :limit="limit"
+                                   :page="page"
+                                   :total="total"
+                                   :total-visible="7"
+                                   @page-change="onPageChange" />
+                </template>
+            {% endblock %}
+
+            {% block swag_paypal_pos_detail_logs_grid_column_date %}
+                <template #column-date="{ item }">
+
+                    {% block swag_paypal_pos_detail_logs_grid_column_date_formatted %}
+                        <template v-if="item.createdAt">
+                            {{ dateFilter(item.createdAt, {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: '2-digit'
+                            }) }}
+                        </template>
+                    {% endblock %}
+
+                    {% block swag_paypal_pos_detail_logs_grid_column_date_empty %}
+                        <template v-else>
+                            {{ $t('swag-paypal-pos.detail.logs.noEntry') }}
+                        </template>
+                    {% endblock %}
+
+                </template>
+            {% endblock %}
+
+            {% block swag_paypal_pos_detail_logs_grid_column_state %}
+                <template #column-state="{ item }">
+
+                    {% block swag_paypal_pos_detail_logs_grid_column_state_label %}
+                        <sw-label v-if="item.level"
+                                  appearance="pill"
+                                  :variant="getLabelVariantForItem(item)">
+                            {{ $t(getLabelForItem(item)) }}
+                        </sw-label>
+                    {% endblock %}
+
+                </template>
+            {% endblock %}
+
+        </sw-data-grid>
+    {% endblock %}
+{% endblock %}

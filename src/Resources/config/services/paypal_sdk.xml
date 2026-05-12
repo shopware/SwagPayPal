@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- CACHE -->
+        <service id="paypal-sdk.token-cache" class="Symfony\Component\Cache\Psr16Cache">
+            <argument type="service" id="cache.object" />
+        </service>
+
+        <!-- HTTP CLIENT -->
+        <service id="paypal-sdk.client" class="Swag\PayPal\RestApi\Client\Client">
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="psr18.paypal.base-client"/>
+        </service>
+
+        <!-- CONTEXT FACTORY -->
+        <service id="Swag\PayPal\RestApi\ApiContextFactoryInterface" class="Swag\PayPal\RestApi\ApiContextFactory">
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
+        </service>
+
+        <service id="Shopware\PayPalSDK\Contract\RequestServiceInterface" class="Swag\PayPal\RestApi\RequestService"/>
+
+        <!-- SDK GATEWAYS -->
+        <service id="Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface" class="Shopware\PayPalSDK\Gateway\TokenGateway">
+            <argument type="service" id="paypal-sdk.client" />
+            <argument type="service" id="paypal-sdk.token-cache" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\RequestServiceInterface" />
+        </service>
+
+        <service id="Shopware\PayPalSDK\Gateway\OrderGateway">
+            <argument type="service" id="paypal-sdk.client" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\RequestServiceInterface" />
+        </service>
+
+        <service id="Shopware\PayPalSDK\Gateway\CustomerGateway">
+            <argument type="service" id="paypal-sdk.client" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\RequestServiceInterface" />
+        </service>
+
+        <service id="Shopware\PayPalSDK\Gateway\PaymentGateway">
+            <argument type="service" id="paypal-sdk.client" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\RequestServiceInterface" />
+        </service>
+
+        <service id="Shopware\PayPalSDK\Gateway\PaymentV1Gateway">
+            <argument type="service" id="paypal-sdk.client" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\RequestServiceInterface" />
+        </service>
+
+        <service id="Shopware\PayPalSDK\Gateway\WebhookGateway">
+            <argument type="service" id="paypal-sdk.client" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface" />
+            <argument type="service" id="Shopware\PayPalSDK\Contract\RequestServiceInterface" />
+        </service>
+    </services>
+</container>

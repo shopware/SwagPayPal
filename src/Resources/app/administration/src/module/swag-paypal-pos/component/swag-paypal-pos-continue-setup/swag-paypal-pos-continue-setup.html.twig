@@ -1,0 +1,34 @@
+{% block swag_paypal_pos_continue_setup %}
+    <mt-card position-identifier="swag-paypal-pos-continue-setup"
+             :title="$t('swag-paypal-pos.detail.overview.continueSetup.cardTitle')">
+
+        {% block swag_paypal_pos_continue_setup_container %}
+            <div class="swag-paypal-pos__continue-setup">
+
+                {% block swag_paypal_pos_continue_setup_container_headline %}
+                    <h6>{{ $t('swag-paypal-pos.detail.overview.continueSetup.content.headline') }}</h6>
+                {% endblock %}
+
+                {% block swag_paypal_pos_continue_setup_container_firstLine %}
+                    <p>{{ $t('swag-paypal-pos.detail.overview.continueSetup.content.firstLine') }}</p>
+                {% endblock %}
+
+                {% block swag_paypal_pos_continue_setup_container_secondLine %}
+                    <p>{{ $t('swag-paypal-pos.detail.overview.continueSetup.content.secondLine') }}</p>
+                {% endblock %}
+
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_continue_setup_button %}
+            <mt-button
+                ghost
+                variant="secondary"
+                @click="onContinueSetup"
+            >
+                {{ $t('swag-paypal-pos.detail.overview.continueSetup.content.headline') }}
+            </mt-button>
+        {% endblock %}
+
+    </mt-card>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% block swag_paypal_pos_wizard_sync_library %}
+    <div class="swag-paypal-pos-wizard-sync-library">
+
+        {% block swag_paypal_pos_wizard_sync_library_header %}
+            <i18n class="swag-paypal-pos-wizard-sync-library__headline"
+                  path="swag-paypal-pos.wizard.syncLibrary.header"
+                  tag="div">
+                <template #shopwareProducts>
+                    <span>{{ $t('swag-paypal-pos.wizard.syncLibrary.shopwareProducts', shopwareProductsCount) }}</span>
+                </template>
+                <template #posProducts>
+                    <span>{{ $t('swag-paypal-pos.wizard.syncLibrary.posProducts', posProductsCount) }}</span>
+                </template>
+            </i18n>
+        {% endblock %}
+
+        {% block swag_paypal_pos_wizard_sync_library_description_input %}
+            <sw-radio-field
+                v-model:value="salesChannel.extensions.paypalPosSalesChannel.replace"
+                class="swag-paypal-pos-boolean-radio"
+                :label="$t('swag-paypal-pos.wizard.syncLibrary.description')"
+                :options="options" />
+        {% endblock %}
+
+        {% block swag_paypal_pos_wizard_sync_library_disclaimer %}
+            <div class="swag-paypal-pos-wizard-sync-library__disclaimer">
+                {{ $t('swag-paypal-pos.wizard.syncLibrary.disclaimer') }}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

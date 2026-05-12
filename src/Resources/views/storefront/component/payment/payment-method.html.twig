@@ -1,0 +1,188 @@
+{% sw_extends {
+    template: '@Storefront/storefront/component/payment/payment-method.html.twig',
+    scopes: ['default', 'subscription', 'mixed-subscription']
+} %}
+
+{% block component_payment_method_description %}
+    {{ parent() }}
+
+    {# @var \Swag\PayPal\Storefront\Data\Struct\VaultData payPalVaultData #}
+    {% set payPalVaultData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\VaultSubscriber::VAULT_EXTENSION')] %}
+    {% set subscriptionContext = context.extensions.subscription is defined or (context.extensions.subscriptionManagedContexts.all|length > 0) or (page.order.extensions.initialSubscriptions|length > 0) %}
+
+    {% if payment.id is same as(context.paymentMethod.id) and payPalVaultData is not null %}
+        {% block component_payment_method_description_paypal_vault %}
+        {% if payPalVaultData.identifier %}
+            <div>{{ payPalVaultData.identifier }}</div>
+            <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
+                {{ ("paypal.vault." ~ payPalVaultData.snippetType ~ ".clear")|trans }}
+            </a>
+        {% elseif not subscriptionContext %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="createVault" id="swagPaypalCreateVault" form="confirmOrderForm" value="1" />
+                <label class="form-check-label" for="swagPaypalCreateVault" >
+                    {{ ("paypal.vault." ~ payPalVaultData.snippetType ~ ".create")|trans }}
+                </label>
+            </div>
+        {% endif %}
+        {% endblock %}
+    {% endif %}
+{% endblock %}
+
+
+{% block component_payment_method_label %}
+    {{ parent() }}
+
+    {# @var \Swag\PayPal\Checkout\ACDC\ACDCCheckoutFieldData acdcFieldData #}
+    {% set acdcFieldData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData acdcFieldData #}
+    {% set puiFraudnetData = page.extensions[constant('Swag\\PayPal\\Checkout\\PUI\\PUISubscriber::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID')] %}
+
+    {% if acdcFieldData and acdcFieldData.paymentMethodId is same as(payment.id) %}
+        {% block swag_paypal_acdc_form %}
+            <div id="swag-paypal-acdc-form" class="mt-2 d-none">
+                <div class="row mb-1">
+                    <div class="col-sm-12">
+                        <label class="d-none"
+                               for="swag-paypal-acdc-form-cardholder">{{ "paypal.acdc.cardholderName"|trans }}</label>
+                        <div id="swag-paypal-acdc-form-cardholder"
+                             data-placeholder="{{ "paypal.acdc.cardholderName"|trans }}"
+                        ></div>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-sm-12 swag-paypal-acdc-form-field-lg">
+                        <label class="d-none"
+                               for="swag-paypal-acdc-form-cardnumber">{{ "paypal.acdc.cardNumber"|trans }}</label>
+                        <div id="swag-paypal-acdc-form-cardnumber"
+                             data-placeholder="{{ "paypal.acdc.cardNumber"|trans }}"
+                        ></div>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-sm-6 pe-1">
+                        <label class="d-none"
+                               for="swag-paypal-acdc-form-expiration">{{ "paypal.acdc.expiration"|trans }}</label>
+                        <div id="swag-paypal-acdc-form-expiration"
+                             data-placeholder="{{ "paypal.acdc.expiration"|trans }}"
+                        ></div>
+                    </div>
+                    <div class="col-sm-6 ps-1">
+                        <label class="d-none" for="swag-paypal-acdc-form-cvv">{{ "paypal.acdc.cvv"|trans }}</label>
+                        <div id="swag-paypal-acdc-form-cvv"
+                             data-placeholder="{{ "paypal.acdc.cvv"|trans }}"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+
+    {% elseif puiFraudnetData and puiFraudnetData.paymentMethodId is same as(payment.id) and puiFraudnetData.paymentMethodId is same as(context.paymentMethod.id) %}
+
+        {% block swag_paypal_pui_customer_data_form %}
+            {% set birthdayName = constant('Swag\\PayPal\\Checkout\\PUI\\Service\\PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY') %}
+            {% set phoneNumberName = constant('Swag\\PayPal\\Checkout\\PUI\\Service\\PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER') %}
+
+            {% block swag_paypal_pui_customer_data_form_phone_number %}
+                {% if not page.order.billingAddress.phoneNumber and not context.customer.activeBillingAddress.phoneNumber %}
+                    <div class="form-row">
+                        <div class="form-group col-12">
+
+                            {% block component_address_form_phone_number_label %}
+                                <label class="form-label"
+                                       for="{{ phoneNumberName }}">
+                                    {{ "address.phoneNumberLabel"|trans|sw_sanitize }}{{ "general.required"|trans|sw_sanitize }}
+                                </label>
+                            {% endblock %}
+
+                            {% block component_address_form_phone_number_input %}
+                                <input type="text"
+                                       class="form-control"
+                                       id="{{ phoneNumberName }}"
+                                       placeholder="{{ "address.phoneNumberPlaceholder"|trans|striptags }}"
+                                       name="{{ phoneNumberName }}"
+                                       form="confirmOrderForm"
+                                       required="required">
+                            {% endblock %}
+
+                        </div>
+                    </div>
+                {% endif %}
+            {% endblock %}
+
+            {% block swag_paypal_pui_customer_data_form_birthday %}
+                {% if not context.customer.birthday %}
+                    {% block swag_paypal_pui_customer_data_form_birthday_label %}
+                        <label for="{{ birthdayName }}">
+                            {{ "account.personalBirthdayLabel"|trans|sw_sanitize }}{{ "general.required"|trans|sw_sanitize }}
+                        </label>
+                    {% endblock %}
+
+                    {% block swag_paypal_pui_customer_data_form_birthday_selects %}
+                    <div class="row g-2">
+
+                        {% block swag_paypal_pui_customer_data_form_birthday_select_day %}
+                            <div class="form-group col-4">
+                                <select id="{{ birthdayName }}"
+                                        name="{{ birthdayName }}[day]"
+                                        class="form-select"
+                                        form="confirmOrderForm"
+                                        required="required">
+                                    <option selected="selected"
+                                            disabled="disabled"
+                                            value="">
+                                        {{ "account.personalBirthdaySelectDay"|trans|sw_sanitize }}
+                                    </option>
+                                    {% for day in range(1, 31) %}
+                                        <option value="{{ day }}">{{ day }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endblock %}
+
+                        {% block swag_paypal_pui_customer_data_form_birthday_select_month %}
+                            <div class="form-group col-4">
+                                <select name="{{ birthdayName }}[month]"
+                                        class="form-select"
+                                        form="confirmOrderForm"
+                                        required="required">
+                                    <option selected="selected"
+                                            disabled="disabled"
+                                            value="">
+                                        {{ "account.personalBirthdaySelectMonth"|trans|sw_sanitize }}
+                                    </option>
+                                    {% for month in range(1, 12) %}
+                                        <option value="{{ month }}">{{ month }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endblock %}
+
+                        {% block swag_paypal_pui_customer_data_form_birthday_select_year %}
+                            <div class="form-group col-4">
+                                {% set currentYear = "now"|date('Y') %}
+                                {% set startYear = currentYear - 120 %}
+
+                                <select name="{{ birthdayName }}[year]"
+                                        class="form-select"
+                                        form="confirmOrderForm"
+                                        required="required">
+                                    <option selected="selected"
+                                            disabled="disabled"
+                                            value="">
+                                        {{ "account.personalBirthdaySelectYear"|trans|sw_sanitize }}
+                                    </option>
+                                    {% for year in range(currentYear, startYear) %}
+                                        <option value="{{ year }}">{{ year }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endblock %}
+
+                    </div>
+                {% endblock %}
+                {% endif %}
+            {% endblock %}
+        {% endblock %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_pos_sales_channel"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Extension\SalesChannelExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Extension\ProductExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Extension\ProductStreamExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_pos_sales_channel_inventory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_pos_sales_channel_run"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_pos_sales_channel_run_log"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_pos_sales_channel_media"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_pos_sales_channel_product"/>
+        </service>
+    </services>
+</container>

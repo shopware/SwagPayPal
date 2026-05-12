@@ -1,0 +1,172 @@
+import template from './swag-paypal-payment-action-v2-refund.html.twig';
+import { REFUNDABLE_CAPTURE_STATUSES } from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
+
+const { Component, Filter } = Shopware;
+
+Component.register('swag-paypal-payment-action-v2-refund', {
+    template,
+
+    inject: ['SwagPayPalOrderService'],
+
+    emits: ['modal-close'],
+
+    mixins: [
+        Shopware.Mixin.getByName('notification'),
+    ],
+
+    props: {
+        paypalOrder: {
+            type: Object,
+            required: true,
+        },
+
+        orderTransactionId: {
+            type: String,
+            required: true,
+        },
+
+        paypalPartnerAttributionId: {
+            type: String,
+            required: true,
+        },
+
+        refundableAmount: {
+            type: Number,
+            required: false,
+            default: 0,
+        },
+    },
+
+    data() {
+        return {
+            captures: [],
+            selectedCapture: {},
+            refundAmount: 0,
+            refundInvoiceNumber: '',
+            refundNoteToPayer: '',
+            selectedCaptureId: '',
+            isLoading: true,
+        };
+    },
+
+    computed: {
+        dateFilter() {
+            return Filter.getByName('date');
+        },
+
+        refundableAmountForSelectedCapture() {
+            if (!this.selectedCapture?.amount) {
+                return 0;
+            }
+
+            if (this.selectedCapture.amount.value > this.refundableAmount) {
+                return Number(this.refundableAmount);
+            }
+
+            return Number(this.selectedCapture.amount.value);
+        },
+
+        captureOptions() {
+            return this.captures.map((capture) => ({
+                id: capture.id,
+                value: capture.id,
+                label: `${this.dateFilter(capture.create_time)} (${capture.amount.value} ${capture.amount.currency_code}) - ${capture.id} [${capture.status}]`,
+            }));
+        },
+
+        selectedCaptureCurrencyCode() {
+            return this.selectedCapture.amount?.currency_code ?? '';
+        },
+    },
+
+    created() {
+        this.createdComponent();
+    },
+
+    methods: {
+        createdComponent() {
+            this.getRefundableCaptures();
+            const firstCapture = this.captures[0];
+
+            if (!firstCapture) {
+                this.selectedCaptureId = '';
+                this.selectedCapture = {};
+                this.refundAmount = 0;
+                this.isLoading = false;
+
+                return;
+            }
+
+            this.selectedCaptureId = firstCapture.id;
+            this.selectedCapture = firstCapture;
+            this.refundAmount = this.refundableAmountForSelectedCapture;
+            this.isLoading = false;
+        },
+
+        getRefundableCaptures() {
+            const rawCaptures = this.paypalOrder.purchase_units[0].payments.captures;
+            const refundableCaptures = [];
+
+            rawCaptures.forEach((capture) => {
+                if (REFUNDABLE_CAPTURE_STATUSES.includes(capture.status)) {
+                    refundableCaptures.push(capture);
+                }
+            });
+
+            this.captures = refundableCaptures;
+        },
+
+        setCapture() {
+            this.selectedCapture = this.captures.find((selectedCapture) => {
+                return selectedCapture.id === this.selectedCaptureId;
+            }) ?? {};
+
+            this.refundAmount = this.refundableAmountForSelectedCapture;
+        },
+
+        refund() {
+            if (!this.selectedCaptureId) {
+                return;
+            }
+
+            this.isLoading = true;
+
+            let refundAmount = this.refundAmount;
+            if (refundAmount === 0) {
+                refundAmount = this.selectedCapture.amount.value;
+            }
+
+            this.SwagPayPalOrderService.refundCapture(
+                this.orderTransactionId,
+                this.selectedCapture.id,
+                this.paypalOrder.id,
+                this.selectedCapture.amount.currency_code,
+                refundAmount,
+                this.refundInvoiceNumber,
+                this.refundNoteToPayer,
+                this.paypalPartnerAttributionId,
+            ).then(() => {
+                this.createNotificationSuccess({
+                    message: this.$t('swag-paypal-payment.refundAction.successMessage'),
+                });
+                this.isLoading = false;
+                this.$emit('modal-close');
+            }).catch((errorResponse) => {
+                try {
+                    this.createNotificationError({
+                        message: `${errorResponse.response.data.errors[0].title}: ${
+                            errorResponse.response.data.errors[0].detail}`,
+                        autoClose: false,
+                    });
+                } catch (e) {
+                    this.createNotificationError({
+                        message: `${errorResponse.title}: ${errorResponse.message}`,
+                        autoClose: false,
+                    });
+                } finally {
+                    this.isLoading = false;
+                }
+            });
+        },
+    },
+});

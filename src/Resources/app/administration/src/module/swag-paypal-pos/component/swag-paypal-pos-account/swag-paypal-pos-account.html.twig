@@ -1,0 +1,103 @@
+{% block swag_paypal_pos_account %}
+    <mt-card class="swag-paypal-pos-account"
+             position-identifier="swag-paypal-pos-account"
+             :title="$t('sw-sales-channel.detail.titleAccount')"
+             :isLoading="isLoading">
+
+        {% block swag_paypal_pos_account_grid %}
+            <sw-container columns="min-content 1fr" align="center">
+
+                {% block swag_paypal_pos_account_grid_logo %}
+                    <img class="swag-paypal-pos-account__logo"
+                         alt="Zettle Logo"
+                         :src="assetFilter('/swagpaypal/administration/static/img/paypal-pos-logo.svg')">
+                {% endblock %}
+
+                {% block swag_paypal_pos_account_grid_container %}
+                    <div class="swag-paypal-pos-account__container">
+
+                        {% block swag_paypal_pos_account_grid_container_info %}
+                            <div class="swag-paypal-pos-account__account-info">
+
+                                {% block swag_paypal_pos_account_grid_container_info_name %}
+                                    <div class="swag-paypal-pos-account__name">
+                                        {{ accountName }}
+                                    </div>
+                                {% endblock %}
+
+                                {% block swag_paypal_pos_account_grid_container_info_email %}
+                                    <div class="swag-paypal-pos-account__email">
+                                        {{ accountEmail }}
+                                    </div>
+                                {% endblock %}
+
+                                {% block swag_paypal_pos_account_grid_container_info_link %}
+                                    <sw-external-link href="https://my.zettle.com"
+                                                      class="swag-paypal-pos-account__manage-link">
+
+                                        {% block swag_paypal_pos_account_grid_container_info_link_text %}
+                                            {{ $t('swag-paypal-pos.account.manageAccount') }}
+                                        {% endblock %}
+
+                                    </sw-external-link>
+                                {% endblock %}
+
+                                {% block swag_paypal_pos_account_grid_container_info_edit_button %}
+                                    {# ToDo PPI-109 - Implement edit connection functionality #}
+                                    <mt-button v-if="false"
+                                               class="swag-paypal-pos-account__edit-connection-button"
+                                               size="small"
+                                               block
+                                               variant="secondary">
+                                        {{ $t('swag-paypal-pos.account.editConnection') }}
+                                    </mt-button>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+
+                        {% block swag_paypal_pos_account_grid_container_status %}
+                            <div class="swag-paypal-pos-account__status-container">
+
+                                {% block swag_paypal_pos_account_grid_container_status_label %}
+                                    <sw-label class="swag-paypal-pos-account__status-label"
+                                              size="medium"
+                                              appearance="pill"
+                                              :variant="connectionStatusVariant"
+                                              :ghost="false"
+                                              :caps="false">
+
+                                        {% block swag_paypal_pos_account_grid_container_status_label_badge %}
+                                            <sw-color-badge class="swag-paypal-pos-account__status-color-badge"
+                                                            rounded
+                                                            :variant="connectionStatusVariant" />
+                                        {% endblock %}
+
+                                        {% block swag_paypal_pos_account_grid_container_status_label_text %}
+                                            <span class="swag-paypal-pos-account__status-text">
+                                                {{ connectionStatusText }}
+                                            </span>
+                                        {% endblock %}
+                                    </sw-label>
+                                {% endblock %}
+
+                                {% block swag_paypal_pos_account_grid_container_status_updated %}
+                                    <div v-if="lastRun"
+                                         class="swag-paypal-pos-account__status-updated">
+                                        {{ $t('swag-paypal-pos.account.lastUpdated') }} {{ dateFilter(lastRun.updatedAt, {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit',
+                                            day: '2-digit',
+                                            month: 'short',
+                                            year: 'numeric'
+                                        }) }}
+                                    </div>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </sw-container>
+        {% endblock %}
+    </mt-card>
+{% endblock %}

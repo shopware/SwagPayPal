@@ -1,0 +1,85 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method Shopware\\Storefront\\Pagelet\\Pagelet\:\:getProduct\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Checkout/ExpressCheckout/ExpressCheckoutSubscriber.php
+
+		-
+			message: '#^Call to method getPagelet\(\) on an unknown class Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPageletLoadedEvent\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Checkout/ExpressCheckout/ExpressCheckoutSubscriber.php
+
+		-
+			message: '#^Call to method getSalesChannelContext\(\) on an unknown class Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPageletLoadedEvent\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Checkout/ExpressCheckout/ExpressCheckoutSubscriber.php
+
+		-
+			message: '#^Class Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPageletLoadedEvent not found\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Checkout/ExpressCheckout/ExpressCheckoutSubscriber.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Storefront\\Pagelet\\Pagelet\:\:getProduct\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Installment/Banner/InstallmentBannerSubscriber.php
+
+		-
+			message: '#^Call to method addExtension\(\) on an unknown class Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPagelet\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Installment/Banner/InstallmentBannerSubscriber.php
+
+		-
+			message: '#^Call to method getPagelet\(\) on an unknown class Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPageletLoadedEvent\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Installment/Banner/InstallmentBannerSubscriber.php
+
+		-
+			message: '#^Call to method getSalesChannelContext\(\) on an unknown class Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPageletLoadedEvent\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Installment/Banner/InstallmentBannerSubscriber.php
+
+		-
+			message: '#^Class Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPageletLoadedEvent not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Installment/Banner/InstallmentBannerSubscriber.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$pagelet contains unknown class Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPagelet\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Installment/Banner/InstallmentBannerSubscriber.php
+
+		-
+			message: '#^PHPDoc tag @var with type Shopware\\Storefront\\Pagelet\\Footer\\FooterPagelet\|Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPagelet is not subtype of type Shopware\\Storefront\\Pagelet\\Pagelet\.$#'
+			identifier: varTag.type
+			count: 1
+			path: src/Installment/Banner/InstallmentBannerSubscriber.php
+
+		-
+			message: '#^Parameter \$page of method Swag\\PayPal\\Installment\\Banner\\Service\\BannerDataService\:\:getInstallmentBannerData\(\) has invalid type Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPagelet\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Installment/Banner/Service/BannerDataService.php
+
+		-
+			message: '#^Parameter \$page of method Swag\\PayPal\\Installment\\Banner\\Service\\BannerDataServiceInterface\:\:getInstallmentBannerData\(\) has invalid type Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPagelet\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Installment/Banner/Service/BannerDataServiceInterface.php
+
+		-
+			message: '#^Class Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPageletLoadedEvent not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Installment/Banner/InstallmentBannerSubscriberTest.php

@@ -1,0 +1,62 @@
+<div class="swag-paypal-payment-method">
+    <img
+        v-if="paymentMethod.media"
+        class="swag-paypal-payment-method__icon"
+        :src="paymentMethod.media.url"
+        :alt="paymentMethod.media.translated.alt"
+    >
+
+    <div class="swag-paypal-payment-method__name">
+        {{ paymentMethod.translated.name }}
+        <span v-if="isPui">
+            ({{ $t('swag-paypal-method.ratePayLabel') }})
+        </span>
+    </div>
+
+    <sw-skeleton-bar v-if="merchantInformationStore.isLoading" />
+
+    <div v-else class="swag-paypal-payment-method__dynamic">
+        <sw-help-text
+            v-if="availabilityToolTip"
+            :text="availabilityToolTip"
+        />
+
+        <sw-label
+            v-tooltip="{
+                message: onboardingStatusTooltip,
+                position: 'top',
+                disabled: !onboardingStatusTooltip,
+            }"
+            class="swag-paypal-payment-method__status-label"
+            size="medium"
+            appearance="pill"
+            :variant="statusBadgeVariant"
+            :ghost="false"
+            :caps="false"
+        >
+            <sw-color-badge rounded :variant="statusBadgeVariant" />
+
+            <span>{{ onboardingStatusText }}</span>
+        </sw-label>
+
+        <router-link
+            v-if="showEditLink"
+            class="swag-paypal-payment-method__detail-link"
+            :to="{ name: 'sw.settings.payment.detail', params: { id: paymentMethod.id } }"
+        >
+            {{ $t('swag-paypal-method.editDetail') }}
+        </router-link>
+    </div>
+
+    <mt-switch
+        :label="$t('swag-paypal-method.switch.label')"
+        :disabled="paymentMethodToggleDisabled || !acl.can('swag_paypal.editor')"
+        :model-value="paymentMethod.active"
+        @update:model-value="onUpdateActive"
+    />
+
+    <swag-paypal-method-domain-association
+        v-if="identifier === 'applepayhandler'"
+        :payment-method="paymentMethod"
+    />
+</div>

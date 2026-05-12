@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\RestApi\V1\Service\CredentialProvider">
+            <argument id="Swag\PayPal\Setting\Service\SettingsValidationService" type="service"/>
+            <argument id="Shopware\Core\System\SystemConfig\SystemConfigService" type="service"/>
+            <argument id="Swag\PayPal\Setting\Service\CredentialsUtil" type="service"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Service\TokenValidator"/>
+    </services>
+</container>

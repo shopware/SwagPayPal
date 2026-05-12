@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_vault_token"/>
+        </service>
+        <service id="Swag\PayPal\DataAbstractionLayer\VaultTokenMapping\VaultTokenMappingDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_vault_token_mapping"/>
+        </service>
+
+        <service id="Swag\PayPal\DataAbstractionLayer\Extension\CustomerExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+        <service id="Swag\PayPal\DataAbstractionLayer\Extension\PaymentMethodExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+    </services>
+</container>

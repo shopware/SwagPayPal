@@ -1,0 +1,173 @@
+{% sw_extends '@Storefront/storefront/page/checkout/finish/finish-details.html.twig' %}
+
+{# @var \Swag\PayPal\Checkout\PUI\PUIPaymentInstructionData payPalPuiPaymentInstruction #}
+{% set payPalPuiPolling = page.extensions[constant('Swag\\PayPal\\Checkout\\PUI\\PUISubscriber::PAYPAL_PUI_PAYMENT_INSTRUCTIONS_PAGE_EXTENSION_ID')] %}
+{% set showPuiPolling = payPalPuiPolling is not null and payPalPuiPolling.paymentInstructions is null %}
+
+{% block page_checkout_finish_header %}
+    {% if showPuiPolling %}
+        {% block page_checkout_finish_header_paypal_pui_polling %}
+            <h1 class="finish-header">
+                {{ "paypal.payUponInvoice.checkout.finish.title"|trans }}
+            </h1>
+        {% endblock %}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block page_checkout_finish_subtitle %}
+    {% if showPuiPolling %}
+        {% block page_checkout_finish_subtitle_paypal_pui_polling %}
+            <div class="text-center">
+                <p class="finish-order-subtitle">{{ "paypal.payUponInvoice.checkout.finish.subtitle"|trans }}</p>
+
+                <div class="swag-paypal-pui-polling"
+                     data-swag-paypal-pui-polling="true"
+                     data-swag-paypal-pui-polling-options="{{ payPalPuiPolling|json_encode }}">
+                </div>
+            </div>
+        {% endblock %}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block page_checkout_finish_ordernumber %}
+    {% if not showPuiPolling %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block page_checkout_finish_teaser %}
+    {% if not showPuiPolling %}
+        {{ parent() }}
+    {% endif %}
+
+    {% block page_checkout_finish_data_paypal_pui_container %}
+        {% set customFieldKey = constant('Swag\\PayPal\\SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION') %}
+        {% set transaction = page.order.transactions.last %}
+        {% if payPalPuiPolling is not null and payPalPuiPolling.paymentInstructions is not null %}
+            {% set payPalPuiPaymentInstruction = payPalPuiPolling.paymentInstructions %}
+        {% elseif transaction.customFields[customFieldKey] %}
+            {% set payPalPuiPaymentInstruction = transaction.customFields[customFieldKey] %}
+        {% endif %}
+
+        {% block page_checkout_finish_data_paypal_pui_instructions %}
+            {% if payPalPuiPaymentInstruction %}
+                {% if payPalPuiPaymentInstruction.payment_due_date is defined %}
+                    {% set paymentDueDate = payPalPuiPaymentInstruction.payment_due_date|format_date('short', locale=app.request.locale) %}
+                {% endif %}
+
+                <div class="border mt-5 p-4 text-left text-sm-center">
+
+                    {% if paymentDueDate is defined %}
+                        {% block page_checkout_finish_data_paypal_pui_instructions_header_diagram %}
+                            <div class="row justify-content-center no-gutters align-items-center mb-3 font-weight-bold">
+
+                                {% block page_checkout_finish_data_paypal_pui_instructions_header_diagram_amount %}
+                                    <div class="col-sm-3 col-md-2">
+                                        <span class="align-middle">{% sw_icon 'money-cash' style { 'size': 'md' } %}</span>
+                                        <span class="ml-1">{{ ((payPalPuiPaymentInstruction.amount.value ?? transaction.amount.totalPrice)*1.0)|currency(payPalPuiPaymentInstruction.amount.currency) }}</span>
+                                    </div>
+                                {% endblock %}
+
+                                {% block page_checkout_finish_data_paypal_pui_instructions_header_diagram_amount_to_due %}
+                                    <div class="col-1 d-none d-sm-block">
+                                        {% sw_icon 'arrow-right' style { 'size': 'lg' } %}
+                                    </div>
+
+                                    <div class="col d-sm-none mb-1">
+                                        {% sw_icon 'arrow-down' style { 'size': 'md' } %}
+                                    </div>
+                                {% endblock %}
+
+                                {% block page_checkout_finish_data_paypal_pui_instructions_header_diagram_due %}
+                                    <div class="col-sm-3 col-md-2">
+                                        <span class="align-middle">{% sw_icon 'calendar' style { 'size': 'md' } %}</span>
+                                        <span class="ml-1">{{ paymentDueDate }}</span>
+                                    </div>
+                                {% endblock %}
+
+                                {% block page_checkout_finish_data_paypal_pui_instructions_header_diagram_due_to_logo %}
+                                    <div class="col-1 d-none d-sm-block">
+                                        {% sw_icon 'arrow-right' style { 'size': 'lg' } %}
+                                    </div>
+
+                                    <div class="col d-sm-none mt-1 mb-2">
+                                        {% sw_icon 'arrow-down' style { 'size': 'md' } %}
+                                    </div>
+                                {% endblock %}
+
+                                {% block page_checkout_finish_data_paypal_pui_instructions_header_diagram_logo %}
+                                    <div class="col-sm-4 col-md-3">
+                                        <img src="{{ asset('storefront/img/paypal-logo.png', '@SwagPayPal') }}" alt="PayPal logo"/>
+                                    </div>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    {% endif %}
+
+                    {% block page_checkout_finish_data_paypal_pui_instructions_header_text %}
+                        <div class="row {{ paymentDueDate is defined ? 'my-4' : 'mb-4' }}">
+                            <div class="col">
+                                {% if paymentDueDate is defined %}
+                                    {{ "paypal.payUponInvoice.instructions.transferRequestDate"|trans({"%value%": (payPalPuiPaymentInstruction.amount.value*1.0)|currency(payPalPuiPaymentInstruction.amount.currency), "%date%": paymentDueDate}) }}
+                                {% else %}
+                                    {{ "paypal.payUponInvoice.instructions.transferRequest"|trans({"%value%": transaction.amount.totalPrice|currency}) }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endblock %}
+
+                    {% block page_checkout_finish_data_paypal_pui_instructions_content %}
+                        <div class="row justify-content-center no-gutters">
+                            <div class="col-sm-10 col-md-8">
+                                <dl class="row text-sm-start swag-paypal-checkout-finish-pui-instructions-content">
+
+                                    {% block page_checkout_finish_data_paypal_pui_instructions_content_bankname %}
+                                        <dt class="instruction-title">{{ "paypal.payUponInvoice.instructions.table.bank"|trans }}</dt>
+                                        <dd class="instruction-description">{{ payPalPuiPaymentInstruction.depositBankDetails.bankName ?? payPalPuiPaymentInstruction.recipient_banking_instruction.bank_name }}</dd>
+                                    {% endblock %}
+
+                                    {% block page_checkout_finish_data_paypal_pui_instructions_content_iban %}
+                                        <dt class="instruction-title">{{ "paypal.payUponInvoice.instructions.table.iban"|trans }}</dt>
+                                        <dd class="instruction-description">{{ payPalPuiPaymentInstruction.depositBankDetails.iban ?? payPalPuiPaymentInstruction.recipient_banking_instruction.international_bank_account_number }}</dd>
+                                    {% endblock %}
+
+                                    {% block page_checkout_finish_data_paypal_pui_instructions_content_bic %}
+                                        <dt class="instruction-title">{{ "paypal.payUponInvoice.instructions.table.bic"|trans }}</dt>
+                                        <dd class="instruction-description">{{ payPalPuiPaymentInstruction.depositBankDetails.bic ?? payPalPuiPaymentInstruction.recipient_banking_instruction.bank_identifier_code }}</dd>
+                                    {% endblock %}
+
+                                    {% block page_checkout_finish_data_paypal_pui_instructions_content_holdername %}
+                                        <dt class="instruction-title">{{ "paypal.payUponInvoice.instructions.table.holder"|trans }}</dt>
+                                        <dd class="instruction-description">{{ payPalPuiPaymentInstruction.depositBankDetails.accountHolderName ?? payPalPuiPaymentInstruction.recipient_banking_instruction.account_holder_name }}</dd>
+                                    {% endblock %}
+
+                                    {% block page_checkout_finish_data_paypal_pui_instructions_content_amount %}
+                                        <dt class="instruction-title">{{ "paypal.payUponInvoice.instructions.table.amount"|trans }}</dt>
+                                        <dd class="instruction-description">{{ ((payPalPuiPaymentInstruction.amount.value ?? transaction.amount.totalPrice)*1.0)|currency(payPalPuiPaymentInstruction.amount.currency) }}</dd>
+                                    {% endblock %}
+
+                                    {% block page_checkout_finish_data_paypal_pui_instructions_content_reference %}
+                                        <dt class="instruction-title">{{ "paypal.payUponInvoice.instructions.table.reference"|trans }}</dt>
+                                        <dd class="instruction-description">{{ payPalPuiPaymentInstruction.paymentReference ?? payPalPuiPaymentInstruction.reference_number }}</dd>
+                                    {% endblock %}
+                                </dl>
+                            </div>
+                        </div>
+                    {% endblock %}
+
+                    {% block page_checkout_finish_data_paypal_pui_instructions_legal %}
+                        <div class="row">
+                            <div class="col my-3">{{ (paymentDueDate is defined ? "paypal.payUponInvoice.instructions.legalMessage" : "paypal.payUponInvoice.instructions.legalMessageRatepay")|trans }}</div>
+                        </div>
+                    {% endblock %}
+                </div>
+            {% endif %}
+        {% endblock %}
+
+    {% endblock %}
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{
+    "swag-paypal-frw-credentials": {
+        "buttonGetCredentials": "Get API credentials",
+        "buttonGetSandboxCredentials": "Get sandbox API credentials",
+        "textIntroPayPal": "To get PayPal up and running you only need to provide your PayPal API credentials.",
+        "labelClientId": "Client ID",
+        "labelClientSecret": "Client secret",
+        "labelMerchantPayerId": "PayPal Merchant ID",
+        "labelClientIdSandbox": "Sandbox client ID",
+        "labelClientSecretSandbox": "Sandbox client secret",
+        "labelMerchantPayerIdSandbox": "Sandbox PayPal Merchant ID",
+        "labelSandbox": "Use sandbox",
+        "tooltipSandbox": "Depending on activation of the sandbox, separate credentials are saved.",
+        "labelSetDefault": "Set as default payment method",
+        "tooltipSetDefault": "PayPal will be set as default payment method of all Sales Channels. You can set individual default payment methods per Sales Channel in the settings module.",
+        "messageFetchedError": "Try again or use the advanced settings to provide your credentials.",
+        "textFetchedSuccessful": "Credentials have been fetched.",
+        "messageNoCredentials": "No credentials provided.",
+        "messageInvalidCredentials": "Credentials are invalid.",
+        "messageTestSuccess": "Credentials are valid."
+    }
+}

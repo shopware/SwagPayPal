@@ -1,0 +1,38 @@
+@import "~scss/variables";
+
+.swag-paypal-onboarding-button {
+    position: relative;
+    color: var(--color-text-brand-default);
+    font-weight: var(--font-weight-semi-bold);
+    font-size: var(--font-size-xs);
+    align-content: center;
+    align-self: center;
+
+    &.is--link {
+        text-wrap: balance;
+    }
+
+    &.is--ghost {
+        border: 1px solid var(--color-text-brand-default);
+        border-radius: var(--border-radius-button);
+        padding: var(--scale-size-2) var(--scale-size-16);
+        min-height: 2.5rem;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    &.is--disabled {
+        cursor: not-allowed;
+        pointer-events: none;
+        color: var(--color-text-brand-disabled);
+        border-color: var(--color-text-brand-disabled);
+
+        &::after {
+            background-color: var(--color-text-brand-disabled);
+        }
+    }
+}
+
+.isu-minibrowser-component {
+    z-index: 2000; // above all shopware components (like modals)
+}

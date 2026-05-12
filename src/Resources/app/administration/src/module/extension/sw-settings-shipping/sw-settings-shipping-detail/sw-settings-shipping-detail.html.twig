@@ -1,0 +1,82 @@
+{% block sw_settings_shipping_detail_tax_cost %}
+    {% block sw_settings_shipping_detail_paypal_default_carrier %}
+    <mt-card
+        v-show="isPayPalEnabled"
+        class="swag-paypal-settings-shipping-carrier"
+        position-identifier="swag-paypal-settings-shipping-carrier"
+    >
+        {% block sw_settings_shipping_detail_paypal_default_carrier_title %}
+        <template #title>
+            <div class="sw-card__title">
+                {{ $t('swag-paypal-settings-shipping-carrier.cardTitle') }}
+                <sw-help-text :text="$t('swag-paypal-settings-shipping-carrier.cardHelpText')" />
+            </div>
+        </template>
+        {% endblock %}
+
+        {% block sw_settings_shipping_detail_paypal_default_carrier_description %}
+        <div
+            class="swag-paypal-settings-shipping-carrier__description"
+            v-html="$t('swag-paypal-settings-shipping-carrier.description')"
+        />
+        {% endblock %}
+
+        {% block sw_settings_shipping_detail_paypal_default_carrier_input %}
+        <sw-single-select
+            ref="carrierSelect"
+            v-model:value="payPalDefaultCarrier"
+            :label="$t('swag-paypal-settings-shipping-carrier.inputLabel')"
+            :placeholder="$t('swag-paypal-settings-shipping-carrier.inputPlaceholder')"
+            :help-text="$t('swag-paypal-settings-shipping-carrier.inputHelpText')"
+            :options="carrierOptions"
+            :search-function="() => carrierOptions"
+            :error="carrierInvalidError"
+            :show-clearable-button="true"
+            label-property="description"
+            @paginate="paginateCarriers"
+            @search="searchCarriers"
+            @on-open-change="onCarrierSelectOpen"
+        >
+            <template #result-label-property="{ item, highlightSearchTerm }">
+                <span class="swag-paypal-settings-shipping-carrier__carrier_info">
+                    <sw-highlight-text
+                        v-if="highlightSearchTerm && item.value !== payPalDefaultCarrier"
+                        :text="item.description"
+                        :search-term="searchTerm"
+                    />
+
+                    <template v-else>
+                        {{ item.description }}
+                    </template>
+
+                    <span
+                        v-if="!item.isInvalid"
+                        class="swag-paypal-settings-shipping-carrier__carrier_info__code"
+                    >
+                        {{ item.value }}
+                    </span>
+
+                    <span
+                        v-if="commonCarriers.includes(item.value)"
+                        class="swag-paypal-settings-shipping-carrier__carrier_info__common"
+                    >
+                        {{ $t('swag-paypal-settings-shipping-carrier.commonCarrierBadge') }}
+                    </span>
+                </span>
+            </template>
+        </sw-single-select>
+
+        <mt-text-field
+            v-if="selectedCarrierOption?.value === 'OTHER'"
+            v-model="payPalOtherCarrierName"
+            :label="$t('swag-paypal-settings-shipping-carrier.inputLabelOther')"
+            :placeholder="$t('swag-paypal-settings-shipping-carrier.inputPlaceholderOther')"
+            :help-text="$t('swag-paypal-settings-shipping-carrier.inputHelpTextOther')"
+        />
+        {% endblock %}
+
+    </mt-card>
+    {% endblock %}
+
+    {% parent %}
+{% endblock %}

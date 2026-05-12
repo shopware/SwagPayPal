@@ -1,0 +1,21 @@
+@import "~scss/variables";
+
+.swag-paypal-pos {
+    &__disclaimer {
+        color: var(--color-text-secondary-default);
+        font-size: $font-size-xxs;
+        text-align: center;
+
+        & > a {
+            font-size: $font-size-xs;
+        }
+
+        .disclaimer-content {
+            margin-bottom: 5px;
+        }
+    }
+
+    &__tab-help {
+        font-size: $font-size-s !important;
+    }
+}

@@ -1,0 +1,59 @@
+{% block swag_paypal_pos_status %}
+    <mt-card position-identifier="swag-paypal-pos-status"
+             :class="statusClasses"
+             :isLoading="isLoading"
+             :title="title">
+
+        {% block swag_paypal_pos_status_icon %}
+            <div class="swag-paypal-pos-status__icon-base">
+                <mt-icon :class="iconClasses"
+                         :name="icon" />
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_status_status %}
+            <div class="swag-paypal-pos-status__status">
+                <slot name="status">
+                    {{ status }}
+                </slot>
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_status_detail %}
+            <div class="swag-paypal-pos-status__detail">
+                <slot name="detail" />
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_status_substatus %}
+            <div v-if="showSubStatus" class="swag-paypal-pos-status__substatus">
+
+                {% block swag_paypal_pos_status_substatus_icon %}
+                    <mt-icon v-if="showSubIcon"
+                             :class="subIconClasses"
+                             :name="subIcon" />
+                {% endblock %}
+
+                {% block swag_paypal_pos_status_substatus_content %}
+                    <span>
+                        <slot name="substatus" />
+                    </span>
+                {% endblock %}
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_status_actions %}
+            <div class="swag-paypal-pos-status__actions">
+                <slot name="actions" />
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_status_disabled %}
+            <div v-if="disabled" class="swag-paypal-pos-status__disabled">
+                <slot name="disabledText">
+{{ disabledText }}
+</slot>
+            </div>
+        {% endblock %}
+    </mt-card>
+{% endblock %}

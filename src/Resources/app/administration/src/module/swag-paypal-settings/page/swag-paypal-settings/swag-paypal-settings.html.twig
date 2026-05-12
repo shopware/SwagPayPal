@@ -1,0 +1,61 @@
+<sw-page class="swag-paypal-settings">
+    <template #smart-bar-header>
+        <h2>
+            {{ $t('sw-settings.index.title') }}
+            <mt-icon name="regular-chevron-right-xs" size="12" />
+            {{ $t('swag-paypal-settings.header') }}
+        </h2>
+    </template>
+
+    <template #smart-bar-actions>
+        <sw-button-process
+            :process-success="savingSettings === 'success'"
+            variant="primary"
+            :is-loading="savingSettings === 'loading'"
+            :disabled="savingSettings === 'loading' || settingsStore.isLoading || !acl.can('swag_paypal.editor')"
+            @update:process-success="testCredentials = 'none'"
+            @click="saveSettings"
+        >
+            {{ $t('global.default.save') }}
+        </sw-button-process>
+    </template>
+
+    <template #content>
+        <sw-card-view>
+            <sw-tabs
+                default-item="general"
+                position-identifier="swag-paypal-settings-tabs"
+            >
+                <template #default="{ active }">
+                    <sw-tabs-item
+                        key="general"
+                        :active-tab="active"
+                        :route="{ name: 'swag.paypal.settings.index.general' }"
+                    >
+                        {{ $t('swag-paypal-settings.tabs.general') }}
+                    </sw-tabs-item>
+                    <sw-tabs-item
+                        key="storefront"
+                        :active-tab="active"
+                        :route="{ name: 'swag.paypal.settings.index.storefront' }"
+                    >
+                        {{ $t('swag-paypal-settings.tabs.storefront') }}
+                    </sw-tabs-item>
+                    <sw-tabs-item
+                        key="advanced"
+                        :active-tab="active"
+                        :route="{ name: 'swag.paypal.settings.index.advanced' }"
+                    >
+                        {{ $t('swag-paypal-settings.tabs.advanced') }}
+                    </sw-tabs-item>
+                </template>
+            </sw-tabs>
+
+            <swag-paypal-settings-sales-channel-switch />
+
+            <keep-alive>
+                <router-view />
+            </keep-alive>
+        </sw-card-view>
+    </template>
+</sw-page>

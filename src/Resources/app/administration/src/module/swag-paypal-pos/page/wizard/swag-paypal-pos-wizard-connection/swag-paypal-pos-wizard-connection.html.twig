@@ -1,0 +1,94 @@
+{% block swag_paypal_pos_wizard_connection %}
+<div class="swag-paypal-pos-wizard-connection">
+
+    {% block swag_paypal_pos_wizard_connection_headline %}
+    <div class="swag-paypal-pos-wizard-connection__headline">
+        {{ $t('swag-paypal-pos.wizard.connection.headerConnect') }}
+    </div>
+    {% endblock %}
+
+    {% block swag_paypal_pos_wizard_connection_apikey %}
+    <mt-password-field
+        v-model="salesChannel.extensions.paypalPosSalesChannel.apiKey"
+        class="swag-paypal-pos-wizard-connection__apikey-field"
+        required
+        :label="$t('swag-paypal-pos.authentication.labelApiKey')"
+        :placeholder="$t('swag-paypal-pos.authentication.placeholderApiKey')"
+        @update:modelValue="updateButtons"
+    />
+    {% endblock %}
+
+    {% block swag_paypal_pos_wizard_connection_apikey_description %}
+    <div class="swag-paypal-pos-wizard-connection__apikey-description">
+
+        {% block swag_paypal_pos_wizard_connection_apikey_description_text %}
+        <div class="swag-paypal-pos-wizard-connection__apikey-description-text">
+            {{ $t('swag-paypal-pos.authentication.apiKeyDescription') }}
+        </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_wizard_connection_apikey_description_link %}
+        <mt-link
+            :to="apiKeyUrl"
+            class="swag-paypal-pos-wizard-connection__apikey-description-link"
+            type="external"
+        >
+
+            {% block swag_paypal_pos_wizard_connection_apikey_description_link_text %}
+                {{ $t('swag-paypal-pos.authentication.buttonGenerateKey') }}
+            {% endblock %}
+        </mt-link>
+        {% endblock %}
+    </div>
+    {% endblock %}
+
+    {% block swag_paypal_pos_wizard_connection_header_new_customer %}
+    <div class="swag-paypal-pos-wizard-connection__new-customer-headline">
+        {{ $t('swag-paypal-pos.wizard.connection.headerNewCustomer') }}
+    </div>
+    {% endblock %}
+
+
+    {% block swag_paypal_pos_wizard_connection_new_customer %}
+    <mt-card position-identifier="swag-paypal-pos-wizard-connection-new-customer" :isLoading="isConnecting">
+        <div class="swag-paypal-pos-wizard-connection__new-customer-container">
+
+            {% block swag_paypal_pos_wizard_connection_new_customer_image %}
+            <img
+                class="swag-paypal-pos-wizard-connection__pos-logo"
+                :src="assetFilter('swagpaypal/administration/static/img/paypal-pos-logo-full.png')"
+                alt="Zettle logo"
+            >
+            {% endblock %}
+
+            {% block swag_paypal_pos_wizard_connection_new_customer_button %}
+            <mt-button
+                class="swag-paypal-pos-wizard-connection__pos-link"
+                ghost
+                size="small"
+                :link="$t('swag-paypal-pos.wizard.connection.buttonCreateAccountLink')"
+                variant="secondary"
+            >
+
+                {% block swag_paypal_pos_wizard_connection_new_customer_button_text %}
+                <span class="swag-paypal-pos-wizard-connection__pos-link-text">
+                    {{ $t('swag-paypal-pos.wizard.connection.buttonCreateAccount') }}
+                </span>
+                {% endblock %}
+
+                {% block swag_paypal_pos_wizard_connection_new_customer_button_icon %}
+                <template #iconBack>
+                    <mt-icon
+                        name="regular-external-link-s"
+                        class="swag-paypal-pos-wizard-connection__pos-link-icon"
+                        size="10px"
+                    />
+                </template>
+                {% endblock %}
+            </mt-button>
+            {% endblock %}
+        </div>
+    </mt-card>
+    {% endblock %}
+</div>
+{% endblock %}

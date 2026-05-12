@@ -1,0 +1,6 @@
+{% block swag_paypal_ecs_button %}
+    <div class="{{ button_class }}"
+         data-swag-paypal-express-button="true"
+         data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}">
+    </div>
+{% endblock %}

@@ -1,0 +1,22 @@
+/.gitlab export-ignore
+/.github export-ignore
+/.gitlab-ci.yml export-ignore
+/README.md export-ignore
+
+; php
+/bin export-ignore
+/tests export-ignore
+/.php-cs-fixer.dist.php export-ignore
+/ecs.php export-ignore
+/phpstan.dynamic.neon export-ignore
+/phpstan.neon.dist export-ignore
+/phpstan-baseline.neon export-ignore
+/phpunit.xml.dist export-ignore
+/rector.php export-ignore
+
+; admin
+/src/Resources/app/administration/internal-rules export-ignore
+/src/Resources/app/administration/*.js export-ignore
+/src/Resources/app/administration/*.mjs export-ignore
+*.spec.ts export-ignore
+*.spec.js export-ignore

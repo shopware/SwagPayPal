@@ -1,0 +1,61 @@
+{% block swag_paypal_payment_action_refund_v2 %}
+<sw-modal
+    variant="small"
+    :title="$t(`swag-paypal-payment.modal.title.refund`)"
+    @modal-close="$emit('modal-close')"
+>
+
+    {% block swag_paypal_payment_action_refund_v2_capture_select %}
+    <mt-select
+        v-model="selectedCaptureId"
+        :label="$t('swag-paypal-payment.refundAction.invoiceSelect.label')"
+        :options="captureOptions"
+        :disabled="captureOptions.length === 0"
+        @update:modelValue="setCapture"
+    />
+    {% endblock %}
+
+    {% block swag_paypal_payment_action_refund_v2_invoice_number %}
+    <mt-text-field
+        v-model="refundInvoiceNumber"
+        :max-length="127"
+        :label="$t('swag-paypal-payment.refundAction.refundInvoiceNumber.label')"
+        :placeholder="$t('swag-paypal-payment.refundAction.refundInvoiceNumber.placeholder')"
+    />
+    {% endblock %}
+
+    {% block swag_paypal_payment_action_refund_v2_amount %}
+    <mt-number-field
+        v-model="refundAmount"
+        :max="refundableAmountForSelectedCapture"
+        :min="0"
+        :disabled="!selectedCaptureId"
+        :label="$t('swag-paypal-payment.refundAction.refundAmount.label')"
+        :helpText="$t('swag-paypal-payment.refundAction.refundAmount.helpText')"
+    >
+        <template #suffix>
+            {{ selectedCaptureCurrencyCode }}
+        </template>
+    </mt-number-field>
+    {% endblock %}
+
+    {% block swag_paypal_payment_action_refund_v2_note_to_payer %}
+    <mt-textarea
+        v-model="refundNoteToPayer"
+        :max-length="255"
+        :placeholder="$t('swag-paypal-payment.refundAction.refundNoteToPayer.placeholder')"
+        :label="$t('swag-paypal-payment.refundAction.refundNoteToPayer.label')"
+    />
+    {% endblock %}
+
+    {% block swag_paypal_payment_action_refund_v2_confirm_button %}
+    <template #modal-footer>
+        <mt-button variant="primary" :disabled="!selectedCaptureId || isLoading" @click="refund">
+            {{ $t('swag-paypal-payment.refundAction.confirmButton.text') }}
+        </mt-button>
+    </template>
+    {% endblock %}
+
+    <sw-loader v-if="isLoading" />
+</sw-modal>
+{% endblock %}

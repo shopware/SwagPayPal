@@ -1,0 +1,9 @@
+import './swag-paypal-pos-wizard';
+import './swag-paypal-pos-wizard-connection';
+import './swag-paypal-pos-wizard-connection-success';
+import './swag-paypal-pos-wizard-connection-disconnect';
+import './swag-paypal-pos-wizard-customization';
+import './swag-paypal-pos-wizard-product-selection';
+import './swag-paypal-pos-wizard-sync-prices';
+import './swag-paypal-pos-wizard-sync-library';
+import './swag-paypal-pos-wizard-finish';

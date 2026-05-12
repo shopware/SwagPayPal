@@ -1,0 +1,72 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Pos\Api\Service\ApiKeyDecoder"/>
+        <service id="Swag\PayPal\Pos\Api\Service\MetadataGenerator"/>
+        <service id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+        <service id="Swag\PayPal\Pos\Api\Service\Converter\OptionGroupConverter"/>
+        <service id="Swag\PayPal\Pos\Api\Service\Converter\PresentationConverter"/>
+        <service id="Swag\PayPal\Pos\Api\Service\Converter\PriceConverter"/>
+
+        <service id="Swag\PayPal\Pos\Api\Service\Converter\CategoryConverter">
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Api\Service\Converter\VariantConverter">
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\PriceConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\PresentationConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Api\Service\ProductConverter">
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\CategoryConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\VariantConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\OptionGroupConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\PresentationConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\MetadataGenerator"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Api\Service\MediaConverter" />
+
+        <service id="Swag\PayPal\Pos\Client\TokenClientFactory">
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Client\PosClientFactory">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\TokenResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Resource\ImageResource">
+            <argument type="service" id="Swag\PayPal\Pos\Client\PosClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Resource\InventoryResource">
+            <argument type="service" id="Swag\PayPal\Pos\Client\PosClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Resource\ProductResource">
+            <argument type="service" id="Swag\PayPal\Pos\Client\PosClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Resource\SubscriptionResource">
+            <argument type="service" id="Swag\PayPal\Pos\Client\PosClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Resource\TokenResource">
+            <argument type="service" id="cache.object"/>
+            <argument type="service" id="Swag\PayPal\Pos\Client\TokenClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Resource\UserResource">
+            <argument type="service" id="Swag\PayPal\Pos\Client\PosClientFactory"/>
+        </service>
+    </services>
+</container>

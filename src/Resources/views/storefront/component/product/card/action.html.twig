@@ -1,0 +1,19 @@
+{% sw_extends "@Storefront/storefront/component/product/card/action.html.twig" %}
+
+{% block component_product_box_action_form %}
+    {{ parent() }}
+
+    {% block component_product_box_action_form_paypal_express %}
+        {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData expressSettings #}
+        {% set expressSettings = page.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+
+        {% if expressSettings is null and cmsPage.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+            {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData expressSettings #}
+            {% set expressSettings = cmsPage.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+        {% endif %}
+
+        {% if expressSettings.listingEnabled and product.calculatedCheapestPrice.totalPrice > 0 and product.extensions[constant('Swag\\PayPal\\Checkout\\Cart\\Service\\ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL')] is null %}
+            {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'pt-3'} %}
+        {% endif %}
+    {% endblock %}
+{% endblock %}

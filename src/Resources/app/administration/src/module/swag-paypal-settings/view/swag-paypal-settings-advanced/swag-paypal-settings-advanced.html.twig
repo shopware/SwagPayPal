@@ -1,0 +1,42 @@
+<mt-card
+    class="swag-paypal-settings-environment"
+    position-identifier="swag-paypal-settings-environment"
+    :title="$t('swag-paypal-settings.environment.title')"
+    :is-loading="settingsStore.isLoading"
+>
+    <div class="swag-paypal-settings-environment__content">
+        <span class="swag-paypal-settings-environment__info-text">
+            {{ $t('swag-paypal-settings.environment.info') }}
+        </span>
+
+        <swag-paypal-setting path="SwagPayPal.settings.isLocalEnvironment" />
+    </div>
+</mt-card>
+
+{% block swag_paypal_settings_webhook %}
+<swag-paypal-settings-webhook />
+{% endblock %}
+
+<mt-card
+    class="swag-paypal-settings-cross-border"
+    position-identifier="swag-paypal-settings-cross-border"
+    :title="$t('swag-paypal-settings.crossBorder.title')"
+    :is-loading="settingsStore.isLoading"
+>
+    <div class="swag-paypal-settings-cross-border__content">
+        <mt-banner class="swag-paypal-settings-cross-border__warning-text" variant="attention">
+            {{ $t('swag-paypal-settings.crossBorder.warning') }}
+        </mt-banner>
+
+        <span class="swag-paypal-settings-cross-border__info-text">
+            {{ $t('swag-paypal-settings.crossBorder.info') }}
+        </span>
+
+        <swag-paypal-setting path="SwagPayPal.settings.crossBorderMessagingEnabled" />
+
+        <swag-paypal-setting
+            path="SwagPayPal.settings.crossBorderBuyerCountry"
+            :options="countryOverrideOptions"
+        />
+    </div>
+</mt-card>

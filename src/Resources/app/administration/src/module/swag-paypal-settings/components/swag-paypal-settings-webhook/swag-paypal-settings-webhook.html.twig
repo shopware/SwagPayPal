@@ -1,0 +1,40 @@
+<mt-card
+    class="swag-paypal-settings-webhook"
+    position-identifier="swag-paypal-settings-webhook"
+    :is-loading="status !== 'none'"
+>
+    <template #title>
+        <div class="swag-paypal-settings-webhook__title">
+            <p>
+                {{ $t('swag-paypal-settings.webhook.title') }}
+            </p>
+
+            <sw-label
+                class="swag-paypal-settings-webhook__label"
+                appearance="pill"
+                size="medium"
+                :variant="webhookStatusVariant"
+            >
+                <sw-color-badge :rounded="true" :variant="webhookStatusVariant" />
+                <span>{{ webhookStatusLabel }}</span>
+            </sw-label>
+        </div>
+    </template>
+
+    <div class="swag-paypal-settings-webhook__content">
+        <span class="swag-paypal-settings-webhook__info-text">
+            {{ $t('swag-paypal-settings.webhook.info') }}
+        </span>
+
+        <mt-button
+            v-tooltip="refreshTooltip"
+            class="swag-paypal-settings-webhook__refresh-button"
+            variant="secondary"
+            :disabled="status !== 'none' || !allowRefresh || !acl.can('swag_paypal.editor')"
+            :is-loading="status === 'refreshing'"
+            @click="onRefreshWebhook"
+        >
+            {{ $t('swag-paypal-settings.webhook.buttonRefresh') }}
+        </mt-button>
+    </div>
+</mt-card>

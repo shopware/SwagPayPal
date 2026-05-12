@@ -1,0 +1,121 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Webhook\WebhookController" public="true">
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
+            <argument type="service" id="system_config.repository"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\WebhookService" public="true">
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\WebhookResource"/>
+            <argument type="service" id="Swag\PayPal\Webhook\WebhookRegistry"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="router"/>
+        </service>
+
+        <!-- handler registry -->
+        <service id="Swag\PayPal\Webhook\WebhookRegistry">
+            <argument type="tagged_iterator" tag="swag.paypal.webhook.handler"/>
+        </service>
+
+        <!-- handler -->
+        <service id="Swag\PayPal\Webhook\Handler\AuthorizationVoided">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\CaptureCompleted">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentStatusUtilV2"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\CaptureDenied">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\CaptureRefunded">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentStatusUtilV2"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\CaptureReversed">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentStatusUtilV2"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\SaleComplete">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\SaleDenied">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\SaleRefunded">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\SaleResource"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\VaultPaymentTokenCreated">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\VaultPaymentTokenDeleted">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="swag_paypal_vault_token.repository"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <!-- registration -->
+        <service id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper">
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Registration\WebhookSubscriber">
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
+            <argument type="service" id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper"/>
+            <argument type="service" id="request_stack"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
+</container>

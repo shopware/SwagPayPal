@@ -1,0 +1,42 @@
+.swag-paypal-checkout-finish-pui-instructions-content {
+    .instruction-title,
+    .instruction-description {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+
+        @media (min-width: 576px) {
+            margin: 0;
+            padding: 1rem;
+        }
+    }
+
+    .instruction-title {
+        font-weight: normal;
+
+        @media (min-width: 576px) {
+            flex: 0 0 auto;
+            width: 41.66666667%;
+        }
+    }
+
+    .instruction-description {
+        font-weight: bold;
+
+        @media (min-width: 576px) {
+            flex: 0 0 auto;
+            width: 58.33333333%;
+        }
+    }
+
+    dt:nth-of-type(#{$table-striped-order}),
+    dd:nth-of-type(#{$table-striped-order}) {
+        background-color: $gray-100;
+    }
+}
+
+.swag-paypal-pui-polling {
+    .loader {
+        width: 44px;
+        height: 44px;
+    }
+}

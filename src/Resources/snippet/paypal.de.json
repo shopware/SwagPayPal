@@ -1,0 +1,88 @@
+{
+    "paypal": {
+        "general": {
+            "paymentCancel": "Der Zahlungsvorgang wurde abgebrochen. Bitte versuchen Sie es noch einmal oder wählen Sie eine andere Zahlungsmethode aus.",
+            "paymentError": "Während des Zahlungsvorgangs ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder wählen Sie eine andere Zahlungsmethode aus.",
+            "browserUnsupported": "Ihr aktueller Browser wird von der gewählten Zahlungsart nicht unterstützt. Bitte versuchen Sie es mit einem anderen Browser oder wählen Sie eine andere Zahlungsmethode aus."
+        },
+        "error": {
+            "SWAG_PAYPAL__EXPRESS_GENERIC_ERROR": "Während des Bestellvorgangs mit PayPal ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder verwenden Sie den normalen Bestellprozess.",
+            "SWAG_PAYPAL__EXPRESS_USER_CANCELLED": "Der Bestellvorgang mit PayPal wurde abgebrochen. Bitte versuchen Sie es noch einmal oder verwenden Sie den normalen Bestellprozess.",
+            "SWAG_PAYPAL__GENERIC_ERROR": "Während des Zahlungsvorgangs ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder wählen Sie eine andere Zahlungsart.",
+            "SWAG_PAYPAL__USER_CANCELLED": "Der Zahlungsvorgang wurde abgebrochen. Bitte versuchen Sie es noch einmal oder wählen Sie eine andere Zahlungsart.",
+            "SWAG_PAYPAL__BROWSER_UNSUPPORTED": "Die gewählte Zahlungsart wird von Ihrem aktuellen Browser nicht unterstützt. Bitte versuchen Sie es mit einem anderen Browser oder wählen Sie eine andere Zahlungsart.",
+            "SWAG_PAYPAL__CARD_VALIDATION_FAILED": "Die eingegebenen Kreditkartendaten sind ungültig. Bitte kontrollieren Sie Ihre Eingaben und versuchen Sie es erneut.",
+            "SWAG_PAYPAL__API_POSTAL_CODE_REQUIRED": "Die eingegebene Adresse enthält keine Postleitzahl. Bitte ergänzen Sie Ihre Eingaben.",
+            "SWAG_PAYPAL__API_CANNOT_BE_ZERO_OR_NEGATIVE": "Der Betrag kann nicht null oder negativ sein. Bitte versuchen Sie es mit einem Betrag größer als null oder wählen Sie eine andere Zahlungsart aus.",
+            "SWAG_PAYPAL__API_SHIPPING_ADDRESS_INVALID": "Die angegebene Lieferadresse wurde vom Zahlungsanbieter nicht akzeptiert. Bitte überprüfen Sie Ihre Adresse oder wählen Sie eine andere Zahlungsart.",
+            "SWAG_PAYPAL__API_NOT_AVAILABLE": "Die PayPal-Services sind derzeit nicht verfügbar. Bitte versuchen Sie es später errneut.",
+            "handler_swag_puihandler": {
+                "SWAG_PAYPAL__API_PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED": "Ihr Name und/oder Ihre Anschrift konnten nicht validiert werden. Bitte kontrollieren Sie Ihre Eingaben und versuchen Sie es erneut. Für mehr Informationen lesen Sie die <a href=\"https://www.ratepay.com/legal-payment-dataprivacy/?lang=de\" target=\"_blank\">Ratepay-Datenschutzbestimmungen</a> oder nutzen Sie das Ratepay-<a href=\"https://www.ratepay.com/kontakt/\" target=\"_blank\">Kontaktformular</a>.",
+                "SWAG_PAYPAL__API_PAYMENT_SOURCE_DECLINED_BY_PROCESSOR": "Die gewählte Zahlungsart wurde aufgrund eines automatisierten Datenverarbeitungsverfahren abgelehnt. Für mehr Informationen lesen Sie in die <a href=\"https://www.ratepay.com/legal-payment-dataprivacy/?lang=de\" target=\"_blank\">Ratepay-Datenschutzbestimmungen</a> oder nutzen Sie das Ratepay-<a href=\"https://www.ratepay.com/kontakt/\" target=\"_blank\">Kontaktformular</a>."
+            }
+        },
+        "payUponInvoice": {
+            "instructions": {
+                "transferRequestDate": "Bitte überweisen Sie %value% bis zum %date% an PayPal.",
+                "transferRequest": "Bitte überweisen Sie %value% an das unten angegebene Konto:",
+                "table": {
+                    "bank": "Bank:",
+                    "iban": "IBAN:",
+                    "bic": "BIC:",
+                    "holder": "Kontoinhaber:",
+                    "amount": "Betrag:",
+                    "reference": "Verwendungszweck:"
+                },
+                "legalMessageRatepay": "Rechnungskauf ist ein Service, den wir in Zusammenarbeit Ratepay anbieten. Der fällige Betrag wurde soeben von Ratepay direkt an uns übersandt. Nachdem Sie ihre Ware erhalten und geprüft haben, zahlen Sie den Rechnungsbetrag gemäß den Zahlungshinweisen an Ratepay.",
+                "legalMessage": "Warum PayPal? Rechnungskauf ist ein Service für den wir mit PayPal zusammenarbeiten. Der Betrag wurde von PayPal soeben direkt an uns gezahlt. Sie bezahlen den Rechnungsbetrag gemäß den Zahlungshinweisen an PayPal, nachdem Sie die Ware erhalten und geprüft haben."
+            },
+            "document": {
+                "paymentShippingInfo": {
+                    "payPalPuiPaymentMethod": "Gewählte Zahlungsart: Rechnungskauf"
+                },
+                "paymentNoteRatepay": "%companyName% hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die Ratepay GmbH abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die Ratepay GmbH geleistet werden. Bitte entnehmen Sie weitere Details zur Rechnungsbegleichung der Kommunikation mit Ratepay.",
+                "paymentNote": "%companyName% hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.à r.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.à r.l. et Cie, S.C.A. geleistet werden."
+            },
+            "checkout": {
+                "confirmDisclaimer": "Mit Klicken auf den Button akzeptieren Sie die <a href=\"https://www.ratepay.com/legal-payment-terms\" target=\"_blank\">Ratepay Zahlungsbedingungen</a> und erklären sich mit der Durchführung einer <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\">Risikoprüfung durch Ratepay</a>, unseren Partner, einverstanden. Sie akzeptieren auch PayPal’s <a href=\"https://www.paypal.com/de/webapps/mpp/ua/rechnungskauf-mit-ratepay?locale.x=en_DE\" target=\"_blank\">Datenschutzerklärung</a>. Falls Ihre Transaktion erfolgreich per Kauf auf Rechnung abgewickelt werden kann, wird der Kaufpreis an Ratepay abgetreten und Sie dürfen nur an Ratepay überweisen, nicht an den Händler.",
+                "finish": {
+                    "title": "Die Zahlung wird bearbeitet",
+                    "subtitle": "Die Verarbeitung kann evtl. einige Minuten dauern. Bitte schließen sie dieses Fenster nicht, sie werden weitergeleitet."
+                }
+            },
+            "error": {
+                "unverifiedInfo": "Die Kombination aus Ihrem Namen und Ihrer Anschrift konnte nicht validiert werden. Bitte korrigieren Sie Ihre Daten und versuchen Sie es erneut. Weitere Informationen finden Sie in den <a href=\"https://www.ratepay.com/legal-payment-dataprivacy/?lang=de\" target=\"_blank\">Ratepay Datenschutzbestimmungen</a> oder nutzen Sie das Ratepay <a href=\"https://www.ratepay.com/kontakt/\" target=\"_blank\">Kontaktformular</a>.",
+                "declined": "Die gewählte Zahlungsart kann nicht genutzt werden. Diese Entscheidung basiert auf einem automatisierten Datenverarbeitungsverfahren. Weitere Informationen finden Sie in den <a href=\"https://www.ratepay.com/legal-payment-dataprivacy/?lang=de\" target=\"_blank\">Ratepay Datenschutzbestimmungen</a> oder nutzen Sie das Ratepay <a href=\"https://www.ratepay.com/kontakt/\" target=\"_blank\">Kontaktformular</a>."
+            }
+        },
+        "acdc": {
+            "cardNumber": "Kartennummer",
+            "expiration": "Ablaufdatum (MM/JJ)",
+            "cvv": "Sicherheitscode (CVV)",
+            "cardholderName": "Name des Karteninhabers",
+            "zip": "Postleitzahl"
+        },
+        "smartPaymentButtons": {
+            "confirmPageHint": "Ihre Zahlung wurde erstellt. Bitte schließen Sie sie ab, indem Sie Ihre Bestellung bestätigen.",
+            "description":  "Einfach, schnell und sicher bezahlen - Bitte wählen Sie eine dieser Zahlungsmethoden auf der Bestellabschlussseite."
+        },
+        "cookie": {
+            "name": "PayPal-Zahlungen",
+            "googlePay": "Google-Pay-Zahlungen"
+        },
+        "vault": {
+          "account": {
+            "clear": "Konto entfernen",
+            "create": "Konto für zukünftige Käufe speichern"
+          },
+          "card": {
+            "clear": "Karte entfernen",
+            "create": "Karte für zukünftige Käufe speichern"
+          }
+        },
+        "e-invoice":{
+          "paymentMethod": "Zahlungsart: \"%paymentMethod%\"",
+          "orderId": "Auftragsnummer: %orderId%"
+        }
+    }
+}

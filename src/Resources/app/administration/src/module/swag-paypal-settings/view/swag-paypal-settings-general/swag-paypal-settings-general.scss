@@ -1,0 +1,24 @@
+@import "~scss/variables";
+
+.swag-paypal-settings {
+    &-credentials__title {
+        height: 100%;
+    }
+
+    &-vaulting {
+        &__description-title {
+            color: var(--color-text-primary-default);
+            font-weight: $font-weight-bold;
+            font-size: $font-size-m;
+            margin-bottom: 16px;
+        }
+
+        &__description-text {
+            margin-bottom: 24px;
+        }
+
+        .swag-paypal-settings.is--boolean {
+            margin-bottom: 24px;
+        }
+    }
+}

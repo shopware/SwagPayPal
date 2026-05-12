@@ -1,0 +1,18 @@
+<a
+    :href="onboardingUrl"
+    :class="classes"
+    class="swag-paypal-onboarding-button"
+    target="_paypal"
+    :data-paypal-onboard-complete="callbackName"
+    data-paypal-button="true"
+>
+    <mt-loader
+        v-if="isLoading"
+        class="swag-paypal-onboarding-button__loader"
+        size="20px"
+    />
+
+    <slot>
+        {{ buttonTitle }}
+    </slot>
+</a>

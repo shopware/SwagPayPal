@@ -1,0 +1,101 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Pos\Sync\ProductSelection">
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\ImageSyncer">
+            <argument type="service" id="swag_paypal_pos_sales_channel_media.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\MediaConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Resource\ImageResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\Inventory\Calculator\RemoteCalculator">
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalCalculator"/>
+        <service id="Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalWebhookCalculator"/>
+
+        <service id="Swag\PayPal\Pos\Sync\Context\InventoryContextFactory">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\InventoryResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel_inventory.repository"/>
+        </service>
+
+        <service id="swag.paypal.pos.sync.inventory.local_updater" class="Swag\PayPal\Pos\Sync\Inventory\LocalUpdater">
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalCalculator"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="swag.paypal.pos.sync.inventory.local_webhook_updater" class="Swag\PayPal\Pos\Sync\Inventory\LocalUpdater">
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalWebhookCalculator"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\Inventory\RemoteUpdater">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\InventoryResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Inventory\Calculator\RemoteCalculator"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\InventorySyncer">
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Context\InventoryContextFactory"/>
+            <argument type="service" id="swag.paypal.pos.sync.inventory.local_updater"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Inventory\RemoteUpdater"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel_inventory.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\Inventory\StockSubscriber">
+            <argument type="service" id="messenger.default_bus"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\Context\ProductContextFactory">
+            <argument type="service" id="swag_paypal_pos_sales_channel_product.repository"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel_media.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\Product\NewUpdater">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\Product\OutdatedUpdater">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\Product\DeletedUpdater">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\Product\UnsyncedChecker">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\ProductSyncer">
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\ProductConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Context\ProductContextFactory"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Product\NewUpdater"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Product\OutdatedUpdater"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Product\DeletedUpdater"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Product\UnsyncedChecker"/>
+        </service>
+    </services>
+</container>

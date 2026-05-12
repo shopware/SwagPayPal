@@ -1,0 +1,149 @@
+import template from './swag-paypal-pos-wizard-connection-disconnect.html.twig';
+import './swag-paypal-pos-wizard-connection-disconnect.scss';
+
+const { Component, Context } = Shopware;
+
+Component.register('swag-paypal-pos-wizard-connection-disconnect', {
+    template,
+
+    inject: [
+        'repositoryFactory',
+        'SwagPayPalPosSettingApiService',
+    ],
+
+    emits: ['frw-set-title', 'buttons-update', 'recreate-sales-channel'],
+
+    mixin: [
+        Shopware.Mixin.getByName('placeholder'),
+        Shopware.Mixin.getByName('notification'),
+    ],
+
+    props: {
+        salesChannel: {
+            type: Object,
+            required: true,
+        },
+        cloneSalesChannelId: {
+            type: String,
+            required: false,
+            default: null,
+        },
+        saveSalesChannel: {
+            type: Function,
+            required: true,
+        },
+    },
+
+    data() {
+        return {
+            posData: null,
+            isFetchingInformation: true,
+        };
+    },
+
+    computed: {
+        salesChannelRepository() {
+            return this.repositoryFactory.create('sales_channel');
+        },
+
+        posUser() {
+            if (this.isFetchingInformation) {
+                const firstName = this.$t('swag-paypal-pos.wizard.connectionSuccess.fakeFirstName');
+                const lastName = this.$t('swag-paypal-pos.wizard.connectionSuccess.fakeLastName');
+                const mail = this.$t('swag-paypal-pos.wizard.connectionSuccess.fakeMail');
+
+                return {
+                    firstName,
+                    lastName,
+                    fullName: `${firstName} ${lastName}`,
+                    mail,
+                };
+            }
+            const parts = this.posData.merchantInformation.name.split(' ');
+
+            return {
+                firstName: parts[0],
+                lastName: parts[parts.length - 1],
+                fullName: this.posData.merchantInformation.name,
+                mail: this.posData.merchantInformation.contactEmail,
+            };
+        },
+    },
+
+    created() {
+        this.createdComponent();
+    },
+
+    methods: {
+        createdComponent() {
+            this.isFetchingInformation = true;
+            this.updateButtons();
+            this.setTitle();
+
+            this.SwagPayPalPosSettingApiService.fetchInformation(this.salesChannel, true).then((response) => {
+                this.posData = response;
+            }).finally(() => {
+                this.isFetchingInformation = false;
+                this.updateButtons();
+            });
+        },
+
+        setTitle() {
+            this.$emit('frw-set-title', this.$t('swag-paypal-pos.wizard.connectionDisconnect.modalTitle'));
+        },
+
+        updateButtons() {
+            const buttonConfig = [
+                {
+                    key: 'cancel',
+                    label: this.$t('global.default.cancel'),
+                    position: 'right',
+                    action: this.routeBackToConnectionSuccess,
+                    disabled: false,
+                },
+                {
+                    key: 'next',
+                    label: this.$t('swag-paypal-pos.wizard.connectionDisconnect.disconnectButton'),
+                    position: 'right',
+                    variant: 'critical',
+                    action: this.onDisconnect,
+                    disabled: this.isFetchingInformation,
+                },
+            ];
+
+            this.$emit('buttons-update', buttonConfig);
+        },
+
+        routeBackToConnectionSuccess() {
+            this.$router.push({
+                name: 'swag.paypal.pos.wizard.connectionSuccess',
+                params: { id: this.salesChannel.id },
+            });
+        },
+
+        onDisconnect() {
+            // ToDo PPI-22 - The module should go into a disconnected state instead of deleting the whole saleschannel.
+            this.salesChannelRepository.delete(this.salesChannel.id, Context.api).then(() => {
+                // Forces the sw-admin-menu component to refresh the SalesChannel list
+                Shopware.Utils.EventBus.emit('sw-sales-channel-detail-sales-channel-change');
+
+                this.$emit('recreate-sales-channel');
+                this.updateButtons();
+
+                this.$router.push({ name: 'swag.paypal.pos.wizard.connection' });
+            }).catch(() => {
+                this.createNotificationError({
+                    message: this.$t('swag-paypal-pos.wizard.connectionDisconnect.disconnectErrorMessage'),
+                });
+            });
+        },
+
+        /**
+         * @deprecated tag:v11.0.0 - will be removed without replacement
+         */
+        forceUpdate() {
+            this.$forceUpdate();
+            this.updateButtons();
+        },
+    },
+});

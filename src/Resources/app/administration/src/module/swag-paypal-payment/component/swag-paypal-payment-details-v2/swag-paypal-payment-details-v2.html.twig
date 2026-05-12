@@ -1,0 +1,175 @@
+{% block swag_paypal_payment_details_v2 %}
+<div class="swag-paypal-payment-details_v2">
+    <mt-card
+        position-identifier="swag-paypal-payment-details-v2"
+        :title="$t('swag-paypal-payment.paymentDetails.cardTitle')"
+    >
+        <template #grid>
+
+            {% block swag_paypal_payment_actions_section %}
+            <sw-card-section secondary slim>
+                <swag-paypal-payment-actions-v2
+                    :orderTransactionId="orderTransaction.id"
+                    :paypalOrder="paypalOrder"
+                    :paypalPartnerAttributionId="orderTransaction.customFields.swag_paypal_partner_attribution_id"
+                    :refundableAmount="refundableAmount"
+                    :captureableAmount="captureableAmount"
+                    :showVoidButton="showVoidButton"
+                    @reloadPaypalOrder="$emit('reload-paypal-order')"
+                />
+            </sw-card-section>
+            {% endblock %}
+
+            <sw-card-section divider="top">
+
+                    {% block swag_paypal_payment_detail_invoice %}
+                        {% block swag_paypal_payment_detail_invoice_heading %}
+                        <h3>
+                            {{ $t('swag-paypal-payment.paymentDetails.invoice.heading') }}
+                        </h3>
+                        {% endblock %}
+
+                        {% block swag_paypal_payment_detail_invoice_list %}
+                        <sw-description-list class="swag-paypal-payment-detail__data" grid="1fr 1fr">
+
+                            {% block swag_paypal_payment_detail_invoice_list_total %}
+                            <dt>{{ $t('swag-paypal-payment.paymentDetails.invoice.totalAmount') }}</dt>
+                            <dd>{{ amount.value }} {{ currency }}</dd>
+                            {% endblock %}
+
+                            <template v-if="amount.breakdown">
+                                {% block swag_paypal_payment_detail_invoice_list_sub_total %}
+                                <dt>{{ $t('swag-paypal-payment.paymentDetails.invoice.subTotal') }}</dt>
+                                <dd> {{ amount.breakdown.item_total.value }} {{ currency }}</dd>
+                                {% endblock %}
+
+                                {% block swag_paypal_payment_detail_invoice_list_discount %}
+                                <template v-if="amount.breakdown.discount">
+                                    <dt>{{ $t('swag-paypal-payment.paymentDetails.invoice.discount') }}</dt>
+                                    <dd> {{ amount.breakdown.discount.value }} {{ currency }}</dd>
+                                </template>
+                                {% endblock %}
+
+                                {% block swag_paypal_payment_detail_invoice_list_handling %}
+                                <template v-if="amount.breakdown.handling">
+                                    <dt>{{ $t('swag-paypal-payment.paymentDetails.invoice.handling') }}</dt>
+                                    <dd> {{ amount.breakdown.handling.value }} {{ currency }}</dd>
+                                </template>
+                                {% endblock %}
+
+                                {% block swag_paypal_payment_detail_invoice_list_insurance %}
+                                <template v-if="amount.breakdown.insurance">
+                                    <dt>{{ $t('swag-paypal-payment.paymentDetails.invoice.insurance') }}</dt>
+                                    <dd> {{ amount.breakdown.insurance.value }} {{ currency }}</dd>
+                                </template>
+                                {% endblock %}
+
+                                {% block swag_paypal_payment_detail_invoice_list_shipping %}
+                                <dt>{{ $t('swag-paypal-payment.paymentDetails.invoice.shipping') }}</dt>
+                                <dd> {{ amount.breakdown.shipping.value }} {{ currency }}</dd>
+                                {% endblock %}
+
+                                {% block swag_paypal_payment_detail_invoice_list_shipping_discount %}
+                                <template v-if="amount.breakdown.insurance">
+                                    <dt>{{ $t('swag-paypal-payment.paymentDetails.invoice.shipping_discount') }}</dt>
+                                    <dd> {{ amount.breakdown.shipping_discount.value }} {{ currency }}</dd>
+                                </template>
+                                {% endblock %}
+                            </template>
+
+                        </sw-description-list>
+                        {% endblock %}
+
+                        {% block swag_paypal_payment_detail_payment %}
+                            {% block swag_paypal_payment_detail_payment_heading %}
+                            <h3 class="swag-paypal-payment-detail__heading">
+                                {{ $t('swag-paypal-payment.paymentDetails.payment.heading') }}
+                            </h3>
+                            {% endblock %}
+
+                            {% block swag_paypal_payment_detail_payment_list %}
+                            <sw-description-list class="swag-paypal-payment-detail__data" grid="1fr 1fr">
+                                {% block swag_paypal_payment_detail_payment_list_intent %}
+                                <dt>{{ $t('swag-paypal-payment.paymentDetails.payment.intent') }}</dt>
+                                <dd>{{ $t(`swag-paypal-settings.options.intent.${paypalOrder.intent}`) }}</dd>
+                                {% endblock %}
+
+                                {% block swag_paypal_payment_detail_payment_list_id %}
+                                <dt>{{ $t('swag-paypal-payment.paymentDetails.payment.paymentId') }}</dt>
+                                <dd>{{ paypalOrder.id }}</dd>
+                                {% endblock %}
+
+                                {% block swag_paypal_payment_detail_payment_list_status %}
+                                <dt>{{ $t('swag-paypal-payment.paymentDetails.payment.state') }}</dt>
+                                <dd>{{ paypalOrder.status }}</dd>
+                                {% endblock %}
+
+                                {% block swag_paypal_payment_detail_payment_list_create_time %}
+                                <template v-if="createDateTime">
+                                    <dt>{{ $t('swag-paypal-payment.paymentDetails.payment.createTime') }}</dt>
+                                    <dd>{{ createDateTime }}</dd>
+                                </template>
+                                {% endblock %}
+
+                                {% block swag_paypal_payment_detail_payment_list_update_time %}
+                                <template v-if="updateDateTime">
+                                    <dt>{{ $t('swag-paypal-payment.paymentDetails.payment.updateTime') }}</dt>
+                                    <dd>{{ updateDateTime }}</dd>
+                                </template>
+                                {% endblock %}
+
+                            </sw-description-list>
+                            {% endblock %}
+                        {% endblock %}
+
+                        {% block swag_paypal_payment_detail_customer %}
+                        <template v-if="payerId">
+
+                            {% block swag_paypal_payment_detail_customer_heading %}
+                            <h3 class="swag-paypal-payment-detail__heading">
+                                {{ $t('swag-paypal-payment.paymentDetails.customer.heading') }}
+                            </h3>
+                            {% endblock %}
+
+                            {% block swag_paypal_payment_detail_customer_list %}
+                            <sw-description-list class="swag-paypal-payment-detail__data" grid="1fr 1fr">
+                                <dt>{{ $t('swag-paypal-payment.paymentDetails.customer.payerId') }}</dt>
+                                <dd>{{ payerId }}</dd>
+                            </sw-description-list>
+                            {% endblock %}
+
+                        </template>
+                        {% endblock %}
+                    {% endblock %}
+
+            </sw-card-section>
+        </template>
+    </mt-card>
+
+    {% block swag_paypal_payment_pui_details %}
+    <swag-paypal-pui-details
+        v-if="puiDetails"
+        :details="puiDetails"
+        :purchase-unit-amount="amount"
+    />
+    {% endblock %}
+
+    {% block swag_paypal_payment_transaction_history_card %}
+    <mt-card
+        position-identifier="swag-paypal-payment-transaction-history-v2"
+        :title="$t('swag-paypal-payment.transactionHistory.cardTitle')"
+    >
+        <template #grid>
+            {% block swag_paypal_payment_transaction_history_grid %}
+            <sw-data-grid
+                :dataSource="payments"
+                :columns="paymentColumns"
+                :showActions="false"
+                :showSelection="false"
+            />
+            {% endblock %}
+        </template>
+    </mt-card>
+    {% endblock %}
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% block sw_extension_card_base_context_menu_actions %}
+    <sw-context-menu-item
+        v-if="extension?.name === 'SwagPayPal'"
+        :router-link="{ name: 'sw.settings.payment.overview' }"
+    >
+        {{ $t('sw-settings-payment.general.mainMenuItemGeneral') }}
+    </sw-context-menu-item>
+
+    <sw-context-menu-item
+        v-if="extension?.name === 'SwagPayPal'"
+        :router-link="{ name: 'swag.paypal.settings.index' }"
+    >
+        {{ $t('sw-extension-store.component.sw-extension-card-base.contextMenu.config') }}
+    </sw-context-menu-item>
+
+    <sw-context-menu-item
+        v-if="extension?.name === 'SwagPayPal'"
+    >
+        <mt-link
+            type="external"
+            as="a"
+            target="_blank"
+            href="https://github.com/shopware/SwagPayPal/issues"
+        >
+            {{ $t('swag-paypal.extension-card-base.reportIssue') }}
+        </mt-link>
+    </sw-context-menu-item>
+
+    {% parent %}
+{% endblock %}

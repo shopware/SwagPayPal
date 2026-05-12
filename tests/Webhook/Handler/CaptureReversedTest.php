@@ -1,0 +1,71 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\Test\Webhook\Handler;
+
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
+use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
+use Swag\PayPal\Util\PaymentStatusUtilV2;
+use Swag\PayPal\Webhook\Handler\CaptureReversed;
+use Swag\PayPal\Webhook\WebhookEventTypes;
+
+/**
+ * @internal
+ */
+#[Package('checkout')]
+class CaptureReversedTest extends AbstractWebhookHandlerTestCase
+{
+    use GatewayTestBehaviour;
+    use ServicesTrait;
+
+    public function testInvoke(): void
+    {
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_REFUND);
+        $this->assertInvoke(OrderTransactionStates::STATE_PARTIALLY_REFUNDED, $webhook, OrderTransactionStates::STATE_PAID);
+    }
+
+    public function testInvokeWithoutResource(): void
+    {
+        $this->assertInvokeWithoutResource();
+    }
+
+    public function testInvokeWithoutCustomId(): void
+    {
+        $this->assertInvokeWithoutCustomId(Event::RESOURCE_TYPE_REFUND);
+    }
+
+    public function testInvokeWithoutTransaction(): void
+    {
+        $orderTransactionId = Uuid::randomHex();
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_REFUND, $orderTransactionId);
+        $reason = \sprintf('with custom ID "%s" (order transaction ID)', $orderTransactionId);
+        $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_CAPTURE_REVERSED, $webhook, $reason);
+    }
+
+    public function testInvokeWithSameInitialState(): void
+    {
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_REFUND);
+        $this->assertInvoke(OrderTransactionStates::STATE_PARTIALLY_REFUNDED, $webhook, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
+    }
+
+    protected function createWebhookHandler(): CaptureReversed
+    {
+        return new CaptureReversed(
+            $this->orderTransactionRepository,
+            new OrderTransactionStateHandler($this->stateMachineRegistry),
+            $this->getContainer()->get(PaymentStatusUtilV2::class),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+        );
+    }
+}

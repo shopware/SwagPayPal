@@ -1,0 +1,72 @@
+{% block swag_paypal_pos_status_view %}
+    <swag-paypal-pos-status :disabled="disabled"
+                            :disabledText="$t('swag-paypal-pos.detail.overview.status.disabled')"
+                            :icon="statusIcon"
+                            :subIcon="statusIconComplete"
+                            :iconAnimated="isSyncing"
+                            :isLoading="isLoading || status === null"
+                            :status="statusTitle"
+                            :showSubStatus="incompleteLastRun"
+                            :title="$t('swag-paypal-pos.detail.overview.titleSync')"
+                            :variant="statusVariant"
+                            :subVariant="statusCompleteErrorLevel">
+
+        {% block swag_paypal_pos_status_view_actions %}
+            <template #actions>
+                <slot name="actions" />
+            </template>
+        {% endblock %}
+
+        {% block swag_paypal_pos_status_view_detail %}
+            <template v-if="isSyncing" #detail>
+
+                {% block swag_paypal_pos_status_view_detail_syncing %}
+                    {{ $t('swag-paypal-pos.detail.overview.status.syncingDetail') }}
+                {% endblock %}
+            </template>
+
+            <template v-if="!isSyncing && lastFinishedRun" #detail>
+                <div>
+                    {% block swag_paypal_pos_status_view_detail_static %}
+                        {{ $t('swag-paypal-pos.detail.overview.status.lastSynced') }}:
+                        {{ dateFilter(lastFinishedRun.updatedAt, {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                        }) }}
+                    {% endblock %}
+                </div>
+
+                {% block swag_paypal_pos_status_view_detail_errors %}
+                    <mt-banner v-if="syncErrors"
+                              variant="critical"
+                              :closable="true"
+                              :title="$t('swag-paypal-pos.detail.overview.syncErrorTitle')">
+                        <ul>
+                            <li v-for="error in syncErrors">
+{{ error.detail }} ({{ error.code }})
+</li>
+                        </ul>
+                    </mt-banner>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block swag_paypal_pos_status_view_substatus %}
+            <template v-if="incompleteLastRun" #substatus>
+                {{ $t('swag-paypal-pos.detail.overview.status.lastSyncedComplete') }}:
+                {{ dateFilter(lastCompleteRun.updatedAt, {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                }) }}
+            </template>
+        {% endblock %}
+    </swag-paypal-pos-status>
+{% endblock %}

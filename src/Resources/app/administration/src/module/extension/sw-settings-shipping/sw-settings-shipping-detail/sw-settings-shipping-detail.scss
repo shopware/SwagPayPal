@@ -1,0 +1,40 @@
+@import "~scss/variables";
+
+.swag-paypal-settings-shipping-carrier {
+    &__description {
+        line-height: 24px;
+        font-size: $font-size-xs;
+        margin-bottom: 24px;
+    }
+
+    &__carrier_info {
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        .sw-highlight-text {
+            display: inline-block;
+        }
+
+        &__code {
+            color: var(--color-text-secondary-default);
+        }
+
+        &__common {
+            display: inline-block;
+            font-size: $font-size-xxs;
+            background-color: var(--color-background-brand-default);
+            color: var(--color-text-brand-default);
+            border-radius: 4px;
+            padding: 1px 4px;
+            margin-left: 4px;
+        }
+    }
+}
+
+.sw-select-result.is--active {
+    .swag-paypal-settings-shipping-carrier__carrier_info__common {
+        background-color: var(--color-background-primary-default);
+    }
+}

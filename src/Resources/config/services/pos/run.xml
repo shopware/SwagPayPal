@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Pos\Run\Task\AbstractTask" abstract="true">
+            <argument type="service" id="Swag\PayPal\Pos\MessageQueue\MessageDispatcher"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Run\Task\CompleteTask" parent="Swag\PayPal\Pos\Run\Task\AbstractTask" />
+        <service id="Swag\PayPal\Pos\Run\Task\ProductTask" parent="Swag\PayPal\Pos\Run\Task\AbstractTask" />
+        <service id="Swag\PayPal\Pos\Run\Task\ImageTask" parent="Swag\PayPal\Pos\Run\Task\AbstractTask" />
+        <service id="Swag\PayPal\Pos\Run\Task\InventoryTask" parent="Swag\PayPal\Pos\Run\Task\AbstractTask" />
+
+        <service id="Swag\PayPal\Pos\Run\LoggerFactory"/>
+
+        <service id="Swag\PayPal\Pos\Run\Logger" class="Monolog\Logger">
+            <factory service="Swag\PayPal\Pos\Run\LoggerFactory" method="createLogger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Run\RunService">
+            <argument type="service" id="swag_paypal_pos_sales_channel_run.repository"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel_run_log.repository"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Run\Administration\LogCleaner">
+            <argument type="service" id="swag_paypal_pos_sales_channel_run.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Run\Administration\SyncResetter">
+            <argument type="service" id="swag_paypal_pos_sales_channel_product.repository"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel_inventory.repository"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel_media.repository"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel_run.repository"/>
+        </service>
+    </services>
+</container>

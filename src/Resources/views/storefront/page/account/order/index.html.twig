@@ -1,0 +1,38 @@
+{% sw_extends '@Storefront/storefront/page/account/order/index.html.twig' %}
+
+{% block page_checkout_confirm_header %}
+    {% set snippetGeneric = 'paypal.error.%s'|format(page.errorCode) %}
+    {% set snippetByMethod = 'paypal.error.%s.%s'|format(context.paymentMethod.formattedHandlerIdentifier, page.errorCode) %}
+
+    {% set transSnippetGeneric = snippetGeneric|trans|sw_sanitize %}
+    {% set transSnippetByMethod = snippetByMethod|trans|sw_sanitize %}
+
+    {% if transSnippetGeneric !== snippetGeneric || transSnippetByMethod !== snippetByMethod %}
+        {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+            type: 'danger',
+            content: transSnippetByMethod !== snippetByMethod ? transSnippetByMethod : transSnippetGeneric,
+        } %}
+
+        <h1 class="confirm-main-header">
+            {{ 'account.completePayment'|trans|sw_sanitize }}
+        </h1>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block page_checkout_confirm_form_submit %}
+    {% block page_checkout_confirm_form_pui_disclaimer %}
+        {# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData acdcFieldData #}
+        {% set puiFraudnetData = page.extensions[constant('Swag\\PayPal\\Checkout\\PUI\\PUISubscriber::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID')] %}
+        {% if puiFraudnetData and puiFraudnetData.paymentMethodId is same as(context.paymentMethod.id) %}
+            <div class="text-muted mb-3">{{ "paypal.payUponInvoice.checkout.confirmDisclaimer"|trans|raw }}</div>
+        {% endif %}
+    {% endblock %}
+
+    {{ parent() }}
+
+    {% block page_checkout_confirm_form_submit_paypal_container %}
+        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
+    {% endblock %}
+{% endblock %}

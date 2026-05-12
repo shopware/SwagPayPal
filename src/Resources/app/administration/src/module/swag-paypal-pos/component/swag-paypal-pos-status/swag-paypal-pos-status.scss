@@ -1,0 +1,123 @@
+@import "~scss/variables";
+
+.swag-paypal-pos-status {
+
+    .mt-card__content {
+        text-align: center;
+    }
+
+    .swag-paypal-pos-status__icon-base {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        height: 80px;
+        border-radius: 40px;
+        background-color: var(--color-background-secondary-default);
+    }
+
+    .swag-paypal-pos-status__icon-animated {
+        position: relative;
+        animation: sync-rotate 2s infinite linear;
+    }
+    @keyframes sync-rotate {
+        from {transform:rotate(360deg);}
+        to {transform:rotate(0deg);}
+    }
+
+    .swag-paypal-pos-status__status {
+        margin-top: $font-size-m;
+        font-weight: bold;
+    }
+
+    .swag-paypal-pos-status__detail {
+        margin-top: $font-size-s;
+        padding-bottom: $font-size-s;
+        font-size: $font-size-xs;
+        border-bottom: var(--color-border-primary-default) solid 1px;
+    }
+
+    .swag-paypal-pos-status__substatus {
+        margin-top: $font-size-s;
+        font-size: $font-size-xs;
+        padding-bottom: $font-size-s;
+        border-bottom: var(--color-border-primary-default) solid 1px;
+
+        span {
+            vertical-align: middle;
+        }
+    }
+
+    .swag-paypal-pos-status__disabled {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--color-elevation-surface-overlay);
+        border-radius: $border-radius-default;
+        padding-top: 9*$font-size-s;
+    }
+
+    .swag-paypal-pos-status__actions {
+        margin-top: $font-size-s;
+    }
+
+    &.swag-paypal-pos-status--warning {
+        .mt-card__content {
+            border-color: var(--color-border-attention-default);
+        }
+
+        .swag-paypal-pos-status__icon {
+            color: var(--color-icon-attention-default);
+        }
+    }
+
+    &.swag-paypal-pos-status--error {
+        .mt-card__content {
+            border-color: var(--color-border-critical-default);
+        }
+
+        .swag-paypal-pos-status__icon {
+            color: var(--color-icon-critical-default);
+        }
+    }
+
+    &.swag-paypal-pos-status--success {
+        .mt-card__content {
+            border-color: var(--color-border-positive-default);
+        }
+
+        .swag-paypal-pos-status__icon {
+            color: var(--color-icon-positive-default);
+        }
+    }
+
+    &.swag-paypal-pos-status--info {
+        .mt-card__content {
+            border-color: var(--color-border-brand-default);
+        }
+
+        .swag-paypal-pos-status__icon {
+            color: var(--color-icon-brand-default);
+        }
+    }
+
+    .swag-paypal-pos-status__subicon {
+        &.swag-paypal-pos-status--success {
+            color: var(--color-icon-positive-default);
+        }
+
+        &.swag-paypal-pos-status--info {
+            color: var(--color-icon-brand-default);
+        }
+
+        &.swag-paypal-pos-status--warning {
+            color: var(--color-icon-attention-default);
+        }
+
+        &.swag-paypal-pos-status--error {
+            color: var(--color-icon-critical-default);
+        }
+    }
+}

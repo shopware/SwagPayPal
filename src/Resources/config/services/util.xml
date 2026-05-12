@@ -1,0 +1,183 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Util\PaymentMethodUtil">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+
+            <tag name="kernel.reset" method="reset"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\PaymentStatusUtil">
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\PaymentStatusUtilV2">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\PriceFormatter"/>
+
+        <service id="Swag\PayPal\Util\LocaleCodeProvider">
+            <argument type="service" id="language.repository"/>
+            <argument type="service" id="monolog.logger.paypal"/>
+
+            <tag name="kernel.reset" method="reset"/>
+        </service>
+
+        <service id="monolog.processor.paypal.introspection" class="Swag\PayPal\Util\IntrospectionProcessor">
+            <tag name="monolog.processor" channel="paypal" />
+        </service>
+
+        <service id="monolog.processor.paypal.web" class="Symfony\Bridge\Monolog\Processor\WebProcessor">
+            <argument type="collection">
+                <argument key="url">REQUEST_URI</argument>
+                <argument key="http_method">REQUEST_METHOD</argument>
+                <argument key="server">SERVER_NAME</argument>
+            </argument>
+            <tag name="monolog.processor" channel="paypal" />
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\ActivateDeactivate">
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\PosStateService"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\PluginLifecycleSubscriber">
+            <argument type="service" id="Swag\PayPal\SwagPayPal"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService" public="true">
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="payment_method.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\State\PosStateService">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="sales_channel_type.repository"/>
+            <argument type="service" id="shipping_method.repository"/>
+            <argument type="service" id="payment_method.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller" public="true">
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="rule.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller" public="true">
+            <argument type="service" id="media.repository"/>
+            <argument type="service" id="media_folder.repository"/>
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Media\File\FileSaver"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry">
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="service_container"/>
+            <argument type="tagged_iterator" tag="swag.paypal.payment.method.data"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData" abstract="true">
+            <argument type="service" id="service_container"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\PUIMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\BancontactMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\BlikMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <!--
+        <service id="Swag\PayPal\Util\Lifecycle\Method\BoletoBancarioMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        -->
+        <service id="Swag\PayPal\Util\Lifecycle\Method\EpsMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\IdealMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\MultibancoMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\MyBankMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\P24MethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\ApplePayMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\GooglePayMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Availability\AvailabilityService">
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+        </service>
+    </services>
+</container>

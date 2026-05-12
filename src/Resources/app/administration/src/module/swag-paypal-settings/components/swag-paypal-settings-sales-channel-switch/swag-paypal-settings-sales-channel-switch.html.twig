@@ -1,0 +1,34 @@
+<mt-card
+    class="swag-paypal-settings-sales-channel-switch"
+    position-identifier="swag-paypal-settings-sales-channel-switch"
+    :title="$t('global.entities.sales_channel', 2)"
+>
+    <template #headerRight>
+        <div class="swag-paypal-settings-sales-channel-switch__header-right">
+            <mt-link type="internal" :to="{ name: 'sw.settings.payment.overview' }">
+                {{ $t('sw-settings-payment.general.mainMenuItemGeneral') }}
+            </mt-link>
+        </div>
+    </template>
+
+    <sw-single-select
+        v-model:value="settingsStore.salesChannel"
+        :is-loading="isLoading || settingsStore.isLoading"
+        :options="salesChannels"
+        :disabled="!acl.can('swag_paypal.editor') || isLoading || settingsStore.isLoading"
+    />
+
+    <div class="swag-paypal-settings-sales-channel-switch__default">
+        <p>{{ $t('swag-paypal-settings-sales-channel-switch.description') }}</p>
+
+        <sw-button-process
+            :process-success="defaultPaymentMethods === 'success'"
+            :is-loading="defaultPaymentMethods === 'loading'"
+            :disabled="!acl.can('swag_paypal.editor') || isLoading"
+            @update:process-success="defaultPaymentMethods === 'none'"
+            @click="onSetPaymentMethodDefault"
+        >
+            {{ $t('swag-paypal-settings-sales-channel-switch.label') }}
+        </sw-button-process>
+    </div>
+</mt-card>

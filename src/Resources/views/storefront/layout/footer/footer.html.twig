@@ -1,0 +1,21 @@
+{% sw_extends '@Storefront/storefront/layout/footer/footer.html.twig' %}
+
+{% block layout_footer_payment_logos %}
+    {% block layout_footer_payment_logos_paypal_installment_banner %}
+        {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
+        {% set installmentBanner = footer.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+
+        {% if installmentBanner.footerEnabled %}
+            <div class="col-4 mt-2 p-0 footer-logo is-payment"
+                 data-swag-paypal-installment-banner="true"
+                 data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
+            </div>
+        {% endif %}
+    {% endblock %}
+
+    {{ parent() }}
+
+    {# @deprecated tag:v11.0.0 - `layout_footer_payment_logos_paypal_funding_eligibility` will be removed, use block `base_body_script` instead #}
+    {% block layout_footer_payment_logos_paypal_funding_eligibility %}
+    {% endblock %}
+{% endblock %}

@@ -1,0 +1,98 @@
+{% block swag_paypal_pos_synced_products %}
+    <div class="swag-paypal-pos-detail-synced-products">
+
+        {% block swag_paypal_pos_synced_products_grid %}
+            <mt-card position-identifier="swag-paypal-pos-synced-products-grid"
+                     :title="$t('swag-paypal-pos.detail.syncedProducts.title')"
+                     :isLoading="isLoading">
+
+                {% block swag_paypal_pos_synced_products_grid %}
+                    <template #grid>
+                        <sw-data-grid v-if="total > 0"
+                                      identifier="swag-paypal-pos-detail-synced-products"
+                                      :dataSource="products"
+                                      :columns="columns"
+                                      :isLoading="isLoading"
+                                      :showActions="actions.length > 0"
+                                      :showSelection="false"
+                                      :showSettings="true"
+                                      :allowColumnEdit="true"
+                                      :sortBy="sortBy"
+                                      :sortDirection="sortDirection"
+                                      :skeletonItemAmount="limit"
+                                      @column-sort="onSortColumn">
+
+                            {% block swag_paypal_pos_synced_products_grid_pagination %}
+                                <template #pagination>
+                                    <sw-pagination :limit="limit"
+                                                   :page="page"
+                                                   :total="total"
+                                                   :total-visible="7"
+                                                   @page-change="onPageChange" />
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_synced_products_grid_column_date %}
+                                <template #column-date="{ item }">
+
+                                    {% block swag_paypal_pos_synced_products_grid_column_date_formatted %}
+                                        <template v-if="hasSync(item)">
+                                            {{ dateFilter(getSyncDate(item), {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: '2-digit'
+                                            }) }}
+                                        </template>
+                                    {% endblock %}
+
+                                    {% block swag_paypal_pos_synced_products_grid_column_date_empty %}
+                                        <template v-else>
+                                            {{ $t('swag-paypal-pos.detail.syncedProducts.notSyncedYet') }}
+                                        </template>
+                                    {% endblock %}
+
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_synced_products_grid_column_state %}
+                                <template #column-state="{ item }">
+
+                                    {% block swag_paypal_pos_synced_products_grid_column_state_label_log %}
+                                        <template v-if="hasSync(item)">
+                                            <sw-label appearance="pill"
+                                                      :variant="getLabelVariant(getLevel(item))">
+                                                {{ $t(getLabel(getLevel(item))) }}
+                                            </sw-label>
+                                        </template>
+                                    {% endblock %}
+
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_synced_products_grid_actions %}
+                                <template v-if="actions"
+                                          #actions="{ item }">
+                                    <sw-context-menu-item v-for="action in actions"
+                                                          @click="action.callback(item)">
+                                        {{ $t(action.label) }}
+                                    </sw-context-menu-item>
+                                </template>
+                            {% endblock %}
+
+                        </sw-data-grid>
+                    </template>
+                {% endblock %}
+
+                {% block swag_paypal_pos_synced_products_empty_state %}
+                    <sw-empty-state v-if="total < 1"
+                                    class="swag-paypal-pos-detail-synced-products__empty-state"
+                                    :title="$t('swag-paypal-pos.detail.syncedProducts.emptyState.title')"
+                                    :subline="$t('swag-paypal-pos.detail.syncedProducts.emptyState.message')" />
+                {% endblock %}
+
+            </mt-card>
+        {% endblock %}
+    </div>
+{% endblock %}

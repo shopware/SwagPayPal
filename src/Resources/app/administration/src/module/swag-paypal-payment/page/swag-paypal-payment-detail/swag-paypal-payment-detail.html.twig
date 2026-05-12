@@ -1,0 +1,57 @@
+{% block swag_paypal_payment_detail %}
+<div v-if="isLoading || loading" class="swag-paypal-payment-detail">
+    {% block swag_paypal_payment_detail_loading_state %}
+    <sw-skeleton />
+    <sw-skeleton />
+    {% endblock %}
+</div>
+
+<div v-else-if="!hasPayPalDetails" class="swag-paypal-payment-detail">
+    {% block swag_paypal_payment_detail_error_page %}
+        {% block swag_paypal_payment_detail_error_page_cancelled %}
+        <sw-empty-state
+            v-if="stateFailedCancelled"
+            :title="$t('swag-paypal-payment.errorPage.title')"
+            :subline="$t('swag-paypal-payment.errorPage.canceledPaymentContent')"
+            :absolute="false"
+            icon="regular-shopping-bag"
+            color="var(--color-purple-500)"
+        />
+        {% endblock %}
+
+        {% block swag_paypal_payment_detail_error_page_other %}
+        <sw-empty-state
+            v-else
+            :title="$t('swag-paypal-payment.errorPage.title')"
+            :subline="$t('swag-paypal-payment.errorPage.other')"
+            :absolute="false"
+            icon="regular-shopping-bag"
+            color="var(--color-purple-500)"
+        />
+        {% endblock %}
+    {% endblock %}
+</div>
+
+<div v-else class="swag-paypal-payment-detail">
+    {% block swag_paypal_payment_detail_components %}
+        {% block swag_paypal_payment_detail_details_v1 %}
+        <swag-paypal-payment-details-v1
+            v-if="!!paymentResource"
+            :paymentResource="paymentResource"
+            :orderId="order.id"
+        />
+        {% endblock %}
+
+        {% block swag_paypal_payment_detail_details_v2 %}
+        <swag-paypal-payment-details-v2
+            v-if="!!paypalOrder"
+            :paypalOrder="paypalOrder"
+            :orderTransaction="orderTransaction"
+            :orderTransactionId="orderTransaction.id"
+            :paypalPartnerAttributionId="orderTransaction.customFields.swag_paypal_partner_attribution_id"
+            @reloadPaypalOrder="fetchPayPalDetails"
+        />
+        {% endblock %}
+    {% endblock %}
+</div>
+{% endblock %}

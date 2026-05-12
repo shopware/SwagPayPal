@@ -1,0 +1,44 @@
+{
+    "swag-paypal-disputes": {
+        "general": {
+            "mainMenuItemGeneral": "PayPal disputes",
+            "descriptionTextModule": "Manage PayPal disputes here"
+        },
+        "common": {
+            "dispute_id": "ID",
+            "update_time": "Update time",
+            "response_due_date": {
+                "label": "Response due date",
+                "seller": "Seller",
+                "buyer": "Buyer"
+            },
+            "status": "Status",
+            "dispute_life_cycle_stage": "Stage",
+            "dispute_amount": "Amount"
+        },
+        "list": {
+            "title": "Disputes",
+            "titleSidebarItemRefresh": "Refresh",
+            "titleSidebarItemFilter": "Filter",
+            "errorTitle": "Error fetching disputes from PayPal",
+            "emptyState": {
+                "title": "No disputes found",
+                "subline": "Change the filter to show all disputes."
+            },
+            "emptyStateNotAuthorized": {
+                "title": "No PayPal account setup",
+                "subline": "Go to the {link} for PayPal setup.",
+                "link": "Payment methods"
+            }
+        },
+        "detail": {
+            "title": "PayPal dispute:",
+            "titleAddition": "(Technical details)",
+            "mainFieldsCardTitle": "Details",
+            "externalLinkText": "Open dispute in PayPal resolution center",
+            "orderModuleLinkText": "Open order",
+            "rawDataCardTitle": "Raw data",
+            "copyButtonLabel": "Copy raw data"
+        }
+    }
+}

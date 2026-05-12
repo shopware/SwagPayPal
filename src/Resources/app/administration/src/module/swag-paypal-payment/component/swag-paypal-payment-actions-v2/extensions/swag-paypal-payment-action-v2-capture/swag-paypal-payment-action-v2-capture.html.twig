@@ -1,0 +1,74 @@
+{% block swag_paypal_payment_action_capture_v2 %}
+<sw-modal
+    variant="small"
+    :title="$t(`swag-paypal-payment.modal.title.capture`)"
+    @modal-close="$emit('modal-close')"
+>
+
+    {% block swag_paypal_payment_action_capture_v2_max_amount %}
+    <mt-text-field
+        v-model="captureableAmount"
+        :label="$t('swag-paypal-payment.captureAction.maxAmount')"
+        :disabled="true"
+    >
+        <template v-if="currencyCode" #suffix>
+            {{ currencyCode }}
+        </template>
+    </mt-text-field>
+    {% endblock %}
+
+    {% block swag_paypal_payment_action_capture_v2_amount %}
+    <mt-number-field
+        v-model="captureAmount"
+        :max="captureableAmount"
+        :min="0"
+        :label="$t('swag-paypal-payment.captureAction.currentAmount')"
+    >
+        <template v-if="currencyCode" #suffix>
+            {{ currencyCode }}
+        </template>
+    </mt-number-field>
+    {% endblock %}
+
+    {% block swag_paypal_payment_action_capture_v2_invoice_number %}
+    <mt-text-field
+        v-model="captureInvoiceNumber"
+        :max-length="127"
+        :label="$t('swag-paypal-payment.captureAction.captureInvoiceNumber.label')"
+        :placeholder="$t('swag-paypal-payment.captureAction.captureInvoiceNumber.placeholder')"
+    />
+    {% endblock %}
+
+    {% block swag_paypal_payment_action_capture_v2_note_to_payer %}
+    <mt-textarea
+        v-model="captureNoteToPayer"
+        :max-length="255"
+        :placeholder="$t('swag-paypal-payment.captureAction.captureNoteToPayer.placeholder')"
+        :label="$t('swag-paypal-payment.captureAction.captureNoteToPayer.label')"
+    />
+    {% endblock %}
+
+    {% block swag_paypal_payment_action_capture_v2_is_final_capture %}
+    <mt-checkbox
+        v-model:checked="isFinalCapture"
+        :label="$t('swag-paypal-payment.captureAction.isFinal')"
+    />
+    {% endblock %}
+
+    {% block swag_paypal_payment_action_capture_v2_hint %}
+    <mt-banner v-if="showHint">
+        {{ $t('swag-paypal-payment.captureAction.isFinalHint') }}
+    </mt-banner>
+    {% endblock %}
+
+    {% block swag_paypal_payment_action_capture_v2_confirm_button %}
+    <template #modal-footer>
+        <mt-button variant="primary" @click="capture">
+            {{ $t('swag-paypal-payment.captureAction.button.text') }}
+        </mt-button>
+    </template>
+    {% endblock %}
+
+    <sw-loader v-if="isLoading" />
+</sw-modal>
+{% endblock %}

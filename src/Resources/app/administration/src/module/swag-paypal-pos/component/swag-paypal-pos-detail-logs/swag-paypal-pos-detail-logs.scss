@@ -1,0 +1,19 @@
+.swag-paypal-pos-detail-runs__modal {
+
+    .sw-data-grid {
+        .sw-data-grid__cell--message {
+            .sw-data-grid__cell-content {
+                min-height: min-content;
+                height: unset;
+            }
+        }
+
+        &.is--compact {
+            .sw-data-grid__cell--message {
+                .sw-data-grid__cell-content {
+                    padding: 0 20px;
+                }
+            }
+        }
+    }
+}

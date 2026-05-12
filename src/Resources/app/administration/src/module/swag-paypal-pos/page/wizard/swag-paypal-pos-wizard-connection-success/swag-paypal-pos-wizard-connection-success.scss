@@ -1,0 +1,55 @@
+@import '~scss/variables';
+
+.swag-paypal-pos-wizard-connection-success {
+    text-align: center;
+
+    .swag-paypal-pos-wizard-connection-success__content {
+        padding: 16px 24px;
+        margin-left: 40px;
+        margin-right: 40px;
+    }
+
+    .swag-paypal-pos-wizard-connection-success__icon-wrapper {
+        display: inline-block;
+        margin: 16px;
+
+        background-color: var(--color-background-positive-default);
+        border-radius: 50%;
+    }
+
+    .swag-paypal-pos-wizard-connection-success__icon {
+        padding: 24px;
+    }
+
+    .swag-paypal-pos-wizard-connection-success__headline {
+        font-size: $font-size-m;
+        font-weight: $font-weight-bold;
+        margin-bottom: 8px;
+    }
+
+    .swag-paypal-pos-wizard-connection-success__info {
+        font-size: $font-size-xs;
+    }
+
+    .swag-paypal-pos-wizard-connection-success__user {
+        margin: 36px 0;
+    }
+
+    .swag-paypal-pos-wizard-connection-success__user-info {
+        text-align: left;
+        font-size: $font-size-xs;
+    }
+
+    .swag-paypal-pos-wizard-connection-success__user-info-name {
+        font-weight: 600;
+    }
+
+    .swag-paypal-pos-wizard-connection-success__user-disconnect {
+        place-self: center end;
+    }
+
+    .swag-paypal-pos-wizard-connection-success__disclaimer {
+        color: var(--color-text-secondary-default);
+        font-size: $font-size-xs;
+    }
+}

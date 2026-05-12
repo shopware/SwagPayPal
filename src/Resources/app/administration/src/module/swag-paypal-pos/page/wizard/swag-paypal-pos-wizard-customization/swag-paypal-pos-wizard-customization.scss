@@ -1,0 +1,8 @@
+@import '~scss/variables';
+
+.swag-paypal-pos-wizard-customization {
+    .swag-paypal-pos-wizard-customization__subtitle {
+        color: var(--color-text-secondary-default);
+        font-size: $font-size-xs;
+    }
+}

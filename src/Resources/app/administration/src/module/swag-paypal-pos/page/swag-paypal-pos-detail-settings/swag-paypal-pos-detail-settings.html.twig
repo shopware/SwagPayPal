@@ -1,0 +1,307 @@
+{% block swag_paypal_pos_detail_settings %}
+    <div class="swag-paypal-pos-detail-settings">
+
+        {% block swag_paypal_pos_detail_settings_alert %}
+            <mt-banner class="swag-paypal-pos-detail-settings__save-alert">
+                {{ $t('swag-paypal-pos.detail.settings.saveAlert') }}
+            </mt-banner>
+        {% endblock %}
+
+        {% block swag_paypal_pos_detail_settings_basic %}
+            <mt-card position-identifier="swag-paypal-pos-detail-settings-basic"
+                     :isLoading="isLoading"
+                     :title="$t('swag-paypal-pos.detail.settings.titleGeneralSettings')">
+                <sw-container columns="1fr 200px" gap="0px 30px">
+
+                    {% block swag_paypal_pos_detail_settings_input_name %}
+                        <mt-text-field
+                                v-model="salesChannel.name"
+                                required
+                                type="text"
+                                validation="required"
+                                :error="salesChannelNameError"
+                                :disabled="!acl.can('sales_channel.editor')"
+                                :label="$t('sw-sales-channel.detail.labelInputName')"
+                                :placeholder="placeholder(salesChannel, 'name', $t('sw-sales-channel.detail.placeholderName'))" />
+                    {% endblock %}
+
+                    {% block swag_paypal_pos_detail_settings_input_active %}
+                        <mt-switch
+                                v-model="salesChannel.active"
+                                bordered
+                                :disabled="!acl.can('sales_channel.editor')"
+                                :label="$t('sw-sales-channel.detail.labelInputActive')"
+                                :helpText="$t('swag-paypal-pos.detail.settings.activeHelpText')" />
+                    {% endblock %}
+
+                </sw-container>
+
+                {% block swag_paypal_pos_detail_settings_input_media_domain %}
+                    <swag-paypal-pos-url-field
+                        v-model="swagPaypalPosSalesChannel.mediaDomain"
+                        required
+                        :error="swagPaypalPosSalesChannelMediaDomainError"
+                        :disabled="!acl.can('sales_channel.editor')"
+                        :label="$t('swag-paypal-pos.detail.settings.domain')"
+                        :helpText="$t('swag-paypal-pos.detail.settings.domainHelpText')"
+                        @update:model-value="forceUpdate"
+                    />
+                {% endblock %}
+
+                {% block swag_paypal_pos_detail_settings_input_language %}
+                    <sw-entity-single-select
+                            v-model:value="salesChannel.languageId"
+                            entity="language"
+                            required
+                            :disabled="!acl.can('sales_channel.editor')"
+                            :label="$t('global.entities.language')"
+                            @update:value="changeLanguage" />
+                {% endblock %}
+
+                {% block swag_paypal_pos_detail_settings_input_product_stream %}
+                    {# ToDo PPI-56 - implement support for product streams #}
+                    <sw-entity-single-select
+                            v-if="false"
+                            v-model:value="swagPaypalPosSalesChannel.productStreamId"
+                            entity="product_stream"
+                            :disabled="!acl.can('sales_channel.editor')"
+                            :label="$t('swag-paypal-pos.detail.settings.productStream')"
+                            @update:value="forceUpdate" />
+                {% endblock %}
+
+            </mt-card>
+        {% endblock %}
+
+        {% block swag_paypal_pos_detail_settings_sync %}
+            <div class="sw-sales-channel-detail-sync">
+                <mt-card position-identifier="swag-paypal-pos-detail-settings-sync"
+                         :isLoading="isLoading"
+                         :title="$t('swag-paypal-pos.detail.settings.titleSync')">
+
+                    {% block swag_paypal_pos_detail_settings_sync_input %}
+                        <sw-radio-field
+                            v-model:value="salesChannel.extensions.paypalPosSalesChannel.replace"
+                            :label="$t('swag-paypal-pos.wizard.syncLibrary.description')"
+                            class="swag-paypal-pos-boolean-radio"
+                            :options="optionsReplace"
+                            :disabled="!acl.can('sales_channel.editor')"
+                            @update:value="forceUpdate" />
+                    {% endblock %}
+
+                </mt-card>
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_detail_settings_prices %}
+            <div class="sw-sales-channel-detail-prices">
+                <mt-card position-identifier="swag-paypal-pos-detail-settings-prices"
+                         :isLoading="isLoading"
+                         :title="$t('swag-paypal-pos.detail.settings.titlePrices')">
+
+                    {% block swag_paypal_pos_detail_settings_prices_input %}
+                        <swag-paypal-pos-boolean-radio
+                            v-model:value="swagPaypalPosSalesChannel.syncPrices"
+                            class="swag-paypal-pos-detail-settings__sync-prices-input"
+                            :label="$t('swag-paypal-pos.wizard.syncPrices.description')"
+                            :optionTrue="optionSyncPrices"
+                            :optionFalse="optionNotSyncPrices"
+                            :disabled="!acl.can('sales_channel.editor')"
+                            @update:value="forceUpdate" />
+                    {% endblock %}
+
+                </mt-card>
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_detail_settings_credentials %}
+            <div class="sw-sales-channel-detail-credentials">
+                <mt-card position-identifier="swag-paypal-pos-detail-settings-credentials"
+                         :isLoading="isLoading"
+                         :title="$t('swag-paypal-pos.detail.settings.titleCredentials')">
+
+                    {% block swag_paypal_pos_detail_settings_credentials_apikey %}
+                        <mt-password-field
+                                v-model="swagPaypalPosSalesChannel.apiKey"
+                                class="swag-paypal-pos-detail-settings__apikey-field"
+                                required
+                                :label="$t('swag-paypal-pos.authentication.labelApiKey')"
+                                :disabled="!acl.can('sales_channel.editor')"
+                                :placeholder="$t('swag-paypal-pos.authentication.placeholderApiKey')"
+                                @update:modelValue="forceUpdate" />
+                    {% endblock %}
+
+                    {% block swag_paypal_pos_detail_settings_credentials_apikey_description %}
+                        <div class="swag-paypal-pos-detail-settings__apikey-description">
+
+                            {% block swag_paypal_pos_detail_settings_credentials_apikey_description_text %}
+                                <div class="swag-paypal-pos-detail-settings__apikey-description-text">
+                                    {{ $t('swag-paypal-pos.authentication.apiKeyDescription') }}
+                                </div>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_detail_settings_credentials_apikey_description_link %}
+                                <sw-external-link v-if="acl.can('sales_channel.editor')"
+                                                  :href="apiKeyUrl"
+                                                  class="swag-paypal-pos-detail-settings__apikey-description-link">
+
+                                    {% block swag_paypal_pos_detail_settings_credentials_apikey_description_link_text %}
+                                        {{ $t('swag-paypal-pos.authentication.buttonGenerateKey') }}
+                                    {% endblock %}
+                                </sw-external-link>
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+
+                </mt-card>
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_detail_settings_options %}
+            <mt-card position-identifier="swag-paypal-pos-detail-settings-options"
+                     :title="$t('swag-paypal-pos.detail.settings.optionsTitle')"
+                     :isLoading="isLoading">
+                <template #grid>
+                    <sw-container rows="auto auto">
+
+                        {% block swag_paypal_pos_detail_settings_options_reset %}
+                            <sw-card-section>
+                                <sw-container columns="1fr 175px" gap="0px 30px" class="swag-paypal-pos-detail-settings__reset-sync">
+
+                                    {% block sw_sales_channel_detail_base_options_reset_text %}
+                                        <div class="swag-paypal-pos-detail-settings__options-description-text">
+                                            {{ $t('swag-paypal-pos.detail.settings.reset.descriptionText') }}
+                                        </div>
+                                    {% endblock %}
+
+                                    {% block sw_sales_channel_detail_base_options_reset_button %}
+                                        <div class="swag-paypal-pos-detail-settings__options-button">
+                                            <mt-button size="small"
+                                                       :disabled="!acl.can('sales_channel.editor')"
+                                                       variant="secondary"
+                                                       @click="showResetModal = true">
+                                                {{ $t('swag-paypal-pos.detail.settings.reset.buttonTitle') }}
+                                            </mt-button>
+                                        </div>
+                                    {% endblock %}
+
+                                </sw-container>
+                            </sw-card-section>
+                        {% endblock %}
+
+                        {% block swag_paypal_pos_detail_settings_options_delete %}
+                            <sw-card-section divider="top">
+                                <sw-container columns="1fr 175px" gap="0px 30px" class="sw-sales-channel-detail-settings__delete-sales-channel">
+
+                                    {% block sw_sales_channel_detail_base_options_delete_text %}
+                                        <div class="swag-paypal-pos-detail-settings__options-description-text">
+                                            <strong>{{ $t('global.default.warning') }}</strong>
+                                            {{ $t('sw-sales-channel.detail.textDeleteSalesChannelWarning') }}
+                                        </div>
+                                    {% endblock %}
+
+                                    {% block sw_sales_channel_detail_base_options_delete_button %}
+                                        <div class="swag-paypal-pos-detail-settings__options-button">
+                                            <mt-button
+                                                variant="critical"
+                                                size="small"
+                                                :disabled="!acl.can('sales_channel.deleter')"
+                                                @click="showDeleteModal = true">
+                                                {{ $t('sw-sales-channel.detail.buttonDelete') }}
+                                            </mt-button>
+                                        </div>
+                                    {% endblock %}
+
+                                </sw-container>
+                            </sw-card-section>
+                        {% endblock %}
+
+                    </sw-container>
+                </template>
+
+                {% block swag_paypal_pos_detail_settings_options_reset_modal %}
+                    <sw-modal v-if="showResetModal"
+                              ref="modal"
+                              class="swag-paypal-pos-detail-settings__reset-sync-modal"
+                              variant="small"
+                              :title="$t('swag-paypal-pos.detail.settings.reset.modalTitle')"
+                              @modal-close="showResetModal = false">
+
+                        {% block swag_paypal_pos_detail_settings_options_reset_modal_confirmtext %}
+                            <p class="swag-paypal-pos-detail-settings__reset-modal-confirm-text">
+                                {{ $t('swag-paypal-pos.detail.settings.reset.modalConfirmText') }}
+                            </p>
+                            <p class="swag-paypal-pos-detail-settings__reset-modal-name">
+                                <strong>{{ placeholder(salesChannel, 'name') }}</strong>
+                            </p>
+                            <p>{{ $t('swag-paypal-pos.detail.settings.reset.modalTextInfo') }}</p>
+                        {% endblock %}
+
+                        {% block sw_sales_channel_detail_options_reset_modal_footer %}
+                            <template #modal-footer>
+
+                                {% block swag_paypal_pos_detail_settings_options_reset_modal_abort %}
+                                    <mt-button size="small" variant="secondary" @click="showResetModal = false">
+                                        {{ $t('global.default.cancel') }}
+                                    </mt-button>
+                                {% endblock %}
+
+                                {% block swag_paypal_pos_detail_settings_options_reset_modal_confirm %}
+                                    <mt-button size="small"
+                                               variant="critical"
+                                               @click="onConfirmReset">
+                                        {{ $t('swag-paypal-pos.detail.settings.reset.modalButtonConfirm') }}
+                                    </mt-button>
+                                {% endblock %}
+
+                            </template>
+                        {% endblock %}
+
+                    </sw-modal>
+                {% endblock %}
+
+                {% block swag_paypal_pos_detail_settings_options_delete_modal %}
+                    <sw-modal v-if="showDeleteModal"
+                              ref="modal"
+                              class="sw-sales-channel-detail-settings__delete-modal"
+                              variant="small"
+                              :title="$t('sw-sales-channel.detail.deleteModalTitle')"
+                              @modal-close="showDeleteModal = false">
+
+                        {% block swag_paypal_pos_detail_settings_options_delete_modal_confirmtext %}
+                            <p class="sw-sales-channel-detail-settings__delete-modal-confirm-text">
+                                {{ $t('sw-sales-channel.detail.textConfirmDelete') }}
+                            </p>
+                            <p class="sw-sales-channel-detail-settings__delete-modal-name">
+                                <strong>{{ placeholder(salesChannel, 'name') }}</strong>
+                            </p>
+                            <p>{{ $t('sw-sales-channel.detail.textDeleteInfo') }}</p>
+                        {% endblock %}
+
+                        {% block sw_sales_channel_detail_options_delete_modal_footer %}
+                            <template #modal-footer>
+
+                                {% block swag_paypal_pos_detail_settings_options_delete_modal_abort %}
+                                    <mt-button size="small" variant="secondary" @click="showDeleteModal = false">
+                                        {{ $t('global.default.cancel') }}
+                                    </mt-button>
+                                {% endblock %}
+
+                                {% block swag_paypal_pos_detail_settings_options_delete_modal_confirm %}
+                                    <mt-button size="small"
+                                               variant="critical"
+                                               @click="onConfirmDelete">
+                                        {{ $t('sw-sales-channel.detail.buttonConfirmDelete') }}
+                                    </mt-button>
+                                {% endblock %}
+
+                            </template>
+                        {% endblock %}
+
+                    </sw-modal>
+                {% endblock %}
+
+            </mt-card>
+        {% endblock %}
+
+    </div>
+{% endblock %}

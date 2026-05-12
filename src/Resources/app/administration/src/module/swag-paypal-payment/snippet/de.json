@@ -1,0 +1,151 @@
+{
+    "swag-paypal-payment": {
+        "general": {
+            "title": "Bestellungen"
+        },
+        "tabs": {
+            "order": "PayPal",
+            "overview": "Übersicht"
+        },
+        "paymentDetails": {
+            "cardTitle": "Zahlung",
+            "invoice": {
+                "heading": "Rechnungsbetrag",
+                "totalAmount": "Gesamtbetrag:",
+                "subTotal": "Zwischensumme:",
+                "shipping": "Versandkosten:",
+                "discount": "Rabatt:",
+                "handling": "Bearbeitungsgebühr:",
+                "insurance": "Versicherung:",
+                "shipping_discount": "Versandkostenrabatt:"
+            },
+            "payment": {
+                "heading": "Zahlungsdetails",
+                "intent": "Zahlungsabschluss:",
+                "paymentId": "Zahlungs-ID:",
+                "cartId": "Warenkorb-ID:",
+                "state": "Status:",
+                "createTime": "Erstellt:",
+                "updateTime": "Zuletzt aktualisiert:"
+            },
+            "customer": {
+                "heading": "Kunde",
+                "payerId": "Kunden-ID:"
+            },
+            "error": {
+                "title": "Fehler beim Abrufen der Zahlungsdaten von PayPal"
+            }
+        },
+        "puiDetails": {
+            "cardTitle": "Zahlungsdaten für Rechnungskauf",
+            "buttonCopy": "Kopieren",
+            "bank": "Bank:",
+            "iban": "IBAN:",
+            "bic": "BIC:",
+            "accountHolder": "Kontoinhaber:",
+            "amount": "Betrag:",
+            "reference": "Verwendungszweck:"
+        },
+        "transactionHistory": {
+            "cardTitle": "Zahlungsverlauf",
+            "states": {
+                "authorization": "Autorisierung",
+                "sale": "Verkauf",
+                "refund": "Rückerstattung",
+                "capture": "Einzug",
+                "order": "Bestellung"
+            },
+            "types": {
+                "type": "Typ",
+                "amount": "Betrag",
+                "createTime": "Erstellt",
+                "updateTime": "Aktualisiert",
+                "state": "Status",
+                "trackingId": "Tracking-ID",
+                "transactionFee": "Aufschlag",
+                "paymentMode": "Zahlungsmodus"
+            }
+        },
+        "buttons": {
+            "label": {
+                "refund": "Rückerstattung",
+                "capture": "Einziehen",
+                "void": "Autorisierung abbrechen"
+            }
+        },
+        "modal": {
+            "title": {
+                "refund": "Rückerstattung",
+                "capture": "Zahlung einziehen",
+                "void": "Autorisierung abbrechen"
+            }
+        },
+        "refundAction": {
+            "successMessage": "Die Rückerstattung war erfolgreich.",
+            "invoiceSelect": {
+                "label": "Einzug wählen"
+            },
+            "refundAmount": {
+                "label": "Betrag",
+                "helpText": "Ein Betrag von '0' sorgt für die Erstattung der kompletten Zahlung."
+            },
+            "refundDescription": {
+                "label": "Beschreibung",
+                "placeholder": "Beschreibung eintragen"
+            },
+            "refundReason": {
+                "label": "Begründung",
+                "placeholder": "Begründung eintragen"
+            },
+            "refundNoteToPayer": {
+                "label": "Verwendungszweck",
+                "placeholder": "Verwendungszweck eintragen"
+            },
+            "refundInvoiceNumber": {
+                "label": "Rechnungsnummer",
+                "placeholder": "Rechnungsnummer eintragen"
+            },
+            "confirmButton": {
+                "text": "Ausführen"
+            }
+        },
+        "captureAction": {
+            "successMessage": "Die Autorisierung war erfolgreich.",
+            "maxAmount": "Maximalbetrag",
+            "currentAmount": "Betrag",
+            "captureInvoiceNumber": {
+                "label": "Rechnungsnummer",
+                "placeholder": "Rechnungsnummer eintragen"
+            },
+            "captureNoteToPayer": {
+                "label": "Verwendungszweck",
+                "placeholder": "Verwendungszweck eintragen"
+            },
+            "isFinal": "Kein erneuter Einzug möglich",
+            "isFinalHint": "Hinweis: Als letzter Einzug markiert, obwohl nicht der ganze Betrag eingezogen werden soll.",
+            "button": {
+                "text": "Zahlung einziehen"
+            }
+        },
+        "voidAction": {
+            "successMessage": "Die Autorisierung wurde erfolgreich abgebrochen.",
+            "confirm": {
+                "message": "Möchtest du diese Zahlung wirklich abbrechen?",
+                "button": {
+                    "confirm": "Autorisierung abbrechen"
+                }
+            }
+        },
+        "errorPage": {
+            "title": "Zahlungsdetails nicht verfügbar",
+            "canceledPaymentContent": "Wenn du diese Nachricht siehst, handelt es sich vermutlich um eine Zahlung, die vom Kunden abgebrochen wurde. Abgebrochene Zahlungen werden nach einiger Zeit von PayPal gelöscht und sind dann nicht länger abrufbar.",
+            "other": "Es ist wahrscheinlich, dass die Zahlung vom Kunden nicht abgeschlossen oder mit aktivierter Sandbox erstellt und jetzt mit Live-Daten angefordert wurde. Die Details für nicht abgeschlossene Zahlungen sind auf der PayPal-Seite nur für etwa 6 Stunden verfügbar."
+        }
+    },
+    "sw-order-detail": {
+        "payPalCarrierLabel": "Standardversanddienstleister",
+        "payPalCarrierPlaceholder": "nicht festgelegt",
+        "payPalCarrierHelpText": "Du kannst den Standardversanddienstleister unter <a class=\"sw-internal-link sw-internal-link--inline\" href=\"#/sw/settings/shipping/index\">Versand<sw-icon name=\"regular-long-arrow-right\" small /></a> festlegen und ändern. Dies hat jedoch keine Auswirkungen auf bereits getätigte Bestellungen.",
+        "payPalCarrierDescription": "Wenn du den Versanddienstleister für diese PayPal Bestellung ändern willst, <a target=\"_blank\" href=\"{orderLink}\">klicke hier</a>."
+    }
+}

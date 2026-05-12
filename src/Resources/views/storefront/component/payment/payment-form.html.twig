@@ -1,0 +1,14 @@
+{% sw_extends '@Storefront/storefront/component/payment/payment-form.html.twig' %}
+
+{% block page_checkout_change_payment_form_redirect %}
+    {{ parent() }}
+
+    {% block page_checkout_change_payment_form_redirect_paypal_express_parameter %}
+        {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData expressCheckoutData #}
+        {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\SalesChannel\\ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
+
+        {% if expressCheckoutData %}
+            <input type="hidden" name="redirectParameters[{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}]" value="1">
+        {% endif %}
+    {% endblock %}
+{% endblock %}

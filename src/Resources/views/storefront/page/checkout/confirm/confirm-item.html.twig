@@ -1,0 +1,27 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/confirm-item.html.twig' %}
+
+{% block page_checkout_item_quantity_redirect %}
+    {{ parent() }}
+
+    {% block page_checkout_item_quantity_redirect_paypal_express_parameter %}
+        {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData expressCheckoutData #}
+        {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\SalesChannel\\ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
+
+        {% if expressCheckoutData %}
+            <input type="hidden" name="redirectParameters[{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}]" value="1">
+        {% endif %}
+    {% endblock %}
+{% endblock %}
+
+{% block page_checkout_item_remove_redirect %}
+    {{ parent() }}
+
+    {% block page_checkout_item_remove_redirect_paypal_express_parameter %}
+        {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData expressCheckoutData #}
+        {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\SalesChannel\\ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
+
+        {% if expressCheckoutData %}
+            <input type="hidden" name="redirectParameters[{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}]" value="1">
+        {% endif %}
+    {% endblock %}
+{% endblock %}

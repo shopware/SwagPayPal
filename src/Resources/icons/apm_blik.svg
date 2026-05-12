@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="46.4" height="24" version="1.1" viewBox="0 0 46.4 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <path id="path-1" d="m4.8176 0c-2.66061 0-4.8176 2.1205-4.8176 4.73609v20.5278c0 2.61559 2.15699 4.73609 4.8176 4.73609h48.3648c2.66061 0 4.8176-2.1205 4.8176-4.73609v-20.5278c0-2.61559-2.15699-4.73609-4.8176-4.73609z"/>
+        <linearGradient id="linearGradient-3" x1="20.8567" x2="20.8567" y1="41.7133" gradientTransform="scale(1.39044 .719195)" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#4D4D4F" offset="0"/>
+            <stop offset="1"/>
+        </linearGradient>
+        <radialGradient id="radialGradient-4" cx="1.58093" cy="1.32028" r="8.18016" gradientTransform="scale(1.00856 .991517)" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#f00" offset="0"/>
+            <stop stop-color="#E83E49" offset=".559042"/>
+            <stop stop-color="#f0f" offset="1"/>
+        </radialGradient>
+        <path id="path-5" d="m3.67239 6.95665c1.93675 0 3.50654-1.54342 3.50654-3.44739 0-1.90379-1.56979-3.44721-3.50654-3.44721s-3.50654 1.54342-3.50654 3.44721c0 1.90398 1.56979 3.44739 3.50654 3.44739z"/>
+    </defs>
+    <g transform="scale(.8)" fill="none" fill-rule="evenodd">
+        <g id="SPB_&amp;_AltPay_NewAssets" transform="translate(-100,-159)">
+            <g id="Blik-logo" transform="translate(100,159)">
+                <mask id="mask-2" fill="#ffffff">
+                    <use xlink:href="#path-1"/>
+                </mask>
+                <path d="m4.8176 0c-2.66061 0-4.8176 2.1205-4.8176 4.73609v20.5278c0 2.61559 2.15699 4.73609 4.8176 4.73609h48.3648c2.66061 0 4.8176-2.1205 4.8176-4.73609v-20.5278c0-2.61559-2.15699-4.73609-4.8176-4.73609z" fill="url(#linearGradient-3)" mask="url(#mask-2)"/>
+                <g transform="translate(6.2549 4.47205)" fill="#fff">
+                    <polygon points="17.6275 0.0154658 17.6275 21.677 21.5605 21.677 21.5605 0.0154658"/>
+                    <polygon points="24.9248 7.32913 24.9248 21.677 28.8578 21.677 28.8578 7.32913"/>
+                    <polygon points="36.1552 21.677 36.1552 14.3106 41.3676 21.677 46.4853 21.677 40.5752 14.0838 46.0114 7.32919 41.3676 7.32919 36.1552 13.8822 36.1552 0.0155217 32.2222 0.0155217 32.2222 21.677"/>
+                    <path d="m7.60539 17.9736c-1.94963 0-3.53023-1.55385-3.53023-3.4705s1.58059-3.4705 3.53023-3.4705c1.94963 0 3.53023 1.55385 3.53023 3.4705s-1.58059 3.4705-3.53023 3.4705m0-10.8075c-1.27714 0-2.47903 0.316025-3.53023 0.871863v-8.02248h-3.93301v14.4876c0 4.05205 3.34144 7.33696 7.46324 7.33696 4.12179 0 7.46324-3.28491 7.46324-7.33696 0-4.05205-3.34144-7.33696-7.46324-7.33696"/>
+                </g>
+                <g transform="translate(14.0261 3.35404)">
+                    <mask id="mask-6" fill="#ffffff">
+                        <use xlink:href="#path-5"/>
+                    </mask>
+                    <use fill="url(#radialGradient-4)" xlink:href="#path-5"/>
+                    <path d="m3.67239 6.95665c1.93675 0 3.50654-1.54342 3.50654-3.44739 0-1.90379-1.56979-3.44721-3.50654-3.44721s-3.50654 1.54342-3.50654 3.44721c0 1.90398 1.56979 3.44739 3.50654 3.44739z" mask="url(#mask-6)"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

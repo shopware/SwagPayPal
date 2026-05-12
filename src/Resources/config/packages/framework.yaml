@@ -1,0 +1,20 @@
+framework:
+  exceptions:
+    Swag\PayPal\Checkout\Exception\OrderFailedException:
+      log_level: notice
+    Swag\PayPal\Checkout\PUI\Exception\PaymentInstructionsNotReadyException:
+      log_level: notice
+    Swag\PayPal\OrdersApi\Administration\Exception\OrderNotFoundException:
+      log_level: notice
+    Swag\PayPal\PaymentsApi\Administration\Exception\PaymentNotFoundException:
+      log_level: notice
+    Swag\PayPal\Checkout\Exception\OrderAmountZeroException:
+      log_level: notice
+    Swag\PayPal\Dispute\Exception\NotAuthorizedException:
+      log_level: notice
+
+  http_client:
+    scoped_clients:
+      paypal.base-client:
+        scope: https\://api\-m\.(sandbox\.)?paypal\.com/
+        max_duration: 30

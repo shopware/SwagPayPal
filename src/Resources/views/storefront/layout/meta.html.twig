@@ -1,0 +1,13 @@
+{% sw_extends '@Storefront/storefront/layout/meta.html.twig' %}
+
+{% block layout_head_javascript_hmr_mode %}
+    {{ parent() }}
+
+    {% if page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ApplePayMethodData::PAYPAL_APPLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
+        <script src="https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js"></script>
+    {% endif %}
+
+    {% if page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\GooglePayMethodData::PAYPAL_GOOGLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
+        <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+    {% endif %}
+{% endblock %}

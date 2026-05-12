@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\RestApi\V1\Resource\AuthorizationResource">
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\PaymentV1Gateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Resource\CaptureResource">
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\PaymentV1Gateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource">
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\CustomerGateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Resource\DisputeResource">
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\CustomerGateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Resource\OrdersResource">
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\PaymentV1Gateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Resource\PaymentResource">
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\PaymentV1Gateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Resource\SaleResource">
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\PaymentV1Gateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Resource\TokenResource">
+            <argument type="service" id="Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Resource\WebhookResource">
+            <argument type="service" id="Shopware\PayPalSDK\Gateway\WebhookGateway"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+        </service>
+    </services>
+</container>

@@ -1,0 +1,27 @@
+{% block sw_sales_channel_grid_columns_icon %}
+<sw-grid-column
+        v-if="isPayPalPosSalesChannel(item.id)"
+        flex="85px"
+        data-index="icon"
+        class="sw-sales-channel-modal-grid__icon-column"
+        label="icon"
+>
+    <span
+        class="sw-sales-channel-modal-grid__icon"
+        role="button"
+        tabindex="0"
+        @click="onOpenDetail(item.id)"
+        @keydown.enter="onOpenDetail(item.id)"
+    >
+         <img
+             class="swag-paypal-pos-modal-grid__icon"
+             :src="assetFilter('swagpaypal/administration/static/img/paypal-pos-logo.svg')"
+         >
+    </span>
+</sw-grid-column>
+
+<template v-else>
+    {% parent %}
+</template>
+{% endblock %}
+

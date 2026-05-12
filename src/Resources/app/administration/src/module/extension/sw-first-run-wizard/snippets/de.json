@@ -1,0 +1,22 @@
+{
+    "swag-paypal-frw-credentials": {
+        "buttonGetCredentials": "Hole API-Zugangsdaten",
+        "buttonGetSandboxCredentials": "Hole Sandbox-API-Zugangsdaten",
+        "textIntroPayPal": "Um PayPal zu nutzen müssen nur die API-Zugangsdaten eingegeben werden.",
+        "labelClientId": "Client-ID",
+        "labelClientSecret": "Client-Secret",
+        "labelMerchantPayerId": "PayPal-Händler-ID",
+        "labelClientIdSandbox": "Sandbox-Client-ID",
+        "labelClientSecretSandbox": "Sandbox-Client-Secret",
+        "labelMerchantPayerIdSandbox": "Sandbox-PayPal-Händler-ID",
+        "labelSandbox": "Sandbox verwenden",
+        "tooltipSandbox": "Je nach Aktivierung der Sandbox werden unterschiedliche Zugangsdaten hinterlegt.",
+        "labelSetDefault": "Als Standard-Zahlungsmethode festlegen",
+        "tooltipSetDefault": "PayPal wird als Standard-Zahlungsmethode für alle Verkaufskanäle festgelegt. Sie können individuelle Standard-Zahlungsmethoden pro Verkaufskanal im Einstellungsmodul festlegen.",
+        "messageFetchedError": "Bitte versuche es erneut oder nutze die erweiterten Einstellungen um die Zugangsdaten direkt einzugeben.",
+        "textFetchedSuccessful": "Die Zugangsdaten wurden erfolgreich abgerufen.",
+        "messageNoCredentials": "Es wurden keine Zugangsdaten hinterlegt.",
+        "messageInvalidCredentials": "Die Zugangsdaten sind ungültig.",
+        "messageTestSuccess": "Die Zugangsdaten sind gültig."
+    }
+}

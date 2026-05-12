@@ -1,0 +1,24 @@
+{% block swag_paypal_pos_wizard_sync_prices %}
+    <div class="swag-paypal-pos-wizard-sync-prices">
+
+        {% block swag_paypal_pos_wizard_sync_prices_header %}
+            <div class="swag-paypal-pos-wizard-sync-prices__headline">
+                {{ $t('swag-paypal-pos.wizard.syncPrices.header') }}
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_wizard_sync_prices_description_input %}
+            <swag-paypal-pos-boolean-radio
+                v-model:value="salesChannel.extensions.paypalPosSalesChannel.syncPrices"
+                :label="$t('swag-paypal-pos.wizard.syncPrices.description')"
+                :optionTrue="optionTrue"
+                :optionFalse="optionFalse" />
+        {% endblock %}
+
+        {% block swag_paypal_pos_wizard_sync_prices_disclaimer %}
+            <div class="swag-paypal-pos-wizard-sync-prices__disclaimer">
+                {{ $t('swag-paypal-pos.wizard.syncPrices.disclaimer') }}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

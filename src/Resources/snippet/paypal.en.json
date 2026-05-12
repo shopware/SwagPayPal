@@ -1,0 +1,88 @@
+{
+    "paypal": {
+        "general": {
+            "paymentCancel": "The payment process has been cancelled. Please try again or choose another payment method.",
+            "paymentError": "An error occurred during the payment process. Please try again later or choose another payment method.",
+            "browserUnsupported": "Your current Browser is unsupported by the selected payment method. Please try another Browser or choose another payment method."
+        },
+        "error": {
+            "SWAG_PAYPAL__EXPRESS_USER_CANCELLED": "The PayPal order process has been cancelled. Please try again or use the regular checkout.",
+            "SWAG_PAYPAL__EXPRESS_GENERIC_ERROR": "An error occurred during the PayPal order process. Please try again later or use the regular checkout.",
+            "SWAG_PAYPAL__GENERIC_ERROR": "An error occurred during the payment process. Please try again later or choose another payment method.",
+            "SWAG_PAYPAL__USER_CANCELLED": "The payment process has been cancelled. Please try again or choose another payment method.",
+            "SWAG_PAYPAL__BROWSER_UNSUPPORTED": "The selected payment method does not support your current browser. Please try again with another browser or choose another payment method.",
+            "SWAG_PAYPAL__CARD_VALIDATION_FAILED": "The entered credit card details could not be validated. Please check your entries and try again.",
+            "SWAG_PAYPAL__API_POSTAL_CODE_REQUIRED": "The provided address does not contain a postal code. Please add your postal code.",
+            "SWAG_PAYPAL__API_CANNOT_BE_ZERO_OR_NEGATIVE": "The total amount must not be zero or negative. Please try again with an amount greater than zero or choose another payment method.",
+            "SWAG_PAYPAL__API_SHIPPING_ADDRESS_INVALID": "The entered shipping address was not accepted by the payment provider. Please check your address or choose another payment method.",
+            "SWAG_PAYPAL__API_NOT_AVAILABLE": "PayPal services are currently unavailable. Please try again later.",
+            "handler_swag_puihandler": {
+                "SWAG_PAYPAL__API_PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED": "Your name and/or address could not be validated. Please check your entries and try again. For further information read the <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\" >Ratepay data privacy statement</a> or use the Ratepay <a href=\"https://www.ratepay.com/kontakt\" target=\"_blank\">contact form</a>.",
+                "SWAG_PAYPAL__API_PAYMENT_SOURCE_DECLINED_BY_PROCESSOR": "The selected payment method was rejected due to an automated data processing procedure. For more information read the <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\">Ratepay data privacy statement</a> or use the Ratepay <a href=\"https://www.ratepay.com/kontakt\" target=\"_blank\">contact form</a>."
+            }
+        },
+        "payUponInvoice": {
+            "instructions": {
+                "transferRequestDate": "Please transfer %value% until %date% to PayPal.",
+                "transferRequest": "Please transfer %value% to the account below:",
+                "table": {
+                    "bank": "Bank:",
+                    "iban": "IBAN:",
+                    "bic": "BIC:",
+                    "holder": "Account holder:",
+                    "amount": "Amount:",
+                    "reference": "Reference:"
+                },
+                "legalMessageRatepay": "Pay upon invoice payments are processed in collaboration with our partner Ratepay. Ratepay has just transferred the payable amount to us. You may wait for the order to arrive and check your purchase, before transferring the invoice amount in accord with the payment instructions to Ratepay.",
+                "legalMessage": "Why PayPal? PayPal is our partner for processing invoice payments. PayPal has just transferred the amount to us directly. You pay the amount to PayPal according to the payment instructions after you have received and checked your purchase."
+            },
+            "document": {
+                "paymentShippingInfo": {
+                    "payPalPuiPaymentMethod": "Payment method: Pay upon invoice"
+                },
+                "paymentNoteRatepay": "%companyName% has assigned the claim against you to Ratepay GmbH as part of a current factoring agreement. Payments with debt discharging effect can only be made to Ratepay GmbH. Please refer to the communication with Ratepay for further details on your payment.",
+                "paymentNote": "%companyName% has assigned the claim against you to PayPal (Europe) S.à r.l. et Cie, S.C.A. as part of a current factoring agreement. Payments with debt discharging effect can only be made to PayPal (Europe) S.à r.l. et Cie, S.C.A."
+            },
+            "checkout": {
+                "confirmDisclaimer": "By clicking on the button, you agree to the <a href=\"https://www.ratepay.com/legal-payment-terms\" target=\"_blank\">terms of payment</a> and <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\">performance of a risk check</a> from the payment partner, Ratepay. You also agree to PayPal’s <a href=\"https://www.paypal.com/us/webapps/mpp/ua/privacy-full\" target=\"_blank\">privacy statement</a>. If your request to purchase Upon invoice is accepted, the purchase price claim will be assigned to Ratepay, and you may only pay Ratepay, not the merchant.",
+                "finish": {
+                    "title": "The payment is being processed",
+                    "subtitle": "Processing may take up to several minutes. Please do not close this window, you will be redirected."
+                }
+            },
+            "error": {
+                "unverifiedInfo": "The combination of your name and address could not be validated. Please correct your data and try again. You can find further information in the <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\" >Ratepay Data Privacy Statement</a> or you can contact Ratepay using this <a href=\"https://www.ratepay.com/kontakt\" target=\"_blank\">contact form</a>.",
+                "declined": "It is not possible to use the selected payment method. This decision is based on automated data processing. You can find further information in the <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\">Ratepay Data Privacy Statement</a> or you can contact Ratepay using this <a href=\"https://www.ratepay.com/kontakt\" target=\"_blank\">contact form</a>."
+            }
+        },
+        "acdc": {
+            "cardNumber": "Card number",
+            "expiration": "Expiration date (MM/YY)",
+            "cvv": "Security code (CVV)",
+            "cardholderName": "Card holder name",
+            "zip": "Billing postal code"
+        },
+        "smartPaymentButtons": {
+            "confirmPageHint": "Your payment has been created. Please complete it, by confirming your order.",
+            "description": "Pay easy, fast and secure - Please choose one of these payment methods on the confirm page."
+        },
+        "cookie": {
+            "name": "PayPal payments",
+            "googlePay": "Google Pay payments"
+        },
+        "vault": {
+          "account": {
+            "clear": "Remove account",
+            "create": "Remember account for future purchases"
+          },
+          "card": {
+            "clear": "Remove card",
+            "create": "Remember card for future purchases"
+          }
+        },
+        "e-invoice":{
+          "paymentMethod": "Payment method: \"%paymentMethod%\"",
+          "orderId": "Order ID: %orderId%"
+        }
+    }
+}

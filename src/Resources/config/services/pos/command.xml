@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Pos\PosSyncController" public="true">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\CompleteTask"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\ProductTask"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\ImageTask"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\InventoryTask"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Administration\LogCleaner"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Administration\SyncResetter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSelection"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Command\PosSyncCommand">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\CompleteTask"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Command\PosImageSyncCommand">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\ImageTask"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Command\PosInventorySyncCommand">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\InventoryTask"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Command\PosProductSyncCommand">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\ProductTask"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Command\PosLogCleanupCommand">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Administration\LogCleaner"/>
+            <tag name="console.command"/>
+        </service>
+    </services>
+</container>

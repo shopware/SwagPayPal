@@ -1,0 +1,83 @@
+[
+    {
+        "isoCode": "AUD",
+        "factor": 1.779,
+        "symbol": "AU$",
+        "decimalPrecision": 2,
+        "position": 1,
+        "name": "Australian dollar",
+        "shortName": "AUD",
+        "translations": {
+            "en-GB": {
+                "name": "Australian dollar"
+            },
+            "de-DE": {
+                "name": "Australischer Dollar"
+            }
+        },
+        "itemRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        },
+        "totalRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        }
+    },
+    {
+        "isoCode": "BRL",
+        "factor": 5.7056,
+        "symbol": "R$",
+        "decimalPrecision": 2,
+        "position": 1,
+        "name": "Brazilian real",
+        "shortName": "BRL",
+        "translations": {
+            "en-GB": {
+                "name": "Brazilian real"
+            },
+            "de-DE": {
+                "name": "Brasilianischer Real"
+            }
+        },
+        "itemRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        },
+        "totalRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        }
+    },
+    {
+        "isoCode": "MXN",
+        "factor": 27.0896,
+        "symbol": "Mex$",
+        "decimalPrecision": 2,
+        "position": 1,
+        "name": "Mexican peso",
+        "shortName": "MXN",
+        "translations": {
+            "en-GB": {
+                "name": "Mexican peso"
+            },
+            "de-DE": {
+                "name": "Mexikanischer Peso"
+            }
+        },
+        "itemRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        },
+        "totalRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        }
+    }
+]

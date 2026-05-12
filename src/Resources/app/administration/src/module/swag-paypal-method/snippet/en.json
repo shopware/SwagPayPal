@@ -1,0 +1,67 @@
+{
+  "swag-paypal-method": {
+    "cardTitle": "PayPal Checkout",
+    "settingsLink": "Settings",
+    "header": "More payment methods with one solution from PayPal",
+    "description": "PayPal Checkout is the new all-in-one solution that lets you offer powerful flexibile payment processing features on the marketplaces and other commerce platforms.",
+    "banner": "With PayPal Checkout, you can offer your customers payment by invoice, credit card and other local payment methods. PayPal Checkout supports you with the latest technology and brings you the highest flexibility. You keep your existing payment methods, and the fees remain the same! Activate PayPal Checkout and deactivate PayPal PLUS to avoid duplicate payment methods in your shop.",
+    "bannerLink": "More information",
+    "sandbox": {
+      "label": "Sandbox",
+      "onlySandboxTooltip": "You are only connected a sandbox PayPal account so far.",
+      "onlyLiveTooltip": "You are only connected a live PayPal account so far.",
+      "helpText": "Enable, if you want to test the PayPal integration."
+    },
+    "switch": {
+      "label": "Active",
+      "active": "Payment method \"{name}\" is now active.",
+      "inactive": "Payment method \"{name}\" is now inactive."
+    },
+    "domainAssociation": {
+      "title": "Please make sure your domain is set correctly for Apple Pay to work properly. The domain association file is already present.",
+      "link": "Open domains settings"
+    },
+    "paymentMethodText": "Payment methods",
+    "appImageAlt": "PayPal",
+    "ratePayLabel": "by Ratepay",
+    "editDetail": "Edit details",
+    "availabilityToolTip": {
+      "bancontactapmhandler": "Bancontact is available for the following countries: Belgium",
+      "blikapmhandler": "BLIK is available for the following countries: Poland",
+      "boletobancarioapmhandler": "Boleto Bancário is available for the following countries: Brazil",
+      "epsapmhandler": "eps is available for the following countries: Austria",
+      "idealapmhandler": "iDEAL is available for the following countries: Netherlands",
+      "multibancoapmhandler": "Multibanco is available for the following countries: Portugal",
+      "mybankapmhandler": "MyBank is available for the following countries: Italy",
+      "oxxoapmhandler": "OXXO is available for the following countries: Mexico",
+      "p24apmhandler": "Przelewy24 is available for the following countries: Poland",
+      "paylaterhandler": "Pay Later is available for the following countries: Australia, France, Germany, Italy, Spain, United Kingdom, United States",
+      "puihandler": "Pay upon invoice is available for the following countries: Germany",
+      "sepahandler": "SEPA Lastschrift is available for the following countries: Germany",
+      "venmohandler": "Venmo is available for the following countries: United States",
+      "trustlyapmhandler": "Trustly is available for the following countries: Estonia, Finland, Netherlands, Sweden"
+    },
+    "onboardingStatusText": {
+      "active": "Authorized",
+      "limited": "Limited",
+      "pending": "Authorization pending",
+      "ineligible": "Ineligible",
+      "inactive": "Onboarding needed",
+      "mybank": "Limited",
+      "test": "Test mode"
+    },
+    "onboardingStatusTooltip": {
+      "ineligible": "PayPal informed us, that this payment method is currently ineligible for your account.",
+      "limited": "PayPal informed us, that this payment method has some limitations for your account.",
+      "mybank": "Merchants enabling MyBank after February 2023 will need manual approval by PayPal. Reach out to PayPal support for further information on this."
+    },
+    "merchantStatusText": {
+      "emailUnconfirmed": "Email unconfirmed",
+      "paymentsUnreceivable": "Payments unreceivable",
+      "onboardingNeeded": "Re-onboarding needed",
+      "connected": "Connected",
+      "notConnected": "Not connected"
+    },
+    "paymentActivateSwitchTooltip": "Go to the <a class=\"swag-paypal-go-to-settings-link\" href=\"#/swag/paypal/index\">PayPal extension settings →</a> and activate PayPal Commerce Platform to activate this payment method."
+  }
+}

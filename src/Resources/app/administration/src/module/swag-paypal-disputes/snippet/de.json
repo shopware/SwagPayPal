@@ -1,0 +1,44 @@
+{
+    "swag-paypal-disputes": {
+        "general": {
+            "mainMenuItemGeneral": "PayPal Konflikte",
+            "descriptionTextModule": "Verwaltung von PayPal Konflikten"
+        },
+        "common": {
+            "dispute_id": "ID",
+            "update_time": "Update-Zeitpunkt",
+            "response_due_date": {
+                "label": "Antwortfälligkeit",
+                "seller": "Verkäufer",
+                "buyer": "Käufer"
+            },
+            "status": "Status",
+            "dispute_life_cycle_stage": "Stadium",
+            "dispute_amount": "Betrag"
+        },
+        "list": {
+            "title": "Konflikte",
+            "titleSidebarItemRefresh": "Neu Laden",
+            "titleSidebarItemFilter": "Filter",
+            "errorTitle": "Fehler beim Abrufen der Konflikte von PayPal",
+            "emptyState": {
+                "title": "Es wurden keine Konflikte gefunden",
+                "subline": "Ändere den Filter, um alle Konflikte anzuzeigen."
+            },
+            "emptyStateNotAuthorized": {
+                "title": "PayPal nicht eingerichtet",
+                "subline": "Gehe zu den {link}, um PayPal einzurichten.",
+                "link": "Zahlungsarten"
+            }
+        },
+        "detail": {
+            "title": "PayPal Konflikt:",
+            "titleAddition": "(Technische Details)",
+            "mainFieldsCardTitle": "Details",
+            "externalLinkText": "Konflikt im PayPal Lösungs-Center öffnen",
+            "orderModuleLinkText": "Bestellung öffnen",
+            "rawDataCardTitle": "Rohdaten",
+            "copyButtonLabel": "Kopiere Rohdaten"
+        }
+    }
+}
