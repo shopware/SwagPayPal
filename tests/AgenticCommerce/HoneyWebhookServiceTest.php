@@ -64,7 +64,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->expects($this->once())
             ->method('request')
             ->with('POST', 'webhooks/sw/install')
-            ->willReturnCallback(function (string $method, string $url, array $options) use ($salesChannel) {
+            ->willReturnCallback(static function (string $method, string $url, array $options) use ($salesChannel) {
                 $jwt = (new JWTDecoder())->decode($options['body']);
 
                 static::assertSame('SalesChannel name', $jwt['storeName']);
@@ -146,7 +146,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->expects($this->once())
             ->method('request')
             ->with('POST', 'webhooks/sw/uninstall')
-            ->willReturnCallback(function (string $method, string $url, array $options) {
+            ->willReturnCallback(static function (string $method, string $url, array $options) {
                 $jwt = (new JWTDecoder())->decode($options['body']);
 
                 static::assertSame('SalesChannel name', $jwt['storeName']);
@@ -212,7 +212,7 @@ class HoneyWebhookServiceTest extends TestCase
         $client
             ->expects($this->exactly(2))
             ->method('request')
-            ->willReturnCallback(function (string $method, string $url, array $options) use ($salesChannel) {
+            ->willReturnCallback(static function (string $method, string $url, array $options) use ($salesChannel) {
                 $jwt = (new JWTDecoder())->decode($options['body']);
 
                 static::assertSame('SalesChannel name', $jwt['storeName']);
@@ -289,7 +289,7 @@ class HoneyWebhookServiceTest extends TestCase
         $client
             ->expects($this->exactly(2))
             ->method('request')
-            ->willReturnCallback(function (): void {
+            ->willReturnCallback(static function (): void {
                 $response = new Response(400, body: (string) json_encode([
                     'success' => false,
                     'error' => 'INVALID_JWT',
@@ -459,7 +459,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->expects($this->once())
             ->method('request')
             ->with('POST', 'webhooks/sw/install')
-            ->willReturnCallback(function (): void {
+            ->willReturnCallback(static function (): void {
                 $response = new Response(400, body: (string) json_encode([
                     'success' => false,
                     'error' => 'INVALID_JWT',
@@ -523,7 +523,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->expects($this->once())
             ->method('request')
             ->with('POST', 'webhooks/sw/uninstall')
-            ->willReturnCallback(function (): void {
+            ->willReturnCallback(static function (): void {
                 $response = new Response(400, body: (string) json_encode([
                     'success' => false,
                     'error' => 'INVALID_JWT',
@@ -584,7 +584,7 @@ class HoneyWebhookServiceTest extends TestCase
             ->expects($this->once())
             ->method('request')
             ->with('POST', 'webhooks/sw/install')
-            ->willReturnCallback(function (): void {
+            ->willReturnCallback(static function (): void {
                 throw new RequestException('Something went wrong', new Request('POST', 'webhooks/sw/install'));
             });
 

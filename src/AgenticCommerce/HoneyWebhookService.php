@@ -126,7 +126,7 @@ class HoneyWebhookService
                 ->withClaim('country', $salesChannel->getCountry()?->getIso())
                 ->withClaim('currency', $salesChannel->getCurrency()?->getIsoCode())
                 ->withClaim('favIcon', $this->faviconLoader->loadFaviconLink($storefront->getId(), $context))
-                ->withClaim('shippingCountries', array_values($storefront->getCountries()?->map(fn (CountryEntity $country) => $country->getIso()) ?? []))
+                ->withClaim('shippingCountries', array_values($storefront->getCountries()?->map(static fn (CountryEntity $country) => $country->getIso()) ?? []))
                 ->withClaim('paypalMerchantId', $this->credentialsUtil->getMerchantPayerId($storefront->getId()))
                 ->withClaim('shopwareMerchantId', $salesChannel->getId())
                 ->withClaim('catalogDownloadUrl', rtrim($url ?? '', '/') . $path)

@@ -500,7 +500,7 @@ class PayPalCartTransformerTest extends TestCase
         $validationIssueMock = $this->createMock(ValidationIssues::class);
         $validationIssueMock
             ->method('cartError')
-            ->willReturnCallback(function (Error $error) {
+            ->willReturnCallback(static function (Error $error) {
                 // Only blocking order errors should be added
                 static::assertTrue($error->blockOrder());
 
@@ -511,7 +511,7 @@ class PayPalCartTransformerTest extends TestCase
             });
         $validationIssueMock
             ->method('outOfStock')
-            ->willReturnCallback(function (LineItem $lineItem) {
+            ->willReturnCallback(static function (LineItem $lineItem) {
                 $issue = new ValidationIssue();
                 $issue->setItemId($lineItem->getReferencedId());
                 $issue->setMessage('outOfStock');
@@ -520,7 +520,7 @@ class PayPalCartTransformerTest extends TestCase
             });
         $validationIssueMock
             ->method('changedPrice')
-            ->willReturnCallback(function (LineItem $lineItem) {
+            ->willReturnCallback(static function (LineItem $lineItem) {
                 $issue = new ValidationIssue();
                 $issue->setItemId($lineItem->getReferencedId());
                 $issue->setMessage('changedPrice');
