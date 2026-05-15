@@ -113,7 +113,7 @@ class GenerateOpenApi extends Command
             Util::finder(self::ROOT_DIR . '/src/Pos'),
             Util::finder(self::ROOT_DIR . '/src/Setting'),
             Util::finder(self::ROOT_DIR . '/src/Webhook'),
-            Util::finder(self::ROOT_DIR . '/src/AgentCommerce'),
+            Util::finder(self::ROOT_DIR . '/src/AgenticCommerce'),
             Util::finder(
                 self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct',
                 [self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct/AgenticCommerce'],

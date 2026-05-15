@@ -23,7 +23,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultablePaymentSourceInterface;
+use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultedPaymentSourceInterface;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\Vault;
 use Swag\PayPal\Checkout\Exception\SubscriptionTypeNotSupportedException;
@@ -87,7 +87,7 @@ class VaultTokenService
         return $this->vaultTokenRepository->search($criteria, $context)->getEntities()->first();
     }
 
-    public function saveToken(PaymentTransactionStruct $struct, OrderTransactionEntity $orderTransaction, VaultablePaymentSourceInterface $paymentSource, string $customerId, Context $context): void
+    public function saveToken(PaymentTransactionStruct $struct, OrderTransactionEntity $orderTransaction, VaultedPaymentSourceInterface $paymentSource, string $customerId, Context $context): void
     {
         $token = $paymentSource->getAttributes()?->getVault();
         if (!$token || !$token->getId()) {
@@ -143,7 +143,7 @@ class VaultTokenService
         throw new SubscriptionTypeNotSupportedException($recurring::class);
     }
 
-    public function requestVaulting(VaultablePaymentSourceInterface $paymentSource): void
+    public function requestVaulting(VaultedPaymentSourceInterface $paymentSource): void
     {
         $vault = new Vault();
         $vault->setStoreInVault(Vault::STORE_IN_VAULT_ON_SUCCESS);

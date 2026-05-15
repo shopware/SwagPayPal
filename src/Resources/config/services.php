@@ -13,7 +13,7 @@ return static function (ContainerBuilder $container): void {
     $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/services'));
 
     $loader->load('administration.xml');
-    $loader->load('agent_commerce.xml');
+    $loader->load('agentic_commerce.xml');
     $loader->load('apm.xml');
     $loader->load('checkout.xml');
     $loader->load('dal.xml');
