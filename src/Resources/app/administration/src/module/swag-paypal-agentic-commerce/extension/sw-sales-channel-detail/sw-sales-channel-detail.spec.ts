@@ -17,6 +17,9 @@ async function createWrapper() {
                 exportTemplateService: {
                     getProductExportTemplateRegistry: () => { return {}; },
                 },
+                systemConfigApiService: {
+                    getValues: () => Promise.resolve({}),
+                },
             },
         },
     });
@@ -32,7 +35,7 @@ describe('sw-sales-channel-detail', () => {
     it('should be agentic commerce type', async () => {
         const wrapper = await createWrapper();
 
-        wrapper.setData({
+        await wrapper.setData({
             salesChannel: {
                 typeId: PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID,
             },
@@ -44,7 +47,7 @@ describe('sw-sales-channel-detail', () => {
     it('should not be agentic commerce type', async () => {
         const wrapper = await createWrapper();
 
-        wrapper.setData({
+        await wrapper.setData({
             salesChannel: {
                 typeId: 'some-other-type-id',
             },
@@ -56,7 +59,7 @@ describe('sw-sales-channel-detail', () => {
     it('should be product comparison', async () => {
         const wrapper = await createWrapper();
 
-        wrapper.setData({
+        await wrapper.setData({
             salesChannel: {
                 typeId: Shopware.Defaults.productComparisonTypeId,
             },
@@ -68,7 +71,7 @@ describe('sw-sales-channel-detail', () => {
     it('should not be product comparison', async () => {
         const wrapper = await createWrapper();
 
-        wrapper.setData({
+        await wrapper.setData({
             salesChannel: {
                 typeId: 'some-other-type-id',
             },

@@ -158,7 +158,7 @@ kQIDAQAB
             new SignedWith(new Sha256(), InMemory::plainText(self::$PAYPAL_JWT)),
         ];
 
-        if (!empty($scopes)) {
+        if ($scopes !== []) {
             $constraints[] = new HasScopes($scopes);
         }
 

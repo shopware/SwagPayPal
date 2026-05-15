@@ -112,7 +112,7 @@ class UpdateCartRoute extends AbstractAgenticCommerceRoute
 
         $this->customerRepository->update([$customerData], $salesChannelContext->getContext());
 
-        if (!empty($toDeleteAddress)) {
+        if ($toDeleteAddress !== null) {
             $this->customerAddressRepository->delete($toDeleteAddress, $salesChannelContext->getContext());
         }
 

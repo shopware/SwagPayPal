@@ -197,7 +197,7 @@ class PayPalCartTransformer
             }
         }
 
-        if (!empty($productIds)) {
+        if ($productIds !== []) {
             $criteria = new Criteria($productIds);
             $criteria->addFilter(
                 new RangeFilter('stock', [RangeFilter::LTE => 0]),
@@ -208,18 +208,24 @@ class PayPalCartTransformer
 
         $mapped = [];
         foreach ($cartItems as $cartItem) {
-            $mapped[$cartItem->getVariantId()] = $cartItem;
+            $variantId = $cartItem->getVariantId();
+            if ($variantId === null) {
+                continue;
+            }
+
+            $mapped[$variantId] = $cartItem;
         }
 
         foreach ($lineItems as $lineItem) {
+            $referencedId = $lineItem->getReferencedId();
             $stock = $lineItem->getPayloadValue('stock');
             if ($stock !== null && $stock < $lineItem->getQuantity()) {
-                $issue = $this->validationIssues->outOfStock($lineItem, $restockProducts[$lineItem->getReferencedId()] ?? null, $context->getCurrency());
+                $issue = $this->validationIssues->outOfStock($lineItem, $referencedId !== null ? ($restockProducts[$referencedId] ?? null) : null, $context->getCurrency());
 
                 $errors->add($issue);
             }
 
-            $initItem = $mapped[$lineItem->getReferencedId()] ?? null;
+            $initItem = $referencedId !== null ? ($mapped[$referencedId] ?? null) : null;
             $initPrice = $initItem?->getPrice()?->getValue();
             if ($initPrice !== null && (float) $initPrice < $lineItem->getPrice()?->getUnitPrice()) {
                 $errors->add($this->validationIssues->changedPrice($lineItem, $initPrice, $context->getCurrency(), $context->getItemRounding()));
@@ -227,7 +233,7 @@ class PayPalCartTransformer
         }
 
         // Age verification would be "REQUIRES_ADDITIONAL_INFORMATION"
-        if ($errors->count()) {
+        if ($errors->count() > 0) {
             $status = PayPalCart::VALIDATION_STATUS__INVALID;
         }
 
@@ -336,7 +342,7 @@ class PayPalCartTransformer
      */
     public function convertToAppliedCoupons(array $lineItems, SalesChannelContext $context): ?AppliedCouponCollection
     {
-        if (empty($lineItems)) {
+        if ($lineItems === []) {
             return null;
         }
 

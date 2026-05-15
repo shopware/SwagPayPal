@@ -67,7 +67,7 @@ class WebhookSubscriber implements EventSubscriberInterface
             $mapped[$id] = $active;
         }
 
-        if (empty($mapped)) {
+        if ($mapped === []) {
             return;
         }
 

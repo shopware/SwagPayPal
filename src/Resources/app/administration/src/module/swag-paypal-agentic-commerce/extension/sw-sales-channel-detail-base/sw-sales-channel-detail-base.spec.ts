@@ -3,6 +3,8 @@ import SwSalesChannelDetailBase from 'src/module/sw-sales-channel/view/sw-sales-
 import SwSalesChannelDetailBaseExtension from '.';
 import { PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID } from "SwagPayPal/constant/swag-paypal.constant";
 
+const { Criteria } = Shopware.Data;
+
 Shopware.Component.register('sw-sales-channel-detail-base', Promise.resolve({
     ...SwSalesChannelDetailBase,
     template: '<div>stub</div>',
@@ -10,12 +12,13 @@ Shopware.Component.register('sw-sales-channel-detail-base', Promise.resolve({
 
 Shopware.Component.extend('swag-paypal-agentic-commerce-sales-channel-detail-base', 'sw-sales-channel-detail-base', Promise.resolve(SwSalesChannelDetailBaseExtension));
 
-async function createWrapper() {
+async function createWrapper(props = {}) {
     return mount(await Shopware.Component.build('swag-paypal-agentic-commerce-sales-channel-detail-base') as typeof SwSalesChannelDetailBaseExtension, {
         props: {
             salesChannel: {},
             productExport: {},
             customFieldSets: [],
+            ...props,
         },
         global: {
             provide: {
@@ -101,5 +104,21 @@ describe('sw-sales-channel-detail-base', () => {
         });
 
         expect(wrapper.vm.isProductComparison).toBeFalsy();
+    });
+
+    it('should restrict agentic storefront sales channel criteria to US storefronts', async () => {
+        const storefrontSalesChannelCriteria = new Criteria(1, 25);
+        storefrontSalesChannelCriteria.addFilter(Criteria.equals('active', true));
+
+        const wrapper = await createWrapper({ storefrontSalesChannelCriteria });
+
+        expect(wrapper.vm.agenticStorefrontSalesChannelCriteria).not.toBe(storefrontSalesChannelCriteria);
+        expect(wrapper.vm.agenticStorefrontSalesChannelCriteria.filters).toEqual([
+            Criteria.equals('active', true),
+            Criteria.equals('country.iso3', 'USA'),
+        ]);
+        expect(storefrontSalesChannelCriteria.filters).toEqual([
+            Criteria.equals('active', true),
+        ]);
     });
 });

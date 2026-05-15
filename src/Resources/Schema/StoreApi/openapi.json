@@ -1581,7 +1581,9 @@
                     "payments_receivable",
                     "legal_name",
                     "primary_email",
-                    "primary_email_confirmed"
+                    "primary_email_confirmed",
+                    "primary_currency",
+                    "country"
                 ],
                 "properties": {
                     "merchant_id": {
@@ -1626,6 +1628,12 @@
                     },
                     "primary_email_confirmed": {
                         "type": "boolean"
+                    },
+                    "primary_currency": {
+                        "type": "string"
+                    },
+                    "country": {
+                        "type": "string"
                     }
                 },
                 "type": "object"
@@ -1640,7 +1648,18 @@
                         "type": "string"
                     },
                     "status": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "SUSPENDED",
+                            "REVOKED",
+                            "APPROVED",
+                            "NEED_DATA",
+                            "DENY",
+                            "IN_REVIEW",
+                            "INACTIVE",
+                            "PENDING"
+                        ]
                     }
                 },
                 "type": "object"
@@ -1726,6 +1745,9 @@
                         "type": "string"
                     },
                     "vetting_status": {
+                        "type": "string"
+                    },
+                    "status": {
                         "type": "string"
                     },
                     "capabilities": {
@@ -3151,6 +3173,99 @@
                 },
                 "type": "object"
             },
+            "paypal_v1_wallet_domain": {
+                "required": [
+                    "provider_type",
+                    "domain",
+                    "merchant",
+                    "reason"
+                ],
+                "properties": {
+                    "provider_type": {
+                        "type": "string"
+                    },
+                    "domain": {
+                        "$ref": "#/components/schemas/paypal_v1_wallet_domain_domain"
+                    },
+                    "merchant": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v1_wallet_domain_merchant"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "reason": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v1_wallet_domain_domain": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v1_wallet_domain_merchant": {
+                "required": [
+                    "account_id",
+                    "business_name",
+                    "url"
+                ],
+                "properties": {
+                    "account_id": {
+                        "type": "string"
+                    },
+                    "business_name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "url": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v1_wallet_domains": {
+                "required": [
+                    "total_items",
+                    "total_pages",
+                    "wallet_domains",
+                    "links"
+                ],
+                "properties": {
+                    "total_items": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "total_pages": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "wallet_domains": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_wallet_domain"
+                        }
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
+                        },
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v1_webhook": {
                 "required": [
                     "id",
@@ -3181,6 +3296,29 @@
                 },
                 "type": "object"
             },
+            "paypal_v1_webhook_application_context": {
+                "required": [
+                    "actor",
+                    "event_context",
+                    "event_targets"
+                ],
+                "properties": {
+                    "actor": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "event_context": {
+                        "type": "string"
+                    },
+                    "event_targets": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v1_webhook_event": {
                 "required": [
                     "id",
@@ -3191,7 +3329,8 @@
                     "create_time",
                     "links",
                     "event_version",
-                    "resource_version"
+                    "resource_version",
+                    "application_context"
                 ],
                 "properties": {
                     "id": {
@@ -3213,6 +3352,9 @@
                                 "$ref": "#/components/schemas/paypal_v3_payment_token"
                             },
                             {
+                                "$ref": "#/components/schemas/paypal_v2_order"
+                            },
+                            {
                                 "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_authorization"
                             },
                             {
@@ -3226,6 +3368,15 @@
                             },
                             {
                                 "$ref": "#/components/schemas/paypal_v1_subscription"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_v1_webhook_events_managed_accounts"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_v1_webhook_events_account_entities"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_v1_webhook_events_dispute"
                             }
                         ]
                     },
@@ -3243,6 +3394,9 @@
                     },
                     "resource_version": {
                         "type": "string"
+                    },
+                    "application_context": {
+                        "$ref": "#/components/schemas/paypal_v1_webhook_application_context"
                     }
                 },
                 "type": "object"
@@ -3270,6 +3424,139 @@
                 },
                 "type": "object"
             },
+            "paypal_v1_webhook_events_account_entities": {
+                "required": [
+                    "external_id",
+                    "account_id",
+                    "capabilities",
+                    "application_context",
+                    "links"
+                ],
+                "properties": {
+                    "external_id": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "account_id": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "capabilities": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_merchant_integrations_capability"
+                        }
+                    },
+                    "application_context": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v1_webhook_application_context"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v1_webhook_events_dispute": {
+                "required": [
+                    "dispute_id",
+                    "merchant_id",
+                    "reason",
+                    "status",
+                    "dispute_state",
+                    "dispute_amount",
+                    "seller_response_due_date",
+                    "dispute_life_cycle_stage",
+                    "links"
+                ],
+                "properties": {
+                    "dispute_id": {
+                        "type": "string"
+                    },
+                    "merchant_id": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "reason": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "dispute_state": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dispute_amount": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v1_disputes_item_dispute_amount"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "seller_response_due_date": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dispute_life_cycle_stage": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v1_webhook_events_managed_accounts": {
+                "required": [
+                    "links",
+                    "external_id",
+                    "account_id",
+                    "capabilities",
+                    "process_collection"
+                ],
+                "properties": {
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_common_link"
+                        }
+                    },
+                    "external_id": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "account_id": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "capabilities": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v1_merchant_integrations_capability"
+                        }
+                    },
+                    "process_collection": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v3_managed_account_process"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v1_webhook_resource": {
                 "required": [
                     "id",
@@ -3288,7 +3575,6 @@
                     "invoice_number",
                     "links",
                     "state",
-                    "tracking_id",
                     "merchant_id"
                 ],
                 "properties": {
@@ -3346,10 +3632,6 @@
                     },
                     "state": {
                         "type": "string"
-                    },
-                    "tracking_id": {
-                        "type": "string",
-                        "nullable": true
                     },
                     "merchant_id": {
                         "type": "string",
@@ -4034,7 +4316,8 @@
                     "token",
                     "trustly",
                     "google_pay",
-                    "venmo"
+                    "venmo",
+                    "bank"
                 ],
                 "properties": {
                     "afterpay": {
@@ -4191,6 +4474,14 @@
                             }
                         ],
                         "nullable": true
+                    },
+                    "bank": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_bank"
+                            }
+                        ],
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -4301,6 +4592,66 @@
                     }
                 },
                 "type": "object"
+            },
+            "paypal_v2_order_payment_source_bank": {
+                "required": [
+                    "sepa_debit"
+                ],
+                "properties": {
+                    "sepa_debit": {
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_bank_sepa_debit"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_payment_source_bank_sepa_debit": {
+                "required": [
+                    "experience_context",
+                    "iban",
+                    "account_holder_name",
+                    "iban_last_chars",
+                    "billing_address",
+                    "attributes"
+                ],
+                "properties": {
+                    "experience_context": {
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
+                    },
+                    "iban": {
+                        "type": "string"
+                    },
+                    "account_holder_name": {
+                        "type": "string"
+                    },
+                    "iban_last_chars": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "billing_address": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_common_address"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "attributes": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes"
+                            }
+                        ],
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_payment_source_bank_sepa_experience_context": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_experience_context"
+                    }
+                ]
             },
             "paypal_v2_order_payment_source_blik": {
                 "required": [
@@ -4533,12 +4884,20 @@
             "paypal_v2_order_payment_source_common_attributes": {
                 "required": [
                     "vault",
+                    "mandate",
+                    "token",
                     "customer",
                     "verification"
                 ],
                 "properties": {
                     "vault": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_vault"
+                    },
+                    "mandate": {
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_mandate"
+                    },
+                    "token": {
+                        "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_token"
                     },
                     "customer": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_customer"
@@ -4556,6 +4915,19 @@
                 "properties": {
                     "id": {
                         "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_payment_source_common_attributes_mandate": {
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "default": "ONE_OFF",
+                        "enum": [
+                            "ONE_OFF",
+                            "RECURRENT"
+                        ]
                     }
                 },
                 "type": "object"
@@ -4578,6 +4950,21 @@
                                 "SHIPPING_OPTIONS"
                             ]
                         }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_payment_source_common_attributes_token": {
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "default": "BANK_REFERENCE_TOKEN"
                     }
                 },
                 "type": "object"
@@ -5240,6 +5627,7 @@
                     "reference_id",
                     "amount",
                     "payee",
+                    "payment_instruction",
                     "description",
                     "custom_id",
                     "invoice_id",
@@ -5258,6 +5646,9 @@
                     },
                     "payee": {
                         "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payee"
+                    },
+                    "payment_instruction": {
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payment_instruction"
                     },
                     "description": {
                         "type": "string"
@@ -5448,6 +5839,53 @@
                 },
                 "type": "object"
             },
+            "paypal_v2_order_purchase_unit_payment_instruction": {
+                "required": [
+                    "platform_fees",
+                    "disbursement_mode",
+                    "payee_pricing_tier_id",
+                    "payee_receivable_fx_rate_id"
+                ],
+                "properties": {
+                    "platform_fees": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payment_instruction_platform_fee"
+                        }
+                    },
+                    "disbursement_mode": {
+                        "type": "string",
+                        "enum": [
+                            "INSTANT",
+                            "DELAYED"
+                        ]
+                    },
+                    "payee_pricing_tier_id": {
+                        "type": "string",
+                        "maxLength": 20
+                    },
+                    "payee_receivable_fx_rate_id": {
+                        "type": "string",
+                        "maxLength": 4000
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_purchase_unit_payment_instruction_platform_fee": {
+                "required": [
+                    "amount",
+                    "payee"
+                ],
+                "properties": {
+                    "amount": {
+                        "$ref": "#/components/schemas/paypal_v2_common_money"
+                    },
+                    "payee": {
+                        "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payee"
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v2_order_purchase_unit_payments": {
                 "required": [
                     "authorizations",
@@ -5488,6 +5926,7 @@
                     "links",
                     "create_time",
                     "update_time",
+                    "supplementary_data",
                     "seller_protection",
                     "expiration_time"
                 ],
@@ -5521,6 +5960,14 @@
                     },
                     "update_time": {
                         "type": "string"
+                    },
+                    "supplementary_data": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "seller_protection": {
                         "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_common_seller_protection"
@@ -5558,6 +6005,7 @@
                     "links",
                     "create_time",
                     "update_time",
+                    "supplementary_data",
                     "invoice_id",
                     "note_to_payer",
                     "seller_protection",
@@ -5596,6 +6044,14 @@
                     },
                     "update_time": {
                         "type": "string"
+                    },
+                    "supplementary_data": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "invoice_id": {
                         "type": "string",
@@ -5666,6 +6122,46 @@
                 },
                 "type": "object"
             },
+            "paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data": {
+                "description": "Supplementary data for a payment resource, typically provided in webhook payloads.\n\nContains related IDs that link a payment resource (capture, refund, authorization)\nback to its parent order.",
+                "required": [
+                    "related_ids"
+                ],
+                "properties": {
+                    "related_ids": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_common_related_ids"
+                            }
+                        ],
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_purchase_unit_payments_common_related_ids": {
+                "description": "Related IDs for a payment resource, provided in webhook supplementary data.",
+                "required": [
+                    "order_id",
+                    "authorization_id",
+                    "capture_id"
+                ],
+                "properties": {
+                    "order_id": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "authorization_id": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "capture_id": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v2_order_purchase_unit_payments_common_seller_protection": {
                 "required": [
                     "status",
@@ -5693,6 +6189,7 @@
                     "links",
                     "create_time",
                     "update_time",
+                    "supplementary_data",
                     "invoice_id",
                     "note_to_payer",
                     "seller_payable_breakdown"
@@ -5727,6 +6224,14 @@
                     },
                     "update_time": {
                         "type": "string"
+                    },
+                    "supplementary_data": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "invoice_id": {
                         "type": "string",
@@ -6541,7 +7046,9 @@
                 },
                 "type": "object"
             },
-            "paypal_v3_managed_account_business_entity_incorporation_details": {},
+            "paypal_v3_managed_account_business_entity_incorporation_details": {
+                "type": "object"
+            },
             "paypal_v3_managed_account_individual_owner": {
                 "required": [
                     "id",
@@ -6618,6 +7125,21 @@
                         "type": "string"
                     },
                     "type": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v3_managed_account_process": {
+                "required": [
+                    "name",
+                    "status"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "status": {
                         "type": "string"
                     }
                 },

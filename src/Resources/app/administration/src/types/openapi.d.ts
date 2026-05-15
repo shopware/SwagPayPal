@@ -943,10 +943,13 @@ export interface components {
             legal_name: string;
             primary_email: string;
             primary_email_confirmed: boolean;
+            primary_currency: string;
+            country: string;
         };
         paypal_v1_merchant_integrations_capability: {
             name: string;
-            status: string;
+            /** @enum {string} */
+            status: "ACTIVE" | "SUSPENDED" | "REVOKED" | "APPROVED" | "NEED_DATA" | "DENY" | "IN_REVIEW" | "INACTIVE" | "PENDING";
         };
         paypal_v1_merchant_integrations_credentials: {
             client_id: string;
@@ -969,6 +972,7 @@ export interface components {
         paypal_v1_merchant_integrations_product: {
             name: string;
             vetting_status?: string;
+            status?: string;
             capabilities?: string[];
         };
         paypal_v1_merchant_tracking: {
@@ -1320,28 +1324,79 @@ export interface components {
              */
             expire_date_time: string;
         };
+        paypal_v1_wallet_domain: {
+            provider_type: string;
+            domain: components["schemas"]["paypal_v1_wallet_domain_domain"];
+            merchant: components["schemas"]["paypal_v1_wallet_domain_merchant"] | null;
+            reason: string | null;
+        };
+        paypal_v1_wallet_domain_domain: {
+            name: string;
+        };
+        paypal_v1_wallet_domain_merchant: {
+            account_id: string;
+            business_name: string | null;
+            url: string | null;
+        };
+        paypal_v1_wallet_domains: {
+            total_items: string | null;
+            total_pages: string | null;
+            wallet_domains: components["schemas"]["paypal_v1_wallet_domain"][];
+            links: components["schemas"]["paypal_v1_common_link"][] | null;
+        };
         paypal_v1_webhook: {
             id: string;
             url: string;
             event_types: components["schemas"]["paypal_v1_webhook_event_type"][];
             links: components["schemas"]["paypal_v1_common_link"][];
         };
+        paypal_v1_webhook_application_context: {
+            actor: string | null;
+            event_context: string;
+            event_targets: string[];
+        };
         paypal_v1_webhook_event: {
             id: string;
             resource_type: string;
             event_type: string;
             summary: string;
-            resource: (components["schemas"]["paypal_v3_payment_token"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_authorization"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_capture"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_refund"] | components["schemas"]["paypal_v1_webhook_resource"] | components["schemas"]["paypal_v1_subscription"]) | null;
+            resource: (components["schemas"]["paypal_v3_payment_token"] | components["schemas"]["paypal_v2_order"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_authorization"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_capture"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_refund"] | components["schemas"]["paypal_v1_webhook_resource"] | components["schemas"]["paypal_v1_subscription"] | components["schemas"]["paypal_v1_webhook_events_managed_accounts"] | components["schemas"]["paypal_v1_webhook_events_account_entities"] | components["schemas"]["paypal_v1_webhook_events_dispute"]) | null;
             create_time: string;
             links: components["schemas"]["paypal_v1_common_link"][];
             event_version: string;
             resource_version: string;
+            application_context: components["schemas"]["paypal_v1_webhook_application_context"];
         };
         paypal_v1_webhook_event_type: {
             name: string;
             description: string;
             status: string;
             resource_version: string;
+        };
+        paypal_v1_webhook_events_account_entities: {
+            external_id: string | null;
+            account_id: string | null;
+            capabilities: components["schemas"]["paypal_v1_merchant_integrations_capability"][];
+            application_context: components["schemas"]["paypal_v1_webhook_application_context"] | null;
+            links: components["schemas"]["paypal_v1_common_link"][];
+        };
+        paypal_v1_webhook_events_dispute: {
+            dispute_id: string;
+            merchant_id: string | null;
+            reason: string;
+            status: string;
+            dispute_state: string | null;
+            dispute_amount: components["schemas"]["paypal_v1_disputes_item_dispute_amount"] | null;
+            seller_response_due_date: string | null;
+            dispute_life_cycle_stage: string | null;
+            links: components["schemas"]["paypal_v1_common_link"][];
+        };
+        paypal_v1_webhook_events_managed_accounts: {
+            links: components["schemas"]["paypal_v1_common_link"][];
+            external_id: string | null;
+            account_id: string | null;
+            capabilities: components["schemas"]["paypal_v1_merchant_integrations_capability"][];
+            process_collection: components["schemas"]["paypal_v3_managed_account_process"][];
         };
         paypal_v1_webhook_resource: {
             id: string;
@@ -1360,7 +1415,6 @@ export interface components {
             invoice_number: string;
             links: components["schemas"]["paypal_v1_common_link"][];
             state: string;
-            tracking_id: string | null;
             merchant_id: string | null;
         };
         paypal_v1_webhook_list: {
@@ -1554,6 +1608,7 @@ export interface components {
             trustly: components["schemas"]["paypal_v2_order_payment_source_trustly"] | null;
             google_pay: components["schemas"]["paypal_v2_order_payment_source_google_pay"] | null;
             venmo: components["schemas"]["paypal_v2_order_payment_source_venmo"] | null;
+            bank: components["schemas"]["paypal_v2_order_payment_source_bank"] | null;
         };
         paypal_v2_order_payment_source_afterpay: {
             experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
@@ -1577,6 +1632,18 @@ export interface components {
             country_code: string;
             experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
         };
+        paypal_v2_order_payment_source_bank: {
+            sepa_debit: components["schemas"]["paypal_v2_order_payment_source_bank_sepa_debit"];
+        };
+        paypal_v2_order_payment_source_bank_sepa_debit: {
+            experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
+            iban: string;
+            account_holder_name: string;
+            iban_last_chars: string | null;
+            billing_address: components["schemas"]["paypal_v2_common_address"] | null;
+            attributes: components["schemas"]["paypal_v2_order_payment_source_common_attributes"] | null;
+        };
+        paypal_v2_order_payment_source_bank_sepa_experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
         paypal_v2_order_payment_source_blik: {
             name: string;
             country_code: string;
@@ -1628,15 +1695,29 @@ export interface components {
         };
         paypal_v2_order_payment_source_common_attributes: {
             vault: components["schemas"]["paypal_v2_order_payment_source_common_attributes_vault"];
+            mandate: components["schemas"]["paypal_v2_order_payment_source_common_attributes_mandate"];
+            token: components["schemas"]["paypal_v2_order_payment_source_common_attributes_token"];
             customer: components["schemas"]["paypal_v2_order_payment_source_common_attributes_customer"];
             verification: components["schemas"]["paypal_v2_order_payment_source_common_attributes_verification"];
         };
         paypal_v2_order_payment_source_common_attributes_customer: {
             id: string;
         };
+        paypal_v2_order_payment_source_common_attributes_mandate: {
+            /**
+             * @default ONE_OFF
+             * @enum {string}
+             */
+            type: "ONE_OFF" | "RECURRENT";
+        };
         paypal_v2_order_payment_source_common_attributes_order_update_callback_config: {
             callback_url: string;
             callback_events: ("SHIPPING_ADDRESS" | "SHIPPING_OPTIONS")[];
+        };
+        paypal_v2_order_payment_source_common_attributes_token: {
+            id: string;
+            /** @default BANK_REFERENCE_TOKEN */
+            type: string;
         };
         paypal_v2_order_payment_source_common_attributes_vault: {
             id: string | null;
@@ -1801,6 +1882,7 @@ export interface components {
             reference_id: string;
             amount: components["schemas"]["paypal_v2_order_purchase_unit_amount"];
             payee: components["schemas"]["paypal_v2_order_purchase_unit_payee"];
+            payment_instruction: components["schemas"]["paypal_v2_order_purchase_unit_payment_instruction"];
             description: string;
             custom_id: string | null;
             invoice_id: string | null;
@@ -1840,6 +1922,17 @@ export interface components {
         paypal_v2_order_purchase_unit_payee_display_data: {
             brand_name: string;
         };
+        paypal_v2_order_purchase_unit_payment_instruction: {
+            platform_fees: components["schemas"]["paypal_v2_order_purchase_unit_payment_instruction_platform_fee"][];
+            /** @enum {string} */
+            disbursement_mode: "INSTANT" | "DELAYED";
+            payee_pricing_tier_id: string;
+            payee_receivable_fx_rate_id: string;
+        };
+        paypal_v2_order_purchase_unit_payment_instruction_platform_fee: {
+            amount: components["schemas"]["paypal_v2_common_money"];
+            payee: components["schemas"]["paypal_v2_order_purchase_unit_payee"];
+        };
         paypal_v2_order_purchase_unit_payments: {
             authorizations: components["schemas"]["paypal_v2_order_purchase_unit_payments_authorization"][] | null;
             captures: components["schemas"]["paypal_v2_order_purchase_unit_payments_capture"][] | null;
@@ -1853,6 +1946,7 @@ export interface components {
             links: components["schemas"]["paypal_v2_common_link"][];
             create_time: string;
             update_time: string;
+            supplementary_data: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data"] | null;
             seller_protection: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_seller_protection"];
             expiration_time: string;
         };
@@ -1868,6 +1962,7 @@ export interface components {
             links: components["schemas"]["paypal_v2_common_link"][];
             create_time: string;
             update_time: string;
+            supplementary_data: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data"] | null;
             invoice_id: string | null;
             note_to_payer: string | null;
             seller_protection: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_seller_protection"];
@@ -1886,6 +1981,21 @@ export interface components {
             paypal_fee: components["schemas"]["paypal_v2_common_money"];
             net_amount: components["schemas"]["paypal_v2_common_money"];
         };
+        /**
+         * @description Supplementary data for a payment resource, typically provided in webhook payloads.
+         *
+         *     Contains related IDs that link a payment resource (capture, refund, authorization)
+         *     back to its parent order.
+         */
+        paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data: {
+            related_ids: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_related_ids"] | null;
+        };
+        /** @description Related IDs for a payment resource, provided in webhook supplementary data. */
+        paypal_v2_order_purchase_unit_payments_common_related_ids: {
+            order_id: string | null;
+            authorization_id: string | null;
+            capture_id: string | null;
+        };
         paypal_v2_order_purchase_unit_payments_common_seller_protection: {
             status: string;
             dispute_categories: string[];
@@ -1898,6 +2008,7 @@ export interface components {
             links: components["schemas"]["paypal_v2_common_link"][];
             create_time: string;
             update_time: string;
+            supplementary_data: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data"] | null;
             invoice_id: string | null;
             note_to_payer: string | null;
             seller_payable_breakdown: components["schemas"]["paypal_v2_order_purchase_unit_payments_refund_seller_payable_breakdown"];
@@ -2088,7 +2199,7 @@ export interface components {
             registered_business_address: components["schemas"]["paypal_v2_common_address"];
             phone_numbers: components["schemas"]["paypal_v3_common_phone_number"][];
         };
-        paypal_v3_managed_account_business_entity_incorporation_details: unknown;
+        paypal_v3_managed_account_business_entity_incorporation_details: Record<string, unknown>;
         paypal_v3_managed_account_individual_owner: {
             id: string;
             names: components["schemas"]["paypal_v3_common_name"][];
@@ -2106,6 +2217,10 @@ export interface components {
             identification_number: string;
             issuing_country_code: string;
             type: string;
+        };
+        paypal_v3_managed_account_process: {
+            name: string;
+            status: string;
         };
         paypal_v3_payment_token: {
             id: string;
