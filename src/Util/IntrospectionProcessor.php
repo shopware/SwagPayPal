@@ -15,7 +15,7 @@ use Psr\Log\LogLevel;
 use Shopware\Core\Framework\HttpException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
-use Swag\PayPal\AgentCommerce\Exception\AgentHttpException;
+use Swag\PayPal\AgenticCommerce\Exception\AgentHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;

@@ -418,64 +418,64 @@ parameters:
 			path: tests/ShopwarePluginClassTest.php
 
 		-
-			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgentCommerce\\Routing\\AgentRequestContextResolver\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgenticCommerce\\Routing\\AgentRequestContextResolver\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
 			count: 1
-			path: src/AgentCommerce/Routing/AgentRequestContextResolver.php
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
 
 		-
 			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
 			count: 1
-			path: src/AgentCommerce/Routing/AgentRequestContextResolver.php
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
 
 		-
 			message: '#^Call to method get\(\) of internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface from outside its root namespace Shopware\.$#'
 			count: 1
-			path: src/AgentCommerce/Routing/AgentRequestContextResolver.php
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
 
 		-
-			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgentCommerce\\Util\\FaviconLoader\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgenticCommerce\\Util\\FaviconLoader\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
 			count: 1
-			path: src/AgentCommerce/Util/FaviconLoader.php
+			path: src/AgenticCommerce/Util/FaviconLoader.php
 
 		-
 			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
 			count: 1
-			path: src/AgentCommerce/Util/FaviconLoader.php
+			path: src/AgenticCommerce/Util/FaviconLoader.php
 
 		-
 			message: '#^Call to method get\(\) of internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface from outside its root namespace Shopware\.$#'
 			count: 1
-			path: src/AgentCommerce/Util/FaviconLoader.php
+			path: src/AgenticCommerce/Util/FaviconLoader.php
 
 		-
 			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
 			count: 1
-			path: src/AgentCommerce/SalesChannel/AbstractAgentCommerceRoute.php
+			path: src/AgenticCommerce/SalesChannel/AbstractAgenticCommerceRoute.php
 
 		-
 			message: '#^Call to method get\(\) of internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface from outside its root namespace Shopware\.$#'
 			count: 1
-			path: src/AgentCommerce/SalesChannel/AbstractAgentCommerceRoute.php
+			path: src/AgenticCommerce/SalesChannel/AbstractAgenticCommerceRoute.php
 
 		-
-			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgentCommerce\\SalesChannel\\UpdateCartRoute\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgenticCommerce\\SalesChannel\\UpdateCartRoute\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
 			count: 1
-			path: src/AgentCommerce/SalesChannel/UpdateCartRoute.php
-
-		-
-			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
-			count: 1
-			path: src/AgentCommerce/SalesChannel/UpdateCartRoute.php
-
-		-
-			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgentCommerce\\SalesChannel\\CreateCartRoute\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
-			count: 1
-			path: src/AgentCommerce/SalesChannel/CreateCartRoute.php
+			path: src/AgenticCommerce/SalesChannel/UpdateCartRoute.php
 
 		-
 			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
 			count: 1
-			path: src/AgentCommerce/SalesChannel/CreateCartRoute.php
+			path: src/AgenticCommerce/SalesChannel/UpdateCartRoute.php
+
+		-
+			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgenticCommerce\\SalesChannel\\CreateCartRoute\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			count: 1
+			path: src/AgenticCommerce/SalesChannel/CreateCartRoute.php
+
+		-
+			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
+			count: 1
+			path: src/AgenticCommerce/SalesChannel/CreateCartRoute.php
 
 		-
 			message: '''
@@ -483,4 +483,4 @@ parameters:
 				Use the \"defaults\" property instead$#
 			'''
 			count: 2
-			path: tests/AgentCommerce/SalesChannel/DefaultRouteScopeTest.php
+			path: tests/AgenticCommerce/SalesChannel/DefaultRouteScopeTest.php
