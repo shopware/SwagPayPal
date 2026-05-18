@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Storefront\Framework\Snippet;
 
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\Snippet\Files\AbstractSnippetFile;
 use Shopware\Core\System\Snippet\Files\GenericSnippetFile;
 use Shopware\Core\System\Snippet\Files\SnippetFileCollection;
 use Shopware\Core\System\Snippet\Files\SnippetFileLoaderInterface;
@@ -20,9 +21,23 @@ use Shopware\Core\System\Snippet\Files\SnippetFileLoaderInterface;
 #[Package('checkout')]
 class SnippetFileLoaderDecorator implements SnippetFileLoaderInterface
 {
+    private const PLUGIN_NAME = 'SwagPayPal';
+    private const TRANSLATION_TECHNICAL_NAME = 'Plugins';
+
     private const ISO_MAP = [
         'en' => 'en-GB',
         'de' => 'de-DE',
+    ];
+
+    private const DEFAULT_SNIPPETS = [
+        'en-GB' => [
+            'name' => 'paypal.en',
+            'file' => 'paypal.en.json',
+        ],
+        'de-DE' => [
+            'name' => 'paypal.de',
+            'file' => 'paypal.de.json',
+        ],
     ];
 
     public function __construct(
@@ -48,5 +63,64 @@ class SnippetFileLoaderDecorator implements SnippetFileLoaderInterface
                 $snippetFile->getTechnicalName(),
             ));
         }
+
+        if (!$this->hasPayPalTranslationSnippet($snippetFileCollection)) {
+            return;
+        }
+
+        foreach (self::DEFAULT_SNIPPETS as $iso => $snippet) {
+            if ($this->hasPayPalSnippetForIso($snippetFileCollection, $iso)) {
+                continue;
+            }
+
+            $snippetFileCollection->add(new GenericSnippetFile(
+                $snippet['name'],
+                __DIR__ . '/../../../Resources/snippet/' . $snippet['file'],
+                $iso,
+                'shopware AG',
+                false,
+                self::PLUGIN_NAME,
+            ));
+        }
+    }
+
+    private function hasPayPalTranslationSnippet(SnippetFileCollection $snippetFileCollection): bool
+    {
+        foreach ($snippetFileCollection as $snippetFile) {
+            if ($this->isPayPalTranslationSnippet($snippetFile)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function hasPayPalSnippetForIso(SnippetFileCollection $snippetFileCollection, string $iso): bool
+    {
+        foreach ($snippetFileCollection as $snippetFile) {
+            if ($snippetFile->getIso() !== $iso) {
+                continue;
+            }
+
+            if ($this->isPayPalBundledSnippet($snippetFile) || $this->isPayPalTranslationSnippet($snippetFile)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isPayPalBundledSnippet(AbstractSnippetFile $snippetFile): bool
+    {
+        return $snippetFile->getTechnicalName() === self::PLUGIN_NAME
+            && \str_starts_with($snippetFile->getName(), 'paypal.');
+    }
+
+    private function isPayPalTranslationSnippet(AbstractSnippetFile $snippetFile): bool
+    {
+        $path = \str_replace('\\', '/', $snippetFile->getPath());
+
+        return $snippetFile->getTechnicalName() === self::TRANSLATION_TECHNICAL_NAME
+            && \str_contains($path, '/Plugins/' . self::PLUGIN_NAME . '/');
     }
 }

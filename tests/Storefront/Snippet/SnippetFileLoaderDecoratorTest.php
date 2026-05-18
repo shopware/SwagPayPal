@@ -93,6 +93,76 @@ class SnippetFileLoaderDecoratorTest extends TestCase
         static::assertEquals($expected, $collection);
     }
 
+    public function testAddsDefaultSnippetsIfOnlyUnrelatedLocaleTranslationExists(): void
+    {
+        $collection = new SnippetFileCollection([
+            new GenericSnippetFile(
+                'storefront',
+                'translation/locale/fr-FR/Plugins/SwagPayPal/storefront.json',
+                'fr-FR',
+                'Shopware',
+                false,
+                'Plugins',
+            ),
+        ]);
+
+        $this->inner
+            ->expects($this->once())
+            ->method('loadSnippetFilesIntoCollection')
+            ->with($collection);
+
+        $this->decorator->loadSnippetFilesIntoCollection($collection);
+
+        $enFiles = $collection->getSnippetFilesByIso('en-GB');
+        $deFiles = $collection->getSnippetFilesByIso('de-DE');
+
+        static::assertCount(1, $enFiles);
+        static::assertCount(1, $deFiles);
+        static::assertSame('paypal.en', $enFiles[0]->getName());
+        static::assertSame('paypal.de', $deFiles[0]->getName());
+        static::assertSame('SwagPayPal', $enFiles[0]->getTechnicalName());
+        static::assertSame('SwagPayPal', $deFiles[0]->getTechnicalName());
+    }
+
+    public function testDoesNotAddDefaultSnippetIfSameLocaleTranslationExists(): void
+    {
+        $collection = new SnippetFileCollection([
+            new GenericSnippetFile(
+                'storefront',
+                'translation/locale/fr-FR/Plugins/SwagPayPal/storefront.json',
+                'fr-FR',
+                'Shopware',
+                false,
+                'Plugins',
+            ),
+            new GenericSnippetFile(
+                'storefront',
+                'translation/locale/de-DE/Plugins/SwagPayPal/storefront.json',
+                'de-DE',
+                'Shopware',
+                false,
+                'Plugins',
+            ),
+        ]);
+
+        $this->inner
+            ->expects($this->once())
+            ->method('loadSnippetFilesIntoCollection')
+            ->with($collection);
+
+        $this->decorator->loadSnippetFilesIntoCollection($collection);
+
+        $enFiles = $collection->getSnippetFilesByIso('en-GB');
+        $deFiles = $collection->getSnippetFilesByIso('de-DE');
+
+        static::assertCount(1, $enFiles);
+        static::assertCount(1, $deFiles);
+        static::assertSame('paypal.en', $enFiles[0]->getName());
+        static::assertSame('SwagPayPal', $enFiles[0]->getTechnicalName());
+        static::assertSame('storefront', $deFiles[0]->getName());
+        static::assertSame('Plugins', $deFiles[0]->getTechnicalName());
+    }
+
     public static function dataProviderNonMatchingSnippetFiles(): \Generator
     {
         yield 'wrong technical name' => [new GenericSnippetFile(
