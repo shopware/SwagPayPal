@@ -166,19 +166,26 @@ class ExpressShippingCallbackServiceTest extends TestCase
         ]);
     }
 
-    public function testCalculationThrowsMethodNotAvailable(): void
+    public function testCalculationSwitchesToFirstAvailableWhenSelectedShippingMethodIsBlocked(): void
     {
-        $shippingMethod = $this->getShippingMethod('Express');
+        $blocked = $this->getShippingMethod('Express');
         static::getContainer()->get('shipping_method.repository')->update([[
-            'id' => $shippingMethod->getId(),
+            'id' => $blocked->getId(),
             'availabilityRule' => self::BLOCK_AVAILABLITITY_RULE,
         ]], $this->salesChannelContext->getContext());
 
-        static::expectException(ExpressShippingCallbackException::class);
-        static::expectExceptionMessage('Shipping method "Express" not available');
-
         $country = $this->getCountry('DE');
-        $this->service->recalculateCart($this->createCallback($country, $shippingMethod->getId()), $this->salesChannelContext);
+        $order = $this->service->recalculateCart($this->createCallback($country, $blocked->getId()), $this->salesChannelContext);
+
+        $this->assertMinimalOrderPayload($order);
+
+        $shippingOptions = $order->getPurchaseUnits()->first()?->getShippingOptions();
+        static::assertNotNull($shippingOptions);
+        static::assertGreaterThan(0, $shippingOptions->count());
+
+        $selected = $shippingOptions->filter(static fn (ShippingOption $option) => $option->isSelected())->first();
+        static::assertNotNull($selected, 'Auto-switched shipping method should be marked as selected');
+        static::assertNotSame($blocked->getId(), $selected->getId(), 'Blocked shipping method must not be re-selected');
     }
 
     public function testCalculationThrowsAddressError(): void

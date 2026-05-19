@@ -32,6 +32,7 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Checkout\Shipping\BlockedShippingMethodSwitcher;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
@@ -82,6 +83,12 @@ class ExpressShippingCallbackServiceTaxedCartTest extends TestCase
             ->with($cart, $salesChannelContext)
             ->willReturn(new ShippingOptionCollection([$shippingOption]));
 
+        $blockedShippingMethodSwitcher = $this->createMock(BlockedShippingMethodSwitcher::class);
+        $blockedShippingMethodSwitcher
+            ->expects(static::once())
+            ->method('switch')
+            ->willReturn($salesChannelContext->getShippingMethod());
+
         $service = new ExpressShippingCallbackService(
             $this->createTaxedCartService($cart, $salesChannelContext, $taxProviderProcessor),
             $this->createMock(SalesChannelRepository::class),
@@ -89,6 +96,7 @@ class ExpressShippingCallbackServiceTaxedCartTest extends TestCase
             $shippingOptionsProvider,
             $this->createMock(AbstractContextSwitchRoute::class),
             $this->createMock(AbstractSalesChannelContextFactory::class),
+            $blockedShippingMethodSwitcher,
             new NullLogger(),
         );
 

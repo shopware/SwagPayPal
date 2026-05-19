@@ -1,3 +1,6 @@
+# 8.11.2
+- Behebt ein Problem, bei dem der Express Checkout fehlschlug, wenn der Käufer das Lieferland zu einem mit regelbasierten Versandarten änderte (shopware/shopware#16295).
+
 # 8.11.1
 - Behebt ein Problem, bei dem abgelehnte PayPal-Zahlungen in der Administration weiterhin als erstattungsfaehig angezeigt wurden (shopware/SwagPayPal#547)
 - Behebt ein Problem, bei dem die PayPal-Bestellerstellung für Abonnements nicht den Subscription-Cart-Service verwendet hat und ACDC für Abonnements ohne Wallet-Vaulting verfügbar war
