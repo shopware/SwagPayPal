@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Fixes an issue, where German and English storefront snippets were missing when translations for other locales were installed (shopware/SwagPayPal#662)
+- Fixes an issue, where bundled storefront snippets were missing when translations for other locales were installed (shopware/SwagPayPal#662)
 
 # 10.6.1
 - Fixes an issue, where declined PayPal payments were still shown as refundable in the Administration (shopware/SwagPayPal#547)

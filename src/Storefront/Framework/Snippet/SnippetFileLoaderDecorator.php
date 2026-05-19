@@ -29,17 +29,6 @@ class SnippetFileLoaderDecorator implements SnippetFileLoaderInterface
         'de' => 'de-DE',
     ];
 
-    private const DEFAULT_SNIPPETS = [
-        'en-GB' => [
-            'name' => 'paypal.en',
-            'file' => 'paypal.en.json',
-        ],
-        'de-DE' => [
-            'name' => 'paypal.de',
-            'file' => 'paypal.de.json',
-        ],
-    ];
-
     public function __construct(
         private readonly SnippetFileLoaderInterface $inner,
     ) {
@@ -68,20 +57,53 @@ class SnippetFileLoaderDecorator implements SnippetFileLoaderInterface
             return;
         }
 
-        foreach (self::DEFAULT_SNIPPETS as $iso => $snippet) {
+        foreach ($this->getBundledPayPalSnippetFiles() as $iso => $snippet) {
             if ($this->hasPayPalSnippetForIso($snippetFileCollection, $iso)) {
                 continue;
             }
 
             $snippetFileCollection->add(new GenericSnippetFile(
                 $snippet['name'],
-                __DIR__ . '/../../../Resources/snippet/' . $snippet['file'],
+                $snippet['path'],
                 $iso,
                 'shopware AG',
                 false,
                 self::PLUGIN_NAME,
             ));
         }
+    }
+
+    /**
+     * @return array<string, array{name: string, path: string}>
+     */
+    private function getBundledPayPalSnippetFiles(): array
+    {
+        $snippetFiles = [];
+        $paths = \glob($this->getSnippetDirectory() . '/paypal.*.json') ?: [];
+
+        \sort($paths);
+
+        foreach ($paths as $path) {
+            $name = \basename($path, '.json');
+            $nameParts = \explode('.', $name);
+
+            if (\count($nameParts) !== 2) {
+                continue;
+            }
+
+            $iso = self::ISO_MAP[$nameParts[1]] ?? $nameParts[1];
+            $snippetFiles[$iso] = [
+                'name' => $name,
+                'path' => $path,
+            ];
+        }
+
+        return $snippetFiles;
+    }
+
+    private function getSnippetDirectory(): string
+    {
+        return \dirname(__DIR__, 3) . '/Resources/snippet';
     }
 
     private function hasPayPalTranslationSnippet(SnippetFileCollection $snippetFileCollection): bool
@@ -120,6 +142,7 @@ class SnippetFileLoaderDecorator implements SnippetFileLoaderInterface
     {
         $path = \str_replace('\\', '/', $snippetFile->getPath());
 
+        // Shopware translation files are stored by plugin, e.g. translations/de-DE/Plugins/SwagPayPal/Storefront.
         return $snippetFile->getTechnicalName() === self::TRANSLATION_TECHNICAL_NAME
             && \str_contains($path, '/Plugins/' . self::PLUGIN_NAME . '/');
     }
