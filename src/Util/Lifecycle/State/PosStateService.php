@@ -16,7 +16,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\SwagPayPal;
 
@@ -76,21 +75,33 @@ class PosStateService
         ], $context);
     }
 
-    public function removePosSalesChannelType(Context $context): void
+    public function handleUninstallPos(Context $context): void
     {
+        $ids = $this->checkPosSalesChannels($context);
+        if ($ids !== []) {
+            return;
+        }
+
         $this->salesChannelTypeRepository->delete([['id' => SwagPayPal::SALES_CHANNEL_TYPE_POS]], $context);
+        $this->removePosDefaultEntities($context);
     }
 
-    public function posSalesChannelsExists(Context $context): bool
+    public function deactivatePosSalesChannel(Context $context): void
     {
-        $criteria = (new Criteria())
-            ->setLimit(1)
-            ->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
+        $ids = $this->checkPosSalesChannels($context);
+        if ($ids === []) {
+            return;
+        }
 
-        return (bool) $this->salesChannelRepository->searchIds($criteria, $context)->getTotal();
+        $updateData = \array_values(\array_map(
+            static fn (string $id) => ['id' => $id, 'active' => false],
+            $ids,
+        ));
+
+        $this->salesChannelRepository->update($updateData, $context);
     }
 
-    public function removePosDefaultEntities(Context $context): void
+    private function removePosDefaultEntities(Context $context): void
     {
         $this->shippingRepository->delete([['id' => InformationDefaultService::POS_SHIPPING_METHOD_ID]], $context);
 
@@ -106,20 +117,17 @@ class PosStateService
         $this->paymentMethodRepository->delete([['id' => InformationDefaultService::POS_PAYMENT_METHOD_ID]], $context);
     }
 
-    public function setPosSalesChannelState(bool $active, Context $context): void
+    /**
+     * @return list<string>
+     */
+    private function checkPosSalesChannels(Context $context): array
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
-        $salesChannels = $this->salesChannelRepository->search($criteria, $context);
 
-        $updateData = \array_values(\array_map(
-            static fn (SalesChannelEntity $salesChannel) => [
-                'id' => $salesChannel->getId(),
-                'active' => $active,
-            ],
-            $salesChannels->getElements(),
-        ));
+        /** @var list<string> $ids */
+        $ids = $this->salesChannelRepository->searchIds($criteria, $context)->getIds();
 
-        $this->salesChannelRepository->update($updateData, $context);
+        return $ids;
     }
 }

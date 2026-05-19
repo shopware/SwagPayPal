@@ -49,7 +49,7 @@ class InstallUninstallTest extends TestCase
         ))->install($context);
     }
 
-    public function testUninstallRemovesPosTypeAndDefaultsWhenNoPosSalesChannelsExist(): void
+    public function testUninstallHandlesAgenticAndPosCleanup(): void
     {
         $context = Context::createDefaultContext();
         $paymentMethodInstaller = $this->createMock(PaymentMethodInstaller::class);
@@ -64,58 +64,8 @@ class InstallUninstallTest extends TestCase
             ->with(static::identicalTo($context));
         $posStateService
             ->expects($this->once())
-            ->method('posSalesChannelsExists')
-            ->with(static::identicalTo($context))
-            ->willReturn(false);
-        $posStateService
-            ->expects($this->once())
-            ->method('removePosSalesChannelType')
+            ->method('handleUninstallPos')
             ->with(static::identicalTo($context));
-        $posStateService
-            ->expects($this->once())
-            ->method('removePosDefaultEntities')
-            ->with(static::identicalTo($context));
-        $settingsInstaller
-            ->expects($this->once())
-            ->method('removeConfiguration')
-            ->with(static::identicalTo($context));
-        $posInstaller
-            ->expects($this->once())
-            ->method('removePosTables');
-
-        (new InstallUninstall(
-            $paymentMethodInstaller,
-            $settingsInstaller,
-            $posInstaller,
-            $posStateService,
-            $agenticCommerceService,
-        ))->uninstall($context);
-    }
-
-    public function testUninstallKeepsPosTypeAndDefaultsWhenPosSalesChannelsExist(): void
-    {
-        $context = Context::createDefaultContext();
-        $paymentMethodInstaller = $this->createMock(PaymentMethodInstaller::class);
-        $settingsInstaller = $this->createMock(SettingsInstaller::class);
-        $posInstaller = $this->createMock(PosInstaller::class);
-        $posStateService = $this->createMock(PosStateService::class);
-        $agenticCommerceService = $this->createMock(AgenticCommerceService::class);
-
-        $agenticCommerceService
-            ->expects($this->once())
-            ->method('handleUninstallAgentic')
-            ->with(static::identicalTo($context));
-        $posStateService
-            ->expects($this->once())
-            ->method('posSalesChannelsExists')
-            ->with(static::identicalTo($context))
-            ->willReturn(true);
-        $posStateService
-            ->expects($this->never())
-            ->method('removePosSalesChannelType');
-        $posStateService
-            ->expects($this->never())
-            ->method('removePosDefaultEntities');
         $settingsInstaller
             ->expects($this->once())
             ->method('removeConfiguration')

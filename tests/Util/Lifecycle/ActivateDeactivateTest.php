@@ -57,8 +57,8 @@ class ActivateDeactivateTest extends TestCase
             ->with(false, static::identicalTo($context));
         $posStateService
             ->expects($this->once())
-            ->method('setPosSalesChannelState')
-            ->with(false, static::identicalTo($context));
+            ->method('deactivatePosSalesChannel')
+            ->with(static::identicalTo($context));
         $agenticCommerceService
             ->expects($this->once())
             ->method('deactivateAgenticSalesChannelState')

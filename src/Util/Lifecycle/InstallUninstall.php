@@ -39,11 +39,7 @@ class InstallUninstall
     public function uninstall(Context $context): void
     {
         $this->agenticCommerceService->handleUninstallAgentic($context);
-        if (!$this->posStateService->posSalesChannelsExists($context)) {
-            $this->posStateService->removePosSalesChannelType($context);
-            $this->posStateService->removePosDefaultEntities($context);
-        }
-
+        $this->posStateService->handleUninstallPos($context);
         $this->settingsInstaller->removeConfiguration($context);
         $this->posInstaller->removePosTables();
     }
