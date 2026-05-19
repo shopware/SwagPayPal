@@ -21,6 +21,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Checkout\Shipping\BlockedShippingMethodSwitcher;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
@@ -42,6 +43,7 @@ class ExpressShippingCallbackService
         private readonly ShippingOptionsProvider $shippingOptionsProvider,
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        private readonly BlockedShippingMethodSwitcher $blockedShippingMethodSwitcher,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -60,15 +62,25 @@ class ExpressShippingCallbackService
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
         }
 
+        $replacement = $this->blockedShippingMethodSwitcher->switch($cart->getErrors(), $salesChannelContext);
+        if ($replacement->getId() !== $salesChannelContext->getShippingMethod()->getId()) {
+            $this->logger->debug('Shipping callback: selected shipping method blocked, switching to alternative', ['shippingMethodId' => $replacement->getId()]);
+            $salesChannelContext = clone $salesChannelContext;
+            $salesChannelContext->assign(['shippingMethod' => $replacement]);
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, false, true);
+        }
+
+        $shippingOptions = $this->shippingOptionsProvider->getShippingOptions($cart, $salesChannelContext);
+
         $fullOrder = $this->orderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
         $order = new Order();
         $order->unset('intent');
         $order->setId($callback->getId());
         $order->setPurchaseUnits($fullOrder->getPurchaseUnits());
         $order->getPurchaseUnits()->first()?->setReferenceId((string) $callback->getPurchaseUnits()->first()?->getReferenceId());
-        $order->getPurchaseUnits()->first()?->setShippingOptions($this->shippingOptionsProvider->getShippingOptions($cart, $salesChannelContext));
+        $order->getPurchaseUnits()->first()?->setShippingOptions($shippingOptions);
 
-        if ((int) $order->getPurchaseUnits()->first()?->getShippingOptions()?->count() === 0) {
+        if ($shippingOptions->count() === 0) {
             $this->logger->debug('Shipping callback: no shipping methods available', ['order' => $order]);
 
             throw ExpressShippingCallbackException::addressError($callback);

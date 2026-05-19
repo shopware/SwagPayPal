@@ -77,6 +77,14 @@ parameters:
         -   # ignore deprecated UrlGenerator
             message : '#Use AbstractMediaUrlGenerator instead#'
 
+        -   # internal BlockedShippingMethodSwitcher reused from Storefront, matches Shopware\Storefront\Checkout\Cart\SalesChannel\StorefrontCartFacade
+            message : '#BlockedShippingMethodSwitcher.* (internal class|in its type|from outside its root namespace)#'
+            path: src/Checkout/ExpressCheckout/Service/ExpressShippingCallbackService.php
+
+        -   # createMock(BlockedShippingMethodSwitcher::class) — internal class constant access in mock
+            message: '#Access to constant on internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher#'
+            path: tests/Checkout/ExpressCheckout/Service/ExpressShippingCallbackServiceTaxedCartTest.php
+
         -   # ignore nullable Zip Code (6.6)
             message : '#Call to deprecated method [sg]etZipcode\(\) of class .*OrderAddressEntity#'
 
