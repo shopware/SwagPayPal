@@ -323,6 +323,26 @@ parameters:
 			path: src/Setting/SettingsController.php
 
 		-
+			message: '#^Call to method switch\(\) of internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/Checkout/ExpressCheckout/Service/ExpressShippingCallbackService.php
+
+		-
+			message: '#^Parameter \$blockedShippingMethodSwitcher of method Swag\\PayPal\\Checkout\\ExpressCheckout\\Service\\ExpressShippingCallbackService\:\:__construct\(\) has typehint with internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher\.$#'
+			count: 1
+			path: src/Checkout/ExpressCheckout/Service/ExpressShippingCallbackService.php
+
+		-
+			message: '#^Property \$blockedShippingMethodSwitcher references internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher in its type\.$#'
+			count: 1
+			path: src/Checkout/ExpressCheckout/Service/ExpressShippingCallbackService.php
+
+		-
+			message: '#^Access to constant on internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher\.$#'
+			count: 1
+			path: tests/Checkout/ExpressCheckout/Service/ExpressShippingCallbackServiceTaxedCartTest.php
+
+		-
 			message: '#^Parameter \$salesChannelContextService of method Swag\\PayPal\\Pos\\MessageQueue\\MessageHydrator\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
 			count: 1
 			path: src/Pos/MessageQueue/MessageHydrator.php
