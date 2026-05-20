@@ -73,11 +73,15 @@ export default Shopware.Component.wrapComponentConfig<SalesChannelModalGrid>({
         withPayPalAgenticCommerceFilter(
             repository: TRepository<'sales_channel_type'>,
         ): TRepository<'sales_channel_type'> {
-            const filteredRepository = Object.create(repository) as TRepository<'sales_channel_type'>;
+            const original = repository.search.bind(repository);
 
-            filteredRepository.search = async (criteria: TCriteria, context?: SalesChannelTypeSearchContext) => {
+            repository.search = async (
+                criteria: TCriteria,
+                context?: SalesChannelTypeSearchContext,
+                ...args: []
+            ) => {
                 if (await this.hasUsDefaultCountryStorefrontSalesChannel(context)) {
-                    return repository.search(criteria, context);
+                    return original(criteria, context, ...args);
                 }
 
                 const filteredCriteria = Criteria.fromCriteria(criteria);
@@ -87,10 +91,10 @@ export default Shopware.Component.wrapComponentConfig<SalesChannelModalGrid>({
                     Criteria.equals('id', PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID),
                 ]));
 
-                return repository.search(filteredCriteria, context);
+                return original(filteredCriteria, context, ...args);
             };
 
-            return filteredRepository;
+            return repository;
         },
     },
 });

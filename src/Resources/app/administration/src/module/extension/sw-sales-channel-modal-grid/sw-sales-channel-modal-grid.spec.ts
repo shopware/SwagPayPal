@@ -69,21 +69,25 @@ function createComponent(hasUsDefaultCountryStorefrontSalesChannel: boolean) {
             hasUsDefaultCountryStorefrontSalesChannel: componentMethods.hasUsDefaultCountryStorefrontSalesChannel,
             withPayPalAgenticCommerceFilter: componentMethods.withPayPalAgenticCommerceFilter,
         } as SalesChannelModalGridTestContext,
+        salesChannelTypeRepository,
         salesChannelTypeSearch,
         salesChannelSearchIds,
     };
 }
 
 describe('sw-sales-channel-modal-grid', () => {
-    it('should call the original sales channel type repository and show PayPal Agentic Commerce when a USA storefront exists', async () => {
-        const { component, salesChannelTypeSearch } = createComponent(true);
+    it('should decorate the original sales channel type repository and show PayPal Agentic Commerce when a USA storefront exists', async () => {
+        const { component, salesChannelTypeRepository, salesChannelTypeSearch } = createComponent(true);
 
         const repository = componentComputed.salesChannelTypeRepository.call(component);
         const criteria = new Criteria(1, 500);
         const result = await repository.search(criteria, Shopware.Context.api);
 
         expect(component.$super).toHaveBeenCalledWith('salesChannelTypeRepository');
+        expect(repository).toBe(salesChannelTypeRepository);
+        expect(repository.search).not.toBe(salesChannelTypeSearch);
         expect(salesChannelTypeSearch).toHaveBeenCalledWith(criteria, Shopware.Context.api);
+        expect(salesChannelTypeSearch.mock.contexts[0]).toBe(salesChannelTypeRepository);
         expect(result.has(PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID)).toBe(true);
         expect(result.has(Shopware.Defaults.agenticCommerceTypeId)).toBe(true);
         expect(result.total).toBe(3);
