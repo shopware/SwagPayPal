@@ -38,6 +38,7 @@ use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
@@ -290,6 +291,10 @@ class SwagPayPal extends Plugin
                 $this->getRepository($this->container, SalesChannelTypeDefinition::ENTITY_NAME),
                 $this->getRepository($this->container, ShippingMethodDefinition::ENTITY_NAME),
                 $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
+            ),
+            new AgenticCommerceService(
+                $this->getRepository($this->container, SalesChannelDefinition::ENTITY_NAME),
+                $this->getRepository($this->container, SalesChannelTypeDefinition::ENTITY_NAME)
             )
         );
     }
