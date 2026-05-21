@@ -10,6 +10,7 @@ namespace Swag\PayPal\Tests\AgenticCommerce\Routing;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
+use phpseclib3\Crypt\PublicKeyLoader;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -22,6 +23,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\JWT\JWTDecoder;
+use Shopware\Core\Framework\JWT\Struct\JWKCollection;
+use Shopware\Core\Framework\JWT\Struct\JWKStruct;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RouteScope;
 use Shopware\Core\Framework\Routing\RouteScopeRegistry;
@@ -39,11 +42,14 @@ use Swag\PayPal\AgenticCommerce\Exception\AgentException;
 use Swag\PayPal\AgenticCommerce\Routing\AgentRequestContextResolver;
 use Swag\PayPal\AgenticCommerce\Routing\AgentRouteScope;
 use Swag\PayPal\AgenticCommerce\Routing\AgentSource;
+use Swag\PayPal\AgenticCommerce\Security\AbstractPayPalJwksProvider;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @internal
+ *
+ * @phpstan-import-type JSONWebKey from JWKStruct
  */
 #[Package('checkout')]
 #[CoversClass(AgentRequestContextResolver::class)]
@@ -93,19 +99,7 @@ TQrKhArgLXX4v3CddjfTRJkFWDbE/CkvKZNOrcf1nhaGCPspRJj2KUkj1Fhl9Cnc
 dn/RsYEONbwQSjIfMPkvxF+8HQ==
 -----END PRIVATE KEY-----';
 
-    protected function setUp(): void
-    {
-        // TODO: Remove this when we have a way to retrieve the public key dynamically from PayPal
-        // Override this, as we use our own private key to sign JWTs during tests
-        AgentRequestContextResolver::$PAYPAL_JWT = self::JWT_PUBLIC;
-    }
-
-    protected function tearDown(): void
-    {
-        // TODO: Remove this when we have a way to retrieve the public key dynamically from PayPal
-        // Reset the static variable to the original value, if it was changed during tests
-        AgentRequestContextResolver::$PAYPAL_JWT = self::JWT_PUBLIC;
-    }
+    private const JWT_KEY_ID = 'paypal-test-key';
 
     public function testResolveWithContextIsSkipped(): void
     {
@@ -119,6 +113,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new JWTDecoder(),
             new RouteScopeRegistry([]),
             $this->createMock(SalesChannelContextService::class),
+            $this->createJwksProvider(),
         );
 
         $resolver->resolve($request);
@@ -143,6 +138,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope(), $wrongScope]),
             $this->createMock(SalesChannelContextService::class),
+            $this->createJwksProvider(),
         );
 
         $resolver->resolve($request);
@@ -162,6 +158,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
+            $this->createJwksProvider(),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Missing Authorization header'));
@@ -184,17 +181,41 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
-        // this is a wrong public key
-        // TODO: change this up in the future, but this has to do for now, as long we do not have a real public JWT key from PayPal
-        AgentRequestContextResolver::$PAYPAL_JWT = '-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu1SU1LfVLPHCozMxH2Mf
-4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0/IzW7yWR7QkrmBL7jTKEn5u
-+qKhbwKfBstIs+bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyeh
-kd3qqGElvW/VDL5AaWTg0nLVkjRo9z+40RQzuVaE8AkAFmxZzow3x+VJYKdjykkJ
-0iT9wCS0DRTXu269V264Vf/3jvredZiKRkgwlL9xNAwxXFg0x/XFw005UWVRIkdg
-cKWTjpBP2dPwVZ4WWC+9aGVd+Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbc
-mwIDAQAB
------END PUBLIC KEY-----';
+        $export = new ProductExportEntity();
+        $export->setId(Uuid::randomHex());
+        $export->setProductStreamId(Uuid::randomHex());
+        $export->setStorefrontSalesChannelId(Uuid::randomHex());
+        $entityRepository = $this->createMock(EntityRepository::class);
+        $entityRepository
+            ->expects($this->never())
+            ->method('search')
+            ->willReturn(self::createSearchResult($export));
+
+        $resolver = new AgentRequestContextResolver(
+            $this->createMock(DataValidator::class),
+            $entityRepository,
+            new JWTDecoder(),
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $this->createMock(SalesChannelContextService::class),
+            $this->createJwksProvider(self::createJwks(self::JWT_PUBLIC, 'wrong-key')),
+        );
+
+        $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
+
+        $resolver->resolve($request);
+    }
+
+    public function testResolveRefreshesJwksWhenKidIsMissingFromCache(): void
+    {
+        $iat = new \DateTimeImmutable();
+        $exp = new \DateTimeImmutable('+1 hour');
+
+        $jwt = self::encodeJWT(['PayPal:MERCHANT_ID'], $iat, $exp, ['cart', 'checkout'], 'SALES_CHANNEL_ID');
+
+        $request = new Request();
+        $request->headers->set('Authorization', 'Bearer ' . $jwt);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
+        $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
         $export = new ProductExportEntity();
         $export->setId(Uuid::randomHex());
@@ -206,17 +227,38 @@ mwIDAQAB
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
+        $salesChannelContext = Generator::generateSalesChannelContext();
+
+        $salesChannelMock = $this->createMock(SalesChannelContextService::class);
+        $salesChannelMock
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn($salesChannelContext);
+
+        $jwksProvider = $this->createMock(AbstractPayPalJwksProvider::class);
+        $jwksProvider
+            ->expects($this->exactly(2))
+            ->method('getJwks')
+            ->willReturnCallback(static function (bool $refresh = false): JWKCollection {
+                if (!$refresh) {
+                    return self::createJwks(self::JWT_PUBLIC, 'stale-key');
+                }
+
+                return self::createJwks(self::JWT_PUBLIC);
+            });
+
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $entityRepository,
             new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
-            $this->createMock(SalesChannelContextService::class),
+            $salesChannelMock,
+            $jwksProvider,
         );
 
-        $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT'));
-
         $resolver->resolve($request);
+
+        static::assertSame($salesChannelContext, $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT));
     }
 
     public function testResolveWithExpiredToken(): void
@@ -241,7 +283,7 @@ mwIDAQAB
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
 
-        $resolver = $this->getContainer()->get(AgentRequestContextResolver::class);
+        $resolver = $this->createResolver();
         $resolver->resolve($request);
     }
 
@@ -258,6 +300,7 @@ mwIDAQAB
             new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
+            $this->createJwksProvider(),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -288,7 +331,7 @@ mwIDAQAB
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
 
-        $resolver = $this->getContainer()->get(AgentRequestContextResolver::class);
+        $resolver = $this->createResolver();
 
         $resolver->resolve($request);
     }
@@ -328,7 +371,7 @@ mwIDAQAB
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
-            ->expects($this->once())
+            ->expects($this->never())
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
@@ -338,6 +381,7 @@ mwIDAQAB
             new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
+            $this->createJwksProvider(),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -391,14 +435,14 @@ mwIDAQAB
 
         $repo = $this->createMock(EntityRepository::class);
         $repo
-            ->expects($this->once())
+            ->expects($this->never())
             ->method('search')
             ->with(static::isInstanceOf(Criteria::class), $expectedContext)
             ->willReturn($productExportResult);
 
         $contextService = $this->createMock(SalesChannelContextService::class);
         $contextService
-            ->expects($this->once())
+            ->expects($this->never())
             ->method('get')
             ->willReturn(
                 Generator::generateSalesChannelContext($expectedContext)
@@ -410,6 +454,7 @@ mwIDAQAB
             new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $contextService,
+            $this->createJwksProvider(),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -453,6 +498,7 @@ mwIDAQAB
             new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $salesChannelMock,
+            $this->createJwksProvider(),
         );
 
         $resolver->resolve($request);
@@ -479,7 +525,9 @@ mwIDAQAB
         );
 
         $builder = $configuration->builder();
-        $builder = $builder->issuedBy(AgentRequestContextResolver::JWT_EXPECTED_ISSUER);
+        $builder = $builder
+            ->issuedBy(AgentRequestContextResolver::JWT_EXPECTED_ISSUER)
+            ->withHeader('kid', self::JWT_KEY_ID);
 
         if ($paypalMerchantId !== null) {
             $builder = $builder->withClaim('external_id', $paypalMerchantId);
@@ -516,6 +564,62 @@ mwIDAQAB
             new Criteria(),
             Context::createDefaultContext(),
         );
+    }
+
+    private function createResolver(): AgentRequestContextResolver
+    {
+        $validator = $this->getContainer()->get(DataValidator::class);
+        static::assertInstanceOf(DataValidator::class, $validator);
+
+        $productExportRepository = $this->getContainer()->get('product_export.repository');
+        static::assertInstanceOf(EntityRepository::class, $productExportRepository);
+
+        $contextService = $this->getContainer()->get(SalesChannelContextService::class);
+        static::assertInstanceOf(SalesChannelContextService::class, $contextService);
+
+        return new AgentRequestContextResolver(
+            $validator,
+            $productExportRepository,
+            new JWTDecoder(),
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $contextService,
+            $this->createJwksProvider(),
+        );
+    }
+
+    private function createJwksProvider(?JWKCollection $jwks = null): AbstractPayPalJwksProvider
+    {
+        $provider = $this->createMock(AbstractPayPalJwksProvider::class);
+        $provider
+            ->method('getJwks')
+            ->willReturn($jwks ?? self::createJwks(self::JWT_PUBLIC));
+
+        return $provider;
+    }
+
+    /**
+     * @param non-empty-string $publicKey
+     * @param non-empty-string $keyId
+     */
+    private static function createJwks(string $publicKey, string $keyId = self::JWT_KEY_ID): JWKCollection
+    {
+        $loadedPublicKey = PublicKeyLoader::load($publicKey);
+        $jwks = $loadedPublicKey->toString('JWK');
+        static::assertIsString($jwks);
+
+        $decoded = \json_decode($jwks, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertIsArray($decoded);
+        static::assertArrayHasKey('keys', $decoded);
+        static::assertIsArray($decoded['keys']);
+        static::assertArrayHasKey(0, $decoded['keys']);
+        static::assertIsArray($decoded['keys'][0]);
+
+        $decoded['keys'][0]['kid'] = $keyId;
+        $decoded['keys'][0]['use'] = 'sig';
+        $decoded['keys'][0]['alg'] = 'RS256';
+
+        /** @var array{keys: array<int, JSONWebKey>} $decoded */
+        return JWKCollection::fromArray($decoded);
     }
 
     /**

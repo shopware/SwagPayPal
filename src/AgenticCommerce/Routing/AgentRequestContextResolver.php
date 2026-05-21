@@ -7,17 +7,15 @@
 
 namespace Swag\PayPal\AgenticCommerce\Routing;
 
-use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
-use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 use Shopware\Core\Content\ProductExport\ProductExportCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\JWT\Constraints\HasValidRSAJWKSignature;
 use Shopware\Core\Framework\JWT\JWTDecoder;
 use Shopware\Core\Framework\JWT\JWTException;
 use Shopware\Core\Framework\Log\Package;
@@ -33,6 +31,7 @@ use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Swag\PayPal\AgenticCommerce\Exception\AgentException;
+use Swag\PayPal\AgenticCommerce\Security\AbstractPayPalJwksProvider;
 use Swag\PayPal\AgenticCommerce\Validation\CartTokenValidator;
 use Swag\PayPal\AgenticCommerce\Validation\Constraint\PayPalExternalId;
 use Swag\PayPal\AgenticCommerce\Validation\HasScopes;
@@ -56,22 +55,6 @@ class AgentRequestContextResolver implements RequestContextResolverInterface
     public const JWT_EXPECTED_ISSUER = 'paypal.com';
 
     /**
-     * This is a hardcoded public key for PayPal JWT validation
-     * We use this as long as PayPal does not provide a way to retrieve the public key dynamically
-     *
-     * @var non-empty-string
-     */
-    public static string $PAYPAL_JWT = '-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvv7Pi1nWWrJj4n5+6gX9
-B7BQpctaPEg9VdVK1kzc9xBNwZobeWEgEmiUGtkrn8S5R6Q4NmB4hnb8F5jeCX5O
-kyA49mgzw4wNXUPGTGMY5Eoxt9zu1Heaivkljh4+wN6d01oIFkHT6E7VjEJOG2RA
-49t7fgQ1phJIUK39B0RAXIG2pYicbujeiiJ12iQipMjY/TVD0KZgUc2Vj2apk7Dv
-1YBqFG+HlSG5hWu880IzGQE9Pds5qekIawJJyed08otq29hDHlFd28B0fFhdzcu8
-cN83NxddXBlh77b8+a7gaWC5/Iw45THRpIsiG41uX0r0INEDcnR3qCUkz6m9LOVW
-kQIDAQAB
------END PUBLIC KEY-----';
-
-    /**
      * @internal
      *
      * @param EntityRepository<ProductExportCollection> $productExportRepository
@@ -82,6 +65,7 @@ kQIDAQAB
         private readonly JWTDecoder $JWTDecoder,
         private readonly RouteScopeRegistry $routeScopeRegistry,
         private readonly SalesChannelContextServiceInterface $contextService,
+        private readonly AbstractPayPalJwksProvider $jwksProvider,
     ) {
     }
 
@@ -105,6 +89,16 @@ kQIDAQAB
 
         $source = $this->resolveContextSource($token);
         $context = new Context($source);
+
+        try {
+            $this->validateJWT($request, $token);
+        } catch (RequiredConstraintsViolated $e) {
+            /** @deprecated tag:v11.0.0 - Remove RequiredConstraintViolated from caught Exceptions, it is a fix for 6.7.0.0 specifically */
+            // this is a workaround for the JWTDecoder which does not catch RequiredConstraintsViolated exceptions in 6.7.0.0
+            throw AgentException::unauthorized('Invalid JWT token', $e);
+        } catch (JWTException $e) {
+            throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
+        }
 
         $criteria = new Criteria();
         $criteria->addFilter(
@@ -130,16 +124,6 @@ kQIDAQAB
 
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $context);
         $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, $salesChannelContext);
-
-        try {
-            $this->validateJWT($request, $token);
-        } catch (RequiredConstraintsViolated $e) {
-            /** @deprecated tag:v11.0.0 - Remove RequiredConstraintViolated from caught Exceptions, it is a fix for 6.7.0.0 specifically */
-            // this is a workaround for the JWTDecoder which does not catch RequiredConstraintsViolated exceptions in 6.7.0.0
-            throw AgentException::unauthorized('Invalid JWT token', $e);
-        } catch (JWTException $e) {
-            throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
-        }
     }
 
     protected function getScopeRegistry(): RouteScopeRegistry
@@ -149,13 +133,26 @@ kQIDAQAB
 
     private function validateJWT(Request $request, string $jwt): void
     {
+        try {
+            $this->validateJWTWithJwks($request, $jwt);
+        } catch (JWTException $e) {
+            if (!$this->shouldRefreshJwks($e)) {
+                throw $e;
+            }
+
+            $this->validateJWTWithJwks($request, $jwt, true);
+        }
+    }
+
+    private function validateJWTWithJwks(Request $request, string $jwt, bool $refreshJwks = false): void
+    {
         /** @var list<string> $scopes */
         $scopes = $request->attributes->get(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, []);
 
         $constraints = [
             new IssuedBy(self::JWT_EXPECTED_ISSUER),
             new LooseValidAt(new NativeClock()),
-            new SignedWith(new Sha256(), InMemory::plainText(self::$PAYPAL_JWT)),
+            new HasValidRSAJWKSignature($this->jwksProvider->getJwks($refreshJwks)),
         ];
 
         if ($scopes !== []) {
@@ -163,6 +160,13 @@ kQIDAQAB
         }
 
         $this->JWTDecoder->validate($jwt, ...$constraints);
+    }
+
+    private function shouldRefreshJwks(JWTException $exception): bool
+    {
+        return \str_contains($exception->getMessage(), 'Key ID')
+            || \str_contains($exception->getMessage(), 'signature')
+            || \str_contains($exception->getMessage(), 'Invalid JWK');
     }
 
     private function extractJwtFromAuthorizationHeader(string $authorization): string
