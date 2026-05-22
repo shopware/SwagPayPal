@@ -116,6 +116,9 @@ class PayLaterMethodDataTest extends TestCase
     {
         return [
             ['ZAR', 'ZA', 1000.00, false],
+            ['EUR', 'AT', 50.00, true],
+            ['EUR', 'AT', 0.50, false],
+            ['EUR', 'AT', 11000.00, false],
             ['EUR', 'DE', 50.00, true],
             ['EUR', 'DE', 0.50, false],
             ['EUR', 'DE', 11000.00, false],

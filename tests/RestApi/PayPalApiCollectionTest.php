@@ -79,26 +79,26 @@ class PayPalApiCollectionTest extends TestCase
     public function testMap(): void
     {
         $collection = new TestCollection();
-        $collection->map(function (): void {
+        $collection->map(static function (): void {
             static::fail('map should not be called for empty collection');
         });
 
         $collection->add((new Money())->assign(['value' => '1']));
         $collection->add((new Money())->assign(['value' => '2']));
-        $result = $collection->map(fn (Money $element) => $element->getValue() . '_test');
+        $result = $collection->map(static fn (Money $element) => $element->getValue() . '_test');
         static::assertEquals(['1_test', '2_test'], $result);
     }
 
     public function testFmap(): void
     {
         $collection = new TestCollection();
-        $collection->fmap(function (): void {
+        $collection->fmap(static function (): void {
             static::fail('fmap should not be called for empty collection');
         });
 
         $collection->add((new Money())->assign(['value' => '1']));
         $collection->add((new Money())->assign(['value' => '2']));
-        $filtered = $collection->fmap(fn (Money $element) => $element->getValue() === '1' ? false : $element->getValue() . '_test');
+        $filtered = $collection->fmap(static fn (Money $element) => $element->getValue() === '1' ? false : $element->getValue() . '_test');
         static::assertEquals([1 => '2_test'], $filtered);
     }
 
@@ -106,7 +106,7 @@ class PayPalApiCollectionTest extends TestCase
     {
         $collection = new TestCollection();
 
-        $collection->sort(function (): void {
+        $collection->sort(static function (): void {
             static::fail('fmap should not be called for empty collection');
         });
 
@@ -114,7 +114,7 @@ class PayPalApiCollectionTest extends TestCase
         $collection->add((new Money())->assign(['value' => '1']));
         $collection->add((new Money())->assign(['value' => '2']));
 
-        $collection->sort(fn (Money $a, Money $b) => \strcmp($a->getValue(), $b->getValue()));
+        $collection->sort(static fn (Money $a, Money $b) => \strcmp($a->getValue(), $b->getValue()));
 
         static::assertEquals([1, 2, 0], $collection->getKeys());
     }
@@ -122,7 +122,7 @@ class PayPalApiCollectionTest extends TestCase
     public function testFilter(): void
     {
         $collection = new TestCollection();
-        $collection->filter(function (): void {
+        $collection->filter(static function (): void {
             static::fail('filter should not be called for empty collection');
         });
 
@@ -130,7 +130,7 @@ class PayPalApiCollectionTest extends TestCase
         $collection->add((new Money())->assign(['value' => '2']));
         $collection->add((new Money())->assign(['value' => '3']));
 
-        $filtered = $collection->filter(fn (Money $element) => $element->getValue() !== '2');
+        $filtered = $collection->filter(static fn (Money $element) => $element->getValue() !== '2');
         static::assertEquals([0, 2], $filtered->getKeys());
     }
 

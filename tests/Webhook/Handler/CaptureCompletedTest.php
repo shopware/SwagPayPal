@@ -52,6 +52,11 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
         $this->assertInvokeWithoutCustomId(Webhook::RESOURCE_TYPE_CAPTURE);
     }
 
+    public function testInvokeWithoutOrderTransactionIdInCustomId(): void
+    {
+        $this->assertInvokeWithoutOrderTransactionIdInCustomId(Webhook::RESOURCE_TYPE_CAPTURE);
+    }
+
     public function testInvokeWithoutTransaction(): void
     {
         $orderTransactionId = Uuid::randomHex();

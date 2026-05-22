@@ -397,6 +397,10 @@ class GuzzleClientMock implements ClientInterface
             throw new \RuntimeException('No fixture defined for POST ' . $resourceUri);
         }
 
+        if ($data) {
+            $this->data = \json_decode(\json_encode($data, \JSON_THROW_ON_ERROR), true, \JSON_THROW_ON_ERROR);
+        }
+
         return $this->ensureValidJson($response);
     }
 

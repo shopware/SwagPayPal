@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Shipping\Cart\Error\ShippingMethodBlockedError;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -22,6 +21,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Checkout\Shipping\BlockedShippingMethodSwitcher;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
@@ -43,6 +43,7 @@ class ExpressShippingCallbackService
         private readonly ShippingOptionsProvider $shippingOptionsProvider,
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        private readonly BlockedShippingMethodSwitcher $blockedShippingMethodSwitcher,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -55,22 +56,37 @@ class ExpressShippingCallbackService
             $salesChannelContext = $this->switchSalesChannelContext($callback, $salesChannelContext);
 
             $this->logger->debug('Shipping callback: recalculating cart with new context');
-            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, false);
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, false, true);
         } else {
             $this->logger->debug('Shipping callback: use existing cart');
-            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
         }
 
-        $order = $this->orderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
-        $order->setId($callback->getId());
-        $order->getPurchaseUnits()->first()?->setReferenceId((string) $callback->getPurchaseUnits()->first()?->getReferenceId());
-        $order->getPurchaseUnits()->first()?->setShippingOptions($this->shippingOptionsProvider->getShippingOptions($cart, $salesChannelContext));
+        $replacement = $this->blockedShippingMethodSwitcher->switch($cart->getErrors(), $salesChannelContext);
+        if ($replacement->getId() !== $salesChannelContext->getShippingMethod()->getId()) {
+            $this->logger->debug('Shipping callback: selected shipping method blocked, switching to alternative', ['shippingMethodId' => $replacement->getId()]);
+            $salesChannelContext = clone $salesChannelContext;
+            $salesChannelContext->assign(['shippingMethod' => $replacement]);
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, false, true);
+        }
 
-        if ((int) $order->getPurchaseUnits()->first()?->getShippingOptions()?->count() === 0) {
+        $shippingOptions = $this->shippingOptionsProvider->getShippingOptions($cart, $salesChannelContext);
+
+        $fullOrder = $this->orderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
+        $order = new Order();
+        $order->unset('intent');
+        $order->setId($callback->getId());
+        $order->setPurchaseUnits($fullOrder->getPurchaseUnits());
+        $order->getPurchaseUnits()->first()?->setReferenceId((string) $callback->getPurchaseUnits()->first()?->getReferenceId());
+        $order->getPurchaseUnits()->first()?->setShippingOptions($shippingOptions);
+
+        if ($shippingOptions->count() === 0) {
+            $this->logger->debug('Shipping callback: no shipping methods available', ['order' => $order]);
             throw ExpressShippingCallbackException::addressError($callback);
         }
 
         if ($error = $cart->getErrors()->filterInstance(ShippingMethodBlockedError::class)->first()) {
+            $this->logger->debug('Shipping callback: selected shipping method blocked', ['order' => $order]);
             /** @var ShippingMethodBlockedError $error */
             throw ExpressShippingCallbackException::methodUnavailable($callback, $error);
         }
@@ -111,6 +127,7 @@ class ExpressShippingCallbackService
 
         $country = $this->countryRepository->search($criteria, $salesChannelContext)->getEntities()->first();
         if (!$country) {
+            $this->logger->debug('Shipping callback: country not available');
             throw ExpressShippingCallbackException::countryError($callback);
         }
 

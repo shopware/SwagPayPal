@@ -43,7 +43,7 @@ $bootstrapper = $bootstrapper
     ->addActivePlugins(...$plugins);
 
 $pluginLoader = new StaticKernelPluginLoader($bootstrapper->getClassLoader(), plugins: \array_map(
-    function (string $plugin) {
+    static function (string $plugin) {
         /** @var array{autoload: array{}, version: string, extra: array{}} $composer */
         $composer = \json_decode(\file_get_contents(getPluginPath($plugin) . '/composer.json') ?: '', true, flags: \JSON_THROW_ON_ERROR);
 

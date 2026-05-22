@@ -1,6 +1,23 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 9.12.2
+- Behebt ein Problem, bei dem der Express Checkout fehlschlug, wenn der Käufer das Lieferland zu einem mit regelbasierten Versandarten änderte (shopware/shopware#16295).
+
+# 9.12.1
+- Behebt ein Problem, bei dem abgelehnte PayPal-Zahlungen in der Administration weiterhin als erstattungsfähig angezeigt wurden (shopware/SwagPayPal#547)
+- Behebt ein Problem, bei dem die PayPal-Bestellerstellung für Abonnements nicht den Subscription-Cart-Service verwendet hat und ACDC für Abonnements ohne Wallet-Vaulting verfügbar war
+- Behebt ein Problem, bei dem die Antwort des Versand-Callbacks im Express Checkout nicht unterstützte Bestellfelder enthielt
+
+# 9.12.0
+- Fügt eine Einstellung hinzu, um den Versand-Callback für Express-Checkouts zu deaktivieren
+- Behebt ein Problem, bei dem der Versand-Callback die Offenlegung der Store-API erforderte
+- Behebt ein Problem, bei dem die PayPal-Bestellerstellung und Express-Checkout-Flows nicht den besteuerten Warenkorb mit Tax-Provider-Verarbeitung verwendet haben
+- Behebt ein Problem, bei dem PayPal-Webhooks mit einem `custom_id`-Payload ohne `orderTransactionId` eine Warnung wegen eines undefinierten Array-Keys ausloesen konnten
+- Behebt ein Problem, bei dem Warenkorbe nicht korrekt als kostenlos erkannt wurden, was zu Fehlern beim PayPal-Checkout führte (shopware/SwagPayPal#591)
+
+# 9.11.0
+- Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
+
+# 9.10.3
 - Behebt ein Problem, bei dem Ursachen für Validierungsfehler nicht korrekt protokolliert wurden
-- Behebt ein Problem, bei dem Rückerstattungen als Bestell-Editor möglich waren, obwohl der Rückerstattungs-Editor der Bestellung bevorzugt werden sollte (shopware/SwagPayPal#556)
 
 # 9.10.2
 - Behebt ein Problem, bei dem erforderliche Cookies nicht im Banner angezeigt wurden, obwohl PayPal-Skripte geladen wurden (shopware/SwagPayPal#506)

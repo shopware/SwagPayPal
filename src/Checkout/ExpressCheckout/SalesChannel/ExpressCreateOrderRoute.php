@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
@@ -68,9 +69,9 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
     {
         try {
             $this->logger->debug('Started');
-            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
 
-            if ($this->cartPriceService->isZeroValueCart($cart)) {
+            if ($this->cartPriceService->hasZeroPrice($cart, $salesChannelContext)) {
                 throw new OrderZeroValueException();
             }
 
@@ -83,10 +84,16 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
                 $experienceContext->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
 
                 // Configure shipping callback for dynamic price recalculation
-                if (!$this->systemConfigService->getBool(Settings::IS_LOCAL_ENVIRONMENT, $salesChannelContext->getSalesChannelId())) {
+                if (!$this->systemConfigService->getBool(Settings::IS_LOCAL_ENVIRONMENT, $salesChannelContext->getSalesChannelId()) && $this->systemConfigService->getBool(Settings::ECS_SHIPPING_CALLBACK_ENABLED, $salesChannelContext->getSalesChannelId())) {
+                    $isStorefront = \in_array(
+                        'storefront',
+                        $request->attributes->get(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, []),
+                        true,
+                    );
+
                     $callbackConfig = new OrderUpdateCallbackConfig();
                     $callbackUrl = $this->router->generate(
-                        'store-api.paypal.express.shipping_callback',
+                        $isStorefront ? 'frontend.paypal.express.shipping_callback' : 'store-api.paypal.express.shipping_callback',
                         ['salesChannelId' => $salesChannelContext->getSalesChannelId(), 'token' => $salesChannelContext->getToken()],
                         UrlGeneratorInterface::ABSOLUTE_URL,
                     );

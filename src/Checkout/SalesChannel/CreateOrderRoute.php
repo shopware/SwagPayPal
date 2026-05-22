@@ -57,6 +57,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         private readonly OrderResource $orderResource,
         private readonly LoggerInterface $logger,
         private readonly AbstractPaymentTransactionStructFactory $paymentTransactionStructFactory,
+        private readonly ?CartService $subscriptionCartService = null,
     ) {
     }
 
@@ -102,6 +103,8 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         try {
             $requestDataBag = new RequestDataBag($request->request->all());
             $requestDataBag->set(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE, true);
+            $requestDataBag->set('_subscriptionCart', $request->attributes->getBoolean('_subscriptionCart'));
+
             $this->logger->debug('Started', ['request' => $requestDataBag->all()]);
             $customer = $salesChannelContext->getCustomer();
             if ($customer === null) {
@@ -138,7 +141,17 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         SalesChannelContext $salesChannelContext,
         RequestDataBag $requestDataBag,
     ): Order {
-        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+        if ($requestDataBag->getBoolean('_subscriptionCart')) {
+            if ($this->subscriptionCartService === null) {
+                throw new \RuntimeException('Subscription cart service is not available');
+            }
+
+            $cartService = $this->subscriptionCartService;
+        } else {
+            $cartService = $this->cartService;
+        }
+
+        $cart = $cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
 
         return $orderBuilder->getOrderFromCart($cart, $salesChannelContext, $requestDataBag);
     }

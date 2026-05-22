@@ -52,6 +52,7 @@
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+            <argument type="service" id="Shopware\Storefront\Checkout\Shipping\BlockedShippingMethodSwitcher"/>
             <argument type="service" id="monolog.logger.paypal"/>
         </service>
 

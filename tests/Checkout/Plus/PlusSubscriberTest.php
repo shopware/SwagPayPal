@@ -431,7 +431,7 @@ class PlusSubscriberTest extends TestCase
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
         $translator = $this->createMock(TranslatorInterface::class);
-        $translator->method('trans')->willReturnCallback(function (string $key): string {
+        $translator->method('trans')->willReturnCallback(static function (string $key): string {
             if ($key === 'paypal.plus.paymentNameOverwrite') {
                 return self::NEW_PAYMENT_NAME;
             }
