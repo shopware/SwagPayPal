@@ -49,7 +49,7 @@ class ProductFilterSubscriber implements EventSubscriberInterface
             return;
         }
 
-        // Product Export for agent commerce should have net prices
+        // Product Export for agentic commerce should have net prices
         $event->getSalesChannelContext()->setTaxState(CartPrice::TAX_STATE_NET);
     }
 }

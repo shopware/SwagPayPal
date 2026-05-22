@@ -179,7 +179,7 @@ class HoneyWebhookServiceTest extends TestCase
         $loggerMock
             ->expects(static::once())
             ->method('log')
-            ->with('info', 'PayPal agent commerce webhook uninstall', [
+            ->with('info', 'PayPal agentic commerce webhook uninstall', [
                 'success' => true,
                 'message' => 'Merchant onboarded successfully',
                 'error' => null,
@@ -550,7 +550,7 @@ class HoneyWebhookServiceTest extends TestCase
         $loggerMock
             ->expects(static::once())
             ->method('log')
-            ->with('error', 'PayPal agent commerce webhook uninstall', [
+            ->with('error', 'PayPal agentic commerce webhook uninstall', [
                 'success' => false,
                 'message' => 'JWT signature verification failed',
                 'error' => 'INVALID_JWT',
