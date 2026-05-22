@@ -40,7 +40,7 @@ class AgentContextResolverListenerTest extends TestCase
     public function testResolveContext(): void
     {
         $request = new Request();
-        $event = new ControllerEvent($this->createMock(HttpKernelInterface::class), function (): void {}, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event = new ControllerEvent($this->createMock(HttpKernelInterface::class), static function (): void {}, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $resolver = $this->createMock(RequestContextResolverInterface::class);
         $resolver
