@@ -75,7 +75,7 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.crossBorderMessagingEnabled'?: boolean;
     'SwagPayPal.settings.crossBorderBuyerCountry'?: typeof COUNTRY_OVERRIDES[number] | null;
 
-    'SwagPayPal.settings.agentCommerceOnboarded'?: string;
+    'SwagPayPal.settings.agenticCommerceOnboarded'?: string;
     'SwagPayPal.settings.isLocalEnvironment'?: boolean;
 };
 
