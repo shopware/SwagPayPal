@@ -87,19 +87,19 @@
         "e-invoice": {
             "paymentMethod": "Zahlungsart: \"%paymentMethod%\"",
             "orderId": "Auftragsnummer: %orderId%"
-        }
-    },
-    "agenticCommerce": {
-        "validationIssue": {
-            "userMessage": {
-                "outOfStock": "{0} Das Produkt \"%name%\" ist nicht mehr auf Lager | [1,Inf[ Das Produkt \"%name%\" ist nur noch %count% mal auf Lager",
-                "priceChanged": "Produktpreis von \"%name%\" hat sich von %oldPrice% zu %newPrice% geändert"
-            },
-            "resolutionOption": {
-                "removeLabel": "Aus Warenkorb entfernen",
-                "acceptLabel": "Fortfahren mit %option%",
-                "waitRestockLabel": "Informieren, wenn \"%name%\" wieder vorrätig ist",
-                "estimatedTime": "%days% Tage"
+        },
+        "agenticCommerce": {
+            "validationIssue": {
+                "userMessage": {
+                    "outOfStock": "{0} Das Produkt \"%name%\" ist nicht mehr auf Lager | [1,Inf[ Das Produkt \"%name%\" ist nur noch %count% mal auf Lager",
+                    "priceChanged": "Produktpreis von \"%name%\" hat sich von %oldPrice% zu %newPrice% geändert"
+                },
+                "resolutionOption": {
+                    "removeLabel": "Aus Warenkorb entfernen",
+                    "acceptLabel": "Fortfahren mit %option%",
+                    "waitRestockLabel": "Informieren, wenn \"%name%\" wieder vorrätig ist",
+                    "estimatedTime": "%days% Tage"
+                }
             }
         }
     }
