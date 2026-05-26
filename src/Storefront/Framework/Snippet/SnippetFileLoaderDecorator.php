@@ -12,6 +12,7 @@ use Shopware\Core\System\Snippet\Files\AbstractSnippetFile;
 use Shopware\Core\System\Snippet\Files\GenericSnippetFile;
 use Shopware\Core\System\Snippet\Files\SnippetFileCollection;
 use Shopware\Core\System\Snippet\Files\SnippetFileLoaderInterface;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @deprecated tag:v11.0.0 - Will be removed without replacement if minimum version is >=6.7.3.0
@@ -79,11 +80,15 @@ class SnippetFileLoaderDecorator implements SnippetFileLoaderInterface
     private function getBundledPayPalSnippetFiles(): array
     {
         $snippetFiles = [];
-        $paths = \glob($this->getSnippetDirectory() . '/paypal.*.json') ?: [];
+        $finder = new Finder();
+        $finder->files()
+            ->in($this->getSnippetDirectory())
+            ->name('paypal.*.json')
+            ->depth('== 0')
+            ->sortByName();
 
-        \sort($paths);
-
-        foreach ($paths as $path) {
+        foreach ($finder as $file) {
+            $path = $file->getPathname();
             $name = \basename($path, '.json');
             $nameParts = \explode('.', $name);
 
