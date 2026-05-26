@@ -17,7 +17,6 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\ProductExport\ProductExportCollection;
 use Shopware\Core\Content\ProductExport\ProductExportDefinition;
 use Shopware\Core\Content\ProductExport\ProductExportEntity;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -28,10 +27,6 @@ use Shopware\Core\Framework\JWT\Struct\JWKStruct;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RouteScope;
 use Shopware\Core\Framework\Routing\RouteScopeRegistry;
-use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataValidator;
 use Shopware\Core\PlatformRequest;
@@ -43,8 +38,8 @@ use Swag\PayPal\AgenticCommerce\Routing\AgentRequestContextResolver;
 use Swag\PayPal\AgenticCommerce\Routing\AgentRouteScope;
 use Swag\PayPal\AgenticCommerce\Routing\AgentSource;
 use Swag\PayPal\AgenticCommerce\Security\AbstractPayPalJwksProvider;
-use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Validation;
 
 /**
  * @internal
@@ -55,11 +50,6 @@ use Symfony\Component\HttpFoundation\Request;
 #[CoversClass(AgentRequestContextResolver::class)]
 class AgentRequestContextResolverTest extends TestCase
 {
-    use BasicTestDataBehaviour;
-    use DatabaseTransactionBehaviour;
-    use KernelTestBehaviour;
-    use SalesChannelApiTestBehaviour;
-
     private const JWT_PUBLIC = '-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu1SU1LfVLPHCozMxH2Mo
 4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0/IzW7yWR7QkrmBL7jTKEn5u
@@ -263,8 +253,6 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
 
     public function testResolveWithExpiredToken(): void
     {
-        $salesChannelId = $this->createSalesChannelWithExport();
-
         $iat = new \DateTimeImmutable('-2 hours');
         $exp = new \DateTimeImmutable('-1 hour');
 
@@ -273,7 +261,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             $iat,
             $exp,
             ['cart', 'checkout'],
-            $salesChannelId,
+            Uuid::randomHex(),
         );
 
         $request = new Request();
@@ -314,8 +302,6 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
     #[DataProvider('malformedJWTProvider')]
     public function testResolveWithMalformedJWTClaims(array $claims): void
     {
-        $this->createSalesChannelWithExport();
-
         $token = self::encodeJWT(
             $claims['paypalMerchantId'] ?? null,
             $claims['iat'] ?? null,
@@ -554,6 +540,9 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             ->toString();
     }
 
+    /**
+     * @return EntitySearchResult<ProductExportCollection>
+     */
     private static function createSearchResult(?ProductExportEntity $productExport): EntitySearchResult
     {
         return new EntitySearchResult(
@@ -568,21 +557,12 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
 
     private function createResolver(): AgentRequestContextResolver
     {
-        $validator = $this->getContainer()->get(DataValidator::class);
-        static::assertInstanceOf(DataValidator::class, $validator);
-
-        $productExportRepository = $this->getContainer()->get('product_export.repository');
-        static::assertInstanceOf(EntityRepository::class, $productExportRepository);
-
-        $contextService = $this->getContainer()->get(SalesChannelContextService::class);
-        static::assertInstanceOf(SalesChannelContextService::class, $contextService);
-
         return new AgentRequestContextResolver(
-            $validator,
-            $productExportRepository,
+            new DataValidator(Validation::createValidator()),
+            $this->createMock(EntityRepository::class),
             new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
-            $contextService,
+            $this->createMock(SalesChannelContextService::class),
             $this->createJwksProvider(),
         );
     }
@@ -620,50 +600,5 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
 
         /** @var array{keys: array<int, JSONWebKey>} $decoded */
         return JWKCollection::fromArray($decoded);
-    }
-
-    /**
-     * @return non-empty-string
-     */
-    private function createSalesChannelWithExport(): string
-    {
-        $salesChannelId = Uuid::randomHex();
-        $salesChannelDomainId = Uuid::randomHex();
-
-        $this->createSalesChannel([
-            'id' => $salesChannelId,
-            'typeId' => SwagPayPal::SALES_CHANNEL_TYPE_AGENTIC_COMMERCE,
-            'active' => true,
-            'domains' => [
-                [
-                    'id' => $salesChannelDomainId,
-                    'languageId' => Defaults::LANGUAGE_SYSTEM,
-                    'currencyId' => Defaults::CURRENCY,
-                    'snippetSetId' => $this->getSnippetSetIdForLocale('en-GB'),
-                    'url' => 'http://hatoken.de',
-                ],
-            ],
-            'productExports' => [
-                [
-                    'productStream' => [
-                        'name' => 'Test Product Stream',
-                        'active' => true,
-                        'type' => '{}',
-                    ],
-                    'generateByCronjob' => false,
-                    'salesChannelDomainId' => $salesChannelDomainId,
-                    'salesChannelId' => $salesChannelId,
-                    'storefrontSalesChannelId' => $salesChannelId,
-                    'currencyId' => $this->getCurrencyIdByIso(),
-                    'fileName' => 'foo',
-                    'accessKey' => '123',
-                    'encoding' => 'UTF-8',
-                    'fileFormat' => 'csv',
-                    'interval' => 0,
-                ],
-            ],
-        ]);
-
-        return $salesChannelId;
     }
 }
