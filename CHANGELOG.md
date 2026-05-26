@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.6.2
 - Fixes an issue, where bundled storefront snippets were missing when translations for other locales were installed (shopware/SwagPayPal#662)
+- Fixes an issue, where the Express Checkout failed when the buyer changed the delivery country to one with rule-restricted shipping methods (shopware/shopware#16295).
 
 # 10.6.1
 - Fixes an issue, where declined PayPal payments were still shown as refundable in the Administration (shopware/SwagPayPal#547)
