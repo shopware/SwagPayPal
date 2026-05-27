@@ -10,7 +10,6 @@ namespace Swag\PayPal\Tests\AgenticCommerce\Routing;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
-use phpseclib3\Crypt\PublicKeyLoader;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -90,6 +89,8 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
 -----END PRIVATE KEY-----';
 
     private const JWT_KEY_ID = 'paypal-test-key';
+    private const JWT_PUBLIC_N = 'u1SU1LfVLPHCozMxH2Mo4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0_IzW7yWR7QkrmBL7jTKEn5u-qKhbwKfBstIs-bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyehkd3qqGElvW_VDL5AaWTg0nLVkjRo9z-40RQzuVaE8AkAFmxZzow3x-VJYKdjykkJ0iT9wCS0DRTXu269V264Vf_3jvredZiKRkgwlL9xNAwxXFg0x_XFw005UWVRIkdgcKWTjpBP2dPwVZ4WWC-9aGVd-Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbcmw';
+    private const JWT_PUBLIC_E = 'AQAB';
 
     public function testResolveWithContextIsSkipped(): void
     {
@@ -187,7 +188,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
-            $this->createJwksProvider(self::createJwks(self::JWT_PUBLIC, 'wrong-key')),
+            $this->createJwksProvider(self::createJwks('wrong-key')),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -231,10 +232,10 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             ->method('getJwks')
             ->willReturnCallback(static function (bool $refresh = false): JWKCollection {
                 if (!$refresh) {
-                    return self::createJwks(self::JWT_PUBLIC, 'stale-key');
+                    return self::createJwks('stale-key');
                 }
 
-                return self::createJwks(self::JWT_PUBLIC);
+                return self::createJwks();
             });
 
         $resolver = new AgentRequestContextResolver(
@@ -572,33 +573,30 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $provider = $this->createMock(AbstractPayPalJwksProvider::class);
         $provider
             ->method('getJwks')
-            ->willReturn($jwks ?? self::createJwks(self::JWT_PUBLIC));
+            ->willReturn($jwks ?? self::createJwks());
 
         return $provider;
     }
 
     /**
-     * @param non-empty-string $publicKey
      * @param non-empty-string $keyId
      */
-    private static function createJwks(string $publicKey, string $keyId = self::JWT_KEY_ID): JWKCollection
+    private static function createJwks(string $keyId = self::JWT_KEY_ID): JWKCollection
     {
-        $loadedPublicKey = PublicKeyLoader::load($publicKey);
-        $jwks = $loadedPublicKey->toString('JWK');
-        static::assertIsString($jwks);
+        /** @var array{keys: array<int, JSONWebKey>} $jwks */
+        $jwks = [
+            'keys' => [
+                [
+                    'kty' => 'RSA',
+                    'kid' => $keyId,
+                    'use' => 'sig',
+                    'alg' => 'RS256',
+                    'n' => self::JWT_PUBLIC_N,
+                    'e' => self::JWT_PUBLIC_E,
+                ],
+            ],
+        ];
 
-        $decoded = \json_decode($jwks, true, 512, \JSON_THROW_ON_ERROR);
-        static::assertIsArray($decoded);
-        static::assertArrayHasKey('keys', $decoded);
-        static::assertIsArray($decoded['keys']);
-        static::assertArrayHasKey(0, $decoded['keys']);
-        static::assertIsArray($decoded['keys'][0]);
-
-        $decoded['keys'][0]['kid'] = $keyId;
-        $decoded['keys'][0]['use'] = 'sig';
-        $decoded['keys'][0]['alg'] = 'RS256';
-
-        /** @var array{keys: array<int, JSONWebKey>} $decoded */
-        return JWKCollection::fromArray($decoded);
+        return JWKCollection::fromArray($jwks);
     }
 }
