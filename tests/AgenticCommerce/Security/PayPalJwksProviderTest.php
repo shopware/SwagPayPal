@@ -93,8 +93,7 @@ class PayPalJwksProviderTest extends TestCase
             new ArrayAdapter(),
         );
 
-        $this->expectException(JWTException::class);
-        $this->expectExceptionMessage('Invalid JWK: PayPal JWKS response is invalid JSON');
+        $this->expectExceptionObject(JWTException::invalidJwk('PayPal JWKS response is invalid JSON'));
 
         $provider->getJwks();
     }
@@ -106,8 +105,7 @@ class PayPalJwksProviderTest extends TestCase
             new ArrayAdapter(),
         );
 
-        $this->expectException(JWTException::class);
-        $this->expectExceptionMessage('Invalid JWK: Could not fetch PayPal JWKS. Status code: 500');
+        $this->expectExceptionObject(JWTException::invalidJwk('Could not fetch PayPal JWKS. Status code: 500'));
 
         $provider->getJwks();
     }
