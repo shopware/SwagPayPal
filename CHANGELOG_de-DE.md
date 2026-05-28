@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem der Checkout still fehlschlug, wenn ein Käufer nach Ablauf der PayPal-Order-Lebensdauer (~3h) zurückkehrte. Die Transaktion wird nun als abgebrochen markiert, sodass der Bezahlvorgang über die Edit-Order-Seite erneut gestartet werden kann.
+
 # 10.6.2
 - Behebt ein Problem, bei dem der Express Checkout fehlschlug, wenn der Käufer das Lieferland zu einem mit regelbasierten Versandarten änderte (shopware/shopware#16295).
 

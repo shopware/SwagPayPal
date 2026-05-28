@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where the checkout silently failed when a buyer returned after the PayPal Order lifetime (~3h) had elapsed. The transaction is now routed to the canceled state so the buyer can retry the payment from the edit-order page.
+
 # 10.6.2
 - Fixes an issue, where the Express Checkout failed when the buyer changed the delivery country to one with rule-restricted shipping methods (shopware/shopware#16295).
 
