@@ -71,6 +71,7 @@ class PayPalPaymentHandlerTest extends TestCase
     public const PAYPAL_PATCH_THROWS_EXCEPTION = 'invalidId';
     public const PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER = 'paypalOrderIdDuplicateOrderNumber';
     public const PAYPAL_ORDER_ID_INSTRUMENT_DECLINED = 'paypalOrderIdInstrumentDeclined';
+    public const PAYPAL_ORDER_ID_EXPIRED_SESSION = 'paypalOrderIdExpiredSession';
     private const TEST_CUSTOMER_STREET = 'Street 1';
     private const TEST_CUSTOMER_FIRST_NAME = 'FirstName';
     private const TEST_CUSTOMER_LAST_NAME = 'LastName';
@@ -236,6 +237,20 @@ class PayPalPaymentHandlerTest extends TestCase
         $this->expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. | [INSTRUMENT_DECLINED] The instrument presented was either declined by the processor or bank, or it can\'t be used for this payment.');
 
         $this->assertFinalizeRequest(self::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED);
+    }
+
+    public function testFinalizePayPalOrderExpiredSessionIsCustomerCanceled(): void
+    {
+        try {
+            $this->assertFinalizeRequest(self::PAYPAL_ORDER_ID_EXPIRED_SESSION);
+            self::fail('Expected PaymentException for expired PayPal session.');
+        } catch (PaymentException $thrown) {
+            self::assertSame(
+                PaymentException::PAYMENT_CUSTOMER_CANCELED_EXTERNAL,
+                $thrown->getErrorCode(),
+                'Expired PayPal sessions must be routed to the canceled state so the buyer can retry from edit-order.',
+            );
+        }
     }
 
     public function testFinalizePayPalOrderPatchOrderNumber(): void

@@ -32,6 +32,7 @@ use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -158,9 +159,23 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             );
         }
 
+        try {
+            $paypalOrder = $this->orderResource->get($paypalOrderId, $order->getSalesChannelId());
+        } catch (PayPalApiException $exception) {
+            if (!$exception->is(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND)) {
+                throw $exception;
+            }
+
+            throw PaymentException::customerCanceled(
+                $transaction->getOrderTransactionId(),
+                'PayPal order session expired (RESOURCE_NOT_FOUND).',
+                $exception,
+            );
+        }
+
         $this->executeOrder(
             $transaction,
-            $this->orderResource->get($paypalOrderId, $order->getSalesChannelId()),
+            $paypalOrder,
             $order,
             $orderTransaction,
             $context,

@@ -191,6 +191,10 @@ class MockRequestHandler
                 return $this->createResponse(SymResponse::HTTP_OK, $orderCapture);
             }
 
+            if (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_EXPIRED_SESSION) !== false) {
+                return $this->createClientExceptionResourceNotFound();
+            }
+
             if (\mb_substr($resourceUri, -17) === GetOrderAuthorization::ID) {
                 return $this->createResponse(SymResponse::HTTP_OK, GetOrderAuthorization::get());
             }
@@ -516,6 +520,21 @@ class MockRequestHandler
                 ],
             ],
             'message' => 'The requested action could not be completed, was semantically incorrect, or failed business validation.',
+        ]);
+    }
+
+    private function createClientExceptionResourceNotFound(): Response
+    {
+        return $this->createResponse(SymResponse::HTTP_NOT_FOUND, [
+            'name' => 'RESOURCE_NOT_FOUND',
+            'details' => [
+                [
+                    'location' => 'path',
+                    'issue' => 'INVALID_RESOURCE_ID',
+                    'description' => 'The specified resource does not exist.',
+                ],
+            ],
+            'message' => 'The specified resource does not exist.',
         ]);
     }
 
