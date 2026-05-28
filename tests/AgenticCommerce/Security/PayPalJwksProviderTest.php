@@ -98,6 +98,36 @@ class PayPalJwksProviderTest extends TestCase
         $provider->getJwks();
     }
 
+    public function testGetJwksDoesNotCacheInvalidJson(): void
+    {
+        $responses = [
+            'invalid-json',
+            self::JWKS,
+        ];
+
+        $provider = new PayPalJwksProvider(
+            new MockHttpClient(static function () use (&$responses): MockResponse {
+                $response = \array_shift($responses);
+                static::assertIsString($response);
+
+                return new MockResponse($response);
+            }),
+            new ArrayAdapter(),
+        );
+
+        try {
+            $provider->getJwks();
+            static::fail('Invalid JWKS response should throw.');
+        } catch (JWTException $e) {
+            static::assertSame(JWTException::invalidJwk('PayPal JWKS response is invalid JSON')->getMessage(), $e->getMessage());
+        }
+
+        $jwks = $provider->getJwks();
+
+        static::assertSame('5874bc103b80920f', \array_values($jwks->getElements())[0]->kid);
+        static::assertSame([], $responses);
+    }
+
     public function testGetJwksThrowsOnHttpError(): void
     {
         $provider = new PayPalJwksProvider(

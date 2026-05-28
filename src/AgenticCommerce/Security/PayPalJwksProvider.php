@@ -41,17 +41,17 @@ final class PayPalJwksProvider extends AbstractPayPalJwksProvider
             $this->cache->delete(self::CACHE_KEY);
         }
 
-        $jwks = $this->cache->get(self::CACHE_KEY, function (ItemInterface $item): string {
+        $jwks = $this->cache->get(self::CACHE_KEY, function (ItemInterface $item): JWKCollection {
             $item->expiresAfter(self::CACHE_TTL);
 
-            return $this->fetchJwks();
+            return $this->decodeJwks($this->fetchJwks());
         });
 
-        if (!\is_string($jwks)) {
+        if (!$jwks instanceof JWKCollection) {
             throw JWTException::invalidJwk('PayPal JWKS cache entry is invalid');
         }
 
-        return $this->decodeJwks($jwks);
+        return $jwks;
     }
 
     private function fetchJwks(): string
