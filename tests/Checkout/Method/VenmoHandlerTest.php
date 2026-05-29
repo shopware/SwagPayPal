@@ -205,8 +205,8 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
             ->willReturn(null);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The recurring capture process was interrupted due to the following error:
-Subscription not found');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The recurring capture process was interrupted due to the following error:
+Subscription not found', '/') . '\z/');
         $this->handler->recurring(
             $paymentTransaction,
             $salesChannelContext->getContext(),
