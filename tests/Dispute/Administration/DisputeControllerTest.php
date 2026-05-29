@@ -47,7 +47,7 @@ class DisputeControllerTest extends TestCase
     public function testDisputeListInvalidSalesChannelId(): void
     {
         $this->expectException(InvalidSalesChannelIdException::class);
-        $this->expectExceptionMessage('The provided salesChannelId "invalidSalesChannelId" is invalid.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The provided salesChannelId "invalidSalesChannelId" is invalid.', '/') . '\z/');
         $this->createController()->disputeList(new Request(['salesChannelId' => 'invalidSalesChannelId']));
     }
 
@@ -69,7 +69,7 @@ class DisputeControllerTest extends TestCase
     public function testDisputeListInvalidDisputeStateFilter(): void
     {
         $this->expectException(RoutingException::class);
-        $this->expectExceptionMessage('The parameter "disputeStateFilter" is invalid.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The parameter "disputeStateFilter" is invalid.', '/') . '\z/');
         $this->createController()->disputeList(new Request(['disputeStateFilter' => Item::DISPUTE_STATE_RESOLVED . ',InvalidState']));
     }
 

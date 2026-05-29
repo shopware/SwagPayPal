@@ -160,7 +160,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The transaction with id  is invalid or could not be found.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The transaction with id  is invalid or could not be found.', '/') . '\z/');
         $this->getBuilder()->getOrderFromCart($this->createCart('', false), $salesChannelContext, new RequestDataBag());
     }
 
@@ -169,7 +169,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
 
         $this->expectException(PayPalSettingsInvalidException::class);
-        $this->expectExceptionMessage('Required setting "intent" is missing or invalid');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Required setting "intent" is missing or invalid', '/') . '\z/');
         $this->systemConfig->set(Settings::INTENT, 'invalidIntent');
         $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, new RequestDataBag());
     }
@@ -179,7 +179,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
 
         $this->expectException(PayPalSettingsInvalidException::class);
-        $this->expectExceptionMessage('Required setting "landingPage" is missing or invalid');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Required setting "landingPage" is missing or invalid', '/') . '\z/');
         $this->systemConfig->set(Settings::LANDING_PAGE, 'invalidLandingPageType');
         $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, new RequestDataBag());
     }

@@ -115,6 +115,24 @@ parameters:
 			path: src/Setting/SettingsController.php
 
 		-
+			message: '#^Call to method switch\(\) of internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher from outside its root namespace Shopware\.$#'
+			identifier: method.internalClass
+			count: 1
+			path: src/Checkout/ExpressCheckout/Service/ExpressShippingCallbackService.php
+
+		-
+			message: '#^Parameter \$blockedShippingMethodSwitcher of method Swag\\PayPal\\Checkout\\ExpressCheckout\\Service\\ExpressShippingCallbackService\:\:__construct\(\) has typehint with internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher\.$#'
+			identifier: parameter.internalClass
+			count: 1
+			path: src/Checkout/ExpressCheckout/Service/ExpressShippingCallbackService.php
+
+		-
+			message: '#^Property \$blockedShippingMethodSwitcher references internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher in its type\.$#'
+			identifier: property.internalClass
+			count: 1
+			path: src/Checkout/ExpressCheckout/Service/ExpressShippingCallbackService.php
+
+		-
 			message: '#^Mixed variable in a `\$checkoutMethod\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
 			identifier: typePerfect.noMixedMethodCaller
 			count: 2
