@@ -15,7 +15,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogDefinition;
 /**
  * @internal
  *
- * @extends AbstractRepoMock<PosSalesChannelRunLogCollection>
+ * @extends AbstractRepoMock<\Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogEntity, PosSalesChannelRunLogCollection>
  */
 #[Package('checkout')]
 class RunLogRepoMock extends AbstractRepoMock
