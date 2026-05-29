@@ -1,10 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Fixes an issue, where cookies are added even though associated payment methods are not active (shopware/SwagPayPal#457)
-- Fixes an issue, where the state of a country was not correctly transmitted to PayPal (shopware/SwagPayPal#469)
-- Added Apple Pay support for third-party browsers (shopware/SwagPayPal#485)
-- Added setting to mark the shop as local environment to preventing connection issues when testing in a non-publicly accessible environment (shopware/SwagPayPal#463)
-- Updated and optimized payment method icons
-- Fixes an issue, where stale `PAYMENT.AUTHORIZATION.VOIDED` webhooks could cancel unrelated order transactions
+# 10.6.2
+- Fixes an issue, where stale authorization webhooks could cancel unrelated order transactions
+- Fixes an issue, where the Express Checkout failed when the buyer changed the delivery country to one with rule-restricted shipping methods (shopware/shopware#16295).
 
 # 10.6.1
 - Fixes an issue, where declined PayPal payments were still shown as refundable in the Administration (shopware/SwagPayPal#547)

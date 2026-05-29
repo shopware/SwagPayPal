@@ -97,7 +97,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
             ->method('fetchPUIInstructions');
 
         static::expectException(OrderException::class);
-        static::expectExceptionMessage('Could not find order transaction with id "test-id"');
+        static::expectExceptionMessageMatches('/\A' . \preg_quote('Could not find order transaction with id "test-id"', '/') . '\z/');
 
         $this->route->getPaymentInstructions('test-id', Generator::generateSalesChannelContext());
     }

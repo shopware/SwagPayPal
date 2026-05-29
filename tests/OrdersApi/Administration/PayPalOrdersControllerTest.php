@@ -72,7 +72,7 @@ class PayPalOrdersControllerTest extends TestCase
         $context->addExtension(ConstantsForTesting::WITHOUT_TRANSACTION, new ArrayStruct());
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The transaction with id orderTransactionId is invalid or could not be found.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The transaction with id orderTransactionId is invalid or could not be found.', '/') . '\z/');
         $this->createController()->orderDetails(
             'orderTransactionId',
             'paypalOrderId',
@@ -86,7 +86,7 @@ class PayPalOrdersControllerTest extends TestCase
         $context->addExtension(ConstantsForTesting::WITHOUT_ORDER, new ArrayStruct());
 
         $this->expectException(OrderNotFoundException::class);
-        $this->expectExceptionMessage('Order "orderTransactionId" could not be found.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Order "orderTransactionId" could not be found.', '/') . '\z/');
         $this->createController()->orderDetails(
             'orderTransactionId',
             GetOrderCapture::ID,
@@ -178,8 +178,8 @@ class PayPalOrdersControllerTest extends TestCase
     {
         $request = $this->createCaptureRefundRequest(self::AMOUNT, self::TOO_LONG_INVOICE_NUMBER);
         $this->expectException(RequestParameterInvalidException::class);
-        $this->expectExceptionMessage('Parameter "invoiceNumber" is invalid.
-Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must not be longer than 127 characters');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Parameter "invoiceNumber" is invalid.
+Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must not be longer than 127 characters', '/') . '\z/');
         $this->executeRefund($request)->getContent();
     }
 
@@ -197,8 +197,8 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
     {
         $request = $this->createCaptureRefundRequest(self::AMOUNT, '', self::TOO_LONG_NOTE_TO_PAYER);
         $this->expectException(RequestParameterInvalidException::class);
-        $this->expectExceptionMessage('Parameter "noteToPayer" is invalid.
-Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must not be longer than 255 characters');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Parameter "noteToPayer" is invalid.
+Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must not be longer than 255 characters', '/') . '\z/');
         $this->executeRefund($request)->getContent();
     }
 

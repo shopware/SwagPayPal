@@ -43,7 +43,7 @@ class ApiCredentialServiceTest extends TestCase
         $sandboxActive = false;
 
         $this->expectException(PayPalApiException::class);
-        $this->expectExceptionMessage(MockRequestHandler::GENERAL_CLIENT_EXCEPTION_MESSAGE);
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The error "TEST" occurred with the following message: ' . MockRequestHandler::GENERAL_CLIENT_EXCEPTION_MESSAGE, '/') . '\z/');
         $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive, null);
     }
 
@@ -55,7 +55,7 @@ class ApiCredentialServiceTest extends TestCase
         $sandboxActive = false;
 
         $this->expectException(PayPalApiException::class);
-        $this->expectExceptionMessage('The error "TEST" occurred with the following message: generalClientExceptionMessage');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The error "TEST" occurred with the following message: generalClientExceptionMessage', '/') . '\z/');
         $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive, null);
     }
 
