@@ -40,7 +40,7 @@ class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessage('Order transaction could not be resolved');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Order transaction could not be resolved', '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 

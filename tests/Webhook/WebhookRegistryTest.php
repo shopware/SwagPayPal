@@ -33,14 +33,14 @@ class WebhookRegistryTest extends TestCase
         $registry = new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock())]);
 
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessage('No webhook handler found for event "Foo". Shopware does not need to handle this event.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('No webhook handler found for event "Foo". Shopware does not need to handle this event.', '/') . '\z/');
         $registry->getWebhookHandler('Foo');
     }
 
     public function testRegisterAlreadyRegisteredWebhook(): void
     {
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessage('The specified event is already registered.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The specified event is already registered.', '/') . '\z/');
         new WebhookRegistry([new DummyWebhook(new OrderTransactionRepoMock()), new DummyWebhook(new OrderTransactionRepoMock())]);
     }
 }

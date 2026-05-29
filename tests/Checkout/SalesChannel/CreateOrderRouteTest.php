@@ -219,7 +219,7 @@ class CreateOrderRouteTest extends TestCase
         $request = new Request([], ['orderId' => 'no-order-transactions-id']);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The order with id noordertransactionsid is invalid or could not be found.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The order with id noordertransactionsid is invalid or could not be found.', '/') . '\z/');
         $this->route->createPayPalOrder($salesChannelContext, $request);
     }
 
@@ -238,7 +238,7 @@ class CreateOrderRouteTest extends TestCase
         $request = new Request([], ['orderId' => 'no-order-transaction-id']);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The order with id noordertransactionid is invalid or could not be found.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The order with id noordertransactionid is invalid or could not be found.', '/') . '\z/');
         $this->route->createPayPalOrder($salesChannelContext, $request);
     }
 

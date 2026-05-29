@@ -25,7 +25,7 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 /**
  * @internal
  *
- * @extends AbstractRepoMock<SalesChannelCollection>
+ * @extends AbstractRepoMock<SalesChannelEntity, SalesChannelCollection>
  */
 #[Package('checkout')]
 class SalesChannelRepoMock extends AbstractRepoMock

@@ -152,7 +152,7 @@ class PayPalPaymentHandlerTest extends TestCase
         $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The error "TEST" occurred with the following message: generalClientExceptionMessage');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The error "TEST" occurred with the following message: generalClientExceptionMessage', '/') . '\z/');
         $handler->pay(new Request([], [
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
             AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_PATCH_THROWS_EXCEPTION,
@@ -212,7 +212,7 @@ class PayPalPaymentHandlerTest extends TestCase
     public function testFinalizeWithCancel(): void
     {
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The customer canceled the external payment process. Customer canceled the payment on the PayPal page');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The customer canceled the external payment process. Customer canceled the payment on the PayPal page', '/') . '\z/');
         $this->createPayPalPaymentHandler()->finalize(
             new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
             new PaymentTransactionStruct($this->getTransactionId(Context::createDefaultContext(), $this->getContainer())),
@@ -233,7 +233,7 @@ class PayPalPaymentHandlerTest extends TestCase
     public function testFinalizePayPalOrderCaptureWithException(): void
     {
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. | [INSTRUMENT_DECLINED] The instrument presented was either declined by the processor or bank, or it can\'t be used for this payment.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. | [INSTRUMENT_DECLINED] The instrument presented was either declined by the processor or bank, or it can\'t be used for this payment.', '/') . '\z/');
 
         $this->assertFinalizeRequest(self::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED);
     }

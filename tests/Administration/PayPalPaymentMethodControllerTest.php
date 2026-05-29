@@ -72,7 +72,7 @@ class PayPalPaymentMethodControllerTest extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(RoutingException::class);
-        $this->expectExceptionMessage('The parameter "salesChannelId" is invalid.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The parameter "salesChannelId" is invalid.', '/') . '\z/');
         $this->payPalPaymentMethodController->setPayPalPaymentMethodAsSalesChannelDefault($request, $context);
     }
 }

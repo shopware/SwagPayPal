@@ -149,7 +149,7 @@ class PayPalPaymentControllerTest extends TestCase
         $order->setSalesChannelId(Uuid::randomHex());
         $this->orderRepository->addSearch(new OrderCollection([$order]));
         $this->expectException(RequiredParameterInvalidException::class);
-        $this->expectExceptionMessage('Required parameter "resourceType" is missing or invalid');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Required parameter "resourceType" is missing or invalid', '/') . '\z/');
         $this->controller->resourceDetails($context, 'unknown', 'testResourceId', 'testOrderId')->getContent();
     }
 }
