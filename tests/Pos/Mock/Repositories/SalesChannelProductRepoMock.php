@@ -56,7 +56,7 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 class SalesChannelProductRepoMock extends SalesChannelRepository
 {
     /**
-     * @use RepoTrait<SalesChannelProductCollection>
+     * @use RepoTrait<SalesChannelProductEntity, SalesChannelProductCollection>
      */
     use RepoTrait;
 

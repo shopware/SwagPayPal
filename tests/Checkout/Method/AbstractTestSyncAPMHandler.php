@@ -105,7 +105,7 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
         $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
         $this->expectException(OrderFailedException::class);
-        $this->expectExceptionMessage(\sprintf('Order "%s" failed', CaptureOrderDeclined::ID));
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('Order "%s" failed', CaptureOrderDeclined::ID), '/') . '\z/');
         $handler->pay($this->createRequest(CaptureOrderDeclined::ID), $paymentTransaction, Context::createDefaultContext(), null);
     }
 
@@ -131,7 +131,7 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
         $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
         $this->expectException(OrderFailedException::class);
-        $this->expectExceptionMessage(\sprintf('Order "%s" failed', AuthorizeOrderDenied::ID));
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('Order "%s" failed', AuthorizeOrderDenied::ID), '/') . '\z/');
         $handler->pay($this->createRequest(AuthorizeOrderDenied::ID), $paymentTransaction, Context::createDefaultContext(), null);
     }
 
@@ -143,7 +143,7 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
         $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. | [INSTRUMENT_DECLINED] The instrument presented was either declined by the processor or bank, or it can\'t be used for this payment.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. | [INSTRUMENT_DECLINED] The instrument presented was either declined by the processor or bank, or it can\'t be used for this payment.', '/') . '\z/');
         $handler->pay($this->createRequest(PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED), $paymentTransaction, Context::createDefaultContext(), null);
     }
 
@@ -164,7 +164,7 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
 
         $paymentTransaction = new PaymentTransactionStruct($transactionId);
         $this->expectException(CheckoutException::class);
-        $this->expectExceptionMessage('PayPal Order ID does not exist in the request. The payment method ' . $handler::class . ' requires a prepared PayPal order.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('PayPal Order ID does not exist in the request. The payment method ' . $handler::class . ' requires a prepared PayPal order.', '/') . '\z/');
         $handler->pay($this->createRequest(), $paymentTransaction, Context::createDefaultContext(), null);
     }
 
