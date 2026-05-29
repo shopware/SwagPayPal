@@ -35,6 +35,11 @@
 
 # 10.4.0
 - Fixes an issue, where the express checkout could choose a customer country that was not assigned to the correct sales channel (shopware/SwagPayPal#479)
+- Fixes an issue, where cookies are added even though associated payment methods are not active (shopware/SwagPayPal#457)
+- Fixes an issue, where the state of a country was not correctly transmitted to PayPal (shopware/SwagPayPal#469)
+- Added Apple Pay support for third-party browsers (shopware/SwagPayPal#485)
+- Added setting to mark the shop as local environment to preventing connection issues when testing in a non-publicly accessible environment (shopware/SwagPayPal#463)
+- Updated and optimized payment method icons
 
 # 10.3.0
 - Added compatibility with subscription mixed carts (shopware/shopware#10486)
