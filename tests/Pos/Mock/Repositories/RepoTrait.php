@@ -20,6 +20,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
+ * @template TEntity of Entity
  * @template TEntityCollection of EntityCollection
  *
  * @internal
@@ -41,6 +42,9 @@ trait RepoTrait
 
     abstract public function getDefinition(): EntityDefinition;
 
+    /**
+     * @param TEntity $entity
+     */
     public function addMockEntity(Entity $entity): void
     {
         $this->entityCollection->add($entity);
@@ -64,6 +68,7 @@ trait RepoTrait
                 $entry['id'] = Uuid::randomHex();
             }
 
+            /** @var class-string<TEntity> $className */
             $className = $this->getDefinition()->getEntityClass();
             $entity = new $className();
             $entity->assign($entry);

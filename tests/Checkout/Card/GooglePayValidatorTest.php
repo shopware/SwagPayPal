@@ -37,7 +37,7 @@ class GooglePayValidatorTest extends AbstractCardValidatorTestCase
         $transaction = new OrderTransactionEntity();
 
         static::expectException(MissingPayloadException::class);
-        static::expectExceptionMessage('Missing request payload payment_source.google_pay.card to order "paypalOrderId" not found');
+        static::expectExceptionMessageMatches('/\A' . \preg_quote('Missing request payload payment_source.google_pay.card to order "paypalOrderId" not found', '/') . '\z/');
 
         $this->validator->validate($order, $transaction, Context::createDefaultContext());
     }
