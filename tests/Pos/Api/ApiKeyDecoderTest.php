@@ -50,7 +50,7 @@ class ApiKeyDecoderTest extends TestCase
         $parts[$segmentOrder] = 'MI$$ING';
 
         $this->expectException(InvalidApiKeyException::class);
-        $this->expectExceptionMessage("The given API key is invalid. The {$segmentName} is incorrect.");
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote("The given API key is invalid. The {$segmentName} is incorrect.", '/') . '\z/');
 
         $decoder->decode(\implode('.', $parts));
     }

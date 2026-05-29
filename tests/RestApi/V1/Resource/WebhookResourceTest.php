@@ -56,7 +56,7 @@ class WebhookResourceTest extends TestCase
         $createWebhooks->assign(['url' => self::TEST_URL]);
 
         $this->expectException(PayPalApiException::class);
-        $this->expectExceptionMessage('The error "TEST" occurred with the following message: ' . MockRequestHandler::GENERAL_CLIENT_EXCEPTION_MESSAGE);
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The error "TEST" occurred with the following message: ' . MockRequestHandler::GENERAL_CLIENT_EXCEPTION_MESSAGE, '/') . '\z/');
         $this->createWebHookResource()->createWebhook(self::TEST_URL, $createWebhooks, TestDefaults::SALES_CHANNEL);
     }
 
@@ -66,7 +66,7 @@ class WebhookResourceTest extends TestCase
         $createWebhooks->assign(['url' => self::TEST_URL_INVALID]);
 
         $this->expectException(WebhookValidationError::class);
-        $this->expectExceptionMessage(\sprintf('Provided webhook URL "%s" is invalid', self::TEST_URL_INVALID));
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('Provided webhook URL "%s" is invalid', self::TEST_URL_INVALID), '/') . '\z/');
         $this->createWebHookResource()->createWebhook(self::TEST_URL_INVALID, $createWebhooks, TestDefaults::SALES_CHANNEL);
     }
 
@@ -76,7 +76,7 @@ class WebhookResourceTest extends TestCase
         $createWebhooks->assign(['url' => self::TEST_URL_ALREADY_EXISTS]);
 
         $this->expectException(WebhookAlreadyExistsException::class);
-        $this->expectExceptionMessage(\sprintf('WebhookUrl "%s" already exists', self::TEST_URL_ALREADY_EXISTS));
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('WebhookUrl "%s" already exists', self::TEST_URL_ALREADY_EXISTS), '/') . '\z/');
         $this->createWebHookResource()->createWebhook(self::TEST_URL_ALREADY_EXISTS, $createWebhooks, TestDefaults::SALES_CHANNEL);
     }
 
@@ -90,14 +90,14 @@ class WebhookResourceTest extends TestCase
     public function testGetWebhookUrlThrowsExceptionInvalidId(): void
     {
         $this->expectException(WebhookIdInvalidException::class);
-        $this->expectExceptionMessage(\sprintf('Webhook with ID "%s" is invalid', self::THROW_EXCEPTION_INVALID_ID));
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('Webhook with ID "%s" is invalid', self::THROW_EXCEPTION_INVALID_ID), '/') . '\z/');
         $this->createWebHookResource()->getWebhookUrl(self::THROW_EXCEPTION_INVALID_ID, TestDefaults::SALES_CHANNEL);
     }
 
     public function testGetWebhookUrlThrowsExceptionWithResponse(): void
     {
         $this->expectException(PayPalApiException::class);
-        $this->expectExceptionMessage('The error "TEST" occurred with the following message: ' . MockRequestHandler::GENERAL_CLIENT_EXCEPTION_MESSAGE);
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The error "TEST" occurred with the following message: ' . MockRequestHandler::GENERAL_CLIENT_EXCEPTION_MESSAGE, '/') . '\z/');
         $this->createWebHookResource()->getWebhookUrl(self::THROW_EXCEPTION_WITH_RESPONSE, TestDefaults::SALES_CHANNEL);
     }
 
@@ -115,7 +115,7 @@ class WebhookResourceTest extends TestCase
     public function testUpdateWebhookWithInvalidResourceId(): void
     {
         $this->expectException(WebhookIdInvalidException::class);
-        $this->expectExceptionMessage(\sprintf('Webhook with ID "%s" is invalid', self::THROW_EXCEPTION_INVALID_ID));
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('Webhook with ID "%s" is invalid', self::THROW_EXCEPTION_INVALID_ID), '/') . '\z/');
         $this->createWebHookResource()->updateWebhook('', self::THROW_EXCEPTION_INVALID_ID, TestDefaults::SALES_CHANNEL);
     }
 
@@ -125,7 +125,7 @@ class WebhookResourceTest extends TestCase
         $createWebhooks->assign(['url' => self::TEST_URL]);
 
         $this->expectException(PayPalApiException::class);
-        $this->expectExceptionMessage('The error "TEST" occurred with the following message: ' . MockRequestHandler::GENERAL_CLIENT_EXCEPTION_MESSAGE);
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The error "TEST" occurred with the following message: ' . MockRequestHandler::GENERAL_CLIENT_EXCEPTION_MESSAGE, '/') . '\z/');
         $this->createWebHookResource()->updateWebhook('', MockRequestHandler::TEST_WEBHOOK_ID, TestDefaults::SALES_CHANNEL);
     }
 
@@ -135,7 +135,7 @@ class WebhookResourceTest extends TestCase
         $createWebhooks->assign(['url' => self::TEST_URL]);
 
         $this->expectException(WebhookValidationError::class);
-        $this->expectExceptionMessage(\sprintf('Provided webhook URL "%s" is invalid', self::TEST_URL));
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('Provided webhook URL "%s" is invalid', self::TEST_URL), '/') . '\z/');
         $this->createWebHookResource()->updateWebhook(self::TEST_URL, self::THROW_EXCEPTION_INVALID_URL, TestDefaults::SALES_CHANNEL);
     }
 

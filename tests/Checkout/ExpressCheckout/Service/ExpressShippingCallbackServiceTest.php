@@ -204,7 +204,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
         ], $this->salesChannelContext->getContext());
 
         static::expectException(ExpressShippingCallbackException::class);
-        static::expectExceptionMessage('Address error for shipping to "DE"');
+        static::expectExceptionMessageMatches('/\A' . \preg_quote('Address error for shipping to "DE"', '/') . '\z/');
 
         $country = $this->getCountry('DE');
         $this->service->recalculateCart($this->createCallback($country, $shippingMethod->getId()), $this->salesChannelContext);
@@ -213,7 +213,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
     public function testCalculationThrowsCountryError(): void
     {
         static::expectException(ExpressShippingCallbackException::class);
-        static::expectExceptionMessage('Country error for shipping to "sdf"');
+        static::expectExceptionMessageMatches('/\A' . \preg_quote('Country error for shipping to "sdf"', '/') . '\z/');
 
         $country = $this->getCountry('DE');
         $callback = $this->createCallback($country);

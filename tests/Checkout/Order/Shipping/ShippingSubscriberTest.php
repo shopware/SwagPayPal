@@ -167,7 +167,7 @@ class ShippingSubscriberTest extends TestCase
     }
 
     #[DataProvider('dataProviderWriteResult')]
-    public function testOnOrderDeliveryWrittenWithNonLiveVersion(EntityWriteResult $result): void
+    public function testOnOrderDeliveryWrittenWithNonLiveVersion(EntityWriteResult $result, ?array $_expectedAfter, bool $_expectEvent): void
     {
         $event = new EntityWrittenEvent(
             'order_delivery',
