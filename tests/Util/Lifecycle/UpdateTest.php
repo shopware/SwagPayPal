@@ -259,7 +259,7 @@ class UpdateTest extends TestCase
 
         $updater = $this->createUpdateService($systemConfig);
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid value for "SwagPayPal.settings.intent" setting');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Invalid value for "SwagPayPal.settings.intent" setting', '/') . '\z/');
         $updater->update($updateContext);
     }
 
@@ -272,7 +272,7 @@ class UpdateTest extends TestCase
 
         $updater = $this->createUpdateService($systemConfig);
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid value for "SwagPayPal.settings.landingPage" setting');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Invalid value for "SwagPayPal.settings.landingPage" setting', '/') . '\z/');
         $updater->update($updateContext);
     }
 

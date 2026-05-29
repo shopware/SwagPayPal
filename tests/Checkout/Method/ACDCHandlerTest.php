@@ -315,7 +315,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->expectException(CheckoutException::class);
-        $this->expectExceptionMessage('PayPal Order ID does not exist in the request. The payment method ' . ACDCHandler::class . ' requires a prepared PayPal order.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('PayPal Order ID does not exist in the request. The payment method ' . ACDCHandler::class . ' requires a prepared PayPal order.', '/') . '\z/');
         $this->handler->pay(new Request(), $paymentTransaction, $context, null);
     }
 
@@ -347,7 +347,7 @@ class ACDCHandlerTest extends TestCase
             ->willReturn(false);
 
         $this->expectException(CardValidationFailedException::class);
-        $this->expectExceptionMessage('Credit card validation failed, 3D secure was not validated.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Credit card validation failed, 3D secure was not validated.', '/') . '\z/');
         $this->handler->finalize(new Request(), $paymentTransaction, $context);
     }
 
@@ -362,7 +362,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->expectException(CheckoutException::class);
-        $this->expectExceptionMessage('PayPal Order ID does not exist in the request. The payment method ' . ACDCHandler::class . ' requires a prepared PayPal order.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('PayPal Order ID does not exist in the request. The payment method ' . ACDCHandler::class . ' requires a prepared PayPal order.', '/') . '\z/');
         $this->handler->finalize(new Request([]), $paymentTransaction, $context);
     }
 
@@ -589,8 +589,8 @@ class ACDCHandlerTest extends TestCase
             ->willReturn(null);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The recurring capture process was interrupted due to the following error:
-Subscription not found');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The recurring capture process was interrupted due to the following error:
+Subscription not found', '/') . '\z/');
         $this->handler->recurring(
             $paymentTransaction,
             Context::createDefaultContext(),

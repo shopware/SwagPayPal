@@ -1,3 +1,6 @@
+# 10.6.2
+- Behebt ein Problem, bei dem der Express Checkout fehlschlug, wenn der Käufer das Lieferland zu einem mit regelbasierten Versandarten änderte (shopware/shopware#16295).
+
 # 10.6.1
 - Behebt ein Problem, bei dem abgelehnte PayPal-Zahlungen in der Administration weiterhin als erstattungsfähig angezeigt wurden (shopware/SwagPayPal#547)
 - Behebt ein Problem, bei dem die Antwort des Versand-Callbacks im Express Checkout nicht unterstützte Bestellfelder enthielt
