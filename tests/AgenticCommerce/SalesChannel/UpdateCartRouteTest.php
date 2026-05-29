@@ -76,7 +76,7 @@ class UpdateCartRouteTest extends TestCase
     public function testInvalidCartToken(): void
     {
         $this->expectException(AgentException::class);
-        $this->expectExceptionMessage('Cart ID format is invalid. Expected format: CART-[a-zA-Z0-9]{32}');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Cart ID format is invalid. Expected format: CART-[a-zA-Z0-9]{32}', '/') . '\z/');
 
         $this->updateCartRoute->updateCart('invalid-token', new Request(), $this->salesChannelContext);
     }

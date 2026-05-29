@@ -90,7 +90,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(ParentPaymentNotFoundException::class);
-        $this->expectExceptionMessage(\sprintf('[PayPal %s Webhook] Could not find parent payment ID', $webhookName));
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('[PayPal %s Webhook] Could not find parent payment ID', $webhookName), '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
@@ -99,9 +99,10 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookOrderTransactionNotFoundException::class);
-        $this->expectExceptionMessage(
-            \sprintf('[PayPal %s Webhook] Could not find associated order transaction %s', $webhookName, $reason)
-        );
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(
+            \sprintf('[PayPal %s Webhook] Could not find associated order transaction %s', $webhookName, $reason),
+            '/'
+        ) . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
@@ -111,7 +112,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessage('Given webhook does not have needed resource data');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Given webhook does not have needed resource data', '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
@@ -121,7 +122,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessage('Given webhook resource data does not contain needed custom ID');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Given webhook resource data does not contain needed custom ID', '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
@@ -131,7 +132,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessage('Given webhook resource data does not contain needed custom ID');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Given webhook resource data does not contain needed custom ID', '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 

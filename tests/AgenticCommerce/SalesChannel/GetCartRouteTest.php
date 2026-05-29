@@ -32,7 +32,7 @@ class GetCartRouteTest extends TestCase
     public function testInvalidCartToken(): void
     {
         $this->expectException(AgentException::class);
-        $this->expectExceptionMessage('Cart ID format is invalid. Expected format: CART-[a-zA-Z0-9]{32}');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Cart ID format is invalid. Expected format: CART-[a-zA-Z0-9]{32}', '/') . '\z/');
 
         $getCartRoute = new GetCartRoute(
             $this->createMock(CartService::class),
@@ -47,7 +47,7 @@ class GetCartRouteTest extends TestCase
         $token = 'CART-11111111111111111111111111111111';
 
         $this->expectException(AgentException::class);
-        $this->expectExceptionMessage('Cart with ID \'' . $token . '\' does not exist');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Cart with ID \'' . $token . '\' does not exist', '/') . '\z/');
 
         $cartService = $this->createMock(CartService::class);
         $cartService

@@ -120,7 +120,7 @@ class ShopwareCartTransformerTest extends TestCase
         $exception = AgentException::requiredFieldInvalid('address.countryCode', 'Country not found');
 
         $this->expectException($exception::class);
-        $this->expectExceptionMessage($exception->getMessage());
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote($exception->getMessage(), '/') . '\z/');
 
         $transformer = new ShopwareCartTransformer(
             $this->createMock(SalesChannelRepository::class),

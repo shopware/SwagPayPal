@@ -26,7 +26,7 @@ class CartTokenValidatorTest extends TestCase
     {
         if (!$id) {
             $this->expectException(AgentException::class);
-            $this->expectExceptionMessage('Cart ID format is invalid. Expected format: CART-[a-zA-Z0-9]{32}');
+            $this->expectExceptionMessageMatches('/\A' . \preg_quote('Cart ID format is invalid. Expected format: CART-[a-zA-Z0-9]{32}', '/') . '\z/');
         }
 
         $extracted = CartTokenValidator::validateCartToken($token);

@@ -19,7 +19,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
 /**
  * @internal
  *
- * @extends AbstractRepoMock<PosSalesChannelInventoryCollection>
+ * @extends AbstractRepoMock<PosSalesChannelInventoryEntity, PosSalesChannelInventoryCollection>
  */
 #[Package('checkout')]
 class PosInventoryRepoMock extends AbstractRepoMock

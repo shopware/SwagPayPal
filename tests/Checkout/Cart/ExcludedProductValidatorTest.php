@@ -172,7 +172,7 @@ class ExcludedProductValidatorTest extends TestCase
      * this test is related to the ExpressCheckoutSubscriber
      */
     #[DataProvider('dataProviderConstellations')]
-    public function testExcludedProductTaggedInSearchResultsWithListingDisabled(?string $settingKey, ?string $settingIdName): void
+    public function testExcludedProductTaggedInSearchResultsWithListingDisabled(?string $settingKey, ?string $settingIdName, ?string $_expectedIdName): void
     {
         if ($settingKey && $settingIdName) {
             $this->systemConfig->set($settingKey, [$this->idsCollection->get($settingIdName)]);

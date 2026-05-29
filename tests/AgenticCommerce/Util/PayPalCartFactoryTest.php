@@ -27,7 +27,7 @@ class PayPalCartFactoryTest extends TestCase
     {
         if ($expectedException) {
             $this->expectException($expectedException::class);
-            $this->expectExceptionMessage($expectedException->getMessage());
+            $this->expectExceptionMessageMatches('/\A' . \preg_quote($expectedException->getMessage(), '/') . '\z/');
         }
 
         $payPalCart = (new PayPalCartFactory())->create($data);
