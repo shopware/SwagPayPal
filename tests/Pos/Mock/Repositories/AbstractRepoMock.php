@@ -24,7 +24,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * @internal
  *
  * @template TEntity of \Shopware\Core\Framework\DataAbstractionLayer\Entity
- * @template TEntityCollection of EntityCollection<TEntity>
+ * @template TEntityCollection of EntityCollection
  *
  * @extends EntityRepository<TEntityCollection>
  */

@@ -122,7 +122,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Given webhook resource data does not contain needed custom ID', '/') . '\z/');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('[PayPal %s Webhook] Could not handle order transaction id Given webhook resource data does not contain needed custom ID', $this->webhookHandler->getEventType()), '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
@@ -132,7 +132,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Given webhook resource data does not contain needed custom ID', '/') . '\z/');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('[PayPal %s Webhook] Could not handle order transaction id Given webhook resource data does not contain needed custom ID', $this->webhookHandler->getEventType()), '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 

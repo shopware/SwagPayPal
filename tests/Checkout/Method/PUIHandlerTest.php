@@ -113,7 +113,7 @@ class PUIHandlerTest extends TestCase
         $order = $this->placeOrder($cart, $context);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Missing Fraudnet session id', '/') . '\z/');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The synchronous payment process was interrupted due to the following error:' . \PHP_EOL . 'Missing Fraudnet session id', '/') . '\z/');
         $this->processPayment(
             $order,
             [

@@ -21,7 +21,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @template TEntity of Entity
- * @template TEntityCollection of EntityCollection<TEntity>
+ * @template TEntityCollection of EntityCollection
  *
  * @internal
  */
