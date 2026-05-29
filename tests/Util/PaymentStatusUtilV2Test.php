@@ -131,9 +131,10 @@ class PaymentStatusUtilV2Test extends TestCase
 
         $captureResponse = $this->createCapture(true);
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage(
-            \sprintf('The transaction with id %s is invalid or could not be found.', $orderTransactionId)
-        );
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(
+            \sprintf('The transaction with id %s is invalid or could not be found.', $orderTransactionId),
+            '/'
+        ) . '\z/');
         $this->paymentStatusUtil->applyCaptureState(
             $orderTransactionId,
             $captureResponse,

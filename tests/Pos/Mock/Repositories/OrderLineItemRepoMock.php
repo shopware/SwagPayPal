@@ -15,7 +15,7 @@ use Shopware\Core\Framework\Log\Package;
 /**
  * @internal
  *
- * @extends AbstractRepoMock<OrderLineItemCollection>
+ * @extends AbstractRepoMock<\Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity, OrderLineItemCollection>
  */
 #[Package('checkout')]
 class OrderLineItemRepoMock extends AbstractRepoMock

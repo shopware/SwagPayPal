@@ -113,7 +113,7 @@ class PUIHandlerTest extends TestCase
         $order = $this->placeOrder($cart, $context);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('Missing Fraudnet session id');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The synchronous payment process was interrupted due to the following error:' . \PHP_EOL . 'Missing Fraudnet session id', '/') . '\z/');
         $this->processPayment(
             $order,
             [
@@ -152,7 +152,7 @@ class PUIHandlerTest extends TestCase
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        static::expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. | [PAYMENT_SOURCE_DECLINED_BY_PROCESSOR] The provided payment source is declined by the processor. Please try again with a different payment source by creating a new order.');
+        static::expectExceptionMessageMatches('/\A' . \preg_quote('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. | [PAYMENT_SOURCE_DECLINED_BY_PROCESSOR] The provided payment source is declined by the processor. Please try again with a different payment source by creating a new order.', '/') . '\z/');
 
         $this->processPayment(
             $order,
@@ -173,7 +173,7 @@ class PUIHandlerTest extends TestCase
         $cart = $this->addToCart($productId, $context);
         $order = $this->placeOrder($cart, $context);
 
-        static::expectExceptionMessage('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. | [PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED] The combination of the payment_source name, billing address, shipping name and shipping address could not be verified. Please correct this information and try again by creating a new order.');
+        static::expectExceptionMessageMatches('/\A' . \preg_quote('The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be performed, semantically incorrect, or failed business validation. | [PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED] The combination of the payment_source name, billing address, shipping name and shipping address could not be verified. Please correct this information and try again by creating a new order.', '/') . '\z/');
 
         $this->processPayment(
             $order,

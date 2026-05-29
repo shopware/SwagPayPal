@@ -35,7 +35,7 @@ class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
         $order->assign(['billingAddress' => null]);
 
         $this->expectException(OrderException::class);
-        $this->expectExceptionMessage('The required association "billingAddress" is missing .');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The required association "billingAddress" is missing .', '/') . '\z/');
         $this->getBuilder()->getOrder(
             $paymentTransaction,
             $orderTransaction,
