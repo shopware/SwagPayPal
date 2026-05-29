@@ -29,7 +29,7 @@ class FaviconLoaderTest extends TestCase
     public function testThemeIdNotFound(): void
     {
         $this->expectException(HoneyWebhookException::class);
-        $this->expectExceptionMessage('Storefront sales channel not found');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Storefront sales channel not found', '/') . '\z/');
 
         $themeProviderMock = $this->createMock(AbstractAvailableThemeProvider::class);
         $themeProviderMock

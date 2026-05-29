@@ -23,6 +23,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 /**
  * @internal
  *
+ * @template TEntity of \Shopware\Core\Framework\DataAbstractionLayer\Entity
  * @template TEntityCollection of EntityCollection
  *
  * @extends EntityRepository<TEntityCollection>
@@ -31,7 +32,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 abstract class AbstractRepoMock extends EntityRepository
 {
     /**
-     * @use RepoTrait<TEntityCollection>
+     * @use RepoTrait<TEntity, TEntityCollection>
      */
     use RepoTrait;
 

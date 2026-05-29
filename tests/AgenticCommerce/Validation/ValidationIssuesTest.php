@@ -148,7 +148,7 @@ class ValidationIssuesTest extends TestCase
         if ($exception) {
             // TODO: create real exception
             $this->expectException(\RuntimeException::class);
-            $this->expectExceptionMessage('Init price need to be lower then actual price');
+            $this->expectExceptionMessageMatches('/\A' . \preg_quote('Init price need to be lower then actual price', '/') . '\z/');
         }
 
         $translator = $this->createMock(AbstractTranslator::class);

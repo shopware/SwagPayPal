@@ -91,7 +91,7 @@ class GooglePayHandlerTest extends TestCase
         $this->cardValidator->method('validate')->willReturn(false);
 
         static::expectException(PaymentException::class);
-        static::expectExceptionMessage('Credit card validation failed, 3D secure was not validated.');
+        static::expectExceptionMessageMatches('/\A' . \preg_quote('Credit card validation failed, 3D secure was not validated.', '/') . '\z/');
 
         $orderTransaction = new OrderTransactionEntity();
         $orderTransaction->setId(Uuid::randomHex());

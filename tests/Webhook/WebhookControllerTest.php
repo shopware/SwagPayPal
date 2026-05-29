@@ -227,7 +227,7 @@ class WebhookControllerTest extends TestCase
         );
 
         $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('No webhook data sent');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('No webhook data sent', '/') . '\z/');
         $this->controller->executeWebhook($request, $context);
     }
 
