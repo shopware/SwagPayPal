@@ -17,7 +17,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 /**
  * @internal
  *
- * @extends AbstractRepoMock<ProductCollection>
+ * @extends AbstractRepoMock<ProductEntity, ProductCollection>
  */
 #[Package('checkout')]
 class ProductRepoMock extends AbstractRepoMock
