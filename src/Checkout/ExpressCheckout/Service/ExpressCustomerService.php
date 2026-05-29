@@ -159,16 +159,16 @@ class ExpressCustomerService
             throw new MissingPayloadException($order->getId(), 'paymentSource.paypal');
         }
 
+        $firstName = $paypal->getName()->getGivenName();
+        $lastName = $paypal->getName()->getSurname();
+        $address = $paypal->getAddress();
+
         $shipping = $order->getPurchaseUnits()->first()?->getShipping();
-        if ($shipping) {
+        if ($shipping !== null) {
             $address = $shipping->getAddress();
             $names = \explode(' ', $shipping->getName()->getFullName());
             $lastName = \array_pop($names);
             $firstName = \implode(' ', $names);
-        } else {
-            $address = $paypal->getAddress();
-            $firstName = $paypal->getName()->getGivenName();
-            $lastName = $paypal->getName()->getSurname();
         }
 
         $countryCode = $address->getCountryCode();
