@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Resource;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Authorization;
+use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -35,6 +36,15 @@ class AuthorizationVoided extends AbstractWebhookHandler
 
         if ($orderTransaction === null) {
             throw new WebhookException($this->getEventType(), 'Order transaction could not be resolved');
+        }
+
+        if ($resource instanceof Authorization) {
+            $customFields = $orderTransaction->getCustomFields() ?? [];
+            $storedResourceId = $customFields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID] ?? null;
+            $isStaleAuthorization = $storedResourceId !== null && $storedResourceId !== $resource->getId();
+            if ($isStaleAuthorization) {
+                return;
+            }
         }
 
         if ($this->isChangeAllowed($orderTransaction, OrderTransactionStates::STATE_CANCELLED)) {
