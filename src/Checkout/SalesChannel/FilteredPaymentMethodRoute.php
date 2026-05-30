@@ -28,10 +28,8 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[Package('checkout')]
-#[Route(defaults: ['_routeScope' => ['store-api']])]
 class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 {
     /**
@@ -57,7 +55,6 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         return $this->decorated;
     }
 
-    #[Route(path: '/store-api/payment-method', name: 'store-api.payment.method', defaults: ['_entity' => 'payment_method'], methods: ['GET', 'POST'])]
     public function load(Request $request, SalesChannelContext $context, Criteria $criteria): PaymentMethodRouteResponse
     {
         $response = $this->getDecorated()->load($request, $context, $criteria);
