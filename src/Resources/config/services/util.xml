@@ -50,6 +50,7 @@
         <service id="Swag\PayPal\Util\Lifecycle\ActivateDeactivate">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\PosStateService"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService"/>
         </service>
 
         <service id="Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService" public="true">
@@ -62,6 +63,11 @@
             <argument type="service" id="sales_channel_type.repository"/>
             <argument type="service" id="shipping_method.repository"/>
             <argument type="service" id="payment_method.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="sales_channel_type.repository"/>
         </service>
 
         <service id="Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller" public="true">
