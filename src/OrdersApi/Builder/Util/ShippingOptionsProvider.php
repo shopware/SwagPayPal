@@ -48,10 +48,8 @@ class ShippingOptionsProvider
         $option->setLabel((string) $shippingMethod->getTranslation('name'));
 
         if ($salesChannelContext->getShippingMethod()->getId() === $shippingMethod->getId()) {
-            $value = $this->priceFormatter->formatPrice(
-                $cart->getShippingCosts()->getTotalPrice(),
-                $salesChannelContext->getCurrency()->getIsoCode(),
-            );
+            $currencyCode = $salesChannelContext->getCurrency()->getIsoCode();
+            $value = $this->priceFormatter->formatPrice($cart->getShippingCosts()->getTotalPrice(), $currencyCode);
 
             $amount = new Money();
             $amount->setValue($value);
