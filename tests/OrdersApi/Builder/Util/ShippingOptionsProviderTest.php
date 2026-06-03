@@ -34,9 +34,10 @@ use Swag\PayPal\Util\PriceFormatter;
 
 /**
  * @internal
+ *
+ * @coversClass \Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider\ShippingOptionsProvider
  */
 #[Package('checkout')]
-#[CoversClass(ShippingOptionsProvider::class)]
 class ShippingOptionsProviderTest extends TestCase
 {
     public function testGetShippingOptionsCreatesAnOptionPerShippingMethod(): void
