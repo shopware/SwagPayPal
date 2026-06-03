@@ -1,3 +1,6 @@
+# 10.6.3
+- Behebt ein Problem, bei dem Versandkosten Diskrepanzen den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
+
 # 10.6.2
 - Behebt ein Problem, bei dem veraltete Authorisations-Webhooks den Zahlungsstatus auf Abgebrochen setzen konnte
 - Behebt ein Problem, bei dem der Express Checkout fehlschlug, wenn der Käufer das Lieferland zu einem mit regelbasierten Versandarten änderte (shopware/shopware#16295).

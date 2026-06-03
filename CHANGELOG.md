@@ -1,3 +1,6 @@
+# 10.6.3
+- Fixes an issue, where shipping const discrepancies could cause the express checkout with shipping callback enabled to fail
+
 # 10.6.2
 - Fixes an issue, where stale authorization webhooks could cancel unrelated order transactions
 - Fixes an issue, where the Express Checkout failed when the buyer changed the delivery country to one with rule-restricted shipping methods (shopware/shopware#16295).
