@@ -48,17 +48,15 @@ class ShippingOptionsProvider
         $option->setLabel((string) $shippingMethod->getTranslation('name'));
 
         if ($salesChannelContext->getShippingMethod()->getId() === $shippingMethod->getId()) {
+            $currencyCode = $salesChannelContext->getCurrency()->getIsoCode();
+            $value = $this->priceFormatter->formatPrice($cart->getShippingCosts()->getTotalPrice(), $currencyCode);
+
+            $amount = new Money();
+            $amount->setValue($value);
+            $amount->setCurrencyCode($currencyCode);
+
+            $option->setAmount($amount);
             $option->setSelected(true);
-
-            if ($shippingCosts = $cart->getDeliveries()->first()?->getShippingCosts()) {
-                $currencyCode = $salesChannelContext->getCurrency()->getIsoCode();
-
-                $amount = new Money();
-                $amount->setValue($this->priceFormatter->formatPrice($shippingCosts->getTotalPrice(), $currencyCode));
-                $amount->setCurrencyCode($currencyCode);
-
-                $option->setAmount($amount);
-            }
         }
 
         return $option;
