@@ -10,6 +10,11 @@ namespace Swag\PayPal\Test\OrdersApi\Builder\Util;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryDate;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryPositionCollection;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\ShippingLocation;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
@@ -20,6 +25,8 @@ use Shopware\Core\Checkout\Shipping\SalesChannel\ShippingMethodRouteResponse;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
@@ -32,25 +39,11 @@ use Swag\PayPal\Util\PriceFormatter;
 #[CoversClass(ShippingOptionsProvider::class)]
 class ShippingOptionsProviderTest extends TestCase
 {
-    private ShippingOptionsProvider $shippingOptionsProvider;
-
-    private AbstractShippingMethodRoute $shippingMethodRoute;
-
-    protected function setUp(): void
-    {
-        $this->shippingMethodRoute = $this->createMock(AbstractShippingMethodRoute::class);
-        $this->shippingOptionsProvider = new ShippingOptionsProvider(
-            new PriceFormatter(),
-            $this->shippingMethodRoute,
-        );
-    }
-
     public function testGetShippingOptionsCreatesAnOptionPerShippingMethod(): void
     {
-        $this->mockRoute($this->createShippingMethod('standard-id', 'Standard'), $this->createShippingMethod('express-id', 'Express'));
+        $provider = $this->createProvider($this->createShippingMethod('standard-id', 'Standard'), $this->createShippingMethod('express-id', 'Express'));
 
-        $cart = $this->createCart();
-        $options = $this->shippingOptionsProvider->getShippingOptions($cart, $this->createSalesChannelContext('unselected-id'));
+        $options = $provider->getShippingOptions($this->createCart(), $this->createSalesChannelContext('unselected-id'));
 
         static::assertCount(2, $options);
 
@@ -62,12 +55,13 @@ class ShippingOptionsProviderTest extends TestCase
 
     public function testGetShippingOptionsMarksTheSelectedMethodAndSetsItsGrossAmount(): void
     {
-        $selected = $this->createShippingMethod('selected-id', 'Selected');
-        $unselected = $this->createShippingMethod('other-id', 'Other');
-        $this->mockRoute($selected, $unselected);
+        $provider = $this->createProvider(
+            $this->createShippingMethod('selected-id', 'Selected'),
+            $this->createShippingMethod('other-id', 'Other'),
+        );
 
         $cart = $this->createCart(shippingTotal: 4.99);
-        $options = $this->shippingOptionsProvider->getShippingOptions($cart, $this->createSalesChannelContext('selected-id'));
+        $options = $provider->getShippingOptions($cart, $this->createSalesChannelContext('selected-id'));
 
         $selectedOption = $options->get('selected-id');
         static::assertNotNull($selectedOption);
@@ -82,11 +76,10 @@ class ShippingOptionsProviderTest extends TestCase
 
     public function testGetShippingOptionsAddsTaxesToTheSelectedMethodOnNetCarts(): void
     {
-        $selected = $this->createShippingMethod('selected-id', 'Selected');
-        $this->mockRoute($selected);
+        $provider = $this->createProvider($this->createShippingMethod('selected-id', 'Selected'));
 
         $cart = $this->createCart(shippingTotal: 5.0, shippingTax: 0.95, taxState: CartPrice::TAX_STATE_NET);
-        $options = $this->shippingOptionsProvider->getShippingOptions($cart, $this->createSalesChannelContext('selected-id'));
+        $options = $provider->getShippingOptions($cart, $this->createSalesChannelContext('selected-id'));
 
         $selectedOption = $options->first();
         static::assertNotNull($selectedOption);
@@ -96,23 +89,26 @@ class ShippingOptionsProviderTest extends TestCase
 
     public function testGetShippingOptionsReturnsEmptyCollectionWhenNoMethodsAreAvailable(): void
     {
-        $this->mockRoute();
+        $provider = $this->createProvider();
 
-        $options = $this->shippingOptionsProvider->getShippingOptions($this->createCart(), $this->createSalesChannelContext('selected-id'));
+        $options = $provider->getShippingOptions($this->createCart(), $this->createSalesChannelContext('selected-id'));
 
         static::assertCount(0, $options);
     }
 
-    private function mockRoute(ShippingMethodEntity ...$shippingMethods): void
+    private function createProvider(ShippingMethodEntity ...$shippingMethods): ShippingOptionsProvider
     {
         $response = $this->createMock(ShippingMethodRouteResponse::class);
         $response
             ->method('getShippingMethods')
             ->willReturn(new ShippingMethodCollection($shippingMethods));
 
-        $this->shippingMethodRoute
+        $shippingMethodRoute = $this->createMock(AbstractShippingMethodRoute::class);
+        $shippingMethodRoute
             ->method('load')
             ->willReturn($response);
+
+        return new ShippingOptionsProvider(new PriceFormatter(), $shippingMethodRoute);
     }
 
     private function createShippingMethod(string $id, string $name): ShippingMethodEntity
@@ -130,6 +126,9 @@ class ShippingOptionsProviderTest extends TestCase
         float $shippingTax = 0.0,
         string $taxState = CartPrice::TAX_STATE_GROSS,
     ): Cart {
+        $cart = new Cart(Uuid::randomHex());
+        $cart->setPrice(new CartPrice(0.0, 0.0, 0.0, new CalculatedTaxCollection(), new TaxRuleCollection(), $taxState));
+
         $shippingCosts = new CalculatedPrice(
             $shippingTotal,
             $shippingTotal,
@@ -137,15 +136,21 @@ class ShippingOptionsProviderTest extends TestCase
             new TaxRuleCollection(),
         );
 
-        // getShippingCosts() is derived from the cart deliveries, so the cart is
-        // mocked to expose the shipping costs and tax state directly.
-        $cart = $this->createMock(Cart::class);
-        $cart
-            ->method('getShippingCosts')
-            ->willReturn($shippingCosts);
-        $cart
-            ->method('getPrice')
-            ->willReturn(new CartPrice(0.0, 0.0, 0.0, new CalculatedTaxCollection(), new TaxRuleCollection(), $taxState));
+        // Cart::getShippingCosts() is derived from the deliveries, so a delivery
+        // carrying the shipping costs is added rather than set directly.
+        $country = new CountryEntity();
+        $country->setId(Uuid::randomHex());
+
+        $now = new \DateTimeImmutable('2026-01-01T00:00:00+00:00');
+        $cart->addDeliveries(new DeliveryCollection([
+            new Delivery(
+                new DeliveryPositionCollection(),
+                new DeliveryDate($now, $now),
+                new ShippingMethodEntity(),
+                ShippingLocation::createFromCountry($country),
+                $shippingCosts,
+            ),
+        ]));
 
         return $cart;
     }
