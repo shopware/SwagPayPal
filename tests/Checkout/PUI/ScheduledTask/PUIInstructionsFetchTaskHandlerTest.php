@@ -59,7 +59,7 @@ class PUIInstructionsFetchTaskHandlerTest extends TestCase
 
     public function testRun(): void
     {
-        $puiMethodData = $this->createStub(PUIMethodData::class);
+        $puiMethodData = static::createStub(PUIMethodData::class);
 
         $this->paymentMethodDataRegistry
             ->expects($this->once())
