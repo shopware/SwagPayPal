@@ -59,9 +59,7 @@ class PUIInstructionsFetchTaskHandlerTest extends TestCase
 
     public function testRun(): void
     {
-        $puiMethodData = $this->getMockBuilder(PUIMethodData::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $puiMethodData = $this->createStub(PUIMethodData::class);
 
         $this->paymentMethodDataRegistry
             ->expects($this->once())
