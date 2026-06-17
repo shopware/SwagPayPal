@@ -23,10 +23,10 @@
 
                 {% block page_checkout_address_login_toggle_paypal_installment_banner %}
                     {% if installmentBannerEnabled %}
-                        <div class="col-12 col-sm-6"
-                             data-swag-paypal-installment-banner="true"
-                             data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
-                        </div>
+                        {% sw_include '@SwagPayPal/storefront/paypal/installment-banner.html.twig' with {
+                            installmentBanner: installmentBanner,
+                            classes: 'col-12 col-sm-6'
+                        } only %}
                     {% endif %}
                 {% endblock %}
             </div>

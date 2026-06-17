@@ -14,9 +14,9 @@
     {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
 
     {% if installmentBanner.offCanvasCartEnabled %}
-        <div class="checkout-aside-action"
-             data-swag-paypal-installment-banner="true"
-             data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
-        </div>
+        {% sw_include '@SwagPayPal/storefront/paypal/installment-banner.html.twig' with {
+            installmentBanner: installmentBanner,
+            classes: 'checkout-aside-action'
+        } only %}
     {% endif %}
 {% endblock %}

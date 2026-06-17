@@ -11,10 +11,10 @@
 
             {% if installmentBanner.detailPageEnabled %}
                 <div class="row g-2 mt-0 mb-4 justify-content-end">
-                    <div class="{{ buyable ? 'col-8' : 'col-12' }}"
-                         data-swag-paypal-installment-banner="true"
-                         data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
-                    </div>
+                    {% sw_include '@SwagPayPal/storefront/paypal/installment-banner.html.twig' with {
+                        installmentBanner: installmentBanner,
+                        classes: buyable ? 'col-8' : 'col-12'
+                    } only %}
                 </div>
             {% endif %}
         {% endblock %}
