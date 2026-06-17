@@ -22,6 +22,7 @@ use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
+use Swag\PayPal\Checkout\Exception\MissingCountryIdException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
@@ -87,7 +88,7 @@ class PayPalController extends StorefrontController
     }
 
     #[Route(path: '/paypal/express/prepare-checkout', name: 'frontend.paypal.express.prepare_checkout', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
-    public function expressPrepareCheckout(Request $request, SalesChannelContext $context): ContextTokenResponse
+    public function expressPrepareCheckout(Request $request, SalesChannelContext $context): ContextTokenResponse|Response
     {
         $affiliateCode = $request->getSession()->get(OrderService::AFFILIATE_CODE_KEY);
         $campaignCode = $request->getSession()->get(OrderService::CAMPAIGN_CODE_KEY);
@@ -100,7 +101,16 @@ class PayPalController extends StorefrontController
             $request->request->set(OrderService::CAMPAIGN_CODE_KEY, $campaignCode);
         }
 
-        return $this->expressPrepareCheckoutRoute->prepareCheckout($context, $request);
+        try {
+            return $this->expressPrepareCheckoutRoute->prepareCheckout($context, $request);
+        } catch (MissingCountryIdException $e) {
+            $this->addFlash('danger', $this->trans(\sprintf('paypal.error.%s', $e->getErrorCode())));
+        } catch (\Throwable) {
+            $this->addFlash('danger', $this->trans('paypal.general.paymentError'));
+        }
+
+        // Where to redirect? Back to the page or register?
+        return new NoContentResponse();
     }
 
     #[Route(path: '/paypal/express/create-order', name: 'frontend.paypal.express.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
