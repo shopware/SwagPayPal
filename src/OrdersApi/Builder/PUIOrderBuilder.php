@@ -58,7 +58,7 @@ class PUIOrderBuilder extends AbstractAPMOrderBuilder
 
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
-        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction);
+        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, $request);
         $experienceContext->setCustomerServiceInstructions([
             $this->systemConfigService->getString(Settings::PUI_CUSTOMER_SERVICE_INSTRUCTIONS, $order->getSalesChannelId()),
         ]);

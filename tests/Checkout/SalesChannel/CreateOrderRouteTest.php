@@ -26,6 +26,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
@@ -151,6 +152,35 @@ class CreateOrderRouteTest extends TestCase
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
+    }
+
+    public function testCreatePaymentUsesRequestReturnUrls(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext(
+            $this->getContainer(),
+            new PaymentMethodCollection(),
+            null,
+            true,
+            false,
+            true
+        );
+
+        $response = $this->route->createPayPalOrder($salesChannelContext, new Request([], [
+            CreateOrderRoute::PAYPAL_RETURN_URL => 'https://example.test/paypal/restore-context/token',
+            CreateOrderRoute::PAYPAL_CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+        ]));
+
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        static::assertSame(CreateOrderCapture::ID, $response->getToken());
+
+        $request = $this->getClient()->getLast();
+        static::assertNotNull($request);
+
+        $order = (new Order())->assign($request->getRequestBody() ?? []);
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext?->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext?->getCancelUrl());
     }
 
     public function testCreatePaymentWithoutCustomer(): void

@@ -57,7 +57,7 @@ class VenmoOrderBuilder extends AbstractOrderBuilder
 
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
-        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction);
+        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, $request);
         $venmo->setExperienceContext($experienceContext);
 
         if (!$request->attributes->getBoolean(self::PRELIMINARY_ATTRIBUTE) && $token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
@@ -81,7 +81,7 @@ class VenmoOrderBuilder extends AbstractOrderBuilder
         $venmo = new Venmo();
         $paymentSource->setVenmo($venmo);
 
-        $venmo->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext()));
+        $venmo->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext(), request: $requestDataBag));
 
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {

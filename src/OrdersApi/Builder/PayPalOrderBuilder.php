@@ -75,7 +75,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
 
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
-        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction);
+        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, $request);
         $paypal->setExperienceContext($experienceContext);
 
         $customer = $order->getOrderCustomer();
@@ -99,7 +99,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $paypal = new Paypal();
         $paymentSource->setPaypal($paypal);
 
-        $paypal->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext()));
+        $paypal->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext(), request: $requestDataBag));
 
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {

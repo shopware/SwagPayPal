@@ -45,6 +45,7 @@ use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\AbstractPaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -182,6 +183,21 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $this->expectExceptionMessageMatches('/\A' . \preg_quote('Required setting "landingPage" is missing or invalid', '/') . '\z/');
         $this->systemConfig->set(Settings::LANDING_PAGE, 'invalidLandingPageType');
         $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, new RequestDataBag());
+    }
+
+    public function testGetOrderFromCartUsesRequestReturnUrls(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        $requestData = new RequestDataBag([
+            CreateOrderRoute::PAYPAL_RETURN_URL => 'https://example.test/paypal/restore-context/token',
+            CreateOrderRoute::PAYPAL_CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+        ]);
+
+        $order = $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, $requestData);
+        $experienceContext = $order->getPaymentSource()?->first($this->getPaymentSourceClass())?->getExperienceContext();
+
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext?->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext?->getCancelUrl());
     }
 
     public function testGetOrderWithDisabledSubmitCartConfig(): void

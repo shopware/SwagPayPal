@@ -17,6 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 #[Package('checkout')]
 abstract class AbstractCreateOrderRoute
 {
+    public const PAYPAL_RETURN_URL = 'paypalReturnUrl';
+    public const PAYPAL_CANCEL_URL = 'paypalCancelUrl';
+
     abstract public function getDecorated(): AbstractCreateOrderRoute;
 
     /**

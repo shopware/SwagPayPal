@@ -86,6 +86,16 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
                 description: 'Use an existing order id to create PayPal order',
                 type: 'string',
             ),
+            new OA\Property(
+                property: self::PAYPAL_RETURN_URL,
+                description: 'Return URL for the PayPal order experience context',
+                type: 'string',
+            ),
+            new OA\Property(
+                property: self::PAYPAL_CANCEL_URL,
+                description: 'Cancel URL for the PayPal order experience context',
+                type: 'string',
+            ),
         ])),
         tags: ['Store API', 'PayPal'],
         responses: [new OA\Response(

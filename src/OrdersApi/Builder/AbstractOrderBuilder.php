@@ -32,6 +32,7 @@ use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
@@ -169,6 +170,7 @@ abstract class AbstractOrderBuilder
         SalesChannelEntity $salesChannel,
         Context $context,
         ?PaymentTransactionStruct $paymentTransaction = null,
+        Request|RequestDataBag|null $request = null,
     ): ExperienceContext {
         $experienceContext = new ExperienceContext();
         $experienceContext->setBrandName($this->getBrandName($salesChannel));
@@ -182,7 +184,12 @@ abstract class AbstractOrderBuilder
             ? ExperienceContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS
             : ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING);
 
-        if ($paymentTransaction?->getReturnUrl()) {
+        $paypalReturnUrl = $this->getPayPalUrlFromRequest($request, CreateOrderRoute::PAYPAL_RETURN_URL);
+        $paypalCancelUrl = $this->getPayPalUrlFromRequest($request, CreateOrderRoute::PAYPAL_CANCEL_URL);
+        if ($paypalReturnUrl !== null && $paypalCancelUrl !== null) {
+            $experienceContext->setReturnUrl($paypalReturnUrl);
+            $experienceContext->setCancelUrl($paypalCancelUrl);
+        } elseif ($paymentTransaction?->getReturnUrl()) {
             $experienceContext->setReturnUrl($paymentTransaction->getReturnUrl());
             $experienceContext->setCancelUrl(\sprintf('%s&cancel=1', $paymentTransaction->getReturnUrl()));
         } else {
@@ -191,6 +198,23 @@ abstract class AbstractOrderBuilder
         }
 
         return $experienceContext;
+    }
+
+    private function getPayPalUrlFromRequest(Request|RequestDataBag|null $request, string $key): ?string
+    {
+        if ($request instanceof Request) {
+            $value = $request->request->get($key);
+        } elseif ($request instanceof ParameterBag) {
+            $value = $request->get($key);
+        } else {
+            return null;
+        }
+
+        if (!\is_string($value) || $value === '') {
+            return null;
+        }
+
+        return $value;
     }
 
     protected function getBrandName(SalesChannelEntity $salesChannel): string
