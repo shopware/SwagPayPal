@@ -19,6 +19,7 @@ abstract class AbstractCreateOrderRoute
 {
     public const PAYPAL_RETURN_URL = 'paypalReturnUrl';
     public const PAYPAL_CANCEL_URL = 'paypalCancelUrl';
+    public const PAYPAL_BUYER_USER_AGENT = 'paypalBuyerUserAgent';
 
     abstract public function getDecorated(): AbstractCreateOrderRoute;
 

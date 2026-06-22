@@ -17,9 +17,9 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
@@ -117,7 +117,7 @@ class PayPalControllerTest extends TestCase
         $this->createOrderRoute
             ->expects($this->once())
             ->method('createPayPalOrder')
-            ->with($this->isInstanceOf(SalesChannelContext::class), $this->callback(static function (Request $request): bool {
+            ->with(static::isInstanceOf(SalesChannelContext::class), static::callback(static function (Request $request): bool {
                 return $request->request->get(CreateOrderRoute::PAYPAL_RETURN_URL) === 'https://example.test/paypal/restore-context/return-token'
                     && $request->request->get(CreateOrderRoute::PAYPAL_CANCEL_URL) === 'https://example.test/paypal/restore-context/return-token';
             }))

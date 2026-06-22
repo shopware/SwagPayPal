@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Storefront\Checkout\ReturnUrl;
 
 use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Token\RegisteredClaims;
 use Lcobucci\JWT\UnencryptedToken;
+use Psr\Clock\ClockInterface;
 use Shopware\Core\Framework\JWT\JWTException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -22,8 +22,12 @@ class PayPalReturnTokenService
     private const CLAIM_RETURN_TARGET = 'returnTarget';
     private const CLAIM_ORDER_ID = 'orderId';
 
+    /**
+     * @internal
+     */
     public function __construct(
         private readonly Configuration $configuration,
+        private readonly ClockInterface $clock,
         private readonly int $tokenLifetime = 900,
     ) {
     }
@@ -42,7 +46,7 @@ class PayPalReturnTokenService
             throw JWTException::invalidJwt('PayPal account order edit return target requires an order id');
         }
 
-        $now = new \DateTimeImmutable('@' . \time());
+        $now = new \DateTimeImmutable('@' . $this->clock->now()->getTimestamp());
         $expiresAt = $now->modify(\sprintf('%+d seconds', $this->tokenLifetime));
 
         $builder = $this->configuration->builder()

@@ -251,7 +251,7 @@ class PayPalController extends StorefrontController
 
     private function restoreContextToken(Request $request, PayPalReturnToken $returnToken): void
     {
-        if (!$request->hasSession()) {
+        if (!$request->hasSession(true)) {
             return;
         }
 

@@ -178,9 +178,10 @@ class CreateOrderRouteTest extends TestCase
 
         $order = (new Order())->assign($request->getRequestBody() ?? []);
         $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
 
-        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext?->getReturnUrl());
-        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext?->getCancelUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
     }
 
     public function testCreatePaymentWithoutCustomer(): void

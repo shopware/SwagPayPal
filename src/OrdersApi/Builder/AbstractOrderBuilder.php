@@ -32,13 +32,14 @@ use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
 abstract class AbstractOrderBuilder
 {
     public const PRELIMINARY_ATTRIBUTE = 'isPayPalPreliminaryOrder';
+
+    private Request|RequestDataBag|null $currentCreateOrderRequest = null;
 
     /**
      * @internal
@@ -64,7 +65,9 @@ abstract class AbstractOrderBuilder
         $payPalOrder->setIntent($this->getIntent($order->getSalesChannelId()));
         $payPalOrder->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
         $paymentSource = new PaymentSource();
-        $this->buildPaymentSource($paymentTransaction, $orderTransaction, $order, $context, $request, $paymentSource);
+        $this->withCreateOrderRequest($request, function () use ($paymentTransaction, $orderTransaction, $order, $context, $request, $paymentSource): void {
+            $this->buildPaymentSource($paymentTransaction, $orderTransaction, $order, $context, $request, $paymentSource);
+        });
         $payPalOrder->setPaymentSource($paymentSource);
 
         return $payPalOrder;
@@ -81,7 +84,9 @@ abstract class AbstractOrderBuilder
         $order->setIntent($this->getIntent($salesChannelContext->getSalesChannelId()));
         $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
         $paymentSource = new PaymentSource();
-        $this->buildPaymentSourceFromCart($cart, $salesChannelContext, $requestDataBag, $paymentSource);
+        $this->withCreateOrderRequest($requestDataBag, function () use ($cart, $salesChannelContext, $requestDataBag, $paymentSource): void {
+            $this->buildPaymentSourceFromCart($cart, $salesChannelContext, $requestDataBag, $paymentSource);
+        });
         $order->setPaymentSource($paymentSource);
 
         return $order;
@@ -170,7 +175,6 @@ abstract class AbstractOrderBuilder
         SalesChannelEntity $salesChannel,
         Context $context,
         ?PaymentTransactionStruct $paymentTransaction = null,
-        Request|RequestDataBag|null $request = null,
     ): ExperienceContext {
         $experienceContext = new ExperienceContext();
         $experienceContext->setBrandName($this->getBrandName($salesChannel));
@@ -184,8 +188,8 @@ abstract class AbstractOrderBuilder
             ? ExperienceContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS
             : ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING);
 
-        $paypalReturnUrl = $this->getPayPalUrlFromRequest($request, CreateOrderRoute::PAYPAL_RETURN_URL);
-        $paypalCancelUrl = $this->getPayPalUrlFromRequest($request, CreateOrderRoute::PAYPAL_CANCEL_URL);
+        $paypalReturnUrl = $this->getPayPalUrlFromRequest(CreateOrderRoute::PAYPAL_RETURN_URL);
+        $paypalCancelUrl = $this->getPayPalUrlFromRequest(CreateOrderRoute::PAYPAL_CANCEL_URL);
         if ($paypalReturnUrl !== null && $paypalCancelUrl !== null) {
             $experienceContext->setReturnUrl($paypalReturnUrl);
             $experienceContext->setCancelUrl($paypalCancelUrl);
@@ -198,23 +202,6 @@ abstract class AbstractOrderBuilder
         }
 
         return $experienceContext;
-    }
-
-    private function getPayPalUrlFromRequest(Request|RequestDataBag|null $request, string $key): ?string
-    {
-        if ($request instanceof Request) {
-            $value = $request->request->get($key);
-        } elseif ($request instanceof ParameterBag) {
-            $value = $request->get($key);
-        } else {
-            return null;
-        }
-
-        if (!\is_string($value) || $value === '') {
-            return null;
-        }
-
-        return $value;
     }
 
     protected function getBrandName(SalesChannelEntity $salesChannel): string
@@ -231,6 +218,37 @@ abstract class AbstractOrderBuilder
     protected function submitCart(string $salesChannelId): bool
     {
         return $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelId);
+    }
+
+    private function getPayPalUrlFromRequest(string $key): ?string
+    {
+        $request = $this->currentCreateOrderRequest;
+
+        if ($request instanceof Request) {
+            $value = $request->request->get($key);
+        } elseif ($request instanceof RequestDataBag) {
+            $value = $request->get($key);
+        } else {
+            return null;
+        }
+
+        if (!\is_string($value) || $value === '') {
+            return null;
+        }
+
+        return $value;
+    }
+
+    private function withCreateOrderRequest(Request|RequestDataBag $request, \Closure $callback): void
+    {
+        $previousRequest = $this->currentCreateOrderRequest;
+        $this->currentCreateOrderRequest = $request;
+
+        try {
+            $callback();
+        } finally {
+            $this->currentCreateOrderRequest = $previousRequest;
+        }
     }
 
     /**

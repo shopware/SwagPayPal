@@ -35,7 +35,7 @@ class ApplePayOrderBuilder extends AbstractOrderBuilder
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
         $applePay = new ApplePay();
-        $applePay->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, $request));
+        $applePay->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction));
 
         $attributes = new Attributes();
         $attributes->setVerification(new Verification());
@@ -47,7 +47,7 @@ class ApplePayOrderBuilder extends AbstractOrderBuilder
     protected function buildPaymentSourceFromCart(Cart $cart, SalesChannelContext $salesChannelContext, RequestDataBag $requestDataBag, PaymentSource $paymentSource): void
     {
         $applePay = new ApplePay();
-        $applePay->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext(), request: $requestDataBag));
+        $applePay->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext()));
 
         $attributes = new Attributes();
         $attributes->setVerification(new Verification());

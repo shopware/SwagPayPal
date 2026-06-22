@@ -152,6 +152,10 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
 
         $requestDataBag = new RequestDataBag($request->request->all());
+        $buyerUserAgent = $request->headers->get('user-agent');
+        if ($buyerUserAgent !== null && $buyerUserAgent !== '') {
+            $requestDataBag->set(self::PAYPAL_BUYER_USER_AGENT, $buyerUserAgent);
+        }
 
         return $orderBuilder->getOrderFromCart($cart, $salesChannelContext, $requestDataBag);
     }

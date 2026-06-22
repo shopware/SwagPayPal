@@ -35,7 +35,7 @@ class GooglePayOrderBuilder extends AbstractOrderBuilder
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
         $googlePay = new GooglePay();
-        $googlePay->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, $request));
+        $googlePay->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction));
 
         $attributes = new Attributes();
         $attributes->setVerification(new Verification());
@@ -47,7 +47,7 @@ class GooglePayOrderBuilder extends AbstractOrderBuilder
     protected function buildPaymentSourceFromCart(Cart $cart, SalesChannelContext $salesChannelContext, RequestDataBag $requestDataBag, PaymentSource $paymentSource): void
     {
         $googlePay = new GooglePay();
-        $googlePay->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext(), request: $requestDataBag));
+        $googlePay->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext()));
 
         $attributes = new Attributes();
         $verification = new Verification();

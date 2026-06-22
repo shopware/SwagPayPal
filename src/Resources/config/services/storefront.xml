@@ -27,6 +27,7 @@
 
         <service id="Swag\PayPal\Storefront\Checkout\ReturnUrl\PayPalReturnTokenService">
             <argument type="service" id="shopware.jwt_config"/>
+            <argument type="service" id="Psr\Clock\ClockInterface"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\Framework\Cookie\CookieProviderSubscriber">

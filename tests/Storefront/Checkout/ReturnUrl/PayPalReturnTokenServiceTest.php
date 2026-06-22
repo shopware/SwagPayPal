@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Storefront\Checkout\ReturnUrl;
 
-use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
@@ -15,12 +14,17 @@ use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 use Shopware\Core\Framework\JWT\JWTException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Storefront\Checkout\ReturnUrl\PayPalReturnToken;
 use Swag\PayPal\Storefront\Checkout\ReturnUrl\PayPalReturnTokenService;
+use Symfony\Component\Clock\MockClock;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 #[CoversClass(PayPalReturnToken::class)]
 #[CoversClass(PayPalReturnTokenService::class)]
@@ -28,20 +32,23 @@ class PayPalReturnTokenServiceTest extends TestCase
 {
     private Configuration $configuration;
 
+    private ClockInterface $clock;
+
     protected function setUp(): void
     {
+        $this->clock = new MockClock('2026-01-01 00:00:00');
         $key = InMemory::plainText('test-secret-with-at-least-32-bytes');
         $signer = new Sha256();
         $this->configuration = Configuration::forSymmetricSigner($signer, $key)
             ->withValidationConstraints(
                 new SignedWith($signer, $key),
-                new LooseValidAt(new SystemClock(new \DateTimeZone(\date_default_timezone_get())), null),
+                new LooseValidAt($this->clock, null),
             );
     }
 
     public function testGenerateAndParseCheckoutConfirmToken(): void
     {
-        $service = new PayPalReturnTokenService($this->configuration);
+        $service = new PayPalReturnTokenService($this->configuration, $this->clock);
         $contextToken = 'context-token';
         $salesChannelId = Uuid::randomHex();
 
@@ -56,7 +63,7 @@ class PayPalReturnTokenServiceTest extends TestCase
 
     public function testGenerateAndParseEditOrderToken(): void
     {
-        $service = new PayPalReturnTokenService($this->configuration);
+        $service = new PayPalReturnTokenService($this->configuration, $this->clock);
         $salesChannelId = Uuid::randomHex();
         $orderId = Uuid::randomHex();
 
@@ -69,7 +76,7 @@ class PayPalReturnTokenServiceTest extends TestCase
 
     public function testGenerateRejectsMissingEditOrderId(): void
     {
-        $service = new PayPalReturnTokenService($this->configuration);
+        $service = new PayPalReturnTokenService($this->configuration, $this->clock);
 
         $this->expectException(JWTException::class);
         $service->generate('context-token', Uuid::randomHex(), PayPalReturnToken::TARGET_ACCOUNT_ORDER_EDIT);
@@ -78,7 +85,7 @@ class PayPalReturnTokenServiceTest extends TestCase
     public function testParseRejectsExpiredToken(): void
     {
         $salesChannelId = Uuid::randomHex();
-        $service = new PayPalReturnTokenService($this->configuration, -1);
+        $service = new PayPalReturnTokenService($this->configuration, $this->clock, -1);
         $token = $service->generate('context-token', $salesChannelId, PayPalReturnToken::TARGET_CHECKOUT_CONFIRM);
 
         $this->expectException(JWTException::class);
@@ -87,7 +94,7 @@ class PayPalReturnTokenServiceTest extends TestCase
 
     public function testParseRejectsSalesChannelMismatch(): void
     {
-        $service = new PayPalReturnTokenService($this->configuration);
+        $service = new PayPalReturnTokenService($this->configuration, $this->clock);
         $token = $service->generate('context-token', Uuid::randomHex(), PayPalReturnToken::TARGET_CHECKOUT_CONFIRM);
 
         $this->expectException(JWTException::class);
@@ -97,7 +104,7 @@ class PayPalReturnTokenServiceTest extends TestCase
     public function testParseRejectsInvalidReturnTarget(): void
     {
         $salesChannelId = Uuid::randomHex();
-        $service = new PayPalReturnTokenService($this->configuration);
+        $service = new PayPalReturnTokenService($this->configuration, $this->clock);
         $token = $this->buildToken([
             'contextToken' => 'context-token',
             'salesChannelId' => $salesChannelId,
@@ -111,7 +118,7 @@ class PayPalReturnTokenServiceTest extends TestCase
     public function testParseRejectsMissingEditOrderId(): void
     {
         $salesChannelId = Uuid::randomHex();
-        $service = new PayPalReturnTokenService($this->configuration);
+        $service = new PayPalReturnTokenService($this->configuration, $this->clock);
         $token = $this->buildToken([
             'contextToken' => 'context-token',
             'salesChannelId' => $salesChannelId,
@@ -127,7 +134,7 @@ class PayPalReturnTokenServiceTest extends TestCase
      */
     private function buildToken(array $claims): string
     {
-        $now = new \DateTimeImmutable('@' . \time());
+        $now = new \DateTimeImmutable('@' . $this->clock->now()->getTimestamp());
         $builder = $this->configuration->builder()
             ->identifiedBy(Uuid::randomHex())
             ->issuedAt($now)
@@ -135,6 +142,10 @@ class PayPalReturnTokenServiceTest extends TestCase
             ->expiresAt($now->modify('+15 minutes'));
 
         foreach ($claims as $claim => $value) {
+            if ($claim === '') {
+                continue;
+            }
+
             $builder = $builder->withClaim($claim, $value);
         }
 

@@ -195,9 +195,10 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
 
         $order = $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, $requestData);
         $experienceContext = $order->getPaymentSource()?->first($this->getPaymentSourceClass())?->getExperienceContext();
+        static::assertNotNull($experienceContext);
 
-        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext?->getReturnUrl());
-        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext?->getCancelUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
     }
 
     public function testGetOrderWithDisabledSubmitCartConfig(): void
@@ -464,7 +465,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         return $order;
     }
 
-    private function createCart(string $paymentMethodId, bool $withTransaction = true, float $netPrice = 9.0, float $totalPrice = 10.9): Cart
+    protected function createCart(string $paymentMethodId, bool $withTransaction = true, float $netPrice = 9.0, float $totalPrice = 10.9): Cart
     {
         $cart = new Cart(Uuid::randomHex());
         if ($withTransaction) {
@@ -485,7 +486,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         return $cart;
     }
 
-    private function createCartPrice(float $netPrice, float $totalPrice, float $positionPrice): CartPrice
+    protected function createCartPrice(float $netPrice, float $totalPrice, float $positionPrice): CartPrice
     {
         return new CartPrice(
             $netPrice,
@@ -497,7 +498,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         );
     }
 
-    private function createLineItem(
+    protected function createLineItem(
         ?CalculatedPrice $lineItemPrice,
         string $lineItemType = LineItem::PRODUCT_LINE_ITEM_TYPE,
     ): LineItem {
@@ -512,7 +513,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         return $lineItem;
     }
 
-    private function createSalesChannelContext(): SalesChannelContext
+    protected function createSalesChannelContext(): SalesChannelContext
     {
         $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCurrency()->setIsoCode('EUR');
@@ -535,7 +536,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         return $salesChannelContext;
     }
 
-    private function createCartWithLineItem(?CalculatedPrice $lineItemPrice = null): Cart
+    protected function createCartWithLineItem(?CalculatedPrice $lineItemPrice = null): Cart
     {
         $cart = $this->createCart('', true, $lineItemPrice ? $lineItemPrice->getTotalPrice() : 9.0, $lineItemPrice ? $lineItemPrice->getTotalPrice() : 10.9);
         $cart->add($this->createLineItem($lineItemPrice));

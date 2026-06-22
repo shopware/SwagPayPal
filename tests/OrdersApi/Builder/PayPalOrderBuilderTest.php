@@ -11,10 +11,14 @@ use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\OrdersApi\Builder\Trait\VaultableOrderBuildTrait;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -25,6 +29,89 @@ use Symfony\Component\HttpFoundation\Request;
 class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
 {
     use VaultableOrderBuildTrait;
+
+    public function testGetOrderFromCartAddsAppSwitchContext(): void
+    {
+        $this->systemConfig->set(Settings::SPB_APP_SWITCH_ENABLED, true);
+
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $this->createSalesChannelContext(),
+            $this->createAppSwitchRequestData(),
+        );
+
+        $mobileWebContext = $order
+            ->getPaymentSource()
+            ?->getPaypal()
+            ?->getExperienceContext()
+            ?->getAppSwitchContext()
+            ?->getMobileWeb();
+
+        static::assertNotNull($mobileWebContext);
+        static::assertSame('Mozilla/5.0 App Switch Test', $mobileWebContext->getBuyerUserAgent());
+        static::assertSame('AUTO', $mobileWebContext->getReturnFlow());
+    }
+
+    public function testGetOrderFromCartSkipsAppSwitchContextWhenDisabled(): void
+    {
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $this->createSalesChannelContext(),
+            $this->createAppSwitchRequestData(),
+        );
+
+        static::assertNull($order->getPaymentSource()?->getPaypal()?->getExperienceContext()?->getAppSwitchContext());
+    }
+
+    public function testGetOrderFromCartSkipsAppSwitchContextForVaulting(): void
+    {
+        $this->systemConfig->set(Settings::SPB_APP_SWITCH_ENABLED, true);
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('shouldRequestVaulting')
+            ->willReturn(true);
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('requestVaulting');
+
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $this->createSalesChannelContext(),
+            $this->createAppSwitchRequestData([VaultTokenService::REQUEST_CREATE_VAULT => true]),
+        );
+
+        static::assertNull($order->getPaymentSource()?->getPaypal()?->getExperienceContext()?->getAppSwitchContext());
+    }
+
+    public function testGetOrderAddsAppSwitchContext(): void
+    {
+        $this->systemConfig->set(Settings::SPB_APP_SWITCH_ENABLED, true);
+        $orderTransaction = $this->createOrderTransaction();
+
+        $order = $this->getBuilder()->getOrder(
+            new PaymentTransactionStruct($orderTransaction->getId()),
+            $orderTransaction,
+            $this->createOrder(),
+            Context::createDefaultContext(),
+            new Request([], [
+                'product' => 'spb',
+            ], [
+                AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true,
+            ], [], [], [
+                'HTTP_USER_AGENT' => 'Mozilla/5.0 Edit Order App Switch Test',
+            ]),
+        );
+
+        $mobileWebContext = $order
+            ->getPaymentSource()
+            ?->getPaypal()
+            ?->getExperienceContext()
+            ?->getAppSwitchContext()
+            ?->getMobileWeb();
+
+        static::assertNotNull($mobileWebContext);
+        static::assertSame('Mozilla/5.0 Edit Order App Switch Test', $mobileWebContext->getBuyerUserAgent());
+    }
 
     public function testGetOrderNoBillingAddress(): void
     {
@@ -60,5 +147,19 @@ class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
     protected function getPaymentSourceClass(): string
     {
         return Paypal::class;
+    }
+
+    /**
+     * @param array<string, mixed> $additionalData
+     */
+    private function createAppSwitchRequestData(array $additionalData = []): RequestDataBag
+    {
+        return new RequestDataBag([
+            'product' => 'spb',
+            CreateOrderRoute::PAYPAL_RETURN_URL => 'https://example.test/paypal/restore-context/token',
+            CreateOrderRoute::PAYPAL_CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+            CreateOrderRoute::PAYPAL_BUYER_USER_AGENT => 'Mozilla/5.0 App Switch Test',
+            ...$additionalData,
+        ]);
     }
 }
