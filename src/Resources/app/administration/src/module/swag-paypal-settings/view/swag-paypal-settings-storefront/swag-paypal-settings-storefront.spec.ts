@@ -85,6 +85,7 @@ describe('swag-paypal-settings-storefront', () => {
             'SwagPayPal.settings.spbCheckoutEnabled',
             'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled',
             'SwagPayPal.settings.spbShowPayLater',
+            'SwagPayPal.settings.spbAppSwitchEnabled',
             'SwagPayPal.settings.spbButtonColor',
             'SwagPayPal.settings.spbButtonShape',
             'SwagPayPal.settings.spbButtonLanguageIso',
@@ -130,6 +131,7 @@ describe('swag-paypal-settings-storefront', () => {
         const disabledSettings = [
             'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled',
             'SwagPayPal.settings.spbShowPayLater',
+            'SwagPayPal.settings.spbAppSwitchEnabled',
             'SwagPayPal.settings.spbButtonColor',
             'SwagPayPal.settings.spbButtonShape',
             'SwagPayPal.settings.spbButtonLanguageIso',
@@ -139,13 +141,13 @@ describe('swag-paypal-settings-storefront', () => {
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.sbpSettingsDisabled).toBe(false);
-        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(5).fill(false));
+        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(6).fill(false));
 
         store.set('SwagPayPal.settings.spbCheckoutEnabled', false);
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.sbpSettingsDisabled).toBe(true);
-        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(5).fill(true));
+        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(6).fill(true));
     });
 
     it('should fetch config without selected sales channel', async () => {

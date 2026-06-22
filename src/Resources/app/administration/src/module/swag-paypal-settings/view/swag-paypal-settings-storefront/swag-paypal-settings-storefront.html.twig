@@ -99,6 +99,11 @@
     />
 
     <swag-paypal-setting
+        path="SwagPayPal.settings.spbAppSwitchEnabled"
+        :disabled="sbpSettingsDisabled"
+    />
+
+    <swag-paypal-setting
         path="SwagPayPal.settings.spbButtonColor"
         :disabled="sbpSettingsDisabled"
         :options="buttonColorOptions"

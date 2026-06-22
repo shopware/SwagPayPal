@@ -22,6 +22,7 @@ const Default = {
     'SwagPayPal.settings.spbShowPayLater': true,
     'SwagPayPal.settings.spbCheckoutEnabled': true,
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled': false,
+    'SwagPayPal.settings.spbAppSwitchEnabled': false,
 
     'SwagPayPal.settings.installmentBannerDetailPageEnabled': true,
     'SwagPayPal.settings.installmentBannerCartEnabled': true,

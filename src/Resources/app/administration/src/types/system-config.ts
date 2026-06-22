@@ -44,6 +44,7 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.spbShowPayLater'?: boolean;
     'SwagPayPal.settings.spbCheckoutEnabled'?: boolean;
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled'?: boolean;
+    'SwagPayPal.settings.spbAppSwitchEnabled'?: boolean;
     'SwagPayPal.settings.vaultingEnabled'?: boolean;
     'SwagPayPal.settings.vaultingEnableAlways'?: boolean;
     'SwagPayPal.settings.vaultingEnabledWallet'?: boolean;
@@ -102,6 +103,7 @@ export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'password'
     'SwagPayPal.settings.spbShowPayLater': 'boolean',
     'SwagPayPal.settings.spbCheckoutEnabled': 'boolean',
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled': 'boolean',
+    'SwagPayPal.settings.spbAppSwitchEnabled': 'boolean',
     'SwagPayPal.settings.vaultingEnabled': 'boolean',
     'SwagPayPal.settings.vaultingEnableAlways': 'boolean',
     'SwagPayPal.settings.vaultingEnabledWallet': 'boolean',

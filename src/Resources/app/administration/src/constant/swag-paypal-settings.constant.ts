@@ -118,6 +118,7 @@ export const SYSTEM_CONFIGS = [
     'SwagPayPal.settings.spbShowPayLater',
     'SwagPayPal.settings.spbCheckoutEnabled',
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled',
+    'SwagPayPal.settings.spbAppSwitchEnabled',
 
     'SwagPayPal.settings.acdcForce3DS',
 
