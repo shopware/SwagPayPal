@@ -326,6 +326,10 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             (response, request) => {
                 if (request.status < 400) {
                     return actions.redirect(this.options.checkoutConfirmUrl);
+                } else if (request.status === 400) {
+                    this.onError(JSON.parse(request.response));
+
+                   return window.location.reload();
                 }
 
                 return this.onError();

@@ -104,13 +104,8 @@ class PayPalController extends StorefrontController
         try {
             return $this->expressPrepareCheckoutRoute->prepareCheckout($context, $request);
         } catch (MissingCountryIdException $e) {
-            $this->addFlash('danger', $this->trans(\sprintf('paypal.error.%s', $e->getErrorCode())));
-        } catch (\Throwable) {
-            $this->addFlash('danger', $this->trans('paypal.general.paymentError'));
+            return (new ErrorResponseFactory())->getResponseFromException($e);
         }
-
-        // Where to redirect? Back to the page or register?
-        return new NoContentResponse();
     }
 
     #[Route(path: '/paypal/express/create-order', name: 'frontend.paypal.express.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
