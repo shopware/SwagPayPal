@@ -103,7 +103,7 @@ class PayPalController extends StorefrontController
 
         try {
             return $this->expressPrepareCheckoutRoute->prepareCheckout($context, $request);
-        } catch (MissingCountryIdException $e) {
+        } catch (PayPalApiException|MissingCountryIdException $e) {
             return (new ErrorResponseFactory())->getResponseFromException($e);
         }
     }
