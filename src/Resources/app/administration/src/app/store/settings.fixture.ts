@@ -25,7 +25,7 @@ const Default = {
 
     'SwagPayPal.settings.installmentBannerLogoType': 'primary',
     'SwagPayPal.settings.installmentBannerTextColor': 'monochrome',
-    'SwagPayPal.settings.installmentBannerTextSize': '12' as unknown as number,
+    'SwagPayPal.settings.installmentBannerTextSize': '12',
 
     'SwagPayPal.settings.installmentBannerDetailPageEnabled': true,
     'SwagPayPal.settings.installmentBannerCartEnabled': true,

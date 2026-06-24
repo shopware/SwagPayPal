@@ -1,6 +1,5 @@
 import template from './swag-paypal-settings-storefront.html.twig';
 import './swag-paypal-settings-storefront.scss';
-import SwagPayPalSettingsBannerPreview from './swag-paypal-settings-banner-preview';
 import {
     BUTTON_COLORS,
     BUTTON_SHAPES,
@@ -14,10 +13,6 @@ const { Criteria } = Shopware.Data;
 
 export default Shopware.Component.wrapComponentConfig({
     template,
-
-    components: {
-        SwagPayPalSettingsBannerPreview,
-    },
 
     inject: [
         'systemConfigApiService',

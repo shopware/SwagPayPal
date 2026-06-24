@@ -52,13 +52,7 @@ export default Shopware.Mixin.register('swag-paypal-settings', Shopware.Componen
 
             const config = await this.systemConfigApiService.getValues('SwagPayPal.settings', salesChannel as null) as PayPal.SystemConfig;
 
-            const defaults: Partial<PayPal.SystemConfig> = {
-                'SwagPayPal.settings.installmentBannerLogoType': 'primary',
-                'SwagPayPal.settings.installmentBannerTextColor': 'monochrome',
-                'SwagPayPal.settings.installmentBannerTextSize': '12' as unknown as number,
-            };
-
-            this.settingsStore.setConfig(salesChannel, { ...defaults, ...(config || {}) });
+            this.settingsStore.setConfig(salesChannel, config || {});
         },
 
         async saveSettings(): Promise<Record<string, PayPal.Setting<'settings_information'>> | void> {

@@ -91,9 +91,13 @@
       "ecsShippingCallbackSettingDisabledTooltip": "Der Shipping Callback kann nicht aktiviert werden, da \"Lokale Entwicklungsumgebung\" aktiviert ist"
     },
     "installment": {
-      "title": "PayPal 'Später Bezahlen'-Banner-Darstellung",
+      "title": "'Später Bezahlen'-Banner",
+      "subtitle": "Banner erhöhen die Konversionsrate in Ihrem Shop und stellen kein finanzielles Risiko für Sie als Händler dar. Es wird empfohlen, sie aktiviert zu lassen.",
       "appearance": "Darstellung",
       "preview": "Vorschau",
+      "previewNoCredentials": "Geben Sie Ihre PayPal-Zugangsdaten ein, um die Bannervorschau zu sehen.",
+      "previewSdkError": "Das PayPal SDK konnte nicht initialisiert werden. Bitte überprüfen Sie Ihre Client-ID.",
+      "previewNoOffers": "Für Ihr Konto sind mit den aktuellen Einstellungen keine Pay-Later-Angebote verfügbar.",
       "pageVisibility": "Seiten-Sichtbarkeit",
       "pageVisibilitySubtitle": "Der Banner wird auf den folgenden Seiten angezeigt."
     },

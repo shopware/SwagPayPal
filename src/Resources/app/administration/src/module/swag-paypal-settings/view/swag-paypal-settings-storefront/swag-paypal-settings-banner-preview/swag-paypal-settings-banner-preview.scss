@@ -26,21 +26,21 @@
         align-items: flex-start;
         gap: var(--scale-size-16);
         margin-bottom: var(--scale-size-20);
+    }
 
-        // mt-skeleton-bar has a scoped margin-bottom: var(--scale-size-32) that needs overriding
-        .mt-skeleton-bar {
-            height: var(--scale-size-16) !important;
-            margin-bottom: 0 !important;
+    &__bar {
+        height: var(--scale-size-16);
+        background: var(--color-zinc-100, #E9EBF4);
+        border-radius: var(--border-radius-xs);
+
+        &--primary {
+            width: 285px;
+            max-width: 100%;
         }
-    }
 
-    &__skeleton-primary {
-        width: 285px !important;
-        max-width: 100% !important;
-    }
-
-    &__skeleton-secondary {
-        width: 158px !important;
-        max-width: 100% !important;
+        &--secondary {
+            width: 158px;
+            max-width: 100%;
+        }
     }
 }
