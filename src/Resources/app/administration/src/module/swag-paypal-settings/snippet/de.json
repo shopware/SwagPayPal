@@ -41,6 +41,18 @@
         "silver": "Silber",
         "white": "Weiß"
       },
+      "installmentLogoType": {
+        "primary": "Primär",
+        "alternative": "Alternativ",
+        "inline": "Inline",
+        "none": "Kein"
+      },
+      "installmentTextColor": {
+        "black": "Schwarz",
+        "white": "Weiß",
+        "monochrome": "Monochrom",
+        "grayscale": "Graustufen"
+      },
       "buttonShape": {
         "sharp": "Rechteckig mit spitzen Ecken",
         "pill": "Rund",
@@ -79,8 +91,11 @@
       "ecsShippingCallbackSettingDisabledTooltip": "Der Shipping Callback kann nicht aktiviert werden, da \"Lokale Entwicklungsumgebung\" aktiviert ist"
     },
     "installment": {
-      "title": "'Später Bezahlen'-Banner",
-      "subtitle": "Banner erhöhen die Konversionsrate in Deinem Shop und stellen für Dich als Händler kein finanzielles Risiko dar, daher sollten sie immer aktiv sein."
+      "title": "PayPal 'Später Bezahlen'-Banner-Darstellung",
+      "appearance": "Darstellung",
+      "preview": "Vorschau",
+      "pageVisibility": "Seiten-Sichtbarkeit",
+      "pageVisibilitySubtitle": "Der Banner wird auf den folgenden Seiten angezeigt."
     },
     "spb": {
       "title": "Smart Payment Buttons"

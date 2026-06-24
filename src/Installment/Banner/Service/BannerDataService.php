@@ -90,6 +90,9 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
             'offCanvasCartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED),
             'loginPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED),
             'detailPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED),
+            'logoType' => $this->systemConfigService->getString(Settings::INSTALLMENT_BANNER_LOGO_TYPE),
+            'textColor' => $this->systemConfigService->getString(Settings::INSTALLMENT_BANNER_TEXT_COLOR),
+            'textSize' => (int) ($this->systemConfigService->get(Settings::INSTALLMENT_BANNER_TEXT_SIZE) ?? 12),
             'crossBorderBuyerCountry' => $crossBorderBuyerCountry ?? null,
         ]);
 

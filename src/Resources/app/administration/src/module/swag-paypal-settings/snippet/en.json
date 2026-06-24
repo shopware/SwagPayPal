@@ -45,6 +45,18 @@
         "gold": "Gold (recommended)",
         "silver": "Silver",
         "white": "White"
+      },
+      "installmentLogoType": {
+        "primary": "Primary",
+        "alternative": "Alternative",
+        "inline": "Inline",
+        "none": "None"
+      },
+      "installmentTextColor": {
+        "black": "Black",
+        "white": "White",
+        "monochrome": "Monochrome",
+        "grayscale": "Grayscale"
       }
     },
     "credentialsLive": {
@@ -79,8 +91,11 @@
       "ecsShippingCallbackSettingDisabledTooltip": "The shipping callback can not be enabled as \"Local development environment\" is active"
     },
     "installment": {
-      "title": "'Pay Later' banner",
-      "subtitle": "Banners increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated."
+      "title": "PayPal Pay Later banner appearance",
+      "appearance": "Appearance",
+      "preview": "Preview",
+      "pageVisibility": "Page visibility",
+      "pageVisibilitySubtitle": "The banner will be displayed on the following pages."
     },
     "spb": {
       "title": "Smart Payment Buttons"

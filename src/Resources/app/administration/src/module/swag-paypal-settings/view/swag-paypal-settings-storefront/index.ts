@@ -1,11 +1,23 @@
 import template from './swag-paypal-settings-storefront.html.twig';
-import { BUTTON_COLORS, BUTTON_SHAPES } from 'SwagPayPal/constant/swag-paypal-settings.constant';
+import './swag-paypal-settings-storefront.scss';
+import SwagPayPalSettingsBannerPreview from './swag-paypal-settings-banner-preview';
+import {
+    BUTTON_COLORS,
+    BUTTON_SHAPES,
+    INSTALLMENT_BANNER_LOGO_TYPES,
+    INSTALLMENT_BANNER_TEXT_COLORS,
+    INSTALLMENT_BANNER_TEXT_SIZES,
+} from 'SwagPayPal/constant/swag-paypal-settings.constant';
 import type EntityCollection from "@shopware-ag/meteor-admin-sdk/es/_internals/data/EntityCollection";
 
 const { Criteria } = Shopware.Data;
 
 export default Shopware.Component.wrapComponentConfig({
     template,
+
+    components: {
+        SwagPayPalSettingsBannerPreview,
+    },
 
     inject: [
         'systemConfigApiService',
@@ -35,6 +47,27 @@ export default Shopware.Component.wrapComponentConfig({
             return BUTTON_SHAPES.map((shape) => ({
                 value: shape,
                 label: this.$t(`swag-paypal-settings.options.buttonShape.${shape}`),
+            }));
+        },
+
+        bannerLogoTypeOptions() {
+            return INSTALLMENT_BANNER_LOGO_TYPES.map((type) => ({
+                value: type,
+                label: this.$t(`swag-paypal-settings.options.installmentLogoType.${type}`),
+            }));
+        },
+
+        bannerTextColorOptions() {
+            return INSTALLMENT_BANNER_TEXT_COLORS.map((color) => ({
+                value: color,
+                label: this.$t(`swag-paypal-settings.options.installmentTextColor.${color}`),
+            }));
+        },
+
+        bannerTextSizeOptions() {
+            return INSTALLMENT_BANNER_TEXT_SIZES.map((size) => ({
+                value: String(size),
+                label: String(size),
             }));
         },
 
