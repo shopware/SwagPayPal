@@ -277,9 +277,10 @@ class CompleteProductTest extends TestCase
         static::assertNotSame((new Product())->generateChecksum(), $productStateD->getChecksum());
         static::assertNotSame((new Product())->generateChecksum(), $productStateE->getChecksum());
 
+        static::assertNotNull(DeleteProductsFixture::$deletedUuids);
         static::assertEqualsCanonicalizing(
             [ConstantsForTesting::PRODUCT_F_ID_CONVERTED, ConstantsForTesting::PRODUCT_G_ID_CONVERTED],
-            DeleteProductsFixture::$deletedUuids
+            \array_values(DeleteProductsFixture::$deletedUuids)
         );
 
         static::assertEquals($this->createConvertedProduct($productB, $variantA, $variantB), CreateProductFixture::$lastCreatedProducts[1]);
