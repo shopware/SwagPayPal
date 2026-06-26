@@ -63,6 +63,7 @@
         <service id="Swag\PayPal\Pos\Resource\TokenResource">
             <argument type="service" id="cache.object"/>
             <argument type="service" id="Swag\PayPal\Pos\Client\TokenClientFactory"/>
+            <argument type="service" id="Psr\Clock\ClockInterface"/>
         </service>
 
         <service id="Swag\PayPal\Pos\Resource\UserResource">

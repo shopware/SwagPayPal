@@ -15,6 +15,7 @@ use Swag\PayPal\Pos\Client\PosClient;
 use Swag\PayPal\Pos\Client\PosClientFactory;
 use Swag\PayPal\Pos\Resource\TokenResource;
 use Swag\PayPal\Test\Mock\CacheMock;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * @internal
@@ -33,7 +34,8 @@ class PosClientFactoryMock extends PosClientFactory
         $this->logger = new NullLogger();
         $this->tokenResource = new TokenResource(
             new CacheMock(),
-            new TokenClientFactoryMock()
+            new TokenClientFactoryMock(),
+            new NativeClock()
         );
         parent::__construct($this->tokenResource, new NullLogger());
     }

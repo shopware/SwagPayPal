@@ -28,6 +28,7 @@ use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessage;
 use Swag\PayPal\Checkout\Payment\ScheduledTask\TransactionStatusSyncTaskHandler;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -58,6 +59,7 @@ class TransactionStatusSyncTaskHandlerTest extends TestCase
             $this->orderTransactionRepository,
             $this->paymentMethodDataRegistry,
             $this->bus,
+            new NativeClock(),
         );
     }
 
