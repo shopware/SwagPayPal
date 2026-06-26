@@ -18,6 +18,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogEntity;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * @internal
@@ -29,7 +30,7 @@ class LogCleanerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $runRepository = $this->createLogHistory();
-        $logCleaner = new LogCleaner($runRepository);
+        $logCleaner = new LogCleaner($runRepository, new NativeClock());
 
         static::assertCount(7, $runRepository->getCollection());
 
@@ -43,7 +44,7 @@ class LogCleanerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $runRepository = $this->createLogHistory();
-        $logCleaner = new LogCleaner($runRepository);
+        $logCleaner = new LogCleaner($runRepository, new NativeClock());
 
         static::assertCount(7, $runRepository->getCollection());
 

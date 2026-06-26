@@ -105,6 +105,7 @@
         <service id="Swag\PayPal\Pos\MessageQueue\MessageDispatcher">
             <argument type="service" id="messenger.default_bus"/>
             <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Psr\Clock\ClockInterface"/>
         </service>
 
         <service id="Swag\PayPal\Pos\MessageQueue\MessageHydrator">
