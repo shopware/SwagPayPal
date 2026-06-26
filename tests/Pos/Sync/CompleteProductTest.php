@@ -75,6 +75,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * @internal
@@ -116,14 +117,15 @@ class CompleteProductTest extends TestCase
         );
 
         $messageBus = new MessageBusMock();
-        $messageDispatcher = new MessageDispatcher($messageBus, $this->createMock(Connection::class));
+        $messageDispatcher = new MessageDispatcher($messageBus, $this->createMock(Connection::class), new NativeClock());
         $messageHydrator = new MessageHydrator($this->createMock(SalesChannelContextService::class), $this->createMock(EntityRepository::class));
 
         $runService = new RunServiceMock(
             new RunRepoMock(),
             new RunLogRepoMock(),
             $this->createMock(Connection::class),
-            new Logger('test')
+            new Logger('test'),
+            new NativeClock()
         );
 
         $productSyncer = new ProductSyncer(
