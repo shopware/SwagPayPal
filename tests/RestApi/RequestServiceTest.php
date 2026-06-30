@@ -41,9 +41,6 @@ class RequestServiceTest extends TestCase
         } catch (PayPalApiException $e) {
             static::assertTrue($e->is(ApiException::CODE_RATE_LIMIT_REACHED));
             static::assertNotNull($e->getRetryAt());
-            static::assertNotNull($e->getRetryDelay());
-            static::assertGreaterThanOrEqual(110000, $e->getRetryDelay());
-            static::assertLessThanOrEqual(120000, $e->getRetryDelay());
         }
     }
 
@@ -67,9 +64,6 @@ class RequestServiceTest extends TestCase
         } catch (PayPalApiException $e) {
             static::assertTrue($e->is(ApiException::CODE_RATE_LIMIT_REACHED));
             static::assertNotNull($e->getRetryAt());
-            static::assertNotNull($e->getRetryDelay());
-            static::assertGreaterThanOrEqual(110000, $e->getRetryDelay());
-            static::assertLessThanOrEqual(120000, $e->getRetryDelay());
         }
     }
 }

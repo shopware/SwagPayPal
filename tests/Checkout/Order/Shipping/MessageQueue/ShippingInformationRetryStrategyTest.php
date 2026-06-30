@@ -17,6 +17,7 @@ use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessage;
 use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationRetryStrategy;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\RequestService;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
 use Symfony\Component\Messenger\EventListener\SendFailedMessageForRetryListener;
@@ -34,6 +35,8 @@ use Symfony\Component\Messenger\Transport\Sender\SenderInterface;
 #[CoversClass(ShippingInformationRetryStrategy::class)]
 class ShippingInformationRetryStrategyTest extends TestCase
 {
+    private const NOW = '2026-01-01T00:00:00+00:00';
+
     public function testIsRetryableDelegatesToDecoratedStrategy(): void
     {
         $envelope = new Envelope(new ShippingInformationMessage('order-delivery-id'));
@@ -45,7 +48,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
             ->with($envelope, $throwable)
             ->willReturn(false);
 
-        $strategy = new ShippingInformationRetryStrategy($decorated);
+        $strategy = new ShippingInformationRetryStrategy($decorated, self::createClock());
 
         static::assertFalse($strategy->isRetryable($envelope, $throwable));
     }
@@ -57,7 +60,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
             ->expects($this->once())
             ->method('getWaitingTime')
             ->willReturn(1000);
-        $strategy = new ShippingInformationRetryStrategy($decorated);
+        $strategy = new ShippingInformationRetryStrategy($decorated, self::createClock());
 
         $delay = $strategy->getWaitingTime(
             new Envelope(new ShippingInformationMessage('order-delivery-id')),
@@ -65,7 +68,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
                 ApiException::CODE_RATE_LIMIT_REACHED,
                 'Rate limit reached',
                 429,
-                retryDelay: 120000,
+                retryAt: self::createRetryAt(120),
             ),
         );
 
@@ -75,16 +78,17 @@ class ShippingInformationRetryStrategyTest extends TestCase
 
     public function testUsesRetryAfterDelayForShippingMessageWhenErrorCodeDiffers(): void
     {
+        $payPalException = self::createRateLimitExceptionFromResponse('120', 'OTHER_RATE_LIMIT');
         $decorated = $this->createMock(RetryStrategyInterface::class);
         $decorated
             ->expects($this->once())
             ->method('getWaitingTime')
             ->willReturn(1000);
-        $strategy = new ShippingInformationRetryStrategy($decorated);
+        $strategy = new ShippingInformationRetryStrategy($decorated, self::createClockForRetryAt($payPalException));
 
         $delay = $strategy->getWaitingTime(
             new Envelope(new ShippingInformationMessage('order-delivery-id')),
-            self::createRateLimitExceptionFromResponse('120', 'OTHER_RATE_LIMIT'),
+            $payPalException,
         );
 
         static::assertGreaterThanOrEqual(110000, $delay);
@@ -98,13 +102,13 @@ class ShippingInformationRetryStrategyTest extends TestCase
             ->expects($this->once())
             ->method('getWaitingTime')
             ->willReturn(1000);
-        $strategy = new ShippingInformationRetryStrategy($decorated);
+        $strategy = new ShippingInformationRetryStrategy($decorated, self::createClock());
         $envelope = new Envelope(new ShippingInformationMessage('order-delivery-id'));
         $payPalException = new PayPalApiException(
             ApiException::CODE_RATE_LIMIT_REACHED,
             'Rate limit reached',
             429,
-            retryDelay: 120000,
+            retryAt: self::createRetryAt(120),
         );
 
         $delay = $strategy->getWaitingTime(
@@ -123,7 +127,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
             ->expects($this->once())
             ->method('getWaitingTime')
             ->willReturn(180000);
-        $strategy = new ShippingInformationRetryStrategy($decorated);
+        $strategy = new ShippingInformationRetryStrategy($decorated, self::createClock());
 
         $delay = $strategy->getWaitingTime(
             new Envelope(new ShippingInformationMessage('order-delivery-id')),
@@ -131,7 +135,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
                 ApiException::CODE_RATE_LIMIT_REACHED,
                 'Rate limit reached',
                 429,
-                retryDelay: 120000,
+                retryAt: self::createRetryAt(120),
             ),
         );
 
@@ -161,7 +165,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
 
         $listener = $this->createRetryListener(
             $sender,
-            new ShippingInformationRetryStrategy(new MultiplierRetryStrategy(3, 1000, 2, 0, 0)),
+            new ShippingInformationRetryStrategy(new MultiplierRetryStrategy(3, 1000, 2, 0, 0), self::createClockForRetryAt($payPalException)),
         );
         $listener->onMessageFailed($event);
 
@@ -194,7 +198,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
 
         $listener = $this->createRetryListener(
             $sender,
-            new ShippingInformationRetryStrategy(new MultiplierRetryStrategy(3, 1000, 2, 0, 0)),
+            new ShippingInformationRetryStrategy(new MultiplierRetryStrategy(3, 1000, 2, 0, 0), self::createClockForRetryAt($payPalException)),
         );
         $listener->onMessageFailed($event);
 
@@ -208,7 +212,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
             ApiException::CODE_RATE_LIMIT_REACHED,
             'Rate limit reached',
             429,
-            retryDelay: 120000,
+            retryAt: self::createRetryAt(120),
         );
         $decorated = $this->createMock(RetryStrategyInterface::class);
         $decorated
@@ -216,14 +220,14 @@ class ShippingInformationRetryStrategyTest extends TestCase
             ->method('getWaitingTime')
             ->with($envelope, $payPalException)
             ->willReturn(1000);
-        $strategy = new ShippingInformationRetryStrategy($decorated);
+        $strategy = new ShippingInformationRetryStrategy($decorated, self::createClock());
 
         $delay = $strategy->getWaitingTime($envelope, $payPalException);
 
         static::assertSame(1000, $delay);
     }
 
-    public function testFallsBackToDecoratedStrategyWithoutRetryDelay(): void
+    public function testFallsBackToDecoratedStrategyWithoutRetryAt(): void
     {
         $envelope = new Envelope(new ShippingInformationMessage('order-delivery-id'));
         $payPalException = new PayPalApiException(
@@ -237,7 +241,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
             ->method('getWaitingTime')
             ->with($envelope, $payPalException)
             ->willReturn(1000);
-        $strategy = new ShippingInformationRetryStrategy($decorated);
+        $strategy = new ShippingInformationRetryStrategy($decorated, self::createClock());
 
         $delay = $strategy->getWaitingTime($envelope, $payPalException);
 
@@ -258,7 +262,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
             ->method('getWaitingTime')
             ->with($envelope, $payPalException)
             ->willReturn(1000);
-        $strategy = new ShippingInformationRetryStrategy($decorated);
+        $strategy = new ShippingInformationRetryStrategy($decorated, self::createClock());
 
         $delay = $strategy->getWaitingTime($envelope, $payPalException);
 
@@ -283,6 +287,24 @@ class ShippingInformationRetryStrategyTest extends TestCase
         }
 
         static::fail('Expected PayPal API exception was not thrown.');
+    }
+
+    private static function createClock(?\DateTimeImmutable $now = null): MockClock
+    {
+        return new MockClock($now ?? self::NOW);
+    }
+
+    private static function createRetryAt(int $seconds): \DateTimeImmutable
+    {
+        return self::createClock()->now()->modify(\sprintf('+%d seconds', $seconds));
+    }
+
+    private static function createClockForRetryAt(PayPalApiException $exception): MockClock
+    {
+        $retryAt = $exception->getRetryAt();
+        static::assertInstanceOf(\DateTimeImmutable::class, $retryAt);
+
+        return self::createClock($retryAt->modify('-120 seconds'));
     }
 
     private function createRetryListener(

@@ -22,6 +22,7 @@
         <service id="Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationRetryStrategy"
                  decorates="messenger.retry.multiplier_retry_strategy.async">
             <argument type="service" id=".inner"/>
+            <argument type="service" id="Psr\Clock\ClockInterface"/>
         </service>
     </services>
 </container>

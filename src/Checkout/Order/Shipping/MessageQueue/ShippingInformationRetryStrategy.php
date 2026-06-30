@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Order\Shipping\MessageQueue;
 
+use Psr\Clock\ClockInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Symfony\Component\Messenger\Envelope;
@@ -20,7 +21,8 @@ use Symfony\Component\Messenger\Retry\RetryStrategyInterface;
 class ShippingInformationRetryStrategy implements RetryStrategyInterface
 {
     public function __construct(
-        private readonly RetryStrategyInterface $decorated
+        private readonly RetryStrategyInterface $decorated,
+        private readonly ClockInterface $clock,
     ) {
     }
 
@@ -37,8 +39,13 @@ class ShippingInformationRetryStrategy implements RetryStrategyInterface
         }
 
         $payPalException = $this->extractPayPalException($throwable);
-        $retryDelay = $payPalException?->getRetryDelay();
-        if ($retryDelay !== null) {
+        $retryAt = $payPalException?->getRetryAt();
+        if ($retryAt === null) {
+            return $waitingTime;
+        }
+
+        $retryDelay = ($retryAt->getTimestamp() - $this->clock->now()->getTimestamp()) * 1000;
+        if ($retryDelay > 0) {
             return max($retryDelay, $waitingTime);
         }
 

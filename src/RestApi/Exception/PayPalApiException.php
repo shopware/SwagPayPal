@@ -36,7 +36,6 @@ class PayPalApiException extends PaymentException
         string $message,
         int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
         private ?string $issue = null,
-        private readonly ?int $retryDelay = null,
         ?\DateTimeImmutable $retryAt = null,
     ) {
         parent::__construct(
@@ -69,18 +68,6 @@ class PayPalApiException extends PaymentException
         return $this->issue;
     }
 
-    /**
-     * @return int|null Retry delay in milliseconds
-     */
-    public function getRetryDelay(): ?int
-    {
-        if ($this->retryDelay === null || $this->retryDelay <= 0) {
-            return null;
-        }
-
-        return $this->retryDelay;
-    }
-
     public function getRetryAt(): ?\DateTimeImmutable
     {
         return $this->retryAt;
@@ -107,7 +94,6 @@ class PayPalApiException extends PaymentException
             $message,
             $e->getStatusCode(),
             $issue,
-            self::extractRetryDelay($e),
             self::extractRetryAt($e),
         );
     }
@@ -130,17 +116,6 @@ class PayPalApiException extends PaymentException
             'message' => $message,
             'issue' => $issue,
         ];
-    }
-
-    private static function extractRetryDelay(ApiException $e): ?int
-    {
-        if (!\method_exists($e, 'getRetryDelay')) {
-            return null;
-        }
-
-        $retryDelay = $e->getRetryDelay();
-
-        return \is_int($retryDelay) && $retryDelay > 0 ? $retryDelay : null;
     }
 
     private static function extractRetryAt(ApiException $e): ?\DateTimeImmutable

@@ -391,8 +391,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             'RATE_LIMIT_REACHED',
             429,
             null,
-            retryDelay: 120000,
-            retryAt: new \DateTimeImmutable('+2 minutes'),
+            retryAt: new \DateTimeImmutable('2026-01-01T00:02:00+00:00'),
         );
 
         $this->orderDeliveryRepository
@@ -423,9 +422,6 @@ class ShippingInformationMessageHandlerTest extends TestCase
         } catch (PayPalApiException $e) {
             static::assertSame($payPalException, $e);
             static::assertNotNull($e->getRetryAt());
-            static::assertNotNull($e->getRetryDelay());
-            static::assertGreaterThanOrEqual(110000, $e->getRetryDelay());
-            static::assertLessThanOrEqual(120000, $e->getRetryDelay());
         }
     }
 
@@ -469,7 +465,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             static::fail('Expected PayPal API exception was not thrown.');
         } catch (PayPalApiException $e) {
             static::assertSame($payPalException, $e);
-            static::assertNull($e->getRetryDelay());
+            static::assertNull($e->getRetryAt());
         }
     }
 
