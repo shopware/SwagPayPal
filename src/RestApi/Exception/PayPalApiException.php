@@ -11,7 +11,6 @@ use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\Exception\ErrorApiException;
-use Shopware\PayPalSDK\Exception\RetryAfterApiException;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
@@ -37,7 +36,7 @@ class PayPalApiException extends PaymentException
         string $message,
         int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
         private ?string $issue = null,
-        ?int $retryDelay = null,
+        private readonly ?int $retryDelay = null,
         ?\DateTimeImmutable $retryAt = null,
     ) {
         parent::__construct(
@@ -51,7 +50,7 @@ class PayPalApiException extends PaymentException
             ]
         );
 
-        $this->retryAt = $retryAt ?? self::createRetryAt($retryDelay);
+        $this->retryAt = $retryAt;
     }
 
     /**
@@ -75,13 +74,11 @@ class PayPalApiException extends PaymentException
      */
     public function getRetryDelay(): ?int
     {
-        if ($this->retryAt === null) {
+        if ($this->retryDelay === null || $this->retryDelay <= 0) {
             return null;
         }
 
-        $retryDelay = ($this->retryAt->getTimestamp() - \time()) * 1000;
-
-        return $retryDelay > 0 ? $retryDelay : null;
+        return $this->retryDelay;
     }
 
     public function getRetryAt(): ?\DateTimeImmutable
@@ -110,7 +107,8 @@ class PayPalApiException extends PaymentException
             $message,
             $e->getStatusCode(),
             $issue,
-            retryAt: $e instanceof RetryAfterApiException ? $e->getRetryAt() : null,
+            self::extractRetryDelay($e),
+            self::extractRetryAt($e),
         );
     }
 
@@ -134,14 +132,25 @@ class PayPalApiException extends PaymentException
         ];
     }
 
-    private static function createRetryAt(?int $retryDelay): ?\DateTimeImmutable
+    private static function extractRetryDelay(ApiException $e): ?int
     {
-        if ($retryDelay === null || $retryDelay <= 0) {
+        if (!\method_exists($e, 'getRetryDelay')) {
             return null;
         }
 
-        $retryAt = (new \DateTimeImmutable())->modify(\sprintf('+%d seconds', (int) \ceil($retryDelay / 1000)));
+        $retryDelay = $e->getRetryDelay();
 
-        return $retryAt ?: null;
+        return \is_int($retryDelay) && $retryDelay > 0 ? $retryDelay : null;
+    }
+
+    private static function extractRetryAt(ApiException $e): ?\DateTimeImmutable
+    {
+        if (!\method_exists($e, 'getRetryAt')) {
+            return null;
+        }
+
+        $retryAt = $e->getRetryAt();
+
+        return $retryAt instanceof \DateTimeImmutable ? $retryAt : null;
     }
 }

@@ -392,6 +392,7 @@ class ShippingInformationMessageHandlerTest extends TestCase
             429,
             null,
             retryDelay: 120000,
+            retryAt: new \DateTimeImmutable('+2 minutes'),
         );
 
         $this->orderDeliveryRepository
