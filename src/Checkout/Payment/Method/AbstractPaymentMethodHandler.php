@@ -22,7 +22,7 @@ use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\System\StateMachine\Transition;
-use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultedPaymentSourceInterface;
+use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultablePaymentSourceInterface;
 use Shopware\PayPalSDK\Struct\V2\Common\Link;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\AbstractPaymentSource;
@@ -225,8 +225,8 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             return $paypalOrder;
         }
 
-        /** @var (VaultedPaymentSourceInterface&AbstractPaymentSource)|null $vaultableSource */
-        $vaultableSource = $paypalOrder->getPaymentSource()?->first(VaultedPaymentSourceInterface::class);
+        /** @var (VaultablePaymentSourceInterface&AbstractPaymentSource)|null $vaultableSource */
+        $vaultableSource = $paypalOrder->getPaymentSource()?->first(VaultablePaymentSourceInterface::class);
         if (!$vaultableSource) {
             return $paypalOrder;
         }
