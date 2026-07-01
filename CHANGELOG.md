@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
+
 # 10.6.4
 - Fixes an issue, where net prices could cause the express checkout with shipping callback enabled to fail
 

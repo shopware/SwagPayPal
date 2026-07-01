@@ -11,6 +11,7 @@ use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\Exception\ErrorApiException;
+use Shopware\PayPalSDK\Exception\RetryAfterApiException;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
@@ -120,12 +121,10 @@ class PayPalApiException extends PaymentException
 
     private static function extractRetryAt(ApiException $e): ?\DateTimeImmutable
     {
-        if (!\method_exists($e, 'getRetryAt')) {
+        if (!$e instanceof RetryAfterApiException) {
             return null;
         }
 
-        $retryAt = $e->getRetryAt();
-
-        return $retryAt instanceof \DateTimeImmutable ? $retryAt : null;
+        return $e->getRetryAt();
     }
 }

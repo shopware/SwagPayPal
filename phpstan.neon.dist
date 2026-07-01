@@ -104,14 +104,6 @@ parameters:
                 - src/Pos/DataAbstractionLayer
                 - src/Reporting/DataAbstractionLayer
 
-        - # 6.8 deprecation - POS inventory sync still relies on available stock semantics
-            identifier: method.deprecated
-            message: '#Call to deprecated method (getAvailableStock|setAvailableStock)\(\) of class .*ProductEntity#'
-            paths:
-                - src/Pos/Sync/Inventory
-                - tests/Pos/Mock/Repositories/ProductRepoMock.php
-                - tests/Pos/Sync/Inventory
-
         - # Shopware trunk classifies these plugin tests as non-Unit by namespace
             identifier: shopware.unexpectedTestCovers
 

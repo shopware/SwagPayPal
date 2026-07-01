@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Checkout\Order\Shipping\MessageQueue;
 
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -16,7 +15,6 @@ use Shopware\PayPalSDK\Exception\ApiException;
 use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessage;
 use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationRetryStrategy;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\RequestService;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
@@ -78,7 +76,7 @@ class ShippingInformationRetryStrategyTest extends TestCase
 
     public function testUsesRetryAfterDelayForShippingMessageWhenErrorCodeDiffers(): void
     {
-        $payPalException = self::createRateLimitExceptionFromResponse('120', 'OTHER_RATE_LIMIT');
+        $payPalException = self::createRateLimitException(120, 'OTHER_RATE_LIMIT');
         $decorated = $this->createMock(RetryStrategyInterface::class);
         $decorated
             ->expects($this->once())
@@ -142,9 +140,9 @@ class ShippingInformationRetryStrategyTest extends TestCase
         static::assertSame(180000, $delay);
     }
 
-    public function testMessengerRetryUsesRetryAfterDelayFromResponse(): void
+    public function testMessengerRetryUsesRetryAfterDelay(): void
     {
-        $payPalException = self::createRateLimitExceptionFromResponse('120');
+        $payPalException = self::createRateLimitException(120);
         $envelope = new Envelope(new ShippingInformationMessage('order-delivery-id'));
         $event = new WorkerMessageFailedEvent(
             $envelope,
@@ -180,9 +178,9 @@ class ShippingInformationRetryStrategyTest extends TestCase
         static::assertSame(1, $redeliveryStamp->getRetryCount());
     }
 
-    public function testMessengerRetryStopsWhenMaxRetriesAreReachedEvenWithRetryAfterResponse(): void
+    public function testMessengerRetryStopsWhenMaxRetriesAreReachedEvenWithRetryAfter(): void
     {
-        $payPalException = self::createRateLimitExceptionFromResponse('120');
+        $payPalException = self::createRateLimitException(120);
         $envelope = (new Envelope(new ShippingInformationMessage('order-delivery-id')))
             ->with(new RedeliveryStamp(3));
         $event = new WorkerMessageFailedEvent(
@@ -269,24 +267,14 @@ class ShippingInformationRetryStrategyTest extends TestCase
         static::assertSame(1000, $delay);
     }
 
-    private static function createRateLimitExceptionFromResponse(string $retryAfter, string $name = ApiException::CODE_RATE_LIMIT_REACHED): PayPalApiException
+    private static function createRateLimitException(int $retryAfterSeconds, string $name = ApiException::CODE_RATE_LIMIT_REACHED): PayPalApiException
     {
-        $response = new Response(
+        return new PayPalApiException(
+            $name,
+            'Rate limit reached',
             429,
-            ['Retry-After' => $retryAfter],
-            \json_encode([
-                'name' => $name,
-                'message' => 'Rate limit reached',
-            ], \JSON_THROW_ON_ERROR),
+            retryAt: self::createRetryAt($retryAfterSeconds),
         );
-
-        try {
-            (new RequestService())->handleResponse($response);
-        } catch (PayPalApiException $e) {
-            return $e;
-        }
-
-        static::fail('Expected PayPal API exception was not thrown.');
     }
 
     private static function createClock(?\DateTimeImmutable $now = null): MockClock
