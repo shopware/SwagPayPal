@@ -113,6 +113,45 @@ class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
         static::assertSame('Mozilla/5.0 Edit Order App Switch Test', $mobileWebContext->getBuyerUserAgent());
     }
 
+    public function testGetOrderFromCartUsesRequestReturnUrls(): void
+    {
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $this->createSalesChannelContext(),
+            new RequestDataBag([
+                CreateOrderRoute::RETURN_URL => 'https://example.test/paypal/restore-context/token',
+                CreateOrderRoute::CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+            ]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
+    }
+
+    public function testGetOrderUsesRequestReturnUrls(): void
+    {
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->getBuilder()->getOrder(
+            new PaymentTransactionStruct($orderTransaction->getId()),
+            $orderTransaction,
+            $this->createOrder(),
+            Context::createDefaultContext(),
+            new Request([], [
+                CreateOrderRoute::RETURN_URL => 'https://example.test/paypal/restore-context/token',
+                CreateOrderRoute::CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+            ]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
+    }
+
     public function testGetOrderNoBillingAddress(): void
     {
         $orderTransaction = $this->createOrderTransaction();
@@ -156,8 +195,8 @@ class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
     {
         return new RequestDataBag([
             'product' => 'spb',
-            CreateOrderRoute::PAYPAL_RETURN_URL => 'https://example.test/paypal/restore-context/token',
-            CreateOrderRoute::PAYPAL_CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+            CreateOrderRoute::RETURN_URL => 'https://example.test/paypal/restore-context/token',
+            CreateOrderRoute::CANCEL_URL => 'https://example.test/paypal/restore-context/token',
             CreateOrderRoute::PAYPAL_BUYER_USER_AGENT => 'Mozilla/5.0 App Switch Test',
             ...$additionalData,
         ]);

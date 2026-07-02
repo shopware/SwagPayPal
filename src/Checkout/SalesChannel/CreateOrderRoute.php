@@ -87,13 +87,13 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
                 type: 'string',
             ),
             new OA\Property(
-                property: self::PAYPAL_RETURN_URL,
-                description: 'Return URL for the PayPal order experience context',
+                property: self::RETURN_URL,
+                description: 'Return URL for the order experience context',
                 type: 'string',
             ),
             new OA\Property(
-                property: self::PAYPAL_CANCEL_URL,
-                description: 'Cancel URL for the PayPal order experience context',
+                property: self::CANCEL_URL,
+                description: 'Cancel URL for the order experience context',
                 type: 'string',
             ),
         ])),

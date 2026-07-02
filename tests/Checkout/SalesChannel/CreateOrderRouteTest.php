@@ -166,8 +166,8 @@ class CreateOrderRouteTest extends TestCase
         );
 
         $response = $this->route->createPayPalOrder($salesChannelContext, new Request([], [
-            CreateOrderRoute::PAYPAL_RETURN_URL => 'https://example.test/paypal/restore-context/token',
-            CreateOrderRoute::PAYPAL_CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+            CreateOrderRoute::RETURN_URL => 'https://example.test/paypal/restore-context/token',
+            CreateOrderRoute::CANCEL_URL => 'https://example.test/paypal/restore-context/token',
         ]));
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());

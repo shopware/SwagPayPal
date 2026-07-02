@@ -17,13 +17,11 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\JWT\JWTException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
@@ -36,8 +34,8 @@ use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\Storefront\Checkout\ReturnUrl\PayPalReturnToken;
-use Swag\PayPal\Storefront\Checkout\ReturnUrl\PayPalReturnTokenService;
+use Swag\PayPal\Storefront\Service\ReturnToken;
+use Swag\PayPal\Storefront\Service\ReturnTokenService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -67,9 +65,8 @@ class PayPalController extends StorefrontController
         private readonly AbstractCartDeleteRoute $cartDeleteRoute,
         private readonly AbstractClearVaultRoute $clearVaultRoute,
         private readonly LoggerInterface $logger,
-        private readonly PayPalReturnTokenService $returnTokenService,
+        private readonly ReturnTokenService $returnTokenService,
         private readonly RouterInterface $router,
-        private readonly SystemConfigService $systemConfigService,
     ) {
     }
 
@@ -92,14 +89,14 @@ class PayPalController extends StorefrontController
         try {
             $returnToken = $this->returnTokenService->parse($token, $salesChannelContext->getSalesChannelId());
         } catch (JWTException $e) {
-            $this->logger->warning('Could not restore PayPal storefront context from return token', ['error' => $e]);
+            $this->logger->warning('Could not restore storefront context from return token', ['error' => $e]);
 
             return $this->redirectToRoute('frontend.checkout.confirm.page');
         }
 
-        $this->restoreContextToken($request, $returnToken);
+        $this->returnTokenService->restoreContextToken($request, $returnToken);
 
-        if ($returnToken->getReturnTarget() === PayPalReturnToken::TARGET_ACCOUNT_ORDER_EDIT) {
+        if ($returnToken->getReturnTarget() === ReturnToken::TARGET_ACCOUNT_ORDER_EDIT) {
             return $this->redirectToRoute('frontend.account.edit-order.page', [
                 'orderId' => $returnToken->getOrderId(),
             ]);
@@ -231,8 +228,8 @@ class PayPalController extends StorefrontController
     {
         $orderId = $request->request->getAlnum('orderId') ?: null;
         $returnTarget = $orderId !== null
-            ? PayPalReturnToken::TARGET_ACCOUNT_ORDER_EDIT
-            : PayPalReturnToken::TARGET_CHECKOUT_CONFIRM;
+            ? ReturnToken::TARGET_ACCOUNT_ORDER_EDIT
+            : ReturnToken::TARGET_CHECKOUT_CONFIRM;
 
         $token = $this->returnTokenService->generate(
             $salesChannelContext->getToken(),
@@ -245,26 +242,7 @@ class PayPalController extends StorefrontController
             'token' => $token,
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $request->request->set(AbstractCreateOrderRoute::PAYPAL_RETURN_URL, $restoreUrl);
-        $request->request->set(AbstractCreateOrderRoute::PAYPAL_CANCEL_URL, $restoreUrl);
-    }
-
-    private function restoreContextToken(Request $request, PayPalReturnToken $returnToken): void
-    {
-        if (!$request->hasSession(true)) {
-            return;
-        }
-
-        $salesChannelId = $returnToken->getSalesChannelId();
-        $contextToken = $returnToken->getContextToken();
-        $session = $request->getSession();
-
-        if ($this->systemConfigService->getBool('core.systemWideLoginRegistration.isCustomerBoundToSalesChannel')) {
-            $session->set(PlatformRequest::HEADER_CONTEXT_TOKEN . '-' . $salesChannelId, $contextToken);
-        }
-
-        $session->set(PlatformRequest::HEADER_CONTEXT_TOKEN, $contextToken);
-        $session->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID, $salesChannelId);
-        $request->headers->set(PlatformRequest::HEADER_CONTEXT_TOKEN, $contextToken);
+        $request->request->set(AbstractCreateOrderRoute::RETURN_URL, $restoreUrl);
+        $request->request->set(AbstractCreateOrderRoute::CANCEL_URL, $restoreUrl);
     }
 }

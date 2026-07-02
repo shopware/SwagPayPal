@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Storefront\Checkout\ReturnUrl;
+namespace Swag\PayPal\Storefront\Service;
 
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\UnencryptedToken;
@@ -13,9 +13,12 @@ use Psr\Clock\ClockInterface;
 use Shopware\Core\Framework\JWT\JWTException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
-class PayPalReturnTokenService
+class ReturnTokenService
 {
     private const CLAIM_CONTEXT_TOKEN = 'contextToken';
     private const CLAIM_SALES_CHANNEL_ID = 'salesChannelId';
@@ -28,6 +31,7 @@ class PayPalReturnTokenService
     public function __construct(
         private readonly Configuration $configuration,
         private readonly ClockInterface $clock,
+        private readonly SystemConfigService $systemConfigService,
         private readonly int $tokenLifetime = 900,
     ) {
     }
@@ -38,15 +42,15 @@ class PayPalReturnTokenService
         string $returnTarget,
         ?string $orderId = null,
     ): string {
-        if (!\in_array($returnTarget, PayPalReturnToken::TARGETS, true)) {
-            throw JWTException::invalidJwt(\sprintf('Unsupported PayPal return target "%s"', $returnTarget));
+        if (!\in_array($returnTarget, ReturnToken::TARGETS, true)) {
+            throw JWTException::invalidJwt(\sprintf('Unsupported return target "%s"', $returnTarget));
         }
 
-        if ($returnTarget === PayPalReturnToken::TARGET_ACCOUNT_ORDER_EDIT && !$orderId) {
-            throw JWTException::invalidJwt('PayPal account order edit return target requires an order id');
+        if ($returnTarget === ReturnToken::TARGET_ACCOUNT_ORDER_EDIT && !$orderId) {
+            throw JWTException::invalidJwt('Account order edit return target requires an order id');
         }
 
-        $now = new \DateTimeImmutable('@' . $this->clock->now()->getTimestamp());
+        $now = $this->clock->now();
         $expiresAt = $now->modify(\sprintf('%+d seconds', $this->tokenLifetime));
 
         $builder = $this->configuration->builder()
@@ -67,7 +71,7 @@ class PayPalReturnTokenService
             ->toString();
     }
 
-    public function parse(string $token, string $expectedSalesChannelId): PayPalReturnToken
+    public function parse(string $token, string $expectedSalesChannelId): ReturnToken
     {
         if ($token === '') {
             throw JWTException::invalidJwt('JWT cannot be empty');
@@ -97,19 +101,38 @@ class PayPalReturnTokenService
             throw JWTException::invalidJwt('JWT sales channel does not match current sales channel');
         }
 
-        if (!\in_array($returnTarget, PayPalReturnToken::TARGETS, true)) {
-            throw JWTException::invalidJwt(\sprintf('Unsupported PayPal return target "%s"', $returnTarget));
+        if (!\in_array($returnTarget, ReturnToken::TARGETS, true)) {
+            throw JWTException::invalidJwt(\sprintf('Unsupported return target "%s"', $returnTarget));
         }
 
-        if ($returnTarget === PayPalReturnToken::TARGET_ACCOUNT_ORDER_EDIT) {
+        if ($returnTarget === ReturnToken::TARGET_ACCOUNT_ORDER_EDIT) {
             if (!\is_string($orderId) || !Uuid::isValid($orderId)) {
-                throw JWTException::invalidJwt('PayPal account order edit return target requires a valid order id');
+                throw JWTException::invalidJwt('Account order edit return target requires a valid order id');
             }
         } else {
             $orderId = null;
         }
 
-        return new PayPalReturnToken($contextToken, $salesChannelId, $returnTarget, $orderId);
+        return new ReturnToken($contextToken, $salesChannelId, $returnTarget, $orderId);
+    }
+
+    public function restoreContextToken(Request $request, ReturnToken $returnToken): void
+    {
+        if (!$request->hasSession(true)) {
+            return;
+        }
+
+        $salesChannelId = $returnToken->getSalesChannelId();
+        $contextToken = $returnToken->getContextToken();
+        $session = $request->getSession();
+
+        if ($this->systemConfigService->getBool('core.systemWideLoginRegistration.isCustomerBoundToSalesChannel', $salesChannelId)) {
+            $session->set(PlatformRequest::HEADER_CONTEXT_TOKEN . '-' . $salesChannelId, $contextToken);
+        }
+
+        $session->set(PlatformRequest::HEADER_CONTEXT_TOKEN, $contextToken);
+        $session->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID, $salesChannelId);
+        $request->headers->set(PlatformRequest::HEADER_CONTEXT_TOKEN, $contextToken);
     }
 
     /**

@@ -19,7 +19,6 @@ use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Generator;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
@@ -31,8 +30,8 @@ use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\Storefront\Checkout\ReturnUrl\PayPalReturnTokenService;
 use Swag\PayPal\Storefront\Controller\PayPalController;
+use Swag\PayPal\Storefront\Service\ReturnTokenService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
@@ -50,7 +49,7 @@ class PayPalControllerTest extends TestCase
 
     private RouterInterface&MockObject $router;
 
-    private PayPalReturnTokenService&MockObject $returnTokenService;
+    private ReturnTokenService&MockObject $returnTokenService;
 
     private TestHandler $logHandler;
 
@@ -59,7 +58,7 @@ class PayPalControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->createOrderRoute = $this->createMock(AbstractCreateOrderRoute::class);
-        $this->returnTokenService = $this->createMock(PayPalReturnTokenService::class);
+        $this->returnTokenService = $this->createMock(ReturnTokenService::class);
         $this->returnTokenService
             ->method('generate')
             ->willReturn('return-token');
@@ -85,7 +84,6 @@ class PayPalControllerTest extends TestCase
                 new Logger('test', [$this->logHandler]),
                 $this->returnTokenService,
                 $this->router,
-                $this->createMock(SystemConfigService::class),
             ])
             ->getMock();
     }
@@ -118,8 +116,8 @@ class PayPalControllerTest extends TestCase
             ->expects($this->once())
             ->method('createPayPalOrder')
             ->with(static::isInstanceOf(SalesChannelContext::class), static::callback(static function (Request $request): bool {
-                return $request->request->get(CreateOrderRoute::PAYPAL_RETURN_URL) === 'https://example.test/paypal/restore-context/return-token'
-                    && $request->request->get(CreateOrderRoute::PAYPAL_CANCEL_URL) === 'https://example.test/paypal/restore-context/return-token';
+                return $request->request->get(CreateOrderRoute::RETURN_URL) === 'https://example.test/paypal/restore-context/return-token'
+                    && $request->request->get(CreateOrderRoute::CANCEL_URL) === 'https://example.test/paypal/restore-context/return-token';
             }))
             ->willReturn(new TokenResponse('paypal-order-id'));
 

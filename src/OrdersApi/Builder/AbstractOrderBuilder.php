@@ -191,11 +191,11 @@ abstract class AbstractOrderBuilder
             $requestDataBag = null;
         }
 
-        $paypalReturnUrl = $requestDataBag?->getString(CreateOrderRoute::PAYPAL_RETURN_URL) ?: null;
-        $paypalCancelUrl = $requestDataBag?->getString(CreateOrderRoute::PAYPAL_CANCEL_URL) ?: null;
-        if ($paypalReturnUrl !== null && $paypalCancelUrl !== null) {
-            $experienceContext->setReturnUrl($paypalReturnUrl);
-            $experienceContext->setCancelUrl($paypalCancelUrl);
+        $returnUrl = $requestDataBag?->getString(CreateOrderRoute::RETURN_URL) ?: null;
+        $cancelUrl = $requestDataBag?->getString(CreateOrderRoute::CANCEL_URL) ?: null;
+        if ($returnUrl !== null && $cancelUrl !== null) {
+            $experienceContext->setReturnUrl($returnUrl);
+            $experienceContext->setCancelUrl($cancelUrl);
         } elseif ($paymentTransaction?->getReturnUrl()) {
             $experienceContext->setReturnUrl($paymentTransaction->getReturnUrl());
             $experienceContext->setCancelUrl(\sprintf('%s&cancel=1', $paymentTransaction->getReturnUrl()));

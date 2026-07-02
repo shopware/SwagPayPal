@@ -168,8 +168,10 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
             return $request->headers->get('user-agent') ?? '';
         }
 
-        $value = $request instanceof Request ? $request->request->get($key) : $request->get($key);
+        if ($request instanceof Request) {
+            return $request->request->getString($key);
+        }
 
-        return \is_string($value) ? $value : '';
+        return $request->getString($key);
     }
 }

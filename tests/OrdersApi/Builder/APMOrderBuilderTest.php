@@ -186,8 +186,8 @@ class APMOrderBuilderTest extends TestCase
             $order,
             Context::createDefaultContext(),
             new Request([], [
-                CreateOrderRoute::PAYPAL_RETURN_URL => 'https://example.test/paypal/restore-context/token',
-                CreateOrderRoute::PAYPAL_CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+                CreateOrderRoute::RETURN_URL => 'https://example.test/paypal/restore-context/token',
+                CreateOrderRoute::CANCEL_URL => 'https://example.test/paypal/restore-context/token',
             ]),
         );
 

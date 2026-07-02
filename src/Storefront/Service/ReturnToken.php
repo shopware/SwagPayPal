@@ -5,12 +5,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Storefront\Checkout\ReturnUrl;
+namespace Swag\PayPal\Storefront\Service;
 
 use Shopware\Core\Framework\Log\Package;
 
 #[Package('checkout')]
-class PayPalReturnToken
+class ReturnToken
 {
     public const TARGET_CHECKOUT_CONFIRM = 'checkout-confirm';
     public const TARGET_ACCOUNT_ORDER_EDIT = 'account-order-edit';

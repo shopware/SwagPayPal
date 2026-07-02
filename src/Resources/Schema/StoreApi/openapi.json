@@ -172,12 +172,12 @@
                                         "description": "Use an existing order id to create PayPal order",
                                         "type": "string"
                                     },
-                                    "paypalReturnUrl": {
-                                        "description": "Return URL for the PayPal order experience context",
+                                    "returnUrl": {
+                                        "description": "Return URL for the order experience context",
                                         "type": "string"
                                     },
-                                    "paypalCancelUrl": {
-                                        "description": "Cancel URL for the PayPal order experience context",
+                                    "cancelUrl": {
+                                        "description": "Cancel URL for the order experience context",
                                         "type": "string"
                                     }
                                 },
