@@ -80,10 +80,11 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
 
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
+        $requestDataBag = new RequestDataBag($request->request->all());
         /** @phpstan-ignore method.deprecated */
-        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, new RequestDataBag($request->request->all()));
-        $requestVaulting = $this->vaultTokenService->shouldRequestVaulting(bag: $request->request, paymentTransaction: $paymentTransaction);
-        $this->configureAppSwitchContext($experienceContext, $order->getSalesChannelId(), $request, $requestVaulting);
+        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, $requestDataBag);
+        $requestVaulting = $this->vaultTokenService->shouldRequestVaulting(bag: $requestDataBag, paymentTransaction: $paymentTransaction);
+        $this->configureAppSwitchContext($experienceContext, $order->getSalesChannelId(), $requestDataBag, $requestVaulting);
         $paypal->setExperienceContext($experienceContext);
 
         $customer = $order->getOrderCustomer();
@@ -137,17 +138,17 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         }
     }
 
-    private function configureAppSwitchContext(ExperienceContext $experienceContext, string $salesChannelId, Request|RequestDataBag $request, bool $requestVaulting): void
+    private function configureAppSwitchContext(ExperienceContext $experienceContext, string $salesChannelId, RequestDataBag $requestDataBag, bool $requestVaulting): void
     {
         if ($requestVaulting || !$this->systemConfigService->getBool(Settings::SPB_APP_SWITCH_ENABLED, $salesChannelId)) {
             return;
         }
 
-        if ($this->getRequestString($request, 'product') !== 'spb') {
+        if ($requestDataBag->getString('product') !== 'spb') {
             return;
         }
 
-        $buyerUserAgent = $this->getRequestString($request, AbstractCreateOrderRoute::PAYPAL_BUYER_USER_AGENT);
+        $buyerUserAgent = $requestDataBag->getString(AbstractCreateOrderRoute::PAYPAL_BUYER_USER_AGENT);
         if ($buyerUserAgent === '') {
             return;
         }
@@ -160,18 +161,5 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $appSwitchContext->setMobileWeb($mobileWebContext);
 
         $experienceContext->setAppSwitchContext($appSwitchContext);
-    }
-
-    private function getRequestString(Request|RequestDataBag $request, string $key): string
-    {
-        if ($request instanceof Request && $key === AbstractCreateOrderRoute::PAYPAL_BUYER_USER_AGENT) {
-            return $request->headers->get('user-agent') ?? '';
-        }
-
-        if ($request instanceof Request) {
-            return $request->request->getString($key);
-        }
-
-        return $request->getString($key);
     }
 }

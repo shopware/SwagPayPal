@@ -197,11 +197,21 @@ class CreateOrderRouteTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $orderId = Uuid::randomHex();
-        $request = new Request([], ['orderId' => $orderId]);
+        $request = new Request([], ['orderId' => $orderId], [], [], [], [
+            'HTTP_USER_AGENT' => 'Mozilla/5.0 Edit Order App Switch Test',
+        ]);
 
         $this->paymentOrderRoute
             ->expects($this->once())
-            ->method('setPayment');
+            ->method('setPayment')
+            ->with(
+                static::callback(static function (Request $request): bool {
+                    static::assertSame('Mozilla/5.0 Edit Order App Switch Test', $request->request->getString(CreateOrderRoute::PAYPAL_BUYER_USER_AGENT));
+
+                    return true;
+                }),
+                $salesChannelContext,
+            );
 
         $orderEntity = $this->createOrderEntity($orderId);
         $orderTransaction = $this->createOrderTransaction();

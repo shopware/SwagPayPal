@@ -95,10 +95,9 @@ class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
             Context::createDefaultContext(),
             new Request([], [
                 'product' => 'spb',
+                CreateOrderRoute::PAYPAL_BUYER_USER_AGENT => 'Mozilla/5.0 Edit Order App Switch Test',
             ], [
                 AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true,
-            ], [], [], [
-                'HTTP_USER_AGENT' => 'Mozilla/5.0 Edit Order App Switch Test',
             ]),
         );
 
