@@ -80,7 +80,8 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
 
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
-        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction);
+        /** @phpstan-ignore method.deprecated */
+        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, new RequestDataBag($request->request->all()));
         $requestVaulting = $this->vaultTokenService->shouldRequestVaulting(bag: $request->request, paymentTransaction: $paymentTransaction);
         $this->configureAppSwitchContext($experienceContext, $order->getSalesChannelId(), $request, $requestVaulting);
         $paypal->setExperienceContext($experienceContext);
@@ -106,7 +107,8 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $paypal = new Paypal();
         $paymentSource->setPaypal($paypal);
 
-        $experienceContext = $this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext());
+        /** @phpstan-ignore method.deprecated */
+        $experienceContext = $this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext(), null, $requestDataBag);
         $requestVaulting = $this->vaultTokenService->shouldRequestVaulting($salesChannelContext, $requestDataBag);
         $this->configureAppSwitchContext($experienceContext, $salesChannelContext->getSalesChannelId(), $requestDataBag, $requestVaulting);
         $paypal->setExperienceContext($experienceContext);

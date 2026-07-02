@@ -201,6 +201,30 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
     }
 
+    public function testGetOrderUsesRequestReturnUrls(): void
+    {
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
+
+        $order = $this->getBuilder()->getOrder(
+            $paymentTransaction,
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], [
+                CreateOrderRoute::PAYPAL_RETURN_URL => 'https://example.test/paypal/restore-context/token',
+                CreateOrderRoute::PAYPAL_CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+            ]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->first($this->getPaymentSourceClass())?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
+    }
+
     public function testGetOrderWithDisabledSubmitCartConfig(): void
     {
         $cart = $this->createCart('');

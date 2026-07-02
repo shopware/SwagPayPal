@@ -18,6 +18,7 @@ use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\PUI\Exception\MissingBirthdayException;
 use Swag\PayPal\Checkout\PUI\Exception\MissingPhoneNumberException;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\PUIOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -79,6 +80,31 @@ class PUIOrderBuilderTest extends TestCase
         static::assertSame((new \DateTime('-30 years'))->format('Y-m-d'), $payUponInvoice->getBirthDate());
         static::assertSame('41', $payUponInvoice->getPhone()->getCountryCode());
         static::assertSame('01234956789', $payUponInvoice->getPhone()->getNationalNumber());
+    }
+
+    public function testGetOrderUsesRequestReturnUrls(): void
+    {
+        $orderBuilder = $this->createPUIOrderBuilder();
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
+
+        $order = $orderBuilder->getOrder(
+            $paymentTransaction,
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], [
+                CreateOrderRoute::PAYPAL_RETURN_URL => 'https://example.test/paypal/restore-context/token',
+                CreateOrderRoute::PAYPAL_CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+            ]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPayUponInvoice()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
     }
 
     public function testGetOrderNoBillingAddress(): void

@@ -39,8 +39,6 @@ abstract class AbstractOrderBuilder
 {
     public const PRELIMINARY_ATTRIBUTE = 'isPayPalPreliminaryOrder';
 
-    private Request|RequestDataBag|null $currentCreateOrderRequest = null;
-
     /**
      * @internal
      */
@@ -65,9 +63,7 @@ abstract class AbstractOrderBuilder
         $payPalOrder->setIntent($this->getIntent($order->getSalesChannelId()));
         $payPalOrder->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
         $paymentSource = new PaymentSource();
-        $this->withCreateOrderRequest($request, function () use ($paymentTransaction, $orderTransaction, $order, $context, $request, $paymentSource): void {
-            $this->buildPaymentSource($paymentTransaction, $orderTransaction, $order, $context, $request, $paymentSource);
-        });
+        $this->buildPaymentSource($paymentTransaction, $orderTransaction, $order, $context, $request, $paymentSource);
         $payPalOrder->setPaymentSource($paymentSource);
 
         return $payPalOrder;
@@ -84,9 +80,7 @@ abstract class AbstractOrderBuilder
         $order->setIntent($this->getIntent($salesChannelContext->getSalesChannelId()));
         $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
         $paymentSource = new PaymentSource();
-        $this->withCreateOrderRequest($requestDataBag, function () use ($cart, $salesChannelContext, $requestDataBag, $paymentSource): void {
-            $this->buildPaymentSourceFromCart($cart, $salesChannelContext, $requestDataBag, $paymentSource);
-        });
+        $this->buildPaymentSourceFromCart($cart, $salesChannelContext, $requestDataBag, $paymentSource);
         $order->setPaymentSource($paymentSource);
 
         return $order;
@@ -170,11 +164,15 @@ abstract class AbstractOrderBuilder
         return $intent;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - reason:new-optional-parameter - Parameter $requestDataBag will be added
+     */
     protected function createExperienceContext(
         OrderEntity|Cart $orderOrCart,
         SalesChannelEntity $salesChannel,
         Context $context,
         ?PaymentTransactionStruct $paymentTransaction = null,
+        /* ?RequestDataBag $requestDataBag = null, */
     ): ExperienceContext {
         $experienceContext = new ExperienceContext();
         $experienceContext->setBrandName($this->getBrandName($salesChannel));
@@ -188,8 +186,13 @@ abstract class AbstractOrderBuilder
             ? ExperienceContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS
             : ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING);
 
-        $paypalReturnUrl = $this->getPayPalUrlFromRequest(CreateOrderRoute::PAYPAL_RETURN_URL);
-        $paypalCancelUrl = $this->getPayPalUrlFromRequest(CreateOrderRoute::PAYPAL_CANCEL_URL);
+        $requestDataBag = \func_num_args() > 4 ? \func_get_arg(4) : null;
+        if (!$requestDataBag instanceof RequestDataBag) {
+            $requestDataBag = null;
+        }
+
+        $paypalReturnUrl = $this->getPayPalUrlFromRequestDataBag($requestDataBag, CreateOrderRoute::PAYPAL_RETURN_URL);
+        $paypalCancelUrl = $this->getPayPalUrlFromRequestDataBag($requestDataBag, CreateOrderRoute::PAYPAL_CANCEL_URL);
         if ($paypalReturnUrl !== null && $paypalCancelUrl !== null) {
             $experienceContext->setReturnUrl($paypalReturnUrl);
             $experienceContext->setCancelUrl($paypalCancelUrl);
@@ -220,35 +223,14 @@ abstract class AbstractOrderBuilder
         return $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelId);
     }
 
-    private function getPayPalUrlFromRequest(string $key): ?string
+    private function getPayPalUrlFromRequestDataBag(?RequestDataBag $requestDataBag, string $key): ?string
     {
-        $request = $this->currentCreateOrderRequest;
-
-        if ($request instanceof Request) {
-            $value = $request->request->get($key);
-        } elseif ($request instanceof RequestDataBag) {
-            $value = $request->get($key);
-        } else {
-            return null;
-        }
-
+        $value = $requestDataBag?->get($key);
         if (!\is_string($value) || $value === '') {
             return null;
         }
 
         return $value;
-    }
-
-    private function withCreateOrderRequest(Request|RequestDataBag $request, \Closure $callback): void
-    {
-        $previousRequest = $this->currentCreateOrderRequest;
-        $this->currentCreateOrderRequest = $request;
-
-        try {
-            $callback();
-        } finally {
-            $this->currentCreateOrderRequest = $previousRequest;
-        }
     }
 
     /**
