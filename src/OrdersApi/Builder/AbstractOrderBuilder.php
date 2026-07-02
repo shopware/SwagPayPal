@@ -191,8 +191,8 @@ abstract class AbstractOrderBuilder
             $requestDataBag = null;
         }
 
-        $paypalReturnUrl = $this->getPayPalUrlFromRequestDataBag($requestDataBag, CreateOrderRoute::PAYPAL_RETURN_URL);
-        $paypalCancelUrl = $this->getPayPalUrlFromRequestDataBag($requestDataBag, CreateOrderRoute::PAYPAL_CANCEL_URL);
+        $paypalReturnUrl = $requestDataBag?->getString(CreateOrderRoute::PAYPAL_RETURN_URL) ?: null;
+        $paypalCancelUrl = $requestDataBag?->getString(CreateOrderRoute::PAYPAL_CANCEL_URL) ?: null;
         if ($paypalReturnUrl !== null && $paypalCancelUrl !== null) {
             $experienceContext->setReturnUrl($paypalReturnUrl);
             $experienceContext->setCancelUrl($paypalCancelUrl);
@@ -221,16 +221,6 @@ abstract class AbstractOrderBuilder
     protected function submitCart(string $salesChannelId): bool
     {
         return $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelId);
-    }
-
-    private function getPayPalUrlFromRequestDataBag(?RequestDataBag $requestDataBag, string $key): ?string
-    {
-        $value = $requestDataBag?->get($key);
-        if (!\is_string($value) || $value === '') {
-            return null;
-        }
-
-        return $value;
     }
 
     /**
