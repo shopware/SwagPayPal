@@ -112,6 +112,26 @@ parameters:
                 - tests/Pos/Mock/Repositories/ProductRepoMock.php
                 - tests/Pos/Sync/Inventory
 
+        - # 6.8 deprecation - kept for 6.7.0.0 compatibility
+            identifier: property.deprecatedInterface
+            message: '#Property \$productStreamBuilder references deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface in its type:#'
+            path: src/Pos/Sync/ProductSelection.php
+
+        - # 6.8 deprecation - kept for 6.7.0.0 compatibility
+            identifier: parameter.deprecatedInterface
+            message: '#Parameter \$productStreamBuilder of method Swag\\PayPal\\Pos\\Sync\\ProductSelection::__construct\(\) has typehint with deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface:#'
+            path: src/Pos/Sync/ProductSelection.php
+
+        - # 6.8 deprecation - kept for 6.7.0.0 compatibility
+            identifier: method.deprecatedInterface
+            message: '#Call to method buildFilters\(\) of deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface:#'
+            path: src/Pos/Sync/ProductSelection.php
+
+        - # 6.8 deprecation - kept for 6.7.0.0 compatibility
+            identifier: classConstant.deprecatedInterface
+            message: '#Access to constant on deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface:#'
+            path: tests/Pos/Sync/Product/ProductSelectionTestProductSync.php
+
         - # Shopware trunk classifies these plugin tests as non-Unit by namespace
             identifier: shopware.unexpectedTestCovers
 
