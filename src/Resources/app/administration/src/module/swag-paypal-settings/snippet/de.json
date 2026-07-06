@@ -41,6 +41,18 @@
         "silver": "Silber",
         "white": "Weiß"
       },
+      "installmentLogoType": {
+        "primary": "Primär",
+        "alternative": "Alternativ",
+        "inline": "Inline",
+        "none": "Kein"
+      },
+      "installmentTextColor": {
+        "black": "Schwarz",
+        "white": "Weiß",
+        "monochrome": "Monochrom",
+        "grayscale": "Graustufen"
+      },
       "buttonShape": {
         "sharp": "Rechteckig mit spitzen Ecken",
         "pill": "Rund",
@@ -80,7 +92,14 @@
     },
     "installment": {
       "title": "'Später Bezahlen'-Banner",
-      "subtitle": "Banner erhöhen die Konversionsrate in Deinem Shop und stellen für Dich als Händler kein finanzielles Risiko dar, daher sollten sie immer aktiv sein."
+      "subtitle": "Banner erhöhen die Konversionsrate in Ihrem Shop und stellen kein finanzielles Risiko für Sie als Händler dar. Es wird empfohlen, sie aktiviert zu lassen.",
+      "appearance": "Darstellung",
+      "preview": "Vorschau",
+      "previewNoCredentials": "Geben Sie Ihre PayPal-Zugangsdaten ein, um die Bannervorschau zu sehen.",
+      "previewSdkError": "Das PayPal SDK konnte nicht initialisiert werden. Bitte überprüfen Sie Ihre Client-ID.",
+      "previewNoOffers": "Für Ihr Konto sind mit den aktuellen Einstellungen keine Pay-Later-Angebote verfügbar.",
+      "pageVisibility": "Seiten-Sichtbarkeit",
+      "pageVisibilitySubtitle": "Der Banner wird auf den folgenden Seiten angezeigt."
     },
     "spb": {
       "title": "Smart Payment Buttons"
