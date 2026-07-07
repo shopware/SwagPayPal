@@ -1,4 +1,5 @@
 # 10.7.0
+- Fügt vom Händler konfigurierbare Darstellungseinstellungen für das „Später bezahlen“-Ratenzahlungsbanner hinzu: Logo-Typ, Textfarbe und Textgröße
 - Behebt ein Problem, bei dem die Smart Payment Buttons unter Safari/iOS ohne sichtbare Rückmeldung fehlschlugen, wenn die AGB nicht akzeptiert wurden, indem der Nutzer nun zum betreffenden Feld geführt wird, anstatt sich auf die native Formularvalidierung des Browsers zu verlassen
 
 # 10.6.4
