@@ -21,6 +21,7 @@ async function createWrapper(systemConfigValues: EntityCollection<"system_config
                         template: '<div class="swag-paypal-setting"></div>',
                     },
                     'swag-paypal-settings-locale-select': true,
+                    'swag-paypal-settings-banner-preview': true,
                 },
                 provide: {
                     systemConfigApiService: { getValues: () => false },
@@ -77,6 +78,9 @@ describe('swag-paypal-settings-storefront', () => {
             'SwagPayPal.settings.ecsButtonLanguageIso',
             'SwagPayPal.settings.ecsShowPayLater',
             'SwagPayPal.settings.ecsShippingCallbackEnabled',
+            'SwagPayPal.settings.installmentBannerLogoType',
+            'SwagPayPal.settings.installmentBannerTextColor',
+            'SwagPayPal.settings.installmentBannerTextSize',
             'SwagPayPal.settings.installmentBannerDetailPageEnabled',
             'SwagPayPal.settings.installmentBannerCartEnabled',
             'SwagPayPal.settings.installmentBannerOffCanvasCartEnabled',

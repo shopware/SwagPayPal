@@ -52,6 +52,9 @@ final class Settings
     public const INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerOffCanvasCartEnabled';
     public const INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerLoginPageEnabled';
     public const INSTALLMENT_BANNER_FOOTER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerFooterEnabled';
+    public const INSTALLMENT_BANNER_LOGO_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerLogoType';
+    public const INSTALLMENT_BANNER_TEXT_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerTextColor';
+    public const INSTALLMENT_BANNER_TEXT_SIZE = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerTextSize';
     public const EXCLUDED_PRODUCT_IDS = self::SYSTEM_CONFIG_DOMAIN . 'excludedProductIds';
     public const EXCLUDED_PRODUCT_STREAM_IDS = self::SYSTEM_CONFIG_DOMAIN . 'excludedProductStreamIds';
     public const SPB_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'spbShowPayLater';
@@ -94,6 +97,9 @@ final class Settings
         self::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED => true,
         self::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED => true,
         self::INSTALLMENT_BANNER_FOOTER_ENABLED => true,
+        self::INSTALLMENT_BANNER_LOGO_TYPE => 'primary',
+        self::INSTALLMENT_BANNER_TEXT_COLOR => 'monochrome',
+        self::INSTALLMENT_BANNER_TEXT_SIZE => 12,
         self::PUI_CUSTOMER_SERVICE_INSTRUCTIONS => 'Details zum Kundenservice finden Sie auf unserer Webseite',
         self::ACDC_FORCE_3DS => false,
         self::EXCLUDED_PRODUCT_IDS => [],

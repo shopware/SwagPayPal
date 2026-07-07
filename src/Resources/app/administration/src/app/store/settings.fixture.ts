@@ -24,6 +24,10 @@ const Default = {
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled': false,
     'SwagPayPal.settings.spbAppSwitchEnabled': false,
 
+    'SwagPayPal.settings.installmentBannerLogoType': 'primary',
+    'SwagPayPal.settings.installmentBannerTextColor': 'monochrome',
+    'SwagPayPal.settings.installmentBannerTextSize': '12',
+
     'SwagPayPal.settings.installmentBannerDetailPageEnabled': true,
     'SwagPayPal.settings.installmentBannerCartEnabled': true,
     'SwagPayPal.settings.installmentBannerOffCanvasCartEnabled': true,
