@@ -1,4 +1,5 @@
 # 10.7.0
+- Added support for PayPal App Switch (currently only available in the US)
 - Added merchant-configurable appearance settings for the Pay Later installment banner: logo type, text colour, and text size
 - Fixes an issue, where the Smart Payment Buttons failed silently on Safari/iOS when the terms and conditions were not accepted, by guiding the user to the invalid field instead of relying on the browser's native form validation
 
