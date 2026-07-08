@@ -235,7 +235,7 @@ class WebhookSubscriberTest extends TestCase
 
     public function testSubscribedEvents(): void
     {
-        static::assertEqualsCanonicalizing([
+        static::assertSame([
             SalesChannelEvents::SALES_CHANNEL_DELETED => 'removeSalesChannelWebhookConfiguration',
             BeforeSystemConfigMultipleChangedEvent::class => 'checkWebhookBefore',
             SystemConfigMultipleChangedEvent::class => 'checkWebhookAfter',

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Pos\MessageQueue;
 
 use Doctrine\DBAL\Connection;
+use Psr\Clock\ClockInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -21,15 +22,19 @@ class MessageDispatcher
 
     protected Connection $connection;
 
+    protected ClockInterface $clock;
+
     /**
      * @internal
      */
     public function __construct(
         MessageBusInterface $messageBus,
         Connection $connection,
+        ClockInterface $clock,
     ) {
         $this->messageBus = $messageBus;
         $this->connection = $connection;
+        $this->clock = $clock;
     }
 
     public function dispatch(AbstractSyncMessage $message, bool $tracked = false): void
@@ -61,7 +66,7 @@ class MessageDispatcher
             [
                 'runId' => Uuid::fromHexToBytes($runId),
                 'amount' => $amount,
-                'updatedAt' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                'updatedAt' => $this->clock->now()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
             ]
         );
     }

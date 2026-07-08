@@ -1,3 +1,6 @@
+# 10.7.0
+- Added merchant-configurable appearance settings for the Pay Later installment banner: logo type, text colour, and text size
+
 # 10.6.4
 - Fixes an issue, where net prices could cause the express checkout with shipping callback enabled to fail
 

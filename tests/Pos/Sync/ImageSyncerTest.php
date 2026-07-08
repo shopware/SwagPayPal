@@ -46,6 +46,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\PosMediaRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * @internal
@@ -101,13 +102,14 @@ class ImageSyncerTest extends TestCase
         );
 
         $messageBus = new MessageBusMock();
-        $messageDispatcher = new MessageDispatcher($messageBus, $this->createMock(Connection::class));
+        $messageDispatcher = new MessageDispatcher($messageBus, $this->createMock(Connection::class), new NativeClock());
         $messageHydrator = new MessageHydrator($this->createMock(SalesChannelContextService::class), $this->createMock(EntityRepository::class));
         $runService = new RunServiceMock(
             new RunRepoMock(),
             new RunLogRepoMock(),
             $this->createMock(Connection::class),
-            new Logger('test')
+            new Logger('test'),
+            new NativeClock()
         );
 
         $imageSyncHandler = new ImageSyncHandler(
@@ -161,12 +163,13 @@ class ImageSyncerTest extends TestCase
             new NullLogger()
         );
 
-        $messageDispatcher = new MessageDispatcher(new MessageBusMock(), $this->createMock(Connection::class));
+        $messageDispatcher = new MessageDispatcher(new MessageBusMock(), $this->createMock(Connection::class), new NativeClock());
         $runService = new RunServiceMock(
             new RunRepoMock(),
             new RunLogRepoMock(),
             $this->createMock(Connection::class),
-            new Logger('test')
+            new Logger('test'),
+            new NativeClock()
         );
 
         $imageSyncManager = new ImageSyncManager($messageDispatcher, new PosMediaRepoMock(), $imageSyncer);

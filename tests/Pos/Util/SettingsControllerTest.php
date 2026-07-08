@@ -62,6 +62,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
+use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -155,7 +156,7 @@ class SettingsControllerTest extends TestCase
             'toSalesChannelId' => self::TO_SALES_CHANNEL,
         ]), $context);
 
-        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class));
+        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class), new NativeClock());
         $messageHydrator = new MessageHydrator($this->createMock(SalesChannelContextService::class), $this->salesChannelRepository);
 
         $this->messageBus->execute([
@@ -264,12 +265,13 @@ class SettingsControllerTest extends TestCase
             $this->runRepository,
             new RunLogRepoMock(),
             $this->createMock(Connection::class),
-            new Logger('test')
+            new Logger('test'),
+            new NativeClock()
         );
 
         $this->salesChannelProductRepository = new SalesChannelProductRepoMock();
         $this->salesChannelRepository = new SalesChannelRepoMock();
-        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class));
+        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class), new NativeClock());
 
         if (!$withSalesChannels) {
             $this->salesChannelRepository->getCollection()->clear();
@@ -279,7 +281,8 @@ class SettingsControllerTest extends TestCase
             new ApiCredentialService(
                 new TokenResource(
                     new CacheMock(),
-                    new TokenClientFactoryMock()
+                    new TokenClientFactoryMock(),
+                    new NativeClock()
                 ),
                 $this->salesChannelRepository,
                 new ApiKeyDecoder()

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Pos\Run\Administration;
 
+use Psr\Clock\ClockInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -23,12 +24,17 @@ class LogCleaner
 
     private EntityRepository $runRepository;
 
+    private ClockInterface $clock;
+
     /**
      * @internal
      */
-    public function __construct(EntityRepository $runRepository)
-    {
+    public function __construct(
+        EntityRepository $runRepository,
+        ClockInterface $clock,
+    ) {
         $this->runRepository = $runRepository;
+        $this->clock = $clock;
     }
 
     public function cleanUpLog(string $salesChannelId, Context $context): void
@@ -43,7 +49,7 @@ class LogCleaner
         /** @var PosSalesChannelRunCollection $runs */
         $runs = $this->runRepository->search($criteria, $context)->getEntities();
 
-        $now = new \DateTime();
+        $now = $this->clock->now();
         $logsPerProduct = [];
 
         foreach ($runs as $run) {

@@ -118,7 +118,7 @@ class StockSubscriberTest extends TestCase
                         ConstantsForTesting::PRODUCT_B_ID,
                         ConstantsForTesting::PRODUCT_C_ID,
                     ],
-                    $message->getIds()
+                    \array_values($message->getIds())
                 );
             }
         }
