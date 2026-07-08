@@ -40,6 +40,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 use Swag\PayPal\Test\Pos\Webhook\_fixtures\InventoryChangeFixture;
+use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -87,7 +88,8 @@ class InventoryChangedTest extends TestCase
                 new RunRepoMock(),
                 new RunLogRepoMock(),
                 $this->createMock(Connection::class),
-                new Logger('test')
+                new Logger('test'),
+                new NativeClock()
             ),
             $localCalculator,
             $localUpdater,

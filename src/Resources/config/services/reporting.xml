@@ -20,6 +20,7 @@
             <argument type="service" id="swag_paypal_transaction_report.repository"/>
             <argument>%kernel.shopware_version%</argument>
             <argument>%instance_id%</argument>
+            <argument type="service" id="Psr\Clock\ClockInterface"/>
             <tag name="messenger.message_handler"/>
         </service>
 

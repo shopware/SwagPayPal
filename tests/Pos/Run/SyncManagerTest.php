@@ -31,6 +31,7 @@ use Swag\PayPal\Pos\Run\Task\CompleteTask;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * @internal
@@ -59,7 +60,7 @@ class SyncManagerTest extends TestCase
         $this->context = Context::createDefaultContext();
         $this->runService = $this->getContainer()->get(RunService::class);
 
-        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->getContainer()->get(Connection::class));
+        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->getContainer()->get(Connection::class), new NativeClock());
         $this->task = new CompleteTask($messageDispatcher, $this->runService);
 
         $this->context = Context::createDefaultContext();

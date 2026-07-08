@@ -45,6 +45,18 @@
         "gold": "Gold (recommended)",
         "silver": "Silver",
         "white": "White"
+      },
+      "installmentLogoType": {
+        "primary": "Primary",
+        "alternative": "Alternative",
+        "inline": "Inline",
+        "none": "None"
+      },
+      "installmentTextColor": {
+        "black": "Black",
+        "white": "White",
+        "monochrome": "Monochrome",
+        "grayscale": "Greyscale"
       }
     },
     "credentialsLive": {
@@ -80,7 +92,14 @@
     },
     "installment": {
       "title": "'Pay Later' banner",
-      "subtitle": "Banners increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated."
+      "subtitle": "Banners increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated.",
+      "appearance": "Appearance",
+      "preview": "Preview",
+      "previewNoCredentials": "Enter your PayPal credentials to see the banner preview.",
+      "previewSdkError": "Could not initialize the PayPal SDK. Please verify your client ID.",
+      "previewNoOffers": "No Pay Later offers are available for your account with the current settings.",
+      "pageVisibility": "Page visibility",
+      "pageVisibilitySubtitle": "The banner will be displayed on the following pages."
     },
     "spb": {
       "title": "Smart Payment Buttons"

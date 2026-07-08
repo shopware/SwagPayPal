@@ -15,6 +15,7 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\CreateTokenResponseFixture;
 use Swag\PayPal\Test\Pos\Mock\Client\TokenClientFactoryMock;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * @internal
@@ -27,7 +28,7 @@ class TokenResourceTest extends TestCase
     public function testExpireDateTimeIsSerializedAsString(): void
     {
         $cache = new ArrayAdapter();
-        $resource = new TokenResource($cache, new TokenClientFactoryMock());
+        $resource = new TokenResource($cache, new TokenClientFactoryMock(), new NativeClock());
         $credentials = $this->createCredentials();
 
         $resource->getToken($credentials);
@@ -50,7 +51,7 @@ class TokenResourceTest extends TestCase
     public function testValidCachedTokenIsReturnedWithoutReauth(): void
     {
         $cache = new ArrayAdapter();
-        $resource = new TokenResource($cache, new TokenClientFactoryMock());
+        $resource = new TokenResource($cache, new TokenClientFactoryMock(), new NativeClock());
 
         $credentials = $this->createCredentials();
 
@@ -67,7 +68,7 @@ class TokenResourceTest extends TestCase
     public function testExpiredCachedTokenTriggersReauth(): void
     {
         $cache = new ArrayAdapter();
-        $resource = new TokenResource($cache, new TokenClientFactoryMock());
+        $resource = new TokenResource($cache, new TokenClientFactoryMock(), new NativeClock());
 
         $credentials = $this->createCredentials();
 
