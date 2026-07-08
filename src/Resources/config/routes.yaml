@@ -1,0 +1,39 @@
+swag_paypal.administration:
+    resource: ../../Administration/**/*Controller.php
+    type: attribute
+
+swag_paypal.checkout_controller:
+    resource: ../../Checkout/**/*Controller.php
+    type: attribute
+
+swag_paypal.checkout_route:
+    resource: ../../Checkout/**/*Route.php
+    type: attribute
+
+swag_paypal.dispute:
+    resource: ../../Dispute/**/*Controller.php
+    type: attribute
+
+swag_paypal.pos:
+    resource: ../../Pos/**/*Controller.php
+    type: attribute
+
+swag_paypal.orders_api:
+    resource: ../../OrdersApi/**/*Controller.php
+    type: attribute
+
+swag_paypal.payments_api:
+    resource: ../../PaymentsApi/**/*Controller.php
+    type: attribute
+
+swag_paypal.setting:
+    resource: ../../Setting/**/*Controller.php
+    type: attribute
+
+swag_paypal.storefront:
+    resource: ../../Storefront/**/*Controller.php
+    type: attribute
+
+swag_paypal.webhook:
+    resource: ../../Webhook/**/*Controller.php
+    type: attribute
