@@ -6,6 +6,14 @@ const GOOGLE_PAY_BUTTON_LOCALES = new Set([
     'ja', 'ko', 'ms', 'nl', 'no', 'pl', 'pt', 'ru', 'sk', 'sl', 'sr', 'sv', 'th', 'tr', 'uk', 'zh',
 ]);
 
+// Google Pay uses the macrolanguage code `no` for Norwegian, but locales use the
+// individual Bokmål (`nb`) / Nynorsk (`nn`) subtags. Map those so Norwegian stores
+// still get a localized button instead of falling back to the browser locale.
+const GOOGLE_PAY_LOCALE_ALIASES = {
+    nb: 'no',
+    nn: 'no',
+};
+
 export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
     static options = {
         ...super.options,
@@ -149,6 +157,12 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
             return undefined;
         }
 
-        return language && GOOGLE_PAY_BUTTON_LOCALES.has(language) ? language : undefined;
+        if (!language) {
+            return undefined;
+        }
+
+        const buttonLocale = GOOGLE_PAY_LOCALE_ALIASES[language] ?? language;
+
+        return GOOGLE_PAY_BUTTON_LOCALES.has(buttonLocale) ? buttonLocale : undefined;
     }
 }
