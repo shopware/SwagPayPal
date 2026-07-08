@@ -157,12 +157,6 @@ parameters:
 			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
 
 		-
-			message: '#^Parameter \#1 \$entity of method Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\<Shopware\\Core\\Content\\Product\\ProductEntity\>\:\:add\(\) expects Shopware\\Core\\Content\\Product\\ProductEntity, Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Pos/Mock/Repositories/SalesChannelProductRepoMock.php
-
-		-
 			message: '#^Return type \(Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult\<Shopware\\Core\\Content\\Product\\SalesChannel\\SalesChannelProductCollection\>\) of method Swag\\PayPal\\Test\\Pos\\Mock\\Repositories\\SalesChannelProductRepoMock\:\:search\(\) should be compatible with return type \(Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult\<Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\>\) of method Shopware\\Core\\System\\SalesChannel\\Entity\\SalesChannelRepository\<Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\>\:\:search\(\)$#'
 			identifier: method.childReturnType
 			count: 1
