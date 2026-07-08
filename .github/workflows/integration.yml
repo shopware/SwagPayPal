@@ -15,7 +15,7 @@ permissions:
 jobs:
   check:
       if: always()
-      needs: [build-zip, test-install-zip, phpunit, acceptance]
+      needs: [build-zip, validate, test-install-zip, phpunit, acceptance]
       runs-on: ubuntu-latest
       steps:
         - uses: re-actors/alls-green@v1.2.2
@@ -32,6 +32,21 @@ jobs:
         uses: shopware/github-actions/build-zip@main
         with:
           extensionName: ${{ github.event.repository.name }}
+
+  validate:
+    needs: build-zip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download zip
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ github.event.repository.name }}.zip
+
+      - name: Install shopware-cli
+        uses: shopware/shopware-cli-action@v3
+
+      - name: Validate extension
+        run: shopware-cli extension validate ${{ github.event.repository.name }}.zip --reporter github
 
   test-install-zip:
     needs: build-zip
