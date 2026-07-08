@@ -1,3 +1,6 @@
+# 10.7.1
+- Behebt ein Problem, bei dem der Google Pay Button immer auf Englisch statt in der Verkaufskanal-Sprache angezeigt wurde (shopware/shopware#17804)
+
 # 10.6.4
 - Behebt ein Problem, bei dem Netto-Preise den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
 

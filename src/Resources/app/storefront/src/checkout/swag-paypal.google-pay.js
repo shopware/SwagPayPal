@@ -1,6 +1,11 @@
 import SwagPaypalAbstractStandalone from './swag-paypal.abstract-standalone';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
+const GOOGLE_PAY_BUTTON_LOCALES = new Set([
+    'en', 'ar', 'bg', 'ca', 'cs', 'da', 'de', 'el', 'es', 'et', 'fi', 'fr', 'hr', 'id', 'it',
+    'ja', 'ko', 'ms', 'nl', 'no', 'pl', 'pt', 'ru', 'sk', 'sl', 'sr', 'sv', 'th', 'tr', 'uk', 'zh',
+]);
+
 export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
     static options = {
         ...super.options,
@@ -52,7 +57,7 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
         }
 
         const gpClient = this.createGPClient(paypal);
-        const { result } = await gpClient.isReadyToPay({ apiVersion, apiVersionMinor, allowedPaymentMethods });
+        const {result} = await gpClient.isReadyToPay({apiVersion, apiVersionMinor, allowedPaymentMethods});
 
         // Quote Docs: "If the browser supports Google Pay, isReadyToPay returns true"
         if (!result) {
@@ -80,8 +85,10 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
 
         gpClient.prefetchPaymentData(paymentDataRequest);
 
+        const buttonLocale = this.getButtonLocale();
         const button = gpClient.createButton({
             allowedPaymentMethods,
+            ...(buttonLocale ? {buttonLocale} : {}),
             onClick: () => {
                 if (this.confirmOrderForm.reportValidity())
                     gpClient.loadPaymentData(paymentDataRequest).catch();
@@ -102,7 +109,7 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
             paymentMethodData: paymentData.paymentMethodData,
         });
 
-        if (!['APPROVED','PAYER_ACTION_REQUIRED'].includes(confirmOrderResponse.status)) {
+        if (!['APPROVED', 'PAYER_ACTION_REQUIRED'].includes(confirmOrderResponse.status)) {
             throw new Error('PayPal didn\'t approve the transaction.');
         }
 
@@ -110,22 +117,29 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
             await paypal.Googlepay().initiatePayerAction({orderId});
         }
 
-        this.onApprove({ orderId });
+        this.onApprove({orderId});
     }
 
     createGPClient(paypal) {
         const onPaymentAuthorized = (paymentData) => {
             return this.onPaymentAuthorized(paypal, paymentData)
-                .then(() => ({ transactionState: 'SUCCESS' }))
+                .then(() => ({transactionState: 'SUCCESS'}))
                 .catch((e) => ({
                     transactionState: 'ERROR',
-                    error: { intent: 'PAYMENT_AUTHORIZATION', message: e.message || 'TRANSACTION FAILED' },
+                    error: {intent: 'PAYMENT_AUTHORIZATION', message: e.message || 'TRANSACTION FAILED'},
                 }));
         };
 
         return new window.google.payments.api.PaymentsClient({
             environment: this.options.sandbox ? 'TEST' : 'PRODUCTION',
-            paymentDataCallbacks: { onPaymentAuthorized },
+            paymentDataCallbacks: {onPaymentAuthorized},
         });
+    }
+
+    getButtonLocale() {
+        const [language] = (this.options.languageIso || '').replace('_', '-').split('-');
+        const buttonLocale = language.toLowerCase();
+
+        return GOOGLE_PAY_BUTTON_LOCALES.has(buttonLocale) ? buttonLocale : undefined;
     }
 }
