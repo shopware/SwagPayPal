@@ -137,9 +137,18 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
     }
 
     getButtonLocale() {
-        const [language] = (this.options.languageIso || '').replace('_', '-').split('-');
-        const buttonLocale = language.toLowerCase();
+        const languageIso = this.options.languageIso;
+        if (!languageIso) {
+            return undefined;
+        }
 
-        return GOOGLE_PAY_BUTTON_LOCALES.has(buttonLocale) ? buttonLocale : undefined;
+        let language;
+        try {
+            language = new Intl.Locale(languageIso.replace(/_/g, '-')).language;
+        } catch {
+            return undefined;
+        }
+
+        return language && GOOGLE_PAY_BUTTON_LOCALES.has(language) ? language : undefined;
     }
 }
