@@ -1,3 +1,6 @@
+# 8.11.5
+- Fixes an issue, where the Smart Payment Buttons failed silently when the terms and conditions were not accepted, by guiding the user to the invalid field
+
 # 8.11.4
 - Fixes an issue, where net prices could cause the express checkout with shipping callback enabled to fail
 
