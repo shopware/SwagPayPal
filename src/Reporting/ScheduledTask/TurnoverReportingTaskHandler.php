@@ -14,6 +14,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Promise\Utils;
 use GuzzleHttp\RequestOptions;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
@@ -41,6 +42,7 @@ class TurnoverReportingTaskHandler extends ScheduledTaskHandler
         private readonly EntityRepository $transactionReportRepository,
         private readonly string $shopwareVersion,
         private readonly ?string $instanceId,
+        private readonly ClockInterface $clock,
     ) {
         $this->client = new Client(['base_uri' => 'https://api.shopware.com']);
         parent::__construct($scheduledTaskRepository, $logger);
@@ -77,7 +79,7 @@ class TurnoverReportingTaskHandler extends ScheduledTaskHandler
         foreach ($reports as $currency => $turnover) {
             $body = [
                 'identifier' => self::API_IDENTIFIER,
-                'reportDate' => (new \DateTime())->format(\DateTimeInterface::ATOM),
+                'reportDate' => $this->clock->now()->format(\DateTimeInterface::ATOM),
                 'instanceId' => $this->instanceId,
                 'shopwareVersion' => $this->shopwareVersion,
                 'reportDataKeys' => ['turnover' => \round((float) $turnover, 2)],

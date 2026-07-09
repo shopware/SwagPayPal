@@ -24,6 +24,7 @@ use Swag\PayPal\Checkout\PUI\MessageQueue\PUIInstructionsFetchMessage;
 use Swag\PayPal\Checkout\PUI\ScheduledTask\PUIInstructionsFetchTaskHandler;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -54,14 +55,13 @@ class PUIInstructionsFetchTaskHandlerTest extends TestCase
             $this->orderTransactionRepository,
             $this->paymentMethodDataRegistry,
             $this->bus,
+            new NativeClock(),
         );
     }
 
     public function testRun(): void
     {
-        $puiMethodData = $this->getMockBuilder(PUIMethodData::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $puiMethodData = static::createStub(PUIMethodData::class);
 
         $this->paymentMethodDataRegistry
             ->expects($this->once())

@@ -43,7 +43,7 @@ jobs:
         with:
           title: "chore: Update PayPal locales"
           body: "Automated update of supported PayPal locales list."
-          branch: update-paypal-locales
+          branch: chore/update-paypal-locales
           token: ${{ steps.create-pr-token.outputs.token }}
           path: custom/plugins/SwagPayPal
           commit-message: "chore: auto update of paypal locales"

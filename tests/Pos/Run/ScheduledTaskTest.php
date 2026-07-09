@@ -31,6 +31,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * @internal
@@ -47,8 +48,8 @@ class ScheduledTaskTest extends TestCase
 
         $messageBus = new MessageBusMock();
         $runRepository = new RunRepoMock();
-        $runService = new RunServiceMock($runRepository, new RunLogRepoMock(), $this->createMock(Connection::class), new Logger('test'));
-        $completeTask = new CompleteTask(new MessageDispatcher($messageBus, $this->createMock(Connection::class)), $runService);
+        $runService = new RunServiceMock($runRepository, new RunLogRepoMock(), $this->createMock(Connection::class), new Logger('test'), new NativeClock());
+        $completeTask = new CompleteTask(new MessageDispatcher($messageBus, $this->createMock(Connection::class), new NativeClock()), $runService);
 
         $taskHandler = new CompleteSyncTaskHandler($scheduledTaskRepository, new NullLogger(), $salesChannelRepoMock, $completeTask);
 
@@ -72,8 +73,8 @@ class ScheduledTaskTest extends TestCase
 
         $messageBus = new MessageBusMock();
         $runRepository = new RunRepoMock();
-        $runService = new RunServiceMock($runRepository, new RunLogRepoMock(), $this->createMock(Connection::class), new Logger('test'));
-        $inventoryTask = new InventoryTask(new MessageDispatcher($messageBus, $this->createMock(Connection::class)), $runService);
+        $runService = new RunServiceMock($runRepository, new RunLogRepoMock(), $this->createMock(Connection::class), new Logger('test'), new NativeClock());
+        $inventoryTask = new InventoryTask(new MessageDispatcher($messageBus, $this->createMock(Connection::class), new NativeClock()), $runService);
 
         $taskHandler = new InventorySyncTaskHandler($scheduledTaskRepository, new NullLogger(), $salesChannelRepoMock, $inventoryTask);
 
@@ -106,7 +107,7 @@ class ScheduledTaskTest extends TestCase
         $runB->setLogs(new PosSalesChannelRunLogCollection());
         $runRepository->addMockEntity($runA);
         $runRepository->addMockEntity($runB);
-        $logCleaner = new LogCleaner($runRepository);
+        $logCleaner = new LogCleaner($runRepository, new NativeClock());
 
         $taskHandler = new CleanUpLogTaskHandler($scheduledTaskRepository, new NullLogger(), $salesChannelRepoMock, $logCleaner);
 

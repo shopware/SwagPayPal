@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Sync\Product;
 
-use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
+use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
@@ -46,7 +46,7 @@ class ProductSelectionTestProductSync extends AbstractTestProductSync
         $productContextFactory = $this->createMock(ProductContextFactory::class);
         $productContextFactory->method('getContext')->willReturn($productContext);
 
-        $productStreamBuilder = $this->createStub(ProductStreamBuilderInterface::class);
+        $productStreamBuilder = $this->createStub(ProductStreamBuilder::class);
         $productStreamBuilder->method('buildFilters')->willReturn(
             [new NotFilter(NotFilter::CONNECTION_AND, [
                 new EqualsFilter('id', null),

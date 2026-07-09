@@ -171,6 +171,14 @@
                                     "orderId": {
                                         "description": "Use an existing order id to create PayPal order",
                                         "type": "string"
+                                    },
+                                    "returnUrl": {
+                                        "description": "Return URL for the order experience context",
+                                        "type": "string"
+                                    },
+                                    "cancelUrl": {
+                                        "description": "Cancel URL for the order experience context",
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -260,6 +268,1842 @@
     },
     "components": {
         "schemas": {
+            "paypal_agentic_commerce_v1_address": {
+                "required": [
+                    "countryCode"
+                ],
+                "properties": {
+                    "address_line_1": {
+                        "description": "The first line of the address, such as number and street, for example, 173 Drury Lane.\nNeeded for data entry, and Compliance and Risk checks. This field needs to pass the full address.",
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 0
+                    },
+                    "address_line_2": {
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 0
+                    },
+                    "admin_area_1": {
+                        "description": "The highest-level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision.\nThis data is formatted for postal delivery, for example, CA and not California. Value, by country, is UK.\nA county. US. A state. Canada. A province. Japan. A prefecture. Switzerland. A kanton.",
+                        "type": "string",
+                        "maxLength": 300,
+                        "minLength": 0
+                    },
+                    "admin_area_2": {
+                        "description": "A city, town, or village. Smaller than admin_area_level_1.",
+                        "type": "string",
+                        "maxLength": 120,
+                        "minLength": 0
+                    },
+                    "postal_code": {
+                        "description": "The postal code, which is the ZIP code or equivalent.\nTypically required for countries with a postal code or an equivalent. See postal code.",
+                        "type": "string",
+                        "maxLength": 60,
+                        "minLength": 0
+                    },
+                    "country_code": {
+                        "description": "The 2-character ISO 3166-1 alpha-2 country code",
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2,
+                        "pattern": "^[A-Z]{2}$"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_agent_error_detail": {
+                "required": [
+                    "field",
+                    "issue",
+                    "description"
+                ],
+                "properties": {
+                    "field": {
+                        "type": "string"
+                    },
+                    "issue": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_applied_coupon": {
+                "required": [
+                    "code",
+                    "description",
+                    "discount_amount"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "discount_amount": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_billing_address": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_address"
+                    }
+                ]
+            },
+            "paypal_agentic_commerce_v1_cart_item": {
+                "required": [
+                    "itemId",
+                    "quantity",
+                    "price"
+                ],
+                "properties": {
+                    "item_id": {
+                        "description": "Unique product identifier (optional in v1 for backwards compatibility)",
+                        "type": "string"
+                    },
+                    "variant_id": {
+                        "description": "Product variant identifier (color, size, etc.) - unique id of the product",
+                        "type": "string"
+                    },
+                    "parent_id": {
+                        "description": "Item grouping identifier - passed when item is part of a group in honey catalog",
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "description": "Number of items",
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "name": {
+                        "description": "Product display name",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Product description",
+                        "type": "string"
+                    },
+                    "item_url": {
+                        "description": "URL for product details page",
+                        "type": "string"
+                    },
+                    "price": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    },
+                    "selected_attributes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_referral_selected_attribute"
+                        }
+                    },
+                    "gift_options": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_gift_options"
+                    },
+                    "custom_options": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_referral_custom_option"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_cart_totals": {
+                "required": [
+                    "total"
+                ],
+                "properties": {
+                    "subtotal": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    },
+                    "discount": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    },
+                    "shipping": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    },
+                    "tax": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    },
+                    "handling": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    },
+                    "insurance": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    },
+                    "shipping_discount": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    },
+                    "custom_charges": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    },
+                    "total": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_checkout_field": {
+                "required": [
+                    "type",
+                    "status"
+                ],
+                "properties": {
+                    "type": {
+                        "description": "PayPal-approved checkout field type",
+                        "type": "string",
+                        "enum": [
+                            "AGE_VERIFICATION_18_PLUS",
+                            "AGE_VERIFICATION_21_PLUS",
+                            "GIFT_RECIPIENT_EMAIL",
+                            "GIFT_RECIPIENT_NAME",
+                            "GIFT_MESSAGE",
+                            "DELIVERY_INSTRUCTIONS",
+                            "DELIVERY_DATE_PREFERENCE",
+                            "ALLERGY_INFORMATION",
+                            "CUSTOM_ENGRAVING_TEXT",
+                            "CUSTOM_SIZING_INFO",
+                            "TERMS_ACCEPTANCE",
+                            "PRIVACY_CONSENT"
+                        ]
+                    },
+                    "status": {
+                        "description": "Field completion and validation status:\n\nPENDING: Field needs customer input\n\nInitial state when field is required\nAI agent should collect this information\nvalue field is null or empty\n\nCOMPLETED: Valid value provided and accepted\n\nCustomer provided acceptable input\nValue passes all validation rules\nCart can proceed with this field resolved\n\nREJECTED: Invalid or unacceptable value provided\n\nCustomer provided input that doesn't meet requirements\nvalidation_issue explains the specific problem\nAI agent should request corrected input\n\nERROR: System error during processing\n\nTechnical failure in field processing\nShould retry or escalate to support\nNot caused by customer input",
+                        "type": "string",
+                        "enum": [
+                            "PENDING",
+                            "COMPLETED",
+                            "REJECTED",
+                            "ERROR"
+                        ]
+                    },
+                    "value": {
+                        "description": "Structured value based on field type. Each checkout field type has a specific value schema.\nUse oneOf to validate against the appropriate structure for the field type.",
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_age_verification_value"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_gift_recipient_email_value"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_gift_recipient_name_value"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_gift_message_value"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_delivery_instructions_value"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_delivery_date_preference_value"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_allergy_information_value"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_custom_engraving_text_value"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_custom_sizing_info_value"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_terms_acceptance_value"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_value_privacy_consent_value"
+                            }
+                        ]
+                    },
+                    "context": {
+                        "description": "Additional context and metadata for the checkout field.\nThis is a flexible object that can contain any field-specific information needed for validation, display, or processing.\nThe structure varies based on the field type.",
+                        "type": "mixed"
+                    },
+                    "validation_issue": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_validation_issue"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_context_business_rule_error_context": {
+                "required": [
+                    "specific_issue",
+                    "current_amount",
+                    "required_amount",
+                    "maximum_amount",
+                    "remaining_amount",
+                    "account_status",
+                    "suspension_reason",
+                    "suspension_date",
+                    "monthly_limit",
+                    "current_month_total",
+                    "reset_date",
+                    "total_quantity",
+                    "approval_threshold",
+                    "maintenance_end_time",
+                    "service_status",
+                    "retry_after",
+                    "contact_info",
+                    "restricted_items",
+                    "age_requirement",
+                    "business_hours",
+                    "shortage_amount",
+                    "exceeds_by"
+                ],
+                "properties": {
+                    "specific_issue": {
+                        "description": "Specific business rule issue type",
+                        "type": "string"
+                    },
+                    "current_amount": {
+                        "description": "Current order amount",
+                        "type": "string"
+                    },
+                    "required_amount": {
+                        "description": "Required minimum amount",
+                        "type": "string"
+                    },
+                    "maximum_amount": {
+                        "description": "Maximum allowed amount",
+                        "type": "string"
+                    },
+                    "remaining_amount": {
+                        "description": "Amount needed to meet minimum",
+                        "type": "string"
+                    },
+                    "account_status": {
+                        "description": "Customer account status",
+                        "type": "string"
+                    },
+                    "suspension_reason": {
+                        "description": "Reason for account suspension",
+                        "type": "string"
+                    },
+                    "suspension_date": {
+                        "description": "Date of account suspension",
+                        "type": "string"
+                    },
+                    "monthly_limit": {
+                        "description": "Monthly purchase limit",
+                        "type": "string"
+                    },
+                    "current_month_total": {
+                        "description": "Current month purchase total",
+                        "type": "string"
+                    },
+                    "reset_date": {
+                        "description": "When limits reset",
+                        "type": "string"
+                    },
+                    "total_quantity": {
+                        "description": "Total quantity in bulk order",
+                        "type": "integer"
+                    },
+                    "approval_threshold": {
+                        "description": "Quantity requiring approval",
+                        "type": "integer"
+                    },
+                    "maintenance_end_time": {
+                        "description": "When maintenance ends",
+                        "type": "string"
+                    },
+                    "service_status": {
+                        "description": "Current service status",
+                        "type": "string"
+                    },
+                    "retry_after": {
+                        "description": "Seconds before retry recommended",
+                        "type": "integer"
+                    },
+                    "contact_info": {
+                        "description": "Support contact information",
+                        "type": "string"
+                    },
+                    "restricted_items": {
+                        "description": "Items with restrictions",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "age_requirement": {
+                        "description": "Required minimum age",
+                        "type": "integer"
+                    },
+                    "business_hours": {
+                        "description": "Store business hours",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_referral_business_hour"
+                        }
+                    },
+                    "shortage_amount": {
+                        "description": "Amount needed to meet minimum requirements",
+                        "type": "string"
+                    },
+                    "exceeds_by": {
+                        "description": "Amount by which limit is exceeded",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_context_data_error_context": {
+                "required": [
+                    "specific_issue",
+                    "field_name",
+                    "provided_value",
+                    "expected_format",
+                    "max_length",
+                    "min_length",
+                    "current_length",
+                    "regex_pattern",
+                    "suggested_value",
+                    "allowed_values",
+                    "required_fields",
+                    "field_descriptions"
+                ],
+                "properties": {
+                    "specific_issue": {
+                        "description": "Specific business rule issue type",
+                        "type": "string"
+                    },
+                    "field_name": {
+                        "description": "Name of the field with validation error",
+                        "type": "string"
+                    },
+                    "provided_value": {
+                        "description": "Value that failed validation",
+                        "type": "string"
+                    },
+                    "expected_format": {
+                        "description": "Expected format description",
+                        "type": "string"
+                    },
+                    "max_length": {
+                        "description": "Maximum allowed length",
+                        "type": "integer"
+                    },
+                    "min_length": {
+                        "description": "Minimum required length",
+                        "type": "integer"
+                    },
+                    "current_length": {
+                        "description": "Current value length",
+                        "type": "integer"
+                    },
+                    "regex_pattern": {
+                        "description": "Required regex pattern",
+                        "type": "string"
+                    },
+                    "suggested_value": {
+                        "description": "Suggested corrected value",
+                        "type": "string"
+                    },
+                    "allowed_values": {
+                        "description": "List of allowed values for enum fields",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "required_fields": {
+                        "description": "List of required field names",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "field_descriptions": {
+                        "description": "Descriptions for required fields",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_context_inventory_issue_context": {
+                "required": [
+                    "specific_issue",
+                    "item_id",
+                    "variant_id",
+                    "available_quantity",
+                    "requested_quantity",
+                    "reserved_quantity",
+                    "restock_date",
+                    "estimated_ship_date",
+                    "back_order_limit",
+                    "current_back_orders",
+                    "discontinuation_date",
+                    "suggested_alternatives",
+                    "upgrade_available",
+                    "seasonal_start_date",
+                    "last_sold"
+                ],
+                "properties": {
+                    "specific_issue": {
+                        "description": "Specific business rule issue type",
+                        "type": "string"
+                    },
+                    "item_id": {
+                        "description": "Product item identifier",
+                        "type": "string"
+                    },
+                    "variant_id": {
+                        "description": "Product variant identifier if applicable",
+                        "type": "string"
+                    },
+                    "available_quantity": {
+                        "description": "Currently available quantity",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "requested_quantity": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "reserved_quantity": {
+                        "description": "Quantity reserved for other transactions",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "restock_date": {
+                        "description": "Expected restock date",
+                        "type": "string"
+                    },
+                    "estimated_ship_date": {
+                        "description": "Estimated shipping date for back-orders",
+                        "type": "string"
+                    },
+                    "back_order_limit": {
+                        "description": "Maximum allowed back-order quantity",
+                        "type": "integer"
+                    },
+                    "current_back_orders": {
+                        "type": "integer"
+                    },
+                    "discontinuation_date": {
+                        "type": "string"
+                    },
+                    "suggested_alternatives": {
+                        "description": "Alternative product IDs",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "upgrade_available": {
+                        "description": "Whether newer version is available",
+                        "type": "boolean"
+                    },
+                    "seasonal_start_date": {
+                        "description": "When seasonal product becomes available",
+                        "type": "string"
+                    },
+                    "last_sold": {
+                        "description": "When item was last sold",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_context_payment_error_context": {
+                "required": [
+                    "specific_issue",
+                    "order_total",
+                    "payment_limit",
+                    "minimum_amount",
+                    "excess_amount",
+                    "payment_method",
+                    "currency_code",
+                    "from_currency",
+                    "to_currency",
+                    "conversion_service",
+                    "supported_payment_methods",
+                    "processor_error_code",
+                    "decline_reason",
+                    "payment_token"
+                ],
+                "properties": {
+                    "specific_issue": {
+                        "description": "Specific business rule issue type",
+                        "type": "string"
+                    },
+                    "order_total": {
+                        "description": "Total order amount",
+                        "type": "string"
+                    },
+                    "payment_limit": {
+                        "description": "Maximum payment limit",
+                        "type": "string"
+                    },
+                    "minimum_amount": {
+                        "description": "Minimum payment amount",
+                        "type": "string"
+                    },
+                    "excess_amount": {
+                        "description": "Amount exceeding limit",
+                        "type": "string"
+                    },
+                    "payment_method": {
+                        "description": "Payment method being used",
+                        "type": "string"
+                    },
+                    "currency_code": {
+                        "description": "Transaction currency",
+                        "type": "string"
+                    },
+                    "from_currency": {
+                        "description": "Source currency for conversion",
+                        "type": "string"
+                    },
+                    "to_currency": {
+                        "description": "Target currency for conversion",
+                        "type": "string"
+                    },
+                    "conversion_service": {
+                        "description": "Currency conversion service status",
+                        "type": "string"
+                    },
+                    "supported_payment_methods": {
+                        "description": "List of supported payment methods",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "processor_error_code": {
+                        "description": "Payment processor specific error code",
+                        "type": "string"
+                    },
+                    "decline_reason": {
+                        "description": "Reason for payment decline",
+                        "type": "string"
+                    },
+                    "payment_token": {
+                        "description": "Payment token that was declined",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_context_pricing_error_context": {
+                "required": [
+                    "specific_issue",
+                    "item_id",
+                    "original_price",
+                    "current_price",
+                    "currency_code",
+                    "price_change_reason",
+                    "price_increase",
+                    "price_decrease",
+                    "coupon_code",
+                    "usage_limit",
+                    "current_usage",
+                    "expiration_date",
+                    "minimum_order_amount",
+                    "supported_currencies",
+                    "found_currencies",
+                    "tax_service_error",
+                    "current_date",
+                    "discount_amount",
+                    "required_currency_consistency",
+                    "mixed_items"
+                ],
+                "properties": {
+                    "specific_issue": {
+                        "description": "Specific business rule issue type",
+                        "type": "string"
+                    },
+                    "item_id": {
+                        "description": "Item with pricing issue",
+                        "type": "string"
+                    },
+                    "original_price": {
+                        "description": "Original price value",
+                        "type": "string"
+                    },
+                    "current_price": {
+                        "description": "Current price value",
+                        "type": "string"
+                    },
+                    "currency_code": {
+                        "description": "Currency code",
+                        "type": "string"
+                    },
+                    "price_change_reason": {
+                        "description": "Reason for price change",
+                        "type": "string",
+                        "enum": [
+                            "promotional_ended",
+                            "promotional_started",
+                            "market_adjustment",
+                            "cost_increase",
+                            "seasonal_pricing",
+                            "component_cost_increase",
+                            "terms_updated"
+                        ]
+                    },
+                    "price_increase": {
+                        "description": "Amount of price increase",
+                        "type": "string"
+                    },
+                    "price_decrease": {
+                        "description": "Amount of price decrease",
+                        "type": "string"
+                    },
+                    "coupon_code": {
+                        "description": "Coupon code with issues",
+                        "type": "string"
+                    },
+                    "usage_limit": {
+                        "description": "Coupon usage limit",
+                        "type": "integer"
+                    },
+                    "current_usage": {
+                        "description": "Current coupon usage count",
+                        "type": "integer"
+                    },
+                    "expiration_date": {
+                        "description": "Discount expiration date",
+                        "type": "string"
+                    },
+                    "minimum_order_amount": {
+                        "description": "Minimum order for discount",
+                        "type": "string"
+                    },
+                    "supported_currencies": {
+                        "description": "List of supported currencies",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "found_currencies": {
+                        "description": "Multiple currencies found in cart",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "tax_service_error": {
+                        "description": "Tax calculation service error",
+                        "type": "string"
+                    },
+                    "current_date": {
+                        "description": "Current system date for comparisons",
+                        "type": "string"
+                    },
+                    "discount_amount": {
+                        "description": "Discount amount that was applied",
+                        "type": "string"
+                    },
+                    "required_currency_consistency": {
+                        "description": "Whether all items must use same currency",
+                        "type": "boolean"
+                    },
+                    "mixed_items": {
+                        "description": "Items with different currencies",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_referral_mixed_item"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_context_shipping_error_context": {
+                "required": [
+                    "specific_issue",
+                    "validation_failures",
+                    "suggested_corrections",
+                    "address_quality_score",
+                    "restricted_items",
+                    "restriction_reason",
+                    "po_box_detected",
+                    "destination_country",
+                    "restricted_region",
+                    "supported_countries",
+                    "provided_address"
+                ],
+                "properties": {
+                    "specific_issue": {
+                        "description": "Specific business rule issue type",
+                        "type": "string"
+                    },
+                    "validation_failures": {
+                        "description": "Specific address validation failures",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "suggested_corrections": {
+                        "description": "Suggested address corrections",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_referral_suggested_correction"
+                        }
+                    },
+                    "address_quality_score": {
+                        "description": "Address validation quality score",
+                        "type": "number",
+                        "format": "float",
+                        "maximum": 1,
+                        "minimum": 0
+                    },
+                    "restricted_items": {
+                        "description": "Items with shipping restrictions",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "restriction_reason": {
+                        "description": "Reason for shipping restriction",
+                        "type": "string",
+                        "enum": [
+                            "signature_required",
+                            "age_verification_required",
+                            "export_controlled",
+                            "hazardous_material",
+                            "oversized_item",
+                            "po_box_restriction"
+                        ]
+                    },
+                    "po_box_detected": {
+                        "description": "Whether PO Box was detected",
+                        "type": "boolean"
+                    },
+                    "destination_country": {
+                        "description": "Destination country code",
+                        "type": "string"
+                    },
+                    "restricted_region": {
+                        "description": "Restricted region identifier",
+                        "type": "string"
+                    },
+                    "supported_countries": {
+                        "description": "List of supported countries",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "provided_address": {
+                        "description": "Address string that failed validation",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_coupon": {
+                "required": [
+                    "code",
+                    "action"
+                ],
+                "properties": {
+                    "code": {
+                        "description": "Coupon code identifier",
+                        "type": "string"
+                    },
+                    "action": {
+                        "description": "Action to perform on this specific coupon",
+                        "type": "string",
+                        "enum": [
+                            "APPLY",
+                            "REMOVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_customer": {
+                "required": [
+                    "name",
+                    "phone",
+                    "email_address"
+                ],
+                "properties": {
+                    "name": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_referral_customer_name"
+                    },
+                    "phone": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_phone"
+                    },
+                    "email_address": {
+                        "description": "The internationalized email address.\nNote: Up to 64 characters are allowed before and 255 characters are allowed after the @ sign.\nHowever, the generally accepted maximum length for an email address is 254 characters.\nThe pattern verifies that an unquoted @ sign exists.",
+                        "type": "string",
+                        "maxLength": 254,
+                        "minLength": 3,
+                        "pattern": "^(?:[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[A-Za-z0-9-]*[A-Za-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])$"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_error": {
+                "required": [
+                    "name",
+                    "message"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Error name/type",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Error description",
+                        "type": "string"
+                    },
+                    "debug_id": {
+                        "description": "Unique error identifier for support",
+                        "type": "string"
+                    },
+                    "details": {
+                        "description": "Detailed error information",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_agent_error_detail"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_geo_coordinates": {
+                "required": [
+                    "latitude",
+                    "longitude",
+                    "subdivision",
+                    "country_code"
+                ],
+                "properties": {
+                    "latitude": {
+                        "description": "Latitude coordinate in decimal degrees (-90 to 90). WGS84 datum.",
+                        "type": "string",
+                        "pattern": "^-?([1-8]?[0-9](\\.\\d+)?|90(\\.0+)?)$"
+                    },
+                    "longitude": {
+                        "description": "Longitude coordinate in decimal degrees (-180 to 180). WGS84 datum.",
+                        "type": "string",
+                        "pattern": "^-?((1[0-7]|[1-9])?[0-9](\\.\\d+)?|180(\\.0+)?)$"
+                    },
+                    "subdivision": {
+                        "description": "Administrative subdivision code (state, province, region).\nISO 3166-2 format without country prefix (e.g., 'CA' for California, 'ON' for Ontario).",
+                        "type": "string",
+                        "maxLength": 10,
+                        "minLength": 1,
+                        "pattern": "^[A-Z0-9-]+$"
+                    },
+                    "country_code": {
+                        "description": "ISO 3166-1 alpha-2 country code for the coordinate location.",
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 2,
+                        "pattern": "^[A-Z]{2}$"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_gift_options": {
+                "required": [
+                    "is_gift",
+                    "recipient",
+                    "delivery_date",
+                    "sender_name",
+                    "gift_message",
+                    "gift_wrap"
+                ],
+                "properties": {
+                    "is_gift": {
+                        "description": "Whether this is a gift",
+                        "type": "boolean"
+                    },
+                    "recipient": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_referral_recipient"
+                    },
+                    "delivery_date": {
+                        "description": "Scheduled delivery date in RFC3339 format. Seconds are required while fractional seconds are optional.\n\nexample: 2024-12-25T09:00:00Z",
+                        "type": "string",
+                        "maxLength": 64,
+                        "minLength": 20,
+                        "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])[T,t]([0-1][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)([.][0-9]+)?([Zz]|[+-][0-9]{2}:[0-9]{2})$"
+                    },
+                    "sender_name": {
+                        "description": "Name of gift sender",
+                        "type": "string"
+                    },
+                    "gift_message": {
+                        "description": "Personal message (max 500 characters)",
+                        "type": "string",
+                        "maxLength": 500
+                    },
+                    "gift_wrap": {
+                        "description": "Whether to include gift wrapping",
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_link": {
+                "required": [
+                    "rel",
+                    "href"
+                ],
+                "properties": {
+                    "rel": {
+                        "description": "Link relationship type",
+                        "type": "string",
+                        "enum": [
+                            "rel",
+                            "update",
+                            "checkout"
+                        ]
+                    },
+                    "href": {
+                        "description": "Target URL for the link\n\nexample: https://your-domain.com/api/paypal/v1/merchant-cart/CART-123",
+                        "type": "string"
+                    },
+                    "method": {
+                        "description": "HTTP method for the link",
+                        "type": "string",
+                        "enum": [
+                            "GET",
+                            "POST",
+                            "PUT"
+                        ]
+                    },
+                    "title": {
+                        "description": "Human-readable description of the link",
+                        "type": "string"
+                    },
+                    "type": {
+                        "description": "Expected content type",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_money": {
+                "required": [
+                    "currencyCode",
+                    "value"
+                ],
+                "properties": {
+                    "currency_code": {
+                        "description": "The 3-character ISO-4217 currency code that identifies the currency.",
+                        "type": "string",
+                        "maxLength": 3,
+                        "minLength": 3,
+                        "pattern": "^[\\S\\s]*$"
+                    },
+                    "value": {
+                        "description": "The value, which might be: An integer for currencies like JPY that are not typically fractional. A decimal fraction for currencies like TND that are subdivided into thousandths. For the required number of decimal places for a currency code, see Currency Codes.",
+                        "type": "string",
+                        "maxLength": 0,
+                        "minLength": 32,
+                        "pattern": "^((-?[0-9]+)|(-?([0-9]+)?[.][0-9]+))$"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_pay_pal_cart": {
+                "required": [
+                    "items",
+                    "paymentMethod"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "CREATED",
+                            "COMPLETE",
+                            "READY",
+                            "INCOMPLETE"
+                        ],
+                        "readOnly": true
+                    },
+                    "validation_status": {
+                        "type": "string",
+                        "enum": [
+                            "VALID",
+                            "INVALID",
+                            "REQUIRES_ADDITIONAL_INFORMATION"
+                        ],
+                        "readOnly": true
+                    },
+                    "validation_issues": {
+                        "description": "List of issues preventing checkout (empty = ready)",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_validation_issue"
+                        }
+                    },
+                    "totals": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_cart_totals"
+                    },
+                    "applied_coupons": {
+                        "description": "Successfully applied coupons (server-calculated)",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_applied_coupon"
+                        }
+                    },
+                    "available_shipping_options": {
+                        "description": "Available shipping methods with selection state",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_shipping_option"
+                        }
+                    },
+                    "links": {
+                        "description": "HATEOAS navigation links for cart operations",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_link"
+                        }
+                    },
+                    "items": {
+                        "description": "Products in the cart",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_cart_item"
+                        }
+                    },
+                    "customer": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_customer"
+                    },
+                    "shipping_address": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_shipping_address"
+                    },
+                    "billing_address": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_billing_address"
+                    },
+                    "payment_method": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_payment_method"
+                    },
+                    "checkout_fields": {
+                        "description": "Custom checkout fields (age verification, etc.)",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_checkout_field"
+                        }
+                    },
+                    "coupons": {
+                        "description": "Discount coupons to apply or remove from cart",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_coupon"
+                        }
+                    },
+                    "geo_coordinates": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_geo_coordinates"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_payment_method": {
+                "required": [
+                    "type"
+                ],
+                "properties": {
+                    "type": {
+                        "description": "Payment method type - only PayPal is supported by this API",
+                        "type": "string",
+                        "enum": [
+                            "paypal"
+                        ]
+                    },
+                    "token": {
+                        "description": "PayPal payment token from cart creation or customer approval",
+                        "type": "string"
+                    },
+                    "payer_id": {
+                        "description": "PayPal payer identifier provided after customer approval",
+                        "type": "string"
+                    },
+                    "approval_url": {
+                        "description": "URL used to inform merchant that the PayPal buyer approved the order",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_phone": {
+                "required": [
+                    "countryCode",
+                    "nationalNumber"
+                ],
+                "properties": {
+                    "country_code": {
+                        "description": "The country calling code (CC), in its canonical international E.164 numbering plan format.\nThe combined length of the CC and the national number must not be greater than 15 digits.\nThe national number consists of a national destination code (NDC) and subscriber number (SN)",
+                        "type": "string",
+                        "maxLength": 3,
+                        "minLength": 1,
+                        "pattern": "^[0-9]{1,3}?$"
+                    },
+                    "national_number": {
+                        "description": "The national number, in its canonical international E.164 numbering plan format.\nThe combined length of the country calling code (CC) and the national number must not be greater than 15 digits.\nThe national number consists of a national destination code (NDC) and subscriber number (SN).",
+                        "type": "string",
+                        "maxLength": 14,
+                        "minLength": 1,
+                        "pattern": "^[0-9]{1,14}?$"
+                    },
+                    "extension_number": {
+                        "description": "The extension number",
+                        "type": "string",
+                        "maxLength": 15,
+                        "minLength": 1,
+                        "pattern": "^[0-9]{1,15}?$"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_referral_business_hour": {
+                "required": [
+                    "open_time",
+                    "close_time",
+                    "timezone"
+                ],
+                "properties": {
+                    "open_time": {
+                        "type": "string"
+                    },
+                    "close_time": {
+                        "type": "string"
+                    },
+                    "timezone": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_referral_custom_option": {
+                "required": [
+                    "name",
+                    "value",
+                    "price_modifier"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    },
+                    "price_modifier": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_referral_customer_name": {
+                "required": [
+                    "given_name",
+                    "surname"
+                ],
+                "properties": {
+                    "given_name": {
+                        "type": "string"
+                    },
+                    "surname": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_referral_measurements": {
+                "required": [
+                    "chest",
+                    "waist",
+                    "height",
+                    "weight"
+                ],
+                "properties": {
+                    "chest": {
+                        "type": "string"
+                    },
+                    "waist": {
+                        "type": "string"
+                    },
+                    "height": {
+                        "type": "string"
+                    },
+                    "weight": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_referral_meta_data": {
+                "required": [
+                    "cost_impact",
+                    "priority",
+                    "waist",
+                    "auto_applicable",
+                    "estimated_time",
+                    "redirect_required"
+                ],
+                "properties": {
+                    "cost_impact": {
+                        "type": "string"
+                    },
+                    "priority": {
+                        "type": "string"
+                    },
+                    "waist": {
+                        "type": "string"
+                    },
+                    "auto_applicable": {
+                        "type": "boolean"
+                    },
+                    "estimated_time": {
+                        "type": "string"
+                    },
+                    "redirect_required": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_referral_mixed_item": {
+                "required": [
+                    "item_id",
+                    "currency"
+                ],
+                "properties": {
+                    "item_id": {
+                        "type": "string"
+                    },
+                    "currency": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_referral_recipient": {
+                "required": [
+                    "name",
+                    "email",
+                    "phone"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "phone": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_referral_selected_attribute": {
+                "required": [
+                    "name",
+                    "value"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_referral_suggested_correction": {
+                "required": [
+                    "postal_code",
+                    "address_line_1",
+                    "admin_area_2"
+                ],
+                "properties": {
+                    "postal_code": {
+                        "type": "string"
+                    },
+                    "address_line_1": {
+                        "type": "string"
+                    },
+                    "admin_area_2": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_resolution_option": {
+                "required": [
+                    "action",
+                    "label"
+                ],
+                "properties": {
+                    "action": {
+                        "description": "Machine-readable action identifier",
+                        "type": "string",
+                        "enum": [
+                            "REDIRECT_TO_MERCHANT",
+                            "MODIFY_CART",
+                            "ACCEPT_NEW_PRICE",
+                            "ACCEPT_BACK_ORDER",
+                            "SUGGEST_ALTERNATIVE",
+                            "REMOVE_ITEM",
+                            "UPDATE_ADDRESS",
+                            "PROVIDE_MISSING_FIELD",
+                            "USE_DIFFERENT_PAYMENT",
+                            "SPLIT_ORDER",
+                            "CONTACT_SUPPORT",
+                            "RETRY_LATER",
+                            "REQUEST_APPROVAL",
+                            "WAIT_FOR_RESTOCK",
+                            "USE_DIFFERENT_CURRENCY",
+                            "ACCEPT_PRE_ORDER",
+                            "UPDATE_SHIPPING_METHOD",
+                            "ACCEPT_TERMS",
+                            "VERIFY_ACCOUNT",
+                            "APPLY_DIFFERENT_COUPON",
+                            "REMOVE_COUPON",
+                            "CHOOSE_DIFFERENT_VARIANT"
+                        ]
+                    },
+                    "label": {
+                        "description": "Human-readable action label",
+                        "type": "string"
+                    },
+                    "url": {
+                        "description": "URL to redirect to for resolution",
+                        "type": "string"
+                    },
+                    "metadata": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_referral_meta_data"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_shipping_address": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_address"
+                    }
+                ]
+            },
+            "paypal_agentic_commerce_v1_shipping_option": {
+                "required": [
+                    "price",
+                    "isSelected"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Unique shipping option identifier",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "Display name",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Detailed description",
+                        "type": "string"
+                    },
+                    "price": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_money"
+                    },
+                    "is_selected": {
+                        "description": "Whether this shipping option is currently selected",
+                        "type": "boolean"
+                    },
+                    "estimated_delivery": {
+                        "description": "Estimated delivery date in YYYY-MM-DD format",
+                        "type": "string",
+                        "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_validation_issue": {
+                "required": [
+                    "code",
+                    "type",
+                    "message"
+                ],
+                "properties": {
+                    "code": {
+                        "description": "Consolidated error category",
+                        "type": "string",
+                        "enum": [
+                            "INVENTORY_ISSUE",
+                            "PRICING_ERROR",
+                            "SHIPPING_ERROR",
+                            "PAYMENT_ERROR",
+                            "DATA_ERROR",
+                            "BUSINESS_RULE_ERROR"
+                        ]
+                    },
+                    "type": {
+                        "description": "Type classification for error handling",
+                        "type": "string",
+                        "enum": [
+                            "MISSING_FIELD",
+                            "INVALID_DATA",
+                            "BUSINESS_RULE"
+                        ]
+                    },
+                    "message": {
+                        "description": "Technical message for developers and logging",
+                        "type": "string"
+                    },
+                    "user_message": {
+                        "description": "Customer-friendly message for end users",
+                        "type": "string"
+                    },
+                    "item_id": {
+                        "description": "Specific item ID if the issue is item-specific",
+                        "type": "string"
+                    },
+                    "field": {
+                        "description": "Specific field name if the issue is field-specific",
+                        "type": "string"
+                    },
+                    "context": {
+                        "description": "Category-specific context information",
+                        "nullable": true,
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_context_inventory_issue_context"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_context_pricing_error_context"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_context_shipping_error_context"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_context_payment_error_context"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_context_data_error_context"
+                            },
+                            {
+                                "$ref": "#/components/schemas/paypal_agentic_commerce_v1_context_business_rule_error_context"
+                            }
+                        ]
+                    },
+                    "resolution_options": {
+                        "description": "Available actions to resolve this issue",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/paypal_agentic_commerce_v1_resolution_option"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_age_verification_value": {
+                "required": [
+                    "confirmed"
+                ],
+                "properties": {
+                    "confirmed": {
+                        "description": "Whether age verification was confirmed",
+                        "type": "boolean"
+                    },
+                    "verificationMethod": {
+                        "description": "Method used for age verification",
+                        "type": "string",
+                        "enum": [
+                            "self_declaration",
+                            "id_verification",
+                            "third_party"
+                        ]
+                    },
+                    "verificationDate": {
+                        "description": "When verification was completed",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_allergy_information_value": {
+                "required": [
+                    "allergies",
+                    "severity",
+                    "medications",
+                    "emergency_contact"
+                ],
+                "properties": {
+                    "allergies": {
+                        "description": "List of known allergies",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "severity": {
+                        "description": "Allergy severity level",
+                        "type": "string",
+                        "enum": [
+                            "life_threatening",
+                            "mild",
+                            "moderate",
+                            "severe"
+                        ]
+                    },
+                    "medications": {
+                        "description": "Medications to avoid",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "emergency_contact": {
+                        "description": "Emergency contact information\n\nexample: +1-555-999-8888",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_custom_engraving_text_value": {
+                "required": [
+                    "text"
+                ],
+                "properties": {
+                    "text": {
+                        "description": "Text to be engraved",
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "font": {
+                        "description": "Preferred font style",
+                        "type": "string",
+                        "enum": [
+                            "arial",
+                            "times",
+                            "script",
+                            "block"
+                        ]
+                    },
+                    "size": {
+                        "description": "Text size preference",
+                        "type": "string",
+                        "enum": [
+                            "small",
+                            "medium",
+                            "large"
+                        ]
+                    },
+                    "position": {
+                        "description": "Engraving position",
+                        "type": "string",
+                        "enum": [
+                            "front",
+                            "back",
+                            "side",
+                            "bottom"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_custom_sizing_info_value": {
+                "required": [
+                    "measurements",
+                    "size_preference",
+                    "special_requirements"
+                ],
+                "properties": {
+                    "measurements": {
+                        "$ref": "#/components/schemas/paypal_agentic_commerce_v1_referral_measurements"
+                    },
+                    "size_preference": {
+                        "description": "Fit preference",
+                        "type": "string",
+                        "enum": [
+                            "tight",
+                            "regular",
+                            "loose"
+                        ]
+                    },
+                    "special_requirements": {
+                        "description": "Special sizing requirements",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_delivery_date_preference_value": {
+                "required": [
+                    "preferred_date",
+                    "time_window",
+                    "specific_time"
+                ],
+                "properties": {
+                    "preferred_date": {
+                        "description": "Preferred delivery date",
+                        "type": "string"
+                    },
+                    "time_window": {
+                        "description": "Preferred time window",
+                        "type": "string",
+                        "enum": [
+                            "morning",
+                            "afternoon",
+                            "evening",
+                            "anytime"
+                        ]
+                    },
+                    "specific_time": {
+                        "description": "Specific preferred time (HH:MM format)",
+                        "type": "string",
+                        "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_delivery_instructions_value": {
+                "required": [
+                    "instructions"
+                ],
+                "properties": {
+                    "instructions": {
+                        "description": "Special delivery instructions",
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "access_code": {
+                        "description": "Building or gate access code",
+                        "type": "string"
+                    },
+                    "contact_phone": {
+                        "description": "Contact phone for delivery",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_gift_message_value": {
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "message": {
+                        "description": "Personal message for the recipient",
+                        "type": "string",
+                        "maxLength": 500
+                    },
+                    "sender_name": {
+                        "description": "Name of the person sending the gift",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_gift_recipient_email_value": {
+                "required": [
+                    "email"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "Recipient's email address",
+                        "type": "string"
+                    },
+                    "verified": {
+                        "description": "Whether email was verified",
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_gift_recipient_name_value": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Recipient's full name",
+                        "type": "string"
+                    },
+                    "first_name": {
+                        "description": "Recipient's first name",
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "description": "Recipient's last name",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_privacy_consent_value": {
+                "required": [
+                    "consented"
+                ],
+                "properties": {
+                    "consented": {
+                        "description": "Whether privacy policy was consented to",
+                        "type": "boolean"
+                    },
+                    "consent_types": {
+                        "description": "Types of consent given",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "enum": [
+                            "analytics",
+                            "third_party_sharing",
+                            "data_processing",
+                            "marketing"
+                        ]
+                    },
+                    "policy_version": {
+                        "description": "Privacy policy version",
+                        "type": "string"
+                    },
+                    "consent_date": {
+                        "description": "When consent was given",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_agentic_commerce_v1_value_terms_acceptance_value": {
+                "required": [
+                    "accepted",
+                    "termsVersions"
+                ],
+                "properties": {
+                    "accepted": {
+                        "description": "Whether terms were accepted",
+                        "type": "boolean"
+                    },
+                    "terms_versions": {
+                        "description": "Version of terms accepted",
+                        "type": "string"
+                    },
+                    "acceptance_date": {
+                        "description": "When terms were accepted",
+                        "type": "string"
+                    },
+                    "ip_address": {
+                        "description": "IP address of acceptance",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "paypal_error_detail": {
                 "required": [
                     "field",
@@ -4881,6 +6725,74 @@
                 },
                 "type": "object"
             },
+            "paypal_v2_order_payment_source_common_app_switch_context": {
+                "required": [
+                    "native_app",
+                    "mobile_web"
+                ],
+                "properties": {
+                    "native_app": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_app_switch_context_native_app_context"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "mobile_web": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_app_switch_context_mobile_web_context"
+                            }
+                        ],
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_payment_source_common_app_switch_context_mobile_web_context": {
+                "required": [
+                    "buyer_user_agent"
+                ],
+                "properties": {
+                    "return_flow": {
+                        "type": "string",
+                        "default": "AUTO",
+                        "enum": [
+                            "AUTO",
+                            "MANUAL"
+                        ]
+                    },
+                    "buyer_user_agent": {
+                        "type": "string",
+                        "maxLength": 512,
+                        "minLength": 1
+                    }
+                },
+                "type": "object"
+            },
+            "paypal_v2_order_payment_source_common_app_switch_context_native_app_context": {
+                "required": [
+                    "os_type",
+                    "os_version"
+                ],
+                "properties": {
+                    "os_type": {
+                        "type": "string",
+                        "enum": [
+                            "ANDROID",
+                            "IOS",
+                            "OTHER"
+                        ]
+                    },
+                    "os_version": {
+                        "type": "string",
+                        "maxLength": 64,
+                        "minLength": 1
+                    }
+                },
+                "type": "object"
+            },
             "paypal_v2_order_payment_source_common_attributes": {
                 "required": [
                     "vault",
@@ -5038,7 +6950,8 @@
                     "acquiring_channel",
                     "payment_method_preference",
                     "customer_service_instructions",
-                    "order_update_callback_config"
+                    "order_update_callback_config",
+                    "app_switch_context"
                 ],
                 "properties": {
                     "locale": {
@@ -5102,6 +7015,14 @@
                     },
                     "order_update_callback_config": {
                         "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_attributes_order_update_callback_config"
+                    },
+                    "app_switch_context": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/paypal_v2_order_payment_source_common_app_switch_context"
+                            }
+                        ],
+                        "nullable": true
                     }
                 },
                 "type": "object"

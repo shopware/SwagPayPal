@@ -44,7 +44,7 @@ class FundingEligibilityDataService extends AbstractScriptDataService
 
     private function getFilteredPaymentMethods(): array
     {
-        if (!$this->requestStack->getCurrentRequest()?->hasSession() || !$this->requestStack->getSession()->isStarted()) {
+        if (!$this->requestStack->getCurrentRequest()?->hasSession(true) || !$this->requestStack->getSession()->isStarted()) {
             return [];
         }
 

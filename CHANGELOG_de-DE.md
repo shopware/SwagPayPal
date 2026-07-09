@@ -1,4 +1,16 @@
+# 10.7.0
+- Fügt Unterstützung für PayPal App Switch hinzu (aktuell nur in den USA verfügbar)
+- Fügt vom Händler konfigurierbare Darstellungseinstellungen für das „Später bezahlen“-Ratenzahlungsbanner hinzu: Logo-Typ, Textfarbe und Textgröße
+- Behebt ein Problem, bei dem die Smart Payment Buttons unter Safari/iOS ohne sichtbare Rückmeldung fehlschlugen, wenn die AGB nicht akzeptiert wurden, indem der Nutzer nun zum betreffenden Feld geführt wird, anstatt sich auf die native Formularvalidierung des Browsers zu verlassen
+
+# 10.6.4
+- Behebt ein Problem, bei dem Netto-Preise den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
+
+# 10.6.3
+- Behebt ein Problem, bei dem Versandkosten Diskrepanzen den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
+
 # 10.6.2
+- Behebt ein Problem, bei dem veraltete Authorisations-Webhooks den Zahlungsstatus auf Abgebrochen setzen konnte
 - Behebt ein Problem, bei dem der Express Checkout fehlschlug, wenn der Käufer das Lieferland zu einem mit regelbasierten Versandarten änderte (shopware/shopware#16295).
 
 # 10.6.1

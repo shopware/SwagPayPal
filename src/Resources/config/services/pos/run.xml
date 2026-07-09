@@ -26,10 +26,12 @@
             <argument type="service" id="swag_paypal_pos_sales_channel_run_log.repository"/>
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+            <argument type="service" id="Psr\Clock\ClockInterface"/>
         </service>
 
         <service id="Swag\PayPal\Pos\Run\Administration\LogCleaner">
             <argument type="service" id="swag_paypal_pos_sales_channel_run.repository"/>
+            <argument type="service" id="Psr\Clock\ClockInterface"/>
         </service>
 
         <service id="Swag\PayPal\Pos\Run\Administration\SyncResetter">

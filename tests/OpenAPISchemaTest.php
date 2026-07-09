@@ -34,6 +34,7 @@ class OpenAPISchemaTest extends TestCase
     public const IGNORED_ROUTES_WITHOUT_SCHEMA = [
         // Storefront controller returning routes, annotations are on the routes
         '\\' . PayPalController::class . '::createOrder',
+        '\\' . PayPalController::class . '::restoreContext',
         '\\' . PayPalController::class . '::paymentMethodEligibility',
         '\\' . PayPalController::class . '::puiPaymentInstructions',
         '\\' . PayPalController::class . '::expressPrepareCheckout',
