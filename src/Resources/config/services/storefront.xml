@@ -14,6 +14,8 @@
             <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressShippingCallbackRoute"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator"/>
             <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute"/>
             <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\Storefront\Service\ReturnTokenService"/>

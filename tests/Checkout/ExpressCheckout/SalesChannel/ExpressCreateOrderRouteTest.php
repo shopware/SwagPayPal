@@ -19,8 +19,10 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\Storefront\Framework\Routing\StorefrontRouteScope;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
+use Swag\PayPal\Checkout\Exception\EmptyCartException;
 use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
@@ -66,6 +68,7 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->getContainer()->get(PayPalOrderBuilder::class),
             new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
             $this->getContainer()->get(CartPriceService::class),
+            new ExpressCartValidator(),
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
             new NullLogger(),
@@ -74,6 +77,33 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::expectException(OrderZeroValueException::class);
 
         $route->createPayPalOrder(new Request(), $salesChannelContext);
+    }
+
+    public function testCreatePaymentWithEmptyCart(): void
+    {
+        $salesChannelContext = $this->getSalesChannelContext();
+
+        $cart = new Cart('token');
+
+        $cartService = $this->createMock(CartService::class);
+        $cartService->method('getCart')->willReturn($cart);
+
+        $route = new ExpressCreateOrderRoute(
+            $cartService,
+            $this->createMock(PayPalOrderBuilder::class),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            $this->getContainer()->get(CartPriceService::class),
+            new ExpressCartValidator(),
+            $this->getContainer()->get(SystemConfigService::class),
+            $this->createMock(RouterInterface::class),
+            new NullLogger(),
+        );
+
+        static::expectException(EmptyCartException::class);
+
+        $route->createPayPalOrder(new Request(), $salesChannelContext);
+
+        static::assertNull($this->getClient()->getLast());
     }
 
     public function testCreatePayment(): void
@@ -222,6 +252,7 @@ class ExpressCreateOrderRouteTest extends TestCase
             $paypalOrderBuilder,
             new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
             $this->getContainer()->get(CartPriceService::class),
+            new ExpressCartValidator(),
             $systemConfig,
             $router ?? $this->createMock(RouterInterface::class),
             new NullLogger(),

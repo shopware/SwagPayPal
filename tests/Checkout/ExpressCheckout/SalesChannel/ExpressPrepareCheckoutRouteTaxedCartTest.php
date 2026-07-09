@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\AbstractCartPersister;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\CartCalculator;
 use Shopware\Core\Checkout\Cart\CartFactory;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
@@ -29,6 +30,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -53,6 +55,7 @@ class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
 
         $newToken = 'new-context-token';
         $cart = new Cart($newToken);
+        $cart->add(new LineItem('test', LineItem::PRODUCT_LINE_ITEM_TYPE, 'test'));
 
         $taxProviderProcessor = $this->createMock(TaxProviderProcessor::class);
         $taxProviderProcessor
@@ -90,6 +93,7 @@ class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
             $salesChannelContextFactory,
             $orderResource,
             $this->createTaxedCartService($cart, $salesChannelContext, $newSalesChannelContext, $taxProviderProcessor),
+            new ExpressCartValidator(),
             new NullLogger(),
         );
 

@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\AbstractCartPersister;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\CartCalculator;
 use Shopware\Core\Checkout\Cart\CartFactory;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
@@ -28,6 +29,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -49,6 +51,7 @@ class ExpressCreateOrderRouteTaxedCartTest extends TestCase
             ->willReturn('express-token');
 
         $cart = new Cart('express-token');
+        $cart->add(new LineItem('test', LineItem::PRODUCT_LINE_ITEM_TYPE, 'test'));
 
         $taxProviderProcessor = $this->createMock(TaxProviderProcessor::class);
         $taxProviderProcessor
@@ -68,6 +71,7 @@ class ExpressCreateOrderRouteTaxedCartTest extends TestCase
             $this->createMock(PayPalOrderBuilder::class),
             $this->createMock(OrderResource::class),
             $cartPriceService,
+            new ExpressCartValidator(),
             $this->createMock(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
             new NullLogger(),

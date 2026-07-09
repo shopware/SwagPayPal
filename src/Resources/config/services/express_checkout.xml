@@ -5,6 +5,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator"/>
+
         <service id="Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService">
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
@@ -21,6 +23,7 @@
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator"/>
             <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
@@ -40,6 +43,7 @@
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="router"/>
             <argument type="service" id="monolog.logger.paypal"/>

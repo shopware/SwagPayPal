@@ -21,6 +21,7 @@ use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\OrderUpda
 use Shopware\Storefront\Framework\Routing\StorefrontRouteScope;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -44,6 +45,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
         private readonly PayPalOrderBuilder $paypalOrderBuilder,
         private readonly OrderResource $orderResource,
         private readonly CartPriceService $cartPriceService,
+        private readonly ExpressCartValidator $expressCartValidator,
         private readonly SystemConfigService $systemConfigService,
         private readonly RouterInterface $router,
         private readonly LoggerInterface $logger,
@@ -71,6 +73,8 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
         try {
             $this->logger->debug('Started');
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
+
+            $this->expressCartValidator->validateNotEmpty($cart);
 
             if ($this->cartPriceService->hasZeroPrice($cart, $salesChannelContext)) {
                 throw new OrderZeroValueException();

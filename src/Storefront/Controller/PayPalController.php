@@ -11,6 +11,7 @@ use Monolog\Level;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Order\SalesChannel\OrderService;
 use Shopware\Core\Framework\Api\EventListener\ErrorResponseFactory;
 use Shopware\Core\Framework\Context;
@@ -26,6 +27,7 @@ use Shopware\Storefront\Controller\StorefrontController;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsResponse;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
@@ -63,6 +65,8 @@ class PayPalController extends StorefrontController
         private readonly AbstractExpressShippingCallbackRoute $expressShippingCallbackRoute,
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly AbstractCartDeleteRoute $cartDeleteRoute,
+        private readonly CartService $cartService,
+        private readonly ExpressCartValidator $expressCartValidator,
         private readonly AbstractClearVaultRoute $clearVaultRoute,
         private readonly LoggerInterface $logger,
         private readonly ReturnTokenService $returnTokenService,
@@ -143,6 +147,11 @@ class PayPalController extends StorefrontController
     #[Route(path: '/paypal/express/prepare-cart', name: 'frontend.paypal.express.prepare_cart', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function expressPrepareCart(Request $request, SalesChannelContext $context): Response
     {
+        if (!$request->request->getBoolean('deleteCart')) {
+            $cart = $this->cartService->getCart($context->getToken(), $context);
+            $this->expressCartValidator->validateNotEmpty($cart);
+        }
+
         $this->contextSwitchRoute->switchContext(new RequestDataBag([
             SalesChannelContextService::PAYMENT_METHOD_ID => $request->request->getAlnum('paymentMethodId') ?: $request->query->getAlnum('paymentMethodId'),
         ]), $context);
