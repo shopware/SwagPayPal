@@ -16,7 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultedPaymentSourceInterface;
+use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultablePaymentSourceInterface;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\Vault;
@@ -81,8 +81,8 @@ class VaultPaymentTokenCreated extends AbstractWebhookHandler
 
         $struct = $this->paymentTransactionStructFactory->build($orderTransaction->getId(), $context);
 
-        $paymentSource = $this->orderResource->get($orderId, $order->getSalesChannelId())->getPaymentSource()?->first(VaultedPaymentSourceInterface::class);
-        if (!$paymentSource instanceof VaultedPaymentSourceInterface) {
+        $paymentSource = $this->orderResource->get($orderId, $order->getSalesChannelId())->getPaymentSource()?->first(VaultablePaymentSourceInterface::class);
+        if (!$paymentSource instanceof VaultablePaymentSourceInterface) {
             return;
         }
 

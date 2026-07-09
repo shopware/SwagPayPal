@@ -207,6 +207,10 @@ parameters:
             message: '#Call to deprecated method getDefaults\(\) of class Symfony\\Component\\Routing\\Attribute\\Route#'
             path: tests/AgenticCommerce/SalesChannel/DefaultRouteScopeTest.php
 
+        - # 6.8 deprecation - reason:new-optional-parameter - can safely be ignored, as the new parameter is optional and has a default value
+            identifier: method.deprecated
+            message: '#Call to deprecated method scope\(\) of class Shopware\\Core\\Framework\\Context#'
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule

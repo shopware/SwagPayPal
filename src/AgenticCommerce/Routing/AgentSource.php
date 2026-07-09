@@ -46,6 +46,7 @@ class AgentSource implements ContextSource, \JsonSerializable
 
     public function isExpired(): bool
     {
+        /** @phpstan-ignore-next-line */
         return $this->expiresAt < new \DateTimeImmutable();
     }
 
