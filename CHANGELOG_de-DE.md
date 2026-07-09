@@ -2,6 +2,7 @@
 - Fügt Unterstützung für PayPal App Switch hinzu (aktuell nur in den USA verfügbar)
 - Fügt vom Händler konfigurierbare Darstellungseinstellungen für das „Später bezahlen“-Ratenzahlungsbanner hinzu: Logo-Typ, Textfarbe und Textgröße
 - Behebt ein Problem, bei dem die Smart Payment Buttons unter Safari/iOS ohne sichtbare Rückmeldung fehlschlugen, wenn die AGB nicht akzeptiert wurden, indem der Nutzer nun zum betreffenden Feld geführt wird, anstatt sich auf die native Formularvalidierung des Browsers zu verlassen
+- Behebt ein Problem, bei dem PayPal Express Checkout in einem veralteten Offcanvas-Warenkorb die PayPal-API mit leerem Warenkorb aufrufen konnte und ohne Rückmeldung für den Kunden fehlschlug (shopware/SwagPayPal#712)
 
 # 10.6.4
 - Behebt ein Problem, bei dem Netto-Preise den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
