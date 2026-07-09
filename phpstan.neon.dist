@@ -96,6 +96,26 @@ parameters:
             identifier: method.deprecated
             message: '#(setActiveBillingAddress|setActiveShippingAddress).*Shopware\\Core\\Checkout\\Customer\\CustomerEntity.*#'
 
+        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
+            identifier: method.deprecatedClass
+            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
+            path: '**/*.php'
+
+        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
+            identifier: return.deprecatedClass
+            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
+            path: '**/*.php'
+
+        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
+            identifier: new.deprecatedClass
+            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
+            path: '**/*.php'
+
+        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
+            identifier: classConstant.deprecatedClass
+            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
+            path: '**/*.php'
+
         - # 6.8 deprecation - DAL field API will return static natively
             identifier: method.deprecated
             message: '#Call to deprecated method (addFlags|removeFlag)\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Field\\Field\:\s+tag\:v6\.8\.0 - reason\:return-type-change - Will return static natively#'
@@ -103,14 +123,6 @@ parameters:
                 - src/DataAbstractionLayer
                 - src/Pos/DataAbstractionLayer
                 - src/Reporting/DataAbstractionLayer
-
-        - # 6.8 deprecation - POS inventory sync still relies on available stock semantics
-            identifier: method.deprecated
-            message: '#Call to deprecated method (getAvailableStock|setAvailableStock)\(\) of class .*ProductEntity#'
-            paths:
-                - src/Pos/Sync/Inventory
-                - tests/Pos/Mock/Repositories/ProductRepoMock.php
-                - tests/Pos/Sync/Inventory
 
         - # 6.8 deprecation - kept for 6.7.0.0 compatibility
             identifier: property.deprecatedInterface

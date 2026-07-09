@@ -105,6 +105,26 @@ class SPBCheckoutDataServiceTest extends TestCase
         static::assertSame($expected, $data?->getUserIdToken());
     }
 
+    public function testSetAppSwitchEnabled(): void
+    {
+        $context = Generator::generateSalesChannelContext(currency: $this->createCurrency(), customer: $this->createCustomer(false));
+
+        $data = $this->checkoutDataService->buildCheckoutData(
+            $context,
+            $this->createCart(Uuid::randomHex()),
+        );
+
+        static::assertFalse($data?->getAppSwitchEnabled());
+
+        $this->systemConfigService->set(Settings::SPB_APP_SWITCH_ENABLED, true);
+        $data = $this->checkoutDataService->buildCheckoutData(
+            $context,
+            $this->createCart(Uuid::randomHex()),
+        );
+
+        static::assertTrue($data?->getAppSwitchEnabled());
+    }
+
     public static function providerTestSetUserIdToken(): \Generator
     {
         yield 'non-guest, setting enabled' => ['user-id-token', false, true];

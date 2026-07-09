@@ -1,6 +1,11 @@
 # 10.7.1
 - Behebt ein Problem, bei dem der Google Pay Button immer auf Englisch statt in der Verkaufskanal-Sprache angezeigt wurde (shopware/shopware#17804)
 
+# 10.7.0
+- Fügt Unterstützung für PayPal App Switch hinzu (aktuell nur in den USA verfügbar)
+- Fügt vom Händler konfigurierbare Darstellungseinstellungen für das „Später bezahlen“-Ratenzahlungsbanner hinzu: Logo-Typ, Textfarbe und Textgröße
+- Behebt ein Problem, bei dem die Smart Payment Buttons unter Safari/iOS ohne sichtbare Rückmeldung fehlschlugen, wenn die AGB nicht akzeptiert wurden, indem der Nutzer nun zum betreffenden Feld geführt wird, anstatt sich auf die native Formularvalidierung des Browsers zu verlassen
+
 # 10.6.4
 - Behebt ein Problem, bei dem Netto-Preise den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
 
