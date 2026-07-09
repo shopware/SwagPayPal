@@ -1,0 +1,49 @@
+{
+  "base": "/bundles/swagpaypal/administration/",
+  "entryPoints": {
+    "swag-pay-pal": {
+      "css": [
+        "/bundles/swagpaypal/administration/assets/swag-pay-pal-Bn72mvvD.css"
+      ],
+      "dynamic": [
+        "/bundles/swagpaypal/administration/assets/index-BziGdwzm.js",
+        "/bundles/swagpaypal/administration/assets/index-H6U7sC0q.js",
+        "/bundles/swagpaypal/administration/assets/index-I9ZyrzNt.js",
+        "/bundles/swagpaypal/administration/assets/index-DBIxKaet.js",
+        "/bundles/swagpaypal/administration/assets/index-BsLOcgcN.js",
+        "/bundles/swagpaypal/administration/assets/index-BqgEHF7_.js",
+        "/bundles/swagpaypal/administration/assets/index-DT6hpUCH.js",
+        "/bundles/swagpaypal/administration/assets/index-C7H-PL9O.js",
+        "/bundles/swagpaypal/administration/assets/index-DnLidD0f.js",
+        "/bundles/swagpaypal/administration/assets/index-DqnLfm3l.js",
+        "/bundles/swagpaypal/administration/assets/index-DZFSj3ip.js",
+        "/bundles/swagpaypal/administration/assets/index-BJtQKoRZ.js",
+        "/bundles/swagpaypal/administration/assets/index-QD0Oy9I0.js",
+        "/bundles/swagpaypal/administration/assets/index-BQixfoOM.js",
+        "/bundles/swagpaypal/administration/assets/index-CsBAAWMw.js",
+        "/bundles/swagpaypal/administration/assets/index-91ZXBB13.js",
+        "/bundles/swagpaypal/administration/assets/index-CjRcIrtF.js",
+        "/bundles/swagpaypal/administration/assets/index-DZ1Vq9QG.js",
+        "/bundles/swagpaypal/administration/assets/index-fwxVXGI1.js",
+        "/bundles/swagpaypal/administration/assets/index-C4TuIbx4.js",
+        "/bundles/swagpaypal/administration/assets/index-BN_nhE6x.js",
+        "/bundles/swagpaypal/administration/assets/index-B_52BUlJ.js",
+        "/bundles/swagpaypal/administration/assets/index-CnMEVSY-.js"
+      ],
+      "js": [
+        "/bundles/swagpaypal/administration/assets/swag-pay-pal-BNH1CkqI.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}
