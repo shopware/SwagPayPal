@@ -618,684 +618,6 @@ export interface components {
             liveCredentialsValid: boolean | null;
             webhookErrors: string[];
         };
-        paypal_agentic_commerce_v1_address: {
-            /**
-             * @description The first line of the address, such as number and street, for example, 173 Drury Lane.
-             *     Needed for data entry, and Compliance and Risk checks. This field needs to pass the full address.
-             */
-            address_line_1?: string;
-            address_line_2?: string;
-            /**
-             * @description The highest-level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision.
-             *     This data is formatted for postal delivery, for example, CA and not California. Value, by country, is UK.
-             *     A county. US. A state. Canada. A province. Japan. A prefecture. Switzerland. A kanton.
-             */
-            admin_area_1?: string;
-            /** @description A city, town, or village. Smaller than admin_area_level_1. */
-            admin_area_2?: string;
-            /**
-             * @description The postal code, which is the ZIP code or equivalent.
-             *     Typically required for countries with a postal code or an equivalent. See postal code.
-             */
-            postal_code?: string;
-            /** @description The 2-character ISO 3166-1 alpha-2 country code */
-            country_code?: string;
-        };
-        paypal_agentic_commerce_v1_agent_error_detail: {
-            field: string;
-            issue: string;
-            description: string;
-        };
-        paypal_agentic_commerce_v1_applied_coupon: {
-            code: string;
-            description: string;
-            discount_amount: components["schemas"]["paypal_agentic_commerce_v1_money"];
-        };
-        paypal_agentic_commerce_v1_billing_address: components["schemas"]["paypal_agentic_commerce_v1_address"];
-        paypal_agentic_commerce_v1_cart_item: {
-            /** @description Unique product identifier (optional in v1 for backwards compatibility) */
-            item_id?: string;
-            /** @description Product variant identifier (color, size, etc.) - unique id of the product */
-            variant_id?: string;
-            /** @description Item grouping identifier - passed when item is part of a group in honey catalog */
-            parent_id?: string;
-            /** @description Number of items */
-            quantity: number;
-            /** @description Product display name */
-            name?: string;
-            /** @description Product description */
-            description?: string;
-            /** @description URL for product details page */
-            item_url?: string;
-            price: components["schemas"]["paypal_agentic_commerce_v1_money"];
-            selected_attributes?: components["schemas"]["paypal_agentic_commerce_v1_referral_selected_attribute"][];
-            gift_options?: components["schemas"]["paypal_agentic_commerce_v1_gift_options"];
-            custom_options?: components["schemas"]["paypal_agentic_commerce_v1_referral_custom_option"][];
-        };
-        paypal_agentic_commerce_v1_cart_totals: {
-            subtotal?: components["schemas"]["paypal_agentic_commerce_v1_money"];
-            discount?: components["schemas"]["paypal_agentic_commerce_v1_money"];
-            shipping?: components["schemas"]["paypal_agentic_commerce_v1_money"];
-            tax?: components["schemas"]["paypal_agentic_commerce_v1_money"];
-            handling?: components["schemas"]["paypal_agentic_commerce_v1_money"];
-            insurance?: components["schemas"]["paypal_agentic_commerce_v1_money"];
-            shipping_discount?: components["schemas"]["paypal_agentic_commerce_v1_money"];
-            custom_charges?: components["schemas"]["paypal_agentic_commerce_v1_money"];
-            total: components["schemas"]["paypal_agentic_commerce_v1_money"];
-        };
-        paypal_agentic_commerce_v1_checkout_field: {
-            /**
-             * @description PayPal-approved checkout field type
-             * @enum {string}
-             */
-            type: "AGE_VERIFICATION_18_PLUS" | "AGE_VERIFICATION_21_PLUS" | "GIFT_RECIPIENT_EMAIL" | "GIFT_RECIPIENT_NAME" | "GIFT_MESSAGE" | "DELIVERY_INSTRUCTIONS" | "DELIVERY_DATE_PREFERENCE" | "ALLERGY_INFORMATION" | "CUSTOM_ENGRAVING_TEXT" | "CUSTOM_SIZING_INFO" | "TERMS_ACCEPTANCE" | "PRIVACY_CONSENT";
-            /**
-             * @description Field completion and validation status:
-             *
-             *     PENDING: Field needs customer input
-             *
-             *     Initial state when field is required
-             *     AI agent should collect this information
-             *     value field is null or empty
-             *
-             *     COMPLETED: Valid value provided and accepted
-             *
-             *     Customer provided acceptable input
-             *     Value passes all validation rules
-             *     Cart can proceed with this field resolved
-             *
-             *     REJECTED: Invalid or unacceptable value provided
-             *
-             *     Customer provided input that doesn't meet requirements
-             *     validation_issue explains the specific problem
-             *     AI agent should request corrected input
-             *
-             *     ERROR: System error during processing
-             *
-             *     Technical failure in field processing
-             *     Should retry or escalate to support
-             *     Not caused by customer input
-             * @enum {string}
-             */
-            status: "PENDING" | "COMPLETED" | "REJECTED" | "ERROR";
-            /**
-             * @description Structured value based on field type. Each checkout field type has a specific value schema.
-             *     Use oneOf to validate against the appropriate structure for the field type.
-             */
-            value?: components["schemas"]["paypal_agentic_commerce_v1_value_age_verification_value"] | components["schemas"]["paypal_agentic_commerce_v1_value_gift_recipient_email_value"] | components["schemas"]["paypal_agentic_commerce_v1_value_gift_recipient_name_value"] | components["schemas"]["paypal_agentic_commerce_v1_value_gift_message_value"] | components["schemas"]["paypal_agentic_commerce_v1_value_delivery_instructions_value"] | components["schemas"]["paypal_agentic_commerce_v1_value_delivery_date_preference_value"] | components["schemas"]["paypal_agentic_commerce_v1_value_allergy_information_value"] | components["schemas"]["paypal_agentic_commerce_v1_value_custom_engraving_text_value"] | components["schemas"]["paypal_agentic_commerce_v1_value_custom_sizing_info_value"] | components["schemas"]["paypal_agentic_commerce_v1_value_terms_acceptance_value"] | components["schemas"]["paypal_agentic_commerce_v1_value_privacy_consent_value"];
-            /**
-             * @description Additional context and metadata for the checkout field.
-             *     This is a flexible object that can contain any field-specific information needed for validation, display, or processing.
-             *     The structure varies based on the field type.
-             */
-            context?: Record<string, unknown>;
-            validation_issue?: components["schemas"]["paypal_agentic_commerce_v1_validation_issue"];
-        };
-        paypal_agentic_commerce_v1_context_business_rule_error_context: {
-            /** @description Specific business rule issue type */
-            specific_issue: string;
-            /** @description Current order amount */
-            current_amount: string;
-            /** @description Required minimum amount */
-            required_amount: string;
-            /** @description Maximum allowed amount */
-            maximum_amount: string;
-            /** @description Amount needed to meet minimum */
-            remaining_amount: string;
-            /** @description Customer account status */
-            account_status: string;
-            /** @description Reason for account suspension */
-            suspension_reason: string;
-            /** @description Date of account suspension */
-            suspension_date: string;
-            /** @description Monthly purchase limit */
-            monthly_limit: string;
-            /** @description Current month purchase total */
-            current_month_total: string;
-            /** @description When limits reset */
-            reset_date: string;
-            /** @description Total quantity in bulk order */
-            total_quantity: number;
-            /** @description Quantity requiring approval */
-            approval_threshold: number;
-            /** @description When maintenance ends */
-            maintenance_end_time: string;
-            /** @description Current service status */
-            service_status: string;
-            /** @description Seconds before retry recommended */
-            retry_after: number;
-            /** @description Support contact information */
-            contact_info: string;
-            /** @description Items with restrictions */
-            restricted_items: string[];
-            /** @description Required minimum age */
-            age_requirement: number;
-            /** @description Store business hours */
-            business_hours: components["schemas"]["paypal_agentic_commerce_v1_referral_business_hour"][];
-            /** @description Amount needed to meet minimum requirements */
-            shortage_amount: string;
-            /** @description Amount by which limit is exceeded */
-            exceeds_by: string;
-        };
-        paypal_agentic_commerce_v1_context_data_error_context: {
-            /** @description Specific business rule issue type */
-            specific_issue: string;
-            /** @description Name of the field with validation error */
-            field_name: string;
-            /** @description Value that failed validation */
-            provided_value: string;
-            /** @description Expected format description */
-            expected_format: string;
-            /** @description Maximum allowed length */
-            max_length: number;
-            /** @description Minimum required length */
-            min_length: number;
-            /** @description Current value length */
-            current_length: number;
-            /** @description Required regex pattern */
-            regex_pattern: string;
-            /** @description Suggested corrected value */
-            suggested_value: string;
-            /** @description List of allowed values for enum fields */
-            allowed_values: string[];
-            /** @description List of required field names */
-            required_fields: string[];
-            /** @description Descriptions for required fields */
-            field_descriptions: string[];
-        };
-        paypal_agentic_commerce_v1_context_inventory_issue_context: {
-            /** @description Specific business rule issue type */
-            specific_issue: string;
-            /** @description Product item identifier */
-            item_id: string;
-            /** @description Product variant identifier if applicable */
-            variant_id: string;
-            /** @description Currently available quantity */
-            available_quantity: number;
-            requested_quantity: number;
-            /** @description Quantity reserved for other transactions */
-            reserved_quantity: number;
-            /** @description Expected restock date */
-            restock_date: string;
-            /** @description Estimated shipping date for back-orders */
-            estimated_ship_date: string;
-            /** @description Maximum allowed back-order quantity */
-            back_order_limit: number;
-            current_back_orders: number;
-            discontinuation_date: string;
-            /** @description Alternative product IDs */
-            suggested_alternatives: string[];
-            /** @description Whether newer version is available */
-            upgrade_available: boolean;
-            /** @description When seasonal product becomes available */
-            seasonal_start_date: string;
-            /** @description When item was last sold */
-            last_sold: string;
-        };
-        paypal_agentic_commerce_v1_context_payment_error_context: {
-            /** @description Specific business rule issue type */
-            specific_issue: string;
-            /** @description Total order amount */
-            order_total: string;
-            /** @description Maximum payment limit */
-            payment_limit: string;
-            /** @description Minimum payment amount */
-            minimum_amount: string;
-            /** @description Amount exceeding limit */
-            excess_amount: string;
-            /** @description Payment method being used */
-            payment_method: string;
-            /** @description Transaction currency */
-            currency_code: string;
-            /** @description Source currency for conversion */
-            from_currency: string;
-            /** @description Target currency for conversion */
-            to_currency: string;
-            /** @description Currency conversion service status */
-            conversion_service: string;
-            /** @description List of supported payment methods */
-            supported_payment_methods: string[];
-            /** @description Payment processor specific error code */
-            processor_error_code: string;
-            /** @description Reason for payment decline */
-            decline_reason: string;
-            /** @description Payment token that was declined */
-            payment_token: string;
-        };
-        paypal_agentic_commerce_v1_context_pricing_error_context: {
-            /** @description Specific business rule issue type */
-            specific_issue: string;
-            /** @description Item with pricing issue */
-            item_id: string;
-            /** @description Original price value */
-            original_price: string;
-            /** @description Current price value */
-            current_price: string;
-            /** @description Currency code */
-            currency_code: string;
-            /**
-             * @description Reason for price change
-             * @enum {string}
-             */
-            price_change_reason: "promotional_ended" | "promotional_started" | "market_adjustment" | "cost_increase" | "seasonal_pricing" | "component_cost_increase" | "terms_updated";
-            /** @description Amount of price increase */
-            price_increase: string;
-            /** @description Amount of price decrease */
-            price_decrease: string;
-            /** @description Coupon code with issues */
-            coupon_code: string;
-            /** @description Coupon usage limit */
-            usage_limit: number;
-            /** @description Current coupon usage count */
-            current_usage: number;
-            /** @description Discount expiration date */
-            expiration_date: string;
-            /** @description Minimum order for discount */
-            minimum_order_amount: string;
-            /** @description List of supported currencies */
-            supported_currencies: string[];
-            /** @description Multiple currencies found in cart */
-            found_currencies: string[];
-            /** @description Tax calculation service error */
-            tax_service_error: string;
-            /** @description Current system date for comparisons */
-            current_date: string;
-            /** @description Discount amount that was applied */
-            discount_amount: string;
-            /** @description Whether all items must use same currency */
-            required_currency_consistency: boolean;
-            /** @description Items with different currencies */
-            mixed_items: components["schemas"]["paypal_agentic_commerce_v1_referral_mixed_item"][];
-        };
-        paypal_agentic_commerce_v1_context_shipping_error_context: {
-            /** @description Specific business rule issue type */
-            specific_issue: string;
-            /** @description Specific address validation failures */
-            validation_failures: string[];
-            /** @description Suggested address corrections */
-            suggested_corrections: components["schemas"]["paypal_agentic_commerce_v1_referral_suggested_correction"][];
-            /**
-             * Format: float
-             * @description Address validation quality score
-             */
-            address_quality_score: number;
-            /** @description Items with shipping restrictions */
-            restricted_items: string[];
-            /**
-             * @description Reason for shipping restriction
-             * @enum {string}
-             */
-            restriction_reason: "signature_required" | "age_verification_required" | "export_controlled" | "hazardous_material" | "oversized_item" | "po_box_restriction";
-            /** @description Whether PO Box was detected */
-            po_box_detected: boolean;
-            /** @description Destination country code */
-            destination_country: string;
-            /** @description Restricted region identifier */
-            restricted_region: string;
-            /** @description List of supported countries */
-            supported_countries: string[];
-            /** @description Address string that failed validation */
-            provided_address: string;
-        };
-        paypal_agentic_commerce_v1_coupon: {
-            /** @description Coupon code identifier */
-            code: string;
-            /**
-             * @description Action to perform on this specific coupon
-             * @enum {string}
-             */
-            action: "APPLY" | "REMOVE";
-        };
-        paypal_agentic_commerce_v1_customer: {
-            name: components["schemas"]["paypal_agentic_commerce_v1_referral_customer_name"];
-            phone: components["schemas"]["paypal_agentic_commerce_v1_phone"];
-            /**
-             * @description The internationalized email address.
-             *     Note: Up to 64 characters are allowed before and 255 characters are allowed after the @ sign.
-             *     However, the generally accepted maximum length for an email address is 254 characters.
-             *     The pattern verifies that an unquoted @ sign exists.
-             */
-            email_address: string;
-        };
-        paypal_agentic_commerce_v1_error: {
-            /** @description Error name/type */
-            name: string;
-            /** @description Error description */
-            message: string;
-            /** @description Unique error identifier for support */
-            debug_id?: string;
-            /** @description Detailed error information */
-            details?: components["schemas"]["paypal_agentic_commerce_v1_agent_error_detail"][];
-        };
-        paypal_agentic_commerce_v1_geo_coordinates: {
-            /** @description Latitude coordinate in decimal degrees (-90 to 90). WGS84 datum. */
-            latitude: string;
-            /** @description Longitude coordinate in decimal degrees (-180 to 180). WGS84 datum. */
-            longitude: string;
-            /**
-             * @description Administrative subdivision code (state, province, region).
-             *     ISO 3166-2 format without country prefix (e.g., 'CA' for California, 'ON' for Ontario).
-             */
-            subdivision: string;
-            /** @description ISO 3166-1 alpha-2 country code for the coordinate location. */
-            country_code: string;
-        };
-        paypal_agentic_commerce_v1_gift_options: {
-            /** @description Whether this is a gift */
-            is_gift: boolean;
-            recipient: components["schemas"]["paypal_agentic_commerce_v1_referral_recipient"];
-            /**
-             * @description Scheduled delivery date in RFC3339 format. Seconds are required while fractional seconds are optional.
-             *
-             *     example: 2024-12-25T09:00:00Z
-             */
-            delivery_date: string;
-            /** @description Name of gift sender */
-            sender_name: string;
-            /** @description Personal message (max 500 characters) */
-            gift_message: string;
-            /** @description Whether to include gift wrapping */
-            gift_wrap: boolean;
-        };
-        paypal_agentic_commerce_v1_link: {
-            /**
-             * @description Link relationship type
-             * @enum {string}
-             */
-            rel: "rel" | "update" | "checkout";
-            /**
-             * @description Target URL for the link
-             *
-             *     example: https://your-domain.com/api/paypal/v1/merchant-cart/CART-123
-             */
-            href: string;
-            /**
-             * @description HTTP method for the link
-             * @enum {string}
-             */
-            method?: "GET" | "POST" | "PUT";
-            /** @description Human-readable description of the link */
-            title?: string;
-            /** @description Expected content type */
-            type?: string;
-        };
-        paypal_agentic_commerce_v1_money: {
-            /** @description The 3-character ISO-4217 currency code that identifies the currency. */
-            currency_code?: string;
-            /** @description The value, which might be: An integer for currencies like JPY that are not typically fractional. A decimal fraction for currencies like TND that are subdivided into thousandths. For the required number of decimal places for a currency code, see Currency Codes. */
-            value: string;
-        };
-        paypal_agentic_commerce_v1_pay_pal_cart: {
-            readonly id?: string;
-            /** @enum {string} */
-            readonly status?: "CREATED" | "COMPLETE" | "READY" | "INCOMPLETE";
-            /** @enum {string} */
-            readonly validation_status?: "VALID" | "INVALID" | "REQUIRES_ADDITIONAL_INFORMATION";
-            /** @description List of issues preventing checkout (empty = ready) */
-            validation_issues?: components["schemas"]["paypal_agentic_commerce_v1_validation_issue"][];
-            totals?: components["schemas"]["paypal_agentic_commerce_v1_cart_totals"];
-            /** @description Successfully applied coupons (server-calculated) */
-            applied_coupons?: components["schemas"]["paypal_agentic_commerce_v1_applied_coupon"][];
-            /** @description Available shipping methods with selection state */
-            available_shipping_options?: components["schemas"]["paypal_agentic_commerce_v1_shipping_option"][];
-            /** @description HATEOAS navigation links for cart operations */
-            links?: components["schemas"]["paypal_agentic_commerce_v1_link"][];
-            /** @description Products in the cart */
-            items: components["schemas"]["paypal_agentic_commerce_v1_cart_item"][];
-            customer?: components["schemas"]["paypal_agentic_commerce_v1_customer"];
-            shipping_address?: components["schemas"]["paypal_agentic_commerce_v1_shipping_address"];
-            billing_address?: components["schemas"]["paypal_agentic_commerce_v1_billing_address"];
-            payment_method?: components["schemas"]["paypal_agentic_commerce_v1_payment_method"];
-            /** @description Custom checkout fields (age verification, etc.) */
-            checkout_fields?: components["schemas"]["paypal_agentic_commerce_v1_checkout_field"][];
-            /** @description Discount coupons to apply or remove from cart */
-            coupons?: components["schemas"]["paypal_agentic_commerce_v1_coupon"][];
-            geo_coordinates?: components["schemas"]["paypal_agentic_commerce_v1_geo_coordinates"];
-        };
-        paypal_agentic_commerce_v1_payment_method: {
-            /**
-             * @description Payment method type - only PayPal is supported by this API
-             * @enum {string}
-             */
-            type: "paypal";
-            /** @description PayPal payment token from cart creation or customer approval */
-            token?: string;
-            /** @description PayPal payer identifier provided after customer approval */
-            payer_id?: string;
-            /** @description URL used to inform merchant that the PayPal buyer approved the order */
-            approval_url?: string;
-        };
-        paypal_agentic_commerce_v1_phone: {
-            /**
-             * @description The country calling code (CC), in its canonical international E.164 numbering plan format.
-             *     The combined length of the CC and the national number must not be greater than 15 digits.
-             *     The national number consists of a national destination code (NDC) and subscriber number (SN)
-             */
-            country_code?: string;
-            /**
-             * @description The national number, in its canonical international E.164 numbering plan format.
-             *     The combined length of the country calling code (CC) and the national number must not be greater than 15 digits.
-             *     The national number consists of a national destination code (NDC) and subscriber number (SN).
-             */
-            national_number?: string;
-            /** @description The extension number */
-            extension_number?: string;
-        };
-        paypal_agentic_commerce_v1_referral_business_hour: {
-            open_time: string;
-            close_time: string;
-            timezone: string;
-        };
-        paypal_agentic_commerce_v1_referral_custom_option: {
-            name: string;
-            value: string;
-            price_modifier: string;
-        };
-        paypal_agentic_commerce_v1_referral_customer_name: {
-            given_name: string;
-            surname: string;
-        };
-        paypal_agentic_commerce_v1_referral_measurements: {
-            chest: string;
-            waist: string;
-            height: string;
-            weight: string;
-        };
-        paypal_agentic_commerce_v1_referral_meta_data: {
-            cost_impact: string;
-            priority: string;
-            waist: string;
-            auto_applicable: boolean;
-            estimated_time: string;
-            redirect_required: boolean;
-        };
-        paypal_agentic_commerce_v1_referral_mixed_item: {
-            item_id: string;
-            currency: string;
-        };
-        paypal_agentic_commerce_v1_referral_recipient: {
-            name: string;
-            email: string;
-            phone: string;
-        };
-        paypal_agentic_commerce_v1_referral_selected_attribute: {
-            name: string;
-            value: string;
-        };
-        paypal_agentic_commerce_v1_referral_suggested_correction: {
-            postal_code: string;
-            address_line_1: string;
-            admin_area_2: string;
-        };
-        paypal_agentic_commerce_v1_resolution_option: {
-            /**
-             * @description Machine-readable action identifier
-             * @enum {string}
-             */
-            action: "REDIRECT_TO_MERCHANT" | "MODIFY_CART" | "ACCEPT_NEW_PRICE" | "ACCEPT_BACK_ORDER" | "SUGGEST_ALTERNATIVE" | "REMOVE_ITEM" | "UPDATE_ADDRESS" | "PROVIDE_MISSING_FIELD" | "USE_DIFFERENT_PAYMENT" | "SPLIT_ORDER" | "CONTACT_SUPPORT" | "RETRY_LATER" | "REQUEST_APPROVAL" | "WAIT_FOR_RESTOCK" | "USE_DIFFERENT_CURRENCY" | "ACCEPT_PRE_ORDER" | "UPDATE_SHIPPING_METHOD" | "ACCEPT_TERMS" | "VERIFY_ACCOUNT" | "APPLY_DIFFERENT_COUPON" | "REMOVE_COUPON" | "CHOOSE_DIFFERENT_VARIANT";
-            /** @description Human-readable action label */
-            label: string;
-            /** @description URL to redirect to for resolution */
-            url?: string;
-            metadata?: components["schemas"]["paypal_agentic_commerce_v1_referral_meta_data"];
-        };
-        paypal_agentic_commerce_v1_shipping_address: components["schemas"]["paypal_agentic_commerce_v1_address"];
-        paypal_agentic_commerce_v1_shipping_option: {
-            /** @description Unique shipping option identifier */
-            id?: string;
-            /** @description Display name */
-            name?: string;
-            /** @description Detailed description */
-            description?: string;
-            price: components["schemas"]["paypal_agentic_commerce_v1_money"];
-            /** @description Whether this shipping option is currently selected */
-            is_selected?: boolean;
-            /** @description Estimated delivery date in YYYY-MM-DD format */
-            estimated_delivery?: string;
-        };
-        paypal_agentic_commerce_v1_validation_issue: {
-            /**
-             * @description Consolidated error category
-             * @enum {string}
-             */
-            code: "INVENTORY_ISSUE" | "PRICING_ERROR" | "SHIPPING_ERROR" | "PAYMENT_ERROR" | "DATA_ERROR" | "BUSINESS_RULE_ERROR";
-            /**
-             * @description Type classification for error handling
-             * @enum {string}
-             */
-            type: "MISSING_FIELD" | "INVALID_DATA" | "BUSINESS_RULE";
-            /** @description Technical message for developers and logging */
-            message: string;
-            /** @description Customer-friendly message for end users */
-            user_message?: string;
-            /** @description Specific item ID if the issue is item-specific */
-            item_id?: string;
-            /** @description Specific field name if the issue is field-specific */
-            field?: string;
-            /** @description Category-specific context information */
-            context?: (components["schemas"]["paypal_agentic_commerce_v1_context_inventory_issue_context"] | components["schemas"]["paypal_agentic_commerce_v1_context_pricing_error_context"] | components["schemas"]["paypal_agentic_commerce_v1_context_shipping_error_context"] | components["schemas"]["paypal_agentic_commerce_v1_context_payment_error_context"] | components["schemas"]["paypal_agentic_commerce_v1_context_data_error_context"] | components["schemas"]["paypal_agentic_commerce_v1_context_business_rule_error_context"]) | null;
-            /** @description Available actions to resolve this issue */
-            resolution_options?: components["schemas"]["paypal_agentic_commerce_v1_resolution_option"][];
-        };
-        paypal_agentic_commerce_v1_value_age_verification_value: {
-            /** @description Whether age verification was confirmed */
-            confirmed: boolean;
-            /**
-             * @description Method used for age verification
-             * @enum {string}
-             */
-            verificationMethod?: "self_declaration" | "id_verification" | "third_party";
-            /** @description When verification was completed */
-            verificationDate?: string;
-        };
-        paypal_agentic_commerce_v1_value_allergy_information_value: {
-            /** @description List of known allergies */
-            allergies: string[];
-            /**
-             * @description Allergy severity level
-             * @enum {string}
-             */
-            severity: "life_threatening" | "mild" | "moderate" | "severe";
-            /** @description Medications to avoid */
-            medications: string[];
-            /**
-             * @description Emergency contact information
-             *
-             *     example: +1-555-999-8888
-             */
-            emergency_contact: string;
-        };
-        paypal_agentic_commerce_v1_value_custom_engraving_text_value: {
-            /** @description Text to be engraved */
-            text: string;
-            /**
-             * @description Preferred font style
-             * @enum {string}
-             */
-            font?: "arial" | "times" | "script" | "block";
-            /**
-             * @description Text size preference
-             * @enum {string}
-             */
-            size?: "small" | "medium" | "large";
-            /**
-             * @description Engraving position
-             * @enum {string}
-             */
-            position?: "front" | "back" | "side" | "bottom";
-        };
-        paypal_agentic_commerce_v1_value_custom_sizing_info_value: {
-            measurements: components["schemas"]["paypal_agentic_commerce_v1_referral_measurements"];
-            /**
-             * @description Fit preference
-             * @enum {string}
-             */
-            size_preference: "tight" | "regular" | "loose";
-            /** @description Special sizing requirements */
-            special_requirements: string;
-        };
-        paypal_agentic_commerce_v1_value_delivery_date_preference_value: {
-            /** @description Preferred delivery date */
-            preferred_date: string;
-            /**
-             * @description Preferred time window
-             * @enum {string}
-             */
-            time_window: "morning" | "afternoon" | "evening" | "anytime";
-            /** @description Specific preferred time (HH:MM format) */
-            specific_time: string;
-        };
-        paypal_agentic_commerce_v1_value_delivery_instructions_value: {
-            /** @description Special delivery instructions */
-            instructions: string;
-            /** @description Building or gate access code */
-            access_code?: string;
-            /** @description Contact phone for delivery */
-            contact_phone?: string;
-        };
-        paypal_agentic_commerce_v1_value_gift_message_value: {
-            /** @description Personal message for the recipient */
-            message: string;
-            /** @description Name of the person sending the gift */
-            sender_name?: string;
-        };
-        paypal_agentic_commerce_v1_value_gift_recipient_email_value: {
-            /** @description Recipient's email address */
-            email: string;
-            /** @description Whether email was verified */
-            verified?: boolean;
-        };
-        paypal_agentic_commerce_v1_value_gift_recipient_name_value: {
-            /** @description Recipient's full name */
-            name: string;
-            /** @description Recipient's first name */
-            first_name?: string;
-            /** @description Recipient's last name */
-            last_name?: string;
-        };
-        paypal_agentic_commerce_v1_value_privacy_consent_value: {
-            /** @description Whether privacy policy was consented to */
-            consented: boolean;
-            /**
-             * @description Types of consent given
-             * @enum {array}
-             */
-            consent_types?: "analytics" | "third_party_sharing" | "data_processing" | "marketing";
-            /** @description Privacy policy version */
-            policy_version?: string;
-            /** @description When consent was given */
-            consent_date?: string;
-        };
-        paypal_agentic_commerce_v1_value_terms_acceptance_value: {
-            /** @description Whether terms were accepted */
-            accepted: boolean;
-            /** @description Version of terms accepted */
-            terms_versions?: string;
-            /** @description When terms were accepted */
-            acceptance_date?: string;
-            /** @description IP address of acceptance */
-            ip_address?: string;
-        };
         paypal_error_detail: {
             field: string;
             value: string;
@@ -1621,13 +943,10 @@ export interface components {
             legal_name: string;
             primary_email: string;
             primary_email_confirmed: boolean;
-            primary_currency: string;
-            country: string;
         };
         paypal_v1_merchant_integrations_capability: {
             name: string;
-            /** @enum {string} */
-            status: "ACTIVE" | "SUSPENDED" | "REVOKED" | "APPROVED" | "NEED_DATA" | "DENY" | "IN_REVIEW" | "INACTIVE" | "PENDING";
+            status: string;
         };
         paypal_v1_merchant_integrations_credentials: {
             client_id: string;
@@ -1650,7 +969,6 @@ export interface components {
         paypal_v1_merchant_integrations_product: {
             name: string;
             vetting_status?: string;
-            status?: string;
             capabilities?: string[];
         };
         paypal_v1_merchant_tracking: {
@@ -2002,79 +1320,28 @@ export interface components {
              */
             expire_date_time: string;
         };
-        paypal_v1_wallet_domain: {
-            provider_type: string;
-            domain: components["schemas"]["paypal_v1_wallet_domain_domain"];
-            merchant: components["schemas"]["paypal_v1_wallet_domain_merchant"] | null;
-            reason: string | null;
-        };
-        paypal_v1_wallet_domain_domain: {
-            name: string;
-        };
-        paypal_v1_wallet_domain_merchant: {
-            account_id: string;
-            business_name: string | null;
-            url: string | null;
-        };
-        paypal_v1_wallet_domains: {
-            total_items: string | null;
-            total_pages: string | null;
-            wallet_domains: components["schemas"]["paypal_v1_wallet_domain"][];
-            links: components["schemas"]["paypal_v1_common_link"][] | null;
-        };
         paypal_v1_webhook: {
             id: string;
             url: string;
             event_types: components["schemas"]["paypal_v1_webhook_event_type"][];
             links: components["schemas"]["paypal_v1_common_link"][];
         };
-        paypal_v1_webhook_application_context: {
-            actor: string | null;
-            event_context: string;
-            event_targets: string[];
-        };
         paypal_v1_webhook_event: {
             id: string;
             resource_type: string;
             event_type: string;
             summary: string;
-            resource: (components["schemas"]["paypal_v3_payment_token"] | components["schemas"]["paypal_v2_order"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_authorization"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_capture"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_refund"] | components["schemas"]["paypal_v1_webhook_resource"] | components["schemas"]["paypal_v1_subscription"] | components["schemas"]["paypal_v1_webhook_events_managed_accounts"] | components["schemas"]["paypal_v1_webhook_events_account_entities"] | components["schemas"]["paypal_v1_webhook_events_dispute"]) | null;
+            resource: (components["schemas"]["paypal_v3_payment_token"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_authorization"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_capture"] | components["schemas"]["paypal_v2_order_purchase_unit_payments_refund"] | components["schemas"]["paypal_v1_webhook_resource"] | components["schemas"]["paypal_v1_subscription"]) | null;
             create_time: string;
             links: components["schemas"]["paypal_v1_common_link"][];
             event_version: string;
             resource_version: string;
-            application_context: components["schemas"]["paypal_v1_webhook_application_context"];
         };
         paypal_v1_webhook_event_type: {
             name: string;
             description: string;
             status: string;
             resource_version: string;
-        };
-        paypal_v1_webhook_events_account_entities: {
-            external_id: string | null;
-            account_id: string | null;
-            capabilities: components["schemas"]["paypal_v1_merchant_integrations_capability"][];
-            application_context: components["schemas"]["paypal_v1_webhook_application_context"] | null;
-            links: components["schemas"]["paypal_v1_common_link"][];
-        };
-        paypal_v1_webhook_events_dispute: {
-            dispute_id: string;
-            merchant_id: string | null;
-            reason: string;
-            status: string;
-            dispute_state: string | null;
-            dispute_amount: components["schemas"]["paypal_v1_disputes_item_dispute_amount"] | null;
-            seller_response_due_date: string | null;
-            dispute_life_cycle_stage: string | null;
-            links: components["schemas"]["paypal_v1_common_link"][];
-        };
-        paypal_v1_webhook_events_managed_accounts: {
-            links: components["schemas"]["paypal_v1_common_link"][];
-            external_id: string | null;
-            account_id: string | null;
-            capabilities: components["schemas"]["paypal_v1_merchant_integrations_capability"][];
-            process_collection: components["schemas"]["paypal_v3_managed_account_process"][];
         };
         paypal_v1_webhook_resource: {
             id: string;
@@ -2286,17 +1553,15 @@ export interface components {
             trustly: components["schemas"]["paypal_v2_order_payment_source_trustly"] | null;
             google_pay: components["schemas"]["paypal_v2_order_payment_source_google_pay"] | null;
             venmo: components["schemas"]["paypal_v2_order_payment_source_venmo"] | null;
-            bank: components["schemas"]["paypal_v2_order_payment_source_bank"] | null;
         };
         paypal_v2_order_payment_source_afterpay: {
+            name: string;
+            country_code: string;
             experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
-            name: components["schemas"]["paypal_v2_common_name"];
-            email_address: string;
+            email: string;
             phone: string;
             /** Format: date */
             birth_date: string;
-            billing_address: components["schemas"]["paypal_v2_common_address"] | null;
-            country_code: string;
         };
         paypal_v2_order_payment_source_apple_pay: {
             name: string;
@@ -2310,18 +1575,6 @@ export interface components {
             country_code: string;
             experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
         };
-        paypal_v2_order_payment_source_bank: {
-            sepa_debit: components["schemas"]["paypal_v2_order_payment_source_bank_sepa_debit"];
-        };
-        paypal_v2_order_payment_source_bank_sepa_debit: {
-            experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
-            iban: string;
-            account_holder_name: string;
-            iban_last_chars: string | null;
-            billing_address: components["schemas"]["paypal_v2_common_address"] | null;
-            attributes: components["schemas"]["paypal_v2_order_payment_source_common_attributes"] | null;
-        };
-        paypal_v2_order_payment_source_bank_sepa_experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
         paypal_v2_order_payment_source_blik: {
             name: string;
             country_code: string;
@@ -2390,29 +1643,15 @@ export interface components {
         };
         paypal_v2_order_payment_source_common_attributes: {
             vault: components["schemas"]["paypal_v2_order_payment_source_common_attributes_vault"];
-            mandate: components["schemas"]["paypal_v2_order_payment_source_common_attributes_mandate"];
-            token: components["schemas"]["paypal_v2_order_payment_source_common_attributes_token"];
             customer: components["schemas"]["paypal_v2_order_payment_source_common_attributes_customer"];
             verification: components["schemas"]["paypal_v2_order_payment_source_common_attributes_verification"];
         };
         paypal_v2_order_payment_source_common_attributes_customer: {
             id: string;
         };
-        paypal_v2_order_payment_source_common_attributes_mandate: {
-            /**
-             * @default ONE_OFF
-             * @enum {string}
-             */
-            type: "ONE_OFF" | "RECURRENT";
-        };
         paypal_v2_order_payment_source_common_attributes_order_update_callback_config: {
             callback_url: string;
             callback_events: ("SHIPPING_ADDRESS" | "SHIPPING_OPTIONS")[];
-        };
-        paypal_v2_order_payment_source_common_attributes_token: {
-            id: string;
-            /** @default BANK_REFERENCE_TOKEN */
-            type: string;
         };
         paypal_v2_order_payment_source_common_attributes_vault: {
             id: string | null;
@@ -2448,7 +1687,6 @@ export interface components {
             user_action: "CONTINUE" | "PAY_NOW";
             return_url: string;
             cancel_url: string;
-            acquiring_channel: string;
             /**
              * @description Only: PayPal Wallet
              * @enum {string}
@@ -2479,16 +1717,11 @@ export interface components {
             experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
         };
         paypal_v2_order_payment_source_klarna: {
-            experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
-            email_address: string;
-            phone: string;
-            name: components["schemas"]["paypal_v2_common_name"];
-            billing_address: components["schemas"]["paypal_v2_common_address"] | null;
+            name: string;
             country_code: string;
-            authorization_context: components["schemas"]["paypal_v2_order_payment_source_klarna_authorization_context"] | null;
-        };
-        paypal_v2_order_payment_source_klarna_authorization_context: {
-            authorization_expiry: string;
+            experience_context: components["schemas"]["paypal_v2_order_payment_source_common_experience_context"];
+            email: string;
+            phone: string;
         };
         paypal_v2_order_payment_source_multibanco: {
             name: string;
@@ -2578,7 +1811,6 @@ export interface components {
             reference_id: string;
             amount: components["schemas"]["paypal_v2_order_purchase_unit_amount"];
             payee: components["schemas"]["paypal_v2_order_purchase_unit_payee"];
-            payment_instruction: components["schemas"]["paypal_v2_order_purchase_unit_payment_instruction"];
             description: string;
             custom_id: string | null;
             invoice_id: string | null;
@@ -2618,17 +1850,6 @@ export interface components {
         paypal_v2_order_purchase_unit_payee_display_data: {
             brand_name: string;
         };
-        paypal_v2_order_purchase_unit_payment_instruction: {
-            platform_fees: components["schemas"]["paypal_v2_order_purchase_unit_payment_instruction_platform_fee"][];
-            /** @enum {string} */
-            disbursement_mode: "INSTANT" | "DELAYED";
-            payee_pricing_tier_id: string;
-            payee_receivable_fx_rate_id: string;
-        };
-        paypal_v2_order_purchase_unit_payment_instruction_platform_fee: {
-            amount: components["schemas"]["paypal_v2_common_money"];
-            payee: components["schemas"]["paypal_v2_order_purchase_unit_payee"];
-        };
         paypal_v2_order_purchase_unit_payments: {
             authorizations: components["schemas"]["paypal_v2_order_purchase_unit_payments_authorization"][] | null;
             captures: components["schemas"]["paypal_v2_order_purchase_unit_payments_capture"][] | null;
@@ -2642,7 +1863,6 @@ export interface components {
             links: components["schemas"]["paypal_v2_common_link"][];
             create_time: string;
             update_time: string;
-            supplementary_data: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data"] | null;
             seller_protection: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_seller_protection"];
             expiration_time: string;
         };
@@ -2658,7 +1878,6 @@ export interface components {
             links: components["schemas"]["paypal_v2_common_link"][];
             create_time: string;
             update_time: string;
-            supplementary_data: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data"] | null;
             invoice_id: string | null;
             note_to_payer: string | null;
             seller_protection: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_seller_protection"];
@@ -2677,21 +1896,6 @@ export interface components {
             paypal_fee: components["schemas"]["paypal_v2_common_money"];
             net_amount: components["schemas"]["paypal_v2_common_money"];
         };
-        /**
-         * @description Supplementary data for a payment resource, typically provided in webhook payloads.
-         *
-         *     Contains related IDs that link a payment resource (capture, refund, authorization)
-         *     back to its parent order.
-         */
-        paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data: {
-            related_ids: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_related_ids"] | null;
-        };
-        /** @description Related IDs for a payment resource, provided in webhook supplementary data. */
-        paypal_v2_order_purchase_unit_payments_common_related_ids: {
-            order_id: string | null;
-            authorization_id: string | null;
-            capture_id: string | null;
-        };
         paypal_v2_order_purchase_unit_payments_common_seller_protection: {
             status: string;
             dispute_categories: string[];
@@ -2704,7 +1908,6 @@ export interface components {
             links: components["schemas"]["paypal_v2_common_link"][];
             create_time: string;
             update_time: string;
-            supplementary_data: components["schemas"]["paypal_v2_order_purchase_unit_payments_common_payment_supplementary_data"] | null;
             invoice_id: string | null;
             note_to_payer: string | null;
             seller_payable_breakdown: components["schemas"]["paypal_v2_order_purchase_unit_payments_refund_seller_payable_breakdown"];
@@ -2855,68 +2058,6 @@ export interface components {
         paypal_v2_referral_partner_config_override: {
             return_url: string;
             partner_logo_url: string;
-        };
-        paypal_v3_common_email: {
-            id: string;
-            email: string;
-        };
-        paypal_v3_common_name: {
-            id: string;
-            given_name: string;
-            surname: string;
-            business_name: string | null;
-            type: string;
-        };
-        paypal_v3_common_phone_number: {
-            id: string;
-            national_number: string;
-            country_code: string;
-            type: string;
-        };
-        paypal_v3_managed_account: {
-            account_id: string;
-            legal_country_code: string;
-            individual_owners: components["schemas"]["paypal_v3_managed_account_individual_owner"][];
-            business_entity: components["schemas"]["paypal_v3_managed_account_business_entity"];
-            external_id: string;
-            organization: string;
-            primary_currency_code: string;
-            soft_descriptor: string;
-            capabilities: components["schemas"]["paypal_v1_merchant_integrations_capability"][];
-            links: components["schemas"]["paypal_v2_common_link"][];
-        };
-        paypal_v3_managed_account_business_entity: {
-            type: string;
-            merchant_category_code: string;
-            incorporation_details: components["schemas"]["paypal_v3_managed_account_business_entity_incorporation_details"];
-            names: components["schemas"]["paypal_v3_common_name"][];
-            emails: components["schemas"]["paypal_v3_common_email"][];
-            website: string;
-            registered_business_address: components["schemas"]["paypal_v2_common_address"];
-            phone_numbers: components["schemas"]["paypal_v3_common_phone_number"][];
-        };
-        paypal_v3_managed_account_business_entity_incorporation_details: Record<string, unknown>;
-        paypal_v3_managed_account_individual_owner: {
-            id: string;
-            names: components["schemas"]["paypal_v3_common_name"][];
-            primary_residence: components["schemas"]["paypal_v2_common_address"];
-            phone_numbers: components["schemas"]["paypal_v3_common_phone_number"][];
-            birth_details: components["schemas"]["paypal_v3_managed_account_individual_owner_birth_details"];
-            identification_documents: components["schemas"]["paypal_v3_managed_account_individual_owner_identification_document"][];
-            emails: components["schemas"]["paypal_v3_common_email"][];
-        };
-        paypal_v3_managed_account_individual_owner_birth_details: {
-            date_of_birth: string;
-        };
-        paypal_v3_managed_account_individual_owner_identification_document: {
-            id: string;
-            identification_number: string;
-            issuing_country_code: string;
-            type: string;
-        };
-        paypal_v3_managed_account_process: {
-            name: string;
-            status: string;
         };
         paypal_v3_payment_token: {
             id: string;
