@@ -1,4 +1,4 @@
-# 10.8.0
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where the Google Pay button was always displayed in English instead of the sales channel language (shopware/shopware#17804)
 
 # 10.7.0
