@@ -26,6 +26,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\System\Tax\TaxEntity;
 use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -65,7 +66,14 @@ trait CheckoutRouteTrait
 
     private function getSalesChannelContextWithCart(): SalesChannelContext
     {
-        $salesChannelContext = $this->getSalesChannelContext();
+        $paymentMethod = $this->getAvailablePaymentMethod();
+        $this->getSalesChannel($paymentMethod);
+
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextService::class)->get(
+            new SalesChannelContextServiceParameters(TestDefaults::SALES_CHANNEL, Uuid::randomHex())
+        );
+        $salesChannelContext->assign(['customer' => null]);
+
         $this->addProductToSalesChannelContext($salesChannelContext);
 
         return $salesChannelContext;
@@ -83,7 +91,7 @@ trait CheckoutRouteTrait
 
     private function addProductToSalesChannelContext(SalesChannelContext $salesChannelContext): void
     {
-        $productId = $this->createTestProduct();
+        $productId = $this->createTestProduct($this->getTaxIdForSalesChannelContext($salesChannelContext));
         $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
         $cartService = $this->getContainer()->get(CartService::class);
@@ -91,7 +99,19 @@ trait CheckoutRouteTrait
         $cartService->add($cart, $lineItem, $salesChannelContext);
     }
 
-    private function createTestProduct(): string
+    private function getTaxIdForSalesChannelContext(SalesChannelContext $salesChannelContext): string
+    {
+        /** @var TaxEntity|null $tax */
+        $tax = $salesChannelContext->getTaxRules()->first();
+
+        if ($tax !== null) {
+            return $tax->getId();
+        }
+
+        return $this->getValidTaxId();
+    }
+
+    private function createTestProduct(string $taxId): string
     {
         $productId = Uuid::randomHex();
 
@@ -100,7 +120,7 @@ trait CheckoutRouteTrait
         $productRepository->upsert([[
             'id' => $productId,
             'name' => 'PayPal test product',
-            'taxId' => $this->getValidTaxId(),
+            'taxId' => $taxId,
             'price' => [
                 [
                     'currencyId' => Defaults::CURRENCY,
