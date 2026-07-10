@@ -108,7 +108,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     public function testCreatePayment(): void
     {
-        $salesChannelContext = $this->getSalesChannelContext();
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
 
         $response = $this->createRoute()->createPayPalOrder(new Request(), $salesChannelContext);
 
@@ -127,7 +127,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     public function testCreateWithLocalEnvironmentActive(): void
     {
-        $salesChannelContext = $this->getSalesChannelContext();
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
 
         $response = $this->createRoute([Settings::IS_LOCAL_ENVIRONMENT => true])->createPayPalOrder(new Request(), $salesChannelContext);
 
@@ -146,7 +146,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     public function testCreateWithShippingCallbackDisabled(): void
     {
-        $salesChannelContext = $this->getSalesChannelContext();
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
 
         $response = $this->createRoute([Settings::ECS_SHIPPING_CALLBACK_ENABLED => false])->createPayPalOrder(new Request(), $salesChannelContext);
 
@@ -165,7 +165,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     public function testCreateShippingCallbackStoreApi(): void
     {
-        $salesChannelContext = $this->getSalesChannelContext();
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
 
         $router = $this->createMock(RouterInterface::class);
         $router
@@ -191,7 +191,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     public function testCreateShippingCallbackStorefront(): void
     {
-        $salesChannelContext = $this->getSalesChannelContext();
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
 
         $router = $this->createMock(RouterInterface::class);
         $router

@@ -21,10 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
@@ -68,9 +65,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
 
     public function testPrepare(): void
     {
-        $salesChannelContext = $this->getContainer()->get(SalesChannelContextService::class)->get(
-            new SalesChannelContextServiceParameters(TestDefaults::SALES_CHANNEL, Uuid::randomHex())
-        );
+        $salesChannelContext = $this->createSalesChannelContextWithCart();
 
         $this->getContainer()->get(SystemConfigService::class)->set(
             'core.loginRegistration.requireDataProtectionCheckbox',
@@ -185,9 +180,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
 
     private function assertNoState(string $testPaypalOrderId): void
     {
-        $salesChannelContext = $this->getContainer()->get(SalesChannelContextService::class)->get(
-            new SalesChannelContextServiceParameters(TestDefaults::SALES_CHANNEL, Uuid::randomHex())
-        );
+        $salesChannelContext = $this->createSalesChannelContextWithCart();
 
         $request = new Request([], [
             ExpressPrepareCheckoutRoute::PAYPAL_REQUEST_PARAMETER_TOKEN => $testPaypalOrderId,
