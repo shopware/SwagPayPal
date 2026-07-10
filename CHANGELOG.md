@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where the Google Pay button was always displayed in English instead of the sales channel language (shopware/shopware#17804)
+
 # 10.7.0
 - Added support for PayPal App Switch (currently only available in the US)
 - Added merchant-configurable appearance settings for the Pay Later installment banner: logo type, text colour, and text size
