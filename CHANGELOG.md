@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where the Google Pay button was always displayed in English instead of the sales channel language (shopware/shopware#17804)
+- Use `SCA_WHEN_REQUIRED` for ACDC payments when "Enforce 3D Secure" is disabled
 
 # 10.7.0
 - Added support for PayPal App Switch (currently only available in the US)
