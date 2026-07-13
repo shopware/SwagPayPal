@@ -101,9 +101,9 @@ class CartPriceServiceTest extends TestCase
     {
         $cart = $this->createCart(10.99, true);
 
-        $this->cartPriceService->validateProcessable($cart, $this->createSalesChannelContext('EUR'));
+        static::expectNotToPerformAssertions();
 
-        static::assertTrue(true);
+        $this->cartPriceService->validateProcessable($cart, $this->createSalesChannelContext('EUR'));
     }
 
     #[DataProvider('hasZeroPriceProvider')]
