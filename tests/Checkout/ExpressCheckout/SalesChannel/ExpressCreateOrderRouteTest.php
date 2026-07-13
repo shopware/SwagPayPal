@@ -22,7 +22,6 @@ use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Exception\EmptyCartException;
 use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
-use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
@@ -68,7 +67,6 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->getContainer()->get(PayPalOrderBuilder::class),
             new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
             $this->getContainer()->get(CartPriceService::class),
-            new ExpressCartValidator(),
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
             new NullLogger(),
@@ -93,7 +91,6 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->createMock(PayPalOrderBuilder::class),
             new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
             $this->getContainer()->get(CartPriceService::class),
-            new ExpressCartValidator(),
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
             new NullLogger(),
@@ -252,7 +249,6 @@ class ExpressCreateOrderRouteTest extends TestCase
             $paypalOrderBuilder,
             new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
             $this->getContainer()->get(CartPriceService::class),
-            new ExpressCartValidator(),
             $systemConfig,
             $router ?? $this->createMock(RouterInterface::class),
             new NullLogger(),

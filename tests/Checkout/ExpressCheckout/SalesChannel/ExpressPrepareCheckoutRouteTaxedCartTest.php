@@ -30,7 +30,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
-use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -88,12 +88,18 @@ class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
             ->with('paypal-order-id', $salesChannel->getId())
             ->willReturn(new Order());
 
+        $cartPriceService = $this->createMock(CartPriceService::class);
+        $cartPriceService
+            ->expects($this->once())
+            ->method('validateProcessable')
+            ->with($cart, $newSalesChannelContext);
+
         $route = new ExpressPrepareCheckoutRoute(
             $expressCustomerService,
             $salesChannelContextFactory,
             $orderResource,
             $this->createTaxedCartService($cart, $salesChannelContext, $newSalesChannelContext, $taxProviderProcessor),
-            new ExpressCartValidator(),
+            $cartPriceService,
             new NullLogger(),
         );
 

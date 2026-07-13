@@ -26,7 +26,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
-use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
@@ -156,7 +156,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
             $this->getContainer()->get(SalesChannelContextFactory::class),
             new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
             $cartService,
-            new ExpressCartValidator(),
+            $this->getContainer()->get(CartPriceService::class),
             new NullLogger()
         );
     }

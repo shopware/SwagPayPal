@@ -18,7 +18,7 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
-use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,7 +40,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
         private readonly OrderResource $orderResource,
         private readonly CartService $cartService,
-        private readonly ExpressCartValidator $expressCartValidator,
+        private readonly CartPriceService $cartPriceService,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -94,7 +94,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 
             $cart = $this->cartService->getCart($newSalesChannelContext->getToken(), $salesChannelContext, taxed: true);
 
-            $this->expressCartValidator->validateNotEmpty($cart);
+            $this->cartPriceService->validateProcessable($cart, $newSalesChannelContext);
 
             $expressCheckoutData = new ExpressCheckoutData($paypalOrderId);
             $cart->addExtension(self::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, $expressCheckoutData);

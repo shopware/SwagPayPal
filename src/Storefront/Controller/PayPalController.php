@@ -27,7 +27,7 @@ use Shopware\Storefront\Controller\StorefrontController;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
-use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCartValidator;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsResponse;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
@@ -66,7 +66,7 @@ class PayPalController extends StorefrontController
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly AbstractCartDeleteRoute $cartDeleteRoute,
         private readonly CartService $cartService,
-        private readonly ExpressCartValidator $expressCartValidator,
+        private readonly CartPriceService $cartPriceService,
         private readonly AbstractClearVaultRoute $clearVaultRoute,
         private readonly LoggerInterface $logger,
         private readonly ReturnTokenService $returnTokenService,
@@ -149,7 +149,7 @@ class PayPalController extends StorefrontController
     {
         if (!$request->request->getBoolean('deleteCart')) {
             $cart = $this->cartService->getCart($context->getToken(), $context);
-            $this->expressCartValidator->validateNotEmpty($cart);
+            $this->cartPriceService->validateProcessable($cart, $context);
         }
 
         $this->contextSwitchRoute->switchContext(new RequestDataBag([
