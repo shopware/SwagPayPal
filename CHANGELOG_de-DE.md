@@ -1,3 +1,6 @@
+# 8.11.5
+- Behebt ein Problem, bei dem die Smart Payment Buttons ohne sichtbare Rückmeldung fehlschlugen, wenn die AGB nicht akzeptiert wurden, indem der Nutzer nun zum betreffenden Feld geführt wird
+
 # 8.11.4
 - Behebt ein Problem, bei dem Netto-Preise den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
 
