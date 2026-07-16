@@ -91,6 +91,13 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
     private const JWT_PUBLIC_N = 'u1SU1LfVLPHCozMxH2Mo4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0_IzW7yWR7QkrmBL7jTKEn5u-qKhbwKfBstIs-bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyehkd3qqGElvW_VDL5AaWTg0nLVkjRo9z-40RQzuVaE8AkAFmxZzow3x-VJYKdjykkJ0iT9wCS0DRTXu269V264Vf_3jvredZiKRkgwlL9xNAwxXFg0x_XFw005UWVRIkdgcKWTjpBP2dPwVZ4WWC-9aGVd-Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbcmw';
     private const JWT_PUBLIC_E = 'AQAB';
 
+    protected function setUp(): void
+    {
+        if (!\class_exists(JWKCollection::class)) {
+            static::markTestSkipped('Shopware\Core\Framework\JWT is only available for >=6.6.x (In App Purchases)');
+        }
+    }
+
     public function testResolveWithContextIsSkipped(): void
     {
         $context = Context::createDefaultContext();
@@ -213,7 +220,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
-        $salesChannelContext = Generator::generateSalesChannelContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
 
         $salesChannelMock = $this->createMock(SalesChannelContextService::class);
         $salesChannelMock

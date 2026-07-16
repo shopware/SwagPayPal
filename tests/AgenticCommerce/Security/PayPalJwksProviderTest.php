@@ -38,6 +38,13 @@ class PayPalJwksProviderTest extends TestCase
         }
         JSON;
 
+    protected function setUp(): void
+    {
+        if (!\class_exists(JWTException::class)) {
+            static::markTestSkipped('Shopware\Core\Framework\JWT is only available for >=6.6.x (In App Purchases)');
+        }
+    }
+
     public function testGetJwksFetchesAndCachesResponse(): void
     {
         $requests = 0;
