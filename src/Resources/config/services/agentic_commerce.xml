@@ -19,11 +19,17 @@
             <tag name="shopware.route_scope"/>
         </service>
 
+        <service id="Swag\PayPal\AgenticCommerce\Security\AbstractPayPalJwksProvider" class="Swag\PayPal\AgenticCommerce\Security\PayPalJwksProvider">
+            <argument type="service" id="Symfony\Contracts\HttpClient\HttpClientInterface"/>
+            <argument type="service" id="cache.app"/>
+        </service>
+
         <service id="Swag\PayPal\AgenticCommerce\Routing\AgentRequestContextResolver">
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
             <argument type="service" id="product_export.repository"/>
             <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Security\AbstractPayPalJwksProvider"/>
         </service>
 
         <service id="Swag\PayPal\AgenticCommerce\Routing\AgentContextResolverListener">
