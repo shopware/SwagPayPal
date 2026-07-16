@@ -41,6 +41,8 @@ function createSalesChannelTypes(): TEntityCollection<'sales_channel_type'> {
         null,
         [
             createSalesChannelType(Shopware.Defaults.storefrontSalesChannelTypeId),
+            // @ts-expect-error - agenticCommerceTypeId is not yet part of Shopware.Defaults
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             createSalesChannelType(Shopware.Defaults.agenticCommerceTypeId),
             createSalesChannelType(PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID),
         ],
@@ -89,6 +91,8 @@ describe('sw-sales-channel-modal-grid', () => {
         expect(salesChannelTypeSearch).toHaveBeenCalledWith(criteria, Shopware.Context.api);
         expect(salesChannelTypeSearch.mock.contexts[0]).toBe(salesChannelTypeRepository);
         expect(result.has(PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID)).toBe(true);
+        // @ts-expect-error - agenticCommerceTypeId is not yet part of Shopware.Defaults
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         expect(result.has(Shopware.Defaults.agenticCommerceTypeId)).toBe(true);
         expect(result.total).toBe(3);
     });

@@ -14,7 +14,7 @@ return static function (ContainerBuilder $container): void {
 
     $loader->load('administration.xml');
 
-    if (\class_exists(\Shopware\Core\Framework\JWT\Struct\JWKCollection::class)) {
+    if (\class_exists(Shopware\Core\Framework\JWT\Struct\JWKCollection::class)) {
         // Agentic commerce cannot authenticate agent requests without PayPal JWKS support (`Shopware\Core\Framework\JWT`),
         // which was only introduced after Shopware 6.6.0.0.
         $loader->load('agentic_commerce.xml');
