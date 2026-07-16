@@ -29,15 +29,15 @@ class ActivateDeactivateTest extends TestCase
         $agenticCommerceService = $this->createMock(AgenticCommerceService::class);
 
         $paymentMethodStateService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('setAllPaymentMethodsState')
             ->with(true, static::identicalTo($context));
         $posStateService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('addPosSalesChannelType')
             ->with(static::identicalTo($context));
         $agenticCommerceService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('addAgenticSalesChannelType')
             ->with(static::identicalTo($context));
 
@@ -52,15 +52,15 @@ class ActivateDeactivateTest extends TestCase
         $agenticCommerceService = $this->createMock(AgenticCommerceService::class);
 
         $paymentMethodStateService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('setAllPaymentMethodsState')
             ->with(false, static::identicalTo($context));
         $posStateService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('deactivatePosSalesChannel')
             ->with(static::identicalTo($context));
         $agenticCommerceService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('deactivateAgenticSalesChannelState')
             ->with(static::identicalTo($context));
 

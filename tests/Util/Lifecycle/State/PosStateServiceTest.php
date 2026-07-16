@@ -39,7 +39,7 @@ class PosStateServiceTest extends TestCase
         $service = $this->createService();
 
         $this->salesChannelTypeRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('upsert')
             ->with(static::callback(static function (array $payload): bool {
                 static::assertCount(1, $payload);
@@ -67,15 +67,15 @@ class PosStateServiceTest extends TestCase
         $this->expectPosSalesChannelSearch($context, []);
 
         $this->salesChannelTypeRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('delete')
             ->with([['id' => SwagPayPal::SALES_CHANNEL_TYPE_POS]], static::identicalTo($context));
         $this->shippingRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('delete')
             ->with([['id' => InformationDefaultService::POS_SHIPPING_METHOD_ID]], static::identicalTo($context));
         $this->paymentMethodRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('searchIds')
             ->with(static::callback(static function (Criteria $criteria): bool {
                 static::assertSame([InformationDefaultService::POS_PAYMENT_METHOD_ID], $criteria->getIds());
@@ -84,14 +84,14 @@ class PosStateServiceTest extends TestCase
             }), static::identicalTo($context))
             ->willReturn($this->createIdSearchResult([InformationDefaultService::POS_PAYMENT_METHOD_ID]));
         $this->paymentMethodRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('update')
             ->with([[
                 'id' => InformationDefaultService::POS_PAYMENT_METHOD_ID,
                 'pluginId' => null,
             ]], static::identicalTo($context));
         $this->paymentMethodRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('delete')
             ->with([['id' => InformationDefaultService::POS_PAYMENT_METHOD_ID]], static::identicalTo($context));
 
@@ -106,19 +106,19 @@ class PosStateServiceTest extends TestCase
         $this->expectPosSalesChannelSearch($context, ['pos-sales-channel-id']);
 
         $this->salesChannelTypeRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('delete');
         $this->shippingRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('delete');
         $this->paymentMethodRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('searchIds');
         $this->paymentMethodRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('update');
         $this->paymentMethodRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('delete');
 
         $service->handleUninstallPos($context);
@@ -132,22 +132,22 @@ class PosStateServiceTest extends TestCase
         $this->expectPosSalesChannelSearch($context, []);
 
         $this->salesChannelTypeRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('delete')
             ->with([['id' => SwagPayPal::SALES_CHANNEL_TYPE_POS]], static::identicalTo($context));
         $this->shippingRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('delete')
             ->with([['id' => InformationDefaultService::POS_SHIPPING_METHOD_ID]], static::identicalTo($context));
         $this->paymentMethodRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('searchIds')
             ->willReturn($this->createIdSearchResult([]));
         $this->paymentMethodRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('update');
         $this->paymentMethodRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('delete');
 
         $service->handleUninstallPos($context);
@@ -161,7 +161,7 @@ class PosStateServiceTest extends TestCase
         $this->expectPosSalesChannelSearch($context, ['first-id', 'second-id']);
 
         $this->salesChannelRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('update')
             ->with([
                 ['id' => 'first-id', 'active' => false],
@@ -179,7 +179,7 @@ class PosStateServiceTest extends TestCase
         $this->expectPosSalesChannelSearch($context, []);
 
         $this->salesChannelRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('update');
 
         $service->deactivatePosSalesChannel($context);
@@ -191,7 +191,7 @@ class PosStateServiceTest extends TestCase
     private function expectPosSalesChannelSearch(Context $context, array $ids): void
     {
         $this->salesChannelRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('searchIds')
             ->with(static::callback(static function (Criteria $criteria): bool {
                 static::assertCount(1, $criteria->getFilters());

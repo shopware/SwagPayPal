@@ -36,7 +36,7 @@ class AgenticCommerceServiceTest extends TestCase
         $service = $this->createService();
 
         $this->salesChannelTypeRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('upsert')
             ->with(static::callback(static function (array $payload): bool {
                 static::assertCount(1, $payload);
@@ -64,7 +64,7 @@ class AgenticCommerceServiceTest extends TestCase
         $this->expectAgenticSalesChannelSearch($context, []);
 
         $this->salesChannelTypeRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('delete')
             ->with([['id' => SwagPayPal::SALES_CHANNEL_TYPE_AGENTIC_COMMERCE]], static::identicalTo($context));
 
@@ -79,7 +79,7 @@ class AgenticCommerceServiceTest extends TestCase
         $this->expectAgenticSalesChannelSearch($context, ['agentic-sales-channel-id']);
 
         $this->salesChannelTypeRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('delete');
 
         $service->handleUninstallAgentic($context);
@@ -93,7 +93,7 @@ class AgenticCommerceServiceTest extends TestCase
         $this->expectAgenticSalesChannelSearch($context, ['first-id', 'second-id']);
 
         $this->salesChannelRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('update')
             ->with([
                 ['id' => 'first-id', 'active' => false],
@@ -111,7 +111,7 @@ class AgenticCommerceServiceTest extends TestCase
         $this->expectAgenticSalesChannelSearch($context, []);
 
         $this->salesChannelRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('update');
 
         $service->deactivateAgenticSalesChannelState($context);
@@ -125,7 +125,7 @@ class AgenticCommerceServiceTest extends TestCase
         $this->expectAgenticSalesChannelSearch($context, ['agentic-sales-channel-id']);
 
         $this->salesChannelRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('update')
             ->willThrowException(HoneyWebhookException::salesChannelNotRegistered());
 
@@ -140,7 +140,7 @@ class AgenticCommerceServiceTest extends TestCase
         $this->expectAgenticSalesChannelSearch($context, ['agentic-sales-channel-id']);
 
         $this->salesChannelRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('update')
             ->willThrowException(HoneyWebhookException::invalidSalesChannel());
 
@@ -155,7 +155,7 @@ class AgenticCommerceServiceTest extends TestCase
     private function expectAgenticSalesChannelSearch(Context $context, array $ids): void
     {
         $this->salesChannelRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('searchIds')
             ->with(static::callback(static function (Criteria $criteria): bool {
                 static::assertCount(1, $criteria->getFilters());

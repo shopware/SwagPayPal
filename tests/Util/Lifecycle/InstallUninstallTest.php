@@ -33,10 +33,10 @@ class InstallUninstallTest extends TestCase
         $agenticCommerceService = $this->createMock(AgenticCommerceService::class);
 
         $settingsInstaller
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('addDefaultConfiguration');
         $paymentMethodInstaller
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('installAll')
             ->with(static::identicalTo($context));
 
@@ -59,19 +59,19 @@ class InstallUninstallTest extends TestCase
         $agenticCommerceService = $this->createMock(AgenticCommerceService::class);
 
         $agenticCommerceService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('handleUninstallAgentic')
             ->with(static::identicalTo($context));
         $posStateService
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('handleUninstallPos')
             ->with(static::identicalTo($context));
         $settingsInstaller
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('removeConfiguration')
             ->with(static::identicalTo($context));
         $posInstaller
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('removePosTables');
 
         (new InstallUninstall(

@@ -174,7 +174,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
@@ -217,13 +217,13 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
 
         $salesChannelMock = $this->createMock(SalesChannelContextService::class);
         $salesChannelMock
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('get')
             ->willReturn($salesChannelContext);
 
         $jwksProvider = $this->createMock(AbstractPayPalJwksProvider::class);
         $jwksProvider
-            ->expects($this->exactly(2))
+            ->expects(static::exactly(2))
             ->method('getJwks')
             ->willReturnCallback(static function (bool $refresh = false): JWKCollection {
                 if (!$refresh) {
@@ -312,9 +312,6 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
 
         $resolver = $this->createResolver();
-
-        static::assertInstanceOf(AgentRequestContextResolver::class, $resolver);
-
         $resolver->resolve($request);
     }
 
@@ -351,7 +348,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $export->setStorefrontSalesChannelId(Uuid::randomHex());
         $entityRepository = $this->createMock(EntityRepository::class);
         $entityRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('search')
             ->willReturn(self::createSearchResult($export));
 
@@ -414,14 +411,14 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
 
         $repo = $this->createMock(EntityRepository::class);
         $repo
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('search')
             ->with(static::isInstanceOf(Criteria::class), $expectedContext)
             ->willReturn($productExportResult);
 
         $contextService = $this->createMock(SalesChannelContextService::class);
         $contextService
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('get')
             ->willReturn(
                 Generator::createSalesChannelContext($expectedContext)
