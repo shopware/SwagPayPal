@@ -20,7 +20,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\JWT\JWTDecoder;
 use Shopware\Core\Framework\JWT\Struct\JWKCollection;
 use Shopware\Core\Framework\JWT\Struct\JWKStruct;
 use Shopware\Core\Framework\Log\Package;
@@ -182,7 +181,6 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $resolver = new AgentRequestContextResolver(
             $this->createMock(DataValidator::class),
             $entityRepository,
-            new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
             $this->createJwksProvider(self::createJwks('wrong-key')),
@@ -553,7 +551,6 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         return new AgentRequestContextResolver(
             new DataValidator(Validation::createValidator()),
             $this->createMock(EntityRepository::class),
-            new JWTDecoder(),
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
             $this->createJwksProvider(),
