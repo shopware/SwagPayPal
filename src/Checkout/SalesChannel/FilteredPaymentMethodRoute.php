@@ -18,6 +18,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
@@ -47,6 +48,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         private readonly RequestStack $requestStack,
         private readonly AvailabilityService $availabilityService,
         private readonly EntityRepository $orderRepository,
+        private readonly SalesChannelContextPersister $contextPersister,
     ) {
     }
 
@@ -78,13 +80,9 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
             return $this->removeAllPaymentMethods($response);
         }
 
-        try {
-            $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
-
-            if (\is_array($ineligiblePaymentMethods)) {
-                $response = $this->removePaymentMethods($response, $ineligiblePaymentMethods);
-            }
-        } catch (SessionNotFoundException) {
+        $ineligiblePaymentMethods = $this->getIneligiblePaymentMethods($context);
+        if (\is_array($ineligiblePaymentMethods)) {
+            $response = $this->removePaymentMethods($response, $ineligiblePaymentMethods);
         }
 
         $order = $this->checkOrder($request, $context->getContext());
@@ -140,5 +138,40 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         ]);
 
         return $response;
+    }
+
+    /**
+     * @return list<class-string>|null
+     */
+    private function getIneligiblePaymentMethods(SalesChannelContext $context): ?array
+    {
+        $parameters = $this->contextPersister->load($context->getToken(), $context->getSalesChannelId(), $context->getCustomerId());
+        $handlers = $parameters[MethodEligibilityRoute::SESSION_KEY] ?? null;
+        if (\is_array($handlers)) {
+            /** @var list<class-string> $handlers */
+            return $handlers;
+        }
+
+        $request = $this->requestStack->getCurrentRequest();
+        if (!$request?->hasSession(true)) {
+            return null;
+        }
+
+        try {
+            $session = $request->getSession();
+            if (!$session->isStarted()) {
+                return null;
+            }
+
+            $handlers = $session->get(MethodEligibilityRoute::SESSION_KEY);
+            if (!\is_array($handlers)) {
+                return null;
+            }
+
+            /** @var list<class-string> $handlers */
+            return $handlers;
+        } catch (SessionNotFoundException) {
+            return null;
+        }
     }
 }

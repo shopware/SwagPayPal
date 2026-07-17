@@ -110,9 +110,9 @@ class PayPalController extends StorefrontController
     }
 
     #[Route(path: '/paypal/payment-method-eligibility', name: 'frontend.paypal.payment-method-eligibility', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
-    public function paymentMethodEligibility(Request $request, Context $context): Response
+    public function paymentMethodEligibility(Request $request, Context $context, SalesChannelContext $salesChannelContext): Response
     {
-        return $this->methodEligibilityRoute->setPaymentMethodEligibility($request, $context);
+        return $this->methodEligibilityRoute->setPaymentMethodEligibility($request, $context, $salesChannelContext);
     }
 
     #[Route(path: '/paypal/pui/payment-instructions/{transactionId}', name: 'frontend.paypal.pui.payment_instructions', methods: ['GET'], defaults: ['_loginRequired' => true, '_loginRequiredAllowGuest' => true, 'XmlHttpRequest' => true, 'csrf_protected' => false])]
