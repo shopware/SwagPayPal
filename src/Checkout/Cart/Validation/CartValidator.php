@@ -12,7 +12,6 @@ use Shopware\Core\Checkout\Cart\CartValidatorInterface;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
 use Shopware\Core\Checkout\Payment\Cart\Error\PaymentMethodBlockedError;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
@@ -39,8 +38,6 @@ class CartValidator implements CartValidatorInterface
 
     private AvailabilityService $availabilityService;
 
-    private SalesChannelContextPersister $contextPersister;
-
     /**
      * @internal
      */
@@ -51,7 +48,6 @@ class CartValidator implements CartValidatorInterface
         RequestStack $requestStack,
         ExcludedProductValidator $excludedProductValidator,
         AvailabilityService $availabilityService,
-        SalesChannelContextPersister $contextPersister,
     ) {
         $this->cartPriceService = $cartPriceService;
         $this->methodDataRegistry = $methodDataRegistry;
@@ -59,7 +55,6 @@ class CartValidator implements CartValidatorInterface
         $this->requestStack = $requestStack;
         $this->excludedProductValidator = $excludedProductValidator;
         $this->availabilityService = $availabilityService;
-        $this->contextPersister = $contextPersister;
     }
 
     public function validate(Cart $cart, ErrorCollection $errors, SalesChannelContext $context): void
@@ -87,11 +82,15 @@ class CartValidator implements CartValidatorInterface
             return;
         }
 
-        $ineligiblePaymentMethods = $this->getIneligiblePaymentMethods($context);
-        if (\is_array($ineligiblePaymentMethods) && \in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
-            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
-            $errors->add(new PaymentMethodBlockedError($name, 'ineligible', $id));
+        try {
+            $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
+            if (\is_array($ineligiblePaymentMethods) && \in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
+                /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
+                $errors->add(new PaymentMethodBlockedError($name, 'ineligible', $id));
 
+                return;
+            }
+        } catch (SessionNotFoundException $e) {
             return;
         }
 
@@ -105,41 +104,6 @@ class CartValidator implements CartValidatorInterface
         if (!$this->availabilityService->isPaymentMethodAvailable($context->getPaymentMethod(), $cart, $context)) {
             /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
             $errors->add(new PaymentMethodBlockedError($name, 'not available', $id));
-        }
-    }
-
-    /**
-     * @return list<class-string>|null
-     */
-    private function getIneligiblePaymentMethods(SalesChannelContext $context): ?array
-    {
-        $parameters = $this->contextPersister->load($context->getToken(), $context->getSalesChannelId());
-        $handlers = $parameters[MethodEligibilityRoute::SESSION_KEY] ?? null;
-        if (\is_array($handlers)) {
-            /** @var list<class-string> $handlers */
-            return $handlers;
-        }
-
-        $request = $this->requestStack->getCurrentRequest();
-        if (!$request?->hasSession(true)) {
-            return null;
-        }
-
-        try {
-            $session = $request->getSession();
-            if (!$session->isStarted()) {
-                return null;
-            }
-
-            $handlers = $session->get(MethodEligibilityRoute::SESSION_KEY);
-            if (!\is_array($handlers)) {
-                return null;
-            }
-
-            /** @var list<class-string> $handlers */
-            return $handlers;
-        } catch (SessionNotFoundException) {
-            return null;
         }
     }
 }

@@ -238,7 +238,7 @@
                     "Store API",
                     "PayPal"
                 ],
-                "description": "Sets ineligible payment methods to be removed from the current sales channel context",
+                "description": "Sets ineligible payment methods to be removed from the session",
                 "operationId": "setPaymentMethodEligibility",
                 "requestBody": {
                     "content": {
