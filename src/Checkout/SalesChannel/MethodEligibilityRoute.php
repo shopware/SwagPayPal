@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\RoutingException;
+use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -70,7 +71,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
         responses: [new OA\Response(response: Response::HTTP_NO_CONTENT, description: 'Success')],
     )]
     #[Route(path: '/store-api/paypal/payment-method-eligibility', name: 'store-api.paypal.payment-method-eligibility', defaults: ['XmlHttpRequest' => true], methods: ['POST'])]
-    public function setPaymentMethodEligibility(Request $request, Context $context, ?SalesChannelContext $salesChannelContext = null): Response
+    public function setPaymentMethodEligibility(Request $request, Context $context): Response
     {
         /** @var array $paymentMethods */
         $paymentMethods = $request->request->all()['paymentMethods'] ?? null;
@@ -85,7 +86,8 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
             }
         }
 
-        if ($salesChannelContext !== null) {
+        $salesChannelContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+        if ($salesChannelContext instanceof SalesChannelContext) {
             $this->contextPersister->save(
                 $salesChannelContext->getToken(),
                 [self::SESSION_KEY => $handlers],

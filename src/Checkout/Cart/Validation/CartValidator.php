@@ -113,7 +113,7 @@ class CartValidator implements CartValidatorInterface
      */
     private function getIneligiblePaymentMethods(SalesChannelContext $context): ?array
     {
-        $parameters = $this->contextPersister->load($context->getToken(), $context->getSalesChannelId(), $context->getCustomerId());
+        $parameters = $this->contextPersister->load($context->getToken(), $context->getSalesChannelId());
         $handlers = $parameters[MethodEligibilityRoute::SESSION_KEY] ?? null;
         if (\is_array($handlers)) {
             /** @var list<class-string> $handlers */

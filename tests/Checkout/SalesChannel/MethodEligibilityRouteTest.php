@@ -37,8 +37,6 @@ class MethodEligibilityRouteTest extends TestCase
 
     private string $salesChannelId;
 
-    private string $contextToken;
-
     protected function setUp(): void
     {
         $methodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
@@ -51,13 +49,11 @@ class MethodEligibilityRouteTest extends TestCase
         }
 
         $this->salesChannelId = Uuid::randomHex();
-        $this->contextToken = Uuid::randomHex();
         $this->browser = $this->createCustomSalesChannelBrowser([
             'id' => $this->salesChannelId,
             'paymentMethods' => $paymentMethodData,
             'paymentMethodId' => $methodDataRegistry->getEntityIdFromData($methodDataRegistry->getPaymentMethod(ACDCMethodData::class), Context::createDefaultContext()),
         ]);
-        $this->browser->setServerParameter('HTTP_SW_CONTEXT_TOKEN', $this->contextToken);
 
         $systemConfig = $this->getContainer()->get(SystemConfigService::class);
         $systemConfig->set(Settings::CLIENT_ID, 'test');
