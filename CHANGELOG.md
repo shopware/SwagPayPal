@@ -1,5 +1,12 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where PayPal Express Checkout in a stale offcanvas cart could call the PayPal API with an empty cart and fail without customer feedback (shopware/SwagPayPal#712)
+- Fixes an issue, where the Google Pay button was always displayed in English instead of the sales channel language (shopware/shopware#17804)
 - Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
+
+# 10.7.0
+- Added support for PayPal App Switch (currently only available in the US)
+- Added merchant-configurable appearance settings for the Pay Later installment banner: logo type, text colour, and text size
+- Fixes an issue, where the Smart Payment Buttons failed silently on Safari/iOS when the terms and conditions were not accepted, by guiding the user to the invalid field instead of relying on the browser's native form validation
 
 # 10.6.4
 - Fixes an issue, where net prices could cause the express checkout with shipping callback enabled to fail

@@ -15,11 +15,13 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
@@ -27,11 +29,17 @@ use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
+use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\Storefront\Controller\PayPalController;
+use Swag\PayPal\Storefront\Service\ReturnTokenService;
+use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -42,6 +50,10 @@ class PayPalControllerTest extends TestCase
 {
     private AbstractCreateOrderRoute&MockObject $createOrderRoute;
 
+    private RouterInterface&MockObject $router;
+
+    private ReturnTokenService&MockObject $returnTokenService;
+
     private TestHandler $logHandler;
 
     private PayPalController&MockObject $controller;
@@ -49,6 +61,15 @@ class PayPalControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->createOrderRoute = $this->createMock(AbstractCreateOrderRoute::class);
+        $this->returnTokenService = $this->createMock(ReturnTokenService::class);
+        $this->returnTokenService
+            ->method('generate')
+            ->willReturn('return-token');
+        $this->router = $this->createMock(RouterInterface::class);
+        $this->router
+            ->method('generate')
+            ->with('frontend.paypal.restore_context', ['token' => 'return-token'], UrlGeneratorInterface::ABSOLUTE_URL)
+            ->willReturn('https://example.test/paypal/restore-context/return-token');
         $this->logHandler = new TestHandler();
 
         $this->controller = $this->getMockBuilder(PayPalController::class)
@@ -62,8 +83,12 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(AbstractExpressShippingCallbackRoute::class),
                 $this->createMock(AbstractContextSwitchRoute::class),
                 $this->createMock(AbstractCartDeleteRoute::class),
+                $this->createMock(CartService::class),
+                new CartPriceService(new PriceFormatter()),
                 $this->createMock(AbstractClearVaultRoute::class),
                 new Logger('test', [$this->logHandler]),
+                $this->returnTokenService,
+                $this->router,
             ])
             ->getMock();
     }
@@ -86,6 +111,22 @@ class PayPalControllerTest extends TestCase
         $errors = $json['errors'];
         static::assertCount(1, $errors);
         static::assertSame('SWAG_PAYPAL__API_issue', $json['errors'][0]['code']);
+    }
+
+    public function testCreateOrderAddsRestoreUrls(): void
+    {
+        $request = new Request();
+
+        $this->createOrderRoute
+            ->expects($this->once())
+            ->method('createPayPalOrder')
+            ->with(static::isInstanceOf(SalesChannelContext::class), static::callback(static function (Request $request): bool {
+                return $request->request->get(CreateOrderRoute::RETURN_URL) === 'https://example.test/paypal/restore-context/return-token'
+                    && $request->request->get(CreateOrderRoute::CANCEL_URL) === 'https://example.test/paypal/restore-context/return-token';
+            }))
+            ->willReturn(new TokenResponse('paypal-order-id'));
+
+        $this->controller->createOrder($this->generateSalesChannelContext(), $request);
     }
 
     public function testOnHandleErrorWithTranslatableErrorCodeAddsFlash(): void

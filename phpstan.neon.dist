@@ -96,6 +96,26 @@ parameters:
             identifier: method.deprecated
             message: '#(setActiveBillingAddress|setActiveShippingAddress).*Shopware\\Core\\Checkout\\Customer\\CustomerEntity.*#'
 
+        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
+            identifier: method.deprecatedClass
+            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
+            path: '**/*.php'
+
+        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
+            identifier: return.deprecatedClass
+            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
+            path: '**/*.php'
+
+        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
+            identifier: new.deprecatedClass
+            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
+            path: '**/*.php'
+
+        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
+            identifier: classConstant.deprecatedClass
+            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
+            path: '**/*.php'
+
         - # 6.8 deprecation - DAL field API will return static natively
             identifier: method.deprecated
             message: '#Call to deprecated method (addFlags|removeFlag)\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Field\\Field\:\s+tag\:v6\.8\.0 - reason\:return-type-change - Will return static natively#'
@@ -103,6 +123,26 @@ parameters:
                 - src/DataAbstractionLayer
                 - src/Pos/DataAbstractionLayer
                 - src/Reporting/DataAbstractionLayer
+
+        - # 6.8 deprecation - kept for 6.7.0.0 compatibility
+            identifier: property.deprecatedInterface
+            message: '#Property \$productStreamBuilder references deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface in its type:#'
+            path: src/Pos/Sync/ProductSelection.php
+
+        - # 6.8 deprecation - kept for 6.7.0.0 compatibility
+            identifier: parameter.deprecatedInterface
+            message: '#Parameter \$productStreamBuilder of method Swag\\PayPal\\Pos\\Sync\\ProductSelection::__construct\(\) has typehint with deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface:#'
+            path: src/Pos/Sync/ProductSelection.php
+
+        - # 6.8 deprecation - kept for 6.7.0.0 compatibility
+            identifier: method.deprecatedInterface
+            message: '#Call to method buildFilters\(\) of deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface:#'
+            path: src/Pos/Sync/ProductSelection.php
+
+        - # 6.8 deprecation - kept for 6.7.0.0 compatibility
+            identifier: classConstant.deprecatedInterface
+            message: '#Access to constant on deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface:#'
+            path: tests/Pos/Sync/Product/ProductSelectionTestProductSync.php
 
         - # Shopware trunk classifies these plugin tests as non-Unit by namespace
             identifier: shopware.unexpectedTestCovers

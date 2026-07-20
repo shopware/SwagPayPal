@@ -10,6 +10,8 @@ namespace Swag\PayPal\Checkout\Cart\Service;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Checkout\Exception\EmptyCartException;
+use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Util\PriceFormatter;
 
 #[Package('checkout')]
@@ -21,6 +23,22 @@ class CartPriceService
     public function __construct(
         private readonly PriceFormatter $priceFormatter,
     ) {
+    }
+
+    public function isProcessable(Cart $cart, SalesChannelContext $context): bool
+    {
+        return $cart->getLineItems()->count() > 0 && !$this->hasZeroPrice($cart, $context);
+    }
+
+    public function validateProcessable(Cart $cart, SalesChannelContext $context): void
+    {
+        if ($cart->getLineItems()->count() === 0) {
+            throw new EmptyCartException();
+        }
+
+        if ($this->hasZeroPrice($cart, $context)) {
+            throw new OrderZeroValueException();
+        }
     }
 
     public function hasZeroPrice(Cart $cart, SalesChannelContext $context): bool
