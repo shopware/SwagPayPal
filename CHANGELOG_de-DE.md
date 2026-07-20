@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.8.0
 - Behebt ein Problem, bei dem PayPal Express Checkout in einem veralteten Offcanvas-Warenkorb die PayPal-API mit leerem Warenkorb aufrufen konnte und ohne Rückmeldung für den Kunden fehlschlug (shopware/SwagPayPal#712)
 - Behebt ein Problem, bei dem der Google Pay Button immer auf Englisch statt in der Verkaufskanal-Sprache angezeigt wurde (shopware/shopware#17804)
 - Behebt ein Problem, bei dem die PayPal-Versandtracking-Synchronisierung 429 RATE_LIMIT_REACHED-Antworten zu früh erneut verarbeitet hat, anstatt den Retry-After-Header zu berücksichtigen.

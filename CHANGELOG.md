@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.8.0
 - Fixes an issue, where PayPal Express Checkout in a stale offcanvas cart could call the PayPal API with an empty cart and fail without customer feedback (shopware/SwagPayPal#712)
 - Fixes an issue, where the Google Pay button was always displayed in English instead of the sales channel language (shopware/shopware#17804)
 - Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
