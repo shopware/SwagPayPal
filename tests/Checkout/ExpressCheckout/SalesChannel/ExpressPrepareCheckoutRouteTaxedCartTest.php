@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Cart\AbstractCartPersister;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartCalculator;
 use Shopware\Core\Checkout\Cart\CartFactory;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemRemoveRoute;
@@ -27,6 +28,7 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\PayPalSDK\Struct\V2\Order;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
@@ -53,6 +55,7 @@ class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
 
         $newToken = 'new-context-token';
         $cart = new Cart($newToken);
+        $cart->add(new LineItem('test', LineItem::PRODUCT_LINE_ITEM_TYPE, 'test'));
 
         $taxProviderProcessor = $this->createMock(TaxProviderProcessor::class);
         $taxProviderProcessor
@@ -85,11 +88,18 @@ class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
             ->with('paypal-order-id', $salesChannel->getId())
             ->willReturn(new Order());
 
+        $cartPriceService = $this->createMock(CartPriceService::class);
+        $cartPriceService
+            ->expects($this->once())
+            ->method('validateProcessable')
+            ->with($cart, $newSalesChannelContext);
+
         $route = new ExpressPrepareCheckoutRoute(
             $expressCustomerService,
             $salesChannelContextFactory,
             $orderResource,
             $this->createTaxedCartService($cart, $salesChannelContext, $newSalesChannelContext, $taxProviderProcessor),
+            $cartPriceService,
             new NullLogger(),
         );
 
