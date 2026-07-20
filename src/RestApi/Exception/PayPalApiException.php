@@ -95,7 +95,7 @@ class PayPalApiException extends PaymentException
             $message,
             $e->getStatusCode(),
             $issue,
-            self::extractRetryAt($e),
+            $e instanceof RetryAfterApiException ? $e->getRetryAt() : null,
         );
     }
 
@@ -117,14 +117,5 @@ class PayPalApiException extends PaymentException
             'message' => $message,
             'issue' => $issue,
         ];
-    }
-
-    private static function extractRetryAt(ApiException $e): ?\DateTimeImmutable
-    {
-        if (!$e instanceof RetryAfterApiException) {
-            return null;
-        }
-
-        return $e->getRetryAt();
     }
 }
