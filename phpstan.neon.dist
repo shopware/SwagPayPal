@@ -164,7 +164,6 @@ parameters:
             paths:
                 - src/Checkout/Cart/Validation/CartValidator.php
                 - tests/Checkout/PUI/PUISubscriberTest.php
-                - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
                 - tests/Storefront/Data/CheckoutSubscriberTest.php
 
         - # 6.8 deprecation - Will be removed

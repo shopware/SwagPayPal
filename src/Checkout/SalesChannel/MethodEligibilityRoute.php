@@ -81,6 +81,10 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
             }
         }
 
+        if (!$request->hasSession(true)) {
+            return new NoContentResponse();
+        }
+
         $request->getSession()->set(self::SESSION_KEY, $handlers);
         $this->logger->info('Removed ineligible PayPal payment methods from session', ['handlers' => $handlers]);
 
