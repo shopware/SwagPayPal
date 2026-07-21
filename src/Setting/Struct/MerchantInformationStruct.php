@@ -20,7 +20,7 @@ class MerchantInformationStruct extends Struct
     protected ?MerchantIntegrations $merchantIntegrations;
 
     /**
-     * @var array<string, string> key: paymentMethodId, value: capability (see AbstractMethodData)
+     * @var array<string,string> key: paymentMethodId, value: capability (see AbstractMethodData)
      */
     #[OA\Property(type: 'object', additionalProperties: new OA\AdditionalProperties(type: 'string'))]
     protected array $capabilities;
