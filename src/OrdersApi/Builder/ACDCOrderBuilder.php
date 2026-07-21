@@ -56,7 +56,8 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
         $card = new Card();
-        $card->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction));
+        /** @phpstan-ignore method.deprecated */
+        $card->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, new RequestDataBag($request->request->all())));
 
         $attributes = new Attributes();
         $attributes->setVerification(new Verification());
@@ -91,7 +92,8 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
     protected function buildPaymentSourceFromCart(Cart $cart, SalesChannelContext $salesChannelContext, RequestDataBag $requestDataBag, PaymentSource $paymentSource): void
     {
         $card = new Card();
-        $card->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext()));
+        /** @phpstan-ignore method.deprecated */
+        $card->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext(), null, $requestDataBag));
 
         $attributes = new Attributes();
         $attributes->setVerification(new Verification());

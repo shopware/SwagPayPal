@@ -19,6 +19,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\Storefront\Framework\Routing\StorefrontRouteScope;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
+use Swag\PayPal\Checkout\Exception\EmptyCartException;
 use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
@@ -76,9 +77,35 @@ class ExpressCreateOrderRouteTest extends TestCase
         $route->createPayPalOrder(new Request(), $salesChannelContext);
     }
 
-    public function testCreatePayment(): void
+    public function testCreatePaymentWithEmptyCart(): void
     {
         $salesChannelContext = $this->getSalesChannelContext();
+
+        $cart = new Cart('token');
+
+        $cartService = $this->createMock(CartService::class);
+        $cartService->method('getCart')->willReturn($cart);
+
+        $route = new ExpressCreateOrderRoute(
+            $cartService,
+            $this->createMock(PayPalOrderBuilder::class),
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            $this->getContainer()->get(CartPriceService::class),
+            $this->getContainer()->get(SystemConfigService::class),
+            $this->createMock(RouterInterface::class),
+            new NullLogger(),
+        );
+
+        static::expectException(EmptyCartException::class);
+
+        $route->createPayPalOrder(new Request(), $salesChannelContext);
+
+        static::assertNull($this->getClient()->getLast());
+    }
+
+    public function testCreatePayment(): void
+    {
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
 
         $response = $this->createRoute()->createPayPalOrder(new Request(), $salesChannelContext);
 
@@ -97,7 +124,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     public function testCreateWithLocalEnvironmentActive(): void
     {
-        $salesChannelContext = $this->getSalesChannelContext();
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
 
         $response = $this->createRoute([Settings::IS_LOCAL_ENVIRONMENT => true])->createPayPalOrder(new Request(), $salesChannelContext);
 
@@ -116,7 +143,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     public function testCreateWithShippingCallbackDisabled(): void
     {
-        $salesChannelContext = $this->getSalesChannelContext();
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
 
         $response = $this->createRoute([Settings::ECS_SHIPPING_CALLBACK_ENABLED => false])->createPayPalOrder(new Request(), $salesChannelContext);
 
@@ -135,7 +162,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     public function testCreateShippingCallbackStoreApi(): void
     {
-        $salesChannelContext = $this->getSalesChannelContext();
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
 
         $router = $this->createMock(RouterInterface::class);
         $router
@@ -161,7 +188,7 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     public function testCreateShippingCallbackStorefront(): void
     {
-        $salesChannelContext = $this->getSalesChannelContext();
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
 
         $router = $this->createMock(RouterInterface::class);
         $router

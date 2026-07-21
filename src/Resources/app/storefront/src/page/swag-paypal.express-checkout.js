@@ -257,6 +257,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                 (responseText, request) => {
                     if (request.status >= 400) {
                         reject(responseText);
+                        return;
                     }
 
                     return Promise.resolve().then(() => {
@@ -275,6 +276,9 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                         });
                 },
             );
+        }).catch((error) => {
+            this.handleError(this.GENERIC_ERROR, false, error);
+            throw error;
         });
     }
 
@@ -342,10 +346,13 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         );
     }
 
-    onErrorHandled(code) {
+    onErrorHandled(code, fatal, error, isCheckout = false) {
         if (code === this.USER_CANCELLED) {
             window.scrollTo(0, 0);
             window.location = this.options.cancelRedirectUrl;
+            return;
         }
+
+        super.onErrorHandled(code, fatal, error, isCheckout);
     }
 }

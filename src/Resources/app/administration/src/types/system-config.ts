@@ -39,11 +39,15 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.installmentBannerOffCanvasCartEnabled'?: boolean;
     'SwagPayPal.settings.installmentBannerLoginPageEnabled'?: boolean;
     'SwagPayPal.settings.installmentBannerFooterEnabled'?: boolean;
+    'SwagPayPal.settings.installmentBannerLogoType'?: string;
+    'SwagPayPal.settings.installmentBannerTextColor'?: string;
+    'SwagPayPal.settings.installmentBannerTextSize'?: string;
     'SwagPayPal.settings.excludedProductIds'?: string[];
     'SwagPayPal.settings.excludedProductStreamIds'?: string[];
     'SwagPayPal.settings.spbShowPayLater'?: boolean;
     'SwagPayPal.settings.spbCheckoutEnabled'?: boolean;
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled'?: boolean;
+    'SwagPayPal.settings.spbAppSwitchEnabled'?: boolean;
     'SwagPayPal.settings.vaultingEnabled'?: boolean;
     'SwagPayPal.settings.vaultingEnableAlways'?: boolean;
     'SwagPayPal.settings.vaultingEnabledWallet'?: boolean;
@@ -97,11 +101,15 @@ export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'password'
     'SwagPayPal.settings.installmentBannerOffCanvasCartEnabled': 'boolean',
     'SwagPayPal.settings.installmentBannerLoginPageEnabled': 'boolean',
     'SwagPayPal.settings.installmentBannerFooterEnabled': 'boolean',
+    'SwagPayPal.settings.installmentBannerLogoType': 'string',
+    'SwagPayPal.settings.installmentBannerTextColor': 'string',
+    'SwagPayPal.settings.installmentBannerTextSize': 'string',
     'SwagPayPal.settings.excludedProductIds': 'array',
     'SwagPayPal.settings.excludedProductStreamIds': 'array',
     'SwagPayPal.settings.spbShowPayLater': 'boolean',
     'SwagPayPal.settings.spbCheckoutEnabled': 'boolean',
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled': 'boolean',
+    'SwagPayPal.settings.spbAppSwitchEnabled': 'boolean',
     'SwagPayPal.settings.vaultingEnabled': 'boolean',
     'SwagPayPal.settings.vaultingEnableAlways': 'boolean',
     'SwagPayPal.settings.vaultingEnabledWallet': 'boolean',

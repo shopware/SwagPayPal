@@ -25,6 +25,7 @@ use Swag\PayPal\Pos\Run\Task\InventoryTask;
 use Swag\PayPal\Pos\Run\Task\ProductTask;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * @internal
@@ -49,7 +50,7 @@ class RunTaskTest extends TestCase
         $this->messageBus = new MessageBusMock();
         $this->runService = $this->createMock(RunService::class);
 
-        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class));
+        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class), new NativeClock());
         $this->tasks = [
             CompleteTask::class => new CompleteTask($messageDispatcher, $this->runService),
             ProductTask::class => new ProductTask($messageDispatcher, $this->runService),

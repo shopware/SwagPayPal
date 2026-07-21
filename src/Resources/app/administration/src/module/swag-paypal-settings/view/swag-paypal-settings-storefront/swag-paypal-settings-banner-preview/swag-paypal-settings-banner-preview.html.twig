@@ -1,0 +1,40 @@
+<div class="swag-paypal-settings-banner-preview">
+    <div class="swag-paypal-settings-banner-preview__image-area">
+        <sw-icon
+            name="solid-image-text"
+            size="24px"
+            class="swag-paypal-settings-banner-preview__image-icon"
+        />
+    </div>
+    <div class="swag-paypal-settings-banner-preview__skeletons">
+        <div class="swag-paypal-settings-banner-preview__bar swag-paypal-settings-banner-preview__bar--primary" />
+        <div class="swag-paypal-settings-banner-preview__bar swag-paypal-settings-banner-preview__bar--secondary" />
+    </div>
+    <template v-if="clientId">
+        <paypal-message
+            ref="paypalMessage"
+            class="swag-paypal-settings-banner-preview__sdk"
+        />
+        <mt-banner
+            v-if="sdkError"
+            variant="warning"
+            class="swag-paypal-settings-banner-preview__error"
+        >
+            {{ $t('swag-paypal-settings.installment.previewSdkError') }}
+        </mt-banner>
+        <mt-banner
+            v-else-if="noOffersAvailable"
+            variant="info"
+            class="swag-paypal-settings-banner-preview__error"
+        >
+            {{ $t('swag-paypal-settings.installment.previewNoOffers') }}
+        </mt-banner>
+    </template>
+    <mt-banner
+        v-else
+        variant="info"
+        class="swag-paypal-settings-banner-preview__empty"
+    >
+        {{ $t('swag-paypal-settings.installment.previewNoCredentials') }}
+    </mt-banner>
+</div>
