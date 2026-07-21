@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Storefront\Data;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Generator;
@@ -17,6 +18,7 @@ use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
+use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
@@ -123,7 +125,8 @@ class FundingSubscriberTest extends TestCase
                 $systemConfig,
                 $localeCodeProvider,
                 $router,
-                $requestStack
+                $requestStack,
+                new MethodEligibilityStateService($this->createMock(SalesChannelContextPersister::class)),
             ),
             $paymentMethodUtil,
         );
