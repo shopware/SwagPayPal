@@ -73,7 +73,15 @@ class CreateOrderRouteTaxedCartTest extends TestCase
         $payPalOrderBuilder
             ->expects($this->once())
             ->method('getOrderFromCart')
-            ->with($cart, $salesChannelContext, static::isInstanceOf(RequestDataBag::class))
+            ->with(
+                $cart,
+                $salesChannelContext,
+                static::callback(static function (RequestDataBag $requestDataBag): bool {
+                    static::assertSame('Mozilla/5.0 Route App Switch Test', $requestDataBag->getString(CreateOrderRoute::PAYPAL_BUYER_USER_AGENT));
+
+                    return true;
+                }),
+            )
             ->willThrowException($exception);
 
         $route = new CreateOrderRoute(
@@ -92,7 +100,9 @@ class CreateOrderRouteTaxedCartTest extends TestCase
 
         static::expectExceptionObject($exception);
 
-        $route->createPayPalOrder($salesChannelContext, new Request());
+        $route->createPayPalOrder($salesChannelContext, new Request([], [], [], [], [], [
+            'HTTP_USER_AGENT' => 'Mozilla/5.0 Route App Switch Test',
+        ]));
     }
 
     private function createTaxedCartService(

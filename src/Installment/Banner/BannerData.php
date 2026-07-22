@@ -33,6 +33,8 @@ class BannerData extends Struct
 
     protected string $textColor = 'black';
 
+    protected int $textSize = 12;
+
     protected string $paymentMethodId;
 
     protected bool $footerEnabled;
@@ -120,6 +122,16 @@ class BannerData extends Struct
     public function getTextColor(): string
     {
         return $this->textColor;
+    }
+
+    public function getTextSize(): int
+    {
+        return $this->textSize;
+    }
+
+    public function setTextSize(int $textSize): void
+    {
+        $this->textSize = $textSize;
     }
 
     public function getFooterEnabled(): bool

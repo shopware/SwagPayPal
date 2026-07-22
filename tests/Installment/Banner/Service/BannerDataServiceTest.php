@@ -112,6 +112,72 @@ class BannerDataServiceTest extends TestCase
         static::assertNull($bannerData->getCrossBorderBuyerCountry());
     }
 
+    public function testBannerAppearanceDefaults(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContextWithLanguage();
+
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(
+            new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()),
+            $salesChannelContext,
+        );
+
+        static::assertSame('primary', $bannerData->getLogoType());
+        static::assertSame('monochrome', $bannerData->getTextColor());
+        static::assertSame(12, $bannerData->getTextSize());
+    }
+
+    public function testLogoTypeIsReadFromConfig(): void
+    {
+        $this->systemConfigService->set(Settings::INSTALLMENT_BANNER_LOGO_TYPE, 'alternative');
+        $salesChannelContext = $this->createSalesChannelContextWithLanguage();
+
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(
+            new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()),
+            $salesChannelContext,
+        );
+
+        static::assertSame('alternative', $bannerData->getLogoType());
+    }
+
+    public function testTextColorIsReadFromConfig(): void
+    {
+        $this->systemConfigService->set(Settings::INSTALLMENT_BANNER_TEXT_COLOR, 'white');
+        $salesChannelContext = $this->createSalesChannelContextWithLanguage();
+
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(
+            new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()),
+            $salesChannelContext,
+        );
+
+        static::assertSame('white', $bannerData->getTextColor());
+    }
+
+    public function testTextSizeIsReadFromConfig(): void
+    {
+        $this->systemConfigService->set(Settings::INSTALLMENT_BANNER_TEXT_SIZE, 16);
+        $salesChannelContext = $this->createSalesChannelContextWithLanguage();
+
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(
+            new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()),
+            $salesChannelContext,
+        );
+
+        static::assertSame(16, $bannerData->getTextSize());
+    }
+
+    public function testTextSizeCastToIntWhenStoredAsString(): void
+    {
+        $this->systemConfigService->set(Settings::INSTALLMENT_BANNER_TEXT_SIZE, '16');
+        $salesChannelContext = $this->createSalesChannelContextWithLanguage();
+
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(
+            new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()),
+            $salesChannelContext,
+        );
+
+        static::assertSame(16, $bannerData->getTextSize());
+    }
+
     private function createSalesChannelContextWithLanguage(string $isoLang = 'en-GB', string $isoCurrency = 'GBP'): SalesChannelContext
     {
         $context = new Context(

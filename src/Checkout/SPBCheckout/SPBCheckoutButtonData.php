@@ -24,6 +24,8 @@ class SPBCheckoutButtonData extends AbstractCheckoutData
 
     protected bool $showPayLater;
 
+    protected bool $appSwitchEnabled;
+
     public function getButtonColor(): string
     {
         return $this->buttonColor;
@@ -53,5 +55,10 @@ class SPBCheckoutButtonData extends AbstractCheckoutData
     public function getShowPayLater(): bool
     {
         return $this->showPayLater;
+    }
+
+    public function getAppSwitchEnabled(): bool
+    {
+        return $this->appSwitchEnabled;
     }
 }
