@@ -76,6 +76,7 @@
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="router"/>
             <argument type="service" id="request_stack"/>
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\Data\Service\VaultDataService">
