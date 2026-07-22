@@ -14,6 +14,8 @@
             <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressShippingCallbackRoute"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
             <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute"/>
             <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\Storefront\Service\ReturnTokenService"/>
@@ -74,6 +76,7 @@
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="router"/>
             <argument type="service" id="request_stack"/>
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\Data\Service\VaultDataService">

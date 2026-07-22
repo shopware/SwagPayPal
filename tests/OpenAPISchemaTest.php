@@ -66,9 +66,7 @@ class OpenAPISchemaTest extends TestCase
         $ite = new \RecursiveIteratorIterator($dir);
         $files = new \RegexIterator($ite, self::FILE_PATTERN, \RegexIterator::GET_MATCH);
 
-        $oa = Generator::scan(\array_keys(\iterator_to_array($files)), [
-            'logger' => $logger,
-        ]);
+        $oa = (new Generator($logger))->generate(\array_keys(\iterator_to_array($files)));
 
         static::assertInstanceOf(OpenApi::class, $oa, 'OpenAPI schema could not be generated.');
 
