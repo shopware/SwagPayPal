@@ -1579,7 +1579,7 @@
                         "nullable": true
                     },
                     "capabilities": {
-                        "description": "string> key: paymentMethodId, value: capability (see AbstractMethodData)",
+                        "description": "key: paymentMethodId, value: capability (see AbstractMethodData)",
                         "type": "object",
                         "additionalProperties": {
                             "type": "string"

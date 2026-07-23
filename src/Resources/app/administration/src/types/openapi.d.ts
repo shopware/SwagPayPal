@@ -606,7 +606,7 @@ export interface components {
         };
         swag_paypal_setting_merchant_information: {
             merchantIntegrations: components["schemas"]["paypal_v1_merchant_integrations"] | null;
-            /** @description string> key: paymentMethodId, value: capability (see AbstractMethodData) */
+            /** @description key: paymentMethodId, value: capability (see AbstractMethodData) */
             capabilities: {
                 [key: string]: string;
             };

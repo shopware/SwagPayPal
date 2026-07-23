@@ -124,7 +124,7 @@
       "puiCustomerServiceInstructions": "Diese Anweisungen werden an PayPal & RatePay übermittelt und in Kunden-E-Mails verwendet.",
       "spbButtonLanguageIso": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet.",
       "spbAlternativePaymentMethodsEnabled": "Die alternativen Zahlungsarten sind Kredit- und Debitkarten und weitere.",
-      "spbAppSwitchEnabled": "Ermöglicht geeigneten mobilen PayPal-Checkouts, in der PayPal-App fortzufahren und anschließend in die Storefront zurückzukehren. Erfordert PayPal App Switch-Unterstützung für Gerät und Browser des Käufers."
+      "spbAppSwitchEnabled": "Ermöglicht geeigneten mobilen PayPal-Checkouts, in der PayPal-App fortzufahren und anschließend in die Storefront zurückzukehren. Erfordert PayPal-App-Switch-Unterstützung für Gerät und Browser des Käufers."
     },
     "hintText": {
       "landingPage": {
