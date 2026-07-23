@@ -81,6 +81,7 @@
       "spbButtonLanguageIso": "Buttonsprache",
       "spbAlternativePaymentMethodsEnabled": "Aktiviert die alternativen Zahlungsarten der Smart Payment Buttons.",
       "spbShowPayLater": "'Später Bezahlen'-Button neben PayPal-Button anzeigen",
+      "spbAppSwitchEnabled": "App Switch für Smart Payment Buttons aktivieren",
       "spbButtonColor": "Buttonfarbe",
       "spbButtonShape": "Buttonform",
       "vaultingEnabledWallet": "Vaulting für PayPal-Zahlungen aktivieren",
@@ -122,7 +123,8 @@
       "acdcForce3DS": "PayPal prüft auf Basis der präsentierten Kredit- oder Debitkarte, ob 3DS (Starke Kunden-Authentifizierung) erforderlich ist. Durch das Setzen dieser Option werden Zahlungsversuche ohne 3DS-Check abgelehnt.",
       "puiCustomerServiceInstructions": "Diese Anweisungen werden an PayPal & RatePay übermittelt und in Kunden-E-Mails verwendet.",
       "spbButtonLanguageIso": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet.",
-      "spbAlternativePaymentMethodsEnabled": "Die alternativen Zahlungsarten sind Kredit- und Debitkarten und weitere."
+      "spbAlternativePaymentMethodsEnabled": "Die alternativen Zahlungsarten sind Kredit- und Debitkarten und weitere.",
+      "spbAppSwitchEnabled": "Ermöglicht geeigneten mobilen PayPal-Checkouts, in der PayPal-App fortzufahren und anschließend in die Storefront zurückzukehren. Erfordert PayPal-App-Switch-Unterstützung für Gerät und Browser des Käufers."
     },
     "hintText": {
       "landingPage": {

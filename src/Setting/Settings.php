@@ -60,6 +60,7 @@ final class Settings
     public const SPB_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'spbShowPayLater';
     public const SPB_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbCheckoutEnabled';
     public const SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbAlternativePaymentMethodsEnabled';
+    public const SPB_APP_SWITCH_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbAppSwitchEnabled';
     public const CROSS_BORDER_MESSAGING_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'crossBorderMessagingEnabled';
     public const CROSS_BORDER_BUYER_COUNTRY = self::SYSTEM_CONFIG_DOMAIN . 'crossBorderBuyerCountry';
     public const VAULTING_ENABLED_WALLET = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledWallet';
@@ -90,6 +91,7 @@ final class Settings
         self::SPB_BUTTON_COLOR => 'gold',
         self::SPB_BUTTON_SHAPE => 'sharp',
         self::SPB_SHOW_PAY_LATER => false,
+        self::SPB_APP_SWITCH_ENABLED => false,
         self::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED => true,
         self::INSTALLMENT_BANNER_CART_ENABLED => true,
         self::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED => true,
