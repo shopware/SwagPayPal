@@ -17,7 +17,7 @@ class RequireNonOptionalPropertiesProcessor
 {
     public function __invoke(Analysis $analysis): void
     {
-        /** @var OA\Schema[] $schemas */
+        /** @var list<OA\Schema> $schemas */
         $schemas = $analysis->getAnnotationsOfType(OA\Schema::class, true);
 
         foreach ($schemas as $schema) {
