@@ -25,6 +25,6 @@
     "@currents/playwright": "^2.5.0",
     "@shopware-ag/acceptance-test-suite": "12.13.4",
     "@shopware/api-client": "1.5.0",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3"
   }
 }
