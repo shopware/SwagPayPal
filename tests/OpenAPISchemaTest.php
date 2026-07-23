@@ -32,6 +32,7 @@ class OpenAPISchemaTest extends TestCase
     public const IGNORED_ROUTES_WITHOUT_SCHEMA = [
         // Storefront controller returning routes, annotations are on the routes
         '\\' . PayPalController::class . '::createOrder',
+        '\\' . PayPalController::class . '::restoreContext',
         '\\' . PayPalController::class . '::paymentMethodEligibility',
         '\\' . PayPalController::class . '::puiPaymentInstructions',
         '\\' . PayPalController::class . '::expressPrepareCheckout',
@@ -65,9 +66,7 @@ class OpenAPISchemaTest extends TestCase
         $ite = new \RecursiveIteratorIterator($dir);
         $files = new \RegexIterator($ite, self::FILE_PATTERN, \RegexIterator::GET_MATCH);
 
-        $oa = Generator::scan(\array_keys(\iterator_to_array($files)), [
-            'logger' => $logger,
-        ]);
+        $oa = (new Generator($logger))->generate(\array_keys(\iterator_to_array($files)));
 
         static::assertInstanceOf(OpenApi::class, $oa, 'OpenAPI schema could not be generated.');
 

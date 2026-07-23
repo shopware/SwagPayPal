@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Oxxo;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +30,8 @@ class OxxoOrderBuilder extends AbstractAPMOrderBuilder
         PaymentSource $paymentSource,
     ): void {
         $sourceElement = new Oxxo();
-        $this->fillPaymentSource($paymentTransaction, $order, $context, $sourceElement);
+        /** @phpstan-ignore method.deprecated */
+        $this->fillPaymentSource($paymentTransaction, $order, $context, $sourceElement, new RequestDataBag($request->request->all()));
 
         $customer = $order->getOrderCustomer();
         if ($customer === null) {
