@@ -1,3 +1,28 @@
 parameters:
     featureToggles:
         rawMessageInBaseline: false
+
+    ignoreErrors:
+        # swagger-php 6.4 (shipped by trunk) deprecates Generator::isDefault()/Generator::UNDEFINED in favour of
+        # OpenApi\Undefined and types OpenApi\Context as non-nullable. The plugin targets Shopware ~6.7, which ships
+        # the older swagger-php where the current calls are correct and OpenApi\Undefined does not exist. As the code
+        # must stay compatible with both, these version-specific findings are ignored for the trunk run only.
+        - identifier: staticMethod.deprecated
+          message: '#^Call to deprecated method isDefault\(\) of class OpenApi\\Generator:#'
+          paths:
+            - src/DevOps/OpenApi/PayPalApiStructSnakeCasePropertiesProcessor.php
+            - src/DevOps/OpenApi/RequireNonOptionalPropertiesProcessor.php
+        - identifier: classConstant.deprecated
+          message: '#^Fetching deprecated class constant UNDEFINED of class OpenApi\\Generator:#'
+          path: tests/OpenAPISchemaTest.php
+        - identifier: nullsafe.neverNull
+          message: '#^Using nullsafe (property access|method call) on non-nullable type OpenApi\\Context\.#'
+          paths:
+            - src/DevOps/OpenApi/PayPalApiStructSnakeCasePropertiesProcessor.php
+            - src/DevOps/OpenApi/RequireNonOptionalPropertiesProcessor.php
+            - tests/OpenAPISchemaTest.php
+        - identifier: varTag.type
+          message: '#^PHPDoc tag @var with type array<OpenApi\\Annotations\\(Property|Schema)> is not subtype of type list<#'
+          paths:
+            - src/DevOps/OpenApi/PayPalApiStructSnakeCasePropertiesProcessor.php
+            - src/DevOps/OpenApi/RequireNonOptionalPropertiesProcessor.php
