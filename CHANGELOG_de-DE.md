@@ -1,8 +1,10 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.7.1
+- Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)
 - Behebt ein Problem, bei dem Prüfungen zur Verfügbarkeit von PayPal-Zahlungsarten bei zustandslosen Store-API-Anfragen PHP-Sitzungen initialisierten (shopware/SwagPayPal#740)
 - Behebt ein Problem, bei dem PayPal Express Checkout in einem veralteten Offcanvas-Warenkorb die PayPal-API mit leerem Warenkorb aufrufen konnte und ohne Rückmeldung für den Kunden fehlschlug (shopware/SwagPayPal#712)
 - Behebt ein Problem, bei dem der Google Pay Button immer auf Englisch statt in der Verkaufskanal-Sprache angezeigt wurde (shopware/shopware#17804)
 - Behebt ein Problem, bei dem Kartenzahlungen ohne 3D-Secure-Daten abgelehnt wurden, obwohl `ACDC_FORCE_3DS` deaktiviert war (shopware/SwagPayPal#714)
+- Deaktiviertes „3D Secure erzwingen” erlaubt nun, dass keine 3DS-Abfrage erfolgt, wenn sie nicht erforderlich ist
 
 # 10.7.0
 - Fügt Unterstützung für PayPal App Switch hinzu (aktuell nur in den USA verfügbar)

@@ -28,6 +28,7 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V2\Order;
+use Swag\PayPal\Checkout\Exception\MissingCountryIdException;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 
 #[Package('checkout')]
@@ -173,6 +174,11 @@ class ExpressCustomerService
 
         $countryCode = $address->getCountryCode();
         $countryId = $this->getCountryId($countryCode, $context);
+
+        if (!$countryId) {
+            throw new MissingCountryIdException($order->getId(), $countryCode);
+        }
+
         $countryStateId = $this->getCountryStateId($countryId, $countryCode, $address->getAdminArea1(), $context->getContext());
         $phone = $paypal->getPhoneNumber();
 
