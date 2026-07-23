@@ -9,7 +9,7 @@ namespace Swag\PayPal\DevOps\OpenApi;
 
 use OpenApi\Analysis;
 use OpenApi\Annotations as OA;
-use OpenApi\Generator;
+use OpenApi\Undefined;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\Struct;
 use Shopware\PayPalSDK\Util\CaseConverter;
@@ -19,11 +19,11 @@ class PayPalApiStructSnakeCasePropertiesProcessor
 {
     public function __invoke(Analysis $analysis): void
     {
-        /** @var OA\Property[] $properties */
+        /** @var list<OA\Property> $properties */
         $properties = $analysis->getAnnotationsOfType(OA\Property::class);
 
         foreach ($properties as $property) {
-            if (Generator::isDefault($property->property) || !$property->_context?->namespace || !$property->_context->class || !$property->_context->property) {
+            if (Undefined::isDefault($property->property) || !$property->_context->namespace || !$property->_context->class || !$property->_context->property) {
                 continue;
             }
 

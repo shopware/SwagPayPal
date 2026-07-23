@@ -9,7 +9,7 @@ namespace Swag\PayPal\DevOps\OpenApi;
 
 use OpenApi\Analysis;
 use OpenApi\Annotations as OA;
-use OpenApi\Generator;
+use OpenApi\Undefined;
 use Shopware\Core\Framework\Log\Package;
 
 #[Package('checkout')]
@@ -17,23 +17,23 @@ class RequireNonOptionalPropertiesProcessor
 {
     public function __invoke(Analysis $analysis): void
     {
-        /** @var OA\Schema[] $schemas */
+        /** @var list<OA\Schema> $schemas */
         $schemas = $analysis->getAnnotationsOfType(OA\Schema::class, true);
 
         foreach ($schemas as $schema) {
-            if (!$schema->_context?->is('class') || !Generator::isDefault($schema->required)) {
+            if (!$schema->_context->is('class') || !Undefined::isDefault($schema->required)) {
                 continue;
             }
 
             $this->requireProps($schema);
 
-            if (!Generator::isDefault($schema->allOf)) {
+            if (!Undefined::isDefault($schema->allOf)) {
                 foreach ($schema->allOf as $item) {
                     $this->requireProps($item);
                 }
             }
 
-            if (!Generator::isDefault($schema->anyOf)) {
+            if (!Undefined::isDefault($schema->anyOf)) {
                 foreach ($schema->anyOf as $item) {
                     $this->requireProps($item);
                 }
@@ -43,13 +43,13 @@ class RequireNonOptionalPropertiesProcessor
 
     private function requireProps(OA\Schema $schema): void
     {
-        if (Generator::isDefault($schema->properties)) {
+        if (Undefined::isDefault($schema->properties)) {
             return;
         }
 
-        $required = Generator::isDefault($schema->required) ? [] : $schema->required;
+        $required = Undefined::isDefault($schema->required) ? [] : $schema->required;
         foreach ($schema->properties as $property) {
-            if (Generator::isDefault($property->property) || !Generator::isDefault($property->default)) {
+            if (Undefined::isDefault($property->property) || !Undefined::isDefault($property->default)) {
                 continue;
             }
 

@@ -14,6 +14,7 @@ use Monolog\LogRecord;
 use OpenApi\Annotations\OpenApi;
 use OpenApi\Annotations\Operation;
 use OpenApi\Generator;
+use OpenApi\Undefined;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute;
@@ -93,7 +94,7 @@ class OpenAPISchemaTest extends TestCase
         $failures = [];
 
         foreach ($this->oa->_analysis->annotations as $annotation) {
-            if (!$annotation instanceof Operation || !$annotation->_context?->class || !$annotation->_context->namespace || !$annotation->_context->method) {
+            if (!$annotation instanceof Operation || !$annotation->_context->class || !$annotation->_context->namespace || !$annotation->_context->method) {
                 continue;
             }
 
@@ -123,7 +124,7 @@ class OpenAPISchemaTest extends TestCase
             if (!\in_array($annotation->method, $routeMethods, true)) {
                 $failures[] = $fqdn . ' was expected to have a method of "' . \implode('" or "', $routeMethods) . '", but found "' . $annotation->method . '" in OpenAPI Schema';
             } else {
-                if ($annotation->method === 'GET' && $annotation->requestBody !== Generator::UNDEFINED) {
+                if ($annotation->method === 'GET' && $annotation->requestBody !== Undefined::UNDEFINED) {
                     $failures[] = $fqdn . ' is a GET-Request and was not expected to have a request body';
                 }
             }
