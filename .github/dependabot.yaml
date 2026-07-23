@@ -57,6 +57,11 @@ updates:
       all:
         patterns:
           - '*'
+    ignore:
+      # typescript is pinned to v6: typescript-eslint@8.65.0 (latest) peers typescript >=4.8.4 <6.1.0,
+      # so typescript@7 cannot resolve for type-aware linting. Drop once typescript-eslint supports v7.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
     labels:
       - 'dependencies'
       - 'javascript'
