@@ -2668,7 +2668,7 @@ export interface components {
         paypal_v2_patch: {
             op: string;
             path: string;
-            value: (unknown[] & (number | Record<string, unknown> | string | boolean | Record<string, unknown>[])) | null;
+            value: (number | Record<string, unknown> | string | boolean | Record<string, unknown>[]) | null;
             from: string;
         };
         paypal_v2_referral: {
