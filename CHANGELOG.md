@@ -1,5 +1,10 @@
-# 8.11.5
+# 8.12.0
 - Fixes an issue, where the Smart Payment Buttons failed silently when the terms and conditions were not accepted, by guiding the user to the invalid field
+- Fixes an issue, where the PayPal Express Checkout failed without customer feedback when shipping to a country that is not assigned to the sales channel (shopware/shopware#15067)
+- Fixes an issue, where PayPal Express Checkout in a stale offcanvas cart could call the PayPal API with an empty cart and fail without customer feedback (shopware/SwagPayPal#712)
+- Fixes an issue, where the Google Pay button was always displayed in English instead of the sales channel language (shopware/shopware#17804)
+- Fixes an issue, where card payments without 3D Secure data were rejected even when `ACDC_FORCE_3DS` was disabled (shopware/SwagPayPal#714)
+- Changes disabled "Enforce 3D Secure" to allow no 3DS challenge if not required
 
 # 8.11.4
 - Fixes an issue, where net prices could cause the express checkout with shipping callback enabled to fail
