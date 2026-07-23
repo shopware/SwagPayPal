@@ -13,6 +13,20 @@ updates:
     ignore:
       - dependency-name: '*jest*'
         update-types: ['version-update:semver-major']
+      # @babel/* is pinned to v7: @shopware-ag/jest-preset-sw6-admin pins @babel/core@7,
+      # so @babel/preset-env@8 / @babel/preset-typescript@8 cannot resolve (peer conflict).
+      - dependency-name: '@babel/*'
+        update-types: ['version-update:semver-major']
+      # eslint is pinned to v9: eslint-plugin-import@2.32.0 (latest) peers eslint up to ^9 only,
+      # so eslint@10 / @eslint/js@10 cannot resolve. Drop once eslint-plugin-import supports v10.
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@eslint/js'
+        update-types: ['version-update:semver-major']
+      # typescript is pinned to v5: openapi-typescript@7.13.0 (latest) peers typescript@^5.x,
+      # so typescript@6 cannot resolve. Drop once openapi-typescript supports v6.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
     labels:
       - 'dependencies'
       - 'javascript'
