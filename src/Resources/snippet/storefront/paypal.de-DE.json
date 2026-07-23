@@ -13,6 +13,7 @@
             "SWAG_PAYPAL__USER_CANCELLED": "Der Zahlungsvorgang wurde abgebrochen. Bitte versuchen Sie es noch einmal oder wählen Sie eine andere Zahlungsart.",
             "SWAG_PAYPAL__BROWSER_UNSUPPORTED": "Die gewählte Zahlungsart wird von Ihrem aktuellen Browser nicht unterstützt. Bitte versuchen Sie es mit einem anderen Browser oder wählen Sie eine andere Zahlungsart.",
             "SWAG_PAYPAL__CARD_VALIDATION_FAILED": "Die eingegebenen Kreditkartendaten sind ungültig. Bitte kontrollieren Sie Ihre Eingaben und versuchen Sie es erneut.",
+            "SWAG_PAYPAL__MISSING_COUNTRY_ID": "Lieferungen in das Land der gewählten Lieferadresse sind nicht möglich.",
             "SWAG_PAYPAL__API_POSTAL_CODE_REQUIRED": "Die eingegebene Adresse enthält keine Postleitzahl. Bitte ergänzen Sie Ihre Eingaben.",
             "SWAG_PAYPAL__API_CANNOT_BE_ZERO_OR_NEGATIVE": "Der Betrag kann nicht null oder negativ sein. Bitte versuchen Sie es mit einem Betrag größer als null oder wählen Sie eine andere Zahlungsart aus.",
             "SWAG_PAYPAL__API_SHIPPING_ADDRESS_INVALID": "Die angegebene Lieferadresse wurde vom Zahlungsanbieter nicht akzeptiert. Bitte überprüfen Sie Ihre Adresse oder wählen Sie eine andere Zahlungsart.",
