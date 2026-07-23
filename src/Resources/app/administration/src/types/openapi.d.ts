@@ -2067,6 +2067,9 @@ export interface components {
             type: string;
             code: string;
         };
+        paypal_v2_confirm_order: {
+            payment_source: components["schemas"]["paypal_v2_order_payment_source"];
+        };
         paypal_v2_eligible_methods_data: {
             eligible_methods: components["schemas"]["paypal_v2_eligible_methods_data_eligible_methods"];
             supplementary_data: components["schemas"]["paypal_v2_eligible_methods_data_supplementary_data"];
@@ -2668,7 +2671,7 @@ export interface components {
         paypal_v2_patch: {
             op: string;
             path: string;
-            value: (unknown[] & (number | Record<string, unknown> | string | boolean | Record<string, unknown>[])) | null;
+            value: (number | Record<string, unknown> | string | boolean | Record<string, unknown>[]) | null;
             from: string;
         };
         paypal_v2_referral: {
