@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\AgenticCommerce\V1\PayPalCart;
 use Swag\PayPal\AgenticCommerce\Exception\AgentException;
+use Swag\PayPal\AgenticCommerce\Routing\AgentRouteScope;
 use Swag\PayPal\AgenticCommerce\Routing\AgentSource;
 use Swag\PayPal\AgenticCommerce\SalesChannel\Response\AgentCartResponse;
 use Swag\PayPal\AgenticCommerce\Util\PayPalCartTransformer;
@@ -23,7 +24,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @internal
  */
 #[Package('checkout')]
-#[Route(defaults: ['_routeScope' => ['paypal-agent'], '_agentScope' => [AgentSource::SCOPE_CART]])]
+#[Route(defaults: ['_routeScope' => [AgentRouteScope::ID], '_agentScope' => [AgentSource::SCOPE_CART]])]
 class GetCartRoute
 {
     public function __construct(
