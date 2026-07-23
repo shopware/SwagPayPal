@@ -250,6 +250,93 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         static::assertNull($purchaseUnit->getItems());
     }
 
+    public function testGetOrderFromCartUsesTaxAdjustedCartTotalNotStaleTransactionAmount(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        $this->systemConfig->set(Settings::SUBMIT_CART, false);
+
+        // The cart transaction is calculated with the original product taxes, before a tax provider runs.
+        $cart = $this->createCart('', true, 10.0, 10.0);
+        // A tax provider (e.g. an app with net customer group) then adjusts the cart total. The transaction
+        // amount is not refreshed and stays stale - PayPal must be charged the adjusted total nonetheless.
+        $cart->setPrice($this->createCartPrice(15.0, 15.0, 15.0));
+
+        $order = $this->getBuilder()->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
+
+        $purchaseUnit = $order->getPurchaseUnits()->first();
+        static::assertNotNull($purchaseUnit);
+        static::assertSame('15.00', $purchaseUnit->getAmount()->getValue());
+    }
+
+    public function testGetOrderFromCartWithSubmittedItemsChargesTaxAdjustedTotalAndReconcilesBreakdown(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        // SUBMIT_CART is enabled by default in production, so the amount breakdown (items) is built as well.
+        $this->systemConfig->set(Settings::SUBMIT_CART, true);
+
+        // Transaction and line item carry the pre-tax-provider amounts.
+        $cart = $this->createCart('', true, 10.0, 10.0);
+        $cart->add($this->createLineItem(new CalculatedPrice(10.0, 10.0, new CalculatedTaxCollection(), new TaxRuleCollection())));
+        // A tax provider raises the cart total afterwards without refreshing the transaction or line items.
+        $cart->setPrice($this->createCartPrice(15.0, 15.0, 15.0));
+
+        $order = $this->getBuilder()->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
+
+        $purchaseUnit = $order->getPurchaseUnits()->first();
+        static::assertNotNull($purchaseUnit);
+
+        $amount = $purchaseUnit->getAmount();
+        static::assertSame('15.00', $amount->getValue());
+
+        // The breakdown must still reconcile to the adjusted top-line total (PayPal rejects mismatches).
+        $breakdown = $amount->getBreakdown();
+        static::assertNotNull($breakdown);
+        $itemTotal = $breakdown->getItemTotal();
+        $taxTotal = $breakdown->getTaxTotal();
+        $shipping = $breakdown->getShipping();
+        $handling = $breakdown->getHandling();
+        $discount = $breakdown->getDiscount();
+        static::assertNotNull($itemTotal);
+        static::assertNotNull($taxTotal);
+        static::assertNotNull($shipping);
+        static::assertNotNull($handling);
+        static::assertNotNull($discount);
+        $reconciled = (float) $itemTotal->getValue()
+            + (float) $taxTotal->getValue()
+            + (float) $shipping->getValue()
+            + (float) $handling->getValue()
+            - (float) $discount->getValue();
+        static::assertEqualsWithDelta(15.0, $reconciled, 0.001);
+    }
+
+    public function testGetOrderUsesTaxAdjustedOrderTotalNotStaleTransactionAmount(): void
+    {
+        $this->systemConfig->set(Settings::SUBMIT_CART, false);
+
+        // The order total (860.00) reflects the tax provider adjustment, but the order transaction was
+        // persisted with the pre-adjustment amount. PayPal must be charged the order total, not the transaction.
+        $order = $this->createOrder();
+        $orderTransaction = $this->createOrderTransaction();
+        $orderTransaction->setAmount(new CalculatedPrice(
+            700.0,
+            800.0,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection()
+        ));
+
+        $payPalOrder = $this->getBuilder()->getOrder(
+            new PaymentTransactionStruct($orderTransaction->getId()),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
+        );
+
+        $purchaseUnit = $payPalOrder->getPurchaseUnits()->first();
+        static::assertNotNull($purchaseUnit);
+        static::assertSame('860.00', $purchaseUnit->getAmount()->getValue());
+    }
+
     public function testGetOrderWithProductWithZeroPrice(): void
     {
         $cart = $this->createCartWithLineItem(new CalculatedPrice(0, 0, new CalculatedTaxCollection(), new TaxRuleCollection()));

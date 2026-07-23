@@ -113,8 +113,8 @@ abstract class AbstractOrderBuilder
         $items = $this->submitCart($order->getSalesChannelId()) ? $this->itemListProvider->getItemList($currency, $order) : null;
         $taxStatus = $order->getTaxStatus() ?? $order->getPrice()->getTaxStatus();
 
-        return $this->purchaseUnitProvider->createPurchaseUnit(
-            $orderTransaction->getAmount(),
+        return $this->purchaseUnitProvider->createPurchaseUnitFromPrice(
+            $order->getPrice(),
             $order->getShippingCosts(),
             null,
             $items,
@@ -130,8 +130,7 @@ abstract class AbstractOrderBuilder
         SalesChannelContext $salesChannelContext,
         Cart $cart,
     ): PurchaseUnit {
-        $cartTransaction = $cart->getTransactions()->first();
-        if ($cartTransaction === null) {
+        if ($cart->getTransactions()->first() === null) {
             throw PaymentException::invalidTransaction('');
         }
 
@@ -139,8 +138,8 @@ abstract class AbstractOrderBuilder
             ? $this->itemListProvider->getItemListFromCart($salesChannelContext->getCurrency(), $cart)
             : null;
 
-        return $this->purchaseUnitProvider->createPurchaseUnit(
-            $cartTransaction->getAmount(),
+        return $this->purchaseUnitProvider->createPurchaseUnitFromPrice(
+            $cart->getPrice(),
             $cart->getShippingCosts(),
             $salesChannelContext->getCustomer(),
             $items,

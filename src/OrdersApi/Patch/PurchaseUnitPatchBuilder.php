@@ -50,8 +50,8 @@ class PurchaseUnitPatchBuilder
 
         $taxStatus = $order->getTaxStatus() ?? $order->getPrice()->getTaxStatus();
 
-        $purchaseUnit = $this->purchaseUnitProvider->createPurchaseUnit(
-            $orderTransaction->getAmount(),
+        $purchaseUnit = $this->purchaseUnitProvider->createPurchaseUnitFromPrice(
+            $order->getPrice(),
             $order->getShippingCosts(),
             $customer,
             $itemList,
