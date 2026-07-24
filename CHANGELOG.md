@@ -1,4 +1,4 @@
-# 10.7.1
+# 10.8.0
 - Fixes an issue, where the PayPal Express Checkout failed without customer feedback when shipping to a country that is not assigned to the sales channel (shopware/shopware#15067)
 - Fixes an issue, where PayPal eligibility checks initialized PHP sessions during stateless Store API requests (shopware/SwagPayPal#740)
 - Fixes an issue, where PayPal Express Checkout in a stale offcanvas cart could call the PayPal API with an empty cart and fail without customer feedback (shopware/SwagPayPal#712)
