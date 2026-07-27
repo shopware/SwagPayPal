@@ -8,6 +8,7 @@
 namespace Swag\PayPal\OrdersApi\Builder\Util;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
@@ -50,8 +51,8 @@ class PurchaseUnitProvider
         $this->systemConfigService = $systemConfigService;
     }
 
-    public function createPurchaseUnit(
-        CalculatedPrice $totalAmount,
+    public function createPurchaseUnitFromPrice(
+        CartPrice $price,
         CalculatedPrice $shippingCosts,
         ?CustomerEntity $customer,
         ?ItemCollection $itemList,
@@ -67,8 +68,8 @@ class PurchaseUnitProvider
             $purchaseUnit->setItems($itemList);
         }
 
-        $amount = $this->amountProvider->createAmount(
-            $totalAmount,
+        $amount = $this->amountProvider->createAmountFromPrice(
+            $price,
             $shippingCosts,
             $currency,
             $purchaseUnit,
@@ -98,6 +99,42 @@ class PurchaseUnitProvider
         }
 
         return $purchaseUnit;
+    }
+
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed. Use {@see PurchaseUnitProvider::createPurchaseUnitFromPrice()} instead.
+     */
+    public function createPurchaseUnit(
+        CalculatedPrice $totalAmount,
+        CalculatedPrice $shippingCosts,
+        ?CustomerEntity $customer,
+        ?ItemCollection $itemList,
+        CurrencyEntity $currency,
+        Context $context,
+        bool $isNet,
+        ?OrderEntity $order = null,
+        ?OrderTransactionEntity $orderTransaction = null,
+    ): PurchaseUnit {
+        $price = new CartPrice(
+            $totalAmount->getTotalPrice(),
+            $totalAmount->getTotalPrice(),
+            $totalAmount->getTotalPrice(),
+            $totalAmount->getCalculatedTaxes(),
+            $totalAmount->getTaxRules(),
+            CartPrice::TAX_STATE_GROSS,
+        );
+
+        return $this->createPurchaseUnitFromPrice(
+            $price,
+            $shippingCosts,
+            $customer,
+            $itemList,
+            $currency,
+            $context,
+            $isNet,
+            $order,
+            $orderTransaction,
+        );
     }
 
     private function createShipping(?CustomerEntity $customer, ?OrderEntity $order): ?Shipping
