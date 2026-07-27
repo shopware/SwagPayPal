@@ -187,6 +187,30 @@ parameters:
           message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
           path: '**/*.php'
 
+        # swagger-php 6.4 (Shopware trunk matrix) moves the "not set" sentinel from OpenApi\Generator to
+        # OpenApi\Undefined and makes OpenApi\Context non-nullable. The v6.7.0.0 matrix still ships the older
+        # API, so we keep the version-agnostic calls (Generator::isDefault()/UNDEFINED and nullsafe _context)
+        # and suppress the 6.4-only notices here. These stay unmatched on 6.7.0.0, which is fine because CI
+        # runs with reportUnmatchedIgnoredErrors=false.
+        - # swagger-php 6.4 deprecation - Generator::isDefault() moved to OpenApi\Undefined::isDefault()
+            identifier: staticMethod.deprecated
+            message: '#Call to deprecated method isDefault\(\) of class OpenApi\\Generator#'
+            paths:
+                - src/DevOps/OpenApi
+                - tests/OpenAPISchemaTest.php
+
+        - # swagger-php 6.4 deprecation - Generator::UNDEFINED moved to OpenApi\Undefined::UNDEFINED
+            identifier: classConstant.deprecated
+            message: '#Fetching deprecated class constant UNDEFINED of class OpenApi\\Generator#'
+            path: tests/OpenAPISchemaTest.php
+
+        - # swagger-php 6.4 makes OpenApi\Context non-nullable; the nullsafe operator is still required on 6.7.0.0
+            identifier: nullsafe.neverNull
+            message: '#Using nullsafe (property access|method call) on non-nullable type OpenApi\\Context#'
+            paths:
+                - src/DevOps/OpenApi
+                - tests/OpenAPISchemaTest.php
+
 rules:
     # Shopware core rules
     - Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule

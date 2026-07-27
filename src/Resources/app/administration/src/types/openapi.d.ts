@@ -590,7 +590,7 @@ export interface components {
         };
         swag_paypal_setting_merchant_information: {
             merchantIntegrations: components["schemas"]["paypal_v1_merchant_integrations"] | null;
-            /** @description string> key: paymentMethodId, value: capability (see AbstractMethodData) */
+            /** @description key: paymentMethodId, value: capability (see AbstractMethodData) */
             capabilities: {
                 [key: string]: string;
             };
@@ -2671,7 +2671,7 @@ export interface components {
         paypal_v2_patch: {
             op: string;
             path: string;
-            value: (unknown[] & (number | Record<string, unknown> | string | boolean | Record<string, unknown>[])) | null;
+            value: (number | Record<string, unknown> | string | boolean | Record<string, unknown>[]) | null;
             from: string;
         };
         paypal_v2_referral: {
