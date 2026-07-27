@@ -194,7 +194,7 @@ trait OrderTransactionTrait
             [
                 'id' => $orderId,
                 'orderNumber' => $orderNumber,
-                'price' => new CartPrice(10, 10, 10, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_NET),
+                'price' => new CartPrice(20028, 20028, 20028, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_NET),
                 'shippingCosts' => new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()),
                 'stateId' => $this->getContainer()->get(InitialStateIdLoader::class)->get(OrderStates::STATE_MACHINE),
                 'versionId' => Defaults::LIVE_VERSION,

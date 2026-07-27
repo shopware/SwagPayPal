@@ -18,6 +18,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @internal
@@ -73,10 +74,7 @@ class GenerateOpenApi extends Command
         $openApi = $generator->generate([
             self::ROOT_DIR . '/src/RestApi',
             self::ROOT_DIR . '/src/Checkout',
-            Util::finder(
-                self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct',
-                [self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct/AgenticCommerce'],
-            ),
+            $this->paypalSdkStructFinder(),
         ])?->toJson();
 
         if ($openApi === null) {
@@ -108,10 +106,7 @@ class GenerateOpenApi extends Command
             self::ROOT_DIR . '/src/Pos',
             self::ROOT_DIR . '/src/Setting',
             self::ROOT_DIR . '/src/Webhook',
-            Util::finder(
-                self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct',
-                [self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct/AgenticCommerce'],
-            ),
+            $this->paypalSdkStructFinder(),
             __DIR__ . '/Polyfill',
         ])?->toJson();
 
@@ -139,5 +134,14 @@ class GenerateOpenApi extends Command
             ->add(new RequireNonOptionalPropertiesProcessor());
 
         $generator->setProcessorPipeline($pipeline);
+    }
+
+    private function paypalSdkStructFinder(): Finder
+    {
+        return (new Finder())
+            ->files()
+            ->name('*.php')
+            ->in(self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct')
+            ->exclude('AgenticCommerce');
     }
 }

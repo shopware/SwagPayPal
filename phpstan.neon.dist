@@ -117,6 +117,17 @@ parameters:
             message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
             path: '**/*.php'
 
+        - # 6.8 deprecation - EntitySearchResult's collection shortcuts (first/get/getElements/reduce/...) move to
+          # getEntities()->...(); it is still the repository search result type on 6.7, so we keep using them.
+            identifier: method.deprecated
+            message: '#Call to deprecated method \w+\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 - Will be removed\. Use getEntities\(\)->#'
+            path: '**/*.php'
+
+        - # 6.8 deprecation - EntitySearchResult constructor signature changes in v6.8; kept for 6.7 compatibility
+            identifier: method.deprecated
+            message: '#Call to deprecated method __construct\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:#'
+            path: '**/*.php'
+
         - # 6.8 deprecation - DAL field API will return static natively
             identifier: method.deprecated
             message: '#Call to deprecated method (addFlags|removeFlag)\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Field\\Field\:\s+tag\:v6\.8\.0 - reason\:return-type-change - Will return static natively#'
@@ -210,6 +221,30 @@ parameters:
         - # 6.8 deprecation - reason:new-optional-parameter - can safely be ignored, as the new parameter is optional and has a default value
             identifier: method.deprecated
             message: '#Call to deprecated method scope\(\) of class Shopware\\Core\\Framework\\Context#'
+
+        # swagger-php 6.4 (Shopware trunk matrix) moves the "not set" sentinel from OpenApi\Generator to
+        # OpenApi\Undefined and makes OpenApi\Context non-nullable. The v6.7.0.0 matrix still ships the older
+        # API, so we keep the version-agnostic calls (Generator::isDefault()/UNDEFINED and nullsafe _context)
+        # and suppress the 6.4-only notices here. These stay unmatched on 6.7.0.0, which is fine because CI
+        # runs with reportUnmatchedIgnoredErrors=false.
+        - # swagger-php 6.4 deprecation - Generator::isDefault() moved to OpenApi\Undefined::isDefault()
+            identifier: staticMethod.deprecated
+            message: '#Call to deprecated method isDefault\(\) of class OpenApi\\Generator#'
+            paths:
+                - src/DevOps/OpenApi
+                - tests/OpenAPISchemaTest.php
+
+        - # swagger-php 6.4 deprecation - Generator::UNDEFINED moved to OpenApi\Undefined::UNDEFINED
+            identifier: classConstant.deprecated
+            message: '#Fetching deprecated class constant UNDEFINED of class OpenApi\\Generator#'
+            path: tests/OpenAPISchemaTest.php
+
+        - # swagger-php 6.4 makes OpenApi\Context non-nullable; the nullsafe operator is still required on 6.7.0.0
+            identifier: nullsafe.neverNull
+            message: '#Using nullsafe (property access|method call) on non-nullable type OpenApi\\Context#'
+            paths:
+                - src/DevOps/OpenApi
+                - tests/OpenAPISchemaTest.php
 
 rules:
     # Shopware core rules
