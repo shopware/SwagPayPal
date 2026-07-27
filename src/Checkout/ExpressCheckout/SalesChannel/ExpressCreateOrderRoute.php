@@ -17,7 +17,6 @@ use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
-use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -71,9 +70,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
             $this->logger->debug('Started');
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
 
-            if ($this->cartPriceService->hasZeroPrice($cart, $salesChannelContext)) {
-                throw new OrderZeroValueException();
-            }
+            $this->cartPriceService->validateProcessable($cart, $salesChannelContext);
 
             $this->logger->debug('Building order');
             $order = $this->paypalOrderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag($request->request->all()));

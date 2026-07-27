@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Cart\AbstractCartPersister;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartCalculator;
 use Shopware\Core\Checkout\Cart\CartFactory;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemRemoveRoute;
@@ -49,6 +50,7 @@ class ExpressCreateOrderRouteTaxedCartTest extends TestCase
             ->willReturn('express-token');
 
         $cart = new Cart('express-token');
+        $cart->add(new LineItem('test', LineItem::PRODUCT_LINE_ITEM_TYPE, 'test'));
 
         $taxProviderProcessor = $this->createMock(TaxProviderProcessor::class);
         $taxProviderProcessor
@@ -59,9 +61,9 @@ class ExpressCreateOrderRouteTaxedCartTest extends TestCase
         $cartPriceService = $this->createMock(CartPriceService::class);
         $cartPriceService
             ->expects(static::once())
-            ->method('hasZeroPrice')
-            ->with($cart)
-            ->willReturn(true);
+            ->method('validateProcessable')
+            ->with($cart, $salesChannelContext)
+            ->willThrowException(new OrderZeroValueException());
 
         $route = new ExpressCreateOrderRoute(
             $this->createTaxedCartService($cart, $salesChannelContext, $taxProviderProcessor),

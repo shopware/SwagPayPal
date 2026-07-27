@@ -23,13 +23,10 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Util\Availability\AvailabilityService;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
-use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[Package('checkout')]
-#[Route(defaults: ['_routeScope' => ['store-api']])]
 class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 {
     private AbstractPaymentMethodRoute $decorated;
@@ -50,6 +47,8 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
     private EntityRepository $orderRepository;
 
+    private MethodEligibilityStateService $methodEligibilityStateService;
+
     /**
      * @internal
      */
@@ -63,6 +62,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         RequestStack $requestStack,
         AvailabilityService $availabilityService,
         EntityRepository $orderRepository,
+        MethodEligibilityStateService $methodEligibilityStateService,
     ) {
         $this->decorated = $decorated;
         $this->methodDataRegistry = $methodDataRegistry;
@@ -73,6 +73,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         $this->requestStack = $requestStack;
         $this->availabilityService = $availabilityService;
         $this->orderRepository = $orderRepository;
+        $this->methodEligibilityStateService = $methodEligibilityStateService;
     }
 
     public function getDecorated(): AbstractPaymentMethodRoute
@@ -80,7 +81,6 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         return $this->decorated;
     }
 
-    #[Route(path: '/store-api/payment-method', name: 'store-api.payment.method', defaults: ['_entity' => 'payment_method'], methods: ['GET', 'POST'])]
     public function load(Request $request, SalesChannelContext $context, Criteria $criteria): PaymentMethodRouteResponse
     {
         $response = $this->getDecorated()->load($request, $context, $criteria);
@@ -109,12 +109,12 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
             return $response;
         }
 
-        try {
-            $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
-            if (\is_array($ineligiblePaymentMethods)) {
-                $this->removePaymentMethods($response->getPaymentMethods(), $ineligiblePaymentMethods);
-            }
-        } catch (SessionNotFoundException $e) {
+        $ineligiblePaymentMethods = $this->methodEligibilityStateService->getIneligiblePaymentMethods(
+            $this->requestStack->getCurrentRequest(),
+            $context,
+        );
+        if ($ineligiblePaymentMethods !== []) {
+            $this->removePaymentMethods($response->getPaymentMethods(), $ineligiblePaymentMethods);
         }
 
         $order = $this->checkOrder($request, $context->getContext());
