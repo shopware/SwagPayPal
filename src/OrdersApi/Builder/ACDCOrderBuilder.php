@@ -22,6 +22,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\StoredCredential;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Verification;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
 #[Package('checkout')]
@@ -51,7 +52,11 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
         $card->setExperienceContext($this->createExperienceContext($salesChannelContext, $paymentTransaction));
 
         $attributes = new Attributes();
-        $attributes->setVerification(new Verification());
+        $verification = new Verification();
+        if (!$this->systemConfigService->getBool(Settings::ACDC_FORCE_3DS, $salesChannelContext->getSalesChannelId())) {
+            $verification->setMethod(Verification::METHOD_SCA_WHEN_REQUIRED);
+        }
+        $attributes->setVerification($verification);
         $card->setAttributes($attributes);
 
         $paymentSource->setCard($card);
@@ -90,7 +95,11 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
         $card->setExperienceContext($this->createExperienceContext($salesChannelContext, $cart));
 
         $attributes = new Attributes();
-        $attributes->setVerification(new Verification());
+        $verification = new Verification();
+        if (!$this->systemConfigService->getBool(Settings::ACDC_FORCE_3DS, $salesChannelContext->getSalesChannelId())) {
+            $verification->setMethod(Verification::METHOD_SCA_WHEN_REQUIRED);
+        }
+        $attributes->setVerification($verification);
         $card->setAttributes($attributes);
 
         $paymentSource->setCard($card);

@@ -1,5 +1,10 @@
-# 8.11.5
+# 8.12.0
 - Behebt ein Problem, bei dem die Smart Payment Buttons ohne sichtbare Rückmeldung fehlschlugen, wenn die AGB nicht akzeptiert wurden, indem der Nutzer nun zum betreffenden Feld geführt wird
+- Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)
+- Behebt ein Problem, bei dem PayPal Express Checkout in einem veralteten Offcanvas-Warenkorb die PayPal-API mit leerem Warenkorb aufrufen konnte und ohne Rückmeldung für den Kunden fehlschlug (shopware/SwagPayPal#712)
+- Behebt ein Problem, bei dem der Google Pay Button immer auf Englisch statt in der Verkaufskanal-Sprache angezeigt wurde (shopware/shopware#17804)
+- Behebt ein Problem, bei dem Kartenzahlungen ohne 3D-Secure-Daten abgelehnt wurden, obwohl `ACDC_FORCE_3DS` deaktiviert war (shopware/SwagPayPal#714)
+- Deaktiviertes „3D Secure erzwingen” erlaubt nun, dass keine 3DS-Abfrage erfolgt, wenn sie nicht erforderlich ist
 
 # 8.11.4
 - Behebt ein Problem, bei dem Netto-Preise den Express Checkout mit aktivem Versand-Callback fehlschlagen lies

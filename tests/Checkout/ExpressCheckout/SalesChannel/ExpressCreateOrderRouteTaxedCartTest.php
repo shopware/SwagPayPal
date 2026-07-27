@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Cart\AbstractCartPersister;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartCalculator;
 use Shopware\Core\Checkout\Cart\CartFactory;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemRemoveRoute;
@@ -25,6 +26,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -46,6 +48,7 @@ class ExpressCreateOrderRouteTaxedCartTest extends TestCase
             ->willReturn('express-token');
 
         $cart = new Cart('express-token');
+        $cart->add(new LineItem('test', LineItem::PRODUCT_LINE_ITEM_TYPE, 'test'));
 
         $taxProviderProcessor = $this->createMock(TaxProviderProcessor::class);
         $taxProviderProcessor
@@ -62,10 +65,13 @@ class ExpressCreateOrderRouteTaxedCartTest extends TestCase
             ->with($cart, $salesChannelContext, static::isInstanceOf(RequestDataBag::class))
             ->willThrowException($exception);
 
+        $cartPriceService = $this->createMock(CartPriceService::class);
+
         $route = new ExpressCreateOrderRoute(
             $this->createTaxedCartService($cart, $salesChannelContext, $taxProviderProcessor),
             $payPalOrderBuilder,
             $this->createMock(OrderResource::class),
+            $cartPriceService,
             $this->createMock(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
             new NullLogger(),

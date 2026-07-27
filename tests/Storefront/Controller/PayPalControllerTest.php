@@ -13,11 +13,13 @@ use Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
@@ -61,6 +63,8 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(AbstractExpressShippingCallbackRoute::class),
                 $this->createMock(AbstractContextSwitchRoute::class),
                 $this->createMock(AbstractCartDeleteRoute::class),
+                $this->createMock(CartService::class),
+                new CartPriceService(),
                 $this->createMock(AbstractClearVaultRoute::class),
                 new Logger('test', [$this->logHandler]),
             ])

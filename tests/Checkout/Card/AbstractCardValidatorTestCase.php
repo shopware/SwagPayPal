@@ -57,6 +57,7 @@ abstract class AbstractCardValidatorTestCase extends TestCase
             [false, CardValidatorInterface::LIABILITY_SHIFT_NO, CardValidatorInterface::ENROLLMENT_STATUS_UNAVAILABLE, null, true],
             [false, CardValidatorInterface::LIABILITY_SHIFT_UNKNOWN, CardValidatorInterface::ENROLLMENT_STATUS_UNAVAILABLE, null, false],
             [false, CardValidatorInterface::LIABILITY_SHIFT_NO, CardValidatorInterface::ENROLLMENT_STATUS_BYPASSED, null, true],
+            [false, CardValidatorInterface::LIABILITY_SHIFT_NO, null, null, true],
             [false, CardValidatorInterface::LIABILITY_SHIFT_UNKNOWN, null, null, false],
 
             [true, CardValidatorInterface::LIABILITY_SHIFT_POSSIBLE, CardValidatorInterface::ENROLLMENT_STATUS_READY, CardValidatorInterface::AUTHENTICATION_STATUS_SUCCESSFUL, true],
@@ -72,6 +73,7 @@ abstract class AbstractCardValidatorTestCase extends TestCase
             [true, CardValidatorInterface::LIABILITY_SHIFT_NO, CardValidatorInterface::ENROLLMENT_STATUS_UNAVAILABLE, null, false],
             [true, CardValidatorInterface::LIABILITY_SHIFT_UNKNOWN, CardValidatorInterface::ENROLLMENT_STATUS_UNAVAILABLE, null, false],
             [true, CardValidatorInterface::LIABILITY_SHIFT_NO, CardValidatorInterface::ENROLLMENT_STATUS_BYPASSED, null, false],
+            [true, CardValidatorInterface::LIABILITY_SHIFT_NO, null, null, false],
             [true, CardValidatorInterface::LIABILITY_SHIFT_UNKNOWN, null, null, false],
         ];
     }
