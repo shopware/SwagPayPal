@@ -86,18 +86,14 @@ class CartValidator implements CartValidatorInterface
         }
 
         if ($this->requestStack->getCurrentRequest()?->hasSession(true)) {
-            try {
-                    $ineligiblePaymentMethods = $this->methodEligibilityStateService->getIneligiblePaymentMethods(
-                    $this->requestStack->getCurrentRequest(),
-                    $context,
-                );
-                if (\in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
-                    /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
-                    $errors->add(new PaymentMethodBlockedError($name, 'ineligible', $id));
+            $ineligiblePaymentMethods = $this->methodEligibilityStateService->getIneligiblePaymentMethods(
+                $this->requestStack->getCurrentRequest(),
+                $context,
+            );
+            if (\in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
+                /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
+                $errors->add(new PaymentMethodBlockedError($name, 'ineligible', $id));
 
-                    return;
-                }
-            } catch (SessionNotFoundException) {
                 return;
             }
         }

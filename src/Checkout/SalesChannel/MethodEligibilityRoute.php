@@ -98,7 +98,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
             $salesChannelContext instanceof SalesChannelContext ? $salesChannelContext : null,
             $handlers,
         );
-        $this->logger->info('Removed ineligible PayPal payment methods from session', ['handlers' => $handlers]);
+        $this->logger->info('Removed ineligible PayPal payment methods from sales channel context', ['handlers' => $handlers]);
 
         return new NoContentResponse();
     }
