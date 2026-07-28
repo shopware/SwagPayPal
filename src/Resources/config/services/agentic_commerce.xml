@@ -114,6 +114,13 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="Swag\PayPal\AgenticCommerce\Tax\AgenticTaxDetector"
+                 decorates="Shopware\Core\Checkout\Cart\Tax\TaxDetector"
+                 decoration-priority="-1000">
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Tax\AgenticTaxDetector.inner"/>
+            <argument type="service" id="request_stack"/>
+        </service>
+
         <service id="swag.paypal.honey_webhook" class="GuzzleHttp\Client" lazy="true">
             <argument type="collection">
                 <argument key="base_uri">https://d.joinhoney.com/</argument>

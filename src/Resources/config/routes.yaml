@@ -3,7 +3,7 @@ swag_paypal.administration:
     type: attribute
 
 swag_paypal.agentic_commerce_controller:
-    resource: ../../AgenticCommerce/**/*Controller.
+    resource: ../../AgenticCommerce/**/*Controller.php
     type: attribute
 
 swag_paypal.agentic_commerce_route:
