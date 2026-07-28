@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Cart\Error\PaymentMethodBlockedError;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
@@ -59,39 +60,60 @@ class MethodEligibilityRouteTest extends TestCase
         $systemConfig->set(Settings::CLIENT_SECRET, 'test');
     }
 
-    public function testStoreApiPaymentMethodRouteDoesNotUseEligibilitySession(): void
+    public function testFilterPaymentMethodRoute(): void
     {
         $this->browser->request(Request::METHOD_GET, '/store-api/payment-method', ['onlyAvailable' => true]);
-        static::assertSame(Response::HTTP_OK, $this->browser->getResponse()->getStatusCode());
+        $response = $this->getJsonResponse();
+        static::assertContains('a_c_d_c_handler', \array_column($response['elements'], 'shortName'));
 
         $this->browser->request(Request::METHOD_POST, '/store-api/paypal/payment-method-eligibility', ['paymentMethods' => ['CARD', 'SEPA']]);
         static::assertSame(Response::HTTP_NO_CONTENT, $this->browser->getResponse()->getStatusCode());
 
         $this->browser->request(Request::METHOD_GET, '/store-api/payment-method', ['onlyAvailable' => true]);
-        static::assertSame(Response::HTTP_OK, $this->browser->getResponse()->getStatusCode());
+        $response = $this->getJsonResponse();
+        static::assertNotContains('a_c_d_c_handler', \array_column($response['elements'], 'shortName'));
 
         $this->browser->request(Request::METHOD_POST, '/store-api/paypal/payment-method-eligibility', ['paymentMethods' => []]);
         static::assertSame(Response::HTTP_NO_CONTENT, $this->browser->getResponse()->getStatusCode());
 
         $this->browser->request(Request::METHOD_GET, '/store-api/payment-method', ['onlyAvailable' => true]);
-        static::assertSame(Response::HTTP_OK, $this->browser->getResponse()->getStatusCode());
+        $response = $this->getJsonResponse();
+        static::assertContains('a_c_d_c_handler', \array_column($response['elements'], 'shortName'));
     }
 
-    public function testStoreApiCartDoesNotUseEligibilitySession(): void
+    public function testFilterCart(): void
     {
         $this->browser->request(Request::METHOD_GET, '/store-api/checkout/cart');
-        static::assertSame(Response::HTTP_OK, $this->browser->getResponse()->getStatusCode());
+        $response = $this->getJsonResponse();
+        static::assertCount(0, $response['errors']);
 
         $this->browser->request(Request::METHOD_POST, '/store-api/paypal/payment-method-eligibility', ['paymentMethods' => ['CARD', 'SEPA']]);
         static::assertSame(Response::HTTP_NO_CONTENT, $this->browser->getResponse()->getStatusCode());
 
         $this->browser->request(Request::METHOD_GET, '/store-api/checkout/cart');
-        static::assertSame(Response::HTTP_OK, $this->browser->getResponse()->getStatusCode());
+        $response = $this->getJsonResponse();
+        static::assertCount(1, $response['errors']);
+        /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
+        static::assertSame((new PaymentMethodBlockedError('', 'test', ''))->getMessageKey(), \current($response['errors'])['messageKey']);
 
         $this->browser->request(Request::METHOD_POST, '/store-api/paypal/payment-method-eligibility', ['paymentMethods' => []]);
         static::assertSame(Response::HTTP_NO_CONTENT, $this->browser->getResponse()->getStatusCode());
 
         $this->browser->request(Request::METHOD_GET, '/store-api/checkout/cart');
-        static::assertSame(Response::HTTP_OK, $this->browser->getResponse()->getStatusCode());
+        $response = $this->getJsonResponse();
+        static::assertCount(0, $response['errors']);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getJsonResponse(): array
+    {
+        $content = $this->browser->getResponse()->getContent();
+        if (!$content) {
+            static::fail('Could not get response content');
+        }
+
+        return \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
     }
 }

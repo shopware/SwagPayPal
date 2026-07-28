@@ -88,10 +88,6 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
             }
         }
 
-        if (!$request->hasSession(true)) {
-            return new NoContentResponse();
-        }
-
         $salesChannelContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
         $this->methodEligibilityStateService->setIneligiblePaymentMethods(
             $request,

@@ -78,14 +78,12 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
             return $this->removeAllPaymentMethods($response);
         }
 
-        if ($this->requestStack->getCurrentRequest()?->hasSession(true)) {
-            $ineligiblePaymentMethods = $this->methodEligibilityStateService->getIneligiblePaymentMethods(
-                $this->requestStack->getCurrentRequest(),
-                $context,
-            );
-            if ($ineligiblePaymentMethods !== []) {
-                $response = $this->removePaymentMethods($response, $ineligiblePaymentMethods);
-            }
+        $ineligiblePaymentMethods = $this->methodEligibilityStateService->getIneligiblePaymentMethods(
+            $this->requestStack->getCurrentRequest(),
+            $context,
+        );
+        if ($ineligiblePaymentMethods !== []) {
+            $response = $this->removePaymentMethods($response, $ineligiblePaymentMethods);
         }
 
         $order = $this->checkOrder($request, $context->getContext());
