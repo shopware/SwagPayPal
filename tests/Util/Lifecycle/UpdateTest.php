@@ -70,7 +70,6 @@ use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use Symfony\Component\Routing\Router;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -526,8 +525,10 @@ class UpdateTest extends TestCase
         ?WebhookService $webhookService = null,
         ?PosWebhookService $posWebhookService = null,
     ): Update {
-        /** @var InformationDefaultService|null $informationDefaultService */
         $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);
+
+        static::assertInstanceOf(InformationDefaultService::class, $informationDefaultService);
+
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry($this->paymentMethodRepository, $this->getContainer());
 
         return new Update(
@@ -573,8 +574,9 @@ class UpdateTest extends TestCase
     private function createPosWebhookService(SystemConfigService $systemConfigService): PosWebhookService
     {
         $webhookRegistry = new PosWebhookRegistry(new \ArrayObject([]));
-        /** @var Router $router */
         $router = $this->getContainer()->get('router');
+
+        static::assertInstanceOf(RouterInterface::class, $router);
 
         return new PosWebhookService(
             new SubscriptionResource(new PosClientFactoryMock()),

@@ -5,6 +5,8 @@
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
     <import resource="../../Administration/**/*Controller.php" type="attribute"/>
+    <import resource="../../AgenticCommerce/*Controller.php" type="attribute"/>
+    <import resource="../../AgenticCommerce/**/*Route.php" type="attribute"/>
     <import resource="../../Checkout/**/*Controller.php" type="attribute"/>
     <import resource="../../Checkout/**/*Route.php" type="attribute"/>
     <import resource="../../Dispute/**/*Controller.php" type="attribute"/>

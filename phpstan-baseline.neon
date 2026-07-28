@@ -416,3 +416,71 @@ parameters:
 			message: '#^Call to static method getContainer\(\) of internal class ShopwarePluginClassTest\.$#'
 			count: 2
 			path: tests/ShopwarePluginClassTest.php
+
+		-
+			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgenticCommerce\\Routing\\AgentRequestContextResolver\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			count: 1
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
+			count: 1
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: '#^Call to method get\(\) of internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgenticCommerce\\Util\\FaviconLoader\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			count: 1
+			path: src/AgenticCommerce/Util/FaviconLoader.php
+
+		-
+			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
+			count: 1
+			path: src/AgenticCommerce/Util/FaviconLoader.php
+
+		-
+			message: '#^Call to method get\(\) of internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/AgenticCommerce/Util/FaviconLoader.php
+
+		-
+			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
+			count: 1
+			path: src/AgenticCommerce/SalesChannel/AbstractAgenticCommerceRoute.php
+
+		-
+			message: '#^Call to method get\(\) of internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface from outside its root namespace Shopware\.$#'
+			count: 1
+			path: src/AgenticCommerce/SalesChannel/AbstractAgenticCommerceRoute.php
+
+		-
+			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgenticCommerce\\SalesChannel\\UpdateCartRoute\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			count: 1
+			path: src/AgenticCommerce/SalesChannel/UpdateCartRoute.php
+
+		-
+			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
+			count: 1
+			path: src/AgenticCommerce/SalesChannel/UpdateCartRoute.php
+
+		-
+			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgenticCommerce\\SalesChannel\\CreateCartRoute\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			count: 1
+			path: src/AgenticCommerce/SalesChannel/CreateCartRoute.php
+
+		-
+			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
+			count: 1
+			path: src/AgenticCommerce/SalesChannel/CreateCartRoute.php
+
+		-
+			message: '''
+				#^Call to deprecated method getDefaults\(\) of class Symfony\\Component\\Routing\\Attribute\\Route\:
+				Use the \"defaults\" property instead$#
+			'''
+			count: 2
+			path: tests/AgenticCommerce/SalesChannel/DefaultRouteScopeTest.php

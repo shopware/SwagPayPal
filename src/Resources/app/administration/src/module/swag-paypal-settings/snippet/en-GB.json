@@ -96,6 +96,10 @@
         "unknown": "Loading...",
         "missing": "Not registered",
         "invalid": "Registered, but possible domain mismatch",
+        "valid": "Registered"
+      },
+      "honey": {
+        "info": "The webhook is used for registration. It transmits all the data required to activate and use the sales channel.",
         "valid": "Registered",
         "disabled": "Disabled"
       }

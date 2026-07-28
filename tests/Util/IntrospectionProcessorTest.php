@@ -16,6 +16,9 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\Kernel;
+use Swag\PayPal\AgenticCommerce\Exception\AgentException;
+use Swag\PayPal\AgenticCommerce\Struct\V1\AgentErrorDetail;
+use Swag\PayPal\AgenticCommerce\Struct\V1\AgentErrorDetailCollection;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\RestApi\Client\AbstractClient;
@@ -275,6 +278,44 @@ class IntrospectionProcessorTest extends TestCase
                 'message' => 'The error "test-name" occurred with the following message: test-message',
                 'parameters' => ['name' => 'test-name', 'message' => 'test-message'],
                 'errorCode' => 'SWAG_PAYPAL__POS_EXCEPTION',
+            ]],
+        ];
+
+        yield 'AgentException' => [
+            ['exception' => new AgentException(
+                500,
+                'TEST_ERROR',
+                'Test error message',
+                [],
+                new AgentErrorDetailCollection([
+                    (new AgentErrorDetail())->assign([
+                        'field' => 'field1',
+                        'issue' => 'issue1',
+                        'description' => 'description1',
+                    ]),
+                    (new AgentErrorDetail())->assign([
+                        'field' => 'field2',
+                        'issue' => 'issue2',
+                        'description' => 'description2',
+                    ]),
+                ])
+            )],
+            ['exception' => [
+                'message' => 'Test error message',
+                'parameters' => [],
+                'errorCode' => 'TEST_ERROR',
+                'details' => [
+                    [
+                        'field' => 'field1',
+                        'issue' => 'issue1',
+                        'description' => 'description1',
+                    ],
+                    [
+                        'field' => 'field2',
+                        'issue' => 'issue2',
+                        'description' => 'description2',
+                    ],
+                ],
             ]],
         ];
 

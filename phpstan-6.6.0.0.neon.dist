@@ -79,3 +79,144 @@ parameters:
 			message: "#^Property Swag\\\\PayPal\\\\Test\\\\Checkout\\\\ExpressCheckout\\\\Service\\\\ExpressShippingCallbackServiceTest\\:\\:\\$ids has unknown class Shopware\\\\Core\\\\Test\\\\Stub\\\\Framework\\\\IdsCollection as its type\\.$#"
 			count: 1
 			path: tests/Checkout/ExpressCheckout/Service/ExpressShippingCallbackServiceTest.php
+
+		# JWT support (Shopware\Core\Framework\JWT\*) is only introduced later in 6.6.x, so it does not exist yet against the 6.6.0.0 dist.
+		-
+			message: "#^Caught class Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException not found\\.$#"
+			count: 3
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: "#^Call to method getPrevious\\(\\) on an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException\\.$#"
+			count: 2
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: "#^Throwing object of an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: "#^Instantiated class Shopware\\\\Core\\\\Framework\\\\JWT\\\\Constraints\\\\HasValidRSAJWKSignature not found\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: "#^Parameter \\#4 \\.\\.\\.\\$constraints of method Swag\\\\PayPal\\\\AgenticCommerce\\\\Routing\\\\AgentRequestContextResolver\\:\\:validate\\(\\) expects Lcobucci\\\\JWT\\\\Validation\\\\Constraint, Shopware\\\\Core\\\\Framework\\\\JWT\\\\Constraints\\\\HasValidRSAJWKSignature given\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: "#^Parameter \\$exception of method Swag\\\\PayPal\\\\AgenticCommerce\\\\Routing\\\\AgentRequestContextResolver\\:\\:shouldRefreshJwks\\(\\) has invalid type Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: "#^Call to method getMessage\\(\\) on an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException\\.$#"
+			count: 3
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: "#^Call to static method invalidJwt\\(\\) on an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException\\.$#"
+			count: 4
+			path: src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+
+		-
+			message: "#^Method Swag\\\\PayPal\\\\AgenticCommerce\\\\Security\\\\AbstractPayPalJwksProvider\\:\\:getJwks\\(\\) has invalid return type Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Security/AbstractPayPalJwksProvider.php
+
+		-
+			message: "#^Cannot import type alias JSONWebKey\\: class Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKStruct does not exist\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Security/PayPalJwksProvider.php
+
+		-
+			message: "#^Method Swag\\\\PayPal\\\\AgenticCommerce\\\\Security\\\\PayPalJwksProvider\\:\\:getJwks\\(\\) has invalid return type Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Security/PayPalJwksProvider.php
+
+		-
+			message: "#^Anonymous function has invalid return type Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Security/PayPalJwksProvider.php
+
+		-
+			message: "#^Class Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection not found\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Security/PayPalJwksProvider.php
+
+		-
+			message: "#^Call to static method invalidJwk\\(\\) on an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException\\.$#"
+			count: 5
+			path: src/AgenticCommerce/Security/PayPalJwksProvider.php
+
+		-
+			message: "#^Method Swag\\\\PayPal\\\\AgenticCommerce\\\\Security\\\\PayPalJwksProvider\\:\\:decodeJwks\\(\\) has invalid return type Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Security/PayPalJwksProvider.php
+
+		-
+			message: "#^Call to static method fromArray\\(\\) on an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Security/PayPalJwksProvider.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$decoded contains unknown class Swag\\\\PayPal\\\\AgenticCommerce\\\\Security\\\\JSONWebKey\\.$#"
+			count: 1
+			path: src/AgenticCommerce/Security/PayPalJwksProvider.php
+
+		-
+			message: "#^Cannot import type alias JSONWebKey\\: class Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKStruct does not exist\\.$#"
+			count: 1
+			path: tests/AgenticCommerce/Routing/AgentRequestContextResolverTest.php
+
+		-
+			message: "#^Anonymous function has invalid return type Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection\\.$#"
+			count: 1
+			path: tests/AgenticCommerce/Routing/AgentRequestContextResolverTest.php
+
+		-
+			message: "#^Parameter \\$jwks of method Swag\\\\PayPal\\\\Test\\\\AgenticCommerce\\\\Routing\\\\AgentRequestContextResolverTest\\:\\:createJwksProvider\\(\\) has invalid type Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection\\.$#"
+			count: 1
+			path: tests/AgenticCommerce/Routing/AgentRequestContextResolverTest.php
+
+		-
+			message: "#^Method Swag\\\\PayPal\\\\Test\\\\AgenticCommerce\\\\Routing\\\\AgentRequestContextResolverTest\\:\\:createJwks\\(\\) has invalid return type Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection\\.$#"
+			count: 1
+			path: tests/AgenticCommerce/Routing/AgentRequestContextResolverTest.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$jwks contains unknown class Swag\\\\PayPal\\\\Test\\\\AgenticCommerce\\\\Routing\\\\JSONWebKey\\.$#"
+			count: 1
+			path: tests/AgenticCommerce/Routing/AgentRequestContextResolverTest.php
+
+		-
+			message: "#^PHPDoc tag @var with type array\\{keys\\: array\\<int, Swag\\\\PayPal\\\\Test\\\\AgenticCommerce\\\\Routing\\\\JSONWebKey\\>\\} is not subtype of native type array\\{keys\\: array\\{array\\{kty\\: .*$#"
+			count: 1
+			path: tests/AgenticCommerce/Routing/AgentRequestContextResolverTest.php
+
+		-
+			message: "#^Call to static method fromArray\\(\\) on an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection\\.$#"
+			count: 1
+			path: tests/AgenticCommerce/Routing/AgentRequestContextResolverTest.php
+
+		-
+			message: "#^Call to method getElements\\(\\) on an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\Struct\\\\JWKCollection\\.$#"
+			count: 4
+			path: tests/AgenticCommerce/Security/PayPalJwksProviderTest.php
+
+		-
+			message: "#^Call to static method invalidJwk\\(\\) on an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException\\.$#"
+			count: 3
+			path: tests/AgenticCommerce/Security/PayPalJwksProviderTest.php
+
+		-
+			message: "#^Caught class Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException not found\\.$#"
+			count: 1
+			path: tests/AgenticCommerce/Security/PayPalJwksProviderTest.php
+
+		-
+			message: "#^Call to method getMessage\\(\\) on an unknown class Shopware\\\\Core\\\\Framework\\\\JWT\\\\JWTException\\.$#"
+			count: 1
+			path: tests/AgenticCommerce/Security/PayPalJwksProviderTest.php

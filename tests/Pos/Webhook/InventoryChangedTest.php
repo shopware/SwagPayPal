@@ -41,7 +41,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 use Swag\PayPal\Test\Pos\Webhook\_fixtures\InventoryChangeFixture;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -109,14 +109,14 @@ class InventoryChangedTest extends TestCase
         $salesChannelRepository = new SalesChannelRepoMock();
         $salesChannelRepository->addMockEntity($salesChannel);
 
-        /** @var Router $router */
-        $router = $this->getContainer()->get('router');
+        $router = static::getContainer()->get('router');
+        static::assertInstanceOf(RouterInterface::class, $router);
 
         $webhookService = new WebhookService(
             new SubscriptionResource(new PosClientFactoryMock()),
             $webhookRegistry,
             $salesChannelRepository,
-            $this->getContainer()->get(SystemConfigService::class),
+            static::getContainer()->get(SystemConfigService::class),
             new UuidConverter(),
             $router
         );
@@ -177,14 +177,14 @@ class InventoryChangedTest extends TestCase
         $salesChannelRepository = new SalesChannelRepoMock();
         $salesChannelRepository->addMockEntity($salesChannel);
 
-        /** @var Router $router */
-        $router = $this->getContainer()->get('router');
+        $router = self::getContainer()->get('router');
+        static::assertInstanceOf(RouterInterface::class, $router);
 
         $webhookService = new WebhookService(
             new SubscriptionResource(new PosClientFactoryMock()),
             $webhookRegistry,
             $salesChannelRepository,
-            $this->getContainer()->get(SystemConfigService::class),
+            self::getContainer()->get(SystemConfigService::class),
             new UuidConverter(),
             $router
         );

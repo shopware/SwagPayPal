@@ -37,7 +37,7 @@ use Swag\PayPal\Test\Pos\Webhook\_fixtures\TestMessageFixture;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -69,14 +69,14 @@ class WebhookControllerTest extends TestCase
         $salesChannelRepository = new SalesChannelRepoMock();
         $salesChannelRepository->addMockEntity($this->salesChannel);
 
-        /** @var Router $router */
-        $router = $this->getContainer()->get('router');
+        $router = self::getContainer()->get('router');
+        static::assertInstanceOf(RouterInterface::class, $router);
 
         $webhookService = new WebhookService(
             new SubscriptionResource(new PosClientFactoryMock()),
             $webhookRegistry,
             $salesChannelRepository,
-            $this->getContainer()->get(SystemConfigService::class),
+            self::getContainer()->get(SystemConfigService::class),
             new UuidConverter(),
             $router
         );
