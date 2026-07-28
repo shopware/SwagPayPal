@@ -117,6 +117,9 @@
         "invalid": "Registriert, aber mit abweichender Domain",
         "valid": "Gültig",
         "disabled": "Deaktiviert"
+      },
+      "honey": {
+        "info": "Der Webhook wird zur registrierung verwendet. Dadurch werden alle nötigen Daten, die zur aktivierung und nutzung des Verkaufskanals benötigt werden übermittelt."
       }
     },
     "crossBorder": {

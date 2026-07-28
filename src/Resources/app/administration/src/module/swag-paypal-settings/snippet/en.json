@@ -117,6 +117,9 @@
         "invalid": "Registered, but possible domain mismatch",
         "valid": "Registered",
         "disabled": "Disabled"
+      },
+      "honey": {
+        "info": "The webhook is used for registration. It transmits all the data required to activate and use the sales channel."
       }
     },
     "crossBorder": {

@@ -16,6 +16,10 @@ use OpenApi\Annotations\Operation;
 use OpenApi\Generator;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\AgenticCommerce\SalesChannel\CheckoutRoute;
+use Swag\PayPal\AgenticCommerce\SalesChannel\CreateCartRoute;
+use Swag\PayPal\AgenticCommerce\SalesChannel\GetCartRoute;
+use Swag\PayPal\AgenticCommerce\SalesChannel\UpdateCartRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute;
 use Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute;
 use Swag\PayPal\Storefront\Controller\PayPalController;
@@ -27,8 +31,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Package('checkout')]
 class OpenAPISchemaTest extends TestCase
 {
-    public const FILE_PATTERN = '/^.+(Controller|Route)\.php/';
-
     public const IGNORED_ROUTES_WITHOUT_SCHEMA = [
         // Storefront controller returning routes, annotations are on the routes
         '\\' . PayPalController::class . '::createOrder',
@@ -45,7 +47,15 @@ class OpenAPISchemaTest extends TestCase
         '\\' . ExpressCategoryRoute::class . '::load',
 
         '\\' . FilteredPaymentMethodRoute::class . '::load',
+
+        // Agentic Commerce routes, no OpenAPI schema
+        '\\' . CheckoutRoute::class . '::checkout',
+        '\\' . GetCartRoute::class . '::getCart',
+        '\\' . UpdateCartRoute::class . '::updateCart',
+        '\\' . CreateCartRoute::class . '::createCart',
     ];
+
+    public const FILE_PATTERN = '/^.+(Controller|Route)\.php/';
 
     public const IGNORED_LOG_MESSAGES = [
         'Required @OA\Info() not found',

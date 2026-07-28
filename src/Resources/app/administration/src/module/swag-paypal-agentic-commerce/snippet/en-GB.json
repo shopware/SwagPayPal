@@ -1,0 +1,13 @@
+{
+    "swag-paypal-agentic-commerce": {
+        "sales-channel": {
+            "detail": {
+                "textActiveDescription": "Deactivates the PayPal Agentic Commerce Integration for this Sales Channel",
+                "storefrontHelpText": "Currently only US sales channels are supported."
+            }
+        },
+        "product-export": {
+            "name": "PayPal Agentic Commerce Export"
+        }
+    }
+}

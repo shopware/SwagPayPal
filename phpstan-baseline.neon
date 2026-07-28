@@ -173,3 +173,30 @@ parameters:
 			identifier: typePerfect.noMixedMethodCaller
 			count: 1
 			path: tests/Reporting/ScheduledTask/TurnoverReportingTaskHandlerTest.php
+
+		-
+			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgenticCommerce\\.*\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			identifier: parameter.internalInterface
+			paths:
+				- src/AgenticCommerce/Util/FaviconLoader.php
+				- src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+				- src/AgenticCommerce/SalesChannel/CreateCartRoute.php
+				- src/AgenticCommerce/SalesChannel/UpdateCartRoute.php
+
+		-
+			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
+			identifier: property.internalInterface
+			paths:
+				- src/AgenticCommerce/Util/FaviconLoader.php
+				- src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+				- src/AgenticCommerce/SalesChannel/AbstractAgenticCommerceRoute.php
+				- src/AgenticCommerce/SalesChannel/CreateCartRoute.php
+				- src/AgenticCommerce/SalesChannel/UpdateCartRoute.php
+
+		-
+			message: '#^Call to method get\(\) of internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface from outside its root namespace Shopware\.$#'
+			identifier: method.internalInterface
+			paths:
+				- src/AgenticCommerce/Util/FaviconLoader.php
+				- src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+				- src/AgenticCommerce/SalesChannel/AbstractAgenticCommerceRoute.php

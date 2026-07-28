@@ -84,9 +84,10 @@ parameters:
             identifier: attribute.internalClass
             message: '#.*Shopware\\Core\\Framework\\Log\\Package#'
 
-        - # 6.8 deprecation
+        - # Has to be fixed upstream, but we can ignore it for now
+            message: '#Call to deprecated method __construct\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition#'
             identifier: method.deprecated
-            message: '#__construct.*Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition.*#'
+            path: 'tests/*'
 
         - # 6.8 deprecation
             identifier: method.deprecated
@@ -171,12 +172,13 @@ parameters:
 
         - # 6.8 deprecation - Parameter order still has to be changed
             identifier: method.deprecated
-            message: '#Call to deprecated method __construct\(\) of class .*\\PaymentMethodBlockedError#'
+            message: '#Call to deprecated method __construct\(\) of class .*\\(PaymentMethodBlockedError|ShippingMethodBlockedError|PaymentMethodChangedError|ShippingMethodChangedError)#'
             paths:
                 - src/Checkout/Cart/Validation/CartValidator.php
                 - tests/Checkout/PUI/PUISubscriberTest.php
                 - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
                 - tests/Storefront/Data/CheckoutSubscriberTest.php
+                - tests/AgenticCommerce/Validation/ValidationIssuesTest.php
 
         - # 6.8 deprecation - Will be removed
             message: '#Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct#'
@@ -185,6 +187,11 @@ parameters:
                 - tests/Checkout/Payment/Service/VaultTokenServiceTest.php
                 - tests/Checkout/Method/ACDCHandlerTest.php
                 - tests/Checkout/Method/VenmoHandlerTest.php
+
+        - # 6.8 deprecation - new parameter addressId will be required
+            identifier: method.deprecated
+            message: '#Call to deprecated method __construct\(\) of class .*\\(AddressValidationError|BillingAddressBlockedError)#'
+            path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
 
         - # 6.8 deprecation - reason:exception-change - Will throw \Shopware\Core\Framework\Util\UtilException instead of \Doctrine\DBAL\Exception\TableNotFoundException
             identifier: method.deprecated
@@ -198,6 +205,22 @@ parameters:
           identifier: method.deprecated
           message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
           path: '**/*.php'
+
+        - # 6.8 deprecation - reason:return-type-change - will use "strong" return type `mixed`
+            identifier: method.deprecated
+            message: '#Call to deprecated method getPayloadValue\(\) of class .*\\LineItem#'
+            paths:
+                - src/AgenticCommerce/Util/PayPalCartTransformer.php
+                - src/AgenticCommerce/Validation/ValidationIssues.php
+
+        - # 6.8 deprecation - Use the "defaults" property instead
+            identifier: method.deprecated
+            message: '#Call to deprecated method getDefaults\(\) of class Symfony\\Component\\Routing\\Attribute\\Route#'
+            path: tests/AgenticCommerce/SalesChannel/DefaultRouteScopeTest.php
+
+        - # 6.8 deprecation - reason:new-optional-parameter - can safely be ignored, as the new parameter is optional and has a default value
+            identifier: method.deprecated
+            message: '#Call to deprecated method scope\(\) of class Shopware\\Core\\Framework\\Context#'
 
         # swagger-php 6.4 (Shopware trunk matrix) moves the "not set" sentinel from OpenApi\Generator to
         # OpenApi\Undefined and makes OpenApi\Context non-nullable. The v6.7.0.0 matrix still ships the older
