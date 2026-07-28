@@ -27,8 +27,12 @@ parameters:
         constantHassers: false
 
     ignoreErrors:
+        - # WebhookSystemConfigController decorates the core SystemConfigController to (de)register webhooks on settings save and must keep its class-level route scope for the inherited route methods. Deprecated (tag:v10.0.0) and removed on the 6.7 line.
+            message: '#is a decorator but overrides @Route attributes#'
+            path: src/Webhook/Registration/WebhookSystemConfigController.php
+
         - # in tests, we can use internal methods
-            message: '#(internal.*from outside its root namespace Shopware\.)|(internal class Shopware\\Core)#'
+            message: '#(internal.*from outside its root namespace)|(internal class Shopware\\Core)#'
             path: tests/*.php
 
         - # ignore package annotation, as it is required

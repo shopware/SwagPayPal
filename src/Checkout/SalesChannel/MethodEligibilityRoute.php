@@ -13,7 +13,9 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\RoutingException;
+use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
@@ -37,12 +39,17 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
 
     private LoggerInterface $logger;
 
+    private MethodEligibilityStateService $methodEligibilityStateService;
+
     /**
      * @internal
      */
-    public function __construct(LoggerInterface $logger)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        MethodEligibilityStateService $methodEligibilityStateService,
+    ) {
         $this->logger = $logger;
+        $this->methodEligibilityStateService = $methodEligibilityStateService;
     }
 
     public function getDecorated(): AbstractMethodEligibilityRoute
@@ -56,7 +63,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
     #[OA\Post(
         path: '/paypal/payment-method-eligibility',
         operationId: 'setPaymentMethodEligibility',
-        description: 'Sets ineligible payment methods to be removed from the session',
+        description: 'Sets ineligible payment methods to be removed from the current sales channel context',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
             new OA\Property(
                 property: 'paymentMethods',
@@ -84,8 +91,13 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
             }
         }
 
-        $request->getSession()->set(self::SESSION_KEY, $handlers);
-        $this->logger->info('Removed ineligible PayPal payment methods from session', ['handlers' => $handlers]);
+        $salesChannelContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+        $this->methodEligibilityStateService->setIneligiblePaymentMethods(
+            $request,
+            $salesChannelContext instanceof SalesChannelContext ? $salesChannelContext : null,
+            $handlers,
+        );
+        $this->logger->info('Removed ineligible PayPal payment methods from sales channel context', ['handlers' => $handlers]);
 
         return new NoContentResponse();
     }

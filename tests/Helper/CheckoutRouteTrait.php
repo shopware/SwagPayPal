@@ -7,6 +7,8 @@
 
 namespace Swag\PayPal\Test\Helper;
 
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Order\Exception\PaymentMethodNotAvailableException;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
@@ -17,10 +19,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\Exception\SalesChannelNotFoundException;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\System\Tax\TaxEntity;
 use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -61,6 +67,84 @@ trait CheckoutRouteTrait
         $salesChannelContext->assign(['customer' => null]);
 
         return $salesChannelContext;
+    }
+
+    private function getSalesChannelContextWithCart(): SalesChannelContext
+    {
+        $paymentMethod = $this->getAvailablePaymentMethod();
+        $this->getSalesChannel($paymentMethod);
+
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextService::class)->get(
+            new SalesChannelContextServiceParameters(TestDefaults::SALES_CHANNEL, Uuid::randomHex())
+        );
+        $salesChannelContext->assign(['customer' => null]);
+
+        $this->addProductToSalesChannelContext($salesChannelContext);
+
+        return $salesChannelContext;
+    }
+
+    private function createSalesChannelContextWithCart(): SalesChannelContext
+    {
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextService::class)->get(
+            new SalesChannelContextServiceParameters(TestDefaults::SALES_CHANNEL, Uuid::randomHex())
+        );
+        $this->addProductToSalesChannelContext($salesChannelContext);
+
+        return $salesChannelContext;
+    }
+
+    private function addProductToSalesChannelContext(SalesChannelContext $salesChannelContext): void
+    {
+        $productId = $this->createTestProduct($this->getTaxIdForSalesChannelContext($salesChannelContext));
+        $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
+
+        $cartService = $this->getContainer()->get(CartService::class);
+        $cart = $cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+        $cartService->add($cart, $lineItem, $salesChannelContext);
+    }
+
+    private function getTaxIdForSalesChannelContext(SalesChannelContext $salesChannelContext): string
+    {
+        /** @var TaxEntity|null $tax */
+        $tax = $salesChannelContext->getTaxRules()->first();
+
+        if ($tax !== null) {
+            return $tax->getId();
+        }
+
+        return $this->getValidTaxId();
+    }
+
+    private function createTestProduct(string $taxId): string
+    {
+        $productId = Uuid::randomHex();
+
+        /** @var EntityRepository $productRepository */
+        $productRepository = $this->getContainer()->get('product.repository');
+        $productRepository->upsert([[
+            'id' => $productId,
+            'name' => 'PayPal test product',
+            'taxId' => $taxId,
+            'price' => [
+                [
+                    'currencyId' => Defaults::CURRENCY,
+                    'gross' => '100',
+                    'linked' => true,
+                    'net' => '90',
+                ],
+            ],
+            'visibilities' => [
+                [
+                    'salesChannelId' => TestDefaults::SALES_CHANNEL,
+                    'visibility' => 30,
+                ],
+            ],
+            'productNumber' => $productId,
+            'stock' => 100,
+        ]], Context::createDefaultContext());
+
+        return $productId;
     }
 
     private function getSalesChannel(PaymentMethodEntity $otherPaymentMethod): SalesChannelEntity
