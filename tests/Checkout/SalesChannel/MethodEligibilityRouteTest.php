@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Checkout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Error\PaymentMethodBlockedError;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
@@ -93,8 +92,7 @@ class MethodEligibilityRouteTest extends TestCase
         $this->browser->request(Request::METHOD_GET, '/store-api/checkout/cart');
         $response = $this->getJsonResponse();
         static::assertCount(1, $response['errors']);
-        /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
-        static::assertSame((new PaymentMethodBlockedError('', 'test', ''))->getMessageKey(), \current($response['errors'])['messageKey']);
+        static::assertSame('payment-method-blocked', \current($response['errors'])['messageKey']);
 
         $this->browser->request(Request::METHOD_POST, '/store-api/paypal/payment-method-eligibility', ['paymentMethods' => []]);
         static::assertSame(Response::HTTP_NO_CONTENT, $this->browser->getResponse()->getStatusCode());
