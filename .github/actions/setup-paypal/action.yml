@@ -123,7 +123,7 @@ runs:
         fi
         echo "deps=$(echo $DEPS | jq -c .)" >> "$GITHUB_OUTPUT"
         echo "repos=$(echo $REPOS | jq -c .)" >> "$GITHUB_OUTPUT"
-    - uses: shopware/github-actions/setup-extension@main
+    - uses: shopware/github-actions/setup-extension@b1d0a9fddcf38cd550f328ea00e1beb7536fa494
       with:
         extensionName: ${{ github.event.repository.name }}
         mysqlVersion: ${{ inputs.mysql-version }}

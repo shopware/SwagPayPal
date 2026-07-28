@@ -12,9 +12,6 @@
     "require": {
         "shopware/core": "~6.5.5@dev"
     },
-    "require-dev": {
-        "rector/rector": "^0.18.3"
-    },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
         "copyright": "(c) by shopware AG",
@@ -69,6 +66,11 @@
         "openapi:generate": [
             "../../../bin/console swag:paypal:openapi:generate",
             "npm run openapi-types --prefix src/Resources/app/administration"
+        ],
+        "bc-check": [
+            "php ../../../vendor-bin/roave-backward-compatibility-check/bin/verify-version.php",
+            "@putenv TMPDIR=./..",
+            "../../../vendor/bin/roave-backward-compatibility-check"
         ]
     },
     "autoload": {
