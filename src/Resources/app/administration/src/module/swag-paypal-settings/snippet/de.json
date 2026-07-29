@@ -119,7 +119,7 @@
         "disabled": "Deaktiviert"
       },
       "honey": {
-        "info": "Der Webhook wird zur registrierung verwendet. Dadurch werden alle nötigen Daten, die zur aktivierung und nutzung des Verkaufskanals benötigt werden übermittelt."
+        "info": "Der Webhook wird zur Registrierung verwendet. Dadurch werden alle nötigen Daten, die zur Aktivierung und nutzung des Verkaufskanals benötigt werden übermittelt."
       }
     },
     "crossBorder": {
