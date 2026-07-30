@@ -12,6 +12,7 @@ export default class PayPalPluginError extends Error {
     ];
 
     public static CODE_GENERIC = 'SWAG_PAYPAL__GENERIC_ERROR' as const;
+    public static CODE_DECLINED = 'SWAG_PAYPAL__DECLINED_ERROR' as const;
     public static CODE_SCRIPT = 'SWAG_PAYPAL__SCRIPT_ERROR' as const;
     public static CODE_NOT_ELIGIBLE = 'SWAG_PAYPAL__NOT_ELIGIBLE' as const;
     public static CODE_BROWSER_UNSUPPORTED = 'SWAG_PAYPAL__BROWSER_UNSUPPORTED' as const;

@@ -71,6 +71,16 @@ export default abstract class SwagPaypalPayment<FS extends PayPalCoreJS.FundingS
     }
 
     /**
+     * Stop payment process with a declined error.
+     * Will __NOT__ prevent rendering the button through the render function.
+     *
+     * @param error - Can be any type, but will be converted to a string
+     */
+    protected onDeclined(error: unknown = undefined) {
+        this.handleError(PayPalPluginError.submitFlow(PayPalPluginError.CODE_DECLINED, error));
+    }
+
+    /**
      * Cancel the payment process with a generic cancellation.
      * Will __NOT__ prevent rendering the button through the render function.
      *

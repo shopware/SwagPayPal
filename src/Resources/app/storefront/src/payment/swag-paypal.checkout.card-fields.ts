@@ -137,31 +137,50 @@ export default class SwagPaypalCheckoutAcdc extends SwagPaypalCheckout<'advanced
 
         this.orderId ??= (await this.createOrder()).orderId;
 
+
+        let result;
         try {
-            await data.paymentSession.submit(this.orderId, {});
+            result = await data.paymentSession.submit(this.orderId, {});
         } catch (error) {
-            if (error instanceof Error && error.name === 'SdkInitError') {
-                const field = error.message.match(/Invalid card data: card (\w+) field/)?.[1] as keyof Omit<Fields, 'form'> | undefined;
-
-                if (field && ['number', 'expiry', 'cvv'].includes(field)) {
-                    this.fields[field]?.focus();
-                    this.wrapperCardFields[field]?.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center',
-                    });
-
-                    this.wrapperCardFields.form?.classList.add(this.options.validatedStyleClass);
-
-                    this.confirmOrderForm.dispatchEvent(new CustomEvent('removeLoader'));
-
-                    return;
-                }
+            if (!(error instanceof Error && error.name === 'SdkInitError')) {
+                throw error;
             }
 
-            throw error;
+            const field = error.message.match(/Invalid card data: card (\w+) field/)?.[1] as keyof Omit<Fields, 'form'> | undefined;
+
+            if (field && ['number', 'expiry', 'cvv'].includes(field)) {
+                this.fields[field]?.focus();
+                this.wrapperCardFields[field]?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+
+                this.wrapperCardFields.form?.classList.add(this.options.validatedStyleClass);
+            }
+
+            this.confirmOrderForm.dispatchEvent(new CustomEvent('removeLoader'));
+
+            return;
         }
 
-        await this.onApprove({ orderId: this.orderId });
+        switch (result.state) {
+            case "succeeded": {
+                await this.onApprove({ orderId: this.orderId });
+                return;
+            }
+            case "canceled": {
+                this.confirmOrderForm.dispatchEvent(new CustomEvent('removeLoader'));
+                return;
+            }
+            case "failed": {
+                this.onDeclined(`Card submission failed: ${result.data ? JSON.stringify(result.data) : '<unknown>'}`);
+                return;
+            }
+            default: {
+                this.onError(`Unhandled submit state: ${result.state}`);
+                return;
+            }
+        }
     }
 
     protected computeFieldStyle(field: keyof Fields): Record<string, Record<string, string | number>> {
