@@ -4,6 +4,7 @@ import { ElementHelper } from '../helper/element.helper';
 export interface SwagPaypalMessagesOptions extends SwagPaypalBaseOptions, PayPalCoreJS.Messages.ContentOptions {
     paymentMethodId: string;
     crossBorderBuyerCountry: string;
+    textSize: 10 | 12 | 16;
 }
 
 export default class SwagPaypalMessages extends SwagPaypalBase {
@@ -18,6 +19,7 @@ export default class SwagPaypalMessages extends SwagPaypalBase {
         textColor: 'BLACK',
         paymentMethodId: '',
         crossBorderBuyerCountry: '',
+        textSize: 12,
     };
 
     protected get metadata(): { components: 'paypal-messages'[] } {
@@ -48,6 +50,10 @@ export default class SwagPaypalMessages extends SwagPaypalBase {
             event.preventDefault();
             learnMore.open(event.detail.config);
         });
+
+        if (typeof this.options.textSize === 'number' && this.options.textSize > 0) {
+            this.el!.style.setProperty('--paypal-message-font-size', `${this.options.textSize}px`);
+        }
     }
 
     protected afterSetup(): void {
