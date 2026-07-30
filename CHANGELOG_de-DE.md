@@ -1,3 +1,43 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem der von einem benutzerdefinierten Tax Provider angepasste Gesamtbetrag nicht berechnet wurde, weil die PayPal-Bestellung den veralteten Warenkorb- oder Bestelltransaktionsbetrag anstelle des besteuerten Gesamtbetrags verwendete (shopware/SwagPayPal#722)
+
+# 10.8.0
+- Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)
+- Behebt ein Problem, bei dem Prüfungen zur Verfügbarkeit von PayPal-Zahlungsarten bei zustandslosen Store-API-Anfragen PHP-Sitzungen initialisierten (shopware/SwagPayPal#740)
+- Behebt ein Problem, bei dem PayPal Express Checkout in einem veralteten Offcanvas-Warenkorb die PayPal-API mit leerem Warenkorb aufrufen konnte und ohne Rückmeldung für den Kunden fehlschlug (shopware/SwagPayPal#712)
+- Behebt ein Problem, bei dem der Google Pay Button immer auf Englisch statt in der Verkaufskanal-Sprache angezeigt wurde (shopware/shopware#17804)
+- Behebt ein Problem, bei dem Kartenzahlungen ohne 3D-Secure-Daten abgelehnt wurden, obwohl `ACDC_FORCE_3DS` deaktiviert war (shopware/SwagPayPal#714)
+- Deaktiviertes „3D Secure erzwingen” erlaubt nun, dass keine 3DS-Abfrage erfolgt, wenn sie nicht erforderlich ist
+
+# 10.7.0
+- Fügt Unterstützung für PayPal App Switch hinzu (aktuell nur in den USA verfügbar)
+- Fügt vom Händler konfigurierbare Darstellungseinstellungen für das „Später bezahlen”-Ratenzahlungsbanner hinzu: Logo-Typ, Textfarbe und Textgröße
+- Behebt ein Problem, bei dem die Smart Payment Buttons unter Safari/iOS ohne sichtbare Rückmeldung fehlschlugen, wenn die AGB nicht akzeptiert wurden, indem der Nutzer nun zum betreffenden Feld geführt wird, anstatt sich auf die native Formularvalidierung des Browsers zu verlassen
+
+# 10.6.4
+- Behebt ein Problem, bei dem Netto-Preise den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
+
+# 10.6.3
+- Behebt ein Problem, bei dem Versandkosten Diskrepanzen den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
+
+# 10.6.2
+- Behebt ein Problem, bei dem veraltete Authorisations-Webhooks den Zahlungsstatus auf Abgebrochen setzen konnte
+- Behebt ein Problem, bei dem der Express Checkout fehlschlug, wenn der Käufer das Lieferland zu einem mit regelbasierten Versandarten änderte (shopware/shopware#16295).
+
+# 10.6.1
+- Behebt ein Problem, bei dem abgelehnte PayPal-Zahlungen in der Administration weiterhin als erstattungsfähig angezeigt wurden (shopware/SwagPayPal#547)
+- Behebt ein Problem, bei dem die Antwort des Versand-Callbacks im Express Checkout nicht unterstützte Bestellfelder enthielt
+- Behebt ein Problem, bei dem ACDC für Abonnements ohne Wallet-Vaulting verfügbar war
+
+# 10.6.0
+- Behebt ein Problem, bei dem PayPal-Webhooks mit einem `custom_id`-Payload ohne `orderTransactionId` eine Warnung wegen eines undefinierten Array-Keys ausloesen konnten
+- Behebt ein Problem, bei dem die PayPal-Bestellerstellung und Express-Checkout-Flows nicht den besteuerten Warenkorb mit Tax-Provider-Verarbeitung verwendet haben
+- Fügt eine Einstellung hinzu, um den Versand-Callback für Express-Checkouts zu deaktivieren
+- Behebt ein Problem, bei dem der Versand-Callback die Offenlegung der Store-API erforderte
+- Behebt ein Problem, bei dem das OpenAPI-Schema nicht generiert werden konnte
+- Behebt ein Problem, bei dem Warenkorbe nicht korrekt als kostenlos erkannt wurden, was zu Fehlern beim PayPal-Checkout führte (shopware/SwagPayPal#591)
+- Behebt ein Problem, bei dem die Zettle-Verbindung nur für einige Stunden funktionierte (shopware/SwagPayPal#594)
+
 # 10.5.0
 - Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
 

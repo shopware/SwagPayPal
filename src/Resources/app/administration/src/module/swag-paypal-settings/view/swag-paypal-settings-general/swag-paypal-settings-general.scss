@@ -7,7 +7,7 @@
 
     &-vaulting {
         &__description-title {
-            color: $color-darkgray-200;
+            color: var(--color-text-primary-default);
             font-weight: $font-weight-bold;
             font-size: $font-size-m;
             margin-bottom: 16px;

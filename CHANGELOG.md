@@ -1,3 +1,43 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where a custom tax provider's adjusted total was not charged, because the PayPal order used the stale cart or order transaction amount instead of the taxed total (shopware/SwagPayPal#722)
+
+# 10.8.0
+- Fixes an issue, where the PayPal Express Checkout failed without customer feedback when shipping to a country that is not assigned to the sales channel (shopware/shopware#15067)
+- Fixes an issue, where PayPal eligibility checks initialized PHP sessions during stateless Store API requests (shopware/SwagPayPal#740)
+- Fixes an issue, where PayPal Express Checkout in a stale offcanvas cart could call the PayPal API with an empty cart and fail without customer feedback (shopware/SwagPayPal#712)
+- Fixes an issue, where the Google Pay button was always displayed in English instead of the sales channel language (shopware/shopware#17804)
+- Fixes an issue, where card payments without 3D Secure data were rejected even when `ACDC_FORCE_3DS` was disabled (shopware/SwagPayPal#714)
+- Changes disabled "Enforce 3D Secure" to allow no 3DS challenge if not required
+
+# 10.7.0
+- Added support for PayPal App Switch (currently only available in the US)
+- Added merchant-configurable appearance settings for the Pay Later installment banner: logo type, text colour, and text size
+- Fixes an issue, where the Smart Payment Buttons failed silently on Safari/iOS when the terms and conditions were not accepted, by guiding the user to the invalid field instead of relying on the browser's native form validation
+
+# 10.6.4
+- Fixes an issue, where net prices could cause the express checkout with shipping callback enabled to fail
+
+# 10.6.3
+- Fixes an issue, where shipping cost discrepancies could cause the express checkout with shipping callback enabled to fail
+
+# 10.6.2
+- Fixes an issue, where stale authorization webhooks could cancel unrelated order transactions
+- Fixes an issue, where the Express Checkout failed when the buyer changed the delivery country to one with rule-restricted shipping methods (shopware/shopware#16295).
+
+# 10.6.1
+- Fixes an issue, where declined PayPal payments were still shown as refundable in the Administration (shopware/SwagPayPal#547)
+- Fixes an issue, where the express checkout shipping callback returned unsupported order fields.
+- Fixes an issue, where ACDC was available for subscriptions without wallet vaulting
+
+# 10.6.0
+- Added setting to disable the shipping callback for express checkouts.
+- Fixes an issue, where the shipping callback required the store-api to be exposed.
+- Fixes an issue, where PayPal webhooks with a `custom_id` payload that does not contain an `orderTransactionId` could trigger an undefined array key warning
+- Fixes an issue, where PayPal order creation and express checkout flows did not use the taxed cart with tax provider processing
+- Fixes an issue, where the OpenAPI schema could not be generated
+- Fixes an issue, where the cart was not correctly detected as free, resulting in errors during the PayPal checkout (shopware/SwagPayPal#591)
+- Fixes an issue, where the Zettle connection was only working for a few hours (shopware/SwagPayPal#594)
+
 # 10.5.0
 - Added Austria to the countries where Pay Later is available
 

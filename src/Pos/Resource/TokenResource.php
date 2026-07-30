@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Pos\Resource;
 
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Clock\ClockInterface;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Util\Hasher;
 use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Api\Authentication\Token;
 use Swag\PayPal\Pos\Client\TokenClientFactory;
@@ -23,20 +23,24 @@ class TokenResource
 
     private TokenClientFactory $tokenClientFactory;
 
+    private ClockInterface $clock;
+
     /**
      * @internal
      */
     public function __construct(
         CacheItemPoolInterface $cache,
         TokenClientFactory $tokenClientFactory,
+        ClockInterface $clock,
     ) {
         $this->cache = $cache;
         $this->tokenClientFactory = $tokenClientFactory;
+        $this->clock = $clock;
     }
 
     public function getToken(OAuthCredentials $credentials): Token
     {
-        $cacheId = Hasher::hash($credentials->getApiKey());
+        $cacheId = $credentials->getCacheKey();
         $token = $this->getTokenFromCache($cacheId);
         if ($token === null || !$this->isTokenValid($token)) {
             $tokenClient = $this->tokenClientFactory->createTokenClient();
@@ -62,19 +66,25 @@ class TokenResource
     private function getTokenFromCache(string $cacheId): ?Token
     {
         $raw = $this->cache->getItem(self::CACHE_ID . $cacheId)->get();
-        if ($raw === null || $raw === '') {
+
+        if (!\is_string($raw) || $raw === '') {
             return null;
         }
 
         $data = \json_decode($raw, true);
-        if (!\is_array($data)) {
-            return null;
-        }
+
+        return \is_array($data) ? $this->hydrateToken($data) : null;
+    }
+
+    private function hydrateToken(array $data): Token
+    {
+        $expireDateTime = $data['expireDateTime'] ?? null;
+        unset($data['expireDateTime']);
 
         $token = (new Token())->assign($data);
 
-        if (isset($data['expireDateTime']) && \is_string($data['expireDateTime'])) {
-            $token->setExpireDateTime(new \DateTime($data['expireDateTime']));
+        if (\is_string($expireDateTime)) {
+            $token->setExpireDateTime(new \DateTime($expireDateTime));
         }
 
         return $token;
@@ -83,13 +93,18 @@ class TokenResource
     private function setToken(Token $token, string $cacheId): void
     {
         $item = $this->cache->getItem(self::CACHE_ID . $cacheId);
-        $item->set(\json_encode($token->jsonSerialize()));
+
+        $item->set(\json_encode([
+            ...$token->jsonSerialize(),
+            'expireDateTime' => $token->getExpireDateTime()->format(\DateTimeInterface::ATOM),
+        ]));
+
         $this->cache->save($item);
     }
 
     private function isTokenValid(Token $token): bool
     {
-        $dateTimeNow = new \DateTime('now', new \DateTimeZone('UTC'));
+        $dateTimeNow = $this->clock->now()->setTimezone(new \DateTimeZone('UTC'));
         $dateTimeExpire = $token->getExpireDateTime();
         // Decrease expire date by one hour just to make sure, it doesn't run into an unauthorized exception.
         $dateTimeExpire = $dateTimeExpire->sub(new \DateInterval('PT1H'));

@@ -28,6 +28,7 @@ use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\MyBank;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Oxxo;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\P24;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Trustly;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder;
@@ -117,7 +118,7 @@ class APMOrderBuilderTest extends TestCase
      * @param class-string<AbstractAPMOrderBuilder> $orderBuilderClass
      */
     #[DataProvider('dataProviderAPM')]
-    public function testGetOrderNoBillingAddress(string $orderBuilderClass, array $requestData): void
+    public function testGetOrderNoBillingAddress(string $orderBuilderClass, array $requestData, string $_structClass, array $_expectedStructData): void
     {
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
         $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
@@ -141,7 +142,7 @@ class APMOrderBuilderTest extends TestCase
      * @param class-string<AbstractAPMOrderBuilder> $orderBuilderClass
      */
     #[DataProvider('dataProviderAPM')]
-    public function testGetOrderNoShippingAddress(string $orderBuilderClass, array $requestData, string $structClass): void
+    public function testGetOrderNoShippingAddress(string $orderBuilderClass, array $requestData, string $structClass, array $_expectedStructData): void
     {
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
         $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
@@ -169,9 +170,47 @@ class APMOrderBuilderTest extends TestCase
 
     /**
      * @param class-string<AbstractAPMOrderBuilder> $orderBuilderClass
+     * @param class-string<AbstractAPMPaymentSource> $structClass
      */
     #[DataProvider('dataProviderAPM')]
-    public function testGetOrderPrefix(string $orderBuilderClass, array $requestData): void
+    public function testGetOrderUsesRequestReturnUrls(string $orderBuilderClass, array $_requestData, string $structClass, array $_expectedStructData): void
+    {
+        $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
+        $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+        $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
+
+        $order = $orderBuilder->getOrder(
+            $paymentTransaction,
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], [
+                CreateOrderRoute::RETURN_URL => 'https://example.test/paypal/restore-context/token',
+                CreateOrderRoute::CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+            ]),
+        );
+
+        $paymentSource = $order->getPaymentSource();
+        static::assertNotNull($paymentSource);
+        $getter = 'get' . $this->getPropertyName($structClass);
+
+        // @phpstan-ignore method.dynamicName
+        $struct = $paymentSource->{$getter}();
+        static::assertInstanceOf(AbstractAPMPaymentSource::class, $struct);
+        static::assertInstanceOf($structClass, $struct);
+
+        $experienceContext = $struct->getExperienceContext();
+
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
+    }
+
+    /**
+     * @param class-string<AbstractAPMOrderBuilder> $orderBuilderClass
+     */
+    #[DataProvider('dataProviderAPM')]
+    public function testGetOrderPrefix(string $orderBuilderClass, array $requestData, string $_structClass, array $_expectedStructData): void
     {
         $order = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
         $orderTransaction = $this->createOrderTransaction();

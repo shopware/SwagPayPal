@@ -46,11 +46,15 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
         throw OrderBuildException::cartNotSupported(static::class);
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - reason:new-optional-parameter - Parameter $requestDataBag will be added
+     */
     protected function fillPaymentSource(
         PaymentTransactionStruct $paymentTransaction,
         OrderEntity $order,
         Context $context,
         AbstractAPMPaymentSource $paymentSource,
+        /* ?RequestDataBag $requestDataBag = null, */
     ): void {
         $address = $order->getBillingAddress();
         if ($address === null) {
@@ -68,6 +72,11 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
 
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
-        $paymentSource->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction));
+        $requestDataBag = \func_num_args() > 4 ? \func_get_arg(4) : null;
+        if (!$requestDataBag instanceof RequestDataBag) {
+            $requestDataBag = null;
+        }
+
+        $paymentSource->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, $requestDataBag));
     }
 }

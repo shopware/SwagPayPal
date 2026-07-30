@@ -23,13 +23,21 @@
             <argument type="service" id="request_stack"/>
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator"/>
             <argument type="service" id="Swag\PayPal\Util\Availability\AvailabilityService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService"/>
             <tag name="shopware.cart.validator"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
+        <service id="Swag\PayPal\Checkout\Cart\Service\CartPriceService">
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService">
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+        </service>
 
         <service id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute" public="true">
             <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute" public="true">
@@ -68,6 +76,7 @@
             <argument type="service" id="request_stack"/>
             <argument type="service" id="Swag\PayPal\Util\Availability\AvailabilityService"/>
             <argument type="service" id="order.repository"/>
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Card\AbstractCardValidator">
@@ -170,6 +179,7 @@
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
             <argument type="service" id="messenger.default_bus"/>
+            <argument type="service" id="Psr\Clock\ClockInterface"/>
             <tag name="messenger.message_handler"/>
         </service>
 

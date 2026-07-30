@@ -28,6 +28,7 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.ecsButtonLanguageIso'?: string | null;
 
     'SwagPayPal.settings.ecsShowPayLater'?: boolean;
+    'SwagPayPal.settings.ecsShippingCallbackEnabled'?: boolean;
     'SwagPayPal.settings.spbButtonColor'?: typeof BUTTON_COLORS[number];
     'SwagPayPal.settings.spbButtonShape'?: typeof BUTTON_SHAPES[number];
     'SwagPayPal.settings.spbButtonLanguageIso'?: string | null;
@@ -38,11 +39,15 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.installmentBannerOffCanvasCartEnabled'?: boolean;
     'SwagPayPal.settings.installmentBannerLoginPageEnabled'?: boolean;
     'SwagPayPal.settings.installmentBannerFooterEnabled'?: boolean;
+    'SwagPayPal.settings.installmentBannerLogoType'?: string;
+    'SwagPayPal.settings.installmentBannerTextColor'?: string;
+    'SwagPayPal.settings.installmentBannerTextSize'?: string;
     'SwagPayPal.settings.excludedProductIds'?: string[];
     'SwagPayPal.settings.excludedProductStreamIds'?: string[];
     'SwagPayPal.settings.spbShowPayLater'?: boolean;
     'SwagPayPal.settings.spbCheckoutEnabled'?: boolean;
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled'?: boolean;
+    'SwagPayPal.settings.spbAppSwitchEnabled'?: boolean;
     'SwagPayPal.settings.vaultingEnabled'?: boolean;
     'SwagPayPal.settings.vaultingEnableAlways'?: boolean;
     'SwagPayPal.settings.vaultingEnabledWallet'?: boolean;
@@ -52,6 +57,7 @@ export declare type SystemConfig = {
     'SwagPayPal.settings.crossBorderMessagingEnabled'?: boolean;
     'SwagPayPal.settings.crossBorderBuyerCountry'?: typeof COUNTRY_OVERRIDES[number] | null;
 
+    'SwagPayPal.settings.agenticCommerceOnboarded'?: string;
     'SwagPayPal.settings.isLocalEnvironment'?: boolean;
     'SwagPayPal.settings.sdkV6Enabled'?: boolean;
 };
@@ -86,6 +92,7 @@ export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'password'
     'SwagPayPal.settings.ecsButtonLanguageIso': 'string',
 
     'SwagPayPal.settings.ecsShowPayLater': 'boolean',
+    'SwagPayPal.settings.ecsShippingCallbackEnabled': 'boolean',
     'SwagPayPal.settings.spbButtonColor': 'string',
     'SwagPayPal.settings.spbButtonShape': 'string',
     'SwagPayPal.settings.spbButtonLanguageIso': 'string',
@@ -96,11 +103,15 @@ export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'password'
     'SwagPayPal.settings.installmentBannerOffCanvasCartEnabled': 'boolean',
     'SwagPayPal.settings.installmentBannerLoginPageEnabled': 'boolean',
     'SwagPayPal.settings.installmentBannerFooterEnabled': 'boolean',
+    'SwagPayPal.settings.installmentBannerLogoType': 'string',
+    'SwagPayPal.settings.installmentBannerTextColor': 'string',
+    'SwagPayPal.settings.installmentBannerTextSize': 'string',
     'SwagPayPal.settings.excludedProductIds': 'array',
     'SwagPayPal.settings.excludedProductStreamIds': 'array',
     'SwagPayPal.settings.spbShowPayLater': 'boolean',
     'SwagPayPal.settings.spbCheckoutEnabled': 'boolean',
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled': 'boolean',
+    'SwagPayPal.settings.spbAppSwitchEnabled': 'boolean',
     'SwagPayPal.settings.vaultingEnabled': 'boolean',
     'SwagPayPal.settings.vaultingEnableAlways': 'boolean',
     'SwagPayPal.settings.vaultingEnabledWallet': 'boolean',

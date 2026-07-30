@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Payment\ScheduledTask;
 
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -39,6 +40,7 @@ class TransactionStatusSyncTaskHandler extends ScheduledTaskHandler
         private readonly EntityRepository $orderTransactionRepository,
         private readonly PaymentMethodDataRegistry $methodDataRegistry,
         private readonly MessageBusInterface $bus,
+        private readonly ClockInterface $clock,
     ) {
         parent::__construct($scheduledTaskRepository, $logger);
     }
@@ -46,7 +48,7 @@ class TransactionStatusSyncTaskHandler extends ScheduledTaskHandler
     public function run(): void
     {
         // Check all transactions from the last 48h, but offset by an hour
-        $hourAgo = (new \DateTimeImmutable('now -1 hour'))
+        $hourAgo = $this->clock->now()->modify('-1 hour')
             ->setTimezone(new \DateTimeZone('UTC'));
 
         $twoDaysAgo = $hourAgo->modify('-48 hours');

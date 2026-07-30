@@ -27,6 +27,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogEntity;
 use Swag\PayPal\Pos\Run\LoggerFactory;
 use Swag\PayPal\Pos\Run\RunService;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * @internal
@@ -59,7 +60,7 @@ class RunServiceTest extends TestCase
         $this->context = Context::createDefaultContext();
 
         $this->logger = (new LoggerFactory())->createLogger();
-        $this->runService = new RunService($this->runRepository, $this->logRepository, $this->getContainer()->get(Connection::class), $this->logger);
+        $this->runService = new RunService($this->runRepository, $this->logRepository, $this->getContainer()->get(Connection::class), $this->logger, new NativeClock());
     }
 
     public function testLogProcessAddLogWithoutProduct(): void

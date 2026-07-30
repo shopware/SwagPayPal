@@ -15,7 +15,7 @@ permissions:
 jobs:
   check:
       if: always()
-      needs: [build-zip, test-install-zip, phpunit, acceptance]
+      needs: [build-zip, validate, test-install-zip, phpunit, acceptance]
       runs-on: ubuntu-latest
       steps:
         - uses: re-actors/alls-green@v1.2.2
@@ -32,6 +32,21 @@ jobs:
         uses: shopware/github-actions/build-zip@main
         with:
           extensionName: ${{ github.event.repository.name }}
+
+  validate:
+    needs: build-zip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download zip
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ github.event.repository.name }}.zip
+
+      - name: Install shopware-cli
+        uses: shopware/shopware-cli-action@v3
+
+      - name: Validate extension
+        run: shopware-cli extension validate ${{ github.event.repository.name }}.zip --reporter github
 
   test-install-zip:
     needs: build-zip
@@ -177,6 +192,8 @@ jobs:
           PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
           PAYPAL_MERCHANT_ID: ${{ secrets.PAYPAL_MERCHANT_ID }}
           PAYPAL_SANDBOX: ${{ secrets.PAYPAL_SANDBOX }}
+          PAYPAL_CUSTOMER_ID: ${{ secrets.PAYPAL_CUSTOMER_ID  }}
+          PAYPAL_CUSTOMER_PASSWORD: ${{ secrets.PAYPAL_CUSTOMER_PASSWORD  }}
 
       - name: Compress and encrypt test-results
         if: always()

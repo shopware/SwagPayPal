@@ -79,7 +79,7 @@ class ExcludedProductValidator
         }
 
         $excludedProductStreamIds = $this->systemConfigService->get(Settings::EXCLUDED_PRODUCT_STREAM_IDS, $salesChannelContext->getSalesChannelId()) ?? [];
-        if (!\is_array($excludedProductStreamIds) || empty($excludedProductStreamIds)) {
+        if (!\is_array($excludedProductStreamIds) || $excludedProductStreamIds === []) {
             return false;
         }
 
@@ -101,7 +101,7 @@ class ExcludedProductValidator
     public function findExcludedProducts(array $productIds, SalesChannelContext $salesChannelContext): array
     {
         $productIds = \array_values(\array_filter($productIds));
-        if (empty($productIds)) {
+        if ($productIds === []) {
             return [];
         }
 
@@ -112,7 +112,7 @@ class ExcludedProductValidator
         }
 
         $excludedProductStreamIds = $this->systemConfigService->get(Settings::EXCLUDED_PRODUCT_STREAM_IDS, $salesChannelContext->getSalesChannelId()) ?? [];
-        if (!\is_array($excludedProductStreamIds) || empty($excludedProductStreamIds)) {
+        if (!\is_array($excludedProductStreamIds) || $excludedProductStreamIds === []) {
             return $excludedByProductIds;
         }
 
@@ -127,12 +127,12 @@ class ExcludedProductValidator
 
     public function isProductExcluded(ProductEntity $product, SalesChannelContext $salesChannelContext): bool
     {
-        return !empty($this->findExcludedProducts(
+        return $this->findExcludedProducts(
             \array_filter([
                 $product->getId(),
                 $product->getParentId(),
             ]),
             $salesChannelContext
-        ));
+        ) !== [];
     }
 }

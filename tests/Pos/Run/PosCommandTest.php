@@ -31,6 +31,7 @@ use Swag\PayPal\Pos\Run\Task\InventoryTask;
 use Swag\PayPal\Pos\Run\Task\ProductTask;
 use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
+use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
@@ -68,7 +69,7 @@ class PosCommandTest extends TestCase
         $this->logCleaner = $this->createMock(LogCleaner::class);
         $this->syncResetter = $this->createMock(SyncResetter::class);
 
-        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class));
+        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class), new NativeClock());
         $productTask = new ProductTask($messageDispatcher, $this->runService);
         $imageTask = new ImageTask($messageDispatcher, $this->runService);
         $inventoryTask = new InventoryTask($messageDispatcher, $this->runService);

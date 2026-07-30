@@ -128,7 +128,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
             onCancel: this.onCancel.bind(this),
 
             /**
-             * Check form validity & show loading spinner on confirm click
+             * Validate the confirm form and guide the user to invalid fields on click
              */
             onClick: this.onClick.bind(this),
 
@@ -195,16 +195,36 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
     }
 
     /**
-     * Triggers the form validation
      * @param _
      * @param {{reject: Function, resolve: Function}} actions
      * @returns {*}
      */
     onClick(_, actions) {
-        if (!this.confirmOrderForm.reportValidity()) {
-            return actions.reject();
+        // `checkValidity()` is overridden by Shopware's FormHandler to mark invalid fields with `aria-invalid`.
+        if (this.confirmOrderForm.checkValidity()) {
+            return actions.resolve();
         }
 
-        return actions.resolve();
+        this.focusFirstInvalidField();
+
+        return actions.reject();
+    }
+
+    /**
+     * Scrolls to and focuses the first invalid field of the confirm form to guide the user to it.
+     *
+     * The required checkboxes (terms, revocation) are associated with the form via the `form`
+     * attribute but live outside of it in the DOM, so they are read from `form.elements`.
+     */
+    focusFirstInvalidField() {
+        const field = Array.from(this.confirmOrderForm.elements)
+            .find((element) => !element.validity.valid);
+
+        if (!field) {
+            return;
+        }
+
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        field.focus();
     }
 }

@@ -7,6 +7,7 @@ Shopware.Component.register('swag-paypal-settings-webhook', () => import('./comp
 Shopware.Component.register('swag-paypal-settings-advanced', () => import('./view/swag-paypal-settings-advanced'));
 Shopware.Component.register('swag-paypal-settings-general', () => import('./view/swag-paypal-settings-general'));
 Shopware.Component.register('swag-paypal-settings-storefront', () => import('./view/swag-paypal-settings-storefront'));
+Shopware.Component.register('swag-paypal-settings-banner-preview', () => import('./view/swag-paypal-settings-storefront/swag-paypal-settings-banner-preview'));
 
 Shopware.Component.register('swag-paypal-settings', () => import('./page/swag-paypal-settings'));
 
@@ -17,7 +18,7 @@ Shopware.Module.register('swag-paypal-settings', {
     description: 'swag-paypal-settings.module.description',
     version: '1.0.0',
     targetVersion: '1.0.0',
-    color: '#9AA8B5',
+    color: 'var(--color-icon-secondary-default)',
     icon: 'regular-cog',
 
     routes: {

@@ -155,6 +155,14 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '10.4.0', '<')) {
             $this->updateTo1040($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.6.0', '<')) {
+            $this->updateTo1060();
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.7.0', '<')) {
+            $this->updateTo1070();
+        }
     }
 
     private function updateTo130(): void
@@ -579,5 +587,17 @@ class Update
     private function updateTo1040(Context $context): void
     {
         $this->paymentMethodInstaller->updateAllMedia($context);
+    }
+
+    private function updateTo1060(): void
+    {
+        $this->systemConfig->set(Settings::ECS_SHIPPING_CALLBACK_ENABLED, true);
+    }
+
+    private function updateTo1070(): void
+    {
+        $this->setSettingToDefaultValue(Settings::INSTALLMENT_BANNER_LOGO_TYPE);
+        $this->setSettingToDefaultValue(Settings::INSTALLMENT_BANNER_TEXT_COLOR);
+        $this->setSettingToDefaultValue(Settings::INSTALLMENT_BANNER_TEXT_SIZE);
     }
 }

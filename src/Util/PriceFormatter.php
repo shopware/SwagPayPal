@@ -20,17 +20,32 @@ class PriceFormatter
         'TWD' => 0,
     ];
 
+    /**
+     * @deprecated tag:v11.0.0 reason:parameter-type-change - `$countryCode` will be renamed to `$currencyIso`
+     */
     public function formatPrice(float $price, ?string $countryCode = null): string
     {
-        $decimals = self::OTHER_DECIMALS[$countryCode] ?? self::DEFAULT_DECIMALS;
+        $decimals = $this->getDecimals($countryCode);
 
         return \number_format($this->roundPrice($price, $countryCode), $decimals, '.', '');
     }
 
+    /**
+     * @deprecated tag:v11.0.0 reason:parameter-type-change - `$countryCode` will be renamed to `$currencyIso`
+     */
     public function roundPrice(float $price, ?string $countryCode = null): float
     {
-        $decimals = self::OTHER_DECIMALS[$countryCode] ?? self::DEFAULT_DECIMALS;
+        $decimals = $this->getDecimals($countryCode);
 
         return \round($price, $decimals);
+    }
+
+    private function getDecimals(?string $currencyIso): int
+    {
+        if ($currencyIso === null) {
+            return self::DEFAULT_DECIMALS;
+        }
+
+        return self::OTHER_DECIMALS[$currencyIso] ?? self::DEFAULT_DECIMALS;
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "swag/paypal",
     "description": "PayPal integration for Shopware 6",
-    "version": "10.5.0",
+    "version": "10.8.0",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
@@ -11,7 +11,7 @@
     ],
     "require": {
         "shopware/core": "~6.7.0@dev",
-        "shopware/paypal-sdk": "^1.6.2"
+        "shopware/paypal-sdk": "^1.8.0"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
@@ -41,6 +41,10 @@
         "jest:watch": [
             "npm run unit-setup --prefix ../../../src/Administration/Resources/app/administration",
             "npm run unit-watch --prefix src/Resources/app/administration"
+        ],
+        "init:testdb": [
+            "@putenv FORCE_INSTALL=true",
+            "@phpunit --group=none --testsuite migration,unit,integration,devops"
         ],
         "lint": [
             "@ecs-fix",

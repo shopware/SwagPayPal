@@ -72,10 +72,20 @@ export default class SwagPayPalInstallmentBanner extends SwagPayPalScriptBase {
          * Available values:
          *  - black
          *  - white
+         *  - monochrome
+         *  - grayscale
          *
          * @type string
          */
         textColor: 'black',
+
+        /**
+         * Text size of the text banner in pixels.
+         * Available values: 10, 12, 16
+         *
+         * @type number
+         */
+        textSize: 12,
 
         /*
          * Streamline options for listing pages, overriding the ones
@@ -111,6 +121,7 @@ export default class SwagPayPalInstallmentBanner extends SwagPayPalScriptBase {
                 },
                 text: {
                     color: this.options.textColor,
+                    size: this.options.textSize,
                 },
             },
         };

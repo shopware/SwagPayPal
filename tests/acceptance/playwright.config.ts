@@ -19,6 +19,9 @@ if (process.env['ADMIN_URL']) {
     process.env['ADMIN_URL'] = process.env['APP_URL'] + 'admin/';
 }
 
+const envLang = process.env.LANG || process.env.LANGUAGE || process.env.lang || "en-GB";
+const browserLocale = envLang.startsWith("de") ? "de-DE" : "en-GB";
+
 export default defineConfig({
     testDir: './tests',
     fullyParallel: true,
@@ -36,6 +39,7 @@ export default defineConfig({
         baseURL: process.env['APP_URL'],
         trace: 'retain-on-failure',
         video: 'off',
+        locale: browserLocale,
     },
 
     // We abuse this to wait for the external webserver

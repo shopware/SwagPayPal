@@ -55,6 +55,8 @@ class BannerData extends AbstractScriptData
      */
     protected string $textColor = 'black';
 
+    protected int $textSize = 12;
+
     protected string $paymentMethodId;
 
     protected bool $footerEnabled;
@@ -134,6 +136,16 @@ class BannerData extends AbstractScriptData
             'grayscale' => self::TEXT_COLOR_MONOCHROME,
             default => $this->textColor,
         };
+    }
+
+    public function getTextSize(): int
+    {
+        return $this->textSize;
+    }
+
+    public function setTextSize(int $textSize): void
+    {
+        $this->textSize = $textSize;
     }
 
     public function getFooterEnabled(): bool

@@ -118,7 +118,7 @@ class CheckoutSubscriberTest extends TestCase
     }
 
     #[DataProvider('dataProviderPaymentMethods')]
-    public function testOnAccountOrderEditPaymentMethodNotInActiveSalesChannel(string $paymentMethodId, string $extensionId): void
+    public function testOnAccountOrderEditPaymentMethodNotInActiveSalesChannel(string $paymentMethodId, string $extensionId, string $_assertionMethod): void
     {
         $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId);
         $subscriber = $this->createSubscriber();
@@ -129,7 +129,7 @@ class CheckoutSubscriberTest extends TestCase
     }
 
     #[DataProvider('dataProviderPaymentMethods')]
-    public function testOnAccountOrderEditLoadedNoSettings(string $paymentMethodId, string $extensionId): void
+    public function testOnAccountOrderEditLoadedNoSettings(string $paymentMethodId, string $extensionId, string $_assertionMethod): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
         $subscriber = $this->createSubscriber([
@@ -174,7 +174,7 @@ class CheckoutSubscriberTest extends TestCase
     }
 
     #[DataProvider('dataProviderPaymentMethods')]
-    public function testOnCheckoutConfirmNoSettings(string $paymentMethodId, string $extensionId): void
+    public function testOnCheckoutConfirmNoSettings(string $paymentMethodId, string $extensionId, string $_assertionMethod): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
         $subscriber = $this->createSubscriber([
@@ -188,7 +188,7 @@ class CheckoutSubscriberTest extends TestCase
     }
 
     #[DataProvider('dataProviderPaymentMethods')]
-    public function testOnCheckoutConfirmPaymentMethodNotInActiveSalesChannel(string $paymentMethodId, string $extensionId): void
+    public function testOnCheckoutConfirmPaymentMethodNotInActiveSalesChannel(string $paymentMethodId, string $extensionId, string $_assertionMethod): void
     {
         $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId);
         $subscriber = $this->createSubscriber();
@@ -211,7 +211,7 @@ class CheckoutSubscriberTest extends TestCase
     }
 
     #[DataProvider('dataProviderPaymentMethods')]
-    public function testOnCheckoutConfirmLoadedDisabledWithCartErrors(string $paymentMethodId, string $extensionId): void
+    public function testOnCheckoutConfirmLoadedDisabledWithCartErrors(string $paymentMethodId, string $extensionId, string $_assertionMethod): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
         $subscriber = $this->createSubscriber();
@@ -224,7 +224,7 @@ class CheckoutSubscriberTest extends TestCase
     }
 
     #[DataProvider('dataProviderPaymentMethods')]
-    public function testOnCheckoutConfirmLoadedWithCustomLanguage(string $paymentMethodId, string $extensionId): void
+    public function testOnCheckoutConfirmLoadedWithCustomLanguage(string $paymentMethodId, string $extensionId, string $_assertionMethod): void
     {
         $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
         $subscriber = $this->createSubscriber([

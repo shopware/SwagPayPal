@@ -8,6 +8,7 @@
 namespace Swag\PayPal\OrdersApi\Builder\Util;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\PayPalSDK\Struct\V2\Common\Money;
@@ -30,8 +31,31 @@ class AmountProvider
         $this->priceFormatter = $priceFormatter;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed. Use {@see AmountProvider::createAmountFromPrice()} instead.
+     */
     public function createAmount(
         CalculatedPrice $totalAmount,
+        CalculatedPrice $shippingCosts,
+        CurrencyEntity $currency,
+        PurchaseUnit $purchaseUnit,
+        bool $isNet,
+    ): Amount {
+        return $this->buildAmount($totalAmount->getTotalPrice(), $shippingCosts, $currency, $purchaseUnit, $isNet);
+    }
+
+    public function createAmountFromPrice(
+        CartPrice $price,
+        CalculatedPrice $shippingCosts,
+        CurrencyEntity $currency,
+        PurchaseUnit $purchaseUnit,
+        bool $isNet,
+    ): Amount {
+        return $this->buildAmount($price->getTotalPrice(), $shippingCosts, $currency, $purchaseUnit, $isNet);
+    }
+
+    private function buildAmount(
+        float $totalPrice,
         CalculatedPrice $shippingCosts,
         CurrencyEntity $currency,
         PurchaseUnit $purchaseUnit,
@@ -41,7 +65,7 @@ class AmountProvider
 
         $amount = new Amount();
         $amount->setCurrencyCode($currencyCode);
-        $amount->setValue($this->priceFormatter->formatPrice($totalAmount->getTotalPrice(), $currencyCode));
+        $amount->setValue($this->priceFormatter->formatPrice($totalPrice, $currencyCode));
 
         $items = $purchaseUnit->getItems();
         if ($items !== null) {

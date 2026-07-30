@@ -21,11 +21,16 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V2\Common\Address;
 use Shopware\PayPalSDK\Struct\V2\Common\Name;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\AppSwitchContext;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\AppSwitchContext\MobileWebContext;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -75,7 +80,11 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
 
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
-        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction);
+        $requestDataBag = new RequestDataBag($request->request->all());
+        /** @phpstan-ignore method.deprecated */
+        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, $requestDataBag);
+        $requestVaulting = $this->vaultTokenService->shouldRequestVaulting(bag: $requestDataBag, paymentTransaction: $paymentTransaction);
+        $this->configureAppSwitchContext($experienceContext, $order->getSalesChannelId(), $requestDataBag, $requestVaulting);
         $paypal->setExperienceContext($experienceContext);
 
         $customer = $order->getOrderCustomer();
@@ -89,7 +98,7 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $name->setSurname($customer->getLastName());
         $paypal->setName($name);
 
-        if ($this->vaultTokenService->shouldRequestVaulting(bag: $request->request, paymentTransaction: $paymentTransaction)) {
+        if ($requestVaulting) {
             $this->vaultTokenService->requestVaulting($paypal);
         }
     }
@@ -99,7 +108,11 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $paypal = new Paypal();
         $paymentSource->setPaypal($paypal);
 
-        $paypal->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext()));
+        /** @phpstan-ignore method.deprecated */
+        $experienceContext = $this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext(), null, $requestDataBag);
+        $requestVaulting = $this->vaultTokenService->shouldRequestVaulting($salesChannelContext, $requestDataBag);
+        $this->configureAppSwitchContext($experienceContext, $salesChannelContext->getSalesChannelId(), $requestDataBag, $requestVaulting);
+        $paypal->setExperienceContext($experienceContext);
 
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
@@ -120,8 +133,33 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $this->addressProvider->createAddress($billingAddress, $address);
         $paypal->setAddress($address);
 
-        if ($this->vaultTokenService->shouldRequestVaulting($salesChannelContext, $requestDataBag)) {
+        if ($requestVaulting) {
             $this->vaultTokenService->requestVaulting($paypal);
         }
+    }
+
+    private function configureAppSwitchContext(ExperienceContext $experienceContext, string $salesChannelId, RequestDataBag $requestDataBag, bool $requestVaulting): void
+    {
+        if ($requestVaulting || !$this->systemConfigService->getBool(Settings::SPB_APP_SWITCH_ENABLED, $salesChannelId)) {
+            return;
+        }
+
+        if ($requestDataBag->getString('product') !== 'spb') {
+            return;
+        }
+
+        $buyerUserAgent = $requestDataBag->getString(AbstractCreateOrderRoute::PAYPAL_BUYER_USER_AGENT);
+        if ($buyerUserAgent === '') {
+            return;
+        }
+
+        $mobileWebContext = new MobileWebContext();
+        $mobileWebContext->setReturnFlow(MobileWebContext::RETURN_FLOW_AUTO);
+        $mobileWebContext->setBuyerUserAgent(\substr($buyerUserAgent, 0, 512));
+
+        $appSwitchContext = new AppSwitchContext();
+        $appSwitchContext->setMobileWeb($mobileWebContext);
+
+        $experienceContext->setAppSwitchContext($appSwitchContext);
     }
 }

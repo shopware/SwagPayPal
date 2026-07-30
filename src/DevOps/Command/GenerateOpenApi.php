@@ -8,7 +8,6 @@
 namespace Swag\PayPal\DevOps\Command;
 
 use OpenApi\Generator;
-use OpenApi\Util;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\DevOps\OpenApi\PayPalApiStructSnakeCasePropertiesProcessor;
 use Swag\PayPal\DevOps\OpenApi\RequireNonOptionalPropertiesProcessor;
@@ -19,6 +18,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @internal
@@ -39,11 +39,7 @@ class GenerateOpenApi extends Command
         $logger = new ConsoleLogger($output);
 
         $generator = new Generator($logger);
-        $pipeline = $generator->getProcessorPipeline()
-            ->add(new PayPalApiStructSnakeCasePropertiesProcessor())
-            ->add(new RequireNonOptionalPropertiesProcessor());
-
-        $generator = $generator->setProcessorPipeline($pipeline);
+        $this->registerProcessors($generator);
 
         $storeApi = $input->getOption('store-api');
         $adminApi = $input->getOption('admin-api');
@@ -76,9 +72,9 @@ class GenerateOpenApi extends Command
         }
 
         $openApi = $generator->generate([
-            Util::finder(self::ROOT_DIR . '/src/RestApi'),
-            Util::finder(self::ROOT_DIR . '/src/Checkout'),
-            Util::finder(self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct'),
+            self::ROOT_DIR . '/src/RestApi',
+            self::ROOT_DIR . '/src/Checkout',
+            $this->paypalSdkStructFinder(),
         ])?->toJson();
 
         if ($openApi === null) {
@@ -102,16 +98,16 @@ class GenerateOpenApi extends Command
         }
 
         $openApi = $generator->generate([
-            Util::finder(self::ROOT_DIR . '/src/RestApi'),
-            Util::finder(self::ROOT_DIR . '/src/Administration'),
-            Util::finder(self::ROOT_DIR . '/src/Dispute'),
-            Util::finder(self::ROOT_DIR . '/src/OrdersApi'),
-            Util::finder(self::ROOT_DIR . '/src/PaymentsApi'),
-            Util::finder(self::ROOT_DIR . '/src/Pos'),
-            Util::finder(self::ROOT_DIR . '/src/Setting'),
-            Util::finder(self::ROOT_DIR . '/src/Webhook'),
-            Util::finder(self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct'),
-            Util::finder(__DIR__ . '/Polyfill'),
+            self::ROOT_DIR . '/src/RestApi',
+            self::ROOT_DIR . '/src/Administration',
+            self::ROOT_DIR . '/src/Dispute',
+            self::ROOT_DIR . '/src/OrdersApi',
+            self::ROOT_DIR . '/src/PaymentsApi',
+            self::ROOT_DIR . '/src/Pos',
+            self::ROOT_DIR . '/src/Setting',
+            self::ROOT_DIR . '/src/Webhook',
+            $this->paypalSdkStructFinder(),
+            __DIR__ . '/Polyfill',
         ])?->toJson();
 
         if ($openApi === null) {
@@ -129,5 +125,23 @@ class GenerateOpenApi extends Command
     {
         $this->addOption('store-api', null, InputOption::VALUE_NEGATABLE, 'Generate store-api schema into src/Resources/Schema/StoreApi', true);
         $this->addOption('admin-api', null, InputOption::VALUE_NEGATABLE, 'Generate store-api schema into src/Resources/Schema/AdminApi', true);
+    }
+
+    private function registerProcessors(Generator $generator): void
+    {
+        $pipeline = $generator->getProcessorPipeline()
+            ->add(new PayPalApiStructSnakeCasePropertiesProcessor())
+            ->add(new RequireNonOptionalPropertiesProcessor());
+
+        $generator->setProcessorPipeline($pipeline);
+    }
+
+    private function paypalSdkStructFinder(): Finder
+    {
+        return (new Finder())
+            ->files()
+            ->name('*.php')
+            ->in(self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct')
+            ->exclude('AgenticCommerce');
     }
 }

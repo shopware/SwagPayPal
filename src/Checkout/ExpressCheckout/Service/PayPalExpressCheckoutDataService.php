@@ -53,11 +53,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService
     ): ?ExpressCheckoutButtonData {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
-        if (!$addProductToCart && $cart->getLineItems()->count() === 0) {
-            return null;
-        }
-
-        if (!$addProductToCart && $this->cartPriceService->isZeroValueCart($cart)) {
+        if (!$addProductToCart && !$this->cartPriceService->isProcessable($cart, $salesChannelContext)) {
             return null;
         }
 

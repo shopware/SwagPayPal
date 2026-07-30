@@ -30,6 +30,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Stub\Framework\IdsCollection;
 use Shopware\Core\Test\TestDefaults;
 use Shopware\PayPalSDK\Struct\V2\Common\Address;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\ShippingOption;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnitCollection;
@@ -102,9 +103,8 @@ class ExpressShippingCallbackServiceTest extends TestCase
 
         $order = $this->service->recalculateCart($this->createCallback($country), $this->salesChannelContext);
 
-        static::assertSame('paypal-order-id', $order->getId());
-        static::assertSame('default', $order->getPurchaseUnits()->first()?->getReferenceId());
-        static::assertCount(2, $order->getPurchaseUnits()->first()->getShippingOptions() ?? []);
+        $this->assertMinimalOrderPayload($order);
+        static::assertCount(2, $order->getPurchaseUnits()->first()?->getShippingOptions() ?? []);
         static::assertNotSame($cart, $this->getCart());
 
         $this->assertContextParameters([
@@ -123,9 +123,8 @@ class ExpressShippingCallbackServiceTest extends TestCase
 
         $order = $this->service->recalculateCart($this->createCallback($country), $this->salesChannelContext);
 
-        static::assertSame('paypal-order-id', $order->getId());
-        static::assertSame('default', $order->getPurchaseUnits()->first()?->getReferenceId());
-        static::assertCount(2, $order->getPurchaseUnits()->first()->getShippingOptions() ?? []);
+        $this->assertMinimalOrderPayload($order);
+        static::assertCount(2, $order->getPurchaseUnits()->first()?->getShippingOptions() ?? []);
         static::assertNotSame($cart, $this->getCart());
 
         $this->assertContextParameters([
@@ -141,9 +140,8 @@ class ExpressShippingCallbackServiceTest extends TestCase
 
         $order = $this->service->recalculateCart($this->createCallback($country, $shippingMethod->getId()), $this->salesChannelContext);
 
-        static::assertSame('paypal-order-id', $order->getId());
-        static::assertSame('default', $order->getPurchaseUnits()->first()?->getReferenceId());
-        static::assertCount(2, $order->getPurchaseUnits()->first()->getShippingOptions() ?? []);
+        $this->assertMinimalOrderPayload($order);
+        static::assertCount(2, $order->getPurchaseUnits()->first()?->getShippingOptions() ?? []);
         static::assertNotSame($cart, $this->getCart());
 
         $this->assertContextParameters([
@@ -157,9 +155,8 @@ class ExpressShippingCallbackServiceTest extends TestCase
         $country = $this->getCountry('DE');
         $order = $this->service->recalculateCart($this->createCallback($country), $this->salesChannelContext);
 
-        static::assertSame('paypal-order-id', $order->getId());
-        static::assertSame('default', $order->getPurchaseUnits()->first()?->getReferenceId());
-        static::assertCount(2, $order->getPurchaseUnits()->first()->getShippingOptions() ?? []);
+        $this->assertMinimalOrderPayload($order);
+        static::assertCount(2, $order->getPurchaseUnits()->first()?->getShippingOptions() ?? []);
         static::assertSame($cart, $this->getCart());
 
         $this->assertContextParameters([
@@ -169,19 +166,26 @@ class ExpressShippingCallbackServiceTest extends TestCase
         ]);
     }
 
-    public function testCalculationThrowsMethodNotAvailable(): void
+    public function testCalculationSwitchesToFirstAvailableWhenSelectedShippingMethodIsBlocked(): void
     {
-        $shippingMethod = $this->getShippingMethod('shipping_express');
+        $blocked = $this->getShippingMethod('shipping_express');
         static::getContainer()->get('shipping_method.repository')->update([[
-            'id' => $shippingMethod->getId(),
+            'id' => $blocked->getId(),
             'availabilityRule' => self::BLOCK_AVAILABLITITY_RULE,
         ]], $this->salesChannelContext->getContext());
 
-        static::expectException(ExpressShippingCallbackException::class);
-        static::expectExceptionMessage('Shipping method "Express" not available');
-
         $country = $this->getCountry('DE');
-        $this->service->recalculateCart($this->createCallback($country, $shippingMethod->getId()), $this->salesChannelContext);
+        $order = $this->service->recalculateCart($this->createCallback($country, $blocked->getId()), $this->salesChannelContext);
+
+        $this->assertMinimalOrderPayload($order);
+
+        $shippingOptions = $order->getPurchaseUnits()->first()?->getShippingOptions();
+        static::assertNotNull($shippingOptions);
+        static::assertGreaterThan(0, $shippingOptions->count());
+
+        $selected = $shippingOptions->filter(static fn (ShippingOption $option) => $option->isSelected())->first();
+        static::assertNotNull($selected, 'Auto-switched shipping method should be marked as selected');
+        static::assertNotSame($blocked->getId(), $selected->getId(), 'Blocked shipping method must not be re-selected');
     }
 
     public function testCalculationThrowsAddressError(): void
@@ -200,7 +204,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
         ], $this->salesChannelContext->getContext());
 
         static::expectException(ExpressShippingCallbackException::class);
-        static::expectExceptionMessage('Address error for shipping to "DE"');
+        static::expectExceptionMessageMatches('/\A' . \preg_quote('Address error for shipping to "DE"', '/') . '\z/');
 
         $country = $this->getCountry('DE');
         $this->service->recalculateCart($this->createCallback($country, $shippingMethod->getId()), $this->salesChannelContext);
@@ -209,7 +213,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
     public function testCalculationThrowsCountryError(): void
     {
         static::expectException(ExpressShippingCallbackException::class);
-        static::expectExceptionMessage('Country error for shipping to "sdf"');
+        static::expectExceptionMessageMatches('/\A' . \preg_quote('Country error for shipping to "sdf"', '/') . '\z/');
 
         $country = $this->getCountry('DE');
         $callback = $this->createCallback($country);
@@ -222,6 +226,15 @@ class ExpressShippingCallbackServiceTest extends TestCase
         $params = static::getContainer()->get(SalesChannelContextPersister::class)->load($this->ids->get('token'), TestDefaults::SALES_CHANNEL);
 
         static::assertEquals($expectedParams, \array_intersect_key($expectedParams, $params));
+    }
+
+    private function assertMinimalOrderPayload(Order $order): void
+    {
+        $serialized = \json_decode((string) \json_encode($order, \JSON_THROW_ON_ERROR), true, flags: \JSON_THROW_ON_ERROR);
+
+        static::assertSame(['id', 'purchase_units'], \array_keys($serialized));
+        static::assertSame('paypal-order-id', $serialized['id']);
+        static::assertSame('default', $serialized['purchase_units'][0]['reference_id']);
     }
 
     private function createCallback(

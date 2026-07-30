@@ -45,6 +45,7 @@ use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\AbstractPaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -160,7 +161,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The transaction with id  is invalid or could not be found.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The transaction with id  is invalid or could not be found.', '/') . '\z/');
         $this->getBuilder()->getOrderFromCart($this->createCart('', false), $salesChannelContext, new RequestDataBag());
     }
 
@@ -169,7 +170,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
 
         $this->expectException(PayPalSettingsInvalidException::class);
-        $this->expectExceptionMessage('Required setting "intent" is missing or invalid');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Required setting "intent" is missing or invalid', '/') . '\z/');
         $this->systemConfig->set(Settings::INTENT, 'invalidIntent');
         $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, new RequestDataBag());
     }
@@ -179,9 +180,49 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
 
         $this->expectException(PayPalSettingsInvalidException::class);
-        $this->expectExceptionMessage('Required setting "landingPage" is missing or invalid');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Required setting "landingPage" is missing or invalid', '/') . '\z/');
         $this->systemConfig->set(Settings::LANDING_PAGE, 'invalidLandingPageType');
         $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, new RequestDataBag());
+    }
+
+    public function testGetOrderFromCartUsesRequestReturnUrls(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        $requestData = new RequestDataBag([
+            CreateOrderRoute::RETURN_URL => 'https://example.test/paypal/restore-context/token',
+            CreateOrderRoute::CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+        ]);
+
+        $order = $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, $requestData);
+        $experienceContext = $order->getPaymentSource()?->first($this->getPaymentSourceClass())?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
+    }
+
+    public function testGetOrderUsesRequestReturnUrls(): void
+    {
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
+
+        $order = $this->getBuilder()->getOrder(
+            $paymentTransaction,
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], [
+                CreateOrderRoute::RETURN_URL => 'https://example.test/paypal/restore-context/token',
+                CreateOrderRoute::CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+            ]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->first($this->getPaymentSourceClass())?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
     }
 
     public function testGetOrderWithDisabledSubmitCartConfig(): void
@@ -207,6 +248,93 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         static::assertNotNull($purchaseUnit);
         static::assertNull($purchaseUnit->getAmount()->getBreakdown());
         static::assertNull($purchaseUnit->getItems());
+    }
+
+    public function testGetOrderFromCartUsesTaxAdjustedCartTotalNotStaleTransactionAmount(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        $this->systemConfig->set(Settings::SUBMIT_CART, false);
+
+        // The cart transaction is calculated with the original product taxes, before a tax provider runs.
+        $cart = $this->createCart('', true, 10.0, 10.0);
+        // A tax provider (e.g. an app with net customer group) then adjusts the cart total. The transaction
+        // amount is not refreshed and stays stale - PayPal must be charged the adjusted total nonetheless.
+        $cart->setPrice($this->createCartPrice(15.0, 15.0, 15.0));
+
+        $order = $this->getBuilder()->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
+
+        $purchaseUnit = $order->getPurchaseUnits()->first();
+        static::assertNotNull($purchaseUnit);
+        static::assertSame('15.00', $purchaseUnit->getAmount()->getValue());
+    }
+
+    public function testGetOrderFromCartWithSubmittedItemsChargesTaxAdjustedTotalAndReconcilesBreakdown(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        // SUBMIT_CART is enabled by default in production, so the amount breakdown (items) is built as well.
+        $this->systemConfig->set(Settings::SUBMIT_CART, true);
+
+        // Transaction and line item carry the pre-tax-provider amounts.
+        $cart = $this->createCart('', true, 10.0, 10.0);
+        $cart->add($this->createLineItem(new CalculatedPrice(10.0, 10.0, new CalculatedTaxCollection(), new TaxRuleCollection())));
+        // A tax provider raises the cart total afterwards without refreshing the transaction or line items.
+        $cart->setPrice($this->createCartPrice(15.0, 15.0, 15.0));
+
+        $order = $this->getBuilder()->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
+
+        $purchaseUnit = $order->getPurchaseUnits()->first();
+        static::assertNotNull($purchaseUnit);
+
+        $amount = $purchaseUnit->getAmount();
+        static::assertSame('15.00', $amount->getValue());
+
+        // The breakdown must still reconcile to the adjusted top-line total (PayPal rejects mismatches).
+        $breakdown = $amount->getBreakdown();
+        static::assertNotNull($breakdown);
+        $itemTotal = $breakdown->getItemTotal();
+        $taxTotal = $breakdown->getTaxTotal();
+        $shipping = $breakdown->getShipping();
+        $handling = $breakdown->getHandling();
+        $discount = $breakdown->getDiscount();
+        static::assertNotNull($itemTotal);
+        static::assertNotNull($taxTotal);
+        static::assertNotNull($shipping);
+        static::assertNotNull($handling);
+        static::assertNotNull($discount);
+        $reconciled = (float) $itemTotal->getValue()
+            + (float) $taxTotal->getValue()
+            + (float) $shipping->getValue()
+            + (float) $handling->getValue()
+            - (float) $discount->getValue();
+        static::assertEqualsWithDelta(15.0, $reconciled, 0.001);
+    }
+
+    public function testGetOrderUsesTaxAdjustedOrderTotalNotStaleTransactionAmount(): void
+    {
+        $this->systemConfig->set(Settings::SUBMIT_CART, false);
+
+        // The order total (860.00) reflects the tax provider adjustment, but the order transaction was
+        // persisted with the pre-adjustment amount. PayPal must be charged the order total, not the transaction.
+        $order = $this->createOrder();
+        $orderTransaction = $this->createOrderTransaction();
+        $orderTransaction->setAmount(new CalculatedPrice(
+            700.0,
+            800.0,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection()
+        ));
+
+        $payPalOrder = $this->getBuilder()->getOrder(
+            new PaymentTransactionStruct($orderTransaction->getId()),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
+        );
+
+        $purchaseUnit = $payPalOrder->getPurchaseUnits()->first();
+        static::assertNotNull($purchaseUnit);
+        static::assertSame('860.00', $purchaseUnit->getAmount()->getValue());
     }
 
     public function testGetOrderWithProductWithZeroPrice(): void
@@ -448,7 +576,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         return $order;
     }
 
-    private function createCart(string $paymentMethodId, bool $withTransaction = true, float $netPrice = 9.0, float $totalPrice = 10.9): Cart
+    protected function createCart(string $paymentMethodId, bool $withTransaction = true, float $netPrice = 9.0, float $totalPrice = 10.9): Cart
     {
         $cart = new Cart(Uuid::randomHex());
         if ($withTransaction) {
@@ -469,7 +597,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         return $cart;
     }
 
-    private function createCartPrice(float $netPrice, float $totalPrice, float $positionPrice): CartPrice
+    protected function createCartPrice(float $netPrice, float $totalPrice, float $positionPrice): CartPrice
     {
         return new CartPrice(
             $netPrice,
@@ -481,7 +609,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         );
     }
 
-    private function createLineItem(
+    protected function createLineItem(
         ?CalculatedPrice $lineItemPrice,
         string $lineItemType = LineItem::PRODUCT_LINE_ITEM_TYPE,
     ): LineItem {
@@ -496,7 +624,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         return $lineItem;
     }
 
-    private function createSalesChannelContext(): SalesChannelContext
+    protected function createSalesChannelContext(): SalesChannelContext
     {
         $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCurrency()->setIsoCode('EUR');
@@ -519,7 +647,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         return $salesChannelContext;
     }
 
-    private function createCartWithLineItem(?CalculatedPrice $lineItemPrice = null): Cart
+    protected function createCartWithLineItem(?CalculatedPrice $lineItemPrice = null): Cart
     {
         $cart = $this->createCart('', true, $lineItemPrice ? $lineItemPrice->getTotalPrice() : 9.0, $lineItemPrice ? $lineItemPrice->getTotalPrice() : 10.9);
         $cart->add($this->createLineItem($lineItemPrice));

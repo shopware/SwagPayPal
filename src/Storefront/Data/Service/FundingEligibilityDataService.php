@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
+use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Storefront\Data\Struct\FundingEligibilityData;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -29,6 +30,7 @@ class FundingEligibilityDataService extends AbstractScriptDataService
         LocaleCodeProvider $localeCodeProvider,
         RouterInterface $router,
         private readonly RequestStack $requestStack,
+        private readonly MethodEligibilityStateService $methodEligibilityStateService,
     ) {
         parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $router);
     }
@@ -38,17 +40,16 @@ class FundingEligibilityDataService extends AbstractScriptDataService
         return (new FundingEligibilityData())->assign([
             ...parent::getBaseData($context),
             'methodEligibilityUrl' => $this->router->generate('frontend.paypal.payment-method-eligibility'),
-            'filteredPaymentMethods' => $this->getFilteredPaymentMethods(),
+            'filteredPaymentMethods' => $this->getFilteredPaymentMethods($context),
         ]);
     }
 
-    private function getFilteredPaymentMethods(): array
+    private function getFilteredPaymentMethods(SalesChannelContext $context): array
     {
-        if (!$this->requestStack->getCurrentRequest()?->hasSession() || !$this->requestStack->getSession()->isStarted()) {
-            return [];
-        }
-
-        $handlers = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY, []);
+        $handlers = $this->methodEligibilityStateService->getIneligiblePaymentMethods(
+            $this->requestStack->getCurrentRequest(),
+            $context,
+        );
 
         return \array_keys(\array_filter(\array_intersect(
             MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS,

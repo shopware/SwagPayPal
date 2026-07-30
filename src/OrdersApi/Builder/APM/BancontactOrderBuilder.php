@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Bancontact;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +29,8 @@ class BancontactOrderBuilder extends AbstractAPMOrderBuilder
         PaymentSource $paymentSource,
     ): void {
         $sourceElement = new Bancontact();
-        $this->fillPaymentSource($paymentTransaction, $order, $context, $sourceElement);
+        /** @phpstan-ignore method.deprecated */
+        $this->fillPaymentSource($paymentTransaction, $order, $context, $sourceElement, new RequestDataBag($request->request->all()));
 
         $paymentSource->setBancontact($sourceElement);
     }

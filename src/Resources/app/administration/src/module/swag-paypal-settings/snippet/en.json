@@ -45,6 +45,18 @@
         "gold": "Gold (recommended)",
         "silver": "Silver",
         "white": "White"
+      },
+      "installmentLogoType": {
+        "primary": "Primary",
+        "alternative": "Alternative",
+        "inline": "Inline",
+        "none": "None"
+      },
+      "installmentTextColor": {
+        "black": "Black",
+        "white": "White",
+        "monochrome": "Monochrome",
+        "grayscale": "Greyscale"
       }
     },
     "credentialsLive": {
@@ -75,11 +87,19 @@
       "subtitle": "Express Checkouts increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated. ",
       "alertMessage": "Double opt-in for guests is activated in one of your Sales Channels. This feature is not compatible with PayPal Express Shortcut buttons. Customers who sign up via the Express Checkout Shortcut buttons won't receive double opt-in verification emails.",
       "alertMessagePhone": "Phone numbers are required for one of your Sales Channels. Please ensure that you have enabled the transmission for \"contact phone number\" in the PayPal account settings to avoid checkout issues. You can find this setting {url}.",
-      "alertMessagePhoneLink": "here"
+      "alertMessagePhoneLink": "here",
+      "ecsShippingCallbackSettingDisabledTooltip": "The shipping callback can not be enabled as \"Local development environment\" is active"
     },
     "installment": {
       "title": "'Pay Later' banner",
-      "subtitle": "Banners increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated."
+      "subtitle": "Banners increase the conversion rate in your shop and pose no financial risk to you as a merchant. It is recommended to keep them activated.",
+      "appearance": "Appearance",
+      "preview": "Preview",
+      "previewNoCredentials": "Enter your PayPal credentials to see the banner preview.",
+      "previewSdkError": "Could not initialize the PayPal SDK. Please verify your client ID.",
+      "previewNoOffers": "No Pay Later offers are available for your account with the current settings.",
+      "pageVisibility": "Page visibility",
+      "pageVisibilitySubtitle": "The banner will be displayed on the following pages."
     },
     "spb": {
       "title": "Smart Payment Buttons"
@@ -90,11 +110,16 @@
       "buttonRefresh": "Refresh webhook",
       "refreshFailed": "Failed to refresh webhook",
       "fetchFailed": "Failed to fetch webhook status",
+      "tooltipDisabled": "Webhook can not be refreshed as \"Local development environment\" is active",
       "status": {
         "unknown": "Loading...",
         "missing": "Not registered",
         "invalid": "Registered, but possible domain mismatch",
-        "valid": "Registered"
+        "valid": "Registered",
+        "disabled": "Disabled"
+      },
+      "honey": {
+        "info": "The webhook is used for registration. It transmits all the data required to activate and use the sales channel."
       }
     },
     "crossBorder": {

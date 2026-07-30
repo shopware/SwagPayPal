@@ -259,7 +259,7 @@ class UpdateTest extends TestCase
 
         $updater = $this->createUpdateService($systemConfig);
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid value for "SwagPayPal.settings.intent" setting');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Invalid value for "SwagPayPal.settings.intent" setting', '/') . '\z/');
         $updater->update($updateContext);
     }
 
@@ -272,7 +272,7 @@ class UpdateTest extends TestCase
 
         $updater = $this->createUpdateService($systemConfig);
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid value for "SwagPayPal.settings.landingPage" setting');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Invalid value for "SwagPayPal.settings.landingPage" setting', '/') . '\z/');
         $updater->update($updateContext);
     }
 
@@ -453,7 +453,9 @@ class UpdateTest extends TestCase
         $media = [];
         foreach ($paymentMethods as $paymentMethod) {
             static::assertNotNull($paymentMethod->getMedia());
-            $media[$paymentMethod->getMedia()->getFileName()] = $paymentMethod->getMedia()->getFileSize();
+            $fileName = $paymentMethod->getMedia()->getFileName();
+            static::assertNotNull($fileName);
+            $media[$fileName] = $paymentMethod->getMedia()->getFileSize();
         }
 
         static::assertEquals([
@@ -486,7 +488,9 @@ class UpdateTest extends TestCase
         $media = [];
         foreach ($paymentMethods as $paymentMethod) {
             static::assertNotNull($paymentMethod->getMedia());
-            $media[$paymentMethod->getMedia()->getFileName()] = $paymentMethod->getMedia()->getFileSize();
+            $fileName = $paymentMethod->getMedia()->getFileName();
+            static::assertNotNull($fileName);
+            $media[$fileName] = $paymentMethod->getMedia()->getFileSize();
         }
 
         static::assertEquals([

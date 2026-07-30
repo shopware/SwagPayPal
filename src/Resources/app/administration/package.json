@@ -13,27 +13,27 @@
         "openapi-types": "openapi-typescript ../../Schema/AdminApi/openapi.json --empty-objects-unknown --default-non-nullable --output src/types/openapi.d.ts"
     },
     "devDependencies": {
-        "@babel/preset-env": "^7.29.0",
-        "@babel/preset-typescript": "^7.28.5",
+        "@babel/preset-env": "^7.29.7",
+        "@babel/preset-typescript": "^7.29.7",
         "@eslint/js": "^9.39.4",
         "@shopware-ag/eslint-config-base": "^2.0.0",
-        "@shopware-ag/jest-preset-sw6-admin": "^6.0.4",
+        "@shopware-ag/jest-preset-sw6-admin": "^6.0.6",
         "@stylistic/eslint-plugin": "^5.10.0",
         "@types/jest": "^29.5.14",
         "eslint": "^9.39.4",
-        "eslint-import-resolver-typescript": "^4.4.4",
+        "eslint-import-resolver-typescript": "^4.4.5",
         "eslint-plugin-import": "^2.32.0",
-        "eslint-plugin-jest": "^29.15.0",
-        "eslint-plugin-vue": "^10.8.0",
-        "globals": "^17.4.0",
+        "eslint-plugin-jest": "^29.15.5",
+        "eslint-plugin-vue": "^10.10.0",
+        "globals": "^17.7.0",
         "jest": "^29.7.0",
         "jest-environment-jsdom": "^29.7.0",
         "openapi-typescript": "^7.13.0",
         "typescript": "~5.9.3",
-        "typescript-eslint": "^8.56.1"
+        "typescript-eslint": "^8.65.0"
     },
     "dependencies": {
-        "@shopware-ag/meteor-admin-sdk": "^6.5.1"
+        "@shopware-ag/meteor-admin-sdk": "^6.9.1"
     },
     "optionalDependencies": {
         "administration": "^6.x"

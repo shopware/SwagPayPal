@@ -20,10 +20,8 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[Package('checkout')]
-#[Route(defaults: ['_routeScope' => ['store-api']])]
 class ExpressCategoryRoute extends AbstractCategoryRoute
 {
     /**
@@ -43,14 +41,13 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
         return $this->inner;
     }
 
-    #[Route(path: '/store-api/category/{navigationId}', name: 'store-api.category.detail', methods: ['GET', 'POST'])]
     public function load(string $navigationId, Request $request, SalesChannelContext $context): CategoryRouteResponse
     {
         $response = $this->inner->load($navigationId, $request, $context);
 
         $route = $request->attributes->get('_route');
 
-        if (!\is_string($route) || empty($route)) {
+        if (!\is_string($route) || $route === '') {
             return $response;
         }
 

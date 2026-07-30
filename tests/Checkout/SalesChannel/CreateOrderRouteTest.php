@@ -26,6 +26,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
@@ -153,6 +154,36 @@ class CreateOrderRouteTest extends TestCase
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
     }
 
+    public function testCreatePaymentUsesRequestReturnUrls(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext(
+            $this->getContainer(),
+            new PaymentMethodCollection(),
+            null,
+            true,
+            false,
+            true
+        );
+
+        $response = $this->route->createPayPalOrder($salesChannelContext, new Request([], [
+            CreateOrderRoute::RETURN_URL => 'https://example.test/paypal/restore-context/token',
+            CreateOrderRoute::CANCEL_URL => 'https://example.test/paypal/restore-context/token',
+        ]));
+
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        static::assertSame(CreateOrderCapture::ID, $response->getToken());
+
+        $request = $this->getClient()->getLast();
+        static::assertNotNull($request);
+
+        $order = (new Order())->assign($request->getRequestBody() ?? []);
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
+    }
+
     public function testCreatePaymentWithoutCustomer(): void
     {
         $salesChannelContext = Generator::generateSalesChannelContext();
@@ -166,11 +197,21 @@ class CreateOrderRouteTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $orderId = Uuid::randomHex();
-        $request = new Request([], ['orderId' => $orderId]);
+        $request = new Request([], ['orderId' => $orderId], [], [], [], [
+            'HTTP_USER_AGENT' => 'Mozilla/5.0 Edit Order App Switch Test',
+        ]);
 
         $this->paymentOrderRoute
             ->expects($this->once())
-            ->method('setPayment');
+            ->method('setPayment')
+            ->with(
+                static::callback(static function (Request $request): bool {
+                    static::assertSame('Mozilla/5.0 Edit Order App Switch Test', $request->request->getString(CreateOrderRoute::PAYPAL_BUYER_USER_AGENT));
+
+                    return true;
+                }),
+                $salesChannelContext,
+            );
 
         $orderEntity = $this->createOrderEntity($orderId);
         $orderTransaction = $this->createOrderTransaction();
@@ -219,7 +260,7 @@ class CreateOrderRouteTest extends TestCase
         $request = new Request([], ['orderId' => 'no-order-transactions-id']);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The order with id noordertransactionsid is invalid or could not be found.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The order with id noordertransactionsid is invalid or could not be found.', '/') . '\z/');
         $this->route->createPayPalOrder($salesChannelContext, $request);
     }
 
@@ -238,7 +279,7 @@ class CreateOrderRouteTest extends TestCase
         $request = new Request([], ['orderId' => 'no-order-transaction-id']);
 
         $this->expectException(PaymentException::class);
-        $this->expectExceptionMessage('The order with id noordertransactionid is invalid or could not be found.');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('The order with id noordertransactionid is invalid or could not be found.', '/') . '\z/');
         $this->route->createPayPalOrder($salesChannelContext, $request);
     }
 

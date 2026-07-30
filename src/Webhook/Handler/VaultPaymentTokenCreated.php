@@ -82,7 +82,7 @@ class VaultPaymentTokenCreated extends AbstractWebhookHandler
         $struct = $this->paymentTransactionStructFactory->build($orderTransaction->getId(), $context);
 
         $paymentSource = $this->orderResource->get($orderId, $order->getSalesChannelId())->getPaymentSource()?->first(VaultablePaymentSourceInterface::class);
-        if ($paymentSource === null) {
+        if (!$paymentSource instanceof VaultablePaymentSourceInterface) {
             return;
         }
 

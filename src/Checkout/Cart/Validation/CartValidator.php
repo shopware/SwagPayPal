@@ -15,12 +15,11 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
-use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
+use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Util\Availability\AvailabilityService;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
-use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 #[Package('checkout')]
@@ -38,6 +37,8 @@ class CartValidator implements CartValidatorInterface
 
     private AvailabilityService $availabilityService;
 
+    private MethodEligibilityStateService $methodEligibilityStateService;
+
     /**
      * @internal
      */
@@ -48,6 +49,7 @@ class CartValidator implements CartValidatorInterface
         RequestStack $requestStack,
         ExcludedProductValidator $excludedProductValidator,
         AvailabilityService $availabilityService,
+        MethodEligibilityStateService $methodEligibilityStateService,
     ) {
         $this->cartPriceService = $cartPriceService;
         $this->methodDataRegistry = $methodDataRegistry;
@@ -55,6 +57,7 @@ class CartValidator implements CartValidatorInterface
         $this->requestStack = $requestStack;
         $this->excludedProductValidator = $excludedProductValidator;
         $this->availabilityService = $availabilityService;
+        $this->methodEligibilityStateService = $methodEligibilityStateService;
     }
 
     public function validate(Cart $cart, ErrorCollection $errors, SalesChannelContext $context): void
@@ -75,22 +78,21 @@ class CartValidator implements CartValidatorInterface
             return;
         }
 
-        if ($this->cartPriceService->isZeroValueCart($cart)) {
+        if ($this->cartPriceService->hasZeroPrice($cart, $context)) {
             /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
             $errors->add(new PaymentMethodBlockedError($name, 'zero value cart', $id));
 
             return;
         }
 
-        try {
-            $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
-            if (\is_array($ineligiblePaymentMethods) && \in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
-                /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
-                $errors->add(new PaymentMethodBlockedError($name, 'ineligible', $id));
+        $ineligiblePaymentMethods = $this->methodEligibilityStateService->getIneligiblePaymentMethods(
+            $this->requestStack->getCurrentRequest(),
+            $context,
+        );
+        if (\in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
+            /** @deprecated tag:v11.0.0 - The order of parameters will be changed to: $id, $name, $reason */
+            $errors->add(new PaymentMethodBlockedError($name, 'ineligible', $id));
 
-                return;
-            }
-        } catch (SessionNotFoundException $e) {
             return;
         }
 

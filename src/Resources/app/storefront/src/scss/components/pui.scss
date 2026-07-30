@@ -1,19 +1,31 @@
 .swag-paypal-checkout-finish-pui-instructions-content {
     .instruction-title,
     .instruction-description {
-        @extend .m-sm-0;
-        @extend .py-1;
-        @extend .p-sm-3;
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+
+        @media (min-width: 576px) {
+            margin: 0;
+            padding: 1rem;
+        }
     }
 
     .instruction-title {
-        @extend .col-sm-5;
         font-weight: normal;
+
+        @media (min-width: 576px) {
+            flex: 0 0 auto;
+            width: 41.66666667%;
+        }
     }
 
     .instruction-description {
-        @extend .col-sm-7;
         font-weight: bold;
+
+        @media (min-width: 576px) {
+            flex: 0 0 auto;
+            width: 58.33333333%;
+        }
     }
 
     dt:nth-of-type(#{$table-striped-order}),

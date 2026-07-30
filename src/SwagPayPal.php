@@ -38,6 +38,7 @@ use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
@@ -66,6 +67,7 @@ class SwagPayPal extends Plugin
     public const SHIPPING_METHOD_CUSTOM_FIELDS_CARRIER = 'swag_paypal_carrier';
     public const SHIPPING_METHOD_CUSTOM_FIELDS_CARRIER_OTHER_NAME = 'swag_paypal_carrier_other_name';
     public const SALES_CHANNEL_TYPE_POS = '1ce0868f406d47d98cfe4b281e62f099';
+    public const SALES_CHANNEL_TYPE_AGENTIC_COMMERCE = 'e3f8c9b2f1a44d4db0f793542e31d2c9';
     public const SALES_CHANNEL_POS_EXTENSION = 'paypalPosSalesChannel';
     public const PRODUCT_LOG_POS_EXTENSION = 'paypalPosLog';
     public const PRODUCT_SYNC_POS_EXTENSION = 'paypalPosSync';
@@ -289,6 +291,10 @@ class SwagPayPal extends Plugin
                 $this->getRepository($this->container, SalesChannelTypeDefinition::ENTITY_NAME),
                 $this->getRepository($this->container, ShippingMethodDefinition::ENTITY_NAME),
                 $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
+            ),
+            new AgenticCommerceService(
+                $this->getRepository($this->container, SalesChannelDefinition::ENTITY_NAME),
+                $this->getRepository($this->container, SalesChannelTypeDefinition::ENTITY_NAME)
             )
         );
     }

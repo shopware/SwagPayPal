@@ -90,7 +90,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(ParentPaymentNotFoundException::class);
-        $this->expectExceptionMessage(\sprintf('[PayPal %s Webhook] Could not find parent payment ID', $webhookName));
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('[PayPal %s Webhook] Could not find parent payment ID', $webhookName), '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
@@ -99,9 +99,10 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookOrderTransactionNotFoundException::class);
-        $this->expectExceptionMessage(
-            \sprintf('[PayPal %s Webhook] Could not find associated order transaction %s', $webhookName, $reason)
-        );
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(
+            \sprintf('[PayPal %s Webhook] Could not find associated order transaction %s', $webhookName, $reason),
+            '/'
+        ) . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
@@ -111,7 +112,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessage('Given webhook does not have needed resource data');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Given webhook does not have needed resource data', '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
@@ -121,7 +122,17 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessage('Given webhook resource data does not contain needed custom ID');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('[PayPal %s Webhook] Could not handle order transaction id Given webhook resource data does not contain needed custom ID', $this->webhookHandler->getEventType()), '/') . '\z/');
+        $this->webhookHandler->invoke($webhook, $context);
+    }
+
+    protected function assertInvokeWithoutOrderTransactionIdInCustomId(string $resourceType): void
+    {
+        $webhook = $this->createWebhookV2WithoutOrderTransactionId($resourceType);
+        $context = Context::createDefaultContext();
+
+        $this->expectException(WebhookException::class);
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote(\sprintf('[PayPal %s Webhook] Could not handle order transaction id Given webhook resource data does not contain needed custom ID', $this->webhookHandler->getEventType()), '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
@@ -134,6 +145,21 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
     {
         $customId = \json_encode(['orderTransactionId' => $orderTransactionId]);
 
+        return $this->createWebhookV2WithCustomId($resourceType, $customId ?: '{}');
+    }
+
+    protected function createWebhookV2WithoutOrderTransactionId(string $resourceType): Event
+    {
+        return $this->createWebhookV2WithCustomId($resourceType, '{}');
+    }
+
+    /**
+     * @return AbstractWebhookHandler
+     */
+    abstract protected function createWebhookHandler();
+
+    private function createWebhookV2WithCustomId(string $resourceType, string $customId): Event
+    {
         $webhook = new Event();
         $webhook->assign(['resource_type' => $resourceType, 'resource_version' => '2.0', 'resource' => ['custom_id' => $customId]]);
         $resource = $webhook->getResource();
@@ -149,9 +175,4 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
 
         return $webhook;
     }
-
-    /**
-     * @return AbstractWebhookHandler
-     */
-    abstract protected function createWebhookHandler();
 }

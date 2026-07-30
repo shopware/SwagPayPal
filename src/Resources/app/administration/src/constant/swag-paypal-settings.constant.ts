@@ -82,6 +82,28 @@ export const BUTTON_SHAPES = [
 
 export type BUTTON_SHAPE = typeof BUTTON_SHAPES[number];
 
+export const INSTALLMENT_BANNER_LOGO_TYPES = [
+    'primary',
+    'alternative',
+    'inline',
+    'none',
+] as const;
+
+export type INSTALLMENT_BANNER_LOGO_TYPE = typeof INSTALLMENT_BANNER_LOGO_TYPES[number];
+
+export const INSTALLMENT_BANNER_TEXT_COLORS = [
+    'black',
+    'white',
+    'monochrome',
+    'grayscale',
+] as const;
+
+export type INSTALLMENT_BANNER_TEXT_COLOR = typeof INSTALLMENT_BANNER_TEXT_COLORS[number];
+
+export const INSTALLMENT_BANNER_TEXT_SIZES = [10, 12, 16] as const;
+
+export type INSTALLMENT_BANNER_TEXT_SIZE = typeof INSTALLMENT_BANNER_TEXT_SIZES[number];
+
 export const SYSTEM_CONFIGS = [
     'SwagPayPal.settings.clientId',
     'SwagPayPal.settings.clientSecret',
@@ -110,6 +132,7 @@ export const SYSTEM_CONFIGS = [
     'SwagPayPal.settings.ecsButtonShape',
     'SwagPayPal.settings.ecsButtonLanguageIso',
     'SwagPayPal.settings.ecsShowPayLater',
+    'SwagPayPal.settings.ecsShippingCallbackEnabled',
 
     'SwagPayPal.settings.spbButtonColor',
     'SwagPayPal.settings.spbButtonShape',
@@ -117,6 +140,7 @@ export const SYSTEM_CONFIGS = [
     'SwagPayPal.settings.spbShowPayLater',
     'SwagPayPal.settings.spbCheckoutEnabled',
     'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled',
+    'SwagPayPal.settings.spbAppSwitchEnabled',
 
     'SwagPayPal.settings.acdcForce3DS',
 
@@ -127,6 +151,9 @@ export const SYSTEM_CONFIGS = [
     'SwagPayPal.settings.installmentBannerOffCanvasCartEnabled',
     'SwagPayPal.settings.installmentBannerLoginPageEnabled',
     'SwagPayPal.settings.installmentBannerFooterEnabled',
+    'SwagPayPal.settings.installmentBannerLogoType',
+    'SwagPayPal.settings.installmentBannerTextColor',
+    'SwagPayPal.settings.installmentBannerTextSize',
 
     'SwagPayPal.settings.vaultingEnabled',
     'SwagPayPal.settings.vaultingEnableAlways',

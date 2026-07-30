@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\PayPalSDK\Contract\Gateway\GatewayInterface;
+use Swag\PayPal\AgenticCommerce\Exception\AgentHttpException;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -151,6 +152,10 @@ class IntrospectionProcessor implements ProcessorInterface
     private function exceptionToContext(\Throwable $exception): array
     {
         $context = ['message' => $exception->getMessage()];
+
+        if ($exception instanceof AgentHttpException) {
+            $context['details'] = $exception->getDetails()->jsonSerialize();
+        }
 
         if ($exception instanceof ShopwareHttpException) {
             $context['parameters'] = $exception->getParameters();

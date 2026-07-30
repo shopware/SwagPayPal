@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\PayPalSDK\Struct\V2\Common\Address;
 use Shopware\PayPalSDK\Struct\V2\Common\Name;
 use Shopware\PayPalSDK\Struct\V2\Common\PhoneNumber;
@@ -58,7 +59,8 @@ class PUIOrderBuilder extends AbstractAPMOrderBuilder
 
         $salesChannel = $order->getSalesChannel();
         \assert($salesChannel !== null);
-        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction);
+        /** @phpstan-ignore method.deprecated */
+        $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, new RequestDataBag($request->request->all()));
         $experienceContext->setCustomerServiceInstructions([
             $this->systemConfigService->getString(Settings::PUI_CUSTOMER_SERVICE_INSTRUCTIONS, $order->getSalesChannelId()),
         ]);
@@ -87,8 +89,7 @@ class PUIOrderBuilder extends AbstractAPMOrderBuilder
 
         $countryCodeMatches = [];
         $countryCode = '49';
-        \preg_match('/^(\+|00)(\d{1,3})\s+/', $phoneNumber, $countryCodeMatches);
-        if (!empty($countryCodeMatches) && isset($countryCodeMatches[2])) {
+        if (\preg_match('/^(\+|00)(\d{1,3})\s+/', $phoneNumber, $countryCodeMatches) === 1) {
             $countryCode = $countryCodeMatches[2];
         }
 

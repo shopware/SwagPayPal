@@ -21,6 +21,7 @@ async function createWrapper(systemConfigValues: EntityCollection<"system_config
                         template: '<div class="swag-paypal-setting"></div>',
                     },
                     'swag-paypal-settings-locale-select': true,
+                    'swag-paypal-settings-banner-preview': true,
                 },
                 provide: {
                     systemConfigApiService: { getValues: () => false },
@@ -78,6 +79,10 @@ describe('swag-paypal-settings-storefront', () => {
             'SwagPayPal.settings.ecsButtonShape',
             'SwagPayPal.settings.ecsButtonLanguageIso',
             'SwagPayPal.settings.ecsShowPayLater',
+            'SwagPayPal.settings.ecsShippingCallbackEnabled',
+            'SwagPayPal.settings.installmentBannerLogoType',
+            'SwagPayPal.settings.installmentBannerTextColor',
+            'SwagPayPal.settings.installmentBannerTextSize',
             'SwagPayPal.settings.installmentBannerDetailPageEnabled',
             'SwagPayPal.settings.installmentBannerCartEnabled',
             'SwagPayPal.settings.installmentBannerOffCanvasCartEnabled',
@@ -86,6 +91,7 @@ describe('swag-paypal-settings-storefront', () => {
             'SwagPayPal.settings.spbCheckoutEnabled',
             'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled',
             'SwagPayPal.settings.spbShowPayLater',
+            'SwagPayPal.settings.spbAppSwitchEnabled',
             'SwagPayPal.settings.spbButtonColor',
             'SwagPayPal.settings.spbButtonShape',
             'SwagPayPal.settings.spbButtonLanguageIso',
@@ -131,6 +137,7 @@ describe('swag-paypal-settings-storefront', () => {
         const disabledSettings = [
             'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled',
             'SwagPayPal.settings.spbShowPayLater',
+            'SwagPayPal.settings.spbAppSwitchEnabled',
             'SwagPayPal.settings.spbButtonColor',
             'SwagPayPal.settings.spbButtonShape',
             'SwagPayPal.settings.spbButtonLanguageIso',
@@ -140,13 +147,13 @@ describe('swag-paypal-settings-storefront', () => {
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.sbpSettingsDisabled).toBe(false);
-        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(5).fill(false));
+        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(6).fill(false));
 
         store.set('SwagPayPal.settings.spbCheckoutEnabled', false);
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.sbpSettingsDisabled).toBe(true);
-        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(5).fill(true));
+        expect(disabledSettings.map((setting) => Boolean(settings[setting]?.vm.$attrs.disabled))).toStrictEqual(Array(6).fill(true));
     });
 
     it('should fetch config without selected sales channel', async () => {

@@ -86,6 +86,16 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
                 description: 'Use an existing order id to create PayPal order',
                 type: 'string',
             ),
+            new OA\Property(
+                property: self::RETURN_URL,
+                description: 'Return URL for the order experience context',
+                type: 'string',
+            ),
+            new OA\Property(
+                property: self::CANCEL_URL,
+                description: 'Cancel URL for the order experience context',
+                type: 'string',
+            ),
         ])),
         tags: ['Store API', 'PayPal'],
         responses: [new OA\Response(
@@ -102,14 +112,17 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
     public function createPayPalOrder(SalesChannelContext $salesChannelContext, Request $request): TokenResponse
     {
         try {
-            $this->logger->debug('Started', ['request' => $request->request->all()]);
+            $requestDataBag = $this->createRequestDataBag($request);
+            $request->request->replace($requestDataBag->all());
+
+            $this->logger->debug('Started', ['request' => $requestDataBag->all()]);
             $customer = $salesChannelContext->getCustomer();
             if ($customer === null) {
                 throw CartException::customerNotLoggedIn();
             }
 
-            $orderId = $request->request->getAlnum('orderId');
-            $product = $request->request->getString('product');
+            $orderId = $requestDataBag->getAlnum('orderId');
+            $product = $requestDataBag->getString('product');
 
             $orderBuilder = match ($product) {
                 'acdc' => $this->acdcOrderBuilder,
@@ -121,7 +134,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
 
             $paypalOrder = $orderId
                 ? $this->getOrderFromOrder($orderBuilder, $orderId, $customer, $request, $salesChannelContext)
-                : $this->getOrderFromCart($orderBuilder, $salesChannelContext, $request);
+                : $this->getOrderFromCart($orderBuilder, $salesChannelContext, $requestDataBag);
 
             $salesChannelId = $salesChannelContext->getSalesChannelId();
             $response = $this->orderResource->create($paypalOrder, $salesChannelId, $this->getPartnerAttributionId($product));
@@ -137,11 +150,9 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
     private function getOrderFromCart(
         AbstractOrderBuilder $orderBuilder,
         SalesChannelContext $salesChannelContext,
-        Request $request,
+        RequestDataBag $requestDataBag,
     ): Order {
-        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
-
-        $requestDataBag = new RequestDataBag($request->request->all());
+        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext, taxed: true);
 
         return $orderBuilder->getOrderFromCart($cart, $salesChannelContext, $requestDataBag);
     }
@@ -209,5 +220,17 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         }
 
         return PartnerAttributionId::PRODUCT_ATTRIBUTION[$product];
+    }
+
+    private function createRequestDataBag(Request $request): RequestDataBag
+    {
+        $requestDataBag = new RequestDataBag($request->request->all());
+
+        $buyerUserAgent = $request->headers->get('user-agent');
+        if ($buyerUserAgent !== null && $buyerUserAgent !== '') {
+            $requestDataBag->set(self::PAYPAL_BUYER_USER_AGENT, $buyerUserAgent);
+        }
+
+        return $requestDataBag;
     }
 }

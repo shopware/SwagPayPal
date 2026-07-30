@@ -70,7 +70,7 @@ class WebhookControllerTest extends TestCase
 
         $result = \json_decode($content, true);
 
-        static::assertEqualsCanonicalizing(['result' => WebhookService::STATUS_WEBHOOK_VALID], $result);
+        static::assertSame(['result' => WebhookService::STATUS_WEBHOOK_VALID], $result);
     }
 
     public function testRegisterWebhook(): void
@@ -81,7 +81,7 @@ class WebhookControllerTest extends TestCase
 
         $result = \json_decode($content, true);
 
-        static::assertEqualsCanonicalizing(['result' => WebhookService::WEBHOOK_CREATED], $result);
+        static::assertSame(['result' => WebhookService::WEBHOOK_CREATED], $result);
     }
 
     public function testDeregisterWebhook(): void
@@ -93,7 +93,7 @@ class WebhookControllerTest extends TestCase
         $result = \json_decode($content, true);
 
         // no action because no Webhook ID is defined by default
-        static::assertEqualsCanonicalizing(['result' => WebhookService::NO_WEBHOOK_ACTION_REQUIRED], $result);
+        static::assertSame(['result' => WebhookService::NO_WEBHOOK_ACTION_REQUIRED], $result);
     }
 
     public function testExecuteWebhook(): void
@@ -227,7 +227,7 @@ class WebhookControllerTest extends TestCase
         );
 
         $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('No webhook data sent');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('No webhook data sent', '/') . '\z/');
         $this->controller->executeWebhook($request, $context);
     }
 

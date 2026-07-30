@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\PUI\ScheduledTask;
 
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Defaults;
@@ -37,13 +38,14 @@ class PUIInstructionsFetchTaskHandler extends ScheduledTaskHandler
         private readonly EntityRepository $orderTransactionRepository,
         private readonly PaymentMethodDataRegistry $methodDataRegistry,
         private readonly MessageBusInterface $bus,
+        private readonly ClockInterface $clock,
     ) {
         parent::__construct($scheduledTaskRepository, $logger);
     }
 
     public function run(): void
     {
-        $date = (new \DateTimeImmutable('now -1h'))->setTimezone(new \DateTimeZone('UTC'));
+        $date = $this->clock->now()->modify('-1 hour')->setTimezone(new \DateTimeZone('UTC'));
         $rangeFilter = [
             RangeFilter::GTE => $date->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ];

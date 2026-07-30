@@ -115,6 +115,24 @@ parameters:
 			path: src/Setting/SettingsController.php
 
 		-
+			message: '#^Call to method switch\(\) of internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher from outside its root namespace Shopware\.$#'
+			identifier: method.internalClass
+			count: 1
+			path: src/Checkout/ExpressCheckout/Service/ExpressShippingCallbackService.php
+
+		-
+			message: '#^Parameter \$blockedShippingMethodSwitcher of method Swag\\PayPal\\Checkout\\ExpressCheckout\\Service\\ExpressShippingCallbackService\:\:__construct\(\) has typehint with internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher\.$#'
+			identifier: parameter.internalClass
+			count: 1
+			path: src/Checkout/ExpressCheckout/Service/ExpressShippingCallbackService.php
+
+		-
+			message: '#^Property \$blockedShippingMethodSwitcher references internal class Shopware\\Storefront\\Checkout\\Shipping\\BlockedShippingMethodSwitcher in its type\.$#'
+			identifier: property.internalClass
+			count: 1
+			path: src/Checkout/ExpressCheckout/Service/ExpressShippingCallbackService.php
+
+		-
 			message: '#^Mixed variable in a `\$checkoutMethod\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
 			identifier: typePerfect.noMixedMethodCaller
 			count: 2
@@ -139,12 +157,6 @@ parameters:
 			path: tests/OrdersApi/Builder/APMOrderBuilderTest.php
 
 		-
-			message: '#^Parameter \#1 \$entity of method Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\<Shopware\\Core\\Content\\Product\\ProductEntity\>\:\:add\(\) expects Shopware\\Core\\Content\\Product\\ProductEntity, Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Pos/Mock/Repositories/SalesChannelProductRepoMock.php
-
-		-
 			message: '#^Return type \(Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult\<Shopware\\Core\\Content\\Product\\SalesChannel\\SalesChannelProductCollection\>\) of method Swag\\PayPal\\Test\\Pos\\Mock\\Repositories\\SalesChannelProductRepoMock\:\:search\(\) should be compatible with return type \(Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult\<Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\>\) of method Shopware\\Core\\System\\SalesChannel\\Entity\\SalesChannelRepository\<Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection\>\:\:search\(\)$#'
 			identifier: method.childReturnType
 			count: 1
@@ -161,3 +173,30 @@ parameters:
 			identifier: typePerfect.noMixedMethodCaller
 			count: 1
 			path: tests/Reporting/ScheduledTask/TurnoverReportingTaskHandlerTest.php
+
+		-
+			message: '#^Parameter \$contextService of method Swag\\PayPal\\AgenticCommerce\\.*\:\:__construct\(\) has typehint with internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface\.$#'
+			identifier: parameter.internalInterface
+			paths:
+				- src/AgenticCommerce/Util/FaviconLoader.php
+				- src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+				- src/AgenticCommerce/SalesChannel/CreateCartRoute.php
+				- src/AgenticCommerce/SalesChannel/UpdateCartRoute.php
+
+		-
+			message: '#^Property \$contextService references internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface in its type\.$#'
+			identifier: property.internalInterface
+			paths:
+				- src/AgenticCommerce/Util/FaviconLoader.php
+				- src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+				- src/AgenticCommerce/SalesChannel/AbstractAgenticCommerceRoute.php
+				- src/AgenticCommerce/SalesChannel/CreateCartRoute.php
+				- src/AgenticCommerce/SalesChannel/UpdateCartRoute.php
+
+		-
+			message: '#^Call to method get\(\) of internal interface Shopware\\Core\\System\\SalesChannel\\Context\\SalesChannelContextServiceInterface from outside its root namespace Shopware\.$#'
+			identifier: method.internalInterface
+			paths:
+				- src/AgenticCommerce/Util/FaviconLoader.php
+				- src/AgenticCommerce/Routing/AgentRequestContextResolver.php
+				- src/AgenticCommerce/SalesChannel/AbstractAgenticCommerceRoute.php

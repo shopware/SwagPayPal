@@ -26,8 +26,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *
  * @deprecated tag:v11.0.0 - Will be removed. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
  */
-#[CoversClass(PayPalCookieProvider::class)]
 #[Package('checkout')]
+#[CoversClass(PayPalCookieProvider::class)]
 class PayPalCookieProviderTest extends TestCase
 {
     private CookieProviderInterface&MockObject $cookieProvider;

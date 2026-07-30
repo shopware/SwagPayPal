@@ -72,6 +72,12 @@
         path="SwagPayPal.settings.ecsShowPayLater"
         :disabled="ecsSettingsDisabled"
     />
+
+    <swag-paypal-setting
+        v-tooltip="ecsShippingCallbackSettingTooltip"
+        path="SwagPayPal.settings.ecsShippingCallbackEnabled"
+        :disabled="ecsShippingCallbackSettingDisabled"
+    />
 </mt-card>
 
 <mt-card
@@ -81,11 +87,77 @@
     :subtitle="$t('swag-paypal-settings.installment.subtitle')"
     :is-loading="settingsStore.isLoading"
 >
-    <swag-paypal-setting path="SwagPayPal.settings.installmentBannerDetailPageEnabled" />
-    <swag-paypal-setting path="SwagPayPal.settings.installmentBannerCartEnabled" />
-    <swag-paypal-setting path="SwagPayPal.settings.installmentBannerOffCanvasCartEnabled" />
-    <swag-paypal-setting path="SwagPayPal.settings.installmentBannerLoginPageEnabled" />
-    <swag-paypal-setting path="SwagPayPal.settings.installmentBannerFooterEnabled" />
+    <div class="swag-paypal-settings-installment__layout">
+        <div class="swag-paypal-settings-installment__left">
+            <div class="swag-paypal-settings-installment__appearance">
+                <mt-text
+                    as="span"
+                    weight="semibold"
+                    size="s"
+                    color="color-text-primary-default"
+                    class="swag-paypal-settings-installment__section-title"
+                >
+                    {{ $t('swag-paypal-settings.installment.appearance') }}
+                </mt-text>
+
+                <swag-paypal-setting
+                    path="SwagPayPal.settings.installmentBannerLogoType"
+                    :options="bannerLogoTypeOptions"
+                />
+
+                <swag-paypal-setting
+                    path="SwagPayPal.settings.installmentBannerTextColor"
+                    :options="bannerTextColorOptions"
+                />
+
+                <swag-paypal-setting
+                    path="SwagPayPal.settings.installmentBannerTextSize"
+                    :options="bannerTextSizeOptions"
+                />
+            </div>
+
+            <div class="swag-paypal-settings-installment__visibility">
+                <mt-text
+                    as="span"
+                    weight="semibold"
+                    size="s"
+                    color="color-text-primary-default"
+                    class="swag-paypal-settings-installment__section-title"
+                >
+                    {{ $t('swag-paypal-settings.installment.pageVisibility') }}
+                </mt-text>
+
+                <mt-text
+                    as="span"
+                    size="xs"
+                    color="color-text-secondary-default"
+                    class="swag-paypal-settings-installment__section-subtitle"
+                >
+                    {{ $t('swag-paypal-settings.installment.pageVisibilitySubtitle') }}
+                </mt-text>
+
+                <swag-paypal-setting path="SwagPayPal.settings.installmentBannerDetailPageEnabled" />
+                <swag-paypal-setting path="SwagPayPal.settings.installmentBannerCartEnabled" />
+                <swag-paypal-setting path="SwagPayPal.settings.installmentBannerOffCanvasCartEnabled" />
+                <swag-paypal-setting path="SwagPayPal.settings.installmentBannerLoginPageEnabled" />
+                <swag-paypal-setting path="SwagPayPal.settings.installmentBannerFooterEnabled" />
+            </div>
+        </div>
+
+        <div class="swag-paypal-settings-installment__right">
+            <mt-text
+                as="span"
+                weight="semibold"
+                size="s"
+                color="color-text-primary-default"
+                class="swag-paypal-settings-installment__section-title"
+            >
+                {{ $t('swag-paypal-settings.installment.preview') }}
+            </mt-text>
+
+            <swag-paypal-settings-banner-preview />
+        </div>
+    </div>
 </mt-card>
 
 <mt-card
@@ -109,6 +181,11 @@
 
     <swag-paypal-setting
         path="SwagPayPal.settings.spbShowPayLater"
+        :disabled="sbpSettingsDisabled"
+    />
+
+    <swag-paypal-setting
+        path="SwagPayPal.settings.spbAppSwitchEnabled"
         :disabled="sbpSettingsDisabled"
     />
 

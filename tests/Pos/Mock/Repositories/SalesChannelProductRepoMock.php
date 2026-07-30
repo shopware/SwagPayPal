@@ -56,7 +56,7 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 class SalesChannelProductRepoMock extends SalesChannelRepository
 {
     /**
-     * @use RepoTrait<SalesChannelProductCollection>
+     * @use RepoTrait<SalesChannelProductEntity, SalesChannelProductCollection>
      */
     use RepoTrait;
 
@@ -123,7 +123,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
             && $firstFilter->getField() === 'parentId'
             && $firstFilter->getValue() === null) {
             $collection = new SalesChannelProductCollection();
-            foreach ($this->getCollection()->getElements() as $product) {
+            foreach ($this->getCollection() as $product) {
                 if ($product->getParentId() === null && !$product->getChildCount()) {
                     $collection->add($product);
                 }
@@ -140,7 +140,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
                 && $subFilter->getField() === 'parentId'
                 && $subFilter->getValue() === null) {
                 $collection = new SalesChannelProductCollection();
-                foreach ($this->getCollection()->getElements() as $product) {
+                foreach ($this->getCollection() as $product) {
                     if ($product->getParentId() !== null) {
                         $collection->add($product);
                     }
@@ -152,7 +152,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
             if ($subFilter instanceof EqualsAnyFilter
                 && ($subFilter->getField() === 'id' || $subFilter->getField() === 'parentId')) {
                 $collection = new SalesChannelProductCollection();
-                foreach ($this->getCollection()->getElements() as $product) {
+                foreach ($this->getCollection() as $product) {
                     if (\in_array($product->getParentId(), $subFilter->getValue(), true)
                         || \in_array($product->getId(), $subFilter->getValue(), true)) {
                         $collection->add($product);
@@ -166,7 +166,7 @@ class SalesChannelProductRepoMock extends SalesChannelRepository
         if ($firstFilter instanceof EqualsAnyFilter
             && $firstFilter->getField() === 'parentId') {
             $collection = new SalesChannelProductCollection();
-            foreach ($this->getCollection()->getElements() as $product) {
+            foreach ($this->getCollection() as $product) {
                 if (\in_array($product->getParentId(), $firstFilter->getValue(), true)) {
                     $collection->add($product);
                 }

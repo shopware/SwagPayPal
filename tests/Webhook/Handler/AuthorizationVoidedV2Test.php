@@ -13,6 +13,8 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Authorization;
+use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Handler\AuthorizationVoided;
 use Swag\PayPal\Webhook\WebhookEventTypes;
@@ -40,7 +42,7 @@ class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessage('Order transaction could not be resolved');
+        $this->expectExceptionMessageMatches('/\A' . \preg_quote('Order transaction could not be resolved', '/') . '\z/');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
@@ -55,6 +57,54 @@ class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
         $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_AUTHORIZATION, $orderTransactionId);
         $reason = \sprintf('with custom ID "%s" (order transaction ID)', $orderTransactionId);
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED, $webhook, $reason);
+    }
+
+    public function testInvokeWithStaleResourceId(): void
+    {
+        $context = Context::createDefaultContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($context, $container);
+
+        $this->orderTransactionRepository->update([[
+            'id' => $transactionId,
+            'customFields' => [
+                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID => 'stored-auth-id',
+            ],
+        ]], $context);
+
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_AUTHORIZATION);
+        $resource = $webhook->getResource();
+        static::assertInstanceOf(Authorization::class, $resource);
+        $resource->setCustomId(\json_encode(['orderTransactionId' => $transactionId]) ?: null);
+        $resource->assign(['id' => 'different-auth-id']);
+
+        $this->webhookHandler->invoke($webhook, $context);
+
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_OPEN, $transactionId, $context);
+    }
+
+    public function testInvokeWithMatchingResourceId(): void
+    {
+        $context = Context::createDefaultContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($context, $container);
+
+        $this->orderTransactionRepository->update([[
+            'id' => $transactionId,
+            'customFields' => [
+                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID => 'matching-auth-id',
+            ],
+        ]], $context);
+
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_AUTHORIZATION);
+        $resource = $webhook->getResource();
+        static::assertInstanceOf(Authorization::class, $resource);
+        $resource->setCustomId(\json_encode(['orderTransactionId' => $transactionId]) ?: null);
+        $resource->assign(['id' => 'matching-auth-id']);
+
+        $this->webhookHandler->invoke($webhook, $context);
+
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_CANCELLED, $transactionId, $context);
     }
 
     public function testInvokeWithSameInitialState(): void
