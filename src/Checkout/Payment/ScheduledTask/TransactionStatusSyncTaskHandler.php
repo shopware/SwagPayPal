@@ -72,7 +72,7 @@ class TransactionStatusSyncTaskHandler extends ScheduledTaskHandler
         $transactions = $this->orderTransactionRepository->search($criteria, Context::createCLIContext());
 
         /** @var OrderTransactionEntity $transaction */
-        foreach ($transactions as $transaction) {
+        foreach ($transactions->getEntities() as $transaction) {
             $orderId = $transaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
 
             if (!\is_string($orderId)) {

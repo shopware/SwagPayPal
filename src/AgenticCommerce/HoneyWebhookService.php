@@ -152,7 +152,7 @@ class HoneyWebhookService
             'productExports.storefrontSalesChannel.countries',
         ]);
 
-        return $this->salesChannelRepository->search($criteria, $context)->first();
+        return $this->salesChannelRepository->search($criteria, $context)->getEntities()->first();
     }
 
     private function webhookCall(string $token, string $endpoint): HoneyWebhookResult

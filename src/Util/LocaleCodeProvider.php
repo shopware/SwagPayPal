@@ -53,7 +53,7 @@ class LocaleCodeProvider implements ResetInterface
         $criteria->setLimit(1);
 
         /** @var LanguageEntity $language */
-        $language = $this->languageRepository->search($criteria, $context)->first();
+        $language = $this->languageRepository->search($criteria, $context)->getEntities()->first();
 
         /** @var string $locale */
         $locale = $language->getLocale()?->getCode();

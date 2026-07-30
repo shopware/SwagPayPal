@@ -94,7 +94,7 @@ class ExpressCustomerService
         ]));
 
         /** @var CustomerEntity|null $customer */
-        $customer = $this->customerRepository->search($criteria, $salesChannelContext->getContext())->first();
+        $customer = $this->customerRepository->search($criteria, $salesChannelContext->getContext())->getEntities()->first();
 
         if ($customer === null) {
             return null;

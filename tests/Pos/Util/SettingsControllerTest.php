@@ -182,7 +182,7 @@ class SettingsControllerTest extends TestCase
         static::assertCount(3, $this->productVisibilityRepository->filterBySalesChannelId(self::TO_SALES_CHANNEL));
 
         /** @var PosSalesChannelRunEntity|null $run */
-        $run = $this->runRepository->search(new Criteria(), $context)->first();
+        $run = $this->runRepository->search(new Criteria(), $context)->getEntities()->first();
         static::assertNotNull($run);
         static::assertSame(PosSalesChannelRunDefinition::STATUS_FINISHED, $run->getStatus());
     }

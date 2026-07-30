@@ -59,7 +59,7 @@ class MessageBusMock implements MessageBusInterface
             foreach ($processed as $key) {
                 unset($this->envelopes[$key]);
             }
-        } while ($loop && \count($processed) > 0);
+        } while ($loop && $processed !== []);
     }
 
     public function getTotalWaitingMessages(): int

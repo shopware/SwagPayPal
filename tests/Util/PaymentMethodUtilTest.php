@@ -140,6 +140,7 @@ class PaymentMethodUtilTest extends TestCase
     {
         $paymentMethodEntity = static::getContainer()->get('payment_method.repository')
             ->search((new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', PayPalPaymentHandler::class)), Context::createDefaultContext())
+            ->getEntities()
             ->first();
 
         yield 'entity' => [$paymentMethodEntity];
@@ -214,6 +215,7 @@ class PaymentMethodUtilTest extends TestCase
         /** @var SalesChannelEntity|null $salesChannel */
         $salesChannel = static::getContainer()->get('sales_channel.repository')
             ->search((new Criteria([TestDefaults::SALES_CHANNEL]))->addAssociation('paymentMethods.salesChannelDefaultAssignments'), Context::createDefaultContext())
+            ->getEntities()
             ->first();
 
         static::assertNotNull($salesChannel);

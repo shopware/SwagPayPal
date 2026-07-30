@@ -106,7 +106,7 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
             $salesChannelContext->getContext()
         );
 
-        return $languages->reduce(
+        return $languages->getEntities()->reduce(
             fn (?string $languageCode, LanguageEntity $language) => $languageCode ?? $this->matchBuyerCountry(
                 $language->getLocale()?->getCode() ?? 'en-GB',
                 $salesChannelContext,

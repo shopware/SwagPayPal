@@ -127,7 +127,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('lineItems');
 
-        return $this->orderRepository->search($criteria, $context)->first();
+        return $this->orderRepository->search($criteria, $context)->getEntities()->first();
     }
 
     private function updateResponse(PaymentMethodRouteResponse $response, PaymentMethodCollection $paymentMethods): PaymentMethodRouteResponse

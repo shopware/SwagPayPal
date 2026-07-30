@@ -50,7 +50,7 @@ class CategoryConverterTest extends TestCase
         $categoryRepository = $this->getContainer()->get('category.repository');
 
         /** @var CategoryEntity|null $category */
-        $category = $categoryRepository->search($criteria, Context::createDefaultContext())->first();
+        $category = $categoryRepository->search($criteria, Context::createDefaultContext())->getEntities()->first();
 
         return $category;
     }

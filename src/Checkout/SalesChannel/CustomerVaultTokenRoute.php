@@ -61,7 +61,7 @@ class CustomerVaultTokenRoute
         $criteria->addFilter(new EqualsFilter('mainMapping.paymentMethodId', $context->getPaymentMethod()->getId()));
 
         /** @var VaultTokenEntity|null $vault */
-        $vault = $this->vaultRepository->search($criteria, $context->getContext())->first();
+        $vault = $this->vaultRepository->search($criteria, $context->getContext())->getEntities()->first();
 
         $token = $this->tokenResource->getUserIdToken($context->getSalesChannelId(), $vault?->getTokenCustomer())->getIdToken();
 

@@ -45,7 +45,7 @@ class ShippingInformationMessageHandler
             ->addAssociation('shippingMethod');
 
         /** @var OrderDeliveryEntity|null $orderDelivery */
-        $orderDelivery = $this->orderDeliveryRepository->search($criteria, Context::createDefaultContext())->first();
+        $orderDelivery = $this->orderDeliveryRepository->search($criteria, Context::createDefaultContext())->getEntities()->first();
         $orderTransaction = $orderDelivery?->getOrder()?->getTransactions()?->last();
         $orderLineItems = $orderDelivery?->getOrder()?->getLineItems() ?? new OrderLineItemCollection();
         $salesChannelId = $orderDelivery?->getOrder()?->getSalesChannelId();

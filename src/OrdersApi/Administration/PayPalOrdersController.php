@@ -406,7 +406,7 @@ class PayPalOrdersController extends AbstractController
         $criteria = new Criteria([$orderTransactionId]);
         $criteria->addAssociation('order');
         /** @var OrderTransactionEntity|null $orderTransaction */
-        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
 
         if ($orderTransaction === null) {
             throw PaymentException::invalidTransaction($orderTransactionId);

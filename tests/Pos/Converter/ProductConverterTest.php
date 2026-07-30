@@ -273,7 +273,7 @@ class ProductConverterTest extends TestCase
         $currencyRepository = $this->getContainer()->get('currency.repository');
 
         /** @var CurrencyEntity|null $currency */
-        $currency = $currencyRepository->search($criteria, Context::createDefaultContext())->first();
+        $currency = $currencyRepository->search($criteria, Context::createDefaultContext())->getEntities()->first();
 
         return $currency;
     }
@@ -287,7 +287,7 @@ class ProductConverterTest extends TestCase
         $categoryRepository = $this->getContainer()->get('category.repository');
 
         /** @var CategoryEntity|null $category */
-        $category = $categoryRepository->search($criteria, Context::createDefaultContext())->first();
+        $category = $categoryRepository->search($criteria, Context::createDefaultContext())->getEntities()->first();
         static::assertNotNull($category);
 
         return $category;
