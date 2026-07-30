@@ -105,12 +105,12 @@ export default abstract class SwagPaypalBase extends Plugin {
      * Override in child classes to handle pre-SDK loading logic.
      */
     protected async beforeSetup(): Promise<void> {
-        const [credentials] = await Promise.all([
+        const [credentials, paypal] = await Promise.all([
             this._fetchCredentials(),
             DependencyHelper.loadPayPalCore({ environment: this.options.environment }),
         ]);
 
-        this.instance ??= await window.paypal!.createInstance({
+        this.instance ??= await paypal.createInstance({
             ...credentials,
             locale: this.options.languageIso.replace('_', '-'),
             pageType: this.options.pageType,

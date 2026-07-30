@@ -1,5 +1,7 @@
 import PayPalPluginError from '../base/paypal-plugin.error';
 
+const PAYPAL_SDK_NAMESPACE = 'paypalV6';
+
 export default class DependencyHelper {
     private static paypal: Promise<void>|null = null;
 
@@ -9,13 +11,24 @@ export default class DependencyHelper {
 
     private constructor() {}
 
-    public static async loadPayPalCore(script: { environment: 'production' | 'sandbox' }): Promise<void> {
+    public static async loadPayPalCore(script: { environment: 'production' | 'sandbox' }): Promise<PayPalCoreJS.Namespace> {
         try {
+            const url = new URL('/web-sdk/v6/core', script.environment === 'sandbox' ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com');
+
             DependencyHelper.paypal ??= DependencyHelper.loadCustomScript(
-                new URL('/web-sdk/v6/core', script.environment === 'sandbox' ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com'),
-                () => !!window.paypal?.createInstance,
+                url,
+                () => !!this._getPaypalNamespace(url),
+                { 'data-namespace': PAYPAL_SDK_NAMESPACE },
             );
-            return await DependencyHelper.paypal;
+
+            await DependencyHelper.paypal;
+
+            const paypal = this._getPaypalNamespace(url);
+            if (!paypal) {
+                throw new Error('Script loaded but check failed');
+            }
+
+            return paypal;
         } catch (error) {
             DependencyHelper.paypal = null;
             throw PayPalPluginError.scriptLoad('paypal-core-js', error);
@@ -48,7 +61,7 @@ export default class DependencyHelper {
         }
     }
 
-    private static async loadCustomScript(url: URL, checkLoaded: () => boolean): Promise<void> {
+    private static async loadCustomScript(url: URL, checkLoaded: () => boolean, attributes: Record<string, string> = {}): Promise<void> {
         const currentScript = document.querySelector<HTMLScriptElement>(`script[src*="${url.toString()}"]`);
 
         if (currentScript) {
@@ -57,9 +70,9 @@ export default class DependencyHelper {
             }
 
             return new Promise<void>((resolve, reject) => {
-                currentScript.addEventListener('load', () => resolve());
+                currentScript.addEventListener('load', () => resolve(), { once: true });
                 // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
-                currentScript.addEventListener('error', (event) => reject(event.error));
+                currentScript.addEventListener('error', (event) => reject(event.error), { once: true });
             });
         }
 
@@ -68,6 +81,9 @@ export default class DependencyHelper {
             scriptTag.src = url.toString();
             scriptTag.async = true;
             scriptTag.type = 'text/javascript';
+            for (const [key, value] of Object.entries(attributes)) {
+                scriptTag.setAttribute(key, value);
+            }
 
             scriptTag.addEventListener('load', () => {
                 if (checkLoaded()) {
@@ -76,11 +92,30 @@ export default class DependencyHelper {
 
                 // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                 reject(`Script "${url.toString()}" loaded but check failed.`);
-            });
+            }, { once: true });
             // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
-            scriptTag.addEventListener('error', (event) => reject(event.error));
+            scriptTag.addEventListener('error', (event) => reject(event.error), { once: true });
 
             document.head.appendChild(scriptTag);
         });
+    }
+
+    /**
+     * Returns the paypal v6 namespace by any means:
+     * - v6 loaded via our own or another namespace
+     * - v6 loaded via a v5 occupied namespace
+     */
+    private static _getPaypalNamespace(url: URL): PayPalCoreJS.Namespace | null {
+        const namespace = document.querySelector<HTMLScriptElement>(`script[src*="${url}"][data-namespace="${PAYPAL_SDK_NAMESPACE}"]`)?.dataset.namespace
+            ?? document.querySelector<HTMLScriptElement>(`script[src*="${url}"]`)?.dataset.namespace ?? 'paypal';
+
+        // @ts-expect-error - window is indexed by a dynamic namespace string
+        const paypal = (window[namespace]?.v6 ?? window[namespace]) as Partial<PayPalCoreJS.Namespace> | undefined;
+
+        if (!!paypal?.version?.startsWith('6') && typeof paypal.createInstance === 'function') {
+            return paypal as PayPalCoreJS.Namespace;
+        }
+
+        return null;
     }
 }
