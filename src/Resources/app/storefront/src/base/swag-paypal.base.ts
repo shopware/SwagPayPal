@@ -78,7 +78,7 @@ export default abstract class SwagPaypalBase extends Plugin {
         handleErrorUrl: '',
     };
 
-    protected instance: PayPalCoreJS.Instance<(typeof this.metadata)['components'][number]> | null = null;
+    protected instance: PayPalCoreJS.SdkInstance<(typeof this.metadata)['components']> | null = null;
 
     protected static eligibleMethods: Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods> | null = null;
 

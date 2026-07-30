@@ -26,7 +26,7 @@ export default class SwagPaypalMessages extends SwagPaypalBase {
         };
     }
 
-    private static messagesInstance: Promise<PayPalCoreJS.Messages.PayPalMessages> | null = null;
+    private static messagesInstance: PayPalCoreJS.Messages.PayPalMessages | null = null;
 
     protected async setup(): Promise<void> {
         if (this.options.crossBorderBuyerCountry) {
@@ -40,12 +40,9 @@ export default class SwagPaypalMessages extends SwagPaypalBase {
         this.el!.amount = String(this.options.amount);
 
         SwagPaypalMessages.messagesInstance ??= this.instance!.createPayPalMessages();
-        const messagesInstance = await SwagPaypalMessages.messagesInstance;
 
-        const [_, learnMore] = await Promise.all([
-            messagesInstance.fetchContent(this.el!.getFetchContentOptions()),
-            messagesInstance.createLearnMore({ presentationMode: 'AUTO' }),
-        ]);
+        await SwagPaypalMessages.messagesInstance.fetchContent(this.el!.getFetchContentOptions());
+        const learnMore = SwagPaypalMessages.messagesInstance.createLearnMore({ presentationMode: 'AUTO' });
 
         this.el!.addEventListener('paypal-message-click', (event) => {
             event.preventDefault();

@@ -3,6 +3,8 @@ import type TPayPalPluginError from '../base/paypal-plugin.error';
 import type Plugin from 'src/plugin-system/plugin.class';
 
 declare global {
+    type OmitReadonly<T> = { -readonly [P in keyof T]: OmitReadonly<T[P]> };
+
     type Products = 'default' | 'googlepay' | 'applepay' | 'acdc' | 'venmo';
 
     type PayPalPluginError = TPayPalPluginError;
@@ -22,5 +24,6 @@ declare global {
 }
 
 declare module '@paypal/paypal-js/types' {
-    interface PayPalNamespace extends PayPalCoreJS.Namespace {}
+    interface PayPalNamespace extends PayPalCoreJS.Namespace {
+    }
 }

@@ -9,7 +9,7 @@ export default class DependencyHelper {
 
     private constructor() {}
 
-    public static async loadPayPalCore(script: PayPalCoreJS.LoadCoreScriptOptions): Promise<void> {
+    public static async loadPayPalCore(script: { environment: 'production' | 'sandbox' }): Promise<void> {
         try {
             DependencyHelper.paypal ??= DependencyHelper.loadCustomScript(
                 new URL('/web-sdk/v6/core', script.environment === 'sandbox' ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com'),

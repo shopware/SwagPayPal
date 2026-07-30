@@ -53,6 +53,11 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
 
     protected async setup(): Promise<void> {
         const paymentSession = this.instance!.createGooglePayOneTimePaymentSession();
+        const details = await this.getFundingDetails();
+
+        if (!details.config.eligible) {
+            throw PayPalPluginError.notEligible(this.metadata.fundingSource);
+        }
 
         const {
             apiVersion,
@@ -60,12 +65,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             allowedPaymentMethods,
             merchantInfo,
             countryCode,
-            isEligible,
-        } = await paymentSession.getGooglePayConfig();
-
-        if (!isEligible) {
-            throw PayPalPluginError.notEligible(this.metadata.fundingSource);
-        }
+        } = paymentSession.formatConfigForPaymentRequest(details.config) as PayPalCoreJS.GooglePay.Config;
 
         this.el!.buttonType = 'checkout';
         this.el!.environment = this.options.environment === 'sandbox' ? 'TEST' : 'PRODUCTION';
@@ -121,7 +121,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
 
             const confirmOrderResponse = await session.confirmOrder({
                 orderId,
-                paymentMethodData: paymentData.paymentMethodData,
+                paymentMethodData: paymentData.paymentMethodData as PayPalCoreJS.GooglePay.PaymentMethodData,
             });
 
             if (!['APPROVED','PAYER_ACTION_REQUIRED'].includes(confirmOrderResponse.status)) {
@@ -129,6 +129,8 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             }
 
             if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status) {
+                // @ts-expect-error - not typed correctly
+                // eslint-disable-next-line @typescript-eslint/await-thenable
                 await session.initiatePayerAction({ orderId });
             }
 

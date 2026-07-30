@@ -22,7 +22,7 @@ export default class SwagPaypalCheckoutVenmo extends SwagPaypalCheckout<'venmo'>
         this.el!.addEventListener('click', () => void this.submissionFlow({ paymentSession }));
     }
 
-    protected async submit(data: { paymentSession: PayPalCoreJS.PaymentSession<'paypal'> }): Promise<void> {
+    protected async submit(data: { paymentSession: PayPalCoreJS.PaymentSession<'venmo'> }): Promise<void> {
         await data.paymentSession.start({ presentationMode: 'auto' }, this.createOrder());
     }
 }

@@ -14,7 +14,6 @@ export interface SwagPaypalCheckoutApplePayOptions extends SwagPaypalCheckoutOpt
 }
 
 interface ApplePaySubmissionData extends SubmissionData<'applepay'> {
-    paymentSession: PayPalCoreJS.ApplePay.PaymentSession;
     config: PayPalCoreJS.ApplePay.Config;
     session: ApplePaySession;
 }
@@ -52,12 +51,9 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
         }
 
         const paymentSession = this.instance!.createApplePayOneTimePaymentSession();
+        const details = await this.getFundingDetails();
 
-        const config = await paymentSession.config();
-
-        if (!config.isEligible) {
-            throw PayPalPluginError.notEligible(this.metadata.fundingSource);
-        }
+        const config = paymentSession.formatConfigForPaymentRequest(details.config);
 
         this.el!.type = 'check-out';
         this.el!.addEventListener('click', () => void this.submissionFlow({ paymentSession, config }));
@@ -67,8 +63,8 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
         const paymentRequest = {
             merchantCapabilities: data.config.merchantCapabilities,
             supportedNetworks: data.config.supportedNetworks,
-            countryCode: data.config.countryCode ?? data.config.merchantCountry,
-            currencyCode: data.config.currencyCode ?? this.options.currency,
+            countryCode: data.config.merchantCountry!,
+            currencyCode: this.options.currency,
             requiredShippingContactFields: [],
             requiredBillingContactFields: [],
             billingContact: {
@@ -82,7 +78,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
             },
         } satisfies ApplePayJS.ApplePayPaymentRequest;
 
-        data.session = new window.ApplePaySession!(4, paymentRequest);
+        data.session = new ApplePaySession(4, paymentRequest);
 
         data.session.onvalidatemerchant = (event) => void this.handleValidateMerchant(data, event);
         data.session.onpaymentauthorized = (event) => void this.handlePaymentAuthorized(data, event);
@@ -114,7 +110,10 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'applep
                 token: event.payment.token,
                 billingContact: {
                     ...this.options.billingAddress,
-                    addressLines: [this.options.billingAddress.addressLines],
+                    ...(this.options.billingAddress.addressLines
+                        ? { addressLines: [this.options.billingAddress.addressLines] }
+                        : {}
+                    ),
                 },
             });
 
