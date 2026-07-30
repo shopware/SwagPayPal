@@ -93,30 +93,6 @@ parameters:
             identifier: method.deprecated
             message: '#arameter \$silent will be added in v6\.8\.0.*#'
 
-        - # 6.8 deprecation - only type change
-            identifier: method.deprecated
-            message: '#(setActiveBillingAddress|setActiveShippingAddress).*Shopware\\Core\\Checkout\\Customer\\CustomerEntity.*#'
-
-        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
-            identifier: method.deprecatedClass
-            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
-            path: '**/*.php'
-
-        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
-            identifier: return.deprecatedClass
-            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
-            path: '**/*.php'
-
-        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
-            identifier: new.deprecatedClass
-            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
-            path: '**/*.php'
-
-        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
-            identifier: classConstant.deprecatedClass
-            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
-            path: '**/*.php'
-
         - # 6.8 deprecation - EntitySearchResult's collection shortcuts (first/get/getElements/reduce/...) move to
           # getEntities()->...(); it is still the repository search result type on 6.7, so we keep using them.
             identifier: method.deprecated
@@ -127,14 +103,6 @@ parameters:
             identifier: method.deprecated
             message: '#Call to deprecated method __construct\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:#'
             path: '**/*.php'
-
-        - # 6.8 deprecation - DAL field API will return static natively
-            identifier: method.deprecated
-            message: '#Call to deprecated method (addFlags|removeFlag)\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Field\\Field\:\s+tag\:v6\.8\.0 - reason\:return-type-change - Will return static natively#'
-            paths:
-                - src/DataAbstractionLayer
-                - src/Pos/DataAbstractionLayer
-                - src/Reporting/DataAbstractionLayer
 
         - # 6.8 deprecation - kept for 6.7.0.0 compatibility
             identifier: property.deprecatedInterface
@@ -151,11 +119,6 @@ parameters:
             message: '#Call to method buildFilters\(\) of deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface:#'
             path: src/Pos/Sync/ProductSelection.php
 
-        - # 6.8 deprecation - kept for 6.7.0.0 compatibility
-            identifier: classConstant.deprecatedInterface
-            message: '#Access to constant on deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface:#'
-            path: tests/Pos/Sync/Product/ProductSelectionTestProductSync.php
-
         - # Shopware trunk classifies these plugin tests as non-Unit by namespace
             identifier: shopware.unexpectedTestCovers
 
@@ -170,16 +133,6 @@ parameters:
             paths:
                 - tests/Storefront/Data/FundingSubscriberTest.php
 
-        - # 6.8 deprecation - Parameter order still has to be changed
-            identifier: method.deprecated
-            message: '#Call to deprecated method __construct\(\) of class .*\\(PaymentMethodBlockedError|ShippingMethodBlockedError|PaymentMethodChangedError|ShippingMethodChangedError)#'
-            paths:
-                - src/Checkout/Cart/Validation/CartValidator.php
-                - tests/Checkout/PUI/PUISubscriberTest.php
-                - tests/Checkout/SalesChannel/MethodEligibilityRouteTest.php
-                - tests/Storefront/Data/CheckoutSubscriberTest.php
-                - tests/AgenticCommerce/Validation/ValidationIssuesTest.php
-
         - # 6.8 deprecation - Will be removed
             message: '#Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct#'
             paths:
@@ -188,39 +141,15 @@ parameters:
                 - tests/Checkout/Method/ACDCHandlerTest.php
                 - tests/Checkout/Method/VenmoHandlerTest.php
 
-        - # 6.8 deprecation - new parameter addressId will be required
-            identifier: method.deprecated
-            message: '#Call to deprecated method __construct\(\) of class .*\\(AddressValidationError|BillingAddressBlockedError)#'
-            path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
-
-        - # 6.8 deprecation - reason:exception-change - Will throw \Shopware\Core\Framework\Util\UtilException instead of \Doctrine\DBAL\Exception\TableNotFoundException
-            identifier: method.deprecated
-            message: '#Call to deprecated method columnExists\(\) of class .*\\MigrationStep#'
-            paths:
-                - src/Migration/Migration1706111604AddCustomerIdToVault.php
-                - src/Migration/Migration1675420139AddManagerDataToRun.php
-                - src/Migration/Migration1626082072AddStatusAndMessageCountToRun.php
-
         - # Only name change
           identifier: method.deprecated
           message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
           path: '**/*.php'
 
-        - # 6.8 deprecation - reason:return-type-change - will use "strong" return type `mixed`
-            identifier: method.deprecated
-            message: '#Call to deprecated method getPayloadValue\(\) of class .*\\LineItem#'
-            paths:
-                - src/AgenticCommerce/Util/PayPalCartTransformer.php
-                - src/AgenticCommerce/Validation/ValidationIssues.php
-
         - # 6.8 deprecation - Use the "defaults" property instead
             identifier: method.deprecated
             message: '#Call to deprecated method getDefaults\(\) of class Symfony\\Component\\Routing\\Attribute\\Route#'
             path: tests/AgenticCommerce/SalesChannel/DefaultRouteScopeTest.php
-
-        - # 6.8 deprecation - reason:new-optional-parameter - can safely be ignored, as the new parameter is optional and has a default value
-            identifier: method.deprecated
-            message: '#Call to deprecated method scope\(\) of class Shopware\\Core\\Framework\\Context#'
 
         # swagger-php 6.4 (Shopware trunk matrix) moves the "not set" sentinel from OpenApi\Generator to
         # OpenApi\Undefined and makes OpenApi\Context non-nullable. The v6.7.0.0 matrix still ships the older
@@ -232,7 +161,6 @@ parameters:
             message: '#Call to deprecated method isDefault\(\) of class OpenApi\\Generator#'
             paths:
                 - src/DevOps/OpenApi
-                - tests/OpenAPISchemaTest.php
 
         - # swagger-php 6.4 deprecation - Generator::UNDEFINED moved to OpenApi\Undefined::UNDEFINED
             identifier: classConstant.deprecated
