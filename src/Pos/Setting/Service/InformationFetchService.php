@@ -80,7 +80,7 @@ class InformationFetchService
         $criteria->addFilter(new EqualsFilter('iso', $merchantInformation->getCountry()));
 
         /** @var CountryEntity|null $country */
-        $country = $this->countryRepository->search($criteria, $context)->first();
+        $country = $this->countryRepository->search($criteria, $context)->getEntities()->first();
 
         if ($country === null) {
             throw new CountryNotFoundException($merchantInformation->getCountry());
@@ -95,7 +95,7 @@ class InformationFetchService
         $criteria->addFilter(new EqualsFilter('isoCode', $merchantInformation->getCurrency()));
 
         /** @var CurrencyEntity|null $currency */
-        $currency = $this->currencyRepository->search($criteria, $context)->first();
+        $currency = $this->currencyRepository->search($criteria, $context)->getEntities()->first();
 
         if ($currency === null) {
             throw new CurrencyNotFoundException($merchantInformation->getCurrency());
@@ -110,7 +110,7 @@ class InformationFetchService
         $criteria->addFilter(new EqualsFilter('locale.code', $merchantInformation->getLanguage() . '-' . $merchantInformation->getCountry()));
 
         /** @var LanguageEntity|null $language */
-        $language = $this->languageRepository->search($criteria, $context)->first();
+        $language = $this->languageRepository->search($criteria, $context)->getEntities()->first();
 
         if ($language !== null) {
             return $language->getId();
@@ -120,7 +120,7 @@ class InformationFetchService
         $criteria->addFilter(new ContainsFilter('locale.code', $merchantInformation->getLanguage() . '-'));
 
         /** @var LanguageEntity|null $language */
-        $language = $this->languageRepository->search($criteria, $context)->first();
+        $language = $this->languageRepository->search($criteria, $context)->getEntities()->first();
 
         if ($language === null) {
             return null;

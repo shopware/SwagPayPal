@@ -42,7 +42,7 @@ trait StateMachineStateTrait
         );
 
         /** @var StateMachineStateEntity|null $stateMachineState */
-        $stateMachineState = $stateMachineStateRepo->search($criteria, $context)->first();
+        $stateMachineState = $stateMachineStateRepo->search($criteria, $context)->getEntities()->first();
         if (!$stateMachineState) {
             return null;
         }
@@ -60,7 +60,7 @@ trait StateMachineStateTrait
         );
 
         /** @var StateMachineEntity|null $orderTransactionStateMachine */
-        $orderTransactionStateMachine = $stateMachineRepo->search($criteria, $context)->first();
+        $orderTransactionStateMachine = $stateMachineRepo->search($criteria, $context)->getEntities()->first();
         if (!$orderTransactionStateMachine) {
             return null;
         }

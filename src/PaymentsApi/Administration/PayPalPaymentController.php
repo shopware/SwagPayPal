@@ -160,7 +160,7 @@ class PayPalPaymentController extends AbstractController
     private function getSalesChannelIdByOrderId(string $orderId, Context $context): string
     {
         /** @var OrderEntity|null $order */
-        $order = $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
+        $order = $this->orderRepository->search(new Criteria([$orderId]), $context)->getEntities()->first();
 
         if ($order === null) {
             throw OrderException::orderNotFound($orderId);

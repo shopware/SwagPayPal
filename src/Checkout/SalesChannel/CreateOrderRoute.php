@@ -179,7 +179,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         $criteria->addAssociation('salesChannel');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
         /** @var OrderEntity|null $order */
-        $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->first();
+        $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->getEntities()->first();
 
         if ($order === null) {
             throw OrderException::orderNotFound($orderId);

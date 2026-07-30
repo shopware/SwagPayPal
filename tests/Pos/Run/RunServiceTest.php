@@ -74,14 +74,14 @@ class RunServiceTest extends TestCase
         $this->runService->writeLog($runId, $this->context);
         $this->runService->finishRun($runId, $this->context);
 
-        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->getEntities()->first();
         static::assertNotNull($run);
         static::assertInstanceOf(PosSalesChannelRunEntity::class, $run);
         static::assertNotNull($run->getFinishedAt());
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('runId', $runId));
-        $logEntry = $this->logRepository->search($criteria, $context)->first();
+        $logEntry = $this->logRepository->search($criteria, $context)->getEntities()->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
         static::assertSame(Level::Info, Level::from($logEntry->getLevel()));
@@ -104,14 +104,14 @@ class RunServiceTest extends TestCase
         $this->runService->writeLog($runId, $this->context);
         $this->runService->finishRun($runId, $this->context);
 
-        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->getEntities()->first();
         static::assertNotNull($run);
         static::assertInstanceOf(PosSalesChannelRunEntity::class, $run);
         static::assertNotNull($run->getFinishedAt());
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('runId', $runId));
-        $logEntry = $this->logRepository->search($criteria, $context)->first();
+        $logEntry = $this->logRepository->search($criteria, $context)->getEntities()->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
         static::assertSame(Level::Info, Level::from($logEntry->getLevel()));
@@ -127,7 +127,7 @@ class RunServiceTest extends TestCase
         $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         static::assertNotNull($this->runRepository->searchIds(new Criteria([$runId]), $context)->firstId());
 
-        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->getEntities()->first();
         static::assertNotNull($run);
         static::assertInstanceOf(PosSalesChannelRunEntity::class, $run);
         static::assertNull($run->getFinishedAt());
@@ -135,12 +135,12 @@ class RunServiceTest extends TestCase
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('runId', $runId));
-        $logEntry = $this->logRepository->search($criteria, $context)->first();
+        $logEntry = $this->logRepository->search($criteria, $context)->getEntities()->first();
         static::assertNull($logEntry);
 
         $this->runService->abortRun($run->getId(), $this->context);
 
-        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->getEntities()->first();
         static::assertNotNull($run);
         static::assertInstanceOf(PosSalesChannelRunEntity::class, $run);
         static::assertNotNull($run->getFinishedAt());
@@ -148,7 +148,7 @@ class RunServiceTest extends TestCase
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('runId', $runId));
-        $logEntry = $this->logRepository->search($criteria, $context)->first();
+        $logEntry = $this->logRepository->search($criteria, $context)->getEntities()->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
         static::assertSame(Level::Emergency, Level::from($logEntry->getLevel()));
@@ -204,7 +204,7 @@ class RunServiceTest extends TestCase
         $productRepository->upsert([$data], $context);
 
         /** @var ProductEntity|null $product */
-        $product = $productRepository->search(new Criteria([$data['id']]), $context)->first();
+        $product = $productRepository->search(new Criteria([$data['id']]), $context)->getEntities()->first();
 
         return $product;
     }

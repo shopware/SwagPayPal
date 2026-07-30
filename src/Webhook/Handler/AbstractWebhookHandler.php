@@ -64,7 +64,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
             )
         );
         /** @var OrderTransactionEntity|null $orderTransaction */
-        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
 
         if ($orderTransaction === null) {
             throw new WebhookOrderTransactionNotFoundException(
@@ -100,7 +100,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         $criteria = new Criteria([$orderTransactionId]);
         $criteria->addAssociations(['order', 'stateMachineState']);
         /** @var OrderTransactionEntity|null $orderTransaction */
-        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
 
         if ($orderTransaction === null) {
             throw new WebhookOrderTransactionNotFoundException(

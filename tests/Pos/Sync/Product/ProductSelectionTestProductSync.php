@@ -89,7 +89,7 @@ class ProductSelectionTestProductSync extends AbstractTestProductSync
         static::assertInstanceOf(PosSalesChannelEntity::class, $posSalesChannel);
         $products = $this->productSelection->getProductLogCollection($this->salesChannel, 10, 1, $context);
 
-        $firstProduct = $products->first();
+        $firstProduct = $products->getEntities()->first();
         static::assertNotNull($firstProduct);
         static::assertSame($product, $firstProduct);
         static::assertSame($productLogCollection, $firstProduct->getExtension(SwagPayPal::PRODUCT_LOG_POS_EXTENSION));

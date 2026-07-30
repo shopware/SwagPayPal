@@ -33,7 +33,7 @@ trait SalesChannelTrait
         $salesChannelCriteria->addAssociation('currency');
 
         /** @var SalesChannelEntity $salesChannel */
-        $salesChannel = $salesChannelRepository->search($salesChannelCriteria, $context)->first();
+        $salesChannel = $salesChannelRepository->search($salesChannelCriteria, $context)->getEntities()->first();
         $posSalesChannel = new PosSalesChannelEntity();
         $posSalesChannel->setId(Uuid::randomHex());
         $posSalesChannel->setSalesChannelId($salesChannel->getId());

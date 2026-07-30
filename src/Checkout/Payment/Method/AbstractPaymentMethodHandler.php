@@ -289,7 +289,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
         $criteria->addAssociation('order.orderCustomer.customer');
         $criteria->addAssociation('order.salesChannel');
 
-        $transaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        $transaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
         \assert($transaction instanceof OrderTransactionEntity);
 
         $order = $transaction->getOrder();

@@ -107,7 +107,7 @@ class AgentRequestContextResolver implements RequestContextResolverInterface
             new EqualsFilter('salesChannel.typeId', SwagPayPal::SALES_CHANNEL_TYPE_AGENTIC_COMMERCE),
         );
 
-        $productExport = $this->productExportRepository->search($criteria, $context)->first();
+        $productExport = $this->productExportRepository->search($criteria, $context)->getEntities()->first();
         if (!$productExport) {
             throw AgentException::unauthorized('Sales channel not found');
         }

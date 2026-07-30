@@ -184,7 +184,7 @@ class WebhookService
         $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
 
         /** @var SalesChannelEntity|null $salesChannel */
-        $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
+        $salesChannel = $this->salesChannelRepository->search($criteria, $context)->getEntities()->first();
 
         if ($salesChannel === null) {
             throw new WebhookIdInvalidException($salesChannelId);

@@ -133,7 +133,7 @@ class ExcludedProductValidatorTest extends TestCase
         $product = $this->getContainer()->get('product.repository')->search(
             new Criteria([$this->idsCollection->get('variant')]),
             Context::createDefaultContext()
-        )->first();
+        )->getEntities()->first();
         static::assertInstanceOf(ProductEntity::class, $product);
 
         static::assertSame(

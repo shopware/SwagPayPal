@@ -188,7 +188,7 @@ trait CheckoutRouteTrait
         $criteria->addAssociation('country');
 
         /** @var SalesChannelEntity|null $salesChannel */
-        $salesChannel = $salesChannelRepo->search($criteria, $context)->first();
+        $salesChannel = $salesChannelRepo->search($criteria, $context)->getEntities()->first();
 
         if ($salesChannel === null) {
             throw new SalesChannelNotFoundException();
@@ -208,7 +208,7 @@ trait CheckoutRouteTrait
         $currencyRepo = $this->getContainer()->get('currency.repository');
 
         /** @var CurrencyEntity $currency */
-        $currency = $currencyRepo->search(new Criteria(), Context::createDefaultContext())->first();
+        $currency = $currencyRepo->search(new Criteria(), Context::createDefaultContext())->getEntities()->first();
 
         return $currency;
     }
@@ -219,7 +219,7 @@ trait CheckoutRouteTrait
         $shippingMethodRepo = $this->getContainer()->get('shipping_method.repository');
 
         /** @var ShippingMethodEntity $shippingMethod */
-        $shippingMethod = $shippingMethodRepo->search(new Criteria(), Context::createDefaultContext())->first();
+        $shippingMethod = $shippingMethodRepo->search(new Criteria(), Context::createDefaultContext())->getEntities()->first();
 
         return $shippingMethod;
     }
@@ -230,7 +230,7 @@ trait CheckoutRouteTrait
         $countryRepo = $this->getContainer()->get('country.repository');
 
         /** @var CountryEntity $country */
-        $country = $countryRepo->search(new Criteria([$this->getValidCountryId()]), Context::createDefaultContext())->first();
+        $country = $countryRepo->search(new Criteria([$this->getValidCountryId()]), Context::createDefaultContext())->getEntities()->first();
 
         return $country;
     }

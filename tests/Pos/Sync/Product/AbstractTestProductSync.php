@@ -65,7 +65,7 @@ abstract class AbstractTestProductSync extends TestCase
         /** @var EntityRepository $taxRepository */
         $taxRepository = $this->getContainer()->get('tax.repository');
         /** @var TaxEntity|null $tax */
-        $tax = $taxRepository->search($criteria, Context::createDefaultContext())->first();
+        $tax = $taxRepository->search($criteria, Context::createDefaultContext())->getEntities()->first();
 
         static::assertNotNull($tax);
 
@@ -81,7 +81,7 @@ abstract class AbstractTestProductSync extends TestCase
         $categoryRepository = $this->getContainer()->get('category.repository');
 
         /** @var CategoryEntity|null $category */
-        $category = $categoryRepository->search($criteria, Context::createDefaultContext())->first();
+        $category = $categoryRepository->search($criteria, Context::createDefaultContext())->getEntities()->first();
         static::assertNotNull($category);
 
         return $category;

@@ -121,7 +121,7 @@ class APMHandlerTest extends TestCase
         /** @var EntityRepository $orderRepository */
         $orderRepository = $this->getContainer()->get('order.repository');
         /** @var OrderEntity|null $order */
-        $order = $orderRepository->search($criteria, $context->getContext())->first();
+        $order = $orderRepository->search($criteria, $context->getContext())->getEntities()->first();
         static::assertNotNull($order);
 
         $struct = new PaymentTransactionStruct($this->getTransactionFromOrder($order)->getId(), 'http://return.url');
@@ -162,7 +162,7 @@ class APMHandlerTest extends TestCase
         /** @var EntityRepository $orderTransactionRepo */
         $orderTransactionRepo = $this->getContainer()->get('order_transaction.repository');
         /** @var OrderTransactionEntity|null $orderTransaction */
-        $orderTransaction = $orderTransactionRepo->search(new Criteria([$orderTransactionId]), Context::createDefaultContext())->first();
+        $orderTransaction = $orderTransactionRepo->search(new Criteria([$orderTransactionId]), Context::createDefaultContext())->getEntities()->first();
         static::assertNotNull($orderTransaction);
 
         static::assertSame($orderId, ($orderTransaction->getCustomFields() ?? [])[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID]);

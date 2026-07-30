@@ -121,7 +121,7 @@ class PUIInstructionsFetchServiceTest extends TestCase
         static::assertSame(GetOrderPUICompleted::BANK_IBAN, $response->getDepositBankDetails()->getIban());
 
         /** @var OrderTransactionEntity|null $transaction */
-        $transaction = $this->orderTransactionRepository->search(new Criteria([$transaction->getId()]), Context::createDefaultContext())->first();
+        $transaction = $this->orderTransactionRepository->search(new Criteria([$transaction->getId()]), Context::createDefaultContext())->getEntities()->first();
         static::assertNotNull($transaction);
         static::assertSame(GetOrderPUICompleted::BANK_IBAN, ($transaction->getCustomFields() ?? [])[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION]['deposit_bank_details']['iban']);
         static::assertSame(GetOrderPUICompleted::CAPTURE_ID, ($transaction->getCustomFields() ?? [])[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID]);
@@ -252,7 +252,7 @@ class PUIInstructionsFetchServiceTest extends TestCase
         $this->getContainer()->get(OrderTransactionStateHandler::class)->process($transactionId, Context::createDefaultContext());
 
         /** @var OrderTransactionEntity|null $transaction */
-        $transaction = $this->orderTransactionRepository->search(new Criteria([$transactionId]), Context::createDefaultContext())->first();
+        $transaction = $this->orderTransactionRepository->search(new Criteria([$transactionId]), Context::createDefaultContext())->getEntities()->first();
 
         static::assertNotNull($transaction);
 
