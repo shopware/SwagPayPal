@@ -352,8 +352,8 @@ class InstallmentBannerSubscriberTest extends TestCase
         static::assertSame('text', $bannerData->getLayout());
         static::assertSame('blue', $bannerData->getColor());
         static::assertSame('8x1', $bannerData->getRatio());
-        static::assertSame('WORDMARK', $bannerData->getLogoType());
-        static::assertSame('black', $bannerData->getTextColor());
+        static::assertSame(BannerData::LOGO_TYPE_WORDMARK, $bannerData->getLogoType());
+        static::assertSame('monochrome', $bannerData->getTextColor());
         static::assertSame(12, $bannerData->getTextSize());
         static::assertTrue($bannerData->getFooterEnabled());
         static::assertTrue($bannerData->getCartEnabled());
