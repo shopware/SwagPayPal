@@ -1,5 +1,7 @@
+import type { PayPalNamespace } from '@paypal/paypal-js/types';
 import PayPalPluginError from '../base/paypal-plugin.error';
 import SwagPaypalBase, { type SwagPaypalBaseOptions } from '../base/swag-paypal.base';
+import DependencyHelper from '../helper/dependency.helper';
 
 interface SwagPayPalEligibilityOptions extends SwagPaypalBaseOptions {
     filteredPaymentMethods: string[];
@@ -22,12 +24,14 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
         methodEligibilityUrl: '',
     };
 
-    fundingSources: Record<string, PayPalCoreJS.FundingSource> = {
+    fundingSources: Record<string, PayPalCoreJS.FundingSource | 'sepa'> = {
         CARD: 'advanced_cards',
-        // SEPA: 'sepa',
+        SEPA: 'sepa',
         VENMO: 'venmo',
         PAYLATER: 'paylater',
     };
+
+    paypalV5: PayPalNamespace | null = null;
 
     protected get metadata(): { components: [] } {
         return {
@@ -35,11 +39,31 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
         };
     }
 
+    protected async beforeSetup(): Promise<void> {
+        const [_, paypalV5] = await Promise.all([
+            super.beforeSetup(),
+            DependencyHelper.loadPayPalV5ForEligibility({
+                clientId: this.options.clientId!,
+                merchantId: this.options.merchantPayerId!,
+                dataPartnerAttributionId: this.options.partnerAttributionId,
+                locale: this.options.languageIso,
+                currency: this.options.currency,
+            }).catch(() => null),
+        ]);
+
+        this.paypalV5 = paypalV5;
+    }
+
     protected async setup(): Promise<void> {
         const eligibleMethods = await this.findEligibleMethods();
 
         const unavailable = Object.entries(this.fundingSources)
-            .filter(([, source]) => !eligibleMethods.isEligible(source))
+            .filter(([, source]) => {
+                return source === 'sepa'
+                    // only consider sepa unavailable if explicitly returned
+                    ? this.paypalV5?.isFundingEligible?.('sepa') === false
+                    : !eligibleMethods.isEligible(source);
+            })
             .map(([key]) => key)
             .sort();
 

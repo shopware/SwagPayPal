@@ -1,9 +1,17 @@
+import type { PayPalNamespace, PayPalScriptOptions } from '@paypal/paypal-js/types';
+import { loadScript } from '@paypal/paypal-js';
 import PayPalPluginError from '../base/paypal-plugin.error';
 
 const PAYPAL_SDK_NAMESPACE = 'paypalV6';
+const PAYPAL_SDK_V5_NAMESPACE = 'paypalV5';
 
 export default class DependencyHelper {
     private static paypal: Promise<void>|null = null;
+
+    /**
+     * @deprecated tag:v11.0.0 - sepa implementation should be replaced by v6
+     */
+    private static paypalV5: Record<string, Promise<PayPalNamespace | null>> = {};
 
     private static googlePay: Promise<void>|null = null;
 
@@ -32,6 +40,35 @@ export default class DependencyHelper {
         } catch (error) {
             DependencyHelper.paypal = null;
             throw PayPalPluginError.scriptLoad('paypal-core-js', error);
+        }
+    }
+
+    /**
+     * @deprecated tag:v11.0.0 - sepa implementation should be replaced by v6
+     */
+    public static async loadPayPalV5ForEligibility(script: Pick<PayPalScriptOptions, 'clientId' | 'merchantId' | 'dataPartnerAttributionId' | 'locale' | 'currency' | 'intent'>): Promise<PayPalNamespace> {
+        const options: PayPalScriptOptions = {
+            ...script,
+            components: 'funding-eligibility',
+            dataNamespace: PAYPAL_SDK_V5_NAMESPACE,
+            commit: false,
+        };
+
+        const hash = DependencyHelper._hashObject(options);
+
+        try {
+            DependencyHelper.paypalV5[hash] ??= loadScript(options);
+
+            const paypal = await DependencyHelper.paypalV5[hash];
+
+            if (!paypal) {
+                throw new Error('Script loaded but check failed');
+            }
+
+            return paypal;
+        } catch (error) {
+            delete DependencyHelper.paypalV5[hash];
+            throw PayPalPluginError.scriptLoad('paypal-js-v5', error);
         }
     }
 
@@ -117,5 +154,18 @@ export default class DependencyHelper {
         }
 
         return null;
+    }
+
+    /**
+     * @deprecated tag:v11.0.0 - can be removed
+     */
+    private static _hashObject(object: Record<keyof any, any>) {
+        let hash = 0;
+        for (const char of JSON.stringify(object)) {
+            hash = (hash << 5) - hash + char.charCodeAt(0);
+            hash |= 0; // Constrain to 32bit integer
+        }
+
+        return String(hash);
     }
 }
