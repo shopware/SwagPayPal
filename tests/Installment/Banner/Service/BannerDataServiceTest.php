@@ -26,6 +26,7 @@ use Shopware\Core\System\Locale\LocaleEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
+use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
@@ -123,7 +124,7 @@ class BannerDataServiceTest extends TestCase
             $salesChannelContext,
         );
 
-        static::assertSame('primary', $bannerData->getLogoType());
+        static::assertSame(BannerData::LOGO_TYPE_WORDMARK, $bannerData->getLogoType());
         static::assertSame('monochrome', $bannerData->getTextColor());
         static::assertSame(12, $bannerData->getTextSize());
     }
@@ -138,7 +139,7 @@ class BannerDataServiceTest extends TestCase
             $salesChannelContext,
         );
 
-        static::assertSame('alternative', $bannerData->getLogoType());
+        static::assertSame(BannerData::LOGO_TYPE_MONOGRAM, $bannerData->getLogoType());
     }
 
     public function testTextColorIsReadFromConfig(): void
@@ -152,6 +153,38 @@ class BannerDataServiceTest extends TestCase
         );
 
         static::assertSame('white', $bannerData->getTextColor());
+    }
+
+    public function testGrayscaleTextColorIsMappedToMonochrome(): void
+    {
+        $this->systemConfigService->set(Settings::INSTALLMENT_BANNER_TEXT_COLOR, 'grayscale');
+        $salesChannelContext = $this->createSalesChannelContextWithLanguage();
+
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(
+            new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()),
+            $salesChannelContext,
+        );
+
+        static::assertSame(BannerData::TEXT_COLOR_MONOCHROME, $bannerData->getTextColor());
+    }
+
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed, the SDK v6 values are then the only ones
+     */
+    public function testBannerAppearanceKeepsUnmappedValuesWithSdkV6Disabled(): void
+    {
+        $this->systemConfigService->set(Settings::SDK_V6_ENABLED, false);
+        $this->systemConfigService->set(Settings::INSTALLMENT_BANNER_LOGO_TYPE, 'alternative');
+        $this->systemConfigService->set(Settings::INSTALLMENT_BANNER_TEXT_COLOR, 'grayscale');
+        $salesChannelContext = $this->createSalesChannelContextWithLanguage();
+
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(
+            new FooterPagelet(null, new CategoryCollection(), new PaymentMethodCollection(), new ShippingMethodCollection()),
+            $salesChannelContext,
+        );
+
+        static::assertSame('alternative', $bannerData->getLogoType());
+        static::assertSame('grayscale', $bannerData->getTextColor());
     }
 
     public function testTextSizeIsReadFromConfig(): void

@@ -101,11 +101,6 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
             'pageType' => $this->getPageType($page),
         ]);
 
-        /** @deprecated tag:v11.0.0 - Will be removed */
-        if ($this->systemConfigService->getBool(Settings::SDK_V6_ENABLED, $salesChannelId)) {
-            $bannerData->setLogoType(BannerData::LOGO_TYPE_WORDMARK);
-        }
-
         return $bannerData;
     }
 

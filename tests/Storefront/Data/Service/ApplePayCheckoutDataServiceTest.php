@@ -20,7 +20,6 @@ use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
-use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\ApplePayCheckoutDataService;
@@ -65,7 +64,6 @@ class ApplePayCheckoutDataServiceTest extends TestCase
             $this->createMock(RouterInterface::class),
             $this->systemConfigService,
             $this->createMock(CredentialsUtilInterface::class),
-            $this->createMock(TokenResource::class),
         );
     }
 
