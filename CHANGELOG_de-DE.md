@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem der von einem benutzerdefinierten Tax Provider angepasste Gesamtbetrag nicht berechnet wurde, weil die PayPal-Bestellung den veralteten Warenkorb- oder Bestelltransaktionsbetrag anstelle des besteuerten Gesamtbetrags verwendete (shopware/SwagPayPal#722)
+- Behebt ein Problem, bei dem die PayPal Express Checkout Buttons nach dem Zurücknavigieren vom Checkout mit dem Browser-Zurück-Button nicht mehr angezeigt wurden (shopware/shopware#18297)
 
 # 10.8.0
 - Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)
