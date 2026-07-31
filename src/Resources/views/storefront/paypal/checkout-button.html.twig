@@ -43,7 +43,9 @@
             <paypal-pay-later-button
                 class="swag-paypal-button shape-{{ spbData.buttonShape }} paypal-gold"
                 data-swag-paypal-checkout-pay-later="true"
-                data-swag-paypal-checkout-pay-later-options="{{ spbData|json_encode }}"
+                {# pageType != "checkout" will cause a non-fatal error handling (no page reloads).
+                   If the pay later button fails to render, but the paypal one don't, the checkout still works #}
+                data-swag-paypal-checkout-pay-later-options="{{ spbData.jsonSerialize()|merge({ pageType: null })|json_encode }}"
                 hidden
             >
             </paypal-pay-later-button>

@@ -120,7 +120,7 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
     }
 
     protected onApprove({ orderId }: OnApproveDataOneTimePayments): Promise<void> {
-        const existingInput = this.confirmOrderForm.querySelector('input[name="paypalOrderId"]');
+        const existingInput = this.confirmOrderForm.elements.namedItem('paypalOrderId');
         if (existingInput) {
             return Promise.resolve();
         }
