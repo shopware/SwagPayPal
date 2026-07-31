@@ -48,7 +48,7 @@ class ClientTokenRoute extends AbstractClientTokenRoute
             )])
         )]
     )]
-    #[Route(path: '/store-api/paypal/client-token', name: 'store-api.paypal.client-token', methods: ['POST'], defaults: ['_loginRequired' => true])]
+    #[Route(path: '/store-api/paypal/client-token', name: 'store-api.paypal.client-token', methods: ['POST'], defaults: ['_loginRequired' => false])]
     public function getClientToken(Request $request, SalesChannelContext $salesChannelContext): Response
     {
         $clientToken = $this->tokenResource->getClientToken($salesChannelContext)->getAccessToken();
