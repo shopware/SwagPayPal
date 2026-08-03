@@ -11,6 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\CustomerException;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\PayPalSDK\Struct\V1\Token;
@@ -63,7 +64,10 @@ class CustomerVaultTokenRouteTest extends TestCase
 
         $this->tokenResource->expects($this->once())->method('getUserIdToken')->willReturn($token);
 
-        $response = $this->createRoute(new VaultTokenCollection([new VaultTokenEntity()]))
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setId(Uuid::randomHex());
+
+        $response = $this->createRoute(new VaultTokenCollection([$vaultToken]))
             ->getVaultToken($salesChannelContext);
 
         static::assertSame(
@@ -84,7 +88,10 @@ class CustomerVaultTokenRouteTest extends TestCase
 
         $this->expectException(MissingCustomerVaultTokenException::class);
 
-        $this->createRoute(new VaultTokenCollection([new VaultTokenEntity()]))
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setId(Uuid::randomHex());
+
+        $this->createRoute(new VaultTokenCollection([$vaultToken]))
             ->getVaultToken($salesChannelContext);
     }
 
