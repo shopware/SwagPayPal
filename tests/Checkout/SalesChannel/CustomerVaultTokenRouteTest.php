@@ -13,10 +13,12 @@ use Shopware\Core\Checkout\Customer\CustomerException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\Generator;
 use Shopware\PayPalSDK\Struct\V1\Token;
 use Swag\PayPal\Checkout\Exception\MissingCustomerVaultTokenException;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
+use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
 
@@ -67,7 +69,9 @@ class CustomerVaultTokenRouteTest extends TestCase
 
         $entitySearchResult = $this->createMock(EntitySearchResult::class);
         $this->repository->expects($this->once())->method('search')->willReturn($entitySearchResult);
-        $entitySearchResult->expects($this->once())->method('first')->willReturn(new VaultTokenEntity());
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setId(Uuid::randomHex());
+        $entitySearchResult->expects($this->once())->method('getEntities')->willReturn(new VaultTokenCollection([$vaultToken]));
 
         $token = new Token();
         $token->assign(['idToken' => 'dummy-token', 'expiresIn' => 45000]);
@@ -89,7 +93,9 @@ class CustomerVaultTokenRouteTest extends TestCase
 
         $entitySearchResult = $this->createMock(EntitySearchResult::class);
         $this->repository->expects($this->once())->method('search')->willReturn($entitySearchResult);
-        $entitySearchResult->expects($this->once())->method('first')->willReturn(new VaultTokenEntity());
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setId(Uuid::randomHex());
+        $entitySearchResult->expects($this->once())->method('getEntities')->willReturn(new VaultTokenCollection([$vaultToken]));
 
         $token = new Token();
         $token->assign(['idToken' => null, 'expiresIn' => 45000]);
