@@ -1,8 +1,8 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem der von einem benutzerdefinierten Tax Provider angepasste Gesamtbetrag nicht berechnet wurde, weil die PayPal-Bestellung den veralteten Warenkorb- oder Bestelltransaktionsbetrag anstelle des besteuerten Gesamtbetrags verwendete (shopware/SwagPayPal#722)
+- Behebt ein Problem, bei dem die PayPal-Versandtracking-Synchronisierung 429 RATE_LIMIT_REACHED-Antworten zu früh erneut verarbeitet hat, anstatt den Retry-After-Header zu berücksichtigen.
 
 # 10.8.0
-- Behebt ein Problem, bei dem die PayPal-Versandtracking-Synchronisierung 429 RATE_LIMIT_REACHED-Antworten zu früh erneut verarbeitet hat, anstatt den Retry-After-Header zu berücksichtigen.
 - Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)
 - Behebt ein Problem, bei dem Prüfungen zur Verfügbarkeit von PayPal-Zahlungsarten bei zustandslosen Store-API-Anfragen PHP-Sitzungen initialisierten (shopware/SwagPayPal#740)
 - Behebt ein Problem, bei dem PayPal Express Checkout in einem veralteten Offcanvas-Warenkorb die PayPal-API mit leerem Warenkorb aufrufen konnte und ohne Rückmeldung für den Kunden fehlschlug (shopware/SwagPayPal#712)

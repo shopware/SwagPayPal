@@ -177,6 +177,11 @@ parameters:
                 - tests/Checkout/PUI/PUISubscriberTest.php
                 - tests/Storefront/Data/CheckoutSubscriberTest.php
 
+        - # Symfony Routing deprecation - getDefaults() remains necessary for Shopware 6.7 compatibility
+            identifier: method.deprecated
+            message: '#Call to deprecated method getDefaults\(\) of class Symfony\\Component\\Routing\\Attribute\\Route: Use the "defaults" property instead#'
+            path: tests/AgenticCommerce/SalesChannel/DefaultRouteScopeTest.php
+
         - # 6.8 deprecation - Will be removed
             message: '#Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct#'
             paths:
