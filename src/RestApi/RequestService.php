@@ -9,7 +9,6 @@ namespace Swag\PayPal\RestApi;
 
 use Psr\Http\Message\ResponseInterface;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\PayPalSDK\Contract\RequestServiceInterface;
 use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\RequestService as SDKRequestService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -18,7 +17,7 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
  * Wrap ApiExceptions into PayPalApiExceptions
  */
 #[Package('checkout')]
-class RequestService extends SDKRequestService implements RequestServiceInterface
+class RequestService extends SDKRequestService
 {
     /**
      * @throws PayPalApiException
