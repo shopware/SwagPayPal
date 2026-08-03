@@ -186,7 +186,7 @@ class InformationDefaultService
         $criteria->addFilter(new EqualsFilter('max', 0));
         $criteria->addFilter(new EqualsFilter('unit', DeliveryTimeEntity::DELIVERY_TIME_DAY));
         /** @var DeliveryTimeEntity|null $first */
-        $first = $this->deliveryTimeRepository->search($criteria, $context)->first();
+        $first = $this->deliveryTimeRepository->search($criteria, $context)->getEntities()->first();
 
         if ($first !== null) {
             return $first->getId();

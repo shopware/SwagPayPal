@@ -66,25 +66,39 @@
         },
         "smartPaymentButtons": {
             "confirmPageHint": "Ihre Zahlung wurde erstellt. Bitte schließen Sie sie ab, indem Sie Ihre Bestellung bestätigen.",
-            "description":  "Einfach, schnell und sicher bezahlen - Bitte wählen Sie eine dieser Zahlungsmethoden auf der Bestellabschlussseite."
+            "description": "Einfach, schnell und sicher bezahlen - Bitte wählen Sie eine dieser Zahlungsmethoden auf der Bestellabschlussseite."
         },
         "cookie": {
             "name": "PayPal-Zahlungen",
             "googlePay": "Google-Pay-Zahlungen"
         },
         "vault": {
-          "account": {
-            "clear": "Konto entfernen",
-            "create": "Konto für zukünftige Käufe speichern"
-          },
-          "card": {
-            "clear": "Karte entfernen",
-            "create": "Karte für zukünftige Käufe speichern"
-          }
+            "account": {
+                "clear": "Konto entfernen",
+                "create": "Konto für zukünftige Käufe speichern"
+            },
+            "card": {
+                "clear": "Karte entfernen",
+                "create": "Karte für zukünftige Käufe speichern"
+            }
         },
-        "e-invoice":{
-          "paymentMethod": "Zahlungsart: \"%paymentMethod%\"",
-          "orderId": "Auftragsnummer: %orderId%"
+        "e-invoice": {
+            "paymentMethod": "Zahlungsart: \"%paymentMethod%\"",
+            "orderId": "Auftragsnummer: %orderId%"
+        },
+        "agenticCommerce": {
+            "validationIssue": {
+                "userMessage": {
+                    "outOfStock": "{0} Das Produkt \"%name%\" ist nicht mehr auf Lager | [0,Inf[ Das Produkt \"%name%\" ist nur noch %count% mal auf Lager",
+                    "priceChanged": "Produktpreis von \"%name%\" hat sich von %oldPrice% zu %newPrice% geändert"
+                },
+                "resolutionOption": {
+                    "removeLabel": "Aus Warenkorb entfernen",
+                    "acceptLabel": "Fortfahren mit %option%",
+                    "waitRestockLabel": "Informieren, wenn \"%name%\" wieder vorrätig ist",
+                    "estimatedTime": "%days% Tage"
+                }
+            }
         }
     }
 }

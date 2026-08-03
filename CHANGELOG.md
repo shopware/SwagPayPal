@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where a custom tax provider's adjusted total was not charged, because the PayPal order used the stale cart or order transaction amount instead of the taxed total (shopware/SwagPayPal#722)
+
 # 10.8.0
 - Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
 - Fixes an issue, where the PayPal Express Checkout failed without customer feedback when shipping to a country that is not assigned to the sales channel (shopware/shopware#15067)

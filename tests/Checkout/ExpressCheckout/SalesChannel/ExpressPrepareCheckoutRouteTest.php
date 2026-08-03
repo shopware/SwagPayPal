@@ -172,7 +172,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
             ->addAssociation('addresses.countryState')
             ->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
         /** @var CustomerEntity|null $customer */
-        $customer = $customerRepo->search($criteria, $context)->first();
+        $customer = $customerRepo->search($criteria, $context)->getEntities()->first();
         static::assertNotNull($customer);
 
         return $customer;

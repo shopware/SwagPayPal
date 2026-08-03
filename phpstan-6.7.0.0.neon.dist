@@ -28,7 +28,9 @@ parameters:
     ignoreErrors:
         - message: '#.* method_exists\(\) with Shopware\\Core\\Checkout\\Order\\OrderEntity .*#'
           identifier: function.impossibleType
-          path: tests/Checkout/Document/Zugferd/ZugferdSubscriberTest.php
+          paths:
+            - tests/Checkout/Document/Zugferd/ZugferdSubscriberTest.php
+            - tests/AgenticCommerce/SalesChannel/CheckoutRouteTest.php
 
         - identifier: symplify.noDynamicName
           path: tests/Pos/Mock/MessageBusMock.php
@@ -40,6 +42,26 @@ parameters:
             - tests/Pos/Run/PosSyncControllerTest.php
             - tests/Storefront/Controller/ApplePayControllerTest.php
             - tests/Storefront/Data/CheckoutSubscriberTest.php
+
+        - message: '#^Class Shopware\\Core\\Checkout\\Payment\\Cart\\Error\\PaymentMethodBlockedError constructor invoked with 3 parameters, 1\-2 required\.$#'
+          identifier: arguments.count
+          count: 1
+          path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
+
+        - message: '#^Class Shopware\\Core\\Checkout\\Shipping\\Cart\\Error\\ShippingMethodBlockedError constructor invoked with 3 parameters, 1 required\.$#'
+          identifier: arguments.count
+          count: 1
+          path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
+
+        - message: '#^Class Shopware\\Storefront\\Checkout\\Cart\\Error\\PaymentMethodChangedError constructor invoked with 5 parameters, 2 required\.$#'
+          identifier: arguments.count
+          count: 1
+          path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
+
+        - message: '#^Class Shopware\\Storefront\\Checkout\\Cart\\Error\\ShippingMethodChangedError constructor invoked with 5 parameters, 2 required\.$#'
+          identifier: arguments.count
+          count: 1
+          path: tests/AgenticCommerce/Validation/ValidationIssuesTest.php
 
         - identifier: arguments.count
           message: '#.*PaymentMethodBlockedError.*#'

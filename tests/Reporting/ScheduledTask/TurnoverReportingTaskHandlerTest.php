@@ -77,7 +77,7 @@ class TurnoverReportingTaskHandlerTest extends TestCase
 
         $this->handler->run();
 
-        static::assertEquals([], $this->transactionReportRepository->search(new Criteria(), Context::createDefaultContext())->getElements());
+        static::assertEquals([], $this->transactionReportRepository->search(new Criteria(), Context::createDefaultContext())->getEntities()->getElements());
 
         static::assertEquals([[
             'reportDataKeys' => ['turnover' => 20],
@@ -102,7 +102,7 @@ class TurnoverReportingTaskHandlerTest extends TestCase
 
         static::assertEquals([], $clientHistory);
 
-        static::assertEquals([], $this->transactionReportRepository->search(new Criteria(), Context::createDefaultContext())->getElements());
+        static::assertEquals([], $this->transactionReportRepository->search(new Criteria(), Context::createDefaultContext())->getEntities()->getElements());
     }
 
     public function testRunWithFailedGuzzleRequestWillNotDeleteFailedReports(): void
@@ -171,7 +171,7 @@ class TurnoverReportingTaskHandlerTest extends TestCase
             'currency' => 'EUR',
         ]], $this->extractTurnoverReports($clientHistory));
 
-        static::assertEquals([], $this->transactionReportRepository->search(new Criteria(), Context::createDefaultContext())->getElements());
+        static::assertEquals([], $this->transactionReportRepository->search(new Criteria(), Context::createDefaultContext())->getEntities()->getElements());
     }
 
     /**

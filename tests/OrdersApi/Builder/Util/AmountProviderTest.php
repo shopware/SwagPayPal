@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\OrdersApi\Builder\Util;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
@@ -128,8 +129,8 @@ class AmountProviderTest extends TestCase
 
     private function createAmount(PurchaseUnit $purchaseUnit, float $total, float $shipping, bool $isNet = false): Amount
     {
-        return $this->amountProvider->createAmount(
-            new CalculatedPrice($total, $total, new CalculatedTaxCollection([new CalculatedTax($total - ($total / 1.19), 19.0, $total)]), new TaxRuleCollection()),
+        return $this->amountProvider->createAmountFromPrice(
+            new CartPrice($total, $total, $total, new CalculatedTaxCollection([new CalculatedTax($total - ($total / 1.19), 19.0, $total)]), new TaxRuleCollection(), CartPrice::TAX_STATE_GROSS),
             new CalculatedPrice($shipping, $shipping, new CalculatedTaxCollection([new CalculatedTax($shipping * 0.19, 19.0, $shipping)]), new TaxRuleCollection()),
             $this->getCurrency(),
             $purchaseUnit,

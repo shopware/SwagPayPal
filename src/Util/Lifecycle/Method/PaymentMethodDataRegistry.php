@@ -82,7 +82,7 @@ class PaymentMethodDataRegistry
         $criteria->addFilter(new EqualsFilter('handlerIdentifier', $method->getHandler()));
 
         /** @var PaymentMethodEntity|null $paymentMethod */
-        $paymentMethod = $this->paymentMethodRepository->search($criteria, $context)->first();
+        $paymentMethod = $this->paymentMethodRepository->search($criteria, $context)->getEntities()->first();
 
         return $paymentMethod;
     }

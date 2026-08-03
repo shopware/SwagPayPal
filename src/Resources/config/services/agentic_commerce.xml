@@ -1,0 +1,153 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="monolog.processor.paypal.agent-debug-id" class="Swag\PayPal\AgenticCommerce\Util\AgentDebugIDProcessor">
+            <tag name="monolog.processor" channel="paypal" />
+            <call method="setRequestStack">
+                <argument type="service" id="request_stack" />
+            </call>
+            <call method="setRouteScopeRegistry">
+                <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry" />
+            </call>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Routing\AgentRouteScope">
+            <tag name="shopware.route_scope"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Security\AbstractPayPalJwksProvider" class="Swag\PayPal\AgenticCommerce\Security\PayPalJwksProvider">
+            <argument type="service" id="Symfony\Contracts\HttpClient\HttpClientInterface"/>
+            <argument type="service" id="cache.app"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Routing\AgentRequestContextResolver">
+            <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+            <argument type="service" id="product_export.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\JWT\JWTDecoder"/>
+            <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Security\AbstractPayPalJwksProvider"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Routing\AgentContextResolverListener">
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Routing\AgentRequestContextResolver"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\SalesChannel\Response\AgentResponseExceptionSubscriber">
+            <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\SalesChannel\CreateCartRoute" public="true">
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Util\PayPalCartTransformer"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Util\ShopwareCartTransformer"/>
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\SalesChannel\GetCartRoute" public="true">
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Util\PayPalCartTransformer"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\SalesChannel\UpdateCartRoute" public="true">
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Util\ShopwareCartTransformer"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\SalesChannel\CreateCartRoute"/>
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="customer_address.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\SalesChannel\CheckoutRoute" public="true">
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRoute"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\PayPalPaymentHandler"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Util\PayPalCartTransformer"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Validation\ValidationIssues">
+            <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Util\PayPalCartTransformer">
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="country.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Shipping\SalesChannel\ShippingMethodRoute"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Validation\ValidationIssues"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Util\FaviconLoader">
+            <argument type="service" id="Shopware\Storefront\Theme\ConfigLoader\AbstractAvailableThemeProvider"/>
+            <argument type="service" id="Shopware\Storefront\Theme\ResolvedConfigLoader"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Util\ShopwareCartTransformer">
+            <argument type="service" id="sales_channel.country.repository"/>
+            <argument type="service" id="salutation.repository"/>
+            <argument type="service" id="customer_group.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory"/>
+            <argument type="service" id="Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Subscriber\ProductFilterSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Subscriber\WebhookSubscriber">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\HoneyWebhookService"/>
+            <argument type="service" id="notification.repository"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Tax\AgenticTaxDetector"
+                 decorates="Shopware\Core\Checkout\Cart\Tax\TaxDetector"
+                 decoration-priority="-1000">
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Tax\AgenticTaxDetector.inner"/>
+            <argument type="service" id="request_stack"/>
+        </service>
+
+        <service id="swag.paypal.honey_webhook" class="GuzzleHttp\Client" lazy="true">
+            <argument type="collection">
+                <argument key="base_uri">https://d.joinhoney.com/</argument>
+                <argument key="timeout">20</argument>
+                <argument key="connect_timeout">20</argument>
+                <argument key="headers" type="collection">
+                    <argument key="Content-Type">text/plain</argument>
+                </argument>
+            </argument>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\HoneyWebhookService">
+            <argument type="service" id="swag.paypal.honey_webhook"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
+            <argument type="service" id="router" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\Util\FaviconLoader"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\HoneyWebhookController" public="true">
+            <argument type="service" id="Swag\PayPal\AgenticCommerce\HoneyWebhookService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+    </services>
+</container>

@@ -17,12 +17,13 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\PayPalSDK\Contract\Gateway\GatewayInterface;
+use Swag\PayPal\AgenticCommerce\Exception\AgentHttpException;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * @phpstan-type Trace array{file?: string, line?: int, function?: string, class?: string, type?: string}
+ * @phpstan-type Trace array{file?: string, line?: int, function?: string, class?: string, type?: string, args?: array<mixed>, object?: object}
  */
 #[Package('checkout')]
 class IntrospectionProcessor implements ProcessorInterface
@@ -133,7 +134,7 @@ class IntrospectionProcessor implements ProcessorInterface
     }
 
     /**
-     * @return Trace[]
+     * @return array<int, Trace>
      */
     protected function getBacktrace(): array
     {
@@ -151,6 +152,10 @@ class IntrospectionProcessor implements ProcessorInterface
     private function exceptionToContext(\Throwable $exception): array
     {
         $context = ['message' => $exception->getMessage()];
+
+        if ($exception instanceof AgentHttpException) {
+            $context['details'] = $exception->getDetails()->jsonSerialize();
+        }
 
         if ($exception instanceof ShopwareHttpException) {
             $context['parameters'] = $exception->getParameters();

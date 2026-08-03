@@ -126,7 +126,7 @@ class PaymentStatusUtilV2
         $criteria->addAssociation('stateMachineState');
 
         /** @var OrderTransactionEntity|null $transaction */
-        $transaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        $transaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
 
         if ($transaction === null) {
             throw PaymentException::invalidTransaction($orderTransactionId);

@@ -2,6 +2,14 @@ swag_paypal.administration:
     resource: ../../Administration/**/*Controller.php
     type: attribute
 
+swag_paypal.agentic_commerce_controller:
+    resource: ../../AgenticCommerce/**/*Controller.php
+    type: attribute
+
+swag_paypal.agentic_commerce_route:
+    resource: ../../AgenticCommerce/**/*Route.php
+    type: attribute
+
 swag_paypal.checkout_controller:
     resource: ../../Checkout/**/*Controller.php
     type: attribute

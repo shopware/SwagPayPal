@@ -146,7 +146,7 @@ class SyncManagerTest extends TestCase
         $runRepository = $this->getContainer()->get('swag_paypal_pos_sales_channel_run.repository');
 
         /** @var PosSalesChannelRunEntity|null $run */
-        $run = $runRepository->search(new Criteria([$runId]), $this->context)->first();
+        $run = $runRepository->search(new Criteria([$runId]), $this->context)->getEntities()->first();
         static::assertNotNull($run);
 
         static::assertSame($count, $run->getMessageCount());

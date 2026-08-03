@@ -52,9 +52,11 @@ class LocaleScraperCommand extends Command
 
         $localesClassContent = '';
         foreach ($locales as $countryCode => $localeOptions) {
+            \usort($localeOptions, static fn (array $a, array $b): int => (int) $a[self::PRIORITY] <=> (int) $b[self::PRIORITY]);
+
             $localeString = '';
-            foreach ($localeOptions as $locale) {
-                $localeString .= $this->getLocaleString($locale);
+            foreach ($localeOptions as $position => $locale) {
+                $localeString .= $this->getLocaleString($position, $locale[self::LOCALE_CODE_KEY]);
             }
             $localesClassContent .= \sprintf(
                 "        '%s' => [\n%s\n        ],\n",
@@ -74,10 +76,15 @@ class LocaleScraperCommand extends Command
         return 0;
     }
 
-    private function getLocaleString(array $locale): string
+    /**
+     * The key is the position within the region, not the scraped priority. PayPal changed
+     * that column from 0-based to 1-based numbering once, which broke every
+     * `SupportedLocales::LOCALES[$countryCode][0]` lookup.
+     */
+    private function getLocaleString(int $position, string $localeCode): string
     {
         return <<<EOD
-            {$locale[self::PRIORITY]} => '{$locale[self::LOCALE_CODE_KEY]}',
+            {$position} => '{$localeCode}',
 
 EOD;
     }

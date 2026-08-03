@@ -112,7 +112,7 @@ class RunService
     public function isRunActive(string $runId, Context $context): bool
     {
         /** @var PosSalesChannelRunEntity|null $run */
-        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->getEntities()->first();
 
         if ($run === null) {
             return false;
@@ -164,7 +164,7 @@ class RunService
     public function getRun(string $runId, Context $context): PosSalesChannelRunEntity
     {
         /** @var PosSalesChannelRunEntity|null $run */
-        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->getEntities()->first();
 
         if ($run === null) {
             throw new \RuntimeException('Run not found');

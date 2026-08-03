@@ -78,7 +78,7 @@ trait OrderTransactionTrait
         $orderTransactionRepo = $container->get(OrderTransactionDefinition::ENTITY_NAME . '.repository');
 
         /** @var OrderTransactionEntity|null $transaction */
-        $transaction = $orderTransactionRepo->search(new Criteria([$transactionId]), $context)->get($transactionId);
+        $transaction = $orderTransactionRepo->search(new Criteria([$transactionId]), $context)->getEntities()->get($transactionId);
 
         return $transaction;
     }
@@ -183,7 +183,7 @@ trait OrderTransactionTrait
         $salesChannel = $salesChannelRepository->search(
             (new Criteria())->addFilter(new EqualsFilter('id', TestDefaults::SALES_CHANNEL)),
             Context::createDefaultContext()
-        )->first();
+        )->getEntities()->first();
 
         $paymentMethodId = $salesChannel->getPaymentMethodId();
         $shippingMethodId = $salesChannel->getShippingMethodId();
@@ -194,7 +194,7 @@ trait OrderTransactionTrait
             [
                 'id' => $orderId,
                 'orderNumber' => $orderNumber,
-                'price' => new CartPrice(10, 10, 10, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_NET),
+                'price' => new CartPrice(20028, 20028, 20028, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_NET),
                 'shippingCosts' => new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()),
                 'stateId' => $this->getContainer()->get(InitialStateIdLoader::class)->get(OrderStates::STATE_MACHINE),
                 'versionId' => Defaults::LIVE_VERSION,

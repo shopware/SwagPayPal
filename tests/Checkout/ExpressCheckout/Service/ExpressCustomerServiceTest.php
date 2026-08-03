@@ -198,7 +198,7 @@ class ExpressCustomerServiceTest extends TestCase
             ->addAssociation('addresses.countryState');
 
         /** @var CustomerEntity|null $customer */
-        $customer = $customerRepo->search($criteria, $context->getContext())->first();
+        $customer = $customerRepo->search($criteria, $context->getContext())->getEntities()->first();
         static::assertNotNull($customer);
 
         return $customer;
