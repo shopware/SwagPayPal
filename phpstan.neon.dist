@@ -177,11 +177,6 @@ parameters:
                 - tests/Checkout/PUI/PUISubscriberTest.php
                 - tests/Storefront/Data/CheckoutSubscriberTest.php
 
-        - # Symfony Routing deprecation - getDefaults() remains necessary for Shopware 6.7 compatibility
-            identifier: method.deprecated
-            message: '#Call to deprecated method getDefaults\(\) of class Symfony\\Component\\Routing\\Attribute\\Route: Use the "defaults" property instead#'
-            path: tests/AgenticCommerce/SalesChannel/DefaultRouteScopeTest.php
-
         - # 6.8 deprecation - Will be removed
             message: '#Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct#'
             paths:
@@ -202,6 +197,11 @@ parameters:
           identifier: method.deprecated
           message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
           path: '**/*.php'
+
+        - # 6.8 deprecation - Use the "defaults" property instead
+            identifier: method.deprecated
+            message: '#Call to deprecated method getDefaults\(\) of class Symfony\\Component\\Routing\\Attribute\\Route#'
+            path: tests/AgenticCommerce/SalesChannel/DefaultRouteScopeTest.php
 
         # swagger-php 6.4 (Shopware trunk matrix) moves the "not set" sentinel from OpenApi\Generator to
         # OpenApi\Undefined and makes OpenApi\Context non-nullable. The v6.7.0.0 matrix still ships the older
