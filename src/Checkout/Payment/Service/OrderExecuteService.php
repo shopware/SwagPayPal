@@ -87,6 +87,13 @@ class OrderExecuteService
                 return false;
             }
 
+            if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_PENDING) {
+                $this->orderTransactionStateHandler->reopen($transactionId, $context);
+                $this->orderTransactionStateHandler->process($transactionId, $context);
+
+                return true;
+            }
+
             if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_COMPLETED) {
                 $this->orderTransactionStateHandler->paid($transactionId, $context);
 
@@ -104,6 +111,13 @@ class OrderExecuteService
         $authorization = $this->getPayments($order, $salesChannelId, $refetch)?->getAuthorizations()?->first();
         if ($authorization === null) {
             return false;
+        }
+
+        if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_PENDING) {
+            $this->orderTransactionStateHandler->reopen($transactionId, $context);
+            $this->orderTransactionStateHandler->process($transactionId, $context);
+
+            return true;
         }
 
         if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_CREATED) {
