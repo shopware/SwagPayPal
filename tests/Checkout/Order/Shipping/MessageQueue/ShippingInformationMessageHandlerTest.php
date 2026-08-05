@@ -26,6 +26,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\Tracker;
 use Swag\PayPal\Checkout\Order\Shipping\MessageQueue\ShippingInformationMessage;
@@ -380,6 +381,92 @@ class ShippingInformationMessageHandlerTest extends TestCase
             ->method('warning');
 
         ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+    }
+
+    public function testRateLimitedGetThrowsPayPalExceptionForRetryStrategy(): void
+    {
+        $orderDelivery = self::createOrderDelivery(self::createOrder(), trackingCodes: ['code-a']);
+        $payPalException = new PayPalApiException(
+            ApiException::CODE_RATE_LIMIT_REACHED,
+            'RATE_LIMIT_REACHED',
+            429,
+            null,
+            retryAt: new \DateTimeImmutable('2026-01-01T00:02:00+00:00'),
+        );
+
+        $this->orderDeliveryRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturn(self::createSearchResult($orderDelivery));
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('get')
+            ->willThrowException($payPalException);
+
+        $this->orderResource
+            ->expects($this->never())
+            ->method('removeTracker');
+
+        $this->orderResource
+            ->expects($this->never())
+            ->method('addTracker');
+
+        $this->logger
+            ->expects($this->never())
+            ->method('warning');
+
+        try {
+            ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+            static::fail('Expected PayPal API exception was not thrown.');
+        } catch (PayPalApiException $e) {
+            static::assertSame($payPalException, $e);
+            static::assertNotNull($e->getRetryAt());
+        }
+    }
+
+    public function testRateLimitedAddTrackerThrowsPayPalExceptionForRetryStrategy(): void
+    {
+        $orderDelivery = self::createOrderDelivery(self::createOrder(), trackingCodes: ['code-a']);
+        $payPalOrder = self::createPayPalOrder();
+        $payPalException = new PayPalApiException(
+            ApiException::CODE_RATE_LIMIT_REACHED,
+            'RATE_LIMIT_REACHED',
+            429,
+            null,
+            null,
+        );
+
+        $this->orderDeliveryRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturn(self::createSearchResult($orderDelivery));
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn($payPalOrder);
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('addTracker')
+            ->willThrowException($payPalException);
+
+        $this->orderResource
+            ->expects($this->never())
+            ->method('removeTracker');
+
+        $this->logger
+            ->expects($this->never())
+            ->method('error');
+
+        try {
+            ($this->handler)(new ShippingInformationMessage('order-delivery-id'));
+            static::fail('Expected PayPal API exception was not thrown.');
+        } catch (PayPalApiException $e) {
+            static::assertSame($payPalException, $e);
+            static::assertNull($e->getRetryAt());
+        }
     }
 
     private static function createPayPalOrder(
