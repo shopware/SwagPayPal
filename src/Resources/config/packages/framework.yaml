@@ -18,3 +18,13 @@ framework:
       paypal.base-client:
         scope: https\://api\-m\.(sandbox\.)?paypal\.com/
         max_duration: 30
+        retry_failed:
+          max_retries: 3
+          delay: 1000
+          multiplier: 2
+          jitter: 0.1
+          http_codes:
+            0: ['GET', 'HEAD', 'OPTIONS']
+            429: ['GET', 'HEAD', 'OPTIONS']
+            502: ['GET', 'HEAD', 'OPTIONS']
+            503: ['GET', 'HEAD', 'OPTIONS']
