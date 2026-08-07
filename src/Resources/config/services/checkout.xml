@@ -134,6 +134,7 @@
 
         <service id="Swag\PayPal\Checkout\Payment\PayPalPaymentHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler">
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\PaymentResumeService"/>
             <tag name="shopware.payment.method"/>
         </service>
 
@@ -153,6 +154,11 @@
         <service id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService">
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Service\PaymentResumeService">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Psr\Clock\ClockInterface"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService">

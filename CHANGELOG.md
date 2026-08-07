@@ -1,6 +1,11 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where a custom tax provider's adjusted total was not charged, because the PayPal order used the stale cart or order transaction amount instead of the taxed total (shopware/SwagPayPal#722)
 - Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
+- Fixes an issue, where a PayPal payment failed with an UNPROCESSABLE_ENTITY error when the order was changed on the confirmation page after the customer had already approved it at PayPal, instead of letting them approve the changed amount again (shopware/SwagPayPal#759)
+- Changes storefront Express Checkout orders to carry the restore context route as return and cancel URL, like other storefront-created PayPal orders already do, so that an interrupted payment can lead the customer back into the shop
+- Adds `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException` and `Swag\PayPal\Checkout\Payment\Service\PaymentResumeService`
+- Adds the session key `swagPayPalPaymentResume`, which remembers where an interrupted payment can be resumed
+- Changes `Swag\PayPal\RestApi\Exception\PayPalApiException` to carry the PayPal SDK exception of the failure as its previous exception
 
 # 10.8.0
 - Fixes an issue, where the PayPal Express Checkout failed without customer feedback when shipping to a country that is not assigned to the sales channel (shopware/shopware#15067)

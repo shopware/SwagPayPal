@@ -1,6 +1,11 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem der von einem benutzerdefinierten Tax Provider angepasste Gesamtbetrag nicht berechnet wurde, weil die PayPal-Bestellung den veralteten Warenkorb- oder Bestelltransaktionsbetrag anstelle des besteuerten Gesamtbetrags verwendete (shopware/SwagPayPal#722)
 - Behebt ein Problem, bei dem die PayPal-Versandtracking-Synchronisierung 429 RATE_LIMIT_REACHED-Antworten zu früh erneut verarbeitet hat, anstatt den Retry-After-Header zu berücksichtigen.
+- Behebt ein Problem, bei dem eine PayPal-Zahlung mit einem UNPROCESSABLE_ENTITY-Fehler fehlschlug, wenn die Bestellung auf der Bestellbestätigungsseite geändert wurde, nachdem der Kunde sie bei PayPal bereits freigegeben hatte, anstatt ihn den geänderten Betrag erneut freigeben zu lassen (shopware/SwagPayPal#759)
+- Ändert in der Storefront erstellte Express-Checkout-Bestellungen, sodass sie wie die übrigen in der Storefront erstellten PayPal-Bestellungen die Restore-Context-Route als Rücksprung- und Abbruch-URL tragen und eine unterbrochene Zahlung den Kunden zurück in den Shop führen kann
+- Fügt `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException` und `Swag\PayPal\Checkout\Payment\Service\PaymentResumeService` hinzu
+- Fügt den Session-Schlüssel `swagPayPalPaymentResume` hinzu, der sich merkt, wo eine unterbrochene Zahlung fortgesetzt werden kann
+- Ändert `Swag\PayPal\RestApi\Exception\PayPalApiException`, sodass die PayPal-SDK-Exception des Fehlers als vorherige Exception erhalten bleibt
 
 # 10.8.0
 - Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)

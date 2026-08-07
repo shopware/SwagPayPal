@@ -23,10 +23,14 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\System\StateMachine\Transition;
+use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
+use Shopware\PayPalSDK\Struct\V1\Common\Link as V1Link;
+use Shopware\PayPalSDK\Struct\V1\Common\LinkCollection as V1LinkCollection;
 use Shopware\PayPalSDK\Struct\V2\Common\Link;
 use Shopware\PayPalSDK\Struct\V2\Common\LinkCollection;
 use Shopware\PayPalSDK\Struct\V2\Order;
@@ -34,9 +38,11 @@ use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Card;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Card\AuthenticationResult;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
+use Shopware\Storefront\Framework\Routing\StorefrontRouteScope;
 use Swag\PayPal\Checkout\Card\CardValidatorInterface;
 use Swag\PayPal\Checkout\Card\Exception\CardValidationFailedException;
 use Swag\PayPal\Checkout\CheckoutException;
+use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -51,6 +57,8 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
  * @internal
@@ -176,6 +184,62 @@ class ACDCHandlerTest extends TestCase
             $context,
             null,
         );
+    }
+
+    public function testPayRethrowsPayerActionRequiredForPreparedOrderHandlers(): void
+    {
+        $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
+        $context = Context::createDefaultContext();
+        $paypalOrder = $this->createOrderObject();
+        $order = new OrderEntity();
+        $order->setSalesChannelId('salesChannelId');
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypalOrderId',
+        ]);
+        $transaction->setOrder($order);
+
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('getAvailableToken')
+            ->willReturn(null);
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('get')
+            ->with('paypalOrderId', $order->getSalesChannelId())
+            ->willReturn($paypalOrder);
+
+        $this->orderExecuteService
+            ->expects($this->once())
+            ->method('captureOrAuthorizeOrder')
+            ->willThrowException(PayerActionRequiredException::payerActionRequired('paypalOrderId', new V1LinkCollection([
+                (new V1Link())->assign(['rel' => Link::RELATION_PAYER_ACTION, 'href' => 'https://paypal.test/payer-action']),
+            ])));
+
+        $this->acdcValidator
+            ->expects($this->once())
+            ->method('validate')
+            ->willReturn(true);
+
+        // a card payment must never be silently downgraded to a PayPal account redirect
+        $this->orderResource
+            ->expects($this->never())
+            ->method('create');
+
+        $this->expectException(PayerActionRequiredException::class);
+
+        // every condition PayPalPaymentHandler would recover from is met, so only the handler itself can prevent it
+        $request = new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => 'paypalOrderId'], [
+            PlatformRequest::ATTRIBUTE_ROUTE_SCOPE => [StorefrontRouteScope::ID],
+            PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT => Generator::generateSalesChannelContext(),
+        ]);
+        $request->setSession(new Session(new MockArraySessionStorage()));
+
+        $this->handler->pay($request, $paymentTransaction, $context, null);
     }
 
     public function testPayWithoutExistingOrder(): void
@@ -573,6 +637,62 @@ class ACDCHandlerTest extends TestCase
             $paymentTransaction,
             $context,
         );
+    }
+
+    public function testRecurringMapsPayerActionRequiredToRecurringInterrupted(): void
+    {
+        if (!\class_exists(SubscriptionDefinition::class)) {
+            static::markTestSkipped('Commercial is not available');
+        }
+
+        $context = Context::createDefaultContext();
+
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $order = new OrderEntity();
+        $order->setSalesChannelId('salesChannelId');
+        $transaction->setOrder($order);
+        $subscription = new SubscriptionEntity();
+        $subscription->setId('subscriptionId');
+        $subscription->setNextSchedule(new \DateTime());
+        $subscriptions = new SubscriptionCollection([$subscription]);
+
+        $payPalOrder = $this->createOrderObject();
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        /** @deprecated tag:v11.0.0 - Condition will always be true */
+        $recurring = \class_exists(SubscriptionsRecurringDataStruct::class)
+            ? new SubscriptionsRecurringDataStruct($subscriptions)
+            : new SubscriptionRecurringDataStruct($subscription);
+        $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null, $recurring);
+
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('getSubscriptions')
+            ->with($paymentTransaction)
+            ->willReturn($subscriptions);
+
+        $this->orderBuilder
+            ->expects($this->once())
+            ->method('getOrder')
+            ->willReturn($payPalOrder);
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('create')
+            ->willReturn($payPalOrder);
+
+        $this->orderExecuteService
+            ->expects($this->once())
+            ->method('captureOrAuthorizeOrder')
+            ->willThrowException(PayerActionRequiredException::payerActionRequired('paypalOrderId'));
+
+        $this->expectExceptionObject(PaymentException::recurringInterrupted(
+            'orderTransactionId',
+            PayerActionRequiredException::payerActionRequired('paypalOrderId')->getMessage(),
+        ));
+
+        $this->handler->recurring($paymentTransaction, $context);
     }
 
     public function testRecurringWithoutSubscription(): void

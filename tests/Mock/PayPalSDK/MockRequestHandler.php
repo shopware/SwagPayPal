@@ -74,6 +74,11 @@ use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 class MockRequestHandler
 {
     public const GENERAL_CLIENT_EXCEPTION_MESSAGE = 'generalClientExceptionMessage';
+
+    // an approved order whose capture PayPal rejects with 422 PAYER_ACTION_REQUIRED (shopware/SwagPayPal#759)
+    public const PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED = 'paypalOrderIdPayerActionRequired';
+
+    public const PAYER_ACTION_URL = 'https://www.sandbox.paypal.com/checkoutnow?token=' . self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED;
     public const CLIENT_EXCEPTION_MESSAGE_WITH_RESPONSE = 'clientExceptionWithoutResponse';
 
     public const GET_WEBHOOK_URL = 'testWebhookUrl';
@@ -187,6 +192,14 @@ class MockRequestHandler
             if (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED) !== false) {
                 $orderCapture = GetRefundedOrderCapture::get();
                 $orderCapture['id'] = PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED;
+
+                return $this->createResponse(SymResponse::HTTP_OK, $orderCapture);
+            }
+
+            if (\mb_strpos($resourceUri, self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED) !== false) {
+                // APPROVED without links, so the capture is attempted and then rejected
+                $orderCapture = GetOrderCapture::get();
+                $orderCapture['id'] = self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED;
 
                 return $this->createResponse(SymResponse::HTTP_OK, $orderCapture);
             }
@@ -342,6 +355,11 @@ class MockRequestHandler
 
             if (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED) !== false) {
                 return $this->createClientExceptionInstrumentDeclined();
+            }
+
+            if (\mb_substr($resourceUri, -8) === '/capture'
+                && \mb_strpos($resourceUri, self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED) !== false) {
+                return $this->createClientExceptionPayerActionRequired();
             }
 
             if (\mb_substr($resourceUri, -8) === '/capture' && \mb_strpos($resourceUri, CaptureOrderAPM::ID)) {
@@ -516,6 +534,27 @@ class MockRequestHandler
                 ],
             ],
             'message' => 'The requested action could not be completed, was semantically incorrect, or failed business validation.',
+        ]);
+    }
+
+    private function createClientExceptionPayerActionRequired(): Response
+    {
+        return $this->createResponse(SymResponse::HTTP_UNPROCESSABLE_ENTITY, [
+            'name' => 'UNPROCESSABLE_ENTITY',
+            'details' => [
+                [
+                    'issue' => 'PAYER_ACTION_REQUIRED',
+                    'description' => 'Payer needs to perform the following action before proceeding with payment.',
+                ],
+            ],
+            'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.',
+            'links' => [
+                [
+                    'href' => self::PAYER_ACTION_URL,
+                    'rel' => 'payer-action',
+                    'method' => 'GET',
+                ],
+            ],
         ]);
     }
 

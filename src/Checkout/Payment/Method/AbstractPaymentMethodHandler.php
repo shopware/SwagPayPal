@@ -27,6 +27,7 @@ use Shopware\PayPalSDK\Struct\V2\Common\Link;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\AbstractPaymentSource;
 use Swag\PayPal\Checkout\CheckoutException;
+use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
@@ -93,15 +94,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
 
         $response = null;
         if (!$paypalOrderId) {
-            $paypalOrder = $this->orderBuilder->getOrder($transaction, $orderTransaction, $order, $context, $request);
-            $response = $this->orderResource->create(
-                $paypalOrder,
-                $order->getSalesChannelId(),
-                $this->resolvePartnerAttributionId($request),
-                true,
-                $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
-                $this->getMetaDataId($request),
-            );
+            $response = $this->createPayPalOrder($request, $transaction, $orderTransaction, $order, $context);
             $paypalOrderId = $response->getId();
         }
 
@@ -199,14 +192,23 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             $context,
         );
 
-        $this->executeOrder(
-            $transaction,
-            $response,
-            $order,
-            $orderTransaction,
-            $context,
-            false,
-        );
+        try {
+            $this->executeOrder(
+                $transaction,
+                $response,
+                $order,
+                $orderTransaction,
+                $context,
+                false,
+            );
+        } catch (PayerActionRequiredException $e) {
+            // no payer is present to approve
+            throw PaymentException::recurringInterrupted(
+                $transaction->getOrderTransactionId(),
+                $e->getMessage(),
+                $e,
+            );
+        }
     }
 
     protected function executeOrder(PaymentTransactionStruct $transaction, Order $paypalOrder, OrderEntity $order, OrderTransactionEntity $orderTransaction, Context $context, bool $isUserPresent = true): Order
@@ -271,7 +273,31 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
 
     protected function resolveRedirect(?Order $order): ?string
     {
-        return $order?->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref();
+        // Order::$links has no default and PayPal may omit it
+        if ($order === null || !$order->isset('links')) {
+            return null;
+        }
+
+        return $order->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref();
+    }
+
+    private function createPayPalOrder(
+        Request $request,
+        PaymentTransactionStruct $transaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+    ): Order {
+        $paypalOrder = $this->orderBuilder->getOrder($transaction, $orderTransaction, $order, $context, $request);
+
+        return $this->orderResource->create(
+            $paypalOrder,
+            $order->getSalesChannelId(),
+            $this->resolvePartnerAttributionId($request),
+            true,
+            $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
+            $this->getMetaDataId($request),
+        );
     }
 
     /**

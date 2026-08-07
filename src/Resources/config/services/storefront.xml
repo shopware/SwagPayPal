@@ -20,6 +20,7 @@
             <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\Storefront\Service\ReturnTokenService"/>
             <argument type="service" id="router"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\PaymentResumeService"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>

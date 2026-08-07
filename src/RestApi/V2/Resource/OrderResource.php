@@ -71,6 +71,9 @@ class OrderResource
         $this->orderGateway->patchOrder($orderId, new PatchCollection($patches), $context);
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function capture(
         string $orderId,
         string $salesChannelId,
