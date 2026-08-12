@@ -1493,7 +1493,7 @@ export interface components {
             previous_network_transaction_reference: string;
         };
         paypal_v2_order_payment_source_card_authentication_result: {
-            liability_shift: string | null;
+            liability_shift: string;
             three_d_secure: components["schemas"]["paypal_v2_order_payment_source_card_authentication_result_3d_secure"] | null;
         };
         paypal_v2_order_payment_source_card_authentication_result_3d_secure: {
