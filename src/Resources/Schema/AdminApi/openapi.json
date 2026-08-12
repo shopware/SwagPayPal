@@ -5286,7 +5286,8 @@
                 ],
                 "properties": {
                     "liability_shift": {
-                        "type": "string"
+                        "type": "string",
+                        "nullable": true
                     },
                     "three_d_secure": {
                         "oneOf": [
