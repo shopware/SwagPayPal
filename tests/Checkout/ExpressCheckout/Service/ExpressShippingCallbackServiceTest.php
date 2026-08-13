@@ -273,7 +273,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
             ->addFilter(new EqualsFilter('salesChannels.id', TestDefaults::SALES_CHANNEL));
 
         /** @var ShippingMethodEntity|null $shippingMethod */
-        $shippingMethod = static::getContainer()->get('shipping_method.repository')->search($criteria, Context::createDefaultContext())->first();
+        $shippingMethod = static::getContainer()->get('shipping_method.repository')->search($criteria, Context::createDefaultContext())->getEntities()->first();
         static::assertNotNull($shippingMethod);
 
         return $shippingMethod;
@@ -288,7 +288,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
             ->addAssociation('states');
 
         /** @var CountryEntity|null $country */
-        $country = static::getContainer()->get('country.repository')->search($criteria, Context::createDefaultContext())->first();
+        $country = static::getContainer()->get('country.repository')->search($criteria, Context::createDefaultContext())->getEntities()->first();
         static::assertNotNull($country);
         static::assertNotNull($country->getStates()?->first());
 

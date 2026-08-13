@@ -46,7 +46,7 @@ class PUIInstructionsFetchMessageHandler
             ]));
 
         /** @var OrderTransactionEntity|null $transaction */
-        $transaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        $transaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
 
         if (!$transaction) {
             return;

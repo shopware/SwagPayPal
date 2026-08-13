@@ -231,7 +231,7 @@ class ValidationIssuesTest extends TestCase
     }
 
     /**
-     * @return iterable<class-string<Error>, array{0: Error}>
+     * @return iterable<class-string<Error>, array{Error, string}>
      */
     public static function dataProviderCartError(): iterable
     {

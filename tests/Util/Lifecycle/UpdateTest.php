@@ -226,7 +226,7 @@ class UpdateTest extends TestCase
         $updater->update($updateContext);
 
         /** @var PaymentMethodEntity|null $updatedPaymentMethod */
-        $updatedPaymentMethod = $this->paymentMethodRepository->search(new Criteria([$paypalId]), $context)->first();
+        $updatedPaymentMethod = $this->paymentMethodRepository->search(new Criteria([$paypalId]), $context)->getEntities()->first();
         static::assertNotNull($updatedPaymentMethod);
         static::assertSame(PayPalPaymentHandler::class, $updatedPaymentMethod->getHandlerIdentifier());
     }
@@ -322,7 +322,7 @@ class UpdateTest extends TestCase
         $updater->update($updateContext);
 
         /** @var PaymentMethodEntity|null $updatedPaymentMethod */
-        $updatedPaymentMethod = $this->paymentMethodRepository->search(new Criteria([$paypalPuiId]), $context)->first();
+        $updatedPaymentMethod = $this->paymentMethodRepository->search(new Criteria([$paypalPuiId]), $context)->getEntities()->first();
         static::assertNotNull($updatedPaymentMethod);
         static::assertSame(PUIHandler::class, $updatedPaymentMethod->getHandlerIdentifier());
     }
@@ -437,7 +437,7 @@ class UpdateTest extends TestCase
             \filesize($filePath) ?: 0
         );
 
-        foreach ($paymentMethods as $paymentMethod) {
+        foreach ($paymentMethods->getEntities() as $paymentMethod) {
             static::assertNotNull($paymentMethod->getMedia());
             static::assertNotNull($paymentMethod->getMedia()->getFileName());
 
@@ -451,7 +451,7 @@ class UpdateTest extends TestCase
 
         $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
         $media = [];
-        foreach ($paymentMethods as $paymentMethod) {
+        foreach ($paymentMethods->getEntities() as $paymentMethod) {
             static::assertNotNull($paymentMethod->getMedia());
             $fileName = $paymentMethod->getMedia()->getFileName();
             static::assertNotNull($fileName);
@@ -486,7 +486,7 @@ class UpdateTest extends TestCase
 
         $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
         $media = [];
-        foreach ($paymentMethods as $paymentMethod) {
+        foreach ($paymentMethods->getEntities() as $paymentMethod) {
             static::assertNotNull($paymentMethod->getMedia());
             $fileName = $paymentMethod->getMedia()->getFileName();
             static::assertNotNull($fileName);

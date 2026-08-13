@@ -161,11 +161,11 @@ class OpenAPISchemaTest extends TestCase
             foreach ($refClass->getMethods() as $method) {
                 $fqdn = $class . '::' . $method->getName();
 
-                if (\count($method->getAttributes(Route::class)) === 0 || \in_array($fqdn, self::IGNORED_ROUTES_WITHOUT_SCHEMA, true)) {
+                if ($method->getAttributes(Route::class) === [] || \in_array($fqdn, self::IGNORED_ROUTES_WITHOUT_SCHEMA, true)) {
                     continue;
                 }
 
-                if (\count($method->getAttributes(Operation::class, \ReflectionAttribute::IS_INSTANCEOF)) === 0) {
+                if ($method->getAttributes(Operation::class, \ReflectionAttribute::IS_INSTANCEOF) === []) {
                     $failures[] = $fqdn . ' is missing an OpenAPI Schema';
                 }
             }

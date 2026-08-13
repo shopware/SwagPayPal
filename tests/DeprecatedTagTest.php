@@ -77,7 +77,7 @@ class DeprecatedTagTest extends TestCase
         $pattern = '/' . $deprecatedPrefix . '(?!\s?tag\:)/';
         \preg_match($pattern, $content, $matches);
 
-        if (!empty(\array_filter($matches))) {
+        if (\array_filter($matches) !== []) {
             return true;
         }
 
@@ -86,7 +86,7 @@ class DeprecatedTagTest extends TestCase
 
         $matches = $matches[1];
 
-        if (empty(\array_filter($matches))) {
+        if (\array_filter($matches) === []) {
             return true;
         }
 

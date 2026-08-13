@@ -66,7 +66,7 @@ class MessageHydrator
         $criteria->addAssociation('currency');
 
         /** @var SalesChannelEntity|null $salesChannel */
-        $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
+        $salesChannel = $this->salesChannelRepository->search($criteria, $context)->getEntities()->first();
         if ($salesChannel === null) {
             throw new SalesChannelNotFoundException();
         }

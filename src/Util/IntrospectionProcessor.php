@@ -23,7 +23,7 @@ use Swag\PayPal\Pos\Client\AbstractClient as PosAbstractClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * @phpstan-type Trace array{file?: string, line?: int, function?: string, class?: string, type?: string}
+ * @phpstan-type Trace array{file?: string, line?: int, function?: string, class?: string, type?: string, args?: array<mixed>, object?: object}
  */
 #[Package('checkout')]
 class IntrospectionProcessor implements ProcessorInterface
@@ -134,7 +134,7 @@ class IntrospectionProcessor implements ProcessorInterface
     }
 
     /**
-     * @return Trace[]
+     * @return array<int, Trace>
      */
     protected function getBacktrace(): array
     {

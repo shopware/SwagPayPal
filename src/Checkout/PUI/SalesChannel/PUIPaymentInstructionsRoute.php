@@ -65,7 +65,7 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
         $transaction = $this->orderTransactionRepository->search(
             (new Criteria([$transactionId]))->addAssociation('stateMachineState'),
             $salesChannelContext->getContext()
-        )->first();
+        )->getEntities()->first();
 
         if ($transaction === null) {
             throw OrderException::orderTransactionNotFound($transactionId);

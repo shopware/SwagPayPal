@@ -203,7 +203,7 @@ class PayPalCartTransformer
                 new RangeFilter('stock', [RangeFilter::LTE => 0]),
                 new NotFilter('AND', [new EqualsFilter('restockTime', null)])
             );
-            $restockProducts = $this->productRepository->search($criteria, $context->getContext())->getElements();
+            $restockProducts = $this->productRepository->search($criteria, $context->getContext())->getEntities()->getElements();
         }
 
         $mapped = [];
@@ -282,7 +282,7 @@ class PayPalCartTransformer
             $criteria = new Criteria([$addressEntity->getCountryId()]);
             $criteria->addFields(['iso']);
 
-            $iso = $this->countryRepository->search($criteria, $context)->first()?->get('iso');
+            $iso = $this->countryRepository->search($criteria, $context)->getEntities()->first()?->get('iso');
             if (!$iso) {
                 throw AgentException::requiredFieldInvalid('address.countryCode', 'Country not found');
             }

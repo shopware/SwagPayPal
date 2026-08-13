@@ -679,7 +679,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         /** @var SalesChannelRepository $productRepo */
         $productRepo = $this->getContainer()->get('sales_channel.product.repository');
         /** @var SalesChannelProductEntity|null $product */
-        $product = $productRepo->search(new Criteria(), $salesChannelContext)->first();
+        $product = $productRepo->search(new Criteria(), $salesChannelContext)->getEntities()->first();
         static::assertNotNull($product);
 
         return new SwitchBuyBoxVariantEvent(

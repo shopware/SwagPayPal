@@ -113,7 +113,7 @@ class ShopwareCartTransformer
                 ]));
         }
 
-        $country = $this->countryRepository->search($criteria, $context)->first();
+        $country = $this->countryRepository->search($criteria, $context)->getEntities()->first();
         if (!$country) {
             throw AgentException::requiredFieldInvalid('address.countryCode', 'Country not found');
         }
