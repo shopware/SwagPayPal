@@ -1,11 +1,11 @@
 import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 
 export default class SwagPaypalCheckoutPayLater extends SwagPaypalCheckout<'paylater'> {
-    protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paylater'; product: 'default' } {
+    protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paylater'; product: 'spb' } {
         return {
             components: ['paypal-payments'],
             fundingSource: 'paylater',
-            product: 'default',
+            product: 'spb',
         };
     }
 

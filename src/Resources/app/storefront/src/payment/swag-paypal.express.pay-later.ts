@@ -1,11 +1,10 @@
 import SwagPaypalExpress from '../base/swag-paypal.express';
 
 export default class SwagPaypalExpressPayLater extends SwagPaypalExpress<'paylater'> {
-    protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paylater'; product: 'default' } {
+    protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paylater' } {
         return {
             components: ['paypal-payments'],
             fundingSource: 'paylater',
-            product: 'default',
         };
     }
 

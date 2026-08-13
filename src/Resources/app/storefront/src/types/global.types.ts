@@ -5,7 +5,7 @@ import type Plugin from 'src/plugin-system/plugin.class';
 declare global {
     type OmitReadonly<T> = { -readonly [P in keyof T]: OmitReadonly<T[P]> };
 
-    type Products = 'default' | 'googlepay' | 'applepay' | 'acdc' | 'venmo';
+    type Products = 'spb' | 'googlepay' | 'applepay' | 'acdc' | 'venmo';
 
     type PayPalPluginError = TPayPalPluginError;
 

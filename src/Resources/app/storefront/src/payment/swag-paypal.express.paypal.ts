@@ -3,11 +3,10 @@ import SwagPaypalExpress from '../base/swag-paypal.express';
 export default class SwagPaypalExpressPaypal extends SwagPaypalExpress<'paypal'> {
     declare el: PayPalCoreJS.HTMLPaypalButton | undefined;
 
-    protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paypal'; product: 'default' } {
+    protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paypal' } {
         return {
             components: ['paypal-payments'],
             fundingSource: 'paypal',
-            product: 'default',
         };
     }
 

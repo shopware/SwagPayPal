@@ -3,11 +3,10 @@ import SwagPaypalExpress from '../base/swag-paypal.express';
 export default class SwagPaypalExpressVenmo extends SwagPaypalExpress<'venmo'> {
     declare el: PayPalCoreJS.HTMLVenmoButton | undefined;
 
-    protected get metadata(): { components: 'venmo-payments'[]; fundingSource: 'venmo'; product: 'venmo' } {
+    protected get metadata(): { components: 'venmo-payments'[]; fundingSource: 'venmo' } {
         return {
             components: ['venmo-payments'],
             fundingSource: 'venmo',
-            product: 'venmo',
         };
     }
 

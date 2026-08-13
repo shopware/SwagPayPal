@@ -18,7 +18,7 @@
 {% block swag_paypal_meta_tags %}
     {% if anyPresent %}
         {% block swag_paypal_core %}
-        <script type="text/javascript" src="{{ baseUrl }}/web-sdk/v6/core" async></script>
+        <script type="text/javascript" src="{{ baseUrl }}/web-sdk/v6/core" data-namespace="paypalV6" async></script>
         {% endblock %}
 
         {% if spbData or payLaterData or (expressData and ('paypal' in expressData.fundingSources or 'paylater' in expressData.fundingSources)) %}

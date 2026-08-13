@@ -3,11 +3,11 @@ import SwagPaypalCheckout from '../base/swag-paypal.checkout';
 export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'paypal'> {
     declare el: PayPalCoreJS.HTMLPaypalButton | undefined;
 
-    protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paypal'; product: 'default' } {
+    protected get metadata(): { components: 'paypal-payments'[]; fundingSource: 'paypal'; product: 'spb' } {
         return {
             components: ['paypal-payments'],
             fundingSource: 'paypal',
-            product: 'default',
+            product: 'spb',
         };
     }
 

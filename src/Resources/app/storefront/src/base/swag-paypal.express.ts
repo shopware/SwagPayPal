@@ -72,13 +72,15 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
         if (this.options.addProductToCart && this.buyButton) {
             if (this.buyButton?.disabled) {
                 ElementHelper.disable(this.el!);
+            } else {
+                ElementHelper.enable(this.el!);
             }
 
             const observer = new MutationObserver(this.buyButtonObserver.bind(this));
             observer.observe(this.buyButton, { attributes: true });
+        } else {
+            ElementHelper.enable(this.el!);
         }
-
-        ElementHelper.enable(this.el!);
     }
 
     protected buyButtonObserver(mutations: MutationRecord[]): void {
