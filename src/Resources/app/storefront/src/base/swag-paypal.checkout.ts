@@ -4,6 +4,7 @@ import SwagPaypalPayment from './swag-paypal.payment';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import PayPalPluginError from './paypal-plugin.error';
 import { ElementHelper } from '../helper/element.helper';
+import { RequestHelper } from '../helper/request.helper';
 
 export interface SwagPaypalCheckoutOptions extends SwagPaypalPaymentOptions {
     orderId: string|null;
@@ -106,7 +107,7 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
             formData.set('orderId', orderId);
         }
 
-        const response = await fetch(this.options.createOrderUrl, {
+        const response = await RequestHelper.fetch(this.options.createOrderUrl, {
             method: 'POST',
             body: formData,
         });

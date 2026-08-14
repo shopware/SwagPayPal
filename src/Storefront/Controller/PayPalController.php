@@ -78,7 +78,7 @@ class PayPalController extends StorefrontController
     ) {
     }
 
-    #[Route(path: '/paypal/client-token', name: 'frontend.paypal.client_token', methods: ['POST'], defaults: ['csrf_protected' => false])]
+    #[Route(path: '/paypal/client-token', name: 'frontend.paypal.client_token', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function clientToken(Request $request, SalesChannelContext $salesChannelContext): Response
     {
         return $this->clientTokenRoute->getClientToken($request, $salesChannelContext);

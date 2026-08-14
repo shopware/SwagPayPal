@@ -4,6 +4,7 @@ import SwagPaypalPayment from './swag-paypal.payment';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import type { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
 import PayPalPluginError from './paypal-plugin.error';
+import { RequestHelper } from '../helper/request.helper';
 
 export interface SwagPaypalExpressOptions extends SwagPaypalPaymentOptions {
     buyButtonSelector: string;
@@ -96,7 +97,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
     }
 
     protected async createOrder(): Promise<{ orderId: string }> {
-        const contextResponse = await fetch(this.options.contextSwitchUrl, {
+        const contextResponse = await RequestHelper.fetch(this.options.contextSwitchUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -113,7 +114,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
             await this.addProductToCart();
         }
 
-        const orderResponse = await fetch(this.options.createOrderUrl, {
+        const orderResponse = await RequestHelper.fetch(this.options.createOrderUrl, {
             method: 'POST',
             body: new FormData(),
         });
@@ -138,7 +139,7 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
     protected async onApprove({ orderId }: OnApproveDataOneTimePayments): Promise<void> {
         PageLoadingIndicatorUtil.create();
 
-        const response = await fetch(this.options.prepareCheckoutUrl, {
+        const response = await RequestHelper.fetch(this.options.prepareCheckoutUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token: orderId }),

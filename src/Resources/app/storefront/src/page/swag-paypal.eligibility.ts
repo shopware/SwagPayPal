@@ -2,6 +2,7 @@ import type { PayPalNamespace } from '@paypal/paypal-js/types';
 import PayPalPluginError from '../base/paypal-plugin.error';
 import SwagPaypalBase, { type SwagPaypalBaseOptions } from '../base/swag-paypal.base';
 import DependencyHelper from '../helper/dependency.helper';
+import { RequestHelper } from '../helper/request.helper';
 
 interface SwagPayPalEligibilityOptions extends SwagPaypalBaseOptions {
     filteredPaymentMethods: string[];
@@ -71,7 +72,7 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
             return;
         }
 
-        const response = await fetch(this.options.methodEligibilityUrl, {
+        const response = await RequestHelper.fetch(this.options.methodEligibilityUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ paymentMethods: unavailable }),

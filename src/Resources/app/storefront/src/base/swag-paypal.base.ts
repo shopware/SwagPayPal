@@ -1,6 +1,7 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import DependencyHelper from '../helper/dependency.helper';
 import PayPalPluginError from './paypal-plugin.error';
+import { RequestHelper } from '../helper/request.helper';
 
 export interface SwagPaypalBaseOptions {
     clientId: string | null;
@@ -155,7 +156,7 @@ export default abstract class SwagPaypalBase extends Plugin {
             return;
         }
 
-        await fetch(this.options.handleErrorUrl, {
+        await RequestHelper.fetch(this.options.handleErrorUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -188,7 +189,7 @@ export default abstract class SwagPaypalBase extends Plugin {
             return this.options.clientToken;
         }
 
-        const response = await fetch(this.options.clientTokenUrl, {
+        const response = await RequestHelper.fetch(this.options.clientTokenUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
         });
