@@ -21,41 +21,15 @@
         <script type="text/javascript" src="{{ baseUrl }}/web-sdk/v6/core" data-namespace="paypalV6" async></script>
         {% endblock %}
 
-        {% if spbData or payLaterData or (expressData and ('paypal' in expressData.fundingSources or 'paylater' in expressData.fundingSources)) %}
-            {% block swag_paypal_meta_tags_paypal_payments %}
-            <link href="{{ baseUrl }}/web-sdk/v6/paypal-payments" rel="preload" as="script">
-            {% endblock %}
-        {% endif %}
-
-        {% if venmoData or (expressData and 'venmo' in expressData.fundingSources) %}
-            {% block swag_paypal_meta_tags_venmo_payments %}
-            <link href="{{ baseUrl }}/web-sdk/v6/venmo-payments" rel="preload" as="script">
-            {% endblock %}
-        {% endif %}
-
-        {% if acdcData %}
-            {% block swag_paypal_meta_tags_card_fields %}
-            <link href="{{ baseUrl }}/web-sdk/v6/card-fields" rel="preload" as="script">
-            {% endblock %}
-        {% endif %}
-
         {% if applePayData %}
             {% block swag_paypal_meta_tags_applepay_payments %}
-            <link href="{{ baseUrl }}/web-sdk/v6/applepay-payments" rel="preload" as="script">
             <script src="https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js" async></script>
             {% endblock %}
         {% endif %}
 
         {% if googlePayData %}
             {% block swag_paypal_meta_tags_googlepay_payments %}
-            <link href="{{ baseUrl }}/web-sdk/v6/googlepay-payments" rel="preload" as="script">
             <script src="https://pay.google.com/gp/p/js/pay.js" async></script>
-            {% endblock %}
-        {% endif %}
-
-        {% if installmentBannerData %}
-            {% block swag_paypal_meta_tags_paypal_messages %}
-            <link href="{{ baseUrl }}/web-sdk/v6/paypal-messages" rel="preload" as="script">
             {% endblock %}
         {% endif %}
     {% endif %}
