@@ -23,6 +23,7 @@ use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Exception\MissingCountryIdException;
@@ -38,6 +39,7 @@ use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Swag\PayPal\Storefront\Service\ReturnToken;
 use Swag\PayPal\Storefront\Service\ReturnTokenService;
@@ -75,6 +77,7 @@ class PayPalController extends StorefrontController
         private readonly LoggerInterface $logger,
         private readonly ReturnTokenService $returnTokenService,
         private readonly RouterInterface $router,
+        private readonly SystemConfigService $systemConfigService,
     ) {
     }
 
@@ -244,7 +247,10 @@ class PayPalController extends StorefrontController
             }
         }
 
-        if ($fatal) {
+        // session key is only read in checkout, if the pageType isn't checkout too
+        // its a JS plugin rendering aside the main one (like pay-later)
+        $isV6Enabled = $this->systemConfigService->getBool(Settings::SDK_V6_ENABLED, $context->getSalesChannelId());
+        if ($fatal && (!$isV6Enabled || $pageType === AbstractScriptData::PAGE_TYPE_CHECKOUT)) {
             $request->getSession()->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
         }
 
