@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where line item labels containing line breaks made the PayPal order creation fail for local payment methods like iDEAL, P24, EPS or Bancontact
+
 # 8.12.1
 - Fixes an issue, where the same PayPal order could be used for multiple Shopware orders.
 
