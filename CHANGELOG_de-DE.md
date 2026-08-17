@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem der von einem benutzerdefinierten Tax Provider angepasste Gesamtbetrag nicht berechnet wurde, weil die PayPal-Bestellung den veralteten Warenkorb- oder Bestelltransaktionsbetrag anstelle des besteuerten Gesamtbetrags verwendete (shopware/SwagPayPal#722)
 - Behebt ein Problem, bei dem die PayPal-Versandtracking-Synchronisierung 429 RATE_LIMIT_REACHED-Antworten zu früh erneut verarbeitet hat, anstatt den Retry-After-Header zu berücksichtigen.
+- Behebt ein Problem, bei dem im Kontextmenü der Erweiterungs-Kachel der rohe Snippet-Key statt „Konfigurieren” angezeigt wurde (shopware/shopware#19028)
 
 # 10.8.0
 - Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)
