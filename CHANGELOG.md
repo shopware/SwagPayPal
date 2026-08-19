@@ -2,6 +2,7 @@
 - Fixes an issue, where a custom tax provider's adjusted total was not charged, because the PayPal order used the stale cart or order transaction amount instead of the taxed total (shopware/SwagPayPal#722)
 - Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
 - Fixes an issue, where transient PayPal API transport errors during Express Checkout resulted in HTTP 500 and left the loading spinner stuck on the page
+- Fixes an issue, where the extension card context menu showed a raw snippet key instead of "Configure" (shopware/shopware#19028)
 
 # 10.8.0
 - Fixes an issue, where the PayPal Express Checkout failed without customer feedback when shipping to a country that is not assigned to the sales channel (shopware/shopware#15067)
