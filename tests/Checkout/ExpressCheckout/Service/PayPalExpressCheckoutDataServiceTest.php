@@ -37,6 +37,8 @@ use Shopware\Core\Test\TestDefaults;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
+use Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPagelet;
+use Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
@@ -288,6 +290,50 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             'PayLater not available' => [true, false, ['paypal', 'venmo']],
             'PayLater enabled and available' => [true, true, ['paypal', 'paylater', 'venmo']],
             'PayLater disabled and not available' => [false, false, ['paypal', 'venmo']],
+        ];
+    }
+
+    #[DataProvider('dataProviderTestFundingSourcesWithoutProductContext')]
+    public function testFundingSourcesWithoutProductContext(bool $showPayLaterSetting, array $expectedFundingSources): void
+    {
+        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
+
+        $this->systemConfigService->set(Settings::ECS_SHOW_PAY_LATER, $showPayLaterSetting, $salesChannelContext->getSalesChannelId());
+
+        $payLaterMethodData = $this->createMock(PayLaterMethodData::class);
+        $payLaterMethodData->expects($this->never())->method('isAvailable');
+
+        $payPalExpressCheckoutDataService = new PayPalExpressCheckoutDataService(
+            $this->getContainer()->get(CartService::class),
+            $this->getContainer()->get(LocaleCodeProvider::class),
+            $this->getContainer()->get('router'),
+            $this->paymentMethodUtil,
+            $this->systemConfigService,
+            new CredentialsUtil($this->systemConfigService),
+            $this->getContainer()->get(CartPriceService::class),
+            $payLaterMethodData
+        );
+
+        // Listing and CMS pages (ExpressCategoryRoute) pass no event at all.
+        $withoutEvent = $payPalExpressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext, true);
+
+        // Pagelets pass an event that is not a ProductPageLoadedEvent, so no context is built either.
+        // GuestWishlist stands in for every PageletLoadedEvent on this path, Quickview included.
+        $pageletEvent = new GuestWishlistPageletLoadedEvent(new GuestWishlistPagelet(), $salesChannelContext, new Request());
+        $withPageletEvent = $payPalExpressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext, true, $pageletEvent);
+
+        foreach ([$withoutEvent, $withPageletEvent] as $expressCheckoutButtonData) {
+            static::assertNotNull($expressCheckoutButtonData);
+            static::assertSame($expectedFundingSources, $expressCheckoutButtonData->getFundingSources());
+            static::assertSame($showPayLaterSetting, $expressCheckoutButtonData->isShowPayLater());
+        }
+    }
+
+    public static function dataProviderTestFundingSourcesWithoutProductContext(): array
+    {
+        return [
+            'PayLater enabled, no product context' => [true, ['paypal', 'paylater', 'venmo']],
+            'PayLater disabled, no product context' => [false, ['paypal', 'venmo']],
         ];
     }
 
