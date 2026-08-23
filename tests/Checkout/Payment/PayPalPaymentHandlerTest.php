@@ -10,33 +10,33 @@ namespace Swag\PayPal\Test\Checkout\Payment;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\PlatformRequest;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
 use Shopware\PayPalSDK\Struct\V2\Common\Link;
+use Shopware\PayPalSDK\Struct\V2\Common\LinkCollection;
 use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\Vault;
 use Shopware\PayPalSDK\Struct\V2\PatchCollection;
-use Shopware\Storefront\Framework\Routing\StorefrontRouteScope;
+use Shopware\PayPalSDK\Test\Request\TestRequestContext;
 use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
-use Swag\PayPal\Checkout\Payment\Service\PaymentResumeService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -49,6 +49,7 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -64,11 +65,8 @@ use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Test\Mock\PayPalSDK\MockRequestHandler;
 use Swag\PayPal\Util\PriceFormatter;
-use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -90,6 +88,7 @@ class PayPalPaymentHandlerTest extends TestCase
     public const PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER = 'paypalOrderIdDuplicateOrderNumber';
     public const PAYPAL_ORDER_ID_INSTRUMENT_DECLINED = 'paypalOrderIdInstrumentDeclined';
     private const RETURN_URL = 'https://example.com/payment/finalize-transaction?_sw_payment_token=testToken';
+    private const MOBILE_USER_AGENT = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) Mobile/15E148 Safari/604.1';
     private const TEST_CUSTOMER_STREET = 'Street 1';
     private const TEST_CUSTOMER_FIRST_NAME = 'FirstName';
     private const TEST_CUSTOMER_LAST_NAME = 'LastName';
@@ -162,24 +161,37 @@ class PayPalPaymentHandlerTest extends TestCase
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, Context::createDefaultContext());
     }
 
-    public function testPayWithEcsPayerActionRequiredRedirectsToRenewedApproval(): void
+    public function testPayWithEcsPayerActionRequiredConfirmsPaymentSourceAndRedirects(): void
     {
-        $settings = $this->getDefaultConfigData();
-        $handler = $this->createPayPalPaymentHandler($settings);
+        $handler = $this->createPayPalPaymentHandler($this->getDefaultConfigData());
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $paymentTransaction = new PaymentTransactionStruct($transactionId, self::RETURN_URL);
-        $salesChannelContext = $this->createStorefrontSalesChannelContext();
 
-        $request = $this->createStorefrontRequest([
+        $response = $handler->pay(new Request([], [
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
             AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
-        ], $salesChannelContext);
-
-        $response = $handler->pay($request, $paymentTransaction, Context::createDefaultContext(), null);
+        ]), $paymentTransaction, Context::createDefaultContext(), null);
 
         static::assertInstanceOf(RedirectResponse::class, $response);
-        static::assertSame(MockRequestHandler::PAYER_ACTION_URL, $response->getTargetUrl());
+        // the approval the confirmed payment source reopened, not the one of the rejected capture
+        static::assertSame(MockRequestHandler::CONFIRMED_PAYER_ACTION_URL, $response->getTargetUrl());
+
+        $confirmations = $this->getGatewayRequests('confirmPaymentSource');
+        static::assertCount(1, $confirmations);
+        static::assertStringEndsWith(
+            \sprintf('/%s/confirm-payment-source', MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED),
+            (string) $confirmations[0]->getRequest()->getUri(),
+        );
+
+        $paypalSource = $confirmations[0]->getRequestBody()['payment_source']['paypal'] ?? null;
+        static::assertIsArray($paypalSource);
+        // the payer returns into finalize, which resumes the payment from its own token
+        static::assertSame(self::RETURN_URL, $paypalSource['experience_context']['return_url'] ?? null);
+        static::assertSame(self::RETURN_URL . '&cancel=1', $paypalSource['experience_context']['cancel_url'] ?? null);
+
+        // no new PayPal order, which would orphan the one the payer approved
+        static::assertCount(0, $this->getGatewayRequests('createOrder'));
 
         $orderTransaction = $this->getTransaction($transactionId, $this->getContainer(), Context::createDefaultContext());
         static::assertNotNull($orderTransaction);
@@ -188,155 +200,229 @@ class PayPalPaymentHandlerTest extends TestCase
             $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID)
         );
 
-        static::assertSame(self::RETURN_URL, $this->createPaymentResumeService()->consume(
-            $request->getSession(),
-            MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
-        ));
-
-        // no confirm-payment-source (voids the renewed approval) and no new order (orphans the approved one)
-        $uris = \array_map(
-            static fn ($context) => $context->getRequest()->getMethod() . ' ' . $context->getRequest()->getUri(),
-            self::getClient()->getAll(),
-        );
-        static::assertNull($this->indexOfRequestEndingWith($uris, '/confirm-payment-source'));
-        static::assertNull($this->indexOfRequestEndingWith($uris, '/v2/checkout/orders'));
-
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, Context::createDefaultContext());
     }
 
     /**
-     * Smart Payment Buttons approve a preliminary order and patch it before capture just like Express does.
+     * App Switch returns report the approval in the URL fragment, which never reaches the shop,
+     * so the renewed approval must not switch into the PayPal app again.
      */
-    public function testPayWithSpbPayerActionRequiredRedirectsToRenewedApproval(): void
+    public function testPayWithSpbPayerActionRequiredConfirmsWithoutAppSwitchContext(): void
     {
-        $handler = $this->createPayPalPaymentHandler($this->getDefaultConfigData());
+        $settings = $this->getDefaultConfigData();
+        $settings[Settings::SPB_APP_SWITCH_ENABLED] = true;
+        $handler = $this->createPayPalPaymentHandler($settings);
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $paymentTransaction = new PaymentTransactionStruct($transactionId, self::RETURN_URL);
 
-        $request = $this->createStorefrontRequest([
+        $payload = [
             AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
-        ], $this->createStorefrontSalesChannelContext());
+            'product' => 'spb',
+            CreateOrderRoute::PAYPAL_BUYER_USER_AGENT => self::MOBILE_USER_AGENT,
+        ];
 
-        $response = $handler->pay($request, $paymentTransaction, Context::createDefaultContext(), null);
+        // the very same payload builds an App Switch order {@see PayPalOrderBuilderTest::testGetOrderAddsAppSwitchContext}
+        $response = $handler->pay(new Request([], $payload), $paymentTransaction, Context::createDefaultContext(), null);
 
         static::assertInstanceOf(RedirectResponse::class, $response);
-        static::assertSame(MockRequestHandler::PAYER_ACTION_URL, $response->getTargetUrl());
-        static::assertSame(self::RETURN_URL, $this->createPaymentResumeService()->consume(
-            $request->getSession(),
-            MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
-        ));
+        static::assertSame(MockRequestHandler::CONFIRMED_PAYER_ACTION_URL, $response->getTargetUrl());
 
-        $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, Context::createDefaultContext());
+        $confirmations = $this->getGatewayRequests('confirmPaymentSource');
+        static::assertCount(1, $confirmations);
+        $paypalSource = $confirmations[0]->getRequestBody()['payment_source']['paypal'] ?? null;
+        static::assertIsArray($paypalSource);
+        static::assertNull($paypalSource['experience_context']['app_switch_context'] ?? null);
+        // an existing vault token would capture without any payer, so the renewed consent must be interactive
+        static::assertArrayNotHasKey('vault_id', $paypalSource);
+        static::assertSame(self::RETURN_URL, $paypalSource['experience_context']['return_url'] ?? null);
+        // nothing was ticked, so nothing is vaulted
+        static::assertArrayNotHasKey('vault', $paypalSource['attributes'] ?? []);
+    }
+
+    public function testPayerActionRecoveryKeepsTheVaultingThePayerAskedFor(): void
+    {
+        $confirmationRequest = null;
+        $orderBuilder = $this->createMock(AbstractOrderBuilder::class);
+        $orderBuilder->method('getOrder')->willReturnCallback(
+            static function (
+                PaymentTransactionStruct $transaction,
+                OrderTransactionEntity $orderTransaction,
+                OrderEntity $order,
+                Context $context,
+                Request $request,
+            ) use (&$confirmationRequest): Order {
+                $confirmationRequest = $request;
+
+                $paypalOrder = new Order();
+                $paypalOrder->setPaymentSource(new PaymentSource());
+
+                return $paypalOrder;
+            }
+        );
+
+        $confirmed = new Order();
+        $link = new Link();
+        $link->setRel(Link::RELATION_PAYER_ACTION);
+        $link->setHref(MockRequestHandler::CONFIRMED_PAYER_ACTION_URL);
+        $confirmed->setLinks(new LinkCollection([$link]));
+
+        $orderResource = $this->createMock(OrderResource::class);
+        $orderResource->method('confirm')->willReturn($confirmed);
+
+        $handler = new class(...$this->createHandlerDependencies($orderResource, $orderBuilder)) extends PayPalPaymentHandler {
+            public function recoverFromPayerActionOf(
+                PayerActionRequiredException $exception,
+                Request $request,
+                string $preparedOrderId,
+                PaymentTransactionStruct $transaction,
+                OrderTransactionEntity $orderTransaction,
+                OrderEntity $order,
+                Context $context,
+            ): RedirectResponse {
+                return $this->recoverFromPayerAction($exception, $request, $preparedOrderId, $transaction, $orderTransaction, $order, $context);
+            }
+        };
+
+        $payerRequest = new Request([], [
+            'product' => 'spb',
+            CreateOrderRoute::PAYPAL_BUYER_USER_AGENT => self::MOBILE_USER_AGENT,
+            VaultTokenService::REQUEST_CREATE_VAULT => true,
+        ]);
+
+        $handler->recoverFromPayerActionOf(
+            PayerActionRequiredException::payerActionRequired(MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED),
+            $payerRequest,
+            MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
+            new PaymentTransactionStruct('orderTransactionId', self::RETURN_URL),
+            new OrderTransactionEntity(),
+            $this->createOrderWithSalesChannel(),
+            Context::createDefaultContext(),
+        );
+
+        static::assertInstanceOf(Request::class, $confirmationRequest);
+        // the payer ticked "save for later" before the capture was rejected; re-approving must carry
+        // that consent, or the order is captured and the payment method never vaulted
+        static::assertTrue($confirmationRequest->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT));
+        // ... while everything that would make the return silent or non-interactive stays behind
+        static::assertTrue($confirmationRequest->attributes->getBoolean(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE));
+        static::assertSame('', $confirmationRequest->request->getString('product'));
+        static::assertSame('', $confirmationRequest->request->getString(CreateOrderRoute::PAYPAL_BUYER_USER_AGENT));
+    }
+
+    public function testPayerActionRecoveryDoesNotInventVaultingThePayerDidNotAskFor(): void
+    {
+        $confirmationRequest = null;
+        $orderBuilder = $this->createMock(AbstractOrderBuilder::class);
+        $orderBuilder->method('getOrder')->willReturnCallback(
+            static function (
+                PaymentTransactionStruct $transaction,
+                OrderTransactionEntity $orderTransaction,
+                OrderEntity $order,
+                Context $context,
+                Request $request,
+            ) use (&$confirmationRequest): Order {
+                $confirmationRequest = $request;
+
+                $paypalOrder = new Order();
+                $paypalOrder->setPaymentSource(new PaymentSource());
+
+                return $paypalOrder;
+            }
+        );
+
+        $confirmed = new Order();
+        $link = new Link();
+        $link->setRel(Link::RELATION_PAYER_ACTION);
+        $link->setHref(MockRequestHandler::CONFIRMED_PAYER_ACTION_URL);
+        $confirmed->setLinks(new LinkCollection([$link]));
+
+        $orderResource = $this->createMock(OrderResource::class);
+        $orderResource->method('confirm')->willReturn($confirmed);
+
+        $handler = new class(...$this->createHandlerDependencies($orderResource, $orderBuilder)) extends PayPalPaymentHandler {
+            public function recoverFromPayerActionOf(
+                PayerActionRequiredException $exception,
+                Request $request,
+                string $preparedOrderId,
+                PaymentTransactionStruct $transaction,
+                OrderTransactionEntity $orderTransaction,
+                OrderEntity $order,
+                Context $context,
+            ): RedirectResponse {
+                return $this->recoverFromPayerAction($exception, $request, $preparedOrderId, $transaction, $orderTransaction, $order, $context);
+            }
+        };
+
+        $handler->recoverFromPayerActionOf(
+            PayerActionRequiredException::payerActionRequired(MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED),
+            new Request([], ['product' => 'spb']),
+            MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
+            new PaymentTransactionStruct('orderTransactionId', self::RETURN_URL),
+            new OrderTransactionEntity(),
+            $this->createOrderWithSalesChannel(),
+            Context::createDefaultContext(),
+        );
+
+        static::assertInstanceOf(Request::class, $confirmationRequest);
+        static::assertFalse($confirmationRequest->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT));
     }
 
     public function testPayWithEcsPayerActionRequiredWithoutReturnUrlFails(): void
     {
-        $settings = $this->getDefaultConfigData();
-        $handler = $this->createPayPalPaymentHandler($settings);
+        $handler = $this->createPayPalPaymentHandler($this->getDefaultConfigData());
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $paymentTransaction = new PaymentTransactionStruct($transactionId);
 
-        $this->expectException(PayerActionRequiredException::class);
+        try {
+            $handler->pay(new Request([], [
+                PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
+                AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
+            ]), $paymentTransaction, Context::createDefaultContext(), null);
+        } catch (PayerActionRequiredException $e) {
+            // without a return URL the renewed approval could not lead back into the shop
+            static::assertCount(0, $this->getGatewayRequests('confirmPaymentSource'));
 
-        $handler->pay($this->createStorefrontRequest([
-            PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
-            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
-        ], $this->createStorefrontSalesChannelContext()), $paymentTransaction, Context::createDefaultContext(), null);
-    }
+            return;
+        }
 
-    public function testPayWithEcsPayerActionRequiredWithoutSalesChannelContextFails(): void
-    {
-        $settings = $this->getDefaultConfigData();
-        $handler = $this->createPayPalPaymentHandler($settings);
-
-        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $paymentTransaction = new PaymentTransactionStruct($transactionId, self::RETURN_URL);
-
-        $this->expectException(PayerActionRequiredException::class);
-
-        $request = $this->createStorefrontRequest([
-            PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
-            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
-        ], $this->createStorefrontSalesChannelContext());
-        $request->attributes->remove(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
-
-        $handler->pay($request, $paymentTransaction, Context::createDefaultContext(), null);
-    }
-
-    public function testPayWithEcsPayerActionRequiredWithoutStorefrontScopeFails(): void
-    {
-        $settings = $this->getDefaultConfigData();
-        $handler = $this->createPayPalPaymentHandler($settings);
-
-        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $paymentTransaction = new PaymentTransactionStruct($transactionId, self::RETURN_URL);
-
-        $this->expectException(PayerActionRequiredException::class);
-
-        $request = $this->createStorefrontRequest([
-            PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
-            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
-        ], $this->createStorefrontSalesChannelContext());
-        $request->attributes->remove(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE);
-
-        $handler->pay($request, $paymentTransaction, Context::createDefaultContext(), null);
+        static::fail(\sprintf('Expected a %s', PayerActionRequiredException::class));
     }
 
     /**
-     * A second checkout tab creates its own PayPal order, whose resume must survive alongside this one.
+     * A PayPal order the shop created itself was never approved, so there is no approval to renew.
      */
-    public function testPayWithEcsPayerActionRequiredKeepsTheResumeOfAnotherPayPalOrder(): void
+    public function testPayerActionRecoveryRequiresAPreparedOrder(): void
     {
-        $settings = $this->getDefaultConfigData();
-        $handler = $this->createPayPalPaymentHandler($settings);
-        $resumeService = $this->createPaymentResumeService();
+        $orderResource = $this->createMock(OrderResource::class);
+        $orderResource->expects($this->never())->method('confirm');
 
-        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $paymentTransaction = new PaymentTransactionStruct($transactionId, self::RETURN_URL);
-        $salesChannelContext = $this->createStorefrontSalesChannelContext();
-
-        $request = $this->createStorefrontRequest([
-            PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
-            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
-        ], $salesChannelContext);
-
-        $session = $request->getSession();
-        $resumeService->store($session, 'otherTabPayPalOrderId', 'https://example.test/other-tab', $salesChannelContext->getSalesChannelId());
-
-        $response = $handler->pay($request, $paymentTransaction, Context::createDefaultContext(), null);
-
-        static::assertInstanceOf(RedirectResponse::class, $response);
-        static::assertSame(self::RETURN_URL, $resumeService->consume($session, MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED));
-        static::assertSame('https://example.test/other-tab', $resumeService->consume($session, 'otherTabPayPalOrderId'));
-    }
-
-    /**
-     * Without a session there is nowhere to remember the resume for the returning payer.
-     */
-    public function testPayWithEcsPayerActionRequiredWithoutSessionFails(): void
-    {
-        $settings = $this->getDefaultConfigData();
-        $handler = $this->createPayPalPaymentHandler($settings);
-
-        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
-        $paymentTransaction = new PaymentTransactionStruct($transactionId, self::RETURN_URL);
+        $handler = new class(...$this->createHandlerDependencies($orderResource)) extends PayPalPaymentHandler {
+            public function recoverFromPayerActionOf(
+                PayerActionRequiredException $exception,
+                Request $request,
+                string $preparedOrderId,
+                PaymentTransactionStruct $transaction,
+                OrderTransactionEntity $orderTransaction,
+                OrderEntity $order,
+                Context $context,
+            ): RedirectResponse {
+                return $this->recoverFromPayerAction($exception, $request, $preparedOrderId, $transaction, $orderTransaction, $order, $context);
+            }
+        };
 
         $this->expectException(PayerActionRequiredException::class);
 
-        $handler->pay($this->createStorefrontRequest([
-            PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
-            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
-        ], $this->createStorefrontSalesChannelContext(), false), $paymentTransaction, Context::createDefaultContext(), null);
-    }
-
-    public function testFinalizePayerActionRequiredIsNotRecovered(): void
-    {
-        // must never redirect again, a payer could be bounced between shop and PayPal
-        $this->expectException(PayerActionRequiredException::class);
-
-        $this->assertFinalizeRequest(MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED);
+        $handler->recoverFromPayerActionOf(
+            PayerActionRequiredException::payerActionRequired(MockRequestHandler::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED),
+            new Request(),
+            '',
+            new PaymentTransactionStruct('orderTransactionId', self::RETURN_URL),
+            new OrderTransactionEntity(),
+            new OrderEntity(),
+            Context::createDefaultContext(),
+        );
     }
 
     /**
@@ -344,7 +430,7 @@ class PayPalPaymentHandlerTest extends TestCase
      */
     public function testResolveRedirectToleratesOrdersWithoutLinks(): void
     {
-        $handler = new class($this->createMock(SettingsValidationServiceInterface::class), $this->createMock(StateMachineRegistry::class), $this->createMock(OrderExecuteService::class), $this->createMock(OrderPatchService::class), $this->createMock(TransactionDataService::class), $this->createMock(OrderResource::class), $this->createMock(VaultTokenService::class), $this->createMock(EntityRepository::class), $this->createMock(AbstractOrderBuilder::class), $this->createMock(PaymentResumeService::class)) extends PayPalPaymentHandler {
+        $handler = new class(...$this->createHandlerDependencies()) extends PayPalPaymentHandler {
             public function resolveRedirectOf(?Order $order): ?string
             {
                 return $this->resolveRedirect($order);
@@ -467,32 +553,43 @@ class PayPalPaymentHandlerTest extends TestCase
         $this->assertFinalizeRequest(self::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER, OrderTransactionStates::STATE_PAID, CaptureOrderCapture::CAPTURE_ID);
     }
 
-    /**
-     * @param array<int, string> $uris
-     */
-    private function indexOfRequestEndingWith(array $uris, string $suffix): ?int
+    private function createOrderWithSalesChannel(): OrderEntity
     {
-        foreach ($uris as $index => $uri) {
-            if (\str_ends_with($uri, $suffix)) {
-                return $index;
-            }
-        }
+        $order = new OrderEntity();
+        $order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
 
-        return null;
+        return $order;
     }
 
-    private function createStorefrontRequest(array $body, SalesChannelContext $salesChannelContext, bool $withSession = true): Request
+    /**
+     * @return array<int, mixed>
+     */
+    private function createHandlerDependencies(
+        ?OrderResource $orderResource = null,
+        ?AbstractOrderBuilder $orderBuilder = null,
+    ): array {
+        return [
+            $this->createMock(SettingsValidationServiceInterface::class),
+            $this->createMock(StateMachineRegistry::class),
+            $this->createMock(OrderExecuteService::class),
+            $this->createMock(OrderPatchService::class),
+            $this->createMock(TransactionDataService::class),
+            $orderResource ?? $this->createMock(OrderResource::class),
+            $this->createMock(VaultTokenService::class),
+            $this->createMock(EntityRepository::class),
+            $orderBuilder ?? $this->createMock(AbstractOrderBuilder::class),
+        ];
+    }
+
+    /**
+     * @return list<TestRequestContext>
+     */
+    private function getGatewayRequests(string $gatewayMethod): array
     {
-        $request = new Request([], $body, [
-            PlatformRequest::ATTRIBUTE_ROUTE_SCOPE => [StorefrontRouteScope::ID],
-            PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT => $salesChannelContext,
-        ]);
-
-        if ($withSession) {
-            $request->setSession(new Session(new MockArraySessionStorage()));
-        }
-
-        return $request;
+        return \array_values(\array_filter(
+            self::getClient()->getAll(),
+            static fn (TestRequestContext $context) => $context->getGatewayMethod() === $gatewayMethod,
+        ));
     }
 
     private function createPayPalPaymentHandler(array $settings = []): PayPalPaymentHandler
@@ -536,24 +633,7 @@ class PayPalPaymentHandlerTest extends TestCase
             $this->createMock(VaultTokenService::class),
             $this->orderTransactionRepo,
             $this->createOrderBuilder($systemConfig),
-            $this->createPaymentResumeService(),
         );
-    }
-
-    /**
-     * The service is stateless and container-inlined, so a local instance reads the same session.
-     */
-    private function createPaymentResumeService(): PaymentResumeService
-    {
-        return new PaymentResumeService(
-            $this->getContainer()->get(SystemConfigService::class),
-            new NativeClock(),
-        );
-    }
-
-    private function createStorefrontSalesChannelContext(): SalesChannelContext
-    {
-        return $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
     }
 
     private function assertFinalizeRequest(

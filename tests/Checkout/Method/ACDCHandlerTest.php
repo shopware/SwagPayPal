@@ -23,11 +23,9 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\System\StateMachine\Transition;
-use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\PayPalSDK\Struct\V1\Common\Link as V1Link;
 use Shopware\PayPalSDK\Struct\V1\Common\LinkCollection as V1LinkCollection;
@@ -38,7 +36,6 @@ use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Card;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Card\AuthenticationResult;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
-use Shopware\Storefront\Framework\Routing\StorefrontRouteScope;
 use Swag\PayPal\Checkout\Card\CardValidatorInterface;
 use Swag\PayPal\Checkout\Card\Exception\CardValidationFailedException;
 use Swag\PayPal\Checkout\CheckoutException;
@@ -57,8 +54,6 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
  * @internal
@@ -225,21 +220,20 @@ class ACDCHandlerTest extends TestCase
             ->method('validate')
             ->willReturn(true);
 
-        // a card payment must never be silently downgraded to a PayPal account redirect
+        // a card payment must never be silently downgraded to a PayPal account approval
         $this->orderResource
             ->expects($this->never())
-            ->method('create');
+            ->method('confirm');
 
         $this->expectException(PayerActionRequiredException::class);
 
-        // every condition PayPalPaymentHandler would recover from is met, so only the handler itself can prevent it
-        $request = new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => 'paypalOrderId'], [
-            PlatformRequest::ATTRIBUTE_ROUTE_SCOPE => [StorefrontRouteScope::ID],
-            PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT => Generator::generateSalesChannelContext(),
-        ]);
-        $request->setSession(new Session(new MockArraySessionStorage()));
-
-        $this->handler->pay($request, $paymentTransaction, $context, null);
+        // the payer approved a prepared order and can be redirected, so only the handler itself prevents the recovery
+        $this->handler->pay(
+            new Request([], [AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => 'paypalOrderId']),
+            $paymentTransaction,
+            $context,
+            null,
+        );
     }
 
     public function testPayWithoutExistingOrder(): void

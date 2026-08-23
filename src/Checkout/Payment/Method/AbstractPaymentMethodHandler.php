@@ -73,7 +73,9 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
         Context $context,
         ?Struct $validateStruct,
     ): ?RedirectResponse {
-        $paypalOrderId = $request->request->getAlnum(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        // empty unless the payer approved a PayPal order the shop prepared for them
+        $preparedOrderId = $request->request->getAlnum(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        $paypalOrderId = $preparedOrderId;
         [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
         $existingVault = $this->isVaultable() ? $this->vaultTokenService->getAvailableToken($transaction, $orderTransaction, $order, $context) : null;
         if ($this->requirePreparedOrder() && !$paypalOrderId && !$existingVault) {
@@ -121,13 +123,17 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             return new RedirectResponse($action);
         }
 
-        $this->executeOrder(
-            $transaction,
-            $response,
-            $order,
-            $orderTransaction,
-            $context,
-        );
+        try {
+            $this->executeOrder(
+                $transaction,
+                $response,
+                $order,
+                $orderTransaction,
+                $context,
+            );
+        } catch (PayerActionRequiredException $e) {
+            return $this->recoverFromPayerAction($e, $request, $preparedOrderId, $transaction, $orderTransaction, $order, $context);
+        }
 
         return null;
     }
@@ -241,6 +247,66 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
         $this->vaultTokenService->saveToken($transaction, $orderTransaction, $vaultableSource, $customerId, $context);
 
         return $paypalOrder;
+    }
+
+    /**
+     * Reopens the approval of an order PayPal refused to capture, redirecting the payer to
+     * approve it again and return into finalize.
+     *
+     * @see https://developer.paypal.com/docs/checkout/standard/customize/overcharge-handling/
+     */
+    protected function recoverFromPayerAction(
+        PayerActionRequiredException $exception,
+        Request $request,
+        string $preparedOrderId,
+        PaymentTransactionStruct $transaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+    ): RedirectResponse {
+        if (!$this->recoversFromPayerAction() || !$preparedOrderId || !$transaction->getReturnUrl()) {
+            throw $exception;
+        }
+
+        // stripped of payment data, so no App Switch context and no vault token
+        $confirmationRequest = new Request();
+        $confirmationRequest->attributes->set(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE, true);
+
+        // but the payer still gets the vaulting they asked for
+        if ($request->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+            $confirmationRequest->request->set(VaultTokenService::REQUEST_CREATE_VAULT, true);
+        }
+
+        $paymentSource = $this->orderBuilder
+            ->getOrder($transaction, $orderTransaction, $order, $context, $confirmationRequest)
+            ->getPaymentSource();
+
+        if ($paymentSource === null) {
+            throw $exception;
+        }
+
+        $confirmedOrder = $this->orderResource->confirm(
+            $preparedOrderId,
+            $paymentSource,
+            $order->getSalesChannelId(),
+            PartnerAttributionId::PAYPAL_PPCP,
+        );
+
+        $action = $this->resolveRedirect($confirmedOrder);
+        if ($action === null) {
+            throw $exception;
+        }
+
+        return new RedirectResponse($action);
+    }
+
+    /**
+     * If this method returns true, a capture PayPal rejected with `PAYER_ACTION_REQUIRED` sends
+     * the payer back to PayPal to approve the order again.
+     */
+    protected function recoversFromPayerAction(): bool
+    {
+        return false;
     }
 
     /**

@@ -16,6 +16,7 @@ use Shopware\PayPalSDK\Gateway\PaymentGateway;
 use Shopware\PayPalSDK\Gateway\PaymentV1Gateway;
 use Shopware\PayPalSDK\Gateway\TokenGateway;
 use Shopware\PayPalSDK\Gateway\WebhookGateway;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V1\Webhook;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund;
@@ -78,7 +79,10 @@ class MockRequestHandler
     // an approved order whose capture PayPal rejects with 422 PAYER_ACTION_REQUIRED (shopware/SwagPayPal#759)
     public const PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED = 'paypalOrderIdPayerActionRequired';
 
+    // the rejected capture offers this approval, the confirmed payment source a new one
     public const PAYER_ACTION_URL = 'https://www.sandbox.paypal.com/checkoutnow?token=' . self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED;
+
+    public const CONFIRMED_PAYER_ACTION_URL = 'https://www.sandbox.paypal.com/checkoutnow?token=' . self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED . '&confirmed=1';
     public const CLIENT_EXCEPTION_MESSAGE_WITH_RESPONSE = 'clientExceptionWithoutResponse';
 
     public const GET_WEBHOOK_URL = 'testWebhookUrl';
@@ -360,6 +364,20 @@ class MockRequestHandler
             if (\mb_substr($resourceUri, -8) === '/capture'
                 && \mb_strpos($resourceUri, self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED) !== false) {
                 return $this->createClientExceptionPayerActionRequired();
+            }
+
+            if (\mb_substr($resourceUri, -23) === '/confirm-payment-source') {
+                return $this->createResponse(SymResponse::HTTP_OK, [
+                    'id' => self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
+                    'status' => ConstantsV2::ORDER_PAYER_ACTION_REQUIRED,
+                    'links' => [
+                        [
+                            'href' => self::CONFIRMED_PAYER_ACTION_URL,
+                            'rel' => 'payer-action',
+                            'method' => 'GET',
+                        ],
+                    ],
+                ]);
             }
 
             if (\mb_substr($resourceUri, -8) === '/capture' && \mb_strpos($resourceUri, CaptureOrderAPM::ID)) {

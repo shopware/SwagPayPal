@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
+use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
@@ -110,6 +111,70 @@ class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
 
         static::assertNotNull($mobileWebContext);
         static::assertSame('Mozilla/5.0 Edit Order App Switch Test', $mobileWebContext->getBuyerUserAgent());
+    }
+
+    /**
+     * The payment source a rejected capture is confirmed with must reopen an interactive approval
+     * that returns into the transaction {@see AbstractPaymentMethodHandler::recoverFromPayerAction}.
+     */
+    public function testGetOrderForConfirmationStillVaultsWhenThePayerAskedFor(): void
+    {
+        $this->systemConfig->set(Settings::SPB_APP_SWITCH_ENABLED, true);
+        // reusing a stored token would skip the payer entirely; storing a new one must not
+        $this->vaultTokenService->expects($this->never())->method('getAvailableToken');
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('shouldRequestVaulting')
+            ->willReturn(true);
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('requestVaulting');
+
+        $orderTransaction = $this->createOrderTransaction();
+        $confirmationRequest = new Request([], [VaultTokenService::REQUEST_CREATE_VAULT => true]);
+        $confirmationRequest->attributes->set(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE, true);
+
+        $order = $this->getBuilder()->getOrder(
+            new PaymentTransactionStruct($orderTransaction->getId(), 'https://example.test/payment/finalize-transaction?_sw_payment_token=token'),
+            $orderTransaction,
+            $this->createOrder(),
+            Context::createDefaultContext(),
+            $confirmationRequest,
+        );
+
+        $paypal = $order->getPaymentSource()?->getPaypal();
+        static::assertNotNull($paypal);
+        static::assertFalse($paypal->isset('vaultId'));
+        // vaulting suppresses App Switch on its own, so the return stays a plain web redirect
+        static::assertNull($paypal->getExperienceContext()->getAppSwitchContext());
+    }
+
+    public function testGetOrderForConfirmationSkipsVaultTokenAndAppSwitchContext(): void
+    {
+        $this->systemConfig->set(Settings::SPB_APP_SWITCH_ENABLED, true);
+        // the confirmation must stay an interactive consent, so the token is never even looked up
+        $this->vaultTokenService->expects($this->never())->method('getAvailableToken');
+
+        $orderTransaction = $this->createOrderTransaction();
+        $confirmationRequest = new Request();
+        $confirmationRequest->attributes->set(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE, true);
+
+        $order = $this->getBuilder()->getOrder(
+            new PaymentTransactionStruct($orderTransaction->getId(), 'https://example.test/payment/finalize-transaction?_sw_payment_token=token'),
+            $orderTransaction,
+            $this->createOrder(),
+            Context::createDefaultContext(),
+            $confirmationRequest,
+        );
+
+        $paypal = $order->getPaymentSource()?->getPaypal();
+        static::assertNotNull($paypal);
+        static::assertFalse($paypal->isset('vaultId'));
+
+        $experienceContext = $paypal->getExperienceContext();
+        static::assertNull($experienceContext->getAppSwitchContext());
+        static::assertSame('https://example.test/payment/finalize-transaction?_sw_payment_token=token', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/payment/finalize-transaction?_sw_payment_token=token&cancel=1', $experienceContext->getCancelUrl());
     }
 
     public function testGetOrderFromCartUsesRequestReturnUrls(): void

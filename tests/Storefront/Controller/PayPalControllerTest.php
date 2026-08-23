@@ -17,7 +17,6 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
-use Shopware\Core\Framework\JWT\JWTException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -26,7 +25,6 @@ use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
-use Swag\PayPal\Checkout\Payment\Service\PaymentResumeService;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
@@ -35,10 +33,8 @@ use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\Storefront\Controller\PayPalController;
-use Swag\PayPal\Storefront\Service\ReturnToken;
 use Swag\PayPal\Storefront\Service\ReturnTokenService;
 use Swag\PayPal\Util\PriceFormatter;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
@@ -52,17 +48,11 @@ use Symfony\Component\Routing\RouterInterface;
 #[CoversClass(PayPalController::class)]
 class PayPalControllerTest extends TestCase
 {
-    private const RESUME_URL = 'https://example.test/payment/finalize-transaction?_sw_payment_token=token';
-
     private AbstractCreateOrderRoute&MockObject $createOrderRoute;
-
-    private AbstractExpressCreateOrderRoute&MockObject $expressCreateOrderRoute;
 
     private RouterInterface&MockObject $router;
 
     private ReturnTokenService&MockObject $returnTokenService;
-
-    private PaymentResumeService&MockObject $paymentResumeService;
 
     private TestHandler $logHandler;
 
@@ -71,7 +61,6 @@ class PayPalControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->createOrderRoute = $this->createMock(AbstractCreateOrderRoute::class);
-        $this->expressCreateOrderRoute = $this->createMock(AbstractExpressCreateOrderRoute::class);
         $this->returnTokenService = $this->createMock(ReturnTokenService::class);
         $this->returnTokenService
             ->method('generate')
@@ -81,17 +70,16 @@ class PayPalControllerTest extends TestCase
             ->method('generate')
             ->with('frontend.paypal.restore_context', ['token' => 'return-token'], UrlGeneratorInterface::ABSOLUTE_URL)
             ->willReturn('https://example.test/paypal/restore-context/return-token');
-        $this->paymentResumeService = $this->createMock(PaymentResumeService::class);
         $this->logHandler = new TestHandler();
 
         $this->controller = $this->getMockBuilder(PayPalController::class)
-            ->onlyMethods(['trans', 'addFlash', 'redirectToRoute'])
+            ->onlyMethods(['trans', 'addFlash'])
             ->setConstructorArgs([
                 $this->createOrderRoute,
                 $this->createMock(AbstractMethodEligibilityRoute::class),
                 $this->createMock(AbstractPUIPaymentInstructionsRoute::class),
                 $this->createMock(AbstractExpressPrepareCheckoutRoute::class),
-                $this->expressCreateOrderRoute,
+                $this->createMock(AbstractExpressCreateOrderRoute::class),
                 $this->createMock(AbstractExpressShippingCallbackRoute::class),
                 $this->createMock(AbstractContextSwitchRoute::class),
                 $this->createMock(AbstractCartDeleteRoute::class),
@@ -101,7 +89,6 @@ class PayPalControllerTest extends TestCase
                 new Logger('test', [$this->logHandler]),
                 $this->returnTokenService,
                 $this->router,
-                $this->paymentResumeService,
             ])
             ->getMock();
     }
@@ -140,120 +127,6 @@ class PayPalControllerTest extends TestCase
             ->willReturn(new TokenResponse('paypal-order-id'));
 
         $this->controller->createOrder($this->generateSalesChannelContext(), $request);
-    }
-
-    public function testExpressCreateOrderAddsRestoreUrls(): void
-    {
-        $request = new Request();
-
-        $this->expressCreateOrderRoute
-            ->expects($this->once())
-            ->method('createPayPalOrder')
-            ->with(static::callback(static function (Request $request): bool {
-                return $request->request->get(CreateOrderRoute::RETURN_URL) === 'https://example.test/paypal/restore-context/return-token'
-                    && $request->request->get(CreateOrderRoute::CANCEL_URL) === 'https://example.test/paypal/restore-context/return-token';
-            }), static::isInstanceOf(SalesChannelContext::class))
-            ->willReturn(new TokenResponse('paypal-order-id'));
-
-        $this->controller->expressCreateOrder($request, $this->generateSalesChannelContext());
-    }
-
-    public function testRestoreContextResumesInterruptedPayment(): void
-    {
-        $request = $this->createSessionRequest(['token' => 'paypalOrderId', 'PayerID' => 'payerId']);
-
-        $this->paymentResumeService
-            ->expects($this->once())
-            ->method('consume')
-            ->with($request->getSession(), 'paypalOrderId')
-            ->willReturn(self::RESUME_URL);
-
-        $this->returnTokenService
-            ->expects($this->never())
-            ->method('parse');
-
-        $response = $this->controller->restoreContext($this->generateSalesChannelContext(), $request, 'return-token');
-
-        static::assertInstanceOf(RedirectResponse::class, $response);
-        static::assertSame(self::RESUME_URL, $response->getTargetUrl());
-    }
-
-    /**
-     * PayPal omits PayerID when the payer canceled, and only finalize can cancel the transaction by then.
-     */
-    public function testRestoreContextResumesInterruptedPaymentWithCancelMarker(): void
-    {
-        $request = $this->createSessionRequest(['token' => 'paypalOrderId']);
-
-        $this->paymentResumeService
-            ->method('consume')
-            ->willReturn(self::RESUME_URL);
-
-        $response = $this->controller->restoreContext($this->generateSalesChannelContext(), $request, 'return-token');
-
-        static::assertInstanceOf(RedirectResponse::class, $response);
-        static::assertSame(self::RESUME_URL . '&cancel=1', $response->getTargetUrl());
-    }
-
-    /**
-     * The resume of another payer lives in their own session, so this one can only ever restore its own.
-     */
-    public function testRestoreContextWithoutSessionDoesNotResume(): void
-    {
-        $request = new Request(['token' => 'paypalOrderId']);
-
-        $this->paymentResumeService
-            ->expects($this->never())
-            ->method('consume');
-
-        $this->returnTokenService
-            ->expects($this->once())
-            ->method('parse')
-            ->willThrowException(JWTException::invalidJwt('invalid'));
-
-        $this->controller
-            ->expects($this->once())
-            ->method('redirectToRoute')
-            ->with('frontend.checkout.confirm.page')
-            ->willReturn(new RedirectResponse('https://example.test/checkout/confirm'));
-
-        $response = $this->controller->restoreContext($this->generateSalesChannelContext(), $request, 'return-token');
-
-        static::assertInstanceOf(RedirectResponse::class, $response);
-        static::assertSame('https://example.test/checkout/confirm', $response->getTargetUrl());
-    }
-
-    public function testRestoreContextWithoutStoredResumeRestoresReturnToken(): void
-    {
-        $request = $this->createSessionRequest(['token' => 'paypalOrderId', 'PayerID' => 'payerId']);
-        $salesChannelContext = $this->generateSalesChannelContext();
-        $returnToken = new ReturnToken('jwt-context-token', $salesChannelContext->getSalesChannelId(), ReturnToken::TARGET_CHECKOUT_CONFIRM);
-
-        $this->returnTokenService
-            ->expects($this->once())
-            ->method('parse')
-            ->willReturn($returnToken);
-
-        $this->paymentResumeService
-            ->expects($this->once())
-            ->method('consume')
-            ->willReturn(null);
-
-        $this->returnTokenService
-            ->expects($this->once())
-            ->method('restoreContextToken')
-            ->with($request, $returnToken);
-
-        $this->controller
-            ->expects($this->once())
-            ->method('redirectToRoute')
-            ->with('frontend.checkout.confirm.page')
-            ->willReturn(new RedirectResponse('https://example.test/checkout/confirm'));
-
-        $response = $this->controller->restoreContext($salesChannelContext, $request, 'return-token');
-
-        static::assertInstanceOf(RedirectResponse::class, $response);
-        static::assertSame('https://example.test/checkout/confirm', $response->getTargetUrl());
     }
 
     public function testOnHandleErrorWithTranslatableErrorCodeAddsFlash(): void
@@ -397,14 +270,6 @@ class PayPalControllerTest extends TestCase
         yield 'script not loaded' => ['SWAG_PAYPAL__SCRIPT_NOT_LOADED', false, Level::Error];
         yield 'generic error' => ['SWAG_PAYPAL__GENERIC_ERROR', false, Level::Warning];
         yield 'eligible error' => ['SWAG_PAYPAL__NOT_ELIGIBLE', false, Level::Warning];
-    }
-
-    private function createSessionRequest(array $query): Request
-    {
-        $request = new Request($query);
-        $request->setSession(new Session(new MockArraySessionStorage()));
-
-        return $request;
     }
 
     private function generateSalesChannelContext(): SalesChannelContext

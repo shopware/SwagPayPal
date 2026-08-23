@@ -29,8 +29,6 @@ use Swag\PayPal\Checkout\Exception\MissingCountryIdException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
-use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
-use Swag\PayPal\Checkout\Payment\Service\PaymentResumeService;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsResponse;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
@@ -41,7 +39,6 @@ use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\Storefront\Service\ReturnToken;
 use Swag\PayPal\Storefront\Service\ReturnTokenService;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -56,9 +53,6 @@ use Symfony\Component\Routing\RouterInterface;
 class PayPalController extends StorefrontController
 {
     public const PAYMENT_METHOD_FATAL_ERROR = 'SWAG_PAYPAL__PAYMENT_METHOD_FATAL_ERROR';
-
-    // PayPal appends it to approval returns, but not to cancellations
-    private const PAYPAL_QUERY_PARAMETER_PAYER_ID = 'PayerID';
 
     /**
      * @internal
@@ -78,7 +72,6 @@ class PayPalController extends StorefrontController
         private readonly LoggerInterface $logger,
         private readonly ReturnTokenService $returnTokenService,
         private readonly RouterInterface $router,
-        private readonly PaymentResumeService $paymentResumeService,
     ) {
     }
 
@@ -98,12 +91,6 @@ class PayPalController extends StorefrontController
     #[Route(path: '/paypal/restore-context/{token}', name: 'frontend.paypal.restore_context', methods: ['GET'], defaults: ['csrf_protected' => false])]
     public function restoreContext(SalesChannelContext $salesChannelContext, Request $request, string $token): Response
     {
-        // before restoring the token, which would replace an Express payer's login with the one from order creation
-        $resumeUrl = $this->getPaymentResumeUrl($request);
-        if ($resumeUrl !== null) {
-            return new RedirectResponse($resumeUrl);
-        }
-
         try {
             $returnToken = $this->returnTokenService->parse($token, $salesChannelContext->getSalesChannelId());
         } catch (JWTException $e) {
@@ -159,8 +146,6 @@ class PayPalController extends StorefrontController
     #[Route(path: '/paypal/express/create-order', name: 'frontend.paypal.express.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function expressCreateOrder(Request $request, SalesChannelContext $context): TokenResponse
     {
-        $this->addRestoreUrls($context, $request);
-
         return $this->expressCreateOrderRoute->createPayPalOrder($request, $context);
     }
 
@@ -272,30 +257,6 @@ class PayPalController extends StorefrontController
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $request->request->set(AbstractCreateOrderRoute::RETURN_URL, $restoreUrl);
-        // App Switch requires both URLs to be identical, a cancellation is detected by the missing PayerID instead
         $request->request->set(AbstractCreateOrderRoute::CANCEL_URL, $restoreUrl);
-    }
-
-    private function getPaymentResumeUrl(Request $request): ?string
-    {
-        $paypalOrderId = $request->query->getAlnum('token');
-        if ($paypalOrderId === '' || !$request->hasSession(true)) {
-            return null;
-        }
-
-        // the resume lives in the session of the payment it belongs to, so only its own payer can find it
-        $resumeUrl = $this->paymentResumeService->consume($request->getSession(), $paypalOrderId);
-        if ($resumeUrl === null) {
-            return null;
-        }
-
-        $this->logger->info('Resuming an interrupted PayPal payment', ['payPalOrderId' => $paypalOrderId]);
-
-        // the order exists already, so only finalize can cancel its transaction and offer the payer a retry
-        if (!$request->query->has(self::PAYPAL_QUERY_PARAMETER_PAYER_ID)) {
-            $resumeUrl .= '&' . AbstractPaymentMethodHandler::PAYPAL_REQUEST_PARAMETER_CANCEL . '=1';
-        }
-
-        return $resumeUrl;
     }
 }

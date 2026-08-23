@@ -9,7 +9,9 @@ namespace Swag\PayPal\RestApi\V2\Resource;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Gateway\OrderGateway;
+use Shopware\PayPalSDK\Struct\V2\ConfirmOrder;
 use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\Tracker;
 use Shopware\PayPalSDK\Struct\V2\Patch;
 use Shopware\PayPalSDK\Struct\V2\PatchCollection;
@@ -69,6 +71,28 @@ class OrderResource
             ->withPartnerAttributionId($partnerAttributionId);
 
         $this->orderGateway->patchOrder($orderId, new PatchCollection($patches), $context);
+    }
+
+    /**
+     * Confirms the payment source of an existing PayPal order, which reopens its approval
+     * with the experience context of the given payment source.
+     *
+     * @throws PayPalApiException
+     */
+    public function confirm(
+        string $orderId,
+        PaymentSource $paymentSource,
+        string $salesChannelId,
+        string $partnerAttributionId,
+    ): Order {
+        $context = $this->apiContextFactory
+            ->getApiContext($salesChannelId)
+            ->withPartnerAttributionId($partnerAttributionId);
+
+        $confirmOrder = new ConfirmOrder();
+        $confirmOrder->setPaymentSource($paymentSource);
+
+        return $this->orderGateway->confirmPaymentSource($orderId, $confirmOrder, $context);
     }
 
     /**
