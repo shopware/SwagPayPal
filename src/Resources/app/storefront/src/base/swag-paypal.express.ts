@@ -169,6 +169,8 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
         if (error.code.includes('USER_CANCELLED')) {
             window.scrollTo(0, 0);
             window.location.href = this.options.cancelRedirectUrl;
+        } else if (error.step === PayPalPluginError.STEP_SUBMIT_FLOW) {
+            super.afterHandleError(error);
         }
     }
 }

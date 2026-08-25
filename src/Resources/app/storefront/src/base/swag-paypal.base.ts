@@ -176,7 +176,7 @@ export default abstract class SwagPaypalBase extends Plugin {
      * Will be called after the handleErrorUrl was called. See {@link handleError}.
      */
     protected afterHandleError(error: PayPalPluginError): void|Promise<void> {
-        if (this.options.pageType === 'checkout') {
+        if (this.options.pageType === 'checkout' || error.step === PayPalPluginError.STEP_SUBMIT_FLOW) {
             window.scrollTo(0, 0);
             window.location.reload();
         }

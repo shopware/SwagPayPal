@@ -13,7 +13,7 @@
             "SWAG_PAYPAL__USER_CANCELLED": "The payment process has been cancelled. Please try again or choose another payment method.",
             "SWAG_PAYPAL__BROWSER_UNSUPPORTED": "The selected payment method does not support your current browser. Please try again with another browser or choose another payment method.",
             "SWAG_PAYPAL__CARD_VALIDATION_FAILED": "The entered credit card details could not be validated. Please check your entries and try again.",
-            "SWAG_PAYPAL__MISSING_COUNTRY_ID": "Shipping to the selected shipping address is currently not possible.",
+            "SWAG_PAYPAL__MISSING_COUNTRY_ID": "Shipping to the country of the selected shipping address are not available.",
             "SWAG_PAYPAL__API_POSTAL_CODE_REQUIRED": "The provided address does not contain a postal code. Please add your postal code.",
             "SWAG_PAYPAL__API_CANNOT_BE_ZERO_OR_NEGATIVE": "The total amount must not be zero or negative. Please try again with an amount greater than zero or choose another payment method.",
             "SWAG_PAYPAL__API_SHIPPING_ADDRESS_INVALID": "The entered shipping address was not accepted by the payment provider. Please check your address or choose another payment method.",

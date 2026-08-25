@@ -232,7 +232,9 @@ class PayPalController extends StorefrontController
         /** @deprecated tag:v11.0.0 - Will be removed */
         $isCheckout = $request->request->getBoolean('isCheckout');
 
-        if ($pageType === AbstractScriptData::PAGE_TYPE_CHECKOUT || $isCheckout) {
+        // we are either on the checkout page or in a js plugin implementing payment.
+        // In both cases any submission error should be shown to the customer
+        if ($pageType === AbstractScriptData::PAGE_TYPE_CHECKOUT || $step === 'SUBMIT_FLOW' || $isCheckout) {
             $snippetGeneric = \sprintf('paypal.error.%s', $code);
             $snippetByMethod = \sprintf('paypal.error.%s.%s', $context->getPaymentMethod()->getFormattedHandlerIdentifier(), $code);
 
