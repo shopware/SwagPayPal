@@ -20,8 +20,9 @@ framework:
         max_duration: 30
         retry_failed:
           max_retries: 3
-          delay: 1000
+          delay: 200
           multiplier: 2
+          max_delay: 1000
           jitter: 0.1
           http_codes:
             0: ['GET', 'HEAD', 'OPTIONS']
