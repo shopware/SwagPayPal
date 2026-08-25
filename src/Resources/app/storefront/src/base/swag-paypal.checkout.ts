@@ -152,6 +152,7 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         } catch (error: unknown) {
             if (error instanceof Error && 'isRecoverable' in error && error.isRecoverable === true && this.options.appSwitchEnabled) {
                 await paymentSession.start({ presentationMode: 'auto' }, createOrder);
+                return;
             }
 
             throw error;
