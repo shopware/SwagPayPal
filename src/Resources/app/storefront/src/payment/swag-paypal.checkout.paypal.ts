@@ -11,18 +11,24 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'paypal
         };
     }
 
-    protected setup(): void {
+    protected async setup(): Promise<void> {
         const paymentSession = this.instance!.createPayPalOneTimePaymentSession({
             onApprove: this.onApprove.bind(this),
             onCancel: this.onCancel.bind(this),
             onError: this.onError.bind(this),
         });
 
+        if (paymentSession.hasReturned?.() === true && paymentSession.resume) {
+            await this.resumeAppSwitch({ paymentSession });
+
+            return;
+        }
+
         this.el!.type = 'checkout';
         this.el!.addEventListener('click', () => void this.submissionFlow({ paymentSession }));
     }
 
     protected async submit(data: { paymentSession: PayPalCoreJS.PaymentSession<'paypal'> }): Promise<void> {
-        await data.paymentSession.start({ presentationMode: 'auto' }, this.createOrder());
+        await this.tryStartWithAppSwitch(data);
     }
 }

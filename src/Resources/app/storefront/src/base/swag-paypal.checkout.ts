@@ -1,4 +1,4 @@
-import type { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
+import type { OnApproveDataOneTimePayments, OneTimePaymentSession } from '@paypal/paypal-js/sdk-v6';
 import type { SubmissionData, SwagPaypalPaymentOptions } from './swag-paypal.payment';
 import SwagPaypalPayment from './swag-paypal.payment';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
@@ -12,6 +12,7 @@ export interface SwagPaypalCheckoutOptions extends SwagPaypalPaymentOptions {
     confirmOrderButtonSelector: string;
     createOrderUrl: string;
     preventErrorReload: boolean;
+    appSwitchEnabled: boolean;
 }
 
 export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.FundingSource> extends SwagPaypalPayment<FS> {
@@ -47,6 +48,8 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
          * This could for example happen if the funding type is not eligible.
          */
         preventErrorReload: false,
+
+        appSwitchEnabled: false,
     };
 
     protected abstract get metadata(): { components: PayPalCoreJS.Components[]; fundingSource: FS; product: Products };
@@ -93,7 +96,8 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
     }
 
     protected submitValidation(data: SubmissionData<FS>): void {
-        if (!this.confirmOrderForm.reportValidity()) {
+        if (!this.confirmOrderForm.checkValidity()) {
+            this.focusFirstInvalidField();
             throw new Error('Form is invalid');
         }
     }
@@ -137,5 +141,44 @@ export default abstract class SwagPaypalCheckout<FS extends PayPalCoreJS.Funding
         this.confirmOrderForm.submit();
 
         return Promise.resolve();
+    }
+
+    protected async tryStartWithAppSwitch({ paymentSession }: { paymentSession: OneTimePaymentSession }): Promise<void> {
+        const createOrder = this.createOrder();
+        const presentationMode = this.options.appSwitchEnabled ? 'direct-app-switch' : 'auto';
+
+        try {
+            await paymentSession.start({ presentationMode }, createOrder);
+        } catch (error: unknown) {
+            if (error instanceof Error && 'isRecoverable' in error && error.isRecoverable === true && this.options.appSwitchEnabled) {
+                await paymentSession.start({ presentationMode: 'auto' }, createOrder);
+            }
+
+            throw error;
+        }
+    }
+
+    protected async resumeAppSwitch({ paymentSession }: { paymentSession: OneTimePaymentSession }): Promise<void> {
+        ElementHelper.disable(this.confirmOrderButton);
+        PageLoadingIndicatorUtil.create();
+
+        try {
+            await paymentSession.resume?.();
+        } catch (error) {
+            // wrap as submit flow, though called in setup
+            throw PayPalPluginError.submitFlow(PayPalPluginError.CODE_GENERIC, error);
+        }
+    }
+
+    private focusFirstInvalidField(): void {
+        const fields = Array.from(this.confirmOrderForm.elements) as HTMLElement[];
+        const field = fields.find((element) => element.matches?.(':invalid:not(fieldset)'));
+
+        if (!field) {
+            return;
+        }
+
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        field.focus();
     }
 }
