@@ -29,9 +29,19 @@ class CustomerVaultTokenRouteTest extends TestCase
 {
     private TokenResourceInterface&MockObject $tokenResource;
 
+    /**
+     * @var StaticEntityRepository<VaultTokenCollection>
+     */
+    private StaticEntityRepository $repository;
+
+    private CustomerVaultTokenRoute $route;
+
     protected function setUp(): void
     {
         $this->tokenResource = $this->createMock(TokenResourceInterface::class);
+        $this->repository = new StaticEntityRepository([]);
+
+        $this->route = new CustomerVaultTokenRoute($this->repository, $this->tokenResource);
     }
 
     public function testGetVaultTokenWithoutCustomer(): void
@@ -41,7 +51,7 @@ class CustomerVaultTokenRouteTest extends TestCase
 
         $this->expectException(CustomerException::class);
 
-        $this->createRoute()->getVaultToken($salesChannelContext);
+        $this->route->getVaultToken($salesChannelContext);
     }
 
     public function testGetVaultTokenWithGuestCustomer(): void
@@ -51,7 +61,7 @@ class CustomerVaultTokenRouteTest extends TestCase
 
         $this->expectException(CustomerException::class);
 
-        $this->createRoute()->getVaultToken($salesChannelContext);
+        $this->route->getVaultToken($salesChannelContext);
     }
 
     public function testGetVaultToken(): void
@@ -66,9 +76,9 @@ class CustomerVaultTokenRouteTest extends TestCase
 
         $vaultToken = new VaultTokenEntity();
         $vaultToken->setId(Uuid::randomHex());
+        $this->repository->addSearch(new VaultTokenCollection([$vaultToken]));
 
-        $response = $this->createRoute(new VaultTokenCollection([$vaultToken]))
-            ->getVaultToken($salesChannelContext);
+        $response = $this->route->getVaultToken($salesChannelContext);
 
         static::assertSame(
             $token->getIdToken(),
@@ -86,22 +96,12 @@ class CustomerVaultTokenRouteTest extends TestCase
 
         $this->tokenResource->expects($this->once())->method('getUserIdToken')->willReturn($token);
 
-        $this->expectException(MissingCustomerVaultTokenException::class);
-
         $vaultToken = new VaultTokenEntity();
         $vaultToken->setId(Uuid::randomHex());
+        $this->repository->addSearch(new VaultTokenCollection([$vaultToken]));
 
-        $this->createRoute(new VaultTokenCollection([$vaultToken]))
-            ->getVaultToken($salesChannelContext);
-    }
+        $this->expectException(MissingCustomerVaultTokenException::class);
 
-    private function createRoute(?VaultTokenCollection $tokens = null): CustomerVaultTokenRoute
-    {
-        $searches = $tokens !== null ? [$tokens] : [];
-
-        return new CustomerVaultTokenRoute(
-            new StaticEntityRepository($searches),
-            $this->tokenResource,
-        );
+        $this->route->getVaultToken($salesChannelContext);
     }
 }
