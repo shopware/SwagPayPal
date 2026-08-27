@@ -15,6 +15,9 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 #[AsMessageHandler(handles: OrderTransactionsCleanupTask::class)]
 class OrderTransactionsCleanupTaskHandler extends ScheduledTaskHandler
