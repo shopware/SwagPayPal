@@ -1,4 +1,5 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.8.1
+- Fixes an issue, where the same PayPal order could be used for multiple Shopware orders.
 - Fixes an issue, where a custom tax provider's adjusted total was not charged, because the PayPal order used the stale cart or order transaction amount instead of the taxed total (shopware/SwagPayPal#722)
 - Fixes an issue, where PayPal Express Checkout buttons disappeared after using the browser back button from the checkout page (shopware/shopware#18297)
 - Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.

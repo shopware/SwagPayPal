@@ -24,6 +24,7 @@ class TransactionDataService
     public function __construct(
         private readonly EntityRepository $orderTransactionRepository,
         private readonly CredentialsUtilInterface $credentialsUtil,
+        private readonly OrderTransactionService $orderTransactionService,
     ) {
     }
 
@@ -34,6 +35,8 @@ class TransactionDataService
         string $salesChannelId,
         Context $context,
     ): void {
+        $this->orderTransactionService->reserve($paypalOrderId, $orderTransactionId);
+
         $data = [
             'id' => $orderTransactionId,
             'customFields' => [
