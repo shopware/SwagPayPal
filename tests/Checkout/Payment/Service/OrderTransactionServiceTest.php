@@ -24,7 +24,7 @@ class OrderTransactionServiceTest extends TestCase
     public function testNewOrderIdIsReserved(): void
     {
         $connection = $this->createMock(Connection::class);
-        $connection->expects($this->once())->method('insert');
+        $connection->expects(static::once())->method('insert');
 
         (new OrderTransactionService($connection))->reserve('paypal-order-id', Uuid::randomHex());
     }
@@ -32,8 +32,8 @@ class OrderTransactionServiceTest extends TestCase
     public function testSameTransactionCanReserveIdempotently(): void
     {
         $connection = $this->createMock(Connection::class);
-        $connection->expects($this->once())->method('insert')->willThrowException($this->createMock(UniqueConstraintViolationException::class));
-        $connection->expects($this->once())->method('fetchOne')->willReturn(false);
+        $connection->expects(static::once())->method('insert')->willThrowException($this->createMock(UniqueConstraintViolationException::class));
+        $connection->expects(static::once())->method('fetchOne')->willReturn(false);
 
         (new OrderTransactionService($connection))->reserve('paypal-order-id', Uuid::randomHex());
     }
@@ -41,8 +41,8 @@ class OrderTransactionServiceTest extends TestCase
     public function testDifferentTransactionCannotReserveExistingOrderId(): void
     {
         $connection = $this->createMock(Connection::class);
-        $connection->expects($this->once())->method('insert')->willThrowException($this->createMock(UniqueConstraintViolationException::class));
-        $connection->expects($this->once())->method('fetchOne')->willReturn(1);
+        $connection->expects(static::once())->method('insert')->willThrowException($this->createMock(UniqueConstraintViolationException::class));
+        $connection->expects(static::once())->method('fetchOne')->willReturn(1);
 
         $this->expectExceptionObject(CheckoutException::paypalOrderAlreadyUsed());
         (new OrderTransactionService($connection))->reserve('paypal-order-id', Uuid::randomHex());

@@ -61,7 +61,7 @@ class TransactionDataServiceTest extends TestCase
         ]);
 
         $this->transactionRepository
-            ->expects($this->never())
+            ->expects(static::never())
             ->method('update');
 
         $this->transactionDataService->setResourceId($payPalOrder, 'order-transaction-id', $context);
@@ -92,7 +92,7 @@ class TransactionDataServiceTest extends TestCase
         ]);
 
         $this->transactionRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('update')
             ->with([[
                 'id' => 'order-transaction-id',
@@ -111,7 +111,7 @@ class TransactionDataServiceTest extends TestCase
     {
         $context = $this->createMock(SalesChannelContext::class);
 
-        $context->expects($this->once())
+        $context->expects(static::once())
             ->method('getSalesChannelId')
             ->willReturn('sales-channel-id');
 
@@ -119,13 +119,13 @@ class TransactionDataServiceTest extends TestCase
             ->willReturn(Context::createDefaultContext());
 
         $this->credentialsUtil
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('isSandbox')
             ->with('sales-channel-id')
             ->willReturn($isSandbox);
 
         $this->transactionRepository
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('update')
             ->with([[
                 'id' => 'order-transaction-id',
