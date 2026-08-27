@@ -1,4 +1,9 @@
 <?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Swag\PayPal\Checkout\Payment\Service;
 
@@ -9,9 +14,15 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\CheckoutException;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class OrderTransactionService
 {
+    /**
+     * @internal
+     */
     public function __construct(private readonly Connection $connection)
     {
     }
