@@ -9,6 +9,9 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\CheckoutException;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class OrderTransactionService
 {
