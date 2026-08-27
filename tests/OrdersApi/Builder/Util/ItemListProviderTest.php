@@ -167,6 +167,41 @@ class ItemListProviderTest extends TestCase
         static::assertCount(Item::MAX_LENGTH_NAME, \mb_str_split($name));
     }
 
+    #[DataProvider('dataProviderLineBreakLabels')]
+    public function testLineItemLabelWhitespaceIsCollapsed(string $label, string $expectedItemName): void
+    {
+        $order = $this->createOrder($label, 12.34);
+
+        $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
+
+        static::assertSame($expectedItemName, $itemList->first()?->getName());
+    }
+
+    #[DataProvider('dataProviderLineBreakLabels')]
+    public function testLineItemLabelWhitespaceIsCollapsedFromCart(string $label, string $expectedItemName): void
+    {
+        $cart = new Cart(Uuid::randomHex());
+        $cart->setLineItems(new LineItemCollection([$this->createCartLineItem($label, 12.34)]));
+        $cart->getPrice()->assign(['taxStatus' => CartPrice::TAX_STATE_GROSS]);
+
+        $itemList = $this->createItemListProvider()->getItemListFromCart($this->createCurrency(), $cart);
+
+        static::assertSame($expectedItemName, $itemList->first()?->getName());
+    }
+
+    public function testLineItemLabelIsTruncatedAfterWhitespaceIsCollapsed(): void
+    {
+        $productName = \str_repeat("a\n", Item::MAX_LENGTH_NAME + 10);
+        $order = $this->createOrder($productName, 12.34);
+
+        $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
+
+        $name = $itemList->first()?->getName();
+        static::assertNotNull($name);
+        static::assertCount(Item::MAX_LENGTH_NAME, \mb_str_split($name));
+        static::assertDoesNotMatchRegularExpression('/\s\s|[\r\n]/', $name);
+    }
+
     public function testLineItemProductNumberTooLongIsTruncated(): void
     {
         $productNumber = 'SW-100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
@@ -175,6 +210,28 @@ class ItemListProviderTest extends TestCase
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
         static::assertSame($expectedItemSku, $itemList->first()?->getSku());
+    }
+
+    /**
+     * PayPal answers with `422 UNPROCESSABLE_ENTITY` / `INVALID_PARAMETER_SYNTAX` on
+     * `/purchase_units/0/items/0/name` for every one of these line terminators.
+     */
+    public static function dataProviderLineBreakLabels(): iterable
+    {
+        return [
+            'line feed' => ["Keim Twinstar\n5kg", 'Keim Twinstar 5kg'],
+            'carriage return' => ["Keim Twinstar\r5kg", 'Keim Twinstar 5kg'],
+            'carriage return line feed' => ["Keim Twinstar\r\n5kg", 'Keim Twinstar 5kg'],
+            'next line' => ["Keim Twinstar\u{0085}5kg", 'Keim Twinstar 5kg'],
+            'line separator' => ["Keim Twinstar\u{2028}5kg", 'Keim Twinstar 5kg'],
+            'paragraph separator' => ["Keim Twinstar\u{2029}5kg", 'Keim Twinstar 5kg'],
+            'tab' => ["Keim Twinstar\t5kg", 'Keim Twinstar 5kg'],
+            'leading and trailing line breaks' => ["\nKeim Twinstar 5kg\n", 'Keim Twinstar 5kg'],
+            'consecutive line breaks' => ["Keim Twinstar\n\n\n5kg", 'Keim Twinstar 5kg'],
+            'line break next to space' => ["Keim Twinstar: \n5kg", 'Keim Twinstar: 5kg'],
+            'label without whitespace to collapse' => ['Keim Twinstar 5kg', 'Keim Twinstar 5kg'],
+            'multibyte characters are kept' => ['Keim Grün Weiß 5kg', 'Keim Grün Weiß 5kg'],
+        ];
     }
 
     public static function dataProviderTaxConstellation(): iterable
