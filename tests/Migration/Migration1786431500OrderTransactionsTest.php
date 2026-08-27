@@ -23,14 +23,11 @@ class Migration1786431500OrderTransactionsTest extends TestCase
 {
     use CompatSchemaTrait;
 
-    protected function tearDown(): void
-    {
-        KernelLifecycleManager::getConnection()->executeStatement('DROP TABLE IF EXISTS `swag_paypal_order_transactions`');
-    }
-
     public function testCreatesTableIdempotently(): void
     {
         $connection = KernelLifecycleManager::getConnection();
+        $connection->executeStatement('DROP TABLE IF EXISTS `swag_paypal_order_transactions`');
+
         $migration = new Migration1786431500OrderTransactions();
 
         $migration->update($connection);
