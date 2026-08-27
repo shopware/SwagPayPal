@@ -11,8 +11,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
-use Shopware\Core\Framework\Util\Database\TableHelper;
 use Swag\PayPal\Migration\Migration1786431500OrderTransactions;
+use Swag\PayPal\Test\Helper\CompatSchemaTrait;
 
 /**
  * @internal
@@ -21,6 +21,8 @@ use Swag\PayPal\Migration\Migration1786431500OrderTransactions;
 #[CoversClass(Migration1786431500OrderTransactions::class)]
 class Migration1786431500OrderTransactionsTest extends TestCase
 {
+    use CompatSchemaTrait;
+
     protected function tearDown(): void
     {
         KernelLifecycleManager::getConnection()->executeStatement('DROP TABLE IF EXISTS `swag_paypal_order_transactions`');
@@ -34,9 +36,12 @@ class Migration1786431500OrderTransactionsTest extends TestCase
         $migration->update($connection);
         $migration->update($connection);
 
-        static::assertTrue(TableHelper::tableExists($connection, 'swag_paypal_order_transactions'));
-        static::assertTrue(TableHelper::columnExists($connection, 'swag_paypal_order_transactions', 'order_transaction_id'));
-        static::assertTrue(TableHelper::columnExists($connection, 'swag_paypal_order_transactions', 'paypal_order_id'));
+        $schemaManager = $connection->createSchemaManager();
+
+        static::assertTrue($schemaManager->tablesExist(['swag_paypal_order_transactions']));
+        $columns = $this->getTableColumns($schemaManager, 'swag_paypal_order_transactions');
+        static::assertArrayHasKey('order_transaction_id', $columns);
+        static::assertArrayHasKey('paypal_order_id', $columns);
 
         $primaryKey = $connection->fetchAssociative('SHOW INDEX FROM `swag_paypal_order_transactions` WHERE `Key_name` = \'PRIMARY\'');
         static::assertIsArray($primaryKey);
