@@ -9,16 +9,22 @@ namespace Swag\PayPal\Checkout\Payment\Service;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Psr\Clock\ClockInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\CheckoutException;
 
+/**
+ * @internal
+ */
 #[Package('checkout')]
 class OrderTransactionService
 {
-    public function __construct(private readonly Connection $connection)
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly ClockInterface $clock,
+    ) {
     }
 
     public function reserve(string $paypalOrderId, string $transactionId): void
@@ -28,7 +34,7 @@ class OrderTransactionService
                 'order_transaction_id' => Uuid::fromHexToBytes($transactionId),
                 'order_transaction_version_id' => Uuid::fromHexToBytes(Defaults::LIVE_VERSION),
                 'paypal_order_id' => $paypalOrderId,
-                'created_at' => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                'created_at' => $this->clock->now()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
             ]);
         } catch (UniqueConstraintViolationException) {
             $differentTransactionExists = $this->connection->fetchOne(

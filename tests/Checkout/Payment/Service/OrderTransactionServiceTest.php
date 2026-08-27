@@ -10,11 +10,13 @@ namespace Swag\PayPal\Test\Checkout\Payment\Service;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\CheckoutException;
 use Swag\PayPal\Checkout\Payment\Service\OrderTransactionService;
+use Symfony\Component\Clock\NativeClock;
 
 /**
  * @internal
@@ -23,14 +25,14 @@ use Swag\PayPal\Checkout\Payment\Service\OrderTransactionService;
 #[CoversClass(OrderTransactionService::class)]
 class OrderTransactionServiceTest extends TestCase
 {
-    private Connection $connection;
+    private Connection&MockObject $connection;
 
     private OrderTransactionService $service;
 
     protected function setUp(): void
     {
         $this->connection = $this->createMock(Connection::class);
-        $this->service = new OrderTransactionService($this->connection);
+        $this->service = new OrderTransactionService($this->connection, new NativeClock());
     }
 
     public function testReservesNewPaypalOrderIdWithOneQuery(): void

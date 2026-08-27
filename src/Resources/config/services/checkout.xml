@@ -158,6 +158,7 @@
 
         <service id="Swag\PayPal\Checkout\Payment\Service\OrderTransactionService">
             <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument type="service" id="Psr\Clock\ClockInterface" />
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService">
