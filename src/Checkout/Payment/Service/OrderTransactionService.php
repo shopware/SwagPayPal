@@ -15,6 +15,9 @@ use Swag\PayPal\Checkout\CheckoutException;
 #[Package('checkout')]
 class OrderTransactionService
 {
+    /**
+     * @internal
+     */
     public function __construct(private readonly Connection $connection)
     {
     }

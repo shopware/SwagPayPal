@@ -17,6 +17,9 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler(handles: OrderTransactionsCleanupTask::class)]
 class OrderTransactionsCleanupTaskHandler extends ScheduledTaskHandler
 {
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $scheduledTaskRepository,
         private readonly Connection $connection,
