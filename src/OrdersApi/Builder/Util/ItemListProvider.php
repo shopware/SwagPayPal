@@ -31,6 +31,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 #[Package('checkout')]
 class ItemListProvider
 {
+    private const WHITESPACE_PATTERN = '/[\s\x{0085}\x{2028}\x{2029}]+/u';
+
     /**
      * @internal
      */
@@ -115,6 +117,7 @@ class ItemListProvider
     private function setName(OrderLineItemEntity|LineItem $lineItem, Item $item): void
     {
         $label = $lineItem->getLabel() ?? '';
+        $label = \trim(\preg_replace(self::WHITESPACE_PATTERN, ' ', $label) ?? $label);
 
         try {
             $item->setName($label);
