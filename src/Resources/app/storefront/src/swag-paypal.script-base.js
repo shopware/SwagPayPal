@@ -127,6 +127,8 @@ export default class SwagPayPalScriptBase extends Plugin {
     static paypal = {};
 
     _init() {
+        this._bindBfcacheRestore();
+
         if (this.options.partOfDomContentLoading || document.readyState === 'complete') {
             super._init();
         } else {
@@ -134,6 +136,47 @@ export default class SwagPayPalScriptBase extends Plugin {
                 super._init();
             });
         }
+    }
+
+    /**
+     * PayPal widgets render into iframes that do not survive bfcache restores
+     * (browser Back/Forward). Re-render when the page is restored from bfcache.
+     *
+     * @private
+     */
+    _bindBfcacheRestore() {
+        if (this._bfcacheBound) {
+            return;
+        }
+
+        this._bfcacheBound = true;
+        this._onPageShow = (event) => {
+            if (!event.persisted) {
+                return;
+            }
+
+            this.onBfcacheRestore();
+        };
+
+        window.addEventListener('pageshow', this._onPageShow);
+    }
+
+    /**
+     * Re-render PayPal UI after the page was restored from bfcache.
+     * Override in subclasses that render into this.el.
+     */
+    onBfcacheRestore() {
+        // no-op by default
+    }
+
+    destroy() {
+        if (this._onPageShow) {
+            window.removeEventListener('pageshow', this._onPageShow);
+            this._onPageShow = null;
+            this._bfcacheBound = false;
+        }
+
+        super.destroy();
     }
 
     get scriptOptionsHash() {

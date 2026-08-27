@@ -17,6 +17,8 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractSta
             return void this.handleError(this.NOT_ELIGIBLE, true, `Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
         }
 
+        this._paypalButton = button;
+
         if (this.options.appSwitchEnabled && typeof button.hasReturned === 'function' && button.hasReturned()) {
             return button.resume();
         }

@@ -32,7 +32,12 @@ class CustomerVaultTokenRouteTest extends TestCase
      */
     private StaticEntityRepository $repository;
 
-    private TokenResource&MockObject $tokenResource;
+    private TokenResourceInterface&MockObject $tokenResource;
+
+    /**
+     * @var StaticEntityRepository<VaultTokenCollection>
+     */
+    private StaticEntityRepository $repository;
 
     private CustomerVaultTokenRoute $route;
 
@@ -79,6 +84,10 @@ class CustomerVaultTokenRouteTest extends TestCase
             ->with($salesChannelContext->getSalesChannelId(), 'token-customer-id')
             ->willReturn($token);
 
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setId(Uuid::randomHex());
+        $this->repository->addSearch(new VaultTokenCollection([$vaultToken]));
+
         $response = $this->route->getVaultToken($salesChannelContext);
 
         static::assertSame(
@@ -98,6 +107,10 @@ class CustomerVaultTokenRouteTest extends TestCase
         $token->assign(['idToken' => null, 'expiresIn' => 45000]);
 
         $this->tokenResource->expects($this->once())->method('getUserIdToken')->willReturn($token);
+
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setId(Uuid::randomHex());
+        $this->repository->addSearch(new VaultTokenCollection([$vaultToken]));
 
         $this->expectException(MissingCustomerVaultTokenException::class);
 

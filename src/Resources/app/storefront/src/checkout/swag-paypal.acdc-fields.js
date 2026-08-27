@@ -103,6 +103,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
                 return void this.handleError(this.NOT_ELIGIBLE, true, 'Neither hosted fields nor standalone buttons are eligible');
             }
 
+            this._paypalButton = button;
             button.render(this.el);
         }
     }
