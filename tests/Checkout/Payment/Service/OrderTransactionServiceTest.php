@@ -1,4 +1,9 @@
 <?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Swag\PayPal\Test\Checkout\Payment\Service;
 
@@ -19,7 +24,7 @@ class OrderTransactionServiceTest extends TestCase
     public function testNewOrderIdIsReserved(): void
     {
         $connection = $this->createMock(Connection::class);
-        $connection->expects(static::once())->method('insert');
+        $connection->expects($this->once())->method('insert');
 
         (new OrderTransactionService($connection))->reserve('paypal-order-id', Uuid::randomHex());
     }
@@ -27,8 +32,8 @@ class OrderTransactionServiceTest extends TestCase
     public function testSameTransactionCanReserveIdempotently(): void
     {
         $connection = $this->createMock(Connection::class);
-        $connection->expects(static::once())->method('insert')->willThrowException($this->createMock(UniqueConstraintViolationException::class));
-        $connection->expects(static::once())->method('fetchOne')->willReturn(false);
+        $connection->expects($this->once())->method('insert')->willThrowException($this->createMock(UniqueConstraintViolationException::class));
+        $connection->expects($this->once())->method('fetchOne')->willReturn(false);
 
         (new OrderTransactionService($connection))->reserve('paypal-order-id', Uuid::randomHex());
     }
@@ -36,8 +41,8 @@ class OrderTransactionServiceTest extends TestCase
     public function testDifferentTransactionCannotReserveExistingOrderId(): void
     {
         $connection = $this->createMock(Connection::class);
-        $connection->expects(static::once())->method('insert')->willThrowException($this->createMock(UniqueConstraintViolationException::class));
-        $connection->expects(static::once())->method('fetchOne')->willReturn(1);
+        $connection->expects($this->once())->method('insert')->willThrowException($this->createMock(UniqueConstraintViolationException::class));
+        $connection->expects($this->once())->method('fetchOne')->willReturn(1);
 
         $this->expectExceptionObject(CheckoutException::paypalOrderAlreadyUsed());
         (new OrderTransactionService($connection))->reserve('paypal-order-id', Uuid::randomHex());

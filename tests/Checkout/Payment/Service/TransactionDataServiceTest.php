@@ -15,8 +15,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\OrderTransactionService;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
@@ -61,7 +61,7 @@ class TransactionDataServiceTest extends TestCase
         ]);
 
         $this->transactionRepository
-            ->expects(static::never())
+            ->expects($this->never())
             ->method('update');
 
         $this->transactionDataService->setResourceId($payPalOrder, 'order-transaction-id', $context);
@@ -92,7 +92,7 @@ class TransactionDataServiceTest extends TestCase
         ]);
 
         $this->transactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('update')
             ->with([[
                 'id' => 'order-transaction-id',
@@ -111,7 +111,7 @@ class TransactionDataServiceTest extends TestCase
     {
         $context = $this->createMock(SalesChannelContext::class);
 
-        $context->expects(static::once())
+        $context->expects($this->once())
             ->method('getSalesChannelId')
             ->willReturn('sales-channel-id');
 
@@ -119,13 +119,13 @@ class TransactionDataServiceTest extends TestCase
             ->willReturn(Context::createDefaultContext());
 
         $this->credentialsUtil
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('isSandbox')
             ->with('sales-channel-id')
             ->willReturn($isSandbox);
 
         $this->transactionRepository
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('update')
             ->with([[
                 'id' => 'order-transaction-id',
