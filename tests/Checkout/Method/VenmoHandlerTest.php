@@ -227,10 +227,11 @@ Subscription not found');
                 ),
                 $orderResource,
             ),
-            new TransactionDataService(
-                $this->orderTransactionRepo,
-                new CredentialsUtil($systemConfig),
-            ),
+                new TransactionDataService(
+                    $this->orderTransactionRepo,
+                    new CredentialsUtil($systemConfig),
+                    $this->createMock(\Swag\PayPal\Checkout\Payment\Service\OrderTransactionService::class),
+                ),
             $logger,
             $orderResource,
             new VaultTokenService(

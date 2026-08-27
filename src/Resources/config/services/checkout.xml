@@ -182,6 +182,11 @@
         <service id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService">
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil" />
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderTransactionService" />
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Service\OrderTransactionService">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService">
@@ -196,6 +201,17 @@
 
         <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\TransactionStatusSyncTask">
             <tag name="shopware.scheduled.task"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\OrderTransactionsCleanupTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\OrderTransactionsCleanupTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Psr\Clock\ClockInterface"/>
+            <tag name="messenger.message_handler"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\TransactionStatusSyncTaskHandler">

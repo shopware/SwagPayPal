@@ -1,3 +1,6 @@
+# 8.12.1
+- Behebt ein Problem, bei dem dieselbe PayPal-Bestellung für mehrere Shopware-Bestellungen verwendet werden konnte.
+
 # 8.12.0
 - Behebt ein Problem, bei dem die Smart Payment Buttons ohne sichtbare Rückmeldung fehlschlugen, wenn die AGB nicht akzeptiert wurden, indem der Nutzer nun zum betreffenden Feld geführt wird
 - Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)

@@ -258,10 +258,11 @@ Missing PayPal order id');
                 ),
                 $orderResource,
             ),
-            new TransactionDataService(
-                $this->orderTransactionRepo,
-                new CredentialsUtil($systemConfig),
-            ),
+                new TransactionDataService(
+                    $this->orderTransactionRepo,
+                    new CredentialsUtil($systemConfig),
+                    $this->createMock(\Swag\PayPal\Checkout\Payment\Service\PaypalOrderTransactionService::class),
+                ),
             $logger,
             $orderResource,
             new VaultTokenService(
