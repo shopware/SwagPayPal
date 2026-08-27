@@ -10,11 +10,10 @@ namespace Swag\PayPal\Test\Checkout\SalesChannel;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\CustomerException;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\Generator;
+use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\PayPalSDK\Struct\V1\Token;
 use Swag\PayPal\Checkout\Exception\MissingCustomerVaultTokenException;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
@@ -28,16 +27,19 @@ use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
 #[Package('checkout')]
 class CustomerVaultTokenRouteTest extends TestCase
 {
-    private EntityRepository&MockObject $repository;
-
     private TokenResourceInterface&MockObject $tokenResource;
+
+    /**
+     * @var StaticEntityRepository<VaultTokenCollection>
+     */
+    private StaticEntityRepository $repository;
 
     private CustomerVaultTokenRoute $route;
 
     protected function setUp(): void
     {
-        $this->repository = $this->createMock(EntityRepository::class);
         $this->tokenResource = $this->createMock(TokenResourceInterface::class);
+        $this->repository = new StaticEntityRepository([]);
 
         $this->route = new CustomerVaultTokenRoute($this->repository, $this->tokenResource);
     }
@@ -67,16 +69,14 @@ class CustomerVaultTokenRouteTest extends TestCase
         $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(false);
 
-        $entitySearchResult = $this->createMock(EntitySearchResult::class);
-        $this->repository->expects($this->once())->method('search')->willReturn($entitySearchResult);
-        $vaultToken = new VaultTokenEntity();
-        $vaultToken->setId(Uuid::randomHex());
-        $entitySearchResult->expects($this->once())->method('getEntities')->willReturn(new VaultTokenCollection([$vaultToken]));
-
         $token = new Token();
         $token->assign(['idToken' => 'dummy-token', 'expiresIn' => 45000]);
 
         $this->tokenResource->expects($this->once())->method('getUserIdToken')->willReturn($token);
+
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setId(Uuid::randomHex());
+        $this->repository->addSearch(new VaultTokenCollection([$vaultToken]));
 
         $response = $this->route->getVaultToken($salesChannelContext);
 
@@ -91,16 +91,14 @@ class CustomerVaultTokenRouteTest extends TestCase
         $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(false);
 
-        $entitySearchResult = $this->createMock(EntitySearchResult::class);
-        $this->repository->expects($this->once())->method('search')->willReturn($entitySearchResult);
-        $vaultToken = new VaultTokenEntity();
-        $vaultToken->setId(Uuid::randomHex());
-        $entitySearchResult->expects($this->once())->method('getEntities')->willReturn(new VaultTokenCollection([$vaultToken]));
-
         $token = new Token();
         $token->assign(['idToken' => null, 'expiresIn' => 45000]);
 
         $this->tokenResource->expects($this->once())->method('getUserIdToken')->willReturn($token);
+
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setId(Uuid::randomHex());
+        $this->repository->addSearch(new VaultTokenCollection([$vaultToken]));
 
         $this->expectException(MissingCustomerVaultTokenException::class);
 

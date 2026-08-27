@@ -57,18 +57,28 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
 
     init() {
         this.confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
+        this._paypalButton = null;
 
         if (this.options.preventErrorReload) {
             DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).disabled = 'disabled';
 
             return;
-        } else {
-            ElementLoadingIndicatorUtil.create(this.el);
         }
 
         DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
 
         this._client = new HttpClient();
+
+        this._createPayPalButton();
+    }
+
+    /**
+     * Creates / re-creates the PayPal button without re-applying confirm-form UI setup.
+     *
+     * @private
+     */
+    _createPayPalButton() {
+        ElementLoadingIndicatorUtil.create(this.el);
 
         this.createScript(async (paypal) => {
             // catch sync and async errors - `.catch()` or similar aren't able to do so
@@ -88,7 +98,34 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
             return void this.handleError(this.NOT_ELIGIBLE, true, `Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
         }
 
-        button.render(this.el);
+        this._paypalButton = button;
+
+        return button.render(this.el);
+    }
+
+    onBfcacheRestore() {
+        if (this.options.preventErrorReload) {
+            return;
+        }
+
+        this._closePayPalButton();
+        this.el.replaceChildren();
+        this._createPayPalButton();
+    }
+
+    /**
+     * @private
+     */
+    _closePayPalButton() {
+        if (this._paypalButton && typeof this._paypalButton.close === 'function') {
+            try {
+                this._paypalButton.close();
+            } catch {
+                // button may already be torn down after bfcache restore
+            }
+        }
+
+        this._paypalButton = null;
     }
 
     /**

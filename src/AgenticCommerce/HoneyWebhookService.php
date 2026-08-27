@@ -26,7 +26,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\AgenticCommerce\Exception\HoneyWebhookException;
 use Swag\PayPal\AgenticCommerce\Util\FaviconLoader;
-use Swag\PayPal\Setting\Service\CredentialsUtil;
+use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Routing\RouterInterface;
@@ -43,7 +43,7 @@ class HoneyWebhookService
     public function __construct(
         private readonly ClientInterface $client,
         private readonly EntityRepository $salesChannelRepository,
-        private readonly CredentialsUtil $credentialsUtil,
+        private readonly CredentialsUtilInterface $credentialsUtil,
         private readonly RouterInterface $router,
         private readonly SystemConfigService $systemConfigService,
         private readonly LoggerInterface $logger,

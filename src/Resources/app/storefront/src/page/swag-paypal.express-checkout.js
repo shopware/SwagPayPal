@@ -105,6 +105,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
     init() {
         this._client = new HttpClient();
+        this._paypalButtons = [];
         this.createButton();
     }
 
@@ -124,13 +125,36 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                 const button = paypal.Buttons(this.getButtonConfig(fundingSource));
 
                 if (button.isEligible()) {
+                    this._paypalButtons.push(button);
                     button.render(this.el);
                 }
             } catch (e) {
                 this.handleError(this.SCRIPT_ERROR, true, `Error while rendering express button for "${fundingSource}": ${e}`);
             }
         });
+    }
 
+    onBfcacheRestore() {
+        this._closePayPalButtons();
+        this.el.replaceChildren();
+        this.createButton();
+    }
+
+    /**
+     * @private
+     */
+    _closePayPalButtons() {
+        this._paypalButtons.forEach((button) => {
+            if (typeof button.close === 'function') {
+                try {
+                    button.close();
+                } catch {
+                    // button may already be torn down after bfcache restore
+                }
+            }
+        });
+
+        this._paypalButtons = [];
     }
 
     getBuyButtonState() {
