@@ -1,3 +1,6 @@
+# 9.13.1
+- Fixes an issue, where the same PayPal order could be used for multiple Shopware orders.
+
 # 9.13.0
 - Fixes an issue, where the Smart Payment Buttons failed silently when the terms and conditions were not accepted, by guiding the user to the invalid field
 - Fixes an issue, where the PayPal Express Checkout failed without customer feedback when shipping to a country that is not assigned to the sales channel (shopware/shopware#15067)

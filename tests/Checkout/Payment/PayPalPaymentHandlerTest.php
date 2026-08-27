@@ -681,6 +681,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
                 new TransactionDataService(
                     $this->orderTransactionRepo,
                     new CredentialsUtil($systemConfig),
+                    $this->createMock(\Swag\PayPal\Checkout\Payment\Service\OrderTransactionService::class),
                 ),
                 $this->createMock(VaultTokenService::class),
                 $logger
