@@ -254,6 +254,7 @@ Subscription not found', '/') . '\z/');
             new TransactionDataService(
                 $this->orderTransactionRepo,
                 new CredentialsUtil($systemConfig),
+                $this->createMock(\Swag\PayPal\Checkout\Payment\Service\OrderTransactionService::class),
             ),
             $orderResource,
             new VaultTokenService(
