@@ -8,7 +8,6 @@
 
 namespace Swag\PayPal\Test\Migration;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
@@ -19,7 +18,6 @@ use Swag\PayPal\Migration\Migration1787895934MakeOrderTransactionsUpdatedAtNulla
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(Migration1787895934MakeOrderTransactionsUpdatedAtNullable::class)]
 class Migration1787895934MakeOrderTransactionsUpdatedAtNullableTest extends TestCase
 {
     public function testMakesUpdatedAtNullableIdempotently(): void
