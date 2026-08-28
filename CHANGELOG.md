@@ -1,4 +1,5 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.8.2
+- Fixes an issue, where PayPal orders could not be placed when the `updated_at` column of the PayPal order transaction table was not nullable
 - Fixes an issue, where line item labels containing line breaks made the PayPal order creation fail for local payment methods like iDEAL, P24, EPS or Bancontact
 
 # 10.8.1
