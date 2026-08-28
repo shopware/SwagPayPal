@@ -12,6 +12,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
+use Swag\PayPal\Migration\Migration1786431500OrderTransactions;
 use Swag\PayPal\Migration\Migration1787895934MakeOrderTransactionsUpdatedAtNullable;
 
 /**
@@ -25,8 +26,10 @@ class Migration1787895934MakeOrderTransactionsUpdatedAtNullableTest extends Test
     {
         $connection = KernelLifecycleManager::getConnection();
         $connection->executeStatement('DROP TABLE IF EXISTS `swag_paypal_order_transactions`');
+
+        (new Migration1786431500OrderTransactions())->update($connection);
         $connection->executeStatement(
-            'CREATE TABLE `swag_paypal_order_transactions` (`updated_at` DATETIME(3) NOT NULL)'
+            'ALTER TABLE `swag_paypal_order_transactions` MODIFY COLUMN `updated_at` DATETIME(3) NOT NULL'
         );
 
         $migration = new Migration1787895934MakeOrderTransactionsUpdatedAtNullable();
