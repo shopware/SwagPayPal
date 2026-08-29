@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\Payment\Method;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AbstractPaymentHandler;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerType;
@@ -44,6 +45,11 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
 {
     public const PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME = 'paypalOrderId';
     public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
+
+    private const FINALIZED_TRANSACTION_STATES = [
+        OrderTransactionStates::STATE_PAID,
+        OrderTransactionStates::STATE_AUTHORIZED,
+    ];
 
     /**
      * @internal
@@ -145,6 +151,10 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
         Context $context,
     ): void {
         [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
+
+        if ($this->isTransactionFinalized($orderTransaction)) {
+            return;
+        }
 
         $paypalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
         if (!\is_string($paypalOrderId) || !$paypalOrderId) {
@@ -274,12 +284,20 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
         return $order?->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref();
     }
 
+    private function isTransactionFinalized(OrderTransactionEntity $orderTransaction): bool
+    {
+        $state = $orderTransaction->getStateMachineState()?->getTechnicalName();
+
+        return $state !== null && \in_array($state, self::FINALIZED_TRANSACTION_STATES, true);
+    }
+
     /**
      * @return array{0: OrderTransactionEntity, 1: OrderEntity}
      */
     private function fetchOrderTransaction(string $transactionId, Context $context): array
     {
         $criteria = new Criteria([$transactionId]);
+        $criteria->addAssociation('stateMachineState');
         $criteria->addAssociation('order.billingAddress.country');
         $criteria->addAssociation('order.billingAddress.countryState');
         $criteria->addAssociation('order.currency');

@@ -2,6 +2,7 @@
 - Behebt ein Problem, bei dem Produktsuchen, die nur einen Teil der Felder laden (z. B. die Anfrage der Mengenauswahl zur Kaufmengenbegrenzung in der Storefront), mit einem Fehler fehlschlugen, wenn der Express-Checkout-Button für Produktlisten aktiviert war (shopware/SwagPayPal#554)
 
 # 10.8.2
+- Behebt ein Problem, bei dem verspätete PayPal-Abbruchantworten oder Webhooks eine erfolgreich bezahlte Transaktion auf „Abgebrochen“ setzen konnten (shopware/shopware#19221)
 - Behebt ein Problem, bei dem PayPal-Bestellungen nicht abgeschlossen werden konnten, wenn die `updated_at`-Spalte der PayPal-Bestelltransaktionstabelle keine NULL-Werte zuließ
 - Behebt ein Problem, bei dem Positionsbezeichnungen mit Zeilenumbrüchen die Erstellung der PayPal-Bestellung für lokale Zahlungsarten wie iDEAL, P24, EPS oder Bancontact fehlschlagen ließen
 
