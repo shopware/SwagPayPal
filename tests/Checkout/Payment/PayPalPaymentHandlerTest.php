@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Payment;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
@@ -218,6 +219,27 @@ class PayPalPaymentHandlerTest extends TestCase
             new PaymentTransactionStruct($this->getTransactionId(Context::createDefaultContext(), $this->getContainer())),
             Context::createDefaultContext(),
         );
+    }
+
+    #[DataProvider('finalizedTransactionStateProvider')]
+    public function testFinalizeWithCancelLeavesFinalizedTransactionUnchanged(string $state): void
+    {
+        $context = Context::createDefaultContext();
+        $transactionId = $this->getTransactionId($context, $this->getContainer(), $state);
+
+        $this->createPayPalPaymentHandler()->finalize(
+            new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
+            new PaymentTransactionStruct($transactionId),
+            $context,
+        );
+
+        $this->assertOrderTransactionState($state, $transactionId, $context);
+    }
+
+    public static function finalizedTransactionStateProvider(): \Generator
+    {
+        yield 'paid transaction' => [OrderTransactionStates::STATE_PAID];
+        yield 'authorized transaction' => [OrderTransactionStates::STATE_AUTHORIZED];
     }
 
     public function testFinalizePayPalOrderCapture(): void
