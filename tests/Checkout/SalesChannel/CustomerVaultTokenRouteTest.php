@@ -32,12 +32,7 @@ class CustomerVaultTokenRouteTest extends TestCase
      */
     private StaticEntityRepository $repository;
 
-    private TokenResourceInterface&MockObject $tokenResource;
-
-    /**
-     * @var StaticEntityRepository<VaultTokenCollection>
-     */
-    private StaticEntityRepository $repository;
+    private TokenResource&MockObject $tokenResource;
 
     private CustomerVaultTokenRoute $route;
 
