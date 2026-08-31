@@ -46,7 +46,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
     public const PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME = 'paypalOrderId';
     public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
 
-    private const FINALIZED_TRANSACTION_STATES = [
+    private const SUCCESSFUL_TRANSACTION_STATES = [
         OrderTransactionStates::STATE_PAID,
         OrderTransactionStates::STATE_AUTHORIZED,
     ];
@@ -152,7 +152,8 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
     ): void {
         [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
 
-        if ($this->isTransactionFinalized($orderTransaction)) {
+        $isCancelled = $request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL);
+        if ($isCancelled && $this->isTransactionSuccessful($orderTransaction)) {
             return;
         }
 
@@ -161,7 +162,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             throw CheckoutException::preparedOrderRequired(static::class);
         }
 
-        if ($request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
+        if ($isCancelled) {
             throw PaymentException::customerCanceled(
                 $transaction->getOrderTransactionId(),
                 'Customer canceled the payment on the PayPal page'
@@ -221,13 +222,15 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
 
     protected function executeOrder(PaymentTransactionStruct $transaction, Order $paypalOrder, OrderEntity $order, OrderTransactionEntity $orderTransaction, Context $context, bool $isUserPresent = true): Order
     {
-        $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
-            $transaction->getOrderTransactionId(),
-            $paypalOrder,
-            $order->getSalesChannelId(),
-            $context,
-            PartnerAttributionId::PAYPAL_PPCP,
-        );
+        if (!$this->isTransactionSuccessful($orderTransaction)) {
+            $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
+                $transaction->getOrderTransactionId(),
+                $paypalOrder,
+                $order->getSalesChannelId(),
+                $context,
+                PartnerAttributionId::PAYPAL_PPCP,
+            );
+        }
 
         $this->transactionDataService->setResourceId($paypalOrder, $transaction->getOrderTransactionId(), $context);
 
@@ -284,11 +287,11 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
         return $order?->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref();
     }
 
-    private function isTransactionFinalized(OrderTransactionEntity $orderTransaction): bool
+    private function isTransactionSuccessful(OrderTransactionEntity $orderTransaction): bool
     {
         $state = $orderTransaction->getStateMachineState()?->getTechnicalName();
 
-        return $state !== null && \in_array($state, self::FINALIZED_TRANSACTION_STATES, true);
+        return $state !== null && \in_array($state, self::SUCCESSFUL_TRANSACTION_STATES, true);
     }
 
     /**
