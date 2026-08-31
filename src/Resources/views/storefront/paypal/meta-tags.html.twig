@@ -11,12 +11,12 @@
 {% set expressData = expressData ?? cmsPage.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
 {% set expressData = expressData ?? product.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
 
-{% set anyPresent = expressData or spbData or acdcData or puiFraudnetData or sepaData or venmoData or payLaterData or applePayData or googlePayData or installmentBannerData or fundingEligibilityData %}
+{% set data = expressData ?? spbData ?? acdcData ?? puiFraudnetData ?? sepaData ?? venmoData ?? payLaterData ?? applePayData ?? googlePayData ?? installmentBannerData ?? fundingEligibilityData %}
 
-{% set baseUrl = config('SwagPayPal.settings.sandbox') ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com' %}
+{% set baseUrl = data.environment == 'sandbox' ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com' %}
 
 {% block swag_paypal_meta_tags %}
-    {% if anyPresent %}
+    {% if data %}
         {% block swag_paypal_core %}
         <script type="text/javascript" src="{{ baseUrl }}/web-sdk/v6/core" data-namespace="paypalV6" async></script>
         {% endblock %}

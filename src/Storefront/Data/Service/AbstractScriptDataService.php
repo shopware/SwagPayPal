@@ -40,7 +40,7 @@ abstract class AbstractScriptDataService
             '_v6Enabled' => $this->systemConfigService->getBool(Settings::SDK_V6_ENABLED, $salesChannelId),
             'clientId' => $this->credentialsUtil->getClientId($salesChannelId),
             'clientTokenUrl' => $this->router->generate('frontend.paypal.client_token'),
-            'environment' => $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId) ? 'sandbox' : 'production',
+            'environment' => $this->credentialsUtil->isSandbox($salesChannelId) ? 'sandbox' : 'production',
             'merchantPayerId' => $merchantPayerId,
             'languageIso' => $this->getButtonLanguage($context),
             'currency' => $context->getCurrency()->getIsoCode(),
