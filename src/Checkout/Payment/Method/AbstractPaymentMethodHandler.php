@@ -222,7 +222,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
 
     protected function executeOrder(PaymentTransactionStruct $transaction, Order $paypalOrder, OrderEntity $order, OrderTransactionEntity $orderTransaction, Context $context, bool $isUserPresent = true): Order
     {
-        if (!$this->isTransactionSuccessful($orderTransaction)) {
+        if (!$this->isPayPalOrderAlreadyExecuted($paypalOrder, $orderTransaction)) {
             $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
                 $transaction->getOrderTransactionId(),
                 $paypalOrder,
@@ -292,6 +292,13 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
         $state = $orderTransaction->getStateMachineState()?->getTechnicalName();
 
         return $state !== null && \in_array($state, self::SUCCESSFUL_TRANSACTION_STATES, true);
+    }
+
+    private function isPayPalOrderAlreadyExecuted(Order $paypalOrder, OrderTransactionEntity $orderTransaction): bool
+    {
+        $storedPayPalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
+
+        return $this->isTransactionSuccessful($orderTransaction) && $storedPayPalOrderId === $paypalOrder->getId();
     }
 
     /**
