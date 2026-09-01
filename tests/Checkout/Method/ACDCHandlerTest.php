@@ -18,11 +18,13 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\System\StateMachine\Transition;
@@ -478,7 +480,7 @@ class ACDCHandlerTest extends TestCase
         $this->handler->finalize(new Request(), $paymentTransaction, $context);
     }
 
-    public function testRecurring(): void
+    public function testRecurringRetryExecutesNewPayPalOrderForSuccessfulTransaction(): void
     {
         if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
@@ -488,6 +490,12 @@ class ACDCHandlerTest extends TestCase
 
         $transaction = new OrderTransactionEntity();
         $transaction->setId('orderTransactionId');
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'previousPaypalOrderId',
+        ]);
+        $state = new StateMachineStateEntity();
+        $state->setTechnicalName(OrderTransactionStates::STATE_PAID);
+        $transaction->setStateMachineState($state);
         $order = new OrderEntity();
         $order->setSalesChannelId('salesChannelId');
         $transaction->setOrder($order);

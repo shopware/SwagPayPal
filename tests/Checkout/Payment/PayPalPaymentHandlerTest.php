@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Payment;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
@@ -45,6 +46,9 @@ use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorizedOrderAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
@@ -220,6 +224,60 @@ class PayPalPaymentHandlerTest extends TestCase
         );
     }
 
+    #[DataProvider('successfulTransactionStateProvider')]
+    public function testFinalizeWithCancelLeavesSuccessfulTransactionUnchanged(string $state): void
+    {
+        $context = Context::createDefaultContext();
+        $transactionId = $this->getTransactionId($context, $this->getContainer(), $state);
+
+        $this->createPayPalPaymentHandler()->finalize(
+            new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
+            new PaymentTransactionStruct($transactionId),
+            $context,
+        );
+
+        $this->assertOrderTransactionState($state, $transactionId, $context);
+    }
+
+    public static function successfulTransactionStateProvider(): \Generator
+    {
+        yield 'paid transaction' => [OrderTransactionStates::STATE_PAID];
+        yield 'authorized transaction' => [OrderTransactionStates::STATE_AUTHORIZED];
+    }
+
+    #[DataProvider('successfulFinalizeProvider')]
+    public function testFinalizeSuccessfulTransactionPersistsPaymentData(string $state, string $paypalOrderId, string $resourceId): void
+    {
+        $context = Context::createDefaultContext();
+        $transactionId = $this->getTransactionId($context, $this->getContainer(), $state);
+        $this->orderTransactionRepo->update([[
+            'id' => $transactionId,
+            'customFields' => [
+                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $paypalOrderId,
+            ],
+        ]], $context);
+        $vaultTokenService = $this->createMock(VaultTokenService::class);
+        $vaultTokenService->expects($this->once())->method('saveToken');
+
+        $this->createPayPalPaymentHandler(vaultTokenService: $vaultTokenService)->finalize(
+            new Request(),
+            new PaymentTransactionStruct($transactionId),
+            $context,
+        );
+
+        $this->assertOrderTransactionState($state, $transactionId, $context);
+        static::assertSame(
+            $resourceId,
+            $this->getTransaction($transactionId, $this->getContainer(), $context)?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID),
+        );
+    }
+
+    public static function successfulFinalizeProvider(): \Generator
+    {
+        yield 'paid transaction' => [OrderTransactionStates::STATE_PAID, GetCapturedOrderCapture::ID, GetCapture::ID];
+        yield 'authorized transaction' => [OrderTransactionStates::STATE_AUTHORIZED, GetAuthorizedOrderAuthorization::ID, GetAuthorization::ID];
+    }
+
     public function testFinalizePayPalOrderCapture(): void
     {
         $this->assertFinalizeRequest(GetOrderCapture::ID, OrderTransactionStates::STATE_PAID, CaptureOrderCapture::CAPTURE_ID);
@@ -249,7 +307,7 @@ class PayPalPaymentHandlerTest extends TestCase
         $this->assertFinalizeRequest(self::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER, OrderTransactionStates::STATE_PAID, CaptureOrderCapture::CAPTURE_ID);
     }
 
-    private function createPayPalPaymentHandler(array $settings = []): PayPalPaymentHandler
+    private function createPayPalPaymentHandler(array $settings = [], ?VaultTokenService $vaultTokenService = null): PayPalPaymentHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
@@ -288,7 +346,7 @@ class PayPalPaymentHandlerTest extends TestCase
                 $this->createMock(\Swag\PayPal\Checkout\Payment\Service\OrderTransactionService::class),
             ),
             $orderResource,
-            $this->createMock(VaultTokenService::class),
+            $vaultTokenService ?? $this->createMock(VaultTokenService::class),
             $this->orderTransactionRepo,
             $this->createOrderBuilder($systemConfig),
         );
