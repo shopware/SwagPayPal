@@ -44,6 +44,15 @@ class PayPalPaymentHandler extends AbstractPaymentMethodHandler
 
     protected function resolveRedirect(?Order $order): ?string
     {
-        return parent::resolveRedirect($order) ?? $order?->getLinks()->getRelation(Link::RELATION_APPROVE)?->getHref();
+        if ($order === null || !$order->isset('links')) {
+            return null;
+        }
+
+        return parent::resolveRedirect($order) ?? $order->getLinks()->getRelation(Link::RELATION_APPROVE)?->getHref();
+    }
+
+    protected function recoversFromPayerAction(): bool
+    {
+        return true;
     }
 }

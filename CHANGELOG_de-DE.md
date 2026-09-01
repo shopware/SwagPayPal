@@ -11,6 +11,10 @@
 - Behebt ein Problem, bei dem die PayPal Express Checkout Buttons nach dem Zurücknavigieren vom Checkout mit dem Browser-Zurück-Button nicht mehr angezeigt wurden (shopware/shopware#18297)
 - Behebt ein Problem, bei dem die PayPal-Versandtracking-Synchronisierung 429 RATE_LIMIT_REACHED-Antworten zu früh erneut verarbeitet hat, anstatt den Retry-After-Header zu berücksichtigen.
 - Behebt ein Problem, bei dem im Kontextmenü der Erweiterungs-Kachel der rohe Snippet-Key statt „Konfigurieren” angezeigt wurde (shopware/shopware#19028)
+- Behebt ein Problem, bei dem eine PayPal-Zahlung mit einem UNPROCESSABLE_ENTITY-Fehler fehlschlug, wenn die Bestellung auf der Bestellbestätigungsseite geändert wurde, nachdem der Kunde sie bei PayPal bereits freigegeben hatte, anstatt ihn den geänderten Betrag erneut freigeben zu lassen (shopware/SwagPayPal#759)
+- Fügt `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException` hinzu
+- Fügt `Swag\PayPal\RestApi\V2\Resource\OrderResource::confirm()` hinzu, das die Zahlungsquelle einer bestehenden PayPal-Bestellung bestätigt
+- Ändert `Swag\PayPal\RestApi\Exception\PayPalApiException`, sodass die PayPal-SDK-Exception des Fehlers als vorherige Exception erhalten bleibt
 
 # 10.8.0
 - Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)

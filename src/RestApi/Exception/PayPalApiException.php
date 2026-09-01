@@ -38,6 +38,7 @@ class PayPalApiException extends PaymentException
         int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
         private ?string $issue = null,
         ?\DateTimeImmutable $retryAt = null,
+        ?\Throwable $previous = null,
     ) {
         parent::__construct(
             $payPalApiStatusCode,
@@ -47,7 +48,8 @@ class PayPalApiException extends PaymentException
                 'name' => $name,
                 'message' => $message,
                 'issue' => $issue,
-            ]
+            ],
+            $previous,
         );
 
         $this->retryAt = $retryAt;
@@ -96,6 +98,8 @@ class PayPalApiException extends PaymentException
             $e->getStatusCode(),
             $issue,
             $e instanceof RetryAfterApiException ? $e->getRetryAt() : null,
+            // keeps the failing response reachable, e.g. its HATEOAS links
+            $e,
         );
     }
 
