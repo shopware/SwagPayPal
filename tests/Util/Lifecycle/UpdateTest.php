@@ -102,7 +102,7 @@ class UpdateTest extends TestCase
         $this->salesChannelRepository = $this->getRepository(SalesChannelDefinition::ENTITY_NAME);
     }
 
-    public function testUpdateWithNonComparableVersionRunsNoSteps(): void
+    public function testUpdateWithNonComparableVersionRunsAndRecordsNoSteps(): void
     {
         $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
         // mirrors the state that triggered the incident: a landing page value that is only valid since 9.0.2
@@ -117,10 +117,23 @@ class UpdateTest extends TestCase
         static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfigService->get(Settings::LANDING_PAGE));
         static::assertTrue($systemConfigService->get(Settings::ACDC_FORCE_3DS));
 
-        $executedSteps = $systemConfigService->get(Update::EXECUTED_UPDATE_STEPS_CONFIG_KEY);
-        static::assertIsArray($executedSteps);
-        static::assertContains('2.0.0', $executedSteps);
-        static::assertContains('10.7.0', $executedSteps);
+        // nothing is recorded either: the baseline is unknown, so the steps must still be able to run
+        // once the plugin version has been corrected to a comparable one
+        static::assertNull($systemConfigService->get(Update::EXECUTED_UPDATE_STEPS_CONFIG_KEY));
+    }
+
+    public function testUpdateRunsPendingStepsAfterNonComparableVersionWasCorrected(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::ECS_SHIPPING_CALLBACK_ENABLED, false);
+        $update = $this->createUpdateService($systemConfigService);
+
+        $update->update($this->createUpdateContext('dev-codex/some-branch', '10.8.3'));
+        static::assertFalse($systemConfigService->get(Settings::ECS_SHIPPING_CALLBACK_ENABLED));
+
+        // the plugin version got corrected to the version the branch was based on, pending steps now run
+        $update->update($this->createUpdateContext('10.5.0', '10.8.3'));
+        static::assertTrue($systemConfigService->get(Settings::ECS_SHIPPING_CALLBACK_ENABLED));
     }
 
     public function testUpdateRunsEachStepOnlyOnce(): void

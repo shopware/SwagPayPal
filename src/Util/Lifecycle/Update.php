@@ -78,20 +78,24 @@ class Update
 
     public function update(UpdateContext $updateContext): void
     {
-        $executedSteps = $this->getExecutedUpdateSteps();
         $currentVersion = $updateContext->getCurrentPluginVersion();
 
         // Non-semver versions (e.g. composer branch versions like "dev-some-branch") cannot be compared to the
-        // step versions, so all steps are only marked as executed, but not run: skipping a step is recoverable
-        // on the next update, re-running a destructive one is not.
-        $isComparableVersion = \preg_match('/^\d+\.\d+/', $currentVersion) === 1;
+        // step versions, so the true baseline is unknown: no steps are run, since re-running a destructive step
+        // is not recoverable, and deliberately none are recorded as executed either, so pending steps still run
+        // once the version has been corrected to a comparable one.
+        if (\preg_match('/^\d+\.\d+/', $currentVersion) !== 1) {
+            return;
+        }
+
+        $executedSteps = $this->getExecutedUpdateSteps();
 
         foreach ($this->getUpdateSteps($updateContext->getContext()) as $version => $step) {
             if (\in_array($version, $executedSteps, true)) {
                 continue;
             }
 
-            if ($isComparableVersion && \version_compare($currentVersion, $version, '<')) {
+            if (\version_compare($currentVersion, $version, '<')) {
                 $step();
             }
 
