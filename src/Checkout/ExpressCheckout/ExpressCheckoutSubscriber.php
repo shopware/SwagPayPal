@@ -12,7 +12,8 @@ use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
-use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\Event\DataMappingEvent;
@@ -172,7 +173,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param SalesChannelEntitySearchResultLoadedEvent<ProductCollection> $event
+     * @param SalesChannelEntitySearchResultLoadedEvent<EntityCollection<Entity>> $event
      */
     public function addExcludedProductsToSearchResult(SalesChannelEntitySearchResultLoadedEvent $event): void
     {
@@ -183,14 +184,15 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         $productIds = [];
         $products = $event->getResult()->getEntities();
         foreach ($products as $product) {
-            $productIds[] = $product->getId();
-            $productIds[] = $product->getParentId();
+            foreach ($this->getProductIds($product) as $productId) {
+                $productIds[$productId] = $productId;
+            }
         }
 
-        $excluded = $this->excludedProductValidator->findExcludedProducts(\array_filter($productIds), $event->getSalesChannelContext());
+        $excluded = $this->excludedProductValidator->findExcludedProducts(\array_values($productIds), $event->getSalesChannelContext());
 
         foreach ($products as $product) {
-            if (\in_array($product->getId(), $excluded, true) || ($product->getParentId() && \in_array($product->getParentId(), $excluded, true))) {
+            if (\array_intersect($this->getProductIds($product), $excluded) !== []) {
                 $product->addExtension(ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL, new ArrayStruct());
             }
         }
@@ -381,5 +383,30 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             $event instanceof SalesChannelEntitySearchResultLoadedEvent => AbstractScriptData::PAGE_TYPE_PRODUCT_LISTING,
             default => null,
         };
+    }
+
+    /**
+     * The entities of a search result are `PartialEntity` instances, if the criteria limited the loaded
+     * fields via `Criteria::addFields()`. Those have no typed getters, therefore the ids are read via
+     * `has()`/`get()`, which works for partial as well as fully hydrated products.
+     *
+     * @return list<string>
+     */
+    private function getProductIds(Entity $product): array
+    {
+        $productIds = [];
+
+        foreach (['id', 'parentId'] as $field) {
+            if (!$product->has($field)) {
+                continue;
+            }
+
+            $productId = $product->get($field);
+            if (\is_string($productId) && $productId !== '') {
+                $productIds[] = $productId;
+            }
+        }
+
+        return $productIds;
     }
 }
