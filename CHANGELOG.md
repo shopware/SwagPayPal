@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
+
 # 9.13.2
 - Fixes an issue, where PayPal orders could not be placed when the `updated_at` column of the PayPal order transaction table was not nullable
 - Fixes an issue, where line item labels containing line breaks made the PayPal order creation fail for local payment methods like iDEAL, P24, EPS or Bancontact
