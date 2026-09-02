@@ -295,7 +295,7 @@ class UpdateTest extends TestCase
 
     public function testUpdateSkipsNonNumericCurrentPluginVersion(): void
     {
-        $updateContext = $this->createUpdateContext('dev-trunk', '10.8.10');
+        $updateContext = $this->createUpdateContext('dev-trunk', '8.12.2');
         $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
         $systemConfig->set(Settings::CLIENT_ID, self::CLIENT_ID);
         $systemConfig->set(Settings::CLIENT_SECRET, self::CLIENT_SECRET);
@@ -314,7 +314,7 @@ class UpdateTest extends TestCase
 
     public function testUpdateRunsUpdatesWithNonNumericTargetPluginVersion(): void
     {
-        $updateContext = $this->createUpdateContext('9.0.1', 'dev-trunk');
+        $updateContext = $this->createUpdateContext('8.0.1', 'dev-trunk');
         $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
         $systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, TestDefaults::SALES_CHANNEL);
 
