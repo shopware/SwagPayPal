@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
 #[Package('checkout')]
@@ -86,7 +86,7 @@ final class Settings
         self::SANDBOX => false,
         self::INTENT => PaymentIntentV2::CAPTURE,
         self::SUBMIT_CART => true,
-        self::LANDING_PAGE => ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE,
+        self::LANDING_PAGE => ExperienceContext::LANDING_PAGE_TYPE_NO_PREFERENCE,
         self::SEND_ORDER_NUMBER => true,
         self::MERCHANT_LOCATION => self::MERCHANT_LOCATION_OTHER,
         self::ECS_DETAIL_ENABLED => true,

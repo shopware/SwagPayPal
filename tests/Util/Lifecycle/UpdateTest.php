@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -260,6 +261,83 @@ class UpdateTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Invalid value for "SwagPayPal.settings.intent" setting');
         $updater->update($updateContext);
+    }
+
+    #[DataProvider('existingSettingsProvider')]
+    public function testUpdateKeepsExistingSettingValue(string $currentVersion, string $nextVersion, string $setting, mixed $value): void
+    {
+        $updateContext = $this->createUpdateContext($currentVersion, $nextVersion);
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfig->set($setting, $value);
+
+        $updater = $this->createUpdateService($systemConfig);
+        $updater->update($updateContext);
+
+        static::assertSame($value, $systemConfig->get($setting));
+    }
+
+    public static function existingSettingsProvider(): \Generator
+    {
+        yield 'PUI instructions' => ['4.9.0', '5.0.0', Settings::PUI_CUSTOMER_SERVICE_INSTRUCTIONS, 'Existing instructions'];
+        yield '3D Secure' => ['5.3.1', '5.4.0', Settings::ACDC_FORCE_3DS, true];
+        yield 'express checkout pay later' => ['6.1.0', '6.2.0', Settings::ECS_SHOW_PAY_LATER, false];
+        yield 'installment banner product detail page' => ['7.2.0', '7.3.0', Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED, false];
+        yield 'installment banner cart' => ['7.2.0', '7.3.0', Settings::INSTALLMENT_BANNER_CART_ENABLED, false];
+        yield 'installment banner off-canvas cart' => ['7.2.0', '7.3.0', Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED, false];
+        yield 'installment banner login page' => ['7.2.0', '7.3.0', Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED, false];
+        yield 'installment banner footer' => ['7.2.0', '7.3.0', Settings::INSTALLMENT_BANNER_FOOTER_ENABLED, false];
+        yield 'express checkout shipping callback' => ['10.5.0', '10.6.0', Settings::ECS_SHIPPING_CALLBACK_ENABLED, false];
+    }
+
+    public function testUpdateSkipsNonNumericCurrentPluginVersion(): void
+    {
+        $updateContext = $this->createUpdateContext('dev-trunk', '10.8.10');
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfig->set(Settings::CLIENT_ID, self::CLIENT_ID);
+        $systemConfig->set(Settings::CLIENT_SECRET, self::CLIENT_SECRET);
+        $systemConfig->delete(Settings::CLIENT_ID_SANDBOX);
+        $systemConfig->delete(Settings::CLIENT_SECRET_SANDBOX);
+        $systemConfig->set(Settings::SANDBOX, true);
+
+        $updater = $this->createUpdateService($systemConfig);
+        $updater->update($updateContext);
+
+        static::assertSame(self::CLIENT_ID, $systemConfig->get(Settings::CLIENT_ID));
+        static::assertSame(self::CLIENT_SECRET, $systemConfig->get(Settings::CLIENT_SECRET));
+        static::assertNull($systemConfig->get(Settings::CLIENT_ID_SANDBOX));
+        static::assertNull($systemConfig->get(Settings::CLIENT_SECRET_SANDBOX));
+    }
+
+    public function testUpdateRunsUpdatesWithNonNumericTargetPluginVersion(): void
+    {
+        $updateContext = $this->createUpdateContext('9.0.1', 'dev-trunk');
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, TestDefaults::SALES_CHANNEL);
+
+        $updater = $this->createUpdateService($systemConfig);
+        $updater->update($updateContext);
+
+        static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
+    }
+
+    #[DataProvider('currentLandingPageValuesProvider')]
+    public function testUpdateTo200KeepsCurrentLandingPageValue(string $landingPage): void
+    {
+        $updateContext = $this->createUpdateContext('1.9.1', '2.0.0');
+        $systemConfig = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfig->set(Settings::LANDING_PAGE, $landingPage, TestDefaults::SALES_CHANNEL);
+
+        $updater = $this->createUpdateService($systemConfig);
+        $updater->update($updateContext);
+
+        static::assertSame($landingPage, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
+    }
+
+    public static function currentLandingPageValuesProvider(): \Generator
+    {
+        yield 'login' => [ExperienceContext::LANDING_PAGE_TYPE_LOGIN];
+        yield 'guest checkout' => [ExperienceContext::LANDING_PAGE_TYPE_GUEST];
+        yield 'no preference' => [ExperienceContext::LANDING_PAGE_TYPE_NO_PREFERENCE];
     }
 
     public function testUpdateTo200MigrateIntentSettingWithInvalidLandingPage(): void
