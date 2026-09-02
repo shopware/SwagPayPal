@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem Produktsuchen, die nur einen Teil der Felder laden (z. B. die Anfrage der Mengenauswahl zur Kaufmengenbegrenzung in der Storefront), mit einem Fehler fehlschlugen, wenn der Express-Checkout-Button für Produktlisten aktiviert war (shopware/SwagPayPal#554)
+- Behebt ein Problem, bei dem alle Plugin-Update-Schritte erneut ausgeführt wurden und Einstellungen zurücksetzten, wenn die installierte Plugin-Version eine nicht vergleichbare Composer-Branch-Version war. Ausgeführte Update-Schritte werden jetzt in der Systemkonfiguration nachgehalten und genau einmal ausgeführt
 
 # 10.8.2
 - Behebt ein Problem, bei dem PayPal-Bestellungen nicht abgeschlossen werden konnten, wenn die `updated_at`-Spalte der PayPal-Bestelltransaktionstabelle keine NULL-Werte zuließ
