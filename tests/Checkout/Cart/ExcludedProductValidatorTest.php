@@ -13,9 +13,11 @@ use Shopware\Core\Content\Product\DataAbstractionLayer\ProductStreamUpdater;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\PartialEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Stub\Framework\IdsCollection;
 use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
@@ -148,6 +150,8 @@ class ExcludedProductValidatorTest extends TestCase
     #[DataProvider('dataProviderConstellations')]
     public function testExcludedProductTaggedInSearchResults(?string $settingKey, ?string $settingIdName, ?string $expectedIdName): void
     {
+        $this->enableExpressCheckoutForListings();
+
         if ($settingKey && $settingIdName) {
             $this->systemConfig->set($settingKey, [$this->idsCollection->get($settingIdName)]);
         }
@@ -160,9 +164,10 @@ class ExcludedProductValidatorTest extends TestCase
         static::assertInstanceOf(SalesChannelProductCollection::class, $products);
         static::assertNotEmpty($products);
 
+        // the searched variant is excluded, whenever it is excluded itself or through its parent
         foreach ($products as $product) {
             static::assertSame(
-                $product->getId() === $expectedIdName,
+                $expectedIdName !== null,
                 $product->hasExtension(ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL)
             );
         }
@@ -174,6 +179,8 @@ class ExcludedProductValidatorTest extends TestCase
     #[DataProvider('dataProviderConstellations')]
     public function testExcludedProductTaggedInSearchResultsWithListingDisabled(?string $settingKey, ?string $settingIdName, ?string $_expectedIdName): void
     {
+        $this->enableExpressCheckoutForListings();
+
         if ($settingKey && $settingIdName) {
             $this->systemConfig->set($settingKey, [$this->idsCollection->get($settingIdName)]);
         }
@@ -189,6 +196,44 @@ class ExcludedProductValidatorTest extends TestCase
         foreach ($products as $product) {
             static::assertFalse($product->hasExtension(ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL));
         }
+    }
+
+    /**
+     * this test is related to the ExpressCheckoutSubscriber
+     */
+    public function testExcludedProductTaggedInPartialSearchResults(): void
+    {
+        $this->enableExpressCheckoutForListings();
+        $this->systemConfig->set(Settings::EXCLUDED_PRODUCT_IDS, [$this->idsCollection->get('parent')]);
+
+        $variant = $this->searchPartialVariant(['parentId'], $this->registerUser());
+
+        static::assertTrue($variant->hasExtension(ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL));
+    }
+
+    /**
+     * this test is related to the ExpressCheckoutSubscriber
+     */
+    public function testExcludedProductTaggedInPartialSearchResultsWithoutParentId(): void
+    {
+        $this->enableExpressCheckoutForListings();
+        $context = $this->registerUser();
+
+        // the field selection of Shopware\Core\Content\Product\SalesChannel\PurchaseLimit\ProductPurchaseLimitRoute
+        $fields = ['minPurchase', 'maxPurchase', 'purchaseSteps', 'isCloseout', 'stock'];
+
+        // without the parentId, an exclusion through the parent product cannot be detected anymore
+        $this->systemConfig->set(Settings::EXCLUDED_PRODUCT_IDS, [$this->idsCollection->get('parent')]);
+        $variant = $this->searchPartialVariant($fields, $context);
+
+        static::assertFalse($variant->has('parentId'));
+        static::assertFalse($variant->hasExtension(ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL));
+
+        // the product's own id is always loaded, as it is the primary key
+        $this->systemConfig->set(Settings::EXCLUDED_PRODUCT_IDS, [$this->idsCollection->get('variant')]);
+        $variant = $this->searchPartialVariant($fields, $context);
+
+        static::assertTrue($variant->hasExtension(ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL));
     }
 
     public static function dataProviderConstellations(): array
@@ -220,5 +265,49 @@ class ExcludedProductValidatorTest extends TestCase
                 'parent',
             ],
         ];
+    }
+
+    /**
+     * The ExpressCheckoutSubscriber only tags excluded products in search results, if the express
+     * checkout is actually shown on listing pages.
+     */
+    private function enableExpressCheckoutForListings(): void
+    {
+        $this->systemConfig->set(Settings::CLIENT_ID, 'someClientId');
+        $this->systemConfig->set(Settings::CLIENT_SECRET, 'someClientSecret');
+        $this->systemConfig->set(Settings::ECS_LISTING_ENABLED, true);
+
+        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
+        $paymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
+        static::assertNotNull($paymentMethodId);
+
+        $this->getContainer()->get('payment_method.repository')->update([[
+            'id' => $paymentMethodId,
+            'active' => true,
+        ]], Context::createDefaultContext());
+        $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
+
+        $paymentMethodUtil->reset();
+    }
+
+    /**
+     * Criteria::addFields() makes the DAL hydrate PartialEntity instances, which only carry the
+     * requested fields and have no typed getters.
+     *
+     * @param list<string> $fields
+     */
+    private function searchPartialVariant(array $fields, SalesChannelContext $context): PartialEntity
+    {
+        $criteria = new Criteria([$this->idsCollection->get('variant')]);
+        $criteria->addFields($fields);
+
+        $variant = $this->getContainer()->get('sales_channel.product.repository')
+            ->search($criteria, $context)
+            ->getEntities()
+            ->get($this->idsCollection->get('variant'));
+
+        static::assertInstanceOf(PartialEntity::class, $variant);
+
+        return $variant;
     }
 }
