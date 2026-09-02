@@ -24,6 +24,9 @@ parameters:
         constantHassers: false
 
     ignoreErrors:
+        - # ignore own deprecations
+          message: '#.*tag:v11.0.0 -.*#'
+
         # We won't type all arrays/iterables for now
         - '#no value type specified in iterable type#'
 

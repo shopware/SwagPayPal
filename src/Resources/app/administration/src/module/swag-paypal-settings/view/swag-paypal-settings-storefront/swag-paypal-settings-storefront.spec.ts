@@ -55,6 +55,7 @@ describe('swag-paypal-settings-storefront', () => {
             .filter((cl) => cl.startsWith('swag-paypal'));
 
         expect(cardClasses).toEqual([
+            'swag-paypal-settings-sdk',
             'swag-paypal-settings-express',
             'swag-paypal-settings-installment',
             'swag-paypal-settings-spb',
@@ -68,6 +69,7 @@ describe('swag-paypal-settings-storefront', () => {
         const settings = components.map((el) => el.props().path);
 
         expect(settings).toEqual([
+            'SwagPayPal.settings.sdkV6Enabled',
             'SwagPayPal.settings.ecsDetailEnabled',
             'SwagPayPal.settings.ecsCartEnabled',
             'SwagPayPal.settings.ecsOffCanvasEnabled',

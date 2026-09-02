@@ -68,6 +68,7 @@ final class Settings
     public const VAULTING_ENABLED_VENMO = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabledVenmo';
     public const AGENTIC_COMMERCE_ONBOARDED = self::SYSTEM_CONFIG_DOMAIN . 'agenticCommerceOnboarded';
     public const IS_LOCAL_ENVIRONMENT = self::SYSTEM_CONFIG_DOMAIN . 'isLocalEnvironment';
+    public const SDK_V6_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'sdkV6Enabled';
 
     /**
      * @internal these may change at any time
@@ -111,6 +112,7 @@ final class Settings
         self::CROSS_BORDER_MESSAGING_ENABLED => false,
         self::CROSS_BORDER_BUYER_COUNTRY => null,
         self::IS_LOCAL_ENVIRONMENT => false,
+        self::SDK_V6_ENABLED => true,
     ];
 
     public const LIVE_CREDENTIAL_KEYS = [

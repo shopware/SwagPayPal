@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout;
 
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -709,6 +710,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
         if ($quickViewLoader === null) {
             static::markTestSkipped('SwagCmsExtensions plugin is not installed');
         }
+
+        $this->getContainer()->get('paypal-sdk.client')->addResponse(new Response(200, [], \json_encode(['access_token' => 'ACCESS-TOKEN', 'token_type' => 'Bearer', 'expires_in' => 36000])));
 
         /** @var QuickviewPagelet $pagelet */
         $pagelet = $quickViewLoader->load($request, $salesChannelContext);

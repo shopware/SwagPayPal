@@ -20,6 +20,11 @@ class FundingEligibilityData extends AbstractScriptData
     protected string $methodEligibilityUrl;
 
     /**
+     * @deprecated tag:v11.0.0 - Will be removed, SEPA eligibility will be checked via SDK v6
+     */
+    protected bool $sepaActive = false;
+
+    /**
      * @return string[]
      */
     public function getFilteredPaymentMethods(): array
@@ -43,5 +48,21 @@ class FundingEligibilityData extends AbstractScriptData
     public function setMethodEligibilityUrl(string $methodEligibilityUrl): void
     {
         $this->methodEligibilityUrl = $methodEligibilityUrl;
+    }
+
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed, SEPA eligibility will be checked via SDK v6
+     */
+    public function isSepaActive(): bool
+    {
+        return $this->sepaActive;
+    }
+
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed, SEPA eligibility will be checked via SDK v6
+     */
+    public function setSepaActive(bool $sepaActive): void
+    {
+        $this->sepaActive = $sepaActive;
     }
 }

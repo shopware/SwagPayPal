@@ -36,14 +36,14 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService
     public function __construct(
         private readonly CartService $cartService,
         LocaleCodeProvider $localeCodeProvider,
-        private readonly RouterInterface $router,
+        RouterInterface $router,
         private readonly PaymentMethodUtil $paymentMethodUtil,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
         private readonly CartPriceService $cartPriceService,
         private readonly PayLaterMethodData $payLaterMethodData,
     ) {
-        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
+        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $router);
     }
 
     public function buildExpressCheckoutButtonData(

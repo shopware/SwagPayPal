@@ -13,6 +13,19 @@ use Shopware\Core\Framework\Struct\Struct;
 #[Package('checkout')]
 class AbstractScriptData extends Struct
 {
+    public const PAGE_TYPE_CART = 'cart';
+    public const PAGE_TYPE_CHECKOUT = 'checkout';
+    public const PAGE_TYPE_HOME = 'home';
+    public const PAGE_TYPE_MINI_CART = 'mini-cart';
+    public const PAGE_TYPE_PRODUCT_DETAILS = 'product-details';
+    public const PAGE_TYPE_PRODUCT_LISTING = 'product-listing';
+    public const PAGE_TYPE_SEARCH_RESULTS = 'search-results';
+
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed
+     */
+    protected bool $_v6Enabled = false;
+
     protected string $clientId;
 
     protected string $merchantPayerId;
@@ -24,6 +37,22 @@ class AbstractScriptData extends Struct
     protected string $currency;
 
     protected string $intent;
+
+    protected ?string $clientToken = null;
+
+    protected string $clientTokenUrl;
+
+    protected string $environment;
+
+    protected ?string $pageType = null;
+
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed
+     */
+    public function isV6Enabled(): bool
+    {
+        return $this->_v6Enabled;
+    }
 
     public function getClientId(): string
     {
@@ -83,5 +112,45 @@ class AbstractScriptData extends Struct
     public function setIntent(string $intent): void
     {
         $this->intent = $intent;
+    }
+
+    public function getClientToken(): ?string
+    {
+        return $this->clientToken;
+    }
+
+    public function setClientToken(?string $clientToken): void
+    {
+        $this->clientToken = $clientToken;
+    }
+
+    public function getClientTokenUrl(): string
+    {
+        return $this->clientTokenUrl;
+    }
+
+    public function setClientTokenUrl(string $clientTokenUrl): void
+    {
+        $this->clientTokenUrl = $clientTokenUrl;
+    }
+
+    public function getEnvironment(): string
+    {
+        return $this->environment;
+    }
+
+    public function setEnvironment(string $environment): void
+    {
+        $this->environment = $environment;
+    }
+
+    public function getPageType(): ?string
+    {
+        return $this->pageType;
+    }
+
+    public function setPageType(?string $pageType): void
+    {
+        $this->pageType = $pageType;
     }
 }

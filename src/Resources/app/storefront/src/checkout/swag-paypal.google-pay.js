@@ -14,6 +14,9 @@ const GOOGLE_PAY_LOCALE_ALIASES = {
     nn: 'no',
 };
 
+/**
+ * @deprecated tag:v11.0.0 - Will be removed and is replaced by `payment/swag-paypal.checkout.google-pay.ts`
+ */
 export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
     static options = {
         ...super.options,
@@ -122,7 +125,7 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
         }
 
         if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status) {
-            await paypal.Googlepay().initiatePayerAction({orderId});
+            await paypal.Googlepay().initiatePayerAction({ orderId });
         }
 
         this.onApprove({ orderId });

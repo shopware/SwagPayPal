@@ -8,29 +8,51 @@
 namespace Swag\PayPal\Installment\Banner;
 
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 
 #[Package('checkout')]
-class BannerData extends Struct
+class BannerData extends AbstractScriptData
 {
-    protected string $clientId;
+    public const TEXT_COLOR_BLACK = 'BLACK';
+    public const TEXT_COLOR_WHITE = 'WHITE';
+    public const TEXT_COLOR_MONOCHROME = 'MONOCHROME';
+
+    public const LOGO_POSITION_INLINE = 'INLINE';
+    public const LOGO_POSITION_LEFT = 'LEFT';
+    public const LOGO_POSITION_RIGHT = 'RIGHT';
+    public const LOGO_POSITION_TOP = 'TOP';
+
+    public const LOGO_TYPE_TEXT = 'TEXT';
+    public const LOGO_TYPE_MONOGRAM = 'MONOGRAM';
+    public const LOGO_TYPE_WORDMARK = 'WORDMARK';
 
     protected float $amount;
 
-    protected string $currency;
-
-    protected string $partnerAttributionId;
-
-    protected string $merchantPayerId;
-
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::logoType}
+     */
     protected string $layout = 'text';
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::textColor}
+     */
     protected string $color = 'blue';
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed without replacement
+     */
     protected string $ratio = '8x1';
 
+    /**
+     * @deprecated tag:v11.0.0 - Will default to `self::LOGO_TYPE_WORDMARK`
+     */
     protected string $logoType = 'primary';
 
+    protected string $logoPosition = self::LOGO_POSITION_LEFT;
+
+    /**
+     * @deprecated tag:v11.0.0 - Will default to `self::TEXT_COLOR_BLACK`
+     */
     protected string $textColor = 'black';
 
     protected int $textSize = 12;
@@ -59,56 +81,30 @@ class BannerData extends Struct
         $this->paymentMethodId = $paymentMethodId;
     }
 
-    public function getMerchantPayerId(): string
-    {
-        return $this->merchantPayerId;
-    }
-
-    public function setMerchantPayerId(string $merchantPayerId): void
-    {
-        $this->merchantPayerId = $merchantPayerId;
-    }
-
-    public function getPartnerAttributionId(): string
-    {
-        return $this->partnerAttributionId;
-    }
-
-    public function setPartnerAttributionId(string $partnerAttributionId): void
-    {
-        $this->partnerAttributionId = $partnerAttributionId;
-    }
-
-    public function getClientId(): string
-    {
-        return $this->clientId;
-    }
-
-    public function setClientId(string $clientId): void
-    {
-        $this->clientId = $clientId;
-    }
-
     public function getAmount(): float
     {
         return $this->amount;
     }
 
-    public function getCurrency(): string
-    {
-        return $this->currency;
-    }
-
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::logoType}
+     */
     public function getLayout(): string
     {
         return $this->layout;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::textColor}
+     */
     public function getColor(): string
     {
         return $this->color;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed without replacement
+     */
     public function getRatio(): string
     {
         return $this->ratio;
@@ -116,12 +112,30 @@ class BannerData extends Struct
 
     public function getLogoType(): string
     {
-        return $this->logoType;
+        /** @deprecated tag:v11.0.0 - Will be removed */
+        if (!$this->isV6Enabled()) {
+            return $this->logoType;
+        }
+
+        return match ($this->logoType) {
+            'primary', 'inline' => self::LOGO_TYPE_WORDMARK,
+            'alternative' => self::LOGO_TYPE_MONOGRAM,
+            'none' => self::LOGO_TYPE_TEXT,
+            default => $this->logoType,
+        };
     }
 
     public function getTextColor(): string
     {
-        return $this->textColor;
+        /** @deprecated tag:v11.0.0 - Will be removed */
+        if (!$this->isV6Enabled()) {
+            return $this->textColor;
+        }
+
+        return match ($this->textColor) {
+            'grayscale' => self::TEXT_COLOR_MONOCHROME,
+            default => $this->textColor,
+        };
     }
 
     public function getTextSize(): int
@@ -164,21 +178,25 @@ class BannerData extends Struct
         $this->amount = $amount;
     }
 
-    public function setCurrency(string $currency): void
-    {
-        $this->currency = $currency;
-    }
-
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::logoType}
+     */
     public function setLayout(string $layout): void
     {
         $this->layout = $layout;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::textColor}
+     */
     public function setColor(string $color): void
     {
         $this->color = $color;
     }
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed without replacement
+     */
     public function setRatio(string $ratio): void
     {
         $this->ratio = $ratio;
@@ -227,5 +245,29 @@ class BannerData extends Struct
     public function setCrossBorderBuyerCountry(?string $crossBorderBuyerCountry): void
     {
         $this->crossBorderBuyerCountry = $crossBorderBuyerCountry;
+    }
+
+    public function getLogoPosition(): string
+    {
+        return match ($this->logoType) {
+            self::LOGO_TYPE_MONOGRAM, 'alternative', 'primary' => self::LOGO_POSITION_LEFT,
+            self::LOGO_TYPE_TEXT, 'inline', 'none' => self::LOGO_POSITION_INLINE,
+            default => $this->logoPosition,
+        };
+    }
+
+    public function setLogoPosition(string $logoPosition): void
+    {
+        $this->logoPosition = $logoPosition;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            ...parent::jsonSerialize(),
+            'logoPosition' => $this->getLogoPosition(),
+            'logoType' => $this->getLogoType(),
+            'textColor' => $this->getTextColor(),
+        ];
     }
 }

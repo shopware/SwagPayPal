@@ -57,6 +57,7 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @internal
@@ -351,7 +352,7 @@ class InstallmentBannerSubscriberTest extends TestCase
         static::assertSame('text', $bannerData->getLayout());
         static::assertSame('blue', $bannerData->getColor());
         static::assertSame('8x1', $bannerData->getRatio());
-        static::assertSame('primary', $bannerData->getLogoType());
+        static::assertSame(BannerData::LOGO_TYPE_WORDMARK, $bannerData->getLogoType());
         static::assertSame('monochrome', $bannerData->getTextColor());
         static::assertSame(12, $bannerData->getTextSize());
         static::assertTrue($bannerData->getFooterEnabled());
@@ -372,6 +373,7 @@ class InstallmentBannerSubscriberTest extends TestCase
                 $this->localeCodeProvider,
                 $settings,
                 new CredentialsUtil($settings),
+                $this->createMock(RouterInterface::class),
                 $this->paymentMethodUtil,
                 $this->languageRepository
             ),

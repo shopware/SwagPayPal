@@ -24,9 +24,12 @@
 
                 {% if (isProductDetail and expressSettings.productDetailEnabled) or (not isProductDetail and expressSettings.listingEnabled) %}
                     <div class="row g-2 mt-0 justify-content-end">
-                        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {
-                            button_class: showQuantitySelect ? 'col-8' : 'col-12'
-                        } %}
+                        {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
+                        {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+                            {% sw_include '@SwagPayPal/storefront/paypal/express-button.html.twig' with { classes: showQuantitySelect ? 'col-8' : 'col-12' } %}
+                        {% else %}
+                            {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with { button_class: showQuantitySelect ? 'col-8' : 'col-12' } %}
+                        {% endif %}
                     </div>
                 {% endif %}
             {% endblock %}

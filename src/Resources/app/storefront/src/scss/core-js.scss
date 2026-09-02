@@ -1,0 +1,64 @@
+// Button container
+.swag-paypal-express-buttons,
+.swag-paypal-checkout-buttons {
+    display: grid;
+    gap: 0.5rem;
+}
+
+// Payment button styles
+.swag-paypal-button {
+    width: 100%;
+    height: calc(#{$btn-line-height} + #{$btn-padding-y * 2} + #{$btn-border-width} * 2);
+
+    &.shape-sharp {
+        --paypal-button-border-radius: 0px;
+        --venmo-button-border-radius: 0px;
+        --google-pay-button-border-radius: 0;
+        --apple-pay-button-border-radius: 0;
+    }
+
+    &.shape-pill {
+        --paypal-button-border-radius: 500px;
+        --venmo-button-border-radius: 500px;
+        --google-pay-button-border-radius: 500;
+        --apple-pay-button-border-radius: 500px;
+    }
+
+    &.shape-rect {
+        --paypal-button-border-radius: 4px;
+        --venmo-button-border-radius: 4px;
+        --google-pay-button-border-radius: 4;
+        --apple-pay-button-border-radius: 4px;
+    }
+}
+
+.swag-paypal-installment-banner {
+    paypal-message {
+        --paypal-message-font-size: 12px;
+    }
+
+    &:has(paypal-message[hidden]) {
+        display: none;
+    }
+}
+
+.swag-paypal-card-field {
+    height: $input-height;
+
+    --paypal-card-field-font-family: var(--bs-body-font-family);
+    --paypal-card-field-font-size: var(--bs-body-font-size);
+    --paypal-card-field-line-height: var(--bs-body-line-height);
+
+    --paypal-card-field-padding: $input-padding-y $input-padding-x;
+    --paypal-card-field-border: var(--bs-border-width) solid var(--bs-border-color);
+    --paypal-card-field-border-radius: var(--bs-border-radius);
+    --paypal-card-field-color: #{$input-color};
+    --paypal-card-field-color-placeholder: #{$input-placeholder-color};
+
+    --paypal-card-field-invalid-color: var(--bs-form-invalid-color);
+    /* prettier-ignore */
+    --paypal-card-field-invalid-border: var(--bs-border-width) solid var(--bs-form-invalid-border-color);
+
+    /* prettier-ignore */
+    --paypal-card-field-focus-box-shadow: 0 0 0 calc(var(--bs-focus-ring-width) / 2) var(--bs-body-bg), 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+}

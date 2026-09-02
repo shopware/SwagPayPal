@@ -63,7 +63,7 @@ class ApplePayCheckoutDataServiceTest extends TestCase
             $this->createMock(LocaleCodeProvider::class),
             $this->createMock(RouterInterface::class),
             $this->systemConfigService,
-            $this->createMock(CredentialsUtilInterface::class)
+            $this->createMock(CredentialsUtilInterface::class),
         );
     }
 

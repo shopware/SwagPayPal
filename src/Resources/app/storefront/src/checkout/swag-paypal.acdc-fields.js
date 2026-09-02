@@ -2,6 +2,9 @@ import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import SwagPaypalAbstractStandalone from './swag-paypal.abstract-standalone';
 
+/**
+ * @deprecated tag:v11.0.0 - Will be removed and is replaced by `payment/swag-paypal.checkout.acdc.ts`
+ */
 export default class SwagPaypalAcdcFields extends SwagPaypalAbstractStandalone {
     static options = {
         ...super.options,
