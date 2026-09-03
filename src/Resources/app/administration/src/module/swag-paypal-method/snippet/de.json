@@ -21,6 +21,11 @@
       "title": "Bitte vergewissere dich, dass die Domain korrekt eingestellt ist, damit Apple Pay funktioniert. Die Domain-Zuordnungsdatei ist bereits hinterlegt.",
       "link": "Domain-Einstellungen öffnen"
     },
+    "partnerOffer": {
+      "title": "Partnerangebot - PayPal Businesskredit: Einfacher Kredit fürs Geschäft",
+      "disclaimer": "(Vorbehaltlich Kreditbewilligung*)",
+      "link": "Mehr erfahren"
+    },
     "paymentMethodText": "Zahlungsmöglichkeiten",
     "appImageAlt": "PayPal",
     "ratePayLabel": "von Ratepay",

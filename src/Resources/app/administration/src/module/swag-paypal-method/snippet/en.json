@@ -21,6 +21,11 @@
       "title": "Please make sure your domain is set correctly for Apple Pay to work properly. The domain association file is already present.",
       "link": "Open domains settings"
     },
+    "partnerOffer": {
+      "title": "Partnerangebot - PayPal Businesskredit: Einfacher Kredit fürs Geschäft",
+      "disclaimer": "(Vorbehaltlich Kreditbewilligung*)",
+      "link": "Mehr erfahren"
+    },
     "paymentMethodText": "Payment methods",
     "appImageAlt": "PayPal",
     "ratePayLabel": "by Ratepay",
