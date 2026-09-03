@@ -1,0 +1,2 @@
+import{a as t}from"./swag-pay-pal-M1GaxMne.js";const o='{% block sw_sales_channel_detail_content_tabs %} <template v-if="!isAgenticCommerceType"> {% parent %} </template> {% endblock %}',s=Shopware.Component.wrapComponentConfig({template:o,computed:{isAgenticCommerceType(){var e;return((e=this.salesChannel)==null?void 0:e.typeId)===t},isProductComparison(){return this.isAgenticCommerceType||this.$super("isProductComparison")}}});export{s as default};
+//# sourceMappingURL=index-DluDWCSy.js.map
