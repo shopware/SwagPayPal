@@ -3,6 +3,7 @@ import { ui } from '@shopware-ag/meteor-admin-sdk';
 Shopware.Component.register('swag-paypal-method-domain-association', () => import('./component/swag-paypal-method-domain-association'));
 Shopware.Component.register('swag-paypal-method-merchant-information', () => import('./component/swag-paypal-method-merchant-information'));
 Shopware.Component.register('swag-paypal-payment-method', () => import('./component/swag-paypal-payment-method'));
+Shopware.Component.register('swag-paypal-method-partner-offer', () => import('./component/swag-paypal-method-partner-offer'));
 
 Shopware.Component.register('swag-paypal-method-card', () => import('./view/swag-paypal-method-card'));
 

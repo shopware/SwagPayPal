@@ -1,0 +1,24 @@
+<mt-banner
+    v-if="show"
+    class="swag-paypal-method-partner-offer"
+    variant="info"
+    :title="$t('swag-paypal-method.partnerOffer.title')"
+    :hide-icon="true"
+    :closable="true"
+    @close="onCloseBanner"
+>
+    <p class="swag-paypal-method-partner-offer__disclaimer">
+        {{ $t('swag-paypal-method.partnerOffer.disclaimer') }}
+    </p>
+
+    <mt-link
+        class="swag-paypal-method-partner-offer__link"
+        type="external"
+        as="a"
+        target="_blank"
+        rel="noopener noreferrer"
+        :href="offerLink"
+    >
+        {{ $t('swag-paypal-method.partnerOffer.link') }}
+    </mt-link>
+</mt-banner>
