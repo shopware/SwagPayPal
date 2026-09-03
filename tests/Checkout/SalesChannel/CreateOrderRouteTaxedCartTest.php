@@ -18,10 +18,10 @@ use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemRemoveRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemUpdateRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartLoadRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute;
-use Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartResponse;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Checkout\Cart\TaxProvider\TaxProviderProcessor;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\SalesChannel\AbstractSetPaymentOrderRoute;
 use Shopware\Core\Checkout\Payment\Cart\AbstractPaymentTransactionStructFactory;
@@ -61,12 +61,6 @@ class CreateOrderRouteTaxedCartTest extends TestCase
 
         $cart = new Cart('create-order-token');
 
-        $taxProviderProcessor = $this->createMock(TaxProviderProcessor::class);
-        $taxProviderProcessor
-            ->expects($this->once())
-            ->method('process')
-            ->with($cart, $salesChannelContext);
-
         $exception = new \RuntimeException('stop after taxed cart load');
 
         $payPalOrderBuilder = $this->createMock(PayPalOrderBuilder::class);
@@ -85,7 +79,7 @@ class CreateOrderRouteTaxedCartTest extends TestCase
             ->willThrowException($exception);
 
         $route = new CreateOrderRoute(
-            $this->createTaxedCartService($cart, $salesChannelContext, $taxProviderProcessor),
+            $this->createTaxedCartService($cart, $salesChannelContext),
             $this->createMock(EntityRepository::class),
             $payPalOrderBuilder,
             $this->createMock(ACDCOrderBuilder::class),
@@ -108,32 +102,27 @@ class CreateOrderRouteTaxedCartTest extends TestCase
     private function createTaxedCartService(
         Cart $cart,
         SalesChannelContext $salesChannelContext,
-        TaxProviderProcessor $taxProviderProcessor,
     ): CartService {
-        $persister = $this->createMock(AbstractCartPersister::class);
-        $persister
+        $cartLoadRoute = $this->createMock(AbstractCartLoadRoute::class);
+        $cartLoadRoute
             ->expects($this->once())
             ->method('load')
-            ->with($cart->getToken(), $salesChannelContext)
-            ->willReturn($cart);
+            ->with(
+                static::callback(static function (Request $request) use ($cart): bool {
+                    static::assertSame($cart->getToken(), $request->query->get('token'));
+                    static::assertTrue($request->query->getBoolean('taxed'));
 
-        $calculator = $this->createMock(CartCalculator::class);
-        $calculator
-            ->expects($this->once())
-            ->method('calculate')
-            ->with($cart, $salesChannelContext)
-            ->willReturn($cart);
+                    return true;
+                }),
+                $salesChannelContext,
+            )
+            ->willReturn(new CartResponse($cart));
 
         return new CartService(
-            $persister,
+            $this->createMock(AbstractCartPersister::class),
             $this->createMock(EventDispatcherInterface::class),
-            $calculator,
-            new CartLoadRoute(
-                $persister,
-                $this->createMock(CartFactory::class),
-                $calculator,
-                $taxProviderProcessor,
-            ),
+            $this->createMock(CartCalculator::class),
+            $cartLoadRoute,
             $this->createMock(AbstractCartDeleteRoute::class),
             $this->createMock(AbstractCartItemAddRoute::class),
             $this->createMock(AbstractCartItemUpdateRoute::class),
