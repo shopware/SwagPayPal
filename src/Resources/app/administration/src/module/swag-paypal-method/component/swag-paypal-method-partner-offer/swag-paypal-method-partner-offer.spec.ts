@@ -90,6 +90,14 @@ describe('swag-paypal-method-partner-offer', () => {
         expect(wrapper.vm.show).toBe(false);
     });
 
+    it('should render the German copy without the snippet system', async () => {
+        const wrapper = await createWrapper();
+
+        expect(wrapper.text()).toContain('Partnerangebot - PayPal Businesskredit: Einfacher Kredit fürs Geschäft');
+        expect(wrapper.text()).toContain('(Vorbehaltlich Kreditbewilligung*)');
+        expect(wrapper.find('a').text()).toBe('Mehr erfahren');
+    });
+
     it('should link to the landing page', async () => {
         const wrapper = await createWrapper();
 

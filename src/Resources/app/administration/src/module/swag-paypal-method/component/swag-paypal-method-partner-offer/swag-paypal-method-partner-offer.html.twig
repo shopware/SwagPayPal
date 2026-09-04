@@ -2,13 +2,13 @@
     v-if="show"
     class="swag-paypal-method-partner-offer"
     variant="info"
-    :title="$t('swag-paypal-method.partnerOffer.title')"
+    :title="germanCopy.title"
     :hide-icon="true"
     :closable="true"
     @close="onCloseBanner"
 >
     <p class="swag-paypal-method-partner-offer__disclaimer">
-        {{ $t('swag-paypal-method.partnerOffer.disclaimer') }}
+        {{ germanCopy.disclaimer }}
     </p>
 
     <mt-link
@@ -19,6 +19,6 @@
         rel="noopener noreferrer"
         :href="offerLink"
     >
-        {{ $t('swag-paypal-method.partnerOffer.link') }}
+        {{ germanCopy.link }}
     </mt-link>
 </mt-banner>
