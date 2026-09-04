@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\RestApi\Client;
 
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Symfony\Component\HttpClient\Psr18Client;
 
 #[Package('checkout')]
@@ -33,9 +35,27 @@ class Client implements ClientInterface
     ) {
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
-        $response = $this->client->sendRequest($request);
+        try {
+            $response = $this->client->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
+            $this->logger->error(
+                'PayPal network error: {message}',
+                [
+                    'message' => $e->getMessage(),
+                    'method' => \mb_strtoupper($request->getMethod()),
+                    'target' => (string) $request->getUri(),
+                    'requestId' => $request->getHeaderLine('paypal-request-id') ?: null,
+                    'error' => $e,
+                ],
+            );
+
+            throw PayPalApiException::fromClientException($e);
+        }
 
         if ($response->getStatusCode() >= 400) {
             $this->logger->error(
