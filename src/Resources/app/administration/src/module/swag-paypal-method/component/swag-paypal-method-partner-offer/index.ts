@@ -14,6 +14,16 @@ const OFFER_END = new Date(2027, 0, 1).getTime();
  */
 const OFFER_LANGUAGE = 'de';
 
+/**
+ * German-only copy on purpose: the banner is gated to German merchants,
+ * so the texts stay out of the snippet files and their translation workflow.
+ */
+const UNTRANSLATED_GERMAN_COPY = {
+    title: 'Partnerangebot - PayPal Businesskredit: Einfacher Kredit fürs Geschäft',
+    disclaimer: '(Vorbehaltlich Kreditbewilligung*)',
+    link: 'Mehr erfahren',
+};
+
 export default Shopware.Component.wrapComponentConfig({
     template,
 
@@ -26,6 +36,10 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     computed: {
+        germanCopy(): typeof UNTRANSLATED_GERMAN_COPY {
+            return UNTRANSLATED_GERMAN_COPY;
+        },
+
         offerLink(): string {
             return 'https://www.shopware.com/de/paypal-businesskredit';
         },
