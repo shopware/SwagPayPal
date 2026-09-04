@@ -58,6 +58,8 @@ class Update
 {
     use PosSalesChannelTrait;
 
+    public const EXECUTED_UPDATE_STEPS_CONFIG_KEY = Settings::SYSTEM_CONFIG_DOMAIN . 'executedUpdateSteps';
+
     public function __construct(
         private readonly SystemConfigService $systemConfig,
         private readonly EntityRepository $paymentRepository,
@@ -76,93 +78,76 @@ class Update
 
     public function update(UpdateContext $updateContext): void
     {
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.3.0', '<')) {
-            $this->updateTo130();
+        $currentVersion = $updateContext->getCurrentPluginVersion();
+
+        // Non-semver versions (e.g. composer branch versions like "dev-some-branch") cannot be compared to the
+        // step versions, so the true baseline is unknown: no steps are run, since re-running a destructive step
+        // is not recoverable, and deliberately none are recorded as executed either, so pending steps still run
+        // once the version has been corrected to a comparable one.
+        if (\preg_match('/^\d+\.\d+/', $currentVersion) !== 1) {
+            return;
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.7.0', '<')) {
-            $this->updateTo170();
+        $executedSteps = $this->getExecutedUpdateSteps();
+
+        foreach ($this->getUpdateSteps($updateContext->getContext()) as $version => $step) {
+            if (\in_array($version, $executedSteps, true)) {
+                continue;
+            }
+
+            if (\version_compare($currentVersion, $version, '<')) {
+                $step();
+            }
+
+            $executedSteps[] = $version;
+            // persist after every step, so an interrupted update does not re-run already executed steps
+            $this->systemConfig->set(self::EXECUTED_UPDATE_STEPS_CONFIG_KEY, $executedSteps);
+        }
+    }
+
+    /**
+     * @return array<string, callable(): void>
+     */
+    private function getUpdateSteps(Context $context): array
+    {
+        return [
+            '1.3.0' => fn () => $this->updateTo130(),
+            '1.7.0' => fn () => $this->updateTo170(),
+            '1.7.2' => fn () => $this->updateTo172($context),
+            '2.0.0' => fn () => $this->updateTo200($context),
+            '3.0.0' => fn () => $this->updateTo300($context),
+            '5.0.0' => fn () => $this->updateTo500($context),
+            '5.3.0' => fn () => $this->updateTo530($context),
+            '5.3.1' => fn () => $this->updateTo531($context),
+            '5.4.0' => fn () => $this->updateTo540($context),
+            '5.4.6' => fn () => $this->updateTo546($context),
+            '6.0.0' => fn () => $this->updateTo600($context),
+            '6.2.0' => fn () => $this->updateTo620(),
+            '7.3.0' => fn () => $this->updateTo730(),
+            '9.0.0' => fn () => $this->updateTo900($context),
+            '9.0.2' => fn () => $this->updateTo902($context),
+            '9.1.0' => fn () => $this->updateTo910($context),
+            '9.2.0' => fn () => $this->updateTo920($context),
+            '9.3.1' => fn () => $this->updateTo931($context),
+            '9.6.1' => fn () => $this->updateTo961($context),
+            '10.4.0' => fn () => $this->updateTo1040($context),
+            '10.6.0' => fn () => $this->updateTo1060(),
+            '10.7.0' => fn () => $this->updateTo1070(),
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getExecutedUpdateSteps(): array
+    {
+        $executedSteps = $this->systemConfig->get(self::EXECUTED_UPDATE_STEPS_CONFIG_KEY);
+
+        if (!\is_array($executedSteps)) {
+            return [];
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.7.2', '<')) {
-            $this->updateTo172($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '2.0.0', '<')) {
-            $this->updateTo200($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '3.0.0', '<')) {
-            $this->updateTo300($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.0.0', '<')) {
-            $this->updateTo500($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.3.0', '<')) {
-            $this->updateTo530($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.3.1', '<')) {
-            $this->updateTo531($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.4.0', '<')) {
-            $this->updateTo540($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.4.6', '<')) {
-            $this->updateTo546($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '6.0.0', '<')) {
-            $this->updateTo600($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '6.2.0', '<')) {
-            $this->updateTo620();
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '7.3.0', '<')) {
-            $this->updateTo730();
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.0.0', '<')) {
-            $this->updateTo900($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.0.2', '<')) {
-            $this->updateTo902($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.1.0', '<')) {
-            $this->updateTo910($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.2.0', '<')) {
-            $this->updateTo920($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.3.1', '<')) {
-            $this->updateTo931($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '9.6.1', '<')) {
-            $this->updateTo961($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.4.0', '<')) {
-            $this->updateTo1040($updateContext->getContext());
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.6.0', '<')) {
-            $this->updateTo1060();
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.7.0', '<')) {
-            $this->updateTo1070();
-        }
+        return \array_values(\array_filter($executedSteps, \is_string(...)));
     }
 
     private function updateTo130(): void

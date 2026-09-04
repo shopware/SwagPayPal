@@ -102,6 +102,87 @@ class UpdateTest extends TestCase
         $this->salesChannelRepository = $this->getRepository(SalesChannelDefinition::ENTITY_NAME);
     }
 
+    public function testUpdateWithNonComparableVersionRunsAndRecordsNoSteps(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        // mirrors the state that triggered the incident: a landing page value that is only valid since 9.0.2
+        // together with a composer branch version, which every step's version_compare considers older than anything
+        $systemConfigService->set(Settings::LANDING_PAGE, ExperienceContext::LANDING_PAGE_TYPE_GUEST);
+        $systemConfigService->set(Settings::ACDC_FORCE_3DS, true);
+
+        $updateContext = $this->createUpdateContext('dev-codex/some-branch', '10.8.3');
+        $update = $this->createUpdateService($systemConfigService);
+        $update->update($updateContext);
+
+        static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfigService->get(Settings::LANDING_PAGE));
+        static::assertTrue($systemConfigService->get(Settings::ACDC_FORCE_3DS));
+
+        // nothing is recorded either: the baseline is unknown, so the steps must still be able to run
+        // once the plugin version has been corrected to a comparable one
+        static::assertNull($systemConfigService->get(Update::EXECUTED_UPDATE_STEPS_CONFIG_KEY));
+    }
+
+    public function testUpdateRunsPendingStepsAfterNonComparableVersionWasCorrected(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Settings::ECS_SHIPPING_CALLBACK_ENABLED, false);
+        $update = $this->createUpdateService($systemConfigService);
+
+        $update->update($this->createUpdateContext('dev-codex/some-branch', '10.8.3'));
+        static::assertFalse($systemConfigService->get(Settings::ECS_SHIPPING_CALLBACK_ENABLED));
+
+        // the plugin version got corrected to the version the branch was based on, pending steps now run
+        $update->update($this->createUpdateContext('10.5.0', '10.8.3'));
+        static::assertTrue($systemConfigService->get(Settings::ECS_SHIPPING_CALLBACK_ENABLED));
+    }
+
+    public function testUpdateRunsEachStepOnlyOnce(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $updateContext = $this->createUpdateContext('10.5.0', '10.8.0');
+        $update = $this->createUpdateService($systemConfigService);
+
+        $update->update($updateContext);
+        static::assertTrue($systemConfigService->get(Settings::ECS_SHIPPING_CALLBACK_ENABLED));
+
+        // the merchant changes the setting afterwards, a repeated update must not overwrite it again
+        $systemConfigService->set(Settings::ECS_SHIPPING_CALLBACK_ENABLED, false);
+        $update->update($updateContext);
+        static::assertFalse($systemConfigService->get(Settings::ECS_SHIPPING_CALLBACK_ENABLED));
+    }
+
+    public function testUpdateSeedsExecutedStepsFromCurrentVersion(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $update = $this->createUpdateService($systemConfigService);
+        $update->update($this->createUpdateContext('10.5.0', '10.8.0'));
+
+        $executedSteps = $systemConfigService->get(Update::EXECUTED_UPDATE_STEPS_CONFIG_KEY);
+        static::assertIsArray($executedSteps);
+        // steps below the current version are marked as executed without running
+        static::assertContains('1.3.0', $executedSteps);
+        static::assertContains('10.4.0', $executedSteps);
+        // steps above the current version ran and are marked as executed
+        static::assertContains('10.6.0', $executedSteps);
+        static::assertContains('10.7.0', $executedSteps);
+    }
+
+    public function testUpdateSkipsStepsAlreadyMarkedAsExecuted(): void
+    {
+        $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
+        $systemConfigService->set(Update::EXECUTED_UPDATE_STEPS_CONFIG_KEY, ['10.6.0']);
+        $systemConfigService->set(Settings::ECS_SHIPPING_CALLBACK_ENABLED, false);
+        $systemConfigService->set(Settings::INSTALLMENT_BANNER_TEXT_SIZE, 14);
+
+        $update = $this->createUpdateService($systemConfigService);
+        $update->update($this->createUpdateContext('10.5.0', '10.8.0'));
+
+        // 10.6.0 is marked as executed and must not run again
+        static::assertFalse($systemConfigService->get(Settings::ECS_SHIPPING_CALLBACK_ENABLED));
+        // 10.7.0 is not marked and must still run
+        static::assertSame(12, $systemConfigService->get(Settings::INSTALLMENT_BANNER_TEXT_SIZE));
+    }
+
     public function testUpdateTo130WithNoPreviousSettings(): void
     {
         $systemConfigService = SystemConfigServiceMock::createWithoutCredentials();

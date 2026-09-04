@@ -1,5 +1,6 @@
 # 10.8.3
 - Fixes an issue, where product searches that load only a subset of fields, like the storefront quantity selector's purchase limit request, failed with an error, if the Express Checkout button was enabled for product listings (shopware/SwagPayPal#554)
+- Fixes an issue, where all plugin update steps ran again and reset settings, when the installed plugin version was a non-comparable composer branch version. Executed update steps are now tracked in the system config and run exactly once
 
 # 10.8.2
 - Fixes an issue, where PayPal orders could not be placed when the `updated_at` column of the PayPal order transaction table was not nullable
