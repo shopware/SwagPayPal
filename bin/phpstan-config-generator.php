@@ -34,7 +34,7 @@ $phpstanConfig = [
     ),
     'parameters' => [
         'symfony' => ['containerXmlPath' => \sprintf('%s/%s%sDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class), \ucfirst($kernel->getEnvironment()))],
-        'reportUnmatchedIgnoredErrors' => true,
+        'reportUnmatchedIgnoredErrors' => !((bool) $_SERVER['CI']),
     ],
 ];
 

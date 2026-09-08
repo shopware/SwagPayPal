@@ -93,7 +93,7 @@ class SystemConfigServiceMock extends SystemConfigService
     /**
      * @param int|float|string|bool|array|object|null $value
      */
-    public function set(string $key, $value, ?string $salesChannelId = null): void
+    public function set(string $key, $value, ?string $salesChannelId = null, bool $silent = true): void
     {
         $salesChannelId = (string) $salesChannelId;
         if (!isset($this->data[$salesChannelId])) {
@@ -102,7 +102,7 @@ class SystemConfigServiceMock extends SystemConfigService
         $this->data[$salesChannelId][$key] = $value;
     }
 
-    public function delete(string $key, ?string $salesChannel = null): void
+    public function delete(string $key, ?string $salesChannel = null, bool $silent = true): void
     {
         $this->set($key, null, $salesChannel);
     }
