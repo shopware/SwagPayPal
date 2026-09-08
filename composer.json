@@ -13,6 +13,9 @@
         "shopware/core": "~6.7.0@dev",
         "shopware/paypal-sdk": "^1.8.0"
     },
+    "require-dev": {
+        "shopwarelabs/phpstan-shopware": "0.2.4"
+    },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
         "copyright": "(c) by shopware AG",

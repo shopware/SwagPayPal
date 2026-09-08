@@ -1,6 +1,7 @@
 includes:
     - phpstan-baseline.neon
     - phpstan.dynamic.neon
+    - ../../../vendor/shopwarelabs/phpstan-shopware/future-compatibility.neon
 
 parameters:
     tmpDir: var/cache/phpstan
