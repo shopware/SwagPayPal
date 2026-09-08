@@ -1,6 +1,7 @@
 includes:
     - phpstan-baseline.neon
     - phpstan.dynamic.neon
+    - ../../../vendor/shopwarelabs/phpstan-shopware/future-compatibility.neon
 
 parameters:
     tmpDir: var/cache/phpstan
@@ -88,53 +89,6 @@ parameters:
             identifier: method.deprecated
             message: '#__construct.*Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition.*#'
 
-        - # 6.8 deprecation
-            identifier: method.deprecated
-            message: '#arameter \$silent will be added in v6\.8\.0.*#'
-
-        - # 6.8 deprecation - only type change
-            identifier: method.deprecated
-            message: '#(setActiveBillingAddress|setActiveShippingAddress).*Shopware\\Core\\Checkout\\Customer\\CustomerEntity.*#'
-
-        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
-            identifier: method.deprecatedClass
-            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
-            path: '**/*.php'
-
-        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
-            identifier: return.deprecatedClass
-            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
-            path: '**/*.php'
-
-        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
-            identifier: new.deprecatedClass
-            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
-            path: '**/*.php'
-
-        - # 6.8 deprecation - EntitySearchResult is still the repository search result type on 6.7
-            identifier: classConstant.deprecatedClass
-            message: '#Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 reason:class-hierarchy-change - Will no longer extend EntityCollection, but will keep extending Struct\.#'
-            path: '**/*.php'
-
-        - # 6.8 deprecation - EntitySearchResult's collection shortcuts (first/get/getElements/reduce/...) move to
-          # getEntities()->...(); it is still the repository search result type on 6.7, so we keep using them.
-            identifier: method.deprecated
-            message: '#Call to deprecated method \w+\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:\s+tag:v6\.8\.0 - Will be removed\. Use getEntities\(\)->#'
-            path: '**/*.php'
-
-        - # 6.8 deprecation - EntitySearchResult constructor signature changes in v6.8; kept for 6.7 compatibility
-            identifier: method.deprecated
-            message: '#Call to deprecated method __construct\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult:#'
-            path: '**/*.php'
-
-        - # 6.8 deprecation - DAL field API will return static natively
-            identifier: method.deprecated
-            message: '#Call to deprecated method (addFlags|removeFlag)\(\) of class Shopware\\Core\\Framework\\DataAbstractionLayer\\Field\\Field\:\s+tag\:v6\.8\.0 - reason\:return-type-change - Will return static natively#'
-            paths:
-                - src/DataAbstractionLayer
-                - src/Pos/DataAbstractionLayer
-                - src/Reporting/DataAbstractionLayer
-
         - # 6.8 deprecation - kept for 6.7.0.0 compatibility
             identifier: property.deprecatedInterface
             message: '#Property \$productStreamBuilder references deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface in its type:#'
@@ -168,14 +122,6 @@ parameters:
             message: '#Parameter \#2 \$extension of method Shopware\\Core\\Framework\\Struct\\Struct::addExtension\(\) expects Shopware\\Core\\Framework\\Struct\\Struct, Shopware\\Core\\Framework\\Struct\\Struct\|null given#'
             paths:
                 - tests/Storefront/Data/FundingSubscriberTest.php
-
-        - # 6.8 deprecation - Parameter order still has to be changed
-            identifier: method.deprecated
-            message: '#Call to deprecated method __construct\(\) of class .*\\PaymentMethodBlockedError#'
-            paths:
-                - src/Checkout/Cart/Validation/CartValidator.php
-                - tests/Checkout/PUI/PUISubscriberTest.php
-                - tests/Storefront/Data/CheckoutSubscriberTest.php
 
         - # 6.8 deprecation - Will be removed
             message: '#Shopware\\Commercial\\Subscription\\Checkout\\Cart\\Recurring\\SubscriptionRecurringDataStruct#'
