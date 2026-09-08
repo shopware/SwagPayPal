@@ -1,8 +1,13 @@
 import SwagPaypalCheckout, { type SwagPaypalCheckoutOptions } from '../base/swag-paypal.checkout';
 import PayPalPluginError from '../base/paypal-plugin.error';
 import '@google-pay/button-element';
-import type GooglePayButton from '@google-pay/button-element';
+import GooglePayButton from '@google-pay/button-element';
 import DependencyHelper from '../helper/dependency.helper';
+
+/**
+ * Twig renders the element before any config exists, and since 4.1.0 the resulting throw strands `connectedCallback`.
+ */
+GooglePayButton.prototype.throwError = () => {};
 
 const GOOGLE_PAY_BUTTON_LOCALES = new Set([
     'en', 'ar', 'bg', 'ca', 'cs', 'da', 'de', 'el', 'es', 'et', 'fi', 'fr', 'hr', 'id', 'it',
@@ -129,8 +134,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             }
 
             if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status) {
-                // @ts-expect-error - not typed correctly
-                // eslint-disable-next-line @typescript-eslint/await-thenable
+                 
                 await session.initiatePayerAction({ orderId });
             }
 

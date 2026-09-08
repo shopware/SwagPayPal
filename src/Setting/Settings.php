@@ -112,7 +112,7 @@ final class Settings
         self::CROSS_BORDER_MESSAGING_ENABLED => false,
         self::CROSS_BORDER_BUYER_COUNTRY => null,
         self::IS_LOCAL_ENVIRONMENT => false,
-        self::SDK_V6_ENABLED => true,
+        self::SDK_V6_ENABLED => false,
     ];
 
     public const LIVE_CREDENTIAL_KEYS = [
