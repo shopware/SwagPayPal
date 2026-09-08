@@ -9,10 +9,20 @@ const HIDDEN_STORAGE_KEY = 'swag-paypal-businesskredit-offer-hidden';
 const OFFER_END = new Date(2027, 0, 1).getTime();
 
 /**
- * Both the banner copy and the landing page behind it are German only,
+ * Both the banner text and the landing page behind it are German only,
  * so the offer is limited to merchants working in a German administration.
  */
 const OFFER_LANGUAGE = 'de';
+
+/**
+ * German-only marketing text on purpose: the banner is gated to German merchants,
+ * so the texts stay out of the snippet files and their translation workflow.
+ */
+const UNTRANSLATED_GERMAN_MARKETING_TEXT = {
+    title: 'Partnerangebot - PayPal Businesskredit: Einfacher Kredit fürs Geschäft',
+    disclaimer: '(Vorbehaltlich Kreditbewilligung*)',
+    link: 'Mehr erfahren',
+};
 
 export default Shopware.Component.wrapComponentConfig({
     template,
@@ -26,6 +36,10 @@ export default Shopware.Component.wrapComponentConfig({
     },
 
     computed: {
+        germanMarketingText(): typeof UNTRANSLATED_GERMAN_MARKETING_TEXT {
+            return UNTRANSLATED_GERMAN_MARKETING_TEXT;
+        },
+
         offerLink(): string {
             return 'https://www.shopware.com/de/paypal-businesskredit';
         },
