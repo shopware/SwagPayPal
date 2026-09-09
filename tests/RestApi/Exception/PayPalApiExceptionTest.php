@@ -9,10 +9,13 @@ namespace Swag\PayPal\Test\RestApi\Exception;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\NetworkExceptionInterface;
+use Psr\Http\Message\RequestInterface;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Exception\RetryAfterApiException;
 use Shopware\PayPalSDK\Struct\Error\DetailCollection;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @internal
@@ -58,5 +61,31 @@ class PayPalApiExceptionTest extends TestCase
 
         static::assertTrue($exception->is('RATE_LIMIT_REACHED'));
         static::assertSame($retryAt, $exception->getRetryAt());
+    }
+
+    public function testFromClientException(): void
+    {
+        $request = $this->createMock(RequestInterface::class);
+
+        $networkException = new class($request) extends \RuntimeException implements NetworkExceptionInterface {
+            public function __construct(private readonly RequestInterface $request)
+            {
+                parent::__construct('Could not resolve host: api-m.paypal.com');
+            }
+
+            public function getRequest(): RequestInterface
+            {
+                return $this->request;
+            }
+        };
+
+        $exception = PayPalApiException::fromClientException($networkException);
+
+        static::assertSame(Response::HTTP_BAD_GATEWAY, $exception->getStatusCode());
+        static::assertTrue($exception->is(PayPalApiException::ISSUE_NETWORK_ERROR));
+        static::assertTrue($exception->is('SERVICE_UNAVAILABLE'));
+        static::assertSame('SWAG_PAYPAL__API_NETWORK_ERROR', $exception->getErrorCode());
+        static::assertStringContainsString('PayPal is currently unreachable', $exception->getMessage());
+        static::assertNull($exception->getRetryAt());
     }
 }

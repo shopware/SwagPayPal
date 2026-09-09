@@ -16,8 +16,13 @@ use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Client\NetworkExceptionInterface;
+use Psr\Http\Message\RequestInterface;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\Client;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 /**
  * @internal
@@ -131,5 +136,54 @@ class ClientTest extends TestCase
             'debugId' => '',
             'requestId' => '1234567',
         ], $logs[0]->context);
+    }
+
+    public function testSendRequestWrapsNetworkException(): void
+    {
+        $request = new Request('GET', 'https://api-m.paypal.com/v2/checkout/orders/ORDER-ID', [
+            'paypal-request-id' => 'req-1',
+        ]);
+
+        $networkException = new class($request) extends \RuntimeException implements NetworkExceptionInterface {
+            public function __construct(private readonly RequestInterface $request)
+            {
+                parent::__construct('Could not resolve host: api-m.paypal.com');
+            }
+
+            public function getRequest(): RequestInterface
+            {
+                return $this->request;
+            }
+        };
+
+        $innerClient = $this->createMock(ClientInterface::class);
+        $innerClient
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->with($request)
+            ->willThrowException($networkException);
+
+        $client = new Client(
+            new Logger('test', [$this->logger]),
+            $innerClient,
+        );
+
+        try {
+            $client->sendRequest($request);
+            static::fail('Expected PayPalApiException to be thrown');
+        } catch (PayPalApiException $exception) {
+            static::assertSame(HttpResponse::HTTP_BAD_GATEWAY, $exception->getStatusCode());
+            static::assertTrue($exception->is(PayPalApiException::ISSUE_NETWORK_ERROR));
+            static::assertTrue($exception->is('SERVICE_UNAVAILABLE'));
+            static::assertSame('SWAG_PAYPAL__API_NETWORK_ERROR', $exception->getErrorCode());
+        }
+
+        $logs = $this->logger->getRecords();
+        static::assertCount(1, $logs);
+        static::assertSame('PayPal network error: {message}', $logs[0]->message);
+        static::assertSame('Could not resolve host: api-m.paypal.com', $logs[0]->context['message']);
+        static::assertSame('GET', $logs[0]->context['method']);
+        static::assertSame('https://api-m.paypal.com/v2/checkout/orders/ORDER-ID', $logs[0]->context['target']);
+        static::assertSame('req-1', $logs[0]->context['requestId']);
     }
 }

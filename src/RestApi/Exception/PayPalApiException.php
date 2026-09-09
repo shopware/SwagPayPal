@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\Exception;
 
+use Psr\Http\Client\ClientExceptionInterface;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Exception\ApiException;
@@ -25,6 +26,7 @@ class PayPalApiException extends PaymentException
     public const ISSUE_DUPLICATE_INVOICE_ID = 'DUPLICATE_INVOICE_ID';
     public const ISSUE_INVALID_PARAMETER_VALUE = 'INVALID_PARAMETER_VALUE';
     public const ISSUE_INVALID_RESOURCE_ID = 'INVALID_RESOURCE_ID';
+    public const ISSUE_NETWORK_ERROR = 'NETWORK_ERROR';
 
     private readonly ?\DateTimeImmutable $retryAt;
 
@@ -96,6 +98,16 @@ class PayPalApiException extends PaymentException
             $e->getStatusCode(),
             $issue,
             $e instanceof RetryAfterApiException ? $e->getRetryAt() : null,
+        );
+    }
+
+    public static function fromClientException(ClientExceptionInterface $e): self
+    {
+        return new self(
+            'SERVICE_UNAVAILABLE',
+            'PayPal is currently unreachable. Please try again later.',
+            Response::HTTP_BAD_GATEWAY,
+            self::ISSUE_NETWORK_ERROR,
         );
     }
 
