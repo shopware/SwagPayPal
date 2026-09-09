@@ -23,16 +23,16 @@
         "eslint": "^9.39.4",
         "eslint-import-resolver-typescript": "^4.4.5",
         "eslint-plugin-import": "^2.32.0",
-        "eslint-plugin-jest": "^29.15.5",
+        "eslint-plugin-jest": "^29.16.0",
         "eslint-plugin-vue": "^10.10.0",
-        "globals": "^17.7.0",
+        "globals": "^17.9.0",
         "jest": "^29.7.0",
         "jest-environment-jsdom": "^29.7.0",
         "openapi-typescript": "^7.13.0",
         "typescript": "~5.9.3",
-        "typescript-eslint": "^8.65.0"
+        "typescript-eslint": "^8.66.0"
     },
     "dependencies": {
-        "@shopware-ag/meteor-admin-sdk": "^6.9.1"
+        "@shopware-ag/meteor-admin-sdk": "^6.12.0"
     }
 }
