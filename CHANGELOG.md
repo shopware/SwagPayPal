@@ -11,6 +11,10 @@
 - Fixes an issue, where PayPal Express Checkout buttons disappeared after using the browser back button from the checkout page (shopware/shopware#18297)
 - Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
 - Fixes an issue, where the extension card context menu showed a raw snippet key instead of "Configure" (shopware/shopware#19028)
+- Fixes an issue, where a PayPal payment failed with an UNPROCESSABLE_ENTITY error when the order was changed on the confirmation page after the customer had already approved it at PayPal, instead of letting them approve the changed amount again (shopware/SwagPayPal#759)
+- Adds `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException`
+- Adds `Swag\PayPal\RestApi\V2\Resource\OrderResource::confirm()`, which confirms the payment source of an existing PayPal order
+- Changes `Swag\PayPal\RestApi\Exception\PayPalApiException` to carry the PayPal SDK exception of the failure as its previous exception
 
 # 10.8.0
 - Fixes an issue, where the PayPal Express Checkout failed without customer feedback when shipping to a country that is not assigned to the sales channel (shopware/shopware#15067)
