@@ -56,6 +56,7 @@ class BannerDataServiceTest extends TestCase
         $this->localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
         $this->systemConfigService = SystemConfigServiceMock::createWithCredentials([
             Settings::CROSS_BORDER_MESSAGING_ENABLED => true,
+            Settings::SDK_V6_ENABLED => true,
         ]);
         $this->paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
         $this->languageRepository = $this->createMock(EntityRepository::class);

@@ -364,7 +364,10 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     private function createInstallmentBannerSubscriber(array $settings = []): InstallmentBannerSubscriber
     {
-        $settings = SystemConfigServiceMock::createWithCredentials($settings);
+        $settings = SystemConfigServiceMock::createWithCredentials([
+            Settings::SDK_V6_ENABLED => true,
+            ...$settings,
+        ]);
 
         return new InstallmentBannerSubscriber(
             new SettingsValidationService($settings, new NullLogger()),
