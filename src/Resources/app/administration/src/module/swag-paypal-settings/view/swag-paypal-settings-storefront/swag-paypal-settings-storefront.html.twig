@@ -1,3 +1,23 @@
+<!-- @deprecated tag:v11.0.0 - SDK card will be removed without replacement -->
+<mt-card
+    class="swag-paypal-settings-sdk"
+    position-identifier="swag-paypal-settings-sdk"
+    :title="$t('swag-paypal-settings.sdk.title')"
+    :is-loading="settingsStore.isLoading"
+>
+    <p class="swag-paypal-settings-sdk__info-text">
+        {{ $t('swag-paypal-settings.sdk.info') }}
+    </p>
+
+    <p class="swag-paypal-settings-sdk__recommendation-text">
+        {{ $t('swag-paypal-settings.sdk.recommendation') }}
+    </p>
+
+    <div class="swag-paypal-settings-sdk__toggle_wrapper">
+        <swag-paypal-setting path="SwagPayPal.settings.sdkV6Enabled" />
+    </div>
+</mt-card>
+
 <mt-card
     class="swag-paypal-settings-express"
     position-identifier="swag-paypal-settings-express"
@@ -156,7 +176,7 @@
 
     <swag-paypal-setting
         path="SwagPayPal.settings.spbAlternativePaymentMethodsEnabled"
-        :disabled="sbpSettingsDisabled"
+        :disabled="sbpSettingsDisabled || settingsStore.getActual('SwagPayPal.settings.sdkV6Enabled')"
     />
 
     <swag-paypal-setting

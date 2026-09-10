@@ -132,6 +132,12 @@
     "environment": {
       "title": "Environment",
       "info": "PayPal will send order status updates to the shop via webhooks, and will also request cart recalculations when customers make changes in the PayPal Express Checkout UI. If the shop is not publicly accessible (e.g. if it is in a development/staging environment, or if it requires authentication), you can mark this instance as a \"local environment\" to prevent connection errors.\nPlease note that any webhook listener will be deregistered when saving."
+    },
+    "sdk": {
+      "title": "PayPal SDK version 6",
+      "info": "This will activate the latest version of the PayPal checkout integration, PayPal SDK v6. Version 6 offers improved performance and security, as well as better compatibility with modern payment workflows. Please note that some customisations and extensions may require adaptation.\nSDK v6 will become the default implementation in version 11 of this plugin.",
+      "recommendation": "We highly recommend enabling this option to take advantage of the latest features and improvements.",
+      "bannerText": "Enable the latest PayPal SDK v6 for improved performance and security in your shop."
     }
   },
   "swag-paypal-settings-sales-channel-switch": {

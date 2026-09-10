@@ -15,6 +15,7 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Symfony\Component\Routing\RouterInterface;
 
 #[Package('checkout')]
 abstract class AbstractScriptDataService
@@ -26,6 +27,7 @@ abstract class AbstractScriptDataService
         protected readonly LocaleCodeProvider $localeCodeProvider,
         protected readonly SystemConfigService $systemConfigService,
         protected readonly CredentialsUtilInterface $credentialsUtil,
+        protected readonly RouterInterface $router,
     ) {
     }
 
@@ -35,7 +37,10 @@ abstract class AbstractScriptDataService
         $merchantPayerId = $this->credentialsUtil->getMerchantPayerId($salesChannelId);
 
         return [
+            '_v6Enabled' => $this->systemConfigService->getBool(Settings::SDK_V6_ENABLED, $salesChannelId),
             'clientId' => $this->credentialsUtil->getClientId($salesChannelId),
+            'clientTokenUrl' => $this->router->generate('frontend.paypal.client_token'),
+            'environment' => $this->credentialsUtil->isSandbox($salesChannelId) ? 'sandbox' : 'production',
             'merchantPayerId' => $merchantPayerId,
             'languageIso' => $this->getButtonLanguage($context),
             'currency' => $context->getCurrency()->getIsoCode(),

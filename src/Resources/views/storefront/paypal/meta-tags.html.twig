@@ -1,0 +1,36 @@
+{% set spbData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
+{% set acdcData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
+{% set venmoData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\VenmoMethodData::PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID')] %}
+{% set payLaterData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\PayLaterMethodData::PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID')] %}
+{% set applePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ApplePayMethodData::PAYPAL_APPLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
+{% set googlePayData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\GooglePayMethodData::PAYPAL_GOOGLE_PAY_FIELD_DATA_EXTENSION_ID')] %}
+{% set installmentBannerData = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+{% set fundingEligibilityData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION')] %}
+
+{% set expressData = page.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+{% set expressData = expressData ?? cmsPage.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+{% set expressData = expressData ?? product.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+
+{% set data = expressData ?? spbData ?? acdcData ?? puiFraudnetData ?? sepaData ?? venmoData ?? payLaterData ?? applePayData ?? googlePayData ?? installmentBannerData ?? fundingEligibilityData %}
+
+{% set baseUrl = data.environment == 'sandbox' ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com' %}
+
+{% block swag_paypal_meta_tags %}
+    {% if data %}
+        {% block swag_paypal_core %}
+        <script type="text/javascript" src="{{ baseUrl }}/web-sdk/v6/core" data-namespace="paypalV6" async></script>
+        {% endblock %}
+
+        {% if applePayData %}
+            {% block swag_paypal_meta_tags_applepay_payments %}
+            <script src="https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js" async></script>
+            {% endblock %}
+        {% endif %}
+
+        {% if googlePayData %}
+            {% block swag_paypal_meta_tags_googlepay_payments %}
+            <script src="https://pay.google.com/gp/p/js/pay.js" async></script>
+            {% endblock %}
+        {% endif %}
+    {% endif %}
+{% endblock %}

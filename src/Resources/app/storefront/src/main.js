@@ -55,3 +55,64 @@ PluginManager.register(
     () => import('./page/swag-paypal.funding-eligibility'),
     '[data-swag-paypal-funding-eligibility]',
 );
+
+
+PluginManager.register(
+    'SwagPaypalCheckoutPaypal',
+    () => import('./payment/swag-paypal.checkout.paypal'),
+    '[data-swag-paypal-checkout-paypal]',
+);
+PluginManager.register(
+    'SwagPaypalCheckoutPayLater',
+    () => import('./payment/swag-paypal.checkout.pay-later'),
+    '[data-swag-paypal-checkout-pay-later]',
+);
+PluginManager.register(
+    'SwagPaypalCheckoutVenmo',
+    () => import('./payment/swag-paypal.checkout.venmo'),
+    '[data-swag-paypal-checkout-venmo]',
+);
+PluginManager.register(
+    'SwagPaypalCheckoutGooglePay',
+    () => import('./payment/swag-paypal.checkout.google-pay'),
+    '[data-swag-paypal-checkout-google-pay]',
+);
+PluginManager.register(
+    'SwagPaypalCheckoutApplePay',
+    () => import('./payment/swag-paypal.checkout.apple-pay'),
+    '[data-swag-paypal-checkout-apple-pay]',
+);
+
+PluginManager.register(
+    'SwagPaypalCheckoutCardFields',
+    () => import('./payment/swag-paypal.checkout.card-fields'),
+    '[data-swag-paypal-checkout-card-fields]',
+);
+
+
+PluginManager.register(
+    'SwagPaypalExpressPaypal',
+    () => import('./payment/swag-paypal.express.paypal'),
+    '[data-swag-paypal-express-paypal]',
+);
+PluginManager.register(
+    'SwagPaypalExpressPayLater',
+    () => import('./payment/swag-paypal.express.pay-later'),
+    '[data-swag-paypal-express-pay-later]',
+);
+PluginManager.register(
+    'SwagPaypalExpressVenmo',
+    () => import('./payment/swag-paypal.express.venmo'),
+    '[data-swag-paypal-express-venmo]',
+);
+
+PluginManager.register(
+    'SwagPaypalEligibility',
+    () => import('./page/swag-paypal.eligibility'),
+    '[data-swag-paypal-eligibility]',
+);
+PluginManager.register(
+    'SwagPaypalMessages',
+    () => import('./page/swag-paypal.messages'),
+    '[data-swag-paypal-messages]',
+);

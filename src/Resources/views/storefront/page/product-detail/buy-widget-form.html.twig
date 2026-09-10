@@ -10,7 +10,11 @@
 
             {% if expressSettings.productDetailEnabled %}
                 <div class="row g-2 mt-0 justify-content-end">
-                    {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'col-8'} %}
+                    {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+                        {% sw_include '@SwagPayPal/storefront/paypal/express-button.html.twig' with { classes: 'col-8' } %}
+                    {% else %}
+                        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'col-8'} %}
+                    {% endif %}
                 </div>
             {% endif %}
         {% endif %}

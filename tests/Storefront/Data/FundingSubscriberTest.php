@@ -62,16 +62,20 @@ class FundingSubscriberTest extends TestCase
 
     private FundingEligibilityDataService $dataService;
 
+    private LocaleCodeProvider $localeCodeProvider;
+
+    private RouterInterface $router;
+
     protected function setUp(): void
     {
         $this->systemConfigService = SystemConfigServiceMock::createWithoutCredentials();
 
         $credentialsUtil = new CredentialsUtil($this->systemConfigService);
 
-        $localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
+        $localeCodeProvider = $this->localeCodeProvider = $this->createMock(LocaleCodeProvider::class);
         $localeCodeProvider->method('getFormattedLocaleCode')->willReturn('en_GB');
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = $this->router = $this->createMock(RouterInterface::class);
         $router->expects($this->atMost(2))->method('generate')->willReturn('/paypal/payment-method-eligibility');
 
         $this->session = new Session(new MockArraySessionStorage());
@@ -86,8 +90,8 @@ class FundingSubscriberTest extends TestCase
         $paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
         $paymentMethodUtil
             ->method('isPaymentMethodActive')
-            ->with(static::isInstanceOf(SalesChannelContext::class), \array_values(MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS))
-            ->willReturn(true);
+            ->willReturnCallback(static fn (SalesChannelContext $context, ?array $handlerIdentifier = null): bool => $handlerIdentifier === \array_values(MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS)
+                || $handlerIdentifier === [SEPAHandler::class]);
 
         $this->subscriber = new FundingSubscriber(
             new SettingsValidationService($this->systemConfigService, new NullLogger()),
@@ -98,6 +102,7 @@ class FundingSubscriberTest extends TestCase
                 $router,
                 $this->requestStack,
                 new MethodEligibilityStateService($this->createMock(SalesChannelContextPersister::class)),
+                $paymentMethodUtil,
             ),
             $paymentMethodUtil,
         );
@@ -194,6 +199,43 @@ class FundingSubscriberTest extends TestCase
         static::assertSame(\mb_strtolower(ConstantsV2::INTENT_CAPTURE), $extension->getIntent());
         static::assertSame('/paypal/payment-method-eligibility', $extension->getMethodEligibilityUrl());
         static::assertSame(['SEPA'], $extension->getFilteredPaymentMethods());
+        static::assertTrue($extension->isSepaActive());
+    }
+
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed with the v5 SEPA eligibility check.
+     */
+    public function testAddFundingAvailabilityDataToPageWithInactiveSepa(): void
+    {
+        $this->systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
+
+        $paymentMethodUtil = $this->createMock(PaymentMethodUtil::class);
+        $paymentMethodUtil
+            ->method('isPaymentMethodActive')
+            ->willReturnCallback(static fn (SalesChannelContext $context, ?array $handlerIdentifier = null): bool => $handlerIdentifier !== [SEPAHandler::class]);
+
+        $subscriber = new FundingSubscriber(
+            new SettingsValidationService($this->systemConfigService, new NullLogger()),
+            new FundingEligibilityDataService(
+                new CredentialsUtil($this->systemConfigService),
+                $this->systemConfigService,
+                $this->localeCodeProvider,
+                $this->router,
+                $this->requestStack,
+                new MethodEligibilityStateService($this->createMock(SalesChannelContextPersister::class)),
+                $paymentMethodUtil,
+            ),
+            $paymentMethodUtil,
+        );
+
+        $event = $this->createGenericPageLoadedEvent();
+        $subscriber->addFundingAvailabilityDataToPage($event);
+
+        $extension = $event->getPage()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION);
+
+        static::assertInstanceOf(FundingEligibilityData::class, $extension);
+        static::assertFalse($extension->isSepaActive());
     }
 
     public function testAddFundingAvailabilityDataToPageWithoutSession(): void

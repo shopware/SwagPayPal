@@ -1,0 +1,14 @@
+<mt-banner
+    v-show="show"
+    class="swag-paypal-settings-sdk-v6-banner"
+    variant="info"
+    :closable="true"
+    @close="onCloseAlert"
+>
+    {{ $t('swag-paypal-settings.sdk.bannerText') }}
+
+
+    <mt-link type="internal" :to="{ name: 'swag.paypal.settings.index.storefront' }">
+        {{ $t('swag-paypal-settings.tabs.storefront') }}
+    </mt-link>
+</mt-banner>

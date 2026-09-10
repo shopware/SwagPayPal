@@ -27,13 +27,17 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareChec
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
+use Swag\PayPal\Checkout\SalesChannel\AbstractClientTokenRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Controller\PayPalController;
+use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Swag\PayPal\Storefront\Service\ReturnTokenService;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -58,6 +62,8 @@ class PayPalControllerTest extends TestCase
 
     private PayPalController&MockObject $controller;
 
+    private SystemConfigServiceMock $systemConfigService;
+
     protected function setUp(): void
     {
         $this->createOrderRoute = $this->createMock(AbstractCreateOrderRoute::class);
@@ -71,6 +77,7 @@ class PayPalControllerTest extends TestCase
             ->with('frontend.paypal.restore_context', ['token' => 'return-token'], UrlGeneratorInterface::ABSOLUTE_URL)
             ->willReturn('https://example.test/paypal/restore-context/return-token');
         $this->logHandler = new TestHandler();
+        $this->systemConfigService = new SystemConfigServiceMock();
 
         $this->controller = $this->getMockBuilder(PayPalController::class)
             ->onlyMethods(['trans', 'addFlash'])
@@ -86,9 +93,11 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(CartService::class),
                 new CartPriceService(new PriceFormatter()),
                 $this->createMock(AbstractClearVaultRoute::class),
+                $this->createMock(AbstractClientTokenRoute::class),
                 new Logger('test', [$this->logHandler]),
                 $this->returnTokenService,
                 $this->router,
+                $this->systemConfigService,
             ])
             ->getMock();
     }
@@ -134,6 +143,8 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'isCheckout' => true,
+            'plugin' => 'test',
+            'step' => null,
         ]);
 
         $matcher = $this->exactly(2);
@@ -160,6 +171,8 @@ class PayPalControllerTest extends TestCase
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
+            'plugin' => 'test',
+            'step' => null,
         ]);
     }
 
@@ -168,6 +181,8 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'isCheckout' => false,
+            'plugin' => 'test',
+            'step' => null,
         ]);
 
         $this->controller
@@ -183,6 +198,8 @@ class PayPalControllerTest extends TestCase
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
+            'plugin' => 'test',
+            'step' => null,
         ]);
     }
 
@@ -191,6 +208,8 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'isCheckout' => true,
+            'plugin' => 'test',
+            'step' => null,
         ]);
 
         $this->controller
@@ -208,6 +227,8 @@ class PayPalControllerTest extends TestCase
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
+            'plugin' => 'test',
+            'step' => null,
         ]);
     }
 
@@ -216,6 +237,8 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'isCheckout' => false,
+            'plugin' => 'test',
+            'step' => null,
         ]);
 
         $this->controller
@@ -231,6 +254,8 @@ class PayPalControllerTest extends TestCase
         $this->assertLogRecord(Level::Warning, [
             'code' => 'SWAG_PAYPAL__NON_TRANSLATABLE_ERROR_CODE',
             'fatal' => false,
+            'plugin' => 'test',
+            'step' => null,
         ]);
     }
 
@@ -241,6 +266,9 @@ class PayPalControllerTest extends TestCase
         $request = new Request(request: [
             'code' => $code,
             'fatal' => $fatal,
+            'plugin' => 'test',
+            'step' => null,
+            'pageType' => 'checkout',
         ]);
 
         $session = new Session(new MockArraySessionStorage());
@@ -256,6 +284,8 @@ class PayPalControllerTest extends TestCase
         $this->assertLogRecord($level, [
             'code' => $code,
             'fatal' => $fatal,
+            'plugin' => 'test',
+            'step' => null,
         ]);
     }
 
@@ -270,6 +300,39 @@ class PayPalControllerTest extends TestCase
         yield 'script not loaded' => ['SWAG_PAYPAL__SCRIPT_NOT_LOADED', false, Level::Error];
         yield 'generic error' => ['SWAG_PAYPAL__GENERIC_ERROR', false, Level::Warning];
         yield 'eligible error' => ['SWAG_PAYPAL__NOT_ELIGIBLE', false, Level::Warning];
+    }
+
+    #[DataProvider('onHandleErrorDataProviderSetFatal')]
+    public function testOnHandleErrorSetFatal(bool $fatal, string $pageType, bool $expectedFatal): void
+    {
+        $this->systemConfigService->set(Settings::SDK_V6_ENABLED, true);
+
+        $salesChannelContext = $this->generateSalesChannelContext();
+        $request = new Request(request: [
+            'code' => 'SWAG_PAYPAL__SCRIPT_ERROR',
+            'fatal' => $fatal,
+            'plugin' => 'test',
+            'step' => null,
+            'pageType' => $pageType,
+        ]);
+
+        $session = new Session(new MockArraySessionStorage());
+        $request->setSession($session);
+
+        $this->controller->onHandleError($request, $salesChannelContext);
+
+        static::assertSame(
+            $expectedFatal ? $salesChannelContext->getPaymentMethod()->getId() : null,
+            $session->get(PayPalController::PAYMENT_METHOD_FATAL_ERROR),
+        );
+    }
+
+    public static function onHandleErrorDataProviderSetFatal(): \Generator
+    {
+        yield 'fatal script error' => [true, AbstractScriptData::PAGE_TYPE_CHECKOUT, true];
+        yield 'non-fatal script error' => [false, AbstractScriptData::PAGE_TYPE_CHECKOUT, false];
+        yield 'fatal script error on non-checkout page' => [true, AbstractScriptData::PAGE_TYPE_PRODUCT_DETAILS, false];
+        yield 'non-fatal script error on non-checkout page' => [false, AbstractScriptData::PAGE_TYPE_PRODUCT_DETAILS, false];
     }
 
     private function generateSalesChannelContext(): SalesChannelContext

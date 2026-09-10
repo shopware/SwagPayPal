@@ -18,6 +18,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\PayPalSDK\Struct\V1\Token;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute;
@@ -129,6 +130,9 @@ class ExpressCategoryRouteTest extends TestCase
 
         $paymentMethodId = $this->getContainer()->get(PaymentMethodUtil::class)->getPayPalPaymentMethodId(Context::createDefaultContext());
         static::assertNotNull($paymentMethodId);
+
+        $token = (new Token())->assign(['access_token' => 'ACCESS-TOKEN', 'token_type' => 'Bearer', 'expires_in' => 36000]);
+        $this->getContainer()->get('paypal-sdk.token-cache')->set('ac2fc88d39c3847ef062a774c7f2d214', $token);
 
         if ($inSalesChannel) {
             $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
