@@ -13,10 +13,12 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
@@ -55,5 +57,59 @@ class OrderExecuteServiceTest extends TestCase
             Context::createDefaultContext(),
             Uuid::randomHex(),
         );
+    }
+
+    public function testCheckFinalizedStatusSetsInProgressOnPendingCapture(): void
+    {
+        $stateHandler = $this->createMock(OrderTransactionStateHandler::class);
+        $orderExecuteService = new OrderExecuteService(
+            $this->createMock(OrderResource::class),
+            $stateHandler,
+            $this->createMock(OrderNumberPatchBuilder::class),
+            new NullLogger(),
+        );
+
+        $orderData = CaptureOrderCapture::get();
+        $orderData['purchase_units'][0]['payments']['captures'][0]['status'] = ConstantsV2::ORDER_CAPTURE_PENDING;
+        $order = (new Order())->assign($orderData);
+
+        $transactionId = Uuid::randomHex();
+        $context = Context::createDefaultContext();
+
+        $stateHandler->expects($this->once())
+            ->method('process')
+            ->with($transactionId, $context);
+        $stateHandler->expects($this->never())->method('paid');
+
+        $finalized = $orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
+
+        static::assertFalse($finalized);
+    }
+
+    public function testCheckFinalizedStatusSetsInProgressOnPendingAuthorization(): void
+    {
+        $stateHandler = $this->createMock(OrderTransactionStateHandler::class);
+        $orderExecuteService = new OrderExecuteService(
+            $this->createMock(OrderResource::class),
+            $stateHandler,
+            $this->createMock(OrderNumberPatchBuilder::class),
+            new NullLogger(),
+        );
+
+        $orderData = AuthorizeOrderAuthorization::get();
+        $orderData['purchase_units'][0]['payments']['authorizations'][0]['status'] = ConstantsV2::ORDER_AUTHORIZATION_PENDING;
+        $order = (new Order())->assign($orderData);
+
+        $transactionId = Uuid::randomHex();
+        $context = Context::createDefaultContext();
+
+        $stateHandler->expects($this->once())
+            ->method('process')
+            ->with($transactionId, $context);
+        $stateHandler->expects($this->never())->method('authorize');
+
+        $finalized = $orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
+
+        static::assertFalse($finalized);
     }
 }
