@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -267,7 +266,9 @@ class UpdateTest extends TestCase
         $updater->update($updateContext);
     }
 
-    #[DataProvider('existingSettingsProvider')]
+    /**
+     * @dataProvider existingSettingsProvider
+     */
     public function testUpdateKeepsExistingSettingValue(string $currentVersion, string $nextVersion, string $setting, mixed $value): void
     {
         $updateContext = $this->createUpdateContext($currentVersion, $nextVersion);
@@ -324,7 +325,9 @@ class UpdateTest extends TestCase
         static::assertSame(ExperienceContext::LANDING_PAGE_TYPE_GUEST, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
     }
 
-    #[DataProvider('currentLandingPageValuesProvider')]
+    /**
+     * @dataProvider currentLandingPageValuesProvider
+     */
     public function testUpdateTo200KeepsCurrentLandingPageValue(string $landingPage): void
     {
         $updateContext = $this->createUpdateContext('1.9.1', '2.0.0');
