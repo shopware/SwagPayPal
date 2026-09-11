@@ -1,0 +1,16 @@
+.swag-paypal-method-partner-offer {
+    /* mt-banner centers itself on its own width, the card content is full width */
+    width: 100%;
+    margin: 0;
+
+    .mt-banner__message {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--scale-size-8);
+    }
+
+    &__disclaimer {
+        margin: 0;
+    }
+}
