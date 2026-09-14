@@ -104,7 +104,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             callbackIntents: ['PAYMENT_AUTHORIZATION'],
             transactionInfo: {
                 countryCode,
-                totalPriceStatus: 'ESTIMATED', // 'FINAL',
+                totalPriceStatus: 'FINAL',
                 totalPriceLabel: this.el!.dataset.totalPriceLabel || 'Grand Total',
                 currencyCode: this.options.currency,
                 totalPrice: this.options.totalPrice,
@@ -134,7 +134,11 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             }
 
             if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status) {
-                await session.initiatePayerAction({ orderId });
+                void session.initiatePayerAction({ orderId })
+                    .then(() => this.onApprove({ orderId }))
+                    .catch((error: unknown) => this.onError(error));
+
+                return { transactionState: 'SUCCESS' };
             }
 
             await this.onApprove({ orderId });

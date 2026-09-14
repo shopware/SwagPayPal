@@ -59,9 +59,9 @@ class SettingsSaver implements SettingsSaverInterface
             $webhookErrors = $this->webhookSystemConfigHelper->checkWebhookBefore([($salesChannelId ?? '') => $settings]);
         }
 
-        $settings = $this->guardSdkV6Setting($settings, $salesChannelId);
-
         $this->systemConfigService->setMultiple($settings, $salesChannelId);
+
+        $this->guardSdkV6Setting($salesChannelId);
 
         if ($information->getLiveCredentialsValid() || $information->getSandboxCredentialsValid()) {
             $webhookErrors = \array_merge(
@@ -75,34 +75,22 @@ class SettingsSaver implements SettingsSaverInterface
         return $information;
     }
 
-    /**
-     * The SDK v6 has to be activated in the PayPal merchant account, otherwise enabling it would break the storefront.
-     * The root configuration is disabled explicitly, while a sales channel keeps its stored value
-     * instead of being given an override of its own.
-     *
-     * @param array<string, mixed> $settings
-     *
-     * @return array<string, mixed>
-     */
-    private function guardSdkV6Setting(array $settings, ?string $salesChannelId): array
+    private function guardSdkV6Setting(?string $salesChannelId): void
     {
-        $value = $settings[Settings::SDK_V6_ENABLED] ?? $this->systemConfigService->getBool(Settings::SDK_V6_ENABLED);
-        if (!$value) {
-            return $settings;
+        if (!$this->systemConfigService->getBool(Settings::SDK_V6_ENABLED, $salesChannelId)) {
+            return;
         }
 
         // neither an ineligible account nor an undeterminable one may enable it
         if ($this->sdkV6EligibilityService->isEligible($salesChannelId)) {
-            return $settings;
+            return;
         }
 
         if ($salesChannelId === null) {
-            $settings[Settings::SDK_V6_ENABLED] = false;
+            $this->systemConfigService->set(Settings::SDK_V6_ENABLED, false);
         } else {
-            unset($settings[Settings::SDK_V6_ENABLED]);
+            $this->systemConfigService->delete(Settings::SDK_V6_ENABLED, $salesChannelId);
         }
-
-        return $settings;
     }
 
     /**
