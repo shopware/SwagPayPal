@@ -23,6 +23,7 @@ class SettingsSaver implements SettingsSaverInterface
         private readonly SystemConfigService $systemConfigService,
         private readonly ApiCredentialService $apiCredentialService,
         private readonly WebhookSystemConfigHelper $webhookSystemConfigHelper,
+        private readonly SdkV6EligibilityService $sdkV6EligibilityService,
     ) {
     }
 
@@ -58,6 +59,8 @@ class SettingsSaver implements SettingsSaverInterface
             $webhookErrors = $this->webhookSystemConfigHelper->checkWebhookBefore([($salesChannelId ?? '') => $settings]);
         }
 
+        $settings = $this->guardSdkV6Setting($settings, $salesChannelId);
+
         $this->systemConfigService->setMultiple($settings, $salesChannelId);
 
         if ($information->getLiveCredentialsValid() || $information->getSandboxCredentialsValid()) {
@@ -70,6 +73,32 @@ class SettingsSaver implements SettingsSaverInterface
         $information->setWebhookErrors(\array_map(static fn (\Throwable $e) => $e->getMessage(), $webhookErrors ?? []));
 
         return $information;
+    }
+
+    /**
+     * The SDK v6 has to be activated in the PayPal merchant account, otherwise enabling it would break the storefront.
+     * As long as that cannot be determined, the stored configuration is left alone.
+     *
+     * @param array<string, mixed> $settings
+     *
+     * @return array<string, mixed>
+     */
+    private function guardSdkV6Setting(array $settings, ?string $salesChannelId): array
+    {
+        // disabling the setting and inheriting it from the root configuration never needs to be guarded
+        if (!\filter_var($settings[Settings::SDK_V6_ENABLED] ?? false, \FILTER_VALIDATE_BOOLEAN)) {
+            return $settings;
+        }
+
+        $eligible = $this->sdkV6EligibilityService->isEligible($salesChannelId);
+
+        if ($eligible === null) {
+            unset($settings[Settings::SDK_V6_ENABLED]);
+        } else {
+            $settings[Settings::SDK_V6_ENABLED] = $eligible;
+        }
+
+        return $settings;
     }
 
     /**

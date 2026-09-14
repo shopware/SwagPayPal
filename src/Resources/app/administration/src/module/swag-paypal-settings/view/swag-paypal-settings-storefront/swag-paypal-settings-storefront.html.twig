@@ -3,7 +3,7 @@
     class="swag-paypal-settings-sdk"
     position-identifier="swag-paypal-settings-sdk"
     :title="$t('swag-paypal-settings.sdk.title')"
-    :is-loading="settingsStore.isLoading"
+    :is-loading="merchantInformationStore.isLoading || settingsStore.isLoading"
 >
     <p class="swag-paypal-settings-sdk__info-text">
         {{ $t('swag-paypal-settings.sdk.info') }}
@@ -13,8 +13,19 @@
         {{ $t('swag-paypal-settings.sdk.recommendation') }}
     </p>
 
+    <mt-banner
+        v-if="sdkV6Notice"
+        class="swag-paypal-settings-sdk__notice-banner"
+        variant="attention"
+    >
+        {{ sdkV6Notice }}
+    </mt-banner>
+
     <div class="swag-paypal-settings-sdk__toggle_wrapper">
-        <swag-paypal-setting path="SwagPayPal.settings.sdkV6Enabled" />
+        <swag-paypal-setting
+            path="SwagPayPal.settings.sdkV6Enabled"
+            :disabled="sdkV6SettingDisabled"
+        />
     </div>
 </mt-card>
 

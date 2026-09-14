@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
+use Swag\PayPal\Setting\Service\SdkV6EligibilityService;
 use Swag\PayPal\Setting\Service\SettingsSaver;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
@@ -53,6 +54,8 @@ class SettingsSaverTest extends TestCase
 
     private WebhookSystemConfigHelper&MockObject $webhookSystemConfigHelper;
 
+    private SdkV6EligibilityService&MockObject $sdkV6EligibilityService;
+
     private SettingsSaver $settingsSaver;
 
     protected function setUp(): void
@@ -60,11 +63,13 @@ class SettingsSaverTest extends TestCase
         $this->systemConfigService = $this->createMock(SystemConfigService::class);
         $this->apiCredentialService = $this->createMock(ApiCredentialService::class);
         $this->webhookSystemConfigHelper = $this->createMock(WebhookSystemConfigHelper::class);
+        $this->sdkV6EligibilityService = $this->createMock(SdkV6EligibilityService::class);
 
         $this->settingsSaver = new SettingsSaver(
             $this->systemConfigService,
             $this->apiCredentialService,
-            $this->webhookSystemConfigHelper
+            $this->webhookSystemConfigHelper,
+            $this->sdkV6EligibilityService
         );
     }
 
@@ -427,5 +432,86 @@ class SettingsSaverTest extends TestCase
 
         static::assertTrue($information->getLiveCredentialsChanged());
         static::assertFalse($information->getLiveCredentialsValid());
+    }
+
+    public function testSdkV6StaysEnabledWhenItIsActivatedInThePayPalAccount(): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->sdkV6EligibilityService
+            ->expects($this->once())
+            ->method('isEligible')
+            ->with('sales-channel-id')
+            ->willReturn(true);
+
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('setMultiple')
+            ->with([
+                Settings::SDK_V6_ENABLED => true,
+                Settings::BRAND_NAME => 'testBrandName',
+            ], 'sales-channel-id');
+
+        $this->settingsSaver->save([
+            Settings::SDK_V6_ENABLED => true,
+            Settings::BRAND_NAME => 'testBrandName',
+        ], 'sales-channel-id');
+    }
+
+    public function testSdkV6IsDisabledWhenItIsNotActivatedInThePayPalAccount(): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->sdkV6EligibilityService->method('isEligible')->willReturn(false);
+
+        // every other setting is still saved
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('setMultiple')
+            ->with([
+                Settings::SDK_V6_ENABLED => false,
+                Settings::BRAND_NAME => 'testBrandName',
+            ], null);
+
+        $this->settingsSaver->save([
+            Settings::SDK_V6_ENABLED => true,
+            Settings::BRAND_NAME => 'testBrandName',
+        ], null);
+    }
+
+    public function testSdkV6IsLeftAloneWhileTheEligibilityCannotBeDetermined(): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->sdkV6EligibilityService->method('isEligible')->willReturn(null);
+
+        // the stored value is kept by not writing the key at all
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('setMultiple')
+            ->with([Settings::BRAND_NAME => 'testBrandName'], null);
+
+        $this->settingsSaver->save([
+            Settings::SDK_V6_ENABLED => true,
+            Settings::BRAND_NAME => 'testBrandName',
+        ], null);
+    }
+
+    #[DataProvider('unguardedSdkV6SettingProvider')]
+    public function testSdkV6EligibilityIsNotCheckedWhenItIsNotEnabled(mixed $value): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->sdkV6EligibilityService->expects($this->never())->method('isEligible');
+
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('setMultiple')
+            ->with([Settings::SDK_V6_ENABLED => $value], 'sales-channel-id');
+
+        $this->settingsSaver->save([Settings::SDK_V6_ENABLED => $value], 'sales-channel-id');
+    }
+
+    public static function unguardedSdkV6SettingProvider(): \Generator
+    {
+        yield 'disabling the setting needs no activated PayPal account' => ['value' => false];
+
+        yield 'inheriting the setting is guarded by the root configuration' => ['value' => null];
     }
 }

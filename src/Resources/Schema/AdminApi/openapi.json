@@ -1527,7 +1527,8 @@
             "swag_paypal_setting_merchant_information": {
                 "required": [
                     "merchantIntegrations",
-                    "capabilities"
+                    "capabilities",
+                    "sdkV6Eligible"
                 ],
                 "properties": {
                     "merchantIntegrations": {
@@ -1544,6 +1545,11 @@
                         "additionalProperties": {
                             "type": "string"
                         }
+                    },
+                    "sdkV6Eligible": {
+                        "description": "null if the eligibility could not be determined",
+                        "type": "boolean",
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -5784,7 +5790,8 @@
                 ],
                 "properties": {
                     "liability_shift": {
-                        "type": "string"
+                        "type": "string",
+                        "nullable": true
                     },
                     "three_d_secure": {
                         "oneOf": [
