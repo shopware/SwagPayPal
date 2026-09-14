@@ -134,7 +134,6 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             }
 
             if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status) {
-                 
                 await session.initiatePayerAction({ orderId });
             }
 

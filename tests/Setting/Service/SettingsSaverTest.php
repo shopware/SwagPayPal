@@ -477,21 +477,48 @@ class SettingsSaverTest extends TestCase
         ], null);
     }
 
-    public function testSdkV6IsLeftAloneWhileTheEligibilityCannotBeDetermined(): void
+    public function testSdkV6IsDisabledWhileTheEligibilityCannotBeDetermined(): void
     {
         $this->systemConfigService->method('get')->willReturn(null);
         $this->sdkV6EligibilityService->method('isEligible')->willReturn(null);
 
-        // the stored value is kept by not writing the key at all
         $this->systemConfigService
             ->expects($this->once())
             ->method('setMultiple')
-            ->with([Settings::BRAND_NAME => 'testBrandName'], null);
+            ->with([
+                Settings::SDK_V6_ENABLED => false,
+                Settings::BRAND_NAME => 'testBrandName',
+            ], null);
 
         $this->settingsSaver->save([
             Settings::SDK_V6_ENABLED => true,
             Settings::BRAND_NAME => 'testBrandName',
         ], null);
+    }
+
+    #[DataProvider('falsySdkV6EligibilityProvider')]
+    public function testSdkV6IsLeftAloneOnASalesChannelInsteadOfGivingItAnOverride(?bool $eligible): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->sdkV6EligibilityService->method('isEligible')->willReturn($eligible);
+
+        // the stored value is kept by not writing the key at all
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('setMultiple')
+            ->with([Settings::BRAND_NAME => 'testBrandName'], 'sales-channel-id');
+
+        $this->settingsSaver->save([
+            Settings::SDK_V6_ENABLED => true,
+            Settings::BRAND_NAME => 'testBrandName',
+        ], 'sales-channel-id');
+    }
+
+    public static function falsySdkV6EligibilityProvider(): \Generator
+    {
+        yield 'the PayPal account of the sales channel has not activated it' => ['eligible' => false];
+
+        yield 'the eligibility of the sales channel could not be determined' => ['eligible' => null];
     }
 
     #[DataProvider('unguardedSdkV6SettingProvider')]
@@ -512,6 +539,61 @@ class SettingsSaverTest extends TestCase
     {
         yield 'disabling the setting needs no activated PayPal account' => ['value' => false];
 
-        yield 'inheriting the setting is guarded by the root configuration' => ['value' => null];
+        yield 'inheriting a disabled root configuration leaves nothing to guard' => ['value' => null];
+    }
+
+    public function testSdkV6KeepsInheritingWhenASalesChannelIsNotActivatedForIt(): void
+    {
+        // the root configuration has it enabled, the sales channel inherits it with its own credentials
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->systemConfigService
+            ->method('getBool')
+            ->with(Settings::SDK_V6_ENABLED)
+            ->willReturn(true);
+
+        $this->sdkV6EligibilityService
+            ->expects($this->once())
+            ->method('isEligible')
+            ->with('sales-channel-id')
+            ->willReturn(false);
+
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('setMultiple')
+            ->with([], 'sales-channel-id');
+
+        $this->settingsSaver->save([Settings::SDK_V6_ENABLED => null], 'sales-channel-id');
+    }
+
+    public function testSdkV6KeepsInheritingWhenTheSalesChannelIsActivatedForItToo(): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->systemConfigService
+            ->method('getBool')
+            ->with(Settings::SDK_V6_ENABLED)
+            ->willReturn(true);
+
+        $this->sdkV6EligibilityService->method('isEligible')->willReturn(true);
+
+        // the inheritance must survive, so no value of its own is written
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('setMultiple')
+            ->with([Settings::SDK_V6_ENABLED => null], 'sales-channel-id');
+
+        $this->settingsSaver->save([Settings::SDK_V6_ENABLED => null], 'sales-channel-id');
+    }
+
+    public function testSdkV6InheritanceIsNotCheckedForTheRootConfiguration(): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->sdkV6EligibilityService->expects($this->never())->method('isEligible');
+
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('setMultiple')
+            ->with([Settings::SDK_V6_ENABLED => null], null);
+
+        $this->settingsSaver->save([Settings::SDK_V6_ENABLED => null], null);
     }
 }

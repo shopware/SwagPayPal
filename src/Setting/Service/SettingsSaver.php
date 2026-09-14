@@ -77,7 +77,8 @@ class SettingsSaver implements SettingsSaverInterface
 
     /**
      * The SDK v6 has to be activated in the PayPal merchant account, otherwise enabling it would break the storefront.
-     * As long as that cannot be determined, the stored configuration is left alone.
+     * The root configuration is disabled explicitly, while a sales channel keeps its stored value
+     * instead of being given an override of its own.
      *
      * @param array<string, mixed> $settings
      *
@@ -85,17 +86,20 @@ class SettingsSaver implements SettingsSaverInterface
      */
     private function guardSdkV6Setting(array $settings, ?string $salesChannelId): array
     {
-        // disabling the setting and inheriting it from the root configuration never needs to be guarded
-        if (!\filter_var($settings[Settings::SDK_V6_ENABLED] ?? false, \FILTER_VALIDATE_BOOLEAN)) {
+        $value = $settings[Settings::SDK_V6_ENABLED] ?? $this->systemConfigService->getBool(Settings::SDK_V6_ENABLED);
+        if (!$value) {
             return $settings;
         }
 
-        $eligible = $this->sdkV6EligibilityService->isEligible($salesChannelId);
+        // neither an ineligible account nor an undeterminable one may enable it
+        if ($this->sdkV6EligibilityService->isEligible($salesChannelId)) {
+            return $settings;
+        }
 
-        if ($eligible === null) {
-            unset($settings[Settings::SDK_V6_ENABLED]);
+        if ($salesChannelId === null) {
+            $settings[Settings::SDK_V6_ENABLED] = false;
         } else {
-            $settings[Settings::SDK_V6_ENABLED] = $eligible;
+            unset($settings[Settings::SDK_V6_ENABLED]);
         }
 
         return $settings;
