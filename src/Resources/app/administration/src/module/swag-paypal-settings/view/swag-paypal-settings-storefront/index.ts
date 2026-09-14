@@ -36,7 +36,8 @@ export default Shopware.Component.wrapComponentConfig({
         },
 
         sdkV6SettingDisabled(): boolean {
-            return this.merchantInformationStore.isLoading || !this.merchantInformationStore.canSdkV6;
+            return (this.merchantInformationStore.isLoading || !this.merchantInformationStore.canSdkV6)
+                && this.settingsStore.getActual('SwagPayPal.settings.sdkV6Enabled') !== true;
         },
 
         sdkV6Notice(): string | null {
