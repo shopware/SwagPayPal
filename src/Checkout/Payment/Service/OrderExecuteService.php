@@ -11,10 +11,13 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Exception\ErrorApiException;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Common\Link;
 use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments;
 use Swag\PayPal\Checkout\Exception\OrderFailedException;
+use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -48,6 +51,7 @@ class OrderExecuteService
 
     /**
      * @throws PayPalApiException
+     * @throws PayerActionRequiredException
      */
     public function captureOrAuthorizeOrder(
         string $transactionId,
@@ -59,23 +63,34 @@ class OrderExecuteService
         $this->logger->debug('Started');
 
         try {
-            return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+            try {
+                return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+            } catch (PayPalApiException $e) {
+                if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
+                    || !$e->is(PayPalApiException::ISSUE_DUPLICATE_INVOICE_ID)) {
+                    throw $e;
+                }
+
+                $this->logger->warning('Duplicate order number detected. Retrying payment without order number.');
+
+                $this->orderResource->update(
+                    [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
+                    $paypalOrder->getId(),
+                    $salesChannelId,
+                    $partnerAttributionId
+                );
+
+                return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+            }
         } catch (PayPalApiException $e) {
-            if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
-                || !$e->is(PayPalApiException::ISSUE_DUPLICATE_INVOICE_ID)) {
+            // is a PayPalApiException itself, so it must not be wrapped twice
+            if ($e instanceof PayerActionRequiredException
+                || $e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
+                || !$e->is(PayerActionRequiredException::ISSUE_PAYER_ACTION_REQUIRED)) {
                 throw $e;
             }
 
-            $this->logger->warning('Duplicate order number detected. Retrying payment without order number.');
-
-            $this->orderResource->update(
-                [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
-                $paypalOrder->getId(),
-                $salesChannelId,
-                $partnerAttributionId
-            );
-
-            return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+            throw $this->createPayerActionRequiredException($transactionId, $paypalOrder, $e);
         }
     }
 
@@ -126,6 +141,11 @@ class OrderExecuteService
             return $paypalOrder;
         }
 
+        // capturing an order PayPal already flagged is guaranteed to fail
+        if ($paypalOrder->isset('status') && $paypalOrder->getStatus() === ConstantsV2::ORDER_PAYER_ACTION_REQUIRED) {
+            throw $this->createPayerActionRequiredException($transactionId, $paypalOrder);
+        }
+
         if ($paypalOrder->getIntent() === ConstantsV2::INTENT_CAPTURE) {
             $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
         } else {
@@ -135,6 +155,39 @@ class OrderExecuteService
         $this->checkFinalizedStatus($response, $salesChannelId, $transactionId, $context);
 
         return $response;
+    }
+
+    private function createPayerActionRequiredException(
+        string $transactionId,
+        PayPalOrder $paypalOrder,
+        ?PayPalApiException $previous = null,
+    ): PayerActionRequiredException {
+        // PayPal returns the `payer-action` link on the failing response only, never on the order itself
+        $error = $previous?->getPrevious();
+        $exception = PayerActionRequiredException::payerActionRequired(
+            $paypalOrder->getId(),
+            $error instanceof ErrorApiException ? $error->getLinks() : null,
+            $previous,
+        );
+
+        $this->logger->warning('PayPal requires another payer action before the order can be captured.', [
+            'orderTransactionId' => $transactionId,
+            'payPalOrderId' => $paypalOrder->getId(),
+            'payerActionUrl' => $exception->getPayerActionUrl() ?? $this->resolvePayerActionUrl($paypalOrder),
+            'error' => $previous,
+        ]);
+
+        return $exception;
+    }
+
+    private function resolvePayerActionUrl(PayPalOrder $paypalOrder): ?string
+    {
+        // Order::$links has no default and PayPal may omit it
+        if (!$paypalOrder->isset('links')) {
+            return null;
+        }
+
+        return $paypalOrder->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref();
     }
 
     private function getPayments(PayPalOrder $order, string $salesChannelId, bool $refetch): ?Payments
