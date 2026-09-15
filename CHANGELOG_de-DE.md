@@ -1,4 +1,5 @@
 # 8.12.3
+- Behebt ein Problem, bei dem Zahlungen mit gespeicherten Karten und wiederkehrende Kartenzahlungen mit unvollständigen PayPal-Bestelldaten verarbeitet wurden
 - Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte
 - Behebt ein Problem, bei dem Google Pay-Zahlungen, für die 3D Secure erforderlich war, nicht abgeschlossen wurden, da das Authentifizierungsfenster durch das Google Pay-Fenster überlagert wurde
 
