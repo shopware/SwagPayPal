@@ -1,0 +1,24 @@
+<mt-banner
+    v-if="show"
+    class="swag-paypal-method-partner-offer"
+    variant="info"
+    :title="germanMarketingText.title"
+    :hide-icon="true"
+    :closable="true"
+    @close="onCloseBanner"
+>
+    <p class="swag-paypal-method-partner-offer__disclaimer">
+        {{ germanMarketingText.disclaimer }}
+    </p>
+
+    <mt-link
+        class="swag-paypal-method-partner-offer__link"
+        type="external"
+        as="a"
+        target="_blank"
+        rel="noopener noreferrer"
+        :href="offerLink"
+    >
+        {{ germanMarketingText.link }}
+    </mt-link>
+</mt-banner>

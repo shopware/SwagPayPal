@@ -1,4 +1,8 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.8.4
+- Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
+- Fixes an issue, where Google Pay payments that required 3D Secure never completed due to blocking the authentication window with the Google Pay one
+
+# 10.8.3
 - Fixes an issue, where product searches that load only a subset of fields, like the storefront quantity selector's purchase limit request, failed with an error, if the Express Checkout button was enabled for product listings (shopware/SwagPayPal#554)
 
 # 10.8.2
