@@ -81,7 +81,7 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
                     $paypalOrder,
                     $salesChannelContext->getSalesChannelId(),
                     PartnerAttributionId::PAYPAL_PPCP,
-                    true,
+                    false,
                     $transactionId . ($updateTime ? $updateTime->getTimestamp() : ''),
                 );
                 $paypalOrderId = $response->getId();
@@ -173,7 +173,7 @@ class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPa
                 $paypalOrder,
                 $salesChannelContext->getSalesChannelId(),
                 PartnerAttributionId::PAYPAL_PPCP,
-                true,
+                false,
                 $transactionId . ($updateTime ? $updateTime->getTimestamp() : ''),
             );
 
