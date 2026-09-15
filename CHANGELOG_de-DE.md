@@ -1,7 +1,7 @@
 # 9.13.3
 - Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte
 - Behebt ein Problem, bei dem Google Pay-Zahlungen, für die 3D Secure erforderlich war, nicht abgeschlossen wurden, da das Authentifizierungsfenster durch das Google Pay-Fenster überlagert wurde
-- Verbessert die Verarbeitung von Zahlungen mit gespeicherten Karten und wiederkehrenden Kartenzahlungen durch den Abruf vollständiger PayPal-Bestelldaten
+- Behebt ein Problem, bei dem Zahlungen mit gespeicherten Karten und wiederkehrende Kartenzahlungen mit unvollständigen PayPal-Bestelldaten verarbeitet wurden
 
 # 9.13.2
 - Behebt ein Problem, bei dem PayPal-Bestellungen nicht abgeschlossen werden konnten, wenn die `updated_at`-Spalte der PayPal-Bestelltransaktionstabelle keine NULL-Werte zuließ
