@@ -187,7 +187,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderResource
             ->expects(static::once())
             ->method('create')
-            ->with($order)
+            ->with($order, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP, false)
             ->willReturn($order);
 
         $response = $this->handler->pay(
@@ -430,7 +430,7 @@ Missing PayPal order id');
         $this->orderResource
             ->expects(static::once())
             ->method('create')
-            ->with($paypalOrder)
+            ->with($paypalOrder, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP, false)
             ->willReturn($paypalOrder);
 
         $this->orderConverter

@@ -1,6 +1,7 @@
 # 9.13.3
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
 - Fixes an issue, where Google Pay payments that required 3D Secure never completed due to blocking the authentication window with the Google Pay one
+- Fixes an issue, where payments with saved cards and recurring card payments were processed using incomplete PayPal order details
 
 # 9.13.2
 - Fixes an issue, where PayPal orders could not be placed when the `updated_at` column of the PayPal order transaction table was not nullable
