@@ -104,7 +104,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
                 $paypalOrder,
                 $order->getSalesChannelId(),
                 $this->resolvePartnerAttributionId($request),
-                true,
+                false,
                 $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
                 $this->getMetaDataId($request),
             );
@@ -198,7 +198,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             $paypalOrder,
             $order->getSalesChannelId(),
             PartnerAttributionId::PAYPAL_PPCP,
-            true,
+            false,
             $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
         );
 

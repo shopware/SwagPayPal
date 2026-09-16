@@ -245,7 +245,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderResource
             ->expects($this->once())
             ->method('create')
-            ->with($payPalOrder)
+            ->with($payPalOrder, $order->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP, false)
             ->willReturn($payPalOrder);
 
         $response = $this->handler->pay(
@@ -562,7 +562,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderResource
             ->expects($this->once())
             ->method('create')
-            ->with($payPalOrder)
+            ->with($payPalOrder, $order->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP, false)
             ->willReturn($payPalOrder);
 
         $this->orderExecuteService
