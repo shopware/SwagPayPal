@@ -192,6 +192,24 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
 
         [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
 
+        if ($this->isTransactionSuccessful($orderTransaction)) {
+            $paypalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
+            if (!\is_string($paypalOrderId) || !$paypalOrderId) {
+                throw CheckoutException::preparedOrderRequired(static::class);
+            }
+
+            $this->executeOrder(
+                $transaction,
+                $this->orderResource->get($paypalOrderId, $order->getSalesChannelId()),
+                $order,
+                $orderTransaction,
+                $context,
+                false,
+            );
+
+            return;
+        }
+
         $this->settingsValidationService->validate($order->getSalesChannelId());
         $paypalOrder = $this->orderBuilder->getOrder($transaction, $orderTransaction, $order, $context, new Request());
         $response = $this->orderResource->create(
