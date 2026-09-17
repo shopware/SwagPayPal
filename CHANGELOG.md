@@ -1,3 +1,6 @@
+# 10.8.5
+- Fixes an issue, where the "log out guest customer after order" setting kept Pay Upon Invoice guests logged in permanently instead of logging them out once the payment details were shown (shopware/shopware#7962)
+
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
 - Fixes an issue, where Google Pay payments that required 3D Secure never completed due to blocking the authentication window with the Google Pay one

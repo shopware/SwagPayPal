@@ -1,3 +1,6 @@
+# 10.8.5
+- Behebt ein Problem, bei dem die Einstellung "Gastkunde nach Bestellung ausloggen" bei Rechnungskauf dauerhaft ignoriert wurde, statt den Gast auszuloggen, sobald die Zahlungsinformationen angezeigt wurden (shopware/shopware#7962)
+
 # 10.8.4
 - Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte
 - Behebt ein Problem, bei dem Google Pay-Zahlungen, für die 3D Secure erforderlich war, nicht abgeschlossen wurden, da das Authentifizierungsfenster durch das Google Pay-Fenster überlagert wurde
