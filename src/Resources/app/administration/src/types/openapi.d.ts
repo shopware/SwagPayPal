@@ -594,7 +594,6 @@ export interface components {
             capabilities: {
                 [key: string]: string;
             };
-            /** @description null if the eligibility could not be determined */
             sdkV6Eligible: boolean | null;
         };
         swag_paypal_setting_settings_information: {
@@ -1597,7 +1596,7 @@ export interface components {
             stored_credential: components["schemas"]["paypal_v2_order_payment_source_card_stored_credential"] | null;
         };
         paypal_v2_order_payment_source_card_authentication_result: {
-            liability_shift: string | null;
+            liability_shift: string;
             three_d_secure: components["schemas"]["paypal_v2_order_payment_source_card_authentication_result_3d_secure"] | null;
         };
         paypal_v2_order_payment_source_card_authentication_result_3d_secure: {

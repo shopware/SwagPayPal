@@ -1547,7 +1547,6 @@
                         }
                     },
                     "sdkV6Eligible": {
-                        "description": "null if the eligibility could not be determined",
                         "type": "boolean",
                         "nullable": true
                     }
@@ -5790,8 +5789,7 @@
                 ],
                 "properties": {
                     "liability_shift": {
-                        "type": "string",
-                        "nullable": true
+                        "type": "string"
                     },
                     "three_d_secure": {
                         "oneOf": [
