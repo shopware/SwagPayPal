@@ -13,7 +13,12 @@
         {% endif %}
 
         {% if expressSettings.listingEnabled and product.calculatedCheapestPrice.totalPrice > 0 and product.extensions[constant('Swag\\PayPal\\Checkout\\Cart\\Service\\ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL')] is null %}
-            {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'pt-3'} %}
+            {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
+            {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+                {% sw_include '@SwagPayPal/storefront/paypal/express-button.html.twig' with { classes: 'pt-3' } %}
+            {% else %}
+                {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'pt-3'} %}
+            {% endif %}
         {% endif %}
     {% endblock %}
 {% endblock %}

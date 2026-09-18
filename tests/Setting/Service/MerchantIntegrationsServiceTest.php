@@ -16,6 +16,7 @@ use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
+use Swag\PayPal\Setting\Service\SdkV6EligibilityService;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceMerchantIntegrations;
@@ -54,6 +55,8 @@ class MerchantIntegrationsServiceTest extends TestCase
         static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['paypal']);
         static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['paylater']);
         static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $capabilities['acdc']);
+
+        static::assertTrue($information->getSdkV6Eligible());
     }
 
     public function testGetInformationWithoutCredentials(): void
@@ -72,6 +75,9 @@ class MerchantIntegrationsServiceTest extends TestCase
 
         $integrations = $information->getMerchantIntegrations();
         static::assertNull($integrations);
+
+        // without credentials no client token can be requested, so the eligibility stays unknown
+        static::assertNull($information->getSdkV6Eligible());
     }
 
     public function testGetInformationWithoutMerchantId(): void
@@ -139,6 +145,7 @@ class MerchantIntegrationsServiceTest extends TestCase
             new TokenResource(self::tokenGateway(), $apiContextFactory),
             new CredentialsUtil($this->systemConfigService),
             $dataRegistry,
+            new SdkV6EligibilityService(self::tokenGateway(), $apiContextFactory, new NullLogger()),
         );
     }
 }

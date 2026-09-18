@@ -59,6 +59,7 @@ export declare type SystemConfig = {
 
     'SwagPayPal.settings.agenticCommerceOnboarded'?: string;
     'SwagPayPal.settings.isLocalEnvironment'?: boolean;
+    'SwagPayPal.settings.sdkV6Enabled'?: boolean;
 };
 
 /**
@@ -121,4 +122,5 @@ export const SystemConfigDefinition: Record<SYSTEM_CONFIG, 'string' | 'password'
     'SwagPayPal.settings.crossBorderBuyerCountry': 'string',
 
     'SwagPayPal.settings.isLocalEnvironment': 'boolean',
+    'SwagPayPal.settings.sdkV6Enabled': 'boolean',
 };

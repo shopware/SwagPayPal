@@ -294,6 +294,10 @@ class MockRequestHandler
                 return $this->createOAuthException(SymResponse::HTTP_UNAUTHORIZED);
             }
 
+            if (($context->getContext()->getOAuthContext()->getBody()['response_type'] ?? null) === 'client_token') {
+                return $this->createResponse(SymResponse::HTTP_OK, CreateTokenResponseFixture::getClientToken());
+            }
+
             return $this->createResponse(SymResponse::HTTP_OK, CreateTokenResponseFixture::get());
         }
 

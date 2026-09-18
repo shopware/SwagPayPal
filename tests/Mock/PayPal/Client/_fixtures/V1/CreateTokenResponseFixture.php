@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Setting\Service\SdkV6EligibilityService;
 
 /**
  * @internal
@@ -28,5 +29,20 @@ class CreateTokenResponseFixture
             'app_id' => 'APP-80W284485P519543T',
             'expires_in' => 32389,
         ];
+    }
+
+    /**
+     * A client token carries the scopes the merchant may use on the client side,
+     * including the one that is granted once the SDK v6 is activated.
+     */
+    public static function getClientToken(): array
+    {
+        return \array_merge(self::get(), [
+            'scope' => \implode(' ', [
+                'https://uri.paypal.com/services/payments/orders/client_sdk_orders_api',
+                SdkV6EligibilityService::SCOPE_CLIENT_PAYMENTS_ELIGIBILITY,
+                'https://uri.paypal.com/services/pricing/exchange-currency/read',
+            ]),
+        ]);
     }
 }

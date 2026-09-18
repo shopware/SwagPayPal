@@ -90,7 +90,8 @@
       "vaultingEnabledVenmo": "Enable Vaulting for Venmo payments",
       "crossBorderMessagingEnabled" : "Enable cross-border localization of Pay Later message",
       "crossBorderBuyerCountry" : "Localization",
-      "isLocalEnvironment": "Local development environment"
+      "isLocalEnvironment": "Local development environment",
+      "sdkV6Enabled": "Use PayPal SDK v6"
     },
     "helpText": {
       "clientId": "The REST API client ID is used to authenticate this plugin with the PayPal API.",

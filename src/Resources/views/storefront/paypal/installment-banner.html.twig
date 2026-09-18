@@ -1,0 +1,13 @@
+{% set installmentBanner = installmentBanner ?? page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+{% set installmentBanner = installmentBanner ?? footer.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+
+{% block swag_paypal_message %}
+<div class="swag-paypal-installment-banner {{ classes ?? '' }}">
+    <paypal-message
+        data-swag-paypal-messages="true"
+        data-swag-paypal-messages-options="{{ installmentBanner|json_encode }}"
+        hidden
+    >
+    </paypal-message>
+</div>
+{% endblock %}

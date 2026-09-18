@@ -1527,7 +1527,8 @@
             "swag_paypal_setting_merchant_information": {
                 "required": [
                     "merchantIntegrations",
-                    "capabilities"
+                    "capabilities",
+                    "sdkV6Eligible"
                 ],
                 "properties": {
                     "merchantIntegrations": {
@@ -1544,6 +1545,10 @@
                         "additionalProperties": {
                             "type": "string"
                         }
+                    },
+                    "sdkV6Eligible": {
+                        "type": "boolean",
+                        "nullable": true
                     }
                 },
                 "type": "object"

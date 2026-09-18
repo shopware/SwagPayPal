@@ -23,6 +23,7 @@ class SettingsSaver implements SettingsSaverInterface
         private readonly SystemConfigService $systemConfigService,
         private readonly ApiCredentialService $apiCredentialService,
         private readonly WebhookSystemConfigHelper $webhookSystemConfigHelper,
+        private readonly SdkV6EligibilityService $sdkV6EligibilityService,
     ) {
     }
 
@@ -60,6 +61,8 @@ class SettingsSaver implements SettingsSaverInterface
 
         $this->systemConfigService->setMultiple($settings, $salesChannelId);
 
+        $this->guardSdkV6Setting($salesChannelId);
+
         if ($information->getLiveCredentialsValid() || $information->getSandboxCredentialsValid()) {
             $webhookErrors = \array_merge(
                 $webhookErrors ?? [],
@@ -70,6 +73,24 @@ class SettingsSaver implements SettingsSaverInterface
         $information->setWebhookErrors(\array_map(static fn (\Throwable $e) => $e->getMessage(), $webhookErrors ?? []));
 
         return $information;
+    }
+
+    private function guardSdkV6Setting(?string $salesChannelId): void
+    {
+        if (!$this->systemConfigService->getBool(Settings::SDK_V6_ENABLED, $salesChannelId)) {
+            return;
+        }
+
+        // neither an ineligible account nor an undeterminable one may enable it
+        if ($this->sdkV6EligibilityService->isEligible($salesChannelId)) {
+            return;
+        }
+
+        if ($salesChannelId === null) {
+            $this->systemConfigService->set(Settings::SDK_V6_ENABLED, false);
+        } else {
+            $this->systemConfigService->delete(Settings::SDK_V6_ENABLED, $salesChannelId);
+        }
     }
 
     /**
