@@ -233,7 +233,7 @@ export default class SwagPayPalScriptBase extends Plugin {
             'enable-funding': 'paylater,venmo',
         };
 
-        if (this.options.disablePayLater || this.options.showPayLater === false) {
+        if (this.options.disablePayLater) {
             config['enable-funding'] = 'venmo';
         }
 
