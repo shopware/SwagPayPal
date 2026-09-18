@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Fixes an issue, where late PayPal cancellation responses or webhooks could change a successfully paid transaction to cancelled (shopware/shopware#19221)
+- Fixes an issue where late PayPal browser cancellations could cancel payments already being processed, and negative webhooks could cancel paid transactions (shopware/shopware#19221)
 
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings

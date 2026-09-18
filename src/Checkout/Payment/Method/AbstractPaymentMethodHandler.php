@@ -159,10 +159,18 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
 
         $paypalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
         if (!\is_string($paypalOrderId) || !$paypalOrderId) {
+            if ($isCancelled) {
+                return;
+            }
+
             throw CheckoutException::preparedOrderRequired(static::class);
         }
 
         if ($isCancelled) {
+            if (!$this->orderExecuteService->isCancellationAllowed($paypalOrderId, $order->getSalesChannelId())) {
+                return;
+            }
+
             throw PaymentException::customerCanceled(
                 $transaction->getOrderTransactionId(),
                 'Customer canceled the payment on the PayPal page'

@@ -20,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\PatchCollection;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -215,13 +216,45 @@ class PayPalPaymentHandlerTest extends TestCase
 
     public function testFinalizeWithCancel(): void
     {
+        $orderResource = $this->createMock(OrderResource::class);
+        $orderResource->expects($this->once())->method('get')
+            ->with(GetCapturedOrderCapture::ID)
+            ->willReturn((new Order())->assign([
+                'id' => GetCapturedOrderCapture::ID,
+                'status' => 'CREATED',
+                'purchase_units' => [['reference_id' => 'default']],
+            ]));
+        $orderResource->expects($this->never())->method('capture');
+        $orderResource->expects($this->never())->method('authorize');
+
         $this->expectException(PaymentException::class);
         $this->expectExceptionMessageMatches('/\A' . \preg_quote('The customer canceled the external payment process. Customer canceled the payment on the PayPal page', '/') . '\z/');
-        $this->createPayPalPaymentHandler()->finalize(
+        $this->createPayPalPaymentHandler(orderResource: $orderResource)->finalize(
             new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
             new PaymentTransactionStruct($this->getTransactionId(Context::createDefaultContext(), $this->getContainer())),
             Context::createDefaultContext(),
         );
+    }
+
+    #[DataProvider('pendingTransactionStateProvider')]
+    public function testFinalizeWithCancelPreservesTransactionAwaitingPaymentReconciliation(string $state): void
+    {
+        $context = Context::createDefaultContext();
+        $transactionId = $this->getTransactionId($context, $this->getContainer(), $state);
+
+        $this->createPayPalPaymentHandler()->finalize(
+            new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
+            new PaymentTransactionStruct($transactionId),
+            $context,
+        );
+
+        $this->assertOrderTransactionState($state, $transactionId, $context);
+    }
+
+    public static function pendingTransactionStateProvider(): \Generator
+    {
+        yield 'unconfirmed transaction already captured by PayPal' => [OrderTransactionStates::STATE_UNCONFIRMED];
+        yield 'in-progress transaction already captured by PayPal' => [OrderTransactionStates::STATE_IN_PROGRESS];
     }
 
     #[DataProvider('successfulTransactionStateProvider')]
@@ -307,10 +340,10 @@ class PayPalPaymentHandlerTest extends TestCase
         $this->assertFinalizeRequest(self::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER, OrderTransactionStates::STATE_PAID, CaptureOrderCapture::CAPTURE_ID);
     }
 
-    private function createPayPalPaymentHandler(array $settings = [], ?VaultTokenService $vaultTokenService = null): PayPalPaymentHandler
+    private function createPayPalPaymentHandler(array $settings = [], ?VaultTokenService $vaultTokenService = null, ?OrderResource $orderResource = null): PayPalPaymentHandler
     {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
-        $orderResource = new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
+        $orderResource ??= new OrderResource(self::orderGateway(), new ApiContextFactoryMock());
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();
 

@@ -79,6 +79,45 @@ class OrderExecuteService
         }
     }
 
+    public function isCancellationAllowed(string $paypalOrderId, string $salesChannelId): bool
+    {
+        try {
+            $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
+        } catch (\Throwable $e) {
+            $this->logger->warning('Could not verify PayPal order before cancellation. Preserving transaction state.', [
+                'paypalOrderId' => $paypalOrderId,
+                'salesChannelId' => $salesChannelId,
+                'exception' => $e,
+            ]);
+
+            return false;
+        }
+
+        if (!$order->isset('id') || $order->getId() !== $paypalOrderId || !$order->isset('status')) {
+            return false;
+        }
+
+        // An approved order may already be executing before payment resources become visible.
+        if (!\in_array($order->getStatus(), [ConstantsV2::ORDER_CREATED, ConstantsV2::ORDER_PAYER_ACTION_REQUIRED], true)) {
+            return false;
+        }
+
+        if ($order->getPurchaseUnits()->first() === null) {
+            return false;
+        }
+
+        foreach ($order->getPurchaseUnits() as $purchaseUnit) {
+            $payments = $purchaseUnit->getPayments();
+            if ($payments?->getCaptures()?->first() !== null
+                || $payments?->getAuthorizations()?->first() !== null
+                || $payments?->getRefunds()?->first() !== null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function checkFinalizedStatus(PayPalOrder $order, string $salesChannelId, string $transactionId, Context $context, bool $refetch = true): bool
     {
         if ($order->getIntent() === ConstantsV2::INTENT_CAPTURE) {

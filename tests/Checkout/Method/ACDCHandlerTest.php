@@ -369,6 +369,99 @@ class ACDCHandlerTest extends TestCase
         $this->handler->finalize(new Request([]), $paymentTransaction, $context);
     }
 
+    #[DataProvider('cancellationDecisionProvider')]
+    public function testFinalizeWithCancelChecksPayPalBeforeCancelling(string $stateName, bool $cancellationAllowed): void
+    {
+        $context = Context::createDefaultContext();
+        $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
+        $order = new OrderEntity();
+        $order->setSalesChannelId('salesChannelId');
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setOrder($order);
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypalOrderId',
+        ]);
+        $state = new StateMachineStateEntity();
+        $state->setTechnicalName($stateName);
+        $transaction->setStateMachineState($state);
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->orderExecuteService
+            ->expects($this->once())
+            ->method('isCancellationAllowed')
+            ->with('paypalOrderId', 'salesChannelId')
+            ->willReturn($cancellationAllowed);
+        $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
+        $this->stateMachineRegistry->expects($this->never())->method('transition');
+        $this->transactionDataService->expects($this->never())->method('setResourceId');
+        $this->acdcValidator->expects($this->never())->method('validate');
+
+        if ($cancellationAllowed) {
+            $this->expectExceptionObject(PaymentException::customerCanceled(
+                $transaction->getId(),
+                'Customer canceled the payment on the PayPal page'
+            ));
+        }
+
+        $this->handler->finalize(new Request(['cancel' => true]), $paymentTransaction, $context);
+    }
+
+    public static function cancellationDecisionProvider(): \Generator
+    {
+        yield 'unconfirmed payment already submitted' => [OrderTransactionStates::STATE_UNCONFIRMED, false];
+        yield 'in-progress payment already submitted' => [OrderTransactionStates::STATE_IN_PROGRESS, false];
+        yield 'unconfirmed payment not submitted' => [OrderTransactionStates::STATE_UNCONFIRMED, true];
+        yield 'in-progress payment not submitted' => [OrderTransactionStates::STATE_IN_PROGRESS, true];
+    }
+
+    #[DataProvider('successfulTransactionStateProvider')]
+    public function testFinalizeWithCancelPreservesSuccessfulTransaction(string $stateName): void
+    {
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setOrder(new OrderEntity());
+        $state = new StateMachineStateEntity();
+        $state->setTechnicalName($stateName);
+        $transaction->setStateMachineState($state);
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
+        $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
+        $this->stateMachineRegistry->expects($this->never())->method('transition');
+
+        $this->handler->finalize(
+            new Request(['cancel' => true]),
+            new PaymentTransactionStruct($transaction->getId()),
+            Context::createDefaultContext(),
+        );
+    }
+
+    #[DataProvider('invalidPayPalOrderIdProvider')]
+    public function testFinalizeWithCancelWithoutValidOrderIdPreservesTransaction(string|int|null $paypalOrderId): void
+    {
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setOrder(new OrderEntity());
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $paypalOrderId,
+        ]);
+        $state = new StateMachineStateEntity();
+        $state->setTechnicalName(OrderTransactionStates::STATE_UNCONFIRMED);
+        $transaction->setStateMachineState($state);
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
+        $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
+        $this->stateMachineRegistry->expects($this->never())->method('transition');
+
+        $this->handler->finalize(
+            new Request(['cancel' => true]),
+            new PaymentTransactionStruct($transaction->getId()),
+            Context::createDefaultContext(),
+        );
+    }
+
     public function testFinalizeValid3DSecure(): void
     {
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
