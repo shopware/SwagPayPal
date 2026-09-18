@@ -10,6 +10,7 @@ namespace Swag\PayPal\Webhook\Handler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -57,6 +58,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 
         $criteria = new Criteria();
         $criteria->addAssociation('order');
+        $criteria->addAssociation('stateMachineState');
         $criteria->addFilter(
             new EqualsFilter(
                 \sprintf('customFields.%s', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID),
@@ -120,5 +122,15 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         }
 
         return $state->getTechnicalName() !== $invalidStatus;
+    }
+
+    protected function isCancellationAllowed(OrderTransactionEntity $orderTransaction): bool
+    {
+        $state = $orderTransaction->getStateMachineState()?->getTechnicalName();
+
+        return $state === null || !\in_array($state, [
+            OrderTransactionStates::STATE_CANCELLED,
+            OrderTransactionStates::STATE_PAID,
+        ], true);
     }
 }

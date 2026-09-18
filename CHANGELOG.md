@@ -1,3 +1,7 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue where late PayPal browser cancellations could cancel payments already being processed, and negative webhooks could cancel paid transactions (shopware/shopware#19221)
+- Retries deferred browser cancellations after temporary PayPal errors without initiating a payment
+
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
 - Fixes an issue, where Google Pay payments that required 3D Secure never completed due to blocking the authentication window with the Google Pay one
