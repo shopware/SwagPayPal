@@ -86,7 +86,7 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
             callbackIntents: ['PAYMENT_AUTHORIZATION'],
             transactionInfo: {
                 countryCode,
-                totalPriceStatus: 'ESTIMATED', // 'FINAL',
+                totalPriceStatus: 'FINAL',
                 totalPriceLabel: 'Grand Total',
                 currencyCode: this.options.currency,
                 totalPrice: this.options.totalPrice,
@@ -125,7 +125,11 @@ export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
         }
 
         if ('PAYER_ACTION_REQUIRED' === confirmOrderResponse.status) {
-            await paypal.Googlepay().initiatePayerAction({ orderId });
+            paypal.Googlepay().initiatePayerAction({ orderId })
+                .then(() => this.onApprove({ orderId }))
+                .catch((e) => this.onError(e));
+
+            return;
         }
 
         this.onApprove({ orderId });
