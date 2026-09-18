@@ -1,6 +1,10 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte
 - Behebt ein Problem, bei dem das PayPal JS in der Storefront mehrmals geladen werden konnte
+
+# 10.8.4
+- Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte
+- Behebt ein Problem, bei dem Google Pay-Zahlungen, für die 3D Secure erforderlich war, nicht abgeschlossen wurden, da das Authentifizierungsfenster durch das Google Pay-Fenster überlagert wurde
+- Behebt ein Problem, bei dem Zahlungen mit gespeicherten Karten und wiederkehrende Zahlungen bei manuellem Zahlungseinzug (`AUTHORIZE`) mit `ACTION_DOES_NOT_MATCH_INTENT` fehlschlagen konnten
 
 # 10.8.3
 - Behebt ein Problem, bei dem Produktsuchen, die nur einen Teil der Felder laden (z. B. die Anfrage der Mengenauswahl zur Kaufmengenbegrenzung in der Storefront), mit einem Fehler fehlschlugen, wenn der Express-Checkout-Button für Produktlisten aktiviert war (shopware/SwagPayPal#554)
