@@ -43,6 +43,7 @@ use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderPending;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
@@ -223,6 +224,11 @@ class PayPalPaymentHandlerTest extends TestCase
     public function testFinalizePayPalOrderCapture(): void
     {
         $this->assertFinalizeRequest(GetOrderCapture::ID, OrderTransactionStates::STATE_PAID, CaptureOrderCapture::CAPTURE_ID);
+    }
+
+    public function testFinalizePendingCapture(): void
+    {
+        $this->assertFinalizeRequest(CaptureOrderPending::ID, OrderTransactionStates::STATE_IN_PROGRESS, CaptureOrderPending::CAPTURE_ID);
     }
 
     public function testFinalizePayPalOrderAuthorize(): void
