@@ -7,6 +7,13 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractSta
         appSwitchEnabled: false,
     };
 
+    _init() {
+        // remove paylater from loaded funding sources
+        this.options.disablePayLater = !this.options.showPayLater;
+
+        super._init();
+    }
+
     render(paypal) {
         const button = paypal.Buttons(this.getButtonConfig(this.getFundingSource(paypal)));
 
