@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem verspätete PayPal-Abbruchantworten im Browser bereits laufende Zahlungen und negative Webhooks bezahlte Transaktionen auf „Abgebrochen“ setzen konnten (shopware/shopware#19221)
+- Wiederholt zurückgestellte Zahlungsabbrüche nach vorübergehenden PayPal-Fehlern, ohne eine Zahlung auszulösen
 
 # 10.8.4
 - Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte

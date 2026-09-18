@@ -8,17 +8,29 @@
 namespace Swag\PayPal\Checkout\Payment\Service;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\ApplePay;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Card;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\GooglePay;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Venmo;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments;
 use Swag\PayPal\Checkout\Exception\OrderFailedException;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Lock\LockFactory;
 
 #[Package('checkout')]
 class OrderExecuteService
@@ -33,12 +45,16 @@ class OrderExecuteService
 
     /**
      * @internal
+     *
+     * @param EntityRepository<OrderTransactionCollection> $orderTransactionRepository
      */
     public function __construct(
         OrderResource $orderResource,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         OrderNumberPatchBuilder $orderNumberPatchBuilder,
         LoggerInterface $logger,
+        private readonly EntityRepository $orderTransactionRepository,
+        private readonly LockFactory $lockFactory,
     ) {
         $this->orderResource = $orderResource;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
@@ -58,64 +74,81 @@ class OrderExecuteService
     ): PayPalOrder {
         $this->logger->debug('Started');
 
+        $lock = $this->lockFactory->createLock('swag-paypal-order-' . $paypalOrder->getId());
+        if (!$lock->acquire(true)) {
+            return $paypalOrder;
+        }
+
         try {
-            return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
-        } catch (PayPalApiException $e) {
-            if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
-                || !$e->is(PayPalApiException::ISSUE_DUPLICATE_INVOICE_ID)) {
-                throw $e;
+            $transaction = $this->orderTransactionRepository->search(new Criteria([$transactionId]), $context)->getEntities()->first();
+            if ($transaction?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED) === $paypalOrder->getId()) {
+                $this->checkFinalizedStatus($paypalOrder, $salesChannelId, $transactionId, $context, false);
+
+                return $paypalOrder;
             }
 
-            $this->logger->warning('Duplicate order number detected. Retrying payment without order number.');
+            try {
+                return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+            } catch (PayPalApiException $e) {
+                if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
+                    || !$e->is(PayPalApiException::ISSUE_DUPLICATE_INVOICE_ID)) {
+                    throw $e;
+                }
 
-            $this->orderResource->update(
-                [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
-                $paypalOrder->getId(),
-                $salesChannelId,
-                $partnerAttributionId
-            );
+                $this->logger->warning('Duplicate order number detected. Retrying payment without order number.');
 
-            return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+                $this->orderResource->update(
+                    [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
+                    $paypalOrder->getId(),
+                    $salesChannelId,
+                    $partnerAttributionId
+                );
+
+                return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+            }
+        } finally {
+            $lock->release();
         }
     }
 
-    public function isCancellationAllowed(string $paypalOrderId, string $salesChannelId): bool
+    public function isCancellationAllowed(string $paypalOrderId, string $salesChannelId, string $transactionId, Context $context): bool
     {
+        $lock = $this->lockFactory->createLock('swag-paypal-order-' . $paypalOrderId);
+        if (!$lock->acquire()) {
+            return false;
+        }
+
         try {
-            $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
-        } catch (\Throwable $e) {
-            $this->logger->warning('Could not verify PayPal order before cancellation. Preserving transaction state.', [
-                'paypalOrderId' => $paypalOrderId,
-                'salesChannelId' => $salesChannelId,
-                'exception' => $e,
-            ]);
-
-            return false;
-        }
-
-        if (!$order->isset('id') || $order->getId() !== $paypalOrderId || !$order->isset('status')) {
-            return false;
-        }
-
-        // An approved order may already be executing before payment resources become visible.
-        if (!\in_array($order->getStatus(), [ConstantsV2::ORDER_CREATED, ConstantsV2::ORDER_PAYER_ACTION_REQUIRED], true)) {
-            return false;
-        }
-
-        if ($order->getPurchaseUnits()->first() === null) {
-            return false;
-        }
-
-        foreach ($order->getPurchaseUnits() as $purchaseUnit) {
-            $payments = $purchaseUnit->getPayments();
-            if ($payments?->getCaptures()?->first() !== null
-                || $payments?->getAuthorizations()?->first() !== null
-                || $payments?->getRefunds()?->first() !== null) {
+            $criteria = (new Criteria([$transactionId]))->addAssociations(['stateMachineState', 'paymentMethod']);
+            $transaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
+            if ($transaction === null
+                || $transaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID) !== $paypalOrderId
+                || $transaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED) !== $paypalOrderId
+                || $transaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_EXECUTION_STARTED) === $paypalOrderId
+                || !\in_array($transaction->getStateMachineState()?->getTechnicalName(), [
+                    OrderTransactionStates::STATE_OPEN,
+                    OrderTransactionStates::STATE_UNCONFIRMED,
+                    OrderTransactionStates::STATE_IN_PROGRESS,
+                ], true)) {
                 return false;
             }
-        }
 
-        return true;
+            try {
+                $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
+            } catch (\Throwable $e) {
+                $this->logger->warning('Could not verify PayPal order before cancellation. Preserving transaction state for retry.', [
+                    'paypalOrderId' => $paypalOrderId,
+                    'salesChannelId' => $salesChannelId,
+                    'exception' => $e,
+                ]);
+
+                return false;
+            }
+
+            return $this->isUnexecutedOrder($order, $paypalOrderId, $transaction->getPaymentMethod()?->getHandlerIdentifier());
+        } finally {
+            $lock->release();
+        }
     }
 
     public function checkFinalizedStatus(PayPalOrder $order, string $salesChannelId, string $transactionId, Context $context, bool $refetch = true): bool
@@ -159,11 +192,64 @@ class OrderExecuteService
         return false;
     }
 
+    private function isUnexecutedOrder(PayPalOrder $order, string $paypalOrderId, ?string $paymentHandler): bool
+    {
+        if (!$order->isset('id') || $order->getId() !== $paypalOrderId || !$order->isset('status')) {
+            return false;
+        }
+
+        $allowedStatuses = [ConstantsV2::ORDER_CREATED, ConstantsV2::ORDER_PAYER_ACTION_REQUIRED];
+        if ($this->isManuallyExecutedOrder($order, $paymentHandler)) {
+            $allowedStatuses[] = ConstantsV2::ORDER_APPROVED;
+        }
+
+        if (!\in_array($order->getStatus(), $allowedStatuses, true)) {
+            return false;
+        }
+
+        if ($order->getPurchaseUnits()->first() === null) {
+            return false;
+        }
+
+        foreach ($order->getPurchaseUnits() as $purchaseUnit) {
+            $payments = $purchaseUnit->getPayments();
+            if ($payments?->getCaptures()?->first() !== null
+                || $payments?->getAuthorizations()?->first() !== null
+                || $payments?->getRefunds()?->first() !== null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function isManuallyExecutedOrder(PayPalOrder $order, ?string $paymentHandler): bool
+    {
+        if ($order->isset('processingInstruction')) {
+            return $order->getProcessingInstruction() === 'NO_INSTRUCTION';
+        }
+
+        $source = $order->getPaymentSource()?->first();
+
+        // Older wallet responses expose only payer data, without a payment_source.
+        if ($order->getPaymentSource() === null && $paymentHandler === PayPalPaymentHandler::class) {
+            return true;
+        }
+
+        return $source instanceof Paypal || $source instanceof Card || $source instanceof ApplePay || $source instanceof GooglePay || $source instanceof Venmo;
+    }
+
     private function doPayPalRequest(PayPalOrder $paypalOrder, string $salesChannelId, string $partnerAttributionId, string $transactionId, Context $context): PayPalOrder
     {
         if ($this->checkFinalizedStatus($paypalOrder, $salesChannelId, $transactionId, $context, false)) {
             return $paypalOrder;
         }
+
+        // A timeout must not make an already submitted payment look safe to cancel.
+        $this->orderTransactionRepository->update([[
+            'id' => $transactionId,
+            'customFields' => [SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_EXECUTION_STARTED => $paypalOrder->getId()],
+        ]], $context);
 
         if ($paypalOrder->getIntent() === ConstantsV2::INTENT_CAPTURE) {
             $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);

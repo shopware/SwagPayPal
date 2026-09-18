@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Checkout\Payment\Service;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
@@ -20,6 +22,8 @@ class TransactionDataService
 {
     /**
      * @internal
+     *
+     * @param EntityRepository<OrderTransactionCollection> $orderTransactionRepository
      */
     public function __construct(
         private readonly EntityRepository $orderTransactionRepository,
@@ -45,7 +49,22 @@ class TransactionDataService
                 SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_IS_SANDBOX => $this->credentialsUtil->isSandbox($salesChannelId),
             ],
         ];
+
+        $transaction = $this->orderTransactionRepository->search(new Criteria([$orderTransactionId]), $context)->getEntities()->first();
+        if ($transaction?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID) !== $paypalOrderId) {
+            $data['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED] = null;
+            $data['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_EXECUTION_STARTED] = null;
+        }
+
         $this->orderTransactionRepository->update([$data], $context);
+    }
+
+    public function setCancellationRequested(string $transactionId, string $paypalOrderId, Context $context): void
+    {
+        $this->orderTransactionRepository->update([[
+            'id' => $transactionId,
+            'customFields' => [SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => $paypalOrderId],
+        ]], $context);
     }
 
     public function setResourceId(PayPalOrder $order, string $transactionId, Context $context): void

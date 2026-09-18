@@ -58,6 +58,8 @@ use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Lock\Store\InMemoryStore;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -225,7 +227,9 @@ abstract class AbstractTestSyncAPMHandler extends TestCase
                 $orderResource,
                 $orderTransactionStateHandler,
                 new OrderNumberPatchBuilder(),
-                $logger
+                $logger,
+                $this->orderTransactionRepo,
+                new LockFactory(new InMemoryStore()),
             ),
             new OrderPatchService(
                 $systemConfig,

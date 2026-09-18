@@ -56,6 +56,8 @@ use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Lock\Store\InMemoryStore;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -354,7 +356,9 @@ class PayPalPaymentHandlerTest extends TestCase
                 $orderResource,
                 $orderTransactionStateHandler,
                 new OrderNumberPatchBuilderV2(),
-                $logger
+                $logger,
+                $this->orderTransactionRepo,
+                new LockFactory(new InMemoryStore()),
             ),
             new OrderPatchService(
                 $systemConfig,
