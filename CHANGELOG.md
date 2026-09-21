@@ -1,11 +1,28 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Fixes an issue, where a custom tax provider's adjusted total was not charged, because the PayPal order used the stale cart or order transaction amount instead of the taxed total (shopware/SwagPayPal#722)
-- Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
-- Fixes an issue, where the extension card context menu showed a raw snippet key instead of "Configure" (shopware/shopware#19028)
-- Fixes an issue, where a PayPal payment failed with an UNPROCESSABLE_ENTITY error when the order was changed on the confirmation page after the customer had already approved it at PayPal, instead of letting them approve the changed amount again (shopware/SwagPayPal#759)
+- Fixes an issue where PayPal and Pay Later payments failed after the approved order amount changed, instead of asking the customer to approve the new amount (shopware/SwagPayPal#759)
 - Adds `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException`
 - Adds `Swag\PayPal\RestApi\V2\Resource\OrderResource::confirm()`, which confirms the payment source of an existing PayPal order
 - Changes `Swag\PayPal\RestApi\Exception\PayPalApiException` to carry the PayPal SDK exception of the failure as its previous exception
+- Fixes an issue, where the PayPal JS could be loaded twice in the storefront
+
+# 10.8.4
+- Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
+- Fixes an issue, where Google Pay payments that required 3D Secure never completed due to blocking the authentication window with the Google Pay one
+- Fixes an issue, where payments with saved cards and recurring payments could fail with `ACTION_DOES_NOT_MATCH_INTENT` when payment acquisition was set to `AUTHORIZE`
+
+# 10.8.3
+- Fixes an issue, where product searches that load only a subset of fields, like the storefront quantity selector's purchase limit request, failed with an error, if the Express Checkout button was enabled for product listings (shopware/SwagPayPal#554)
+
+# 10.8.2
+- Fixes an issue, where PayPal orders could not be placed when the `updated_at` column of the PayPal order transaction table was not nullable
+- Fixes an issue, where line item labels containing line breaks made the PayPal order creation fail for local payment methods like iDEAL, P24, EPS or Bancontact
+
+# 10.8.1
+- Fixes an issue, where the same PayPal order could be used for multiple Shopware orders.
+- Fixes an issue, where a custom tax provider's adjusted total was not charged, because the PayPal order used the stale cart or order transaction amount instead of the taxed total (shopware/SwagPayPal#722)
+- Fixes an issue, where PayPal Express Checkout buttons disappeared after using the browser back button from the checkout page (shopware/shopware#18297)
+- Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
+- Fixes an issue, where the extension card context menu showed a raw snippet key instead of "Configure" (shopware/shopware#19028)
 
 # 10.8.0
 - Fixes an issue, where the PayPal Express Checkout failed without customer feedback when shipping to a country that is not assigned to the sales channel (shopware/shopware#15067)

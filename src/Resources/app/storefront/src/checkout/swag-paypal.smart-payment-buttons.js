@@ -7,12 +7,21 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractSta
         appSwitchEnabled: false,
     };
 
+    _init() {
+        // remove paylater from loaded funding sources
+        this.options.disablePayLater = !this.options.showPayLater;
+
+        super._init();
+    }
+
     render(paypal) {
         const button = paypal.Buttons(this.getButtonConfig(this.getFundingSource(paypal)));
 
         if (!button.isEligible()) {
             return void this.handleError(this.NOT_ELIGIBLE, true, `Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
         }
+
+        this._paypalButton = button;
 
         if (this.options.appSwitchEnabled && typeof button.hasReturned === 'function' && button.hasReturned()) {
             return button.resume();

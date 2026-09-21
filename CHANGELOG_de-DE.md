@@ -1,11 +1,28 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Behebt ein Problem, bei dem der von einem benutzerdefinierten Tax Provider angepasste Gesamtbetrag nicht berechnet wurde, weil die PayPal-Bestellung den veralteten Warenkorb- oder Bestelltransaktionsbetrag anstelle des besteuerten Gesamtbetrags verwendete (shopware/SwagPayPal#722)
-- Behebt ein Problem, bei dem die PayPal-Versandtracking-Synchronisierung 429 RATE_LIMIT_REACHED-Antworten zu früh erneut verarbeitet hat, anstatt den Retry-After-Header zu berücksichtigen.
-- Behebt ein Problem, bei dem im Kontextmenü der Erweiterungs-Kachel der rohe Snippet-Key statt „Konfigurieren” angezeigt wurde (shopware/shopware#19028)
-- Behebt ein Problem, bei dem eine PayPal-Zahlung mit einem UNPROCESSABLE_ENTITY-Fehler fehlschlug, wenn die Bestellung auf der Bestellbestätigungsseite geändert wurde, nachdem der Kunde sie bei PayPal bereits freigegeben hatte, anstatt ihn den geänderten Betrag erneut freigeben zu lassen (shopware/SwagPayPal#759)
+- Behebt ein Problem, bei dem PayPal-Zahlungen und Zahlungen mit „Später bezahlen“ nach einer Änderung des freigegebenen Bestellbetrags fehlschlugen, anstatt den Kunden den neuen Betrag erneut freigeben zu lassen (shopware/SwagPayPal#759)
 - Fügt `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException` hinzu
 - Fügt `Swag\PayPal\RestApi\V2\Resource\OrderResource::confirm()` hinzu, das die Zahlungsquelle einer bestehenden PayPal-Bestellung bestätigt
 - Ändert `Swag\PayPal\RestApi\Exception\PayPalApiException`, sodass die PayPal-SDK-Exception des Fehlers als vorherige Exception erhalten bleibt
+- Behebt ein Problem, bei dem das PayPal JS in der Storefront mehrmals geladen werden konnte
+
+# 10.8.4
+- Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte
+- Behebt ein Problem, bei dem Google Pay-Zahlungen, für die 3D Secure erforderlich war, nicht abgeschlossen wurden, da das Authentifizierungsfenster durch das Google Pay-Fenster überlagert wurde
+- Behebt ein Problem, bei dem Zahlungen mit gespeicherten Karten und wiederkehrende Zahlungen bei manuellem Zahlungseinzug (`AUTHORIZE`) mit `ACTION_DOES_NOT_MATCH_INTENT` fehlschlagen konnten
+
+# 10.8.3
+- Behebt ein Problem, bei dem Produktsuchen, die nur einen Teil der Felder laden (z. B. die Anfrage der Mengenauswahl zur Kaufmengenbegrenzung in der Storefront), mit einem Fehler fehlschlugen, wenn der Express-Checkout-Button für Produktlisten aktiviert war (shopware/SwagPayPal#554)
+
+# 10.8.2
+- Behebt ein Problem, bei dem PayPal-Bestellungen nicht abgeschlossen werden konnten, wenn die `updated_at`-Spalte der PayPal-Bestelltransaktionstabelle keine NULL-Werte zuließ
+- Behebt ein Problem, bei dem Positionsbezeichnungen mit Zeilenumbrüchen die Erstellung der PayPal-Bestellung für lokale Zahlungsarten wie iDEAL, P24, EPS oder Bancontact fehlschlagen ließen
+
+# 10.8.1
+- Behebt ein Problem, bei dem dieselbe PayPal-Bestellung für mehrere Shopware-Bestellungen verwendet werden konnte.
+- Behebt ein Problem, bei dem der von einem benutzerdefinierten Tax Provider angepasste Gesamtbetrag nicht berechnet wurde, weil die PayPal-Bestellung den veralteten Warenkorb- oder Bestelltransaktionsbetrag anstelle des besteuerten Gesamtbetrags verwendete (shopware/SwagPayPal#722)
+- Behebt ein Problem, bei dem die PayPal Express Checkout Buttons nach dem Zurücknavigieren vom Checkout mit dem Browser-Zurück-Button nicht mehr angezeigt wurden (shopware/shopware#18297)
+- Behebt ein Problem, bei dem die PayPal-Versandtracking-Synchronisierung 429 RATE_LIMIT_REACHED-Antworten zu früh erneut verarbeitet hat, anstatt den Retry-After-Header zu berücksichtigen.
+- Behebt ein Problem, bei dem im Kontextmenü der Erweiterungs-Kachel der rohe Snippet-Key statt „Konfigurieren” angezeigt wurde (shopware/shopware#19028)
 
 # 10.8.0
 - Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)

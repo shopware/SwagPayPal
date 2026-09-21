@@ -38,9 +38,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download zip
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: ${{ github.event.repository.name }}.zip
+          # The artifact is the extension zip itself, not an archive around it.
+          skip-decompress: true
 
       - name: Install shopware-cli
         uses: shopware/shopware-cli-action@v3
@@ -153,9 +155,11 @@ jobs:
           path: ${{ env.PLUGIN_PATH }}
 
       - name: Download zip
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: SwagPayPal.zip
+          # The artifact is the extension zip itself, not an archive around it.
+          skip-decompress: true
 
       - name: Setup SwagPayPal
         uses: ./paypal/.github/actions/setup-paypal

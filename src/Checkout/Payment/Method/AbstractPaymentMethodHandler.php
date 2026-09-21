@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Checkout\Payment\Method;
 
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -33,6 +36,7 @@ use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -41,8 +45,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
-abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
+abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     public const PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME = 'paypalOrderId';
     public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
 
@@ -186,7 +192,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             $paypalOrder,
             $order->getSalesChannelId(),
             PartnerAttributionId::PAYPAL_PPCP,
-            true,
+            false,
             $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
         );
 
@@ -285,12 +291,22 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             throw $exception;
         }
 
-        $confirmedOrder = $this->orderResource->confirm(
-            $preparedOrderId,
-            $paymentSource,
-            $order->getSalesChannelId(),
-            PartnerAttributionId::PAYPAL_PPCP,
-        );
+        try {
+            $confirmedOrder = $this->orderResource->confirm(
+                $preparedOrderId,
+                $paymentSource,
+                $order->getSalesChannelId(),
+                PartnerAttributionId::PAYPAL_PPCP,
+            );
+        } catch (PayPalApiException|ClientExceptionInterface $confirmationException) {
+            $this->logger?->warning('Could not reopen the PayPal order for payer approval.', [
+                'orderTransactionId' => $transaction->getOrderTransactionId(),
+                'payPalOrderId' => $preparedOrderId,
+                'exception' => $confirmationException,
+            ]);
+
+            throw $exception;
+        }
 
         $action = $this->resolveRedirect($confirmedOrder);
         if ($action === null) {
@@ -360,7 +376,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             $paypalOrder,
             $order->getSalesChannelId(),
             $this->resolvePartnerAttributionId($request),
-            true,
+            false,
             $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
             $this->getMetaDataId($request),
         );
