@@ -315,6 +315,7 @@ class PayPalPaymentHandlerTest extends TestCase
             new TransactionDataService(
                 $this->orderTransactionRepo,
                 new CredentialsUtil($systemConfig),
+                $this->createMock(\Swag\PayPal\Checkout\Payment\Service\OrderTransactionService::class),
             ),
             $orderResource,
             $this->createMock(VaultTokenService::class),

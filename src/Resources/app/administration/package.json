@@ -34,8 +34,5 @@
     },
     "dependencies": {
         "@shopware-ag/meteor-admin-sdk": "^6.9.1"
-    },
-    "optionalDependencies": {
-        "administration": "^6.x"
     }
 }

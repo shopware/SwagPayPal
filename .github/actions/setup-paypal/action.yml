@@ -134,6 +134,7 @@ runs:
         dependencies: ${{ steps.dependency-list.outputs.deps }}
         extraRepositories: ${{ steps.dependency-list.outputs.repos }}
         keep-composer-tools: true
+        node-version: 24 # latest LTS
 
     - name: Prepare Administration
       shell: bash

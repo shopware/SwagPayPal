@@ -24,8 +24,6 @@ class PayPalCookieProvider implements CookieProviderInterface
 
     /**
      * @internal
-     *
-     * @deprecated tag:v11.0.0 - Will be removed. Use {@see CookieGroupCollectEvent} instead to introduce cookies.
      */
     public function __construct(
         CookieProviderInterface $cookieProvider,

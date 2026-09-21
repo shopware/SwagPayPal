@@ -1,6 +1,7 @@
 {
   "swag-paypal": {
     "extension-card-base": {
+      "config": "Konfigurieren",
       "reportIssue": "Problem melden"
     }
   }

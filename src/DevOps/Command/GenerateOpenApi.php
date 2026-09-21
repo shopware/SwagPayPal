@@ -142,6 +142,8 @@ class GenerateOpenApi extends Command
             ->files()
             ->name('*.php')
             ->in(self::ROOT_DIR . '/../../../vendor/shopware/paypal-sdk/src/Struct')
-            ->exclude('AgenticCommerce');
+            ->exclude('AgenticCommerce')
+            // Scan order determines the order of `components.schemas`; unsorted it differs per machine
+            ->sortByName();
     }
 }
