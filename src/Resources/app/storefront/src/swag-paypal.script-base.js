@@ -81,6 +81,13 @@ export default class SwagPayPalScriptBase extends Plugin {
         showPayLater: true,
 
         /**
+         * This option removes `paylater` from the script's `enable-funding`
+         *
+         * @type boolean
+         */
+        disablePayLater: false,
+
+        /**
          * This option toggles if credit card and ELV should be shown
          *
          * @type boolean
@@ -233,7 +240,7 @@ export default class SwagPayPalScriptBase extends Plugin {
             'enable-funding': 'paylater,venmo',
         };
 
-        if (this.options.disablePayLater || this.options.showPayLater === false) {
+        if (this.options.disablePayLater) {
             config['enable-funding'] = 'venmo';
         }
 
