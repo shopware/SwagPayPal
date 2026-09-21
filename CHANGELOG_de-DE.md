@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
 - Behebt ein Problem, bei dem das PayPal JS in der Storefront mehrmals geladen werden konnte
 
 # 10.8.4

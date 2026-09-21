@@ -43,6 +43,7 @@ use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderPending;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
@@ -103,6 +104,30 @@ class PayPalPaymentHandlerTest extends TestCase
         );
 
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, Context::createDefaultContext());
+    }
+
+    public function testPayAndFinalizePendingCapture(): void
+    {
+        $settings = $this->getDefaultConfigData();
+        $handler = $this->createPayPalPaymentHandler($settings);
+        $context = Context::createDefaultContext();
+
+        $transactionId = $this->getTransactionId($context, $this->getContainer());
+        $response = $handler->pay(new Request(), new PaymentTransactionStruct($transactionId), $context, null);
+        static::assertNotNull($response);
+
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $context);
+
+        $this->orderTransactionRepo->update([[
+            'id' => $transactionId,
+            'customFields' => [
+                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => CaptureOrderPending::ID,
+            ],
+        ]], $context);
+
+        $handler->finalize(new Request(), new PaymentTransactionStruct($transactionId), $context);
+
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $context);
     }
 
     public function testPayWithEcs(): void
@@ -223,6 +248,11 @@ class PayPalPaymentHandlerTest extends TestCase
     public function testFinalizePayPalOrderCapture(): void
     {
         $this->assertFinalizeRequest(GetOrderCapture::ID, OrderTransactionStates::STATE_PAID, CaptureOrderCapture::CAPTURE_ID);
+    }
+
+    public function testFinalizePendingCapture(): void
+    {
+        $this->assertFinalizeRequest(CaptureOrderPending::ID, OrderTransactionStates::STATE_IN_PROGRESS, CaptureOrderPending::CAPTURE_ID);
     }
 
     public function testFinalizePayPalOrderAuthorize(): void

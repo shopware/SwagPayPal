@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront
 
 # 10.8.4
