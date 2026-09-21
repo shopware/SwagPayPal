@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments;
@@ -88,7 +89,10 @@ class OrderExecuteService
             }
 
             if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_PENDING) {
-                $this->orderTransactionStateHandler->process($transactionId, $context);
+                try {
+                    $this->orderTransactionStateHandler->process($transactionId, $context);
+                } catch (IllegalTransitionException) {
+                }
 
                 return true;
             }
@@ -113,7 +117,10 @@ class OrderExecuteService
         }
 
         if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_PENDING) {
-            $this->orderTransactionStateHandler->process($transactionId, $context);
+            try {
+                $this->orderTransactionStateHandler->process($transactionId, $context);
+            } catch (IllegalTransitionException) {
+            }
 
             return true;
         }

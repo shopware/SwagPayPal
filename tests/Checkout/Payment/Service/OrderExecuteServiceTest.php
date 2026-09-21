@@ -10,9 +10,12 @@ namespace Swag\PayPal\Test\Checkout\Payment\Service;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
+use Shopware\Core\System\StateMachine\StateMachineException;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -113,5 +116,91 @@ class OrderExecuteServiceTest extends TestCase
         $finalized = $orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
 
         static::assertTrue($finalized);
+    }
+
+    public function testCheckFinalizedStatusIgnoresIllegalTransitionOnPendingCapture(): void
+    {
+        $stateHandler = $this->createMock(OrderTransactionStateHandler::class);
+        $orderExecuteService = new OrderExecuteService(
+            $this->createMock(OrderResource::class),
+            $stateHandler,
+            $this->createMock(OrderNumberPatchBuilder::class),
+            new NullLogger(),
+        );
+
+        $orderData = CaptureOrderCapture::get();
+        $orderData['purchase_units'][0]['payments']['captures'][0]['status'] = ConstantsV2::ORDER_CAPTURE_PENDING;
+        $order = (new Order())->assign($orderData);
+
+        $transactionId = Uuid::randomHex();
+        $context = Context::createDefaultContext();
+
+        // the transaction is already "in progress", e.g. because the payment was executed before
+        $stateHandler->expects($this->once())
+            ->method('process')
+            ->with($transactionId, $context)
+            ->willThrowException(StateMachineException::illegalStateTransition(
+                OrderTransactionStates::STATE_IN_PROGRESS,
+                StateMachineTransitionActions::ACTION_PROCESS,
+                [],
+            ));
+
+        $finalized = $orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
+
+        static::assertTrue($finalized);
+    }
+
+    public function testCheckFinalizedStatusIgnoresIllegalTransitionOnPendingAuthorization(): void
+    {
+        $stateHandler = $this->createMock(OrderTransactionStateHandler::class);
+        $orderExecuteService = new OrderExecuteService(
+            $this->createMock(OrderResource::class),
+            $stateHandler,
+            $this->createMock(OrderNumberPatchBuilder::class),
+            new NullLogger(),
+        );
+
+        $orderData = AuthorizeOrderAuthorization::get();
+        $orderData['purchase_units'][0]['payments']['authorizations'][0]['status'] = ConstantsV2::ORDER_AUTHORIZATION_PENDING;
+        $order = (new Order())->assign($orderData);
+
+        $transactionId = Uuid::randomHex();
+        $context = Context::createDefaultContext();
+
+        // the transaction is already "in progress", e.g. because the payment was executed before
+        $stateHandler->expects($this->once())
+            ->method('process')
+            ->with($transactionId, $context)
+            ->willThrowException(StateMachineException::illegalStateTransition(
+                OrderTransactionStates::STATE_IN_PROGRESS,
+                StateMachineTransitionActions::ACTION_PROCESS,
+                [],
+            ));
+
+        $finalized = $orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
+
+        static::assertTrue($finalized);
+    }
+
+    public function testCheckFinalizedStatusDoesNotSwallowOtherStateMachineExceptions(): void
+    {
+        $stateHandler = $this->createMock(OrderTransactionStateHandler::class);
+        $orderExecuteService = new OrderExecuteService(
+            $this->createMock(OrderResource::class),
+            $stateHandler,
+            $this->createMock(OrderNumberPatchBuilder::class),
+            new NullLogger(),
+        );
+
+        $orderData = CaptureOrderCapture::get();
+        $orderData['purchase_units'][0]['payments']['captures'][0]['status'] = ConstantsV2::ORDER_CAPTURE_PENDING;
+        $order = (new Order())->assign($orderData);
+
+        $stateHandler->expects($this->once())
+            ->method('process')
+            ->willThrowException(StateMachineException::stateMachineNotFound(OrderTransactionStates::STATE_MACHINE));
+
+        $this->expectException(StateMachineException::class);
+        $orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), Uuid::randomHex(), Context::createDefaultContext(), false);
     }
 }
