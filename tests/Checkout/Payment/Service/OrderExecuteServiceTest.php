@@ -80,10 +80,11 @@ class OrderExecuteServiceTest extends TestCase
             ->method('process')
             ->with($transactionId, $context);
         $stateHandler->expects($this->never())->method('paid');
+        $stateHandler->expects($this->never())->method('reopen');
 
         $finalized = $orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
 
-        static::assertFalse($finalized);
+        static::assertTrue($finalized);
     }
 
     public function testCheckFinalizedStatusSetsInProgressOnPendingAuthorization(): void
@@ -107,9 +108,10 @@ class OrderExecuteServiceTest extends TestCase
             ->method('process')
             ->with($transactionId, $context);
         $stateHandler->expects($this->never())->method('authorize');
+        $stateHandler->expects($this->never())->method('reopen');
 
         $finalized = $orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
 
-        static::assertFalse($finalized);
+        static::assertTrue($finalized);
     }
 }

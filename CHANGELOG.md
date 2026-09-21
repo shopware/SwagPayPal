@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
 - Fixes an issue, where a custom tax provider's adjusted total was not charged, because the PayPal order used the stale cart or order transaction amount instead of the taxed total (shopware/SwagPayPal#722)
 - Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
 

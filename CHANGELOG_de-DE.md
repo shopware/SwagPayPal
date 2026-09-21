@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
 - Behebt ein Problem, bei dem der von einem benutzerdefinierten Tax Provider angepasste Gesamtbetrag nicht berechnet wurde, weil die PayPal-Bestellung den veralteten Warenkorb- oder Bestelltransaktionsbetrag anstelle des besteuerten Gesamtbetrags verwendete (shopware/SwagPayPal#722)
 - Behebt ein Problem, bei dem die PayPal-Versandtracking-Synchronisierung 429 RATE_LIMIT_REACHED-Antworten zu früh erneut verarbeitet hat, anstatt den Retry-After-Header zu berücksichtigen.
 

@@ -88,7 +88,6 @@ class OrderExecuteService
             }
 
             if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_PENDING) {
-                $this->orderTransactionStateHandler->reopen($transactionId, $context);
                 $this->orderTransactionStateHandler->process($transactionId, $context);
 
                 return true;
@@ -114,7 +113,6 @@ class OrderExecuteService
         }
 
         if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_PENDING) {
-            $this->orderTransactionStateHandler->reopen($transactionId, $context);
             $this->orderTransactionStateHandler->process($transactionId, $context);
 
             return true;
