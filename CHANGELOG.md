@@ -1,5 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue where late PayPal browser cancellations could cancel payments already being processed, and negative webhooks could cancel paid transactions (shopware/shopware#19221)
+- Fixes an issue, where the "log out guest customer after order" setting kept Pay Upon Invoice guests logged in permanently instead of logging them out once the payment details were shown (shopware/shopware#7962)
+- Fixes an issue, where the PayPal JS could be loaded twice in the storefront
 
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
