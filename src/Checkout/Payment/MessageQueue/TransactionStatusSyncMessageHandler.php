@@ -21,11 +21,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\StateMachineException;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
-use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -44,7 +42,6 @@ class TransactionStatusSyncMessageHandler
         private readonly OrderResource $orderResource,
         private readonly TransactionDataService $transactionDataService,
         private readonly LoggerInterface $logger,
-        private readonly OrderExecuteService $orderExecuteService,
     ) {
     }
 
@@ -61,17 +58,12 @@ class TransactionStatusSyncMessageHandler
 
             // Check if transaction is still unconfirmed at time of execution
             $criteria = (new Criteria([$message->getTransactionId()]))
-                ->addAssociation('stateMachineState')
                 ->addFilter(new MultiFilter(
                     MultiFilter::CONNECTION_OR,
                     [
                         new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_UNCONFIRMED),
                         new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_AUTHORIZED),
                         new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_IN_PROGRESS),
-                        new MultiFilter(MultiFilter::CONNECTION_AND, [
-                            new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_OPEN),
-                            new EqualsFilter('customFields.' . SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED, $message->getPayPalOrderId()),
-                        ]),
                     ]
                 ));
 
@@ -81,34 +73,6 @@ class TransactionStatusSyncMessageHandler
             $transaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
             if ($transaction === null) {
                 return;
-            }
-
-            if ($transaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID) !== $message->getPayPalOrderId()) {
-                return;
-            }
-
-            $cancellationOrderId = $transaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED);
-            if ($cancellationOrderId === $message->getPayPalOrderId()) {
-                $state = $transaction->getStateMachineState()?->getTechnicalName();
-                if (!\in_array($state, [
-                    OrderTransactionStates::STATE_OPEN,
-                    OrderTransactionStates::STATE_UNCONFIRMED,
-                    OrderTransactionStates::STATE_IN_PROGRESS,
-                    OrderTransactionStates::STATE_AUTHORIZED,
-                ], true)) {
-                    return;
-                }
-
-                if ($state !== OrderTransactionStates::STATE_AUTHORIZED && $this->orderExecuteService->isCancellationAllowed(
-                    $cancellationOrderId,
-                    $message->getSalesChannelId(),
-                    $message->getTransactionId(),
-                    $context,
-                )) {
-                    $this->orderTransactionStateHandler->cancel($message->getTransactionId(), $context);
-
-                    return;
-                }
             }
 
             $order = $this->orderResource->get($message->getPayPalOrderId(), $message->getSalesChannelId());

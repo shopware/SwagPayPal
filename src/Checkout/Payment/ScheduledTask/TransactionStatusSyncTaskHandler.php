@@ -18,7 +18,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
@@ -60,29 +59,15 @@ class TransactionStatusSyncTaskHandler extends ScheduledTaskHandler
             ->addFilter(new MultiFilter(
                 MultiFilter::CONNECTION_OR,
                 [
-                    new MultiFilter(MultiFilter::CONNECTION_AND, [
-                        new EqualsAnyFilter('stateMachineState.technicalName', [
-                            OrderTransactionStates::STATE_UNCONFIRMED,
-                            OrderTransactionStates::STATE_AUTHORIZED,
-                            OrderTransactionStates::STATE_IN_PROGRESS,
-                        ]),
-                        new RangeFilter('createdAt', [
-                            RangeFilter::LTE => $hourAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-                            RangeFilter::GTE => $twoDaysAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-                        ]),
-                    ]),
-                    new MultiFilter(MultiFilter::CONNECTION_AND, [
-                        new EqualsAnyFilter('stateMachineState.technicalName', [
-                            OrderTransactionStates::STATE_OPEN,
-                            OrderTransactionStates::STATE_UNCONFIRMED,
-                            OrderTransactionStates::STATE_IN_PROGRESS,
-                        ]),
-                        new NotFilter(MultiFilter::CONNECTION_AND, [
-                            new EqualsFilter('customFields.' . SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED, null),
-                        ]),
-                    ]),
+                    new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_UNCONFIRMED),
+                    new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_AUTHORIZED),
+                    new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_IN_PROGRESS),
                 ]
-            ));
+            ))
+            ->addFilter(new RangeFilter('createdAt', [
+                RangeFilter::LTE => $hourAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                RangeFilter::GTE => $twoDaysAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            ]));
 
         $transactions = $this->orderTransactionRepository->search($criteria, Context::createCLIContext());
 

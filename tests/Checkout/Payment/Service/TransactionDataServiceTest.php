@@ -11,11 +11,10 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
 use Swag\PayPal\Checkout\Payment\Service\OrderTransactionService;
@@ -30,10 +29,7 @@ use Swag\PayPal\SwagPayPal;
 #[CoversClass(TransactionDataService::class)]
 class TransactionDataServiceTest extends TestCase
 {
-    /**
-     * @var StaticEntityRepository<OrderTransactionCollection>
-     */
-    private StaticEntityRepository $transactionRepository;
+    private EntityRepository&MockObject $transactionRepository;
 
     private CredentialsUtil&MockObject $credentialsUtil;
 
@@ -43,7 +39,7 @@ class TransactionDataServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->transactionRepository = new StaticEntityRepository([new OrderTransactionCollection()]);
+        $this->transactionRepository = $this->createMock(EntityRepository::class);
         $this->credentialsUtil = $this->createMock(CredentialsUtil::class);
         $this->orderTransactionService = $this->createMock(OrderTransactionService::class);
 
@@ -64,9 +60,11 @@ class TransactionDataServiceTest extends TestCase
             'purchaseUnits' => $purchaseUnits,
         ]);
 
-        $this->transactionDataService->setResourceId($payPalOrder, 'order-transaction-id', $context);
+        $this->transactionRepository
+            ->expects($this->never())
+            ->method('update');
 
-        static::assertSame([], $this->transactionRepository->updates);
+        $this->transactionDataService->setResourceId($payPalOrder, 'order-transaction-id', $context);
     }
 
     public static function dataProviderSetResourceIdWithMissingData(): \Generator
@@ -93,25 +91,17 @@ class TransactionDataServiceTest extends TestCase
             ]],
         ]);
 
-        $this->transactionDataService->setResourceId($payPalOrder, 'order-transaction-id', $context);
-
-        static::assertSame([[['id' => 'order-transaction-id', 'customFields' => [
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID => 'capture-id',
-        ]]]], $this->transactionRepository->updates);
-    }
-
-    public function testCancellationRequestIsBoundToPayPalOrder(): void
-    {
-        $this->transactionDataService->setCancellationRequested('order-transaction-id', 'paypal-order-id', Context::createDefaultContext());
-
-        static::assertSame([[
-            [
+        $this->transactionRepository
+            ->expects($this->once())
+            ->method('update')
+            ->with([[
                 'id' => 'order-transaction-id',
                 'customFields' => [
-                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => 'paypal-order-id',
+                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID => 'capture-id',
                 ],
-            ],
-        ]], $this->transactionRepository->updates);
+            ]], $context);
+
+        $this->transactionDataService->setResourceId($payPalOrder, 'order-transaction-id', $context);
     }
 
     #[DataProvider('dataProviderSetOrderId')]
@@ -125,6 +115,19 @@ class TransactionDataServiceTest extends TestCase
             ->with('sales-channel-id')
             ->willReturn($isSandbox);
 
+        $this->transactionRepository
+            ->expects($this->once())
+            ->method('update')
+            ->with([[
+                'id' => 'order-transaction-id',
+                'customFields' => [
+                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id',
+                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID => 'partner-attribution-id',
+                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_IS_SANDBOX => $isSandbox,
+                ],
+            ]], $context)
+            ->willReturn($this->createMock(EntityWrittenContainerEvent::class));
+
         $this->transactionDataService->setOrderId(
             'order-transaction-id',
             'paypal-order-id',
@@ -132,59 +135,6 @@ class TransactionDataServiceTest extends TestCase
             'sales-channel-id',
             $context,
         );
-
-        static::assertSame([[
-            [
-                'id' => 'order-transaction-id',
-                'customFields' => [
-                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id',
-                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID => 'partner-attribution-id',
-                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_IS_SANDBOX => $isSandbox,
-                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => null,
-                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_EXECUTION_STARTED => null,
-                ],
-            ],
-        ]], $this->transactionRepository->updates);
-    }
-
-    #[DataProvider('existingOrderProvider')]
-    public function testSetOrderIdPreservesProofOnlyForTheSameOrder(string $previousOrderId, bool $clearMarkers): void
-    {
-        $transaction = new OrderTransactionEntity();
-        $transaction->setId('order-transaction-id');
-        $transaction->setCustomFields([
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $previousOrderId,
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => $previousOrderId,
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_EXECUTION_STARTED => $previousOrderId,
-        ]);
-        $repository = new StaticEntityRepository([new OrderTransactionCollection([$transaction])]);
-        $service = new TransactionDataService($repository, $this->credentialsUtil, $this->orderTransactionService);
-
-        $service->setOrderId(
-            'order-transaction-id',
-            'paypal-order-id',
-            'partner-attribution-id',
-            'sales-channel-id',
-            Context::createDefaultContext(),
-        );
-
-        static::assertCount(1, $repository->updates);
-        $fields = $repository->updates[0][0]['customFields'];
-        if ($clearMarkers) {
-            static::assertArrayHasKey(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED, $fields);
-            static::assertArrayHasKey(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_EXECUTION_STARTED, $fields);
-            static::assertNull($fields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED]);
-            static::assertNull($fields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_EXECUTION_STARTED]);
-        } else {
-            static::assertArrayNotHasKey(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED, $fields);
-            static::assertArrayNotHasKey(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_EXECUTION_STARTED, $fields);
-        }
-    }
-
-    public static function existingOrderProvider(): \Generator
-    {
-        yield 'same order keeps cancellation and submission evidence' => ['paypal-order-id', false];
-        yield 'replacement order discards markers for the previous order' => ['previous-paypal-order-id', true];
     }
 
     public static function dataProviderSetOrderId(): \Generator

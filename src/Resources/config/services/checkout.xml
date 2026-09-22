@@ -142,8 +142,6 @@
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder"/>
             <argument type="service" id="monolog.logger.paypal"/>
-            <argument type="service" id="order_transaction.repository"/>
-            <argument type="service" id="lock.factory"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService">
@@ -205,7 +203,6 @@
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
             <argument type="service" id="monolog.logger.paypal"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
             <tag name="messenger.message_handler" />
         </service>
     </services>

@@ -387,14 +387,10 @@ class ACDCHandlerTest extends TestCase
         $transaction->setStateMachineState($state);
         $this->orderTransactionRepository->addSearch([$transaction]);
 
-        $this->transactionDataService
-            ->expects($this->once())
-            ->method('setCancellationRequested')
-            ->with('orderTransactionId', 'paypalOrderId', $context);
         $this->orderExecuteService
             ->expects($this->once())
             ->method('isCancellationAllowed')
-            ->with('paypalOrderId', 'salesChannelId', 'orderTransactionId', $context)
+            ->with('paypalOrderId', 'salesChannelId')
             ->willReturn($cancellationAllowed);
         $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
         $this->stateMachineRegistry->expects($this->never())->method('transition');
@@ -431,7 +427,6 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
-        $this->transactionDataService->expects($this->never())->method('setCancellationRequested');
         $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
         $this->stateMachineRegistry->expects($this->never())->method('transition');
 
@@ -457,7 +452,6 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
-        $this->transactionDataService->expects($this->never())->method('setCancellationRequested');
         $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
         $this->stateMachineRegistry->expects($this->never())->method('transition');
 

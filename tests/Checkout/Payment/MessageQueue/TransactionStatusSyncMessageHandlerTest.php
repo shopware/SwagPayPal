@@ -13,25 +13,23 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\StateMachineException;
-use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessage;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessageHandler;
-use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\SwagPayPal;
 
 /**
  * @internal
@@ -40,10 +38,7 @@ use Swag\PayPal\SwagPayPal;
 #[CoversClass(TransactionStatusSyncMessageHandler::class)]
 class TransactionStatusSyncMessageHandlerTest extends TestCase
 {
-    /**
-     * @var StaticEntityRepository<OrderTransactionCollection>
-     */
-    private StaticEntityRepository $orderTransactionRepository;
+    private EntityRepository&MockObject $orderTransactionRepository;
 
     private OrderTransactionStateHandler&MockObject $orderTransactionStateHandler;
 
@@ -53,19 +48,15 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     private LoggerInterface&MockObject $logger;
 
-    private OrderExecuteService&MockObject $orderExecuteService;
-
     private TransactionStatusSyncMessageHandler $handler;
 
     protected function setUp(): void
     {
-        $this->orderTransactionRepository = new StaticEntityRepository([], new OrderTransactionDefinition());
+        $this->orderTransactionRepository = $this->createMock(EntityRepository::class);
         $this->orderTransactionStateHandler = $this->createMock(OrderTransactionStateHandler::class);
         $this->orderResource = $this->createMock(OrderResource::class);
         $this->transactionDataService = $this->createMock(TransactionDataService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->orderExecuteService = $this->createMock(OrderExecuteService::class);
-        $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
 
         $this->handler = new TransactionStatusSyncMessageHandler(
             $this->orderTransactionRepository,
@@ -73,17 +64,23 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             $this->orderResource,
             $this->transactionDataService,
             $this->logger,
-            $this->orderExecuteService,
         );
     }
 
     #[DataProvider('dataProviderInvokeWithAllMatchingStatus')]
     public function testInvokeWithAllMatchingStatus(string $intent, string $status, ?string $stateHandlerMethod): void
     {
-        $transaction = new OrderTransactionEntity();
-        $transaction->setId('transaction-id');
-        $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
+            );
 
         $payPalOrder = (new Order())->assign([
             'intent' => $intent,
@@ -141,10 +138,17 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     public function testInvokeThrowsStateMachineExceptionException(): void
     {
-        $transaction = new OrderTransactionEntity();
-        $transaction->setId('transaction-id');
-        $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
+            );
 
         $payPalOrder = (new Order())->assign([
             'intent' => ConstantsV2::INTENT_CAPTURE,
@@ -200,10 +204,17 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     public function testInvokeThrowsPayPalApiException(): void
     {
-        $transaction = new OrderTransactionEntity();
-        $transaction->setId('transaction-id');
-        $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
+            );
 
         $exception = new PayPalApiException('General error', '404 Not found');
 
@@ -235,10 +246,17 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     public function testInvokeThrowsPayPalApiExceptionResourceNotFound(): void
     {
-        $transaction = new OrderTransactionEntity();
-        $transaction->setId('transaction-id');
-        $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
+            );
 
         $exception = new PayPalApiException(PayPalApiException::ERROR_CODE_RESOURCE_NOT_FOUND, '404 Not found', issue: PayPalApiException::ISSUE_INVALID_RESOURCE_ID);
 
@@ -266,7 +284,12 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     public function testInvokeWithoutUnconfirmedTransaction(): void
     {
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection());
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static fn (Criteria $criteria, Context $context) => new EntitySearchResult('order_transaction', 0, new EntityCollection(), null, $criteria, $context)
+            );
 
         $this->orderResource->expects($this->never())->method('get');
         $this->logger->expects($this->never())->method(static::anything());
@@ -283,6 +306,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     public function testInvokeWithMissingPayPalOrderId(): void
     {
+        $this->orderTransactionRepository->expects($this->never())->method(static::anything());
         $this->orderResource->expects($this->never())->method('get');
         $this->logger->expects($this->never())->method(static::anything());
 
@@ -300,218 +324,20 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         ($this->handler)($message);
     }
 
-    public function testRequestedCancellationIsRetriedAfterVerificationFailure(): void
-    {
-        $transaction = $this->createTransaction(OrderTransactionStates::STATE_UNCONFIRMED);
-        $transaction->setCustomFields([
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id',
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => 'paypal-order-id',
-        ]);
-        $this->orderTransactionRepository->addSearch(
-            new OrderTransactionCollection([$transaction]),
-            new OrderTransactionCollection([$transaction]),
-        );
-        $this->orderExecuteService->expects($this->exactly(2))->method('isCancellationAllowed')
-            ->with('paypal-order-id', 'sales-channel-id', 'transaction-id', static::isInstanceOf(Context::class))
-            ->willReturn(false, true);
-        $order = (new Order())->assign([
-            'id' => 'paypal-order-id',
-            'status' => 'CREATED',
-            'purchase_units' => [['reference_id' => 'default']],
-        ]);
-        $this->orderResource->expects($this->once())->method('get')->willReturn($order);
-        $this->transactionDataService->expects($this->once())->method('setResourceId');
-        $cancellations = $this->once();
-        $this->orderTransactionStateHandler->expects($cancellations)->method('cancel')->with('transaction-id');
-
-        $message = new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', 'paypal-order-id');
-        ($this->handler)($message);
-        static::assertSame(0, $cancellations->numberOfInvocations());
-        ($this->handler)($message);
-        static::assertSame(1, $cancellations->numberOfInvocations());
-        static::assertSame([], $this->orderTransactionRepository->updates);
-    }
-
-    public function testRequestedCancellationOfUnexecutedApprovedOrderDoesNotCapture(): void
-    {
-        $transaction = $this->createTransaction(OrderTransactionStates::STATE_OPEN);
-        $transaction->setCustomFields([
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id',
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => 'paypal-order-id',
-        ]);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
-        $this->orderExecuteService->expects($this->once())->method('isCancellationAllowed')
-            ->with('paypal-order-id', 'sales-channel-id', 'transaction-id', static::isInstanceOf(Context::class))
-            ->willReturn(true);
-        $this->orderTransactionStateHandler->expects($this->once())->method('cancel')->with('transaction-id');
-        $this->orderResource->expects($this->never())->method(static::anything());
-        $this->transactionDataService->expects($this->never())->method('setResourceId');
-
-        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', 'paypal-order-id'));
-    }
-
-    #[DataProvider('pendingCancellationPaymentProvider')]
-    public function testSubmittedPaymentWithRequestedCancellationStillReconciles(string $intent, string $status, ?string $transition): void
-    {
-        $transaction = $this->createTransaction(OrderTransactionStates::STATE_IN_PROGRESS);
-        $transaction->setCustomFields([
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id',
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => 'paypal-order-id',
-        ]);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
-        $this->orderExecuteService->expects($this->once())->method('isCancellationAllowed')->willReturn(false);
-        $order = (new Order())->assign([
-            'id' => 'paypal-order-id',
-            'intent' => $intent,
-            'purchase_units' => [['payments' => [
-                $intent === ConstantsV2::INTENT_CAPTURE ? 'captures' : 'authorizations' => [['id' => 'resource-id', 'status' => $status]],
-            ]]],
-        ]);
-        $this->orderResource->expects($this->once())->method('get')->willReturn($order);
-        $this->transactionDataService->expects($this->once())->method('setResourceId')->with($order, 'transaction-id');
-        $this->orderTransactionStateHandler->expects($transition ? $this->once() : $this->never())
-            ->method($transition ?? static::anything())->with('transaction-id');
-        $this->orderTransactionStateHandler->expects($this->never())->method('cancel');
-
-        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', 'paypal-order-id'));
-    }
-
-    public static function pendingCancellationPaymentProvider(): \Generator
-    {
-        yield 'pending capture remains pending' => [ConstantsV2::INTENT_CAPTURE, 'PENDING', null];
-        yield 'completed capture marks transaction paid' => [ConstantsV2::INTENT_CAPTURE, 'COMPLETED', 'paid'];
-        yield 'pending authorization remains pending' => [ConstantsV2::INTENT_AUTHORIZE, 'PENDING', null];
-        yield 'created authorization marks transaction authorized' => [ConstantsV2::INTENT_AUTHORIZE, 'CREATED', 'authorize'];
-    }
-
-    #[DataProvider('staleCancellationProvider')]
-    public function testStaleCancellationCannotAffectAnotherPayPalOrder(string $currentOrderId, string $requestedOrderId, string $messageOrderId): void
-    {
-        $transaction = $this->createTransaction(OrderTransactionStates::STATE_UNCONFIRMED);
-        $transaction->setCustomFields([
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $currentOrderId,
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => $requestedOrderId,
-        ]);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
-        $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
-        $this->orderResource->expects($this->never())->method('get');
-        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
-        $this->transactionDataService->expects($this->never())->method('setResourceId');
-
-        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', $messageOrderId));
-
-        static::assertSame([], $this->orderTransactionRepository->updates);
-    }
-
-    public static function staleCancellationProvider(): \Generator
-    {
-        yield 'old message cannot cancel a replacement order' => ['replacement-order', 'old-order', 'old-order'];
-        yield 'old message cannot clear a newer cancellation' => ['replacement-order', 'replacement-order', 'old-order'];
-    }
-
-    public function testOldCancellationMessageCannotReconcileReplacementAfterMarkerWasCleared(): void
-    {
-        $transaction = $this->createTransaction(OrderTransactionStates::STATE_UNCONFIRMED);
-        $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'replacement-order']);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
-        $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
-        $this->orderResource->expects($this->never())->method('get');
-        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
-        $this->transactionDataService->expects($this->never())->method('setResourceId');
-
-        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', 'old-order'));
-
-        static::assertSame([], $this->orderTransactionRepository->updates);
-    }
-
-    public function testOlderCancellationRequestDoesNotPreventCurrentPaymentReconciliation(): void
-    {
-        $transaction = $this->createTransaction(OrderTransactionStates::STATE_UNCONFIRMED);
-        $transaction->setCustomFields([
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'replacement-order',
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => 'old-order',
-        ]);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
-        $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
-        $order = (new Order())->assign([
-            'id' => 'replacement-order',
-            'intent' => 'CAPTURE',
-            'purchase_units' => [['payments' => ['captures' => [['id' => 'capture-id', 'status' => 'COMPLETED']]]]],
-        ]);
-        $this->orderResource->expects($this->once())->method('get')->with('replacement-order', 'sales-channel-id')->willReturn($order);
-        $this->transactionDataService->expects($this->once())->method('setResourceId')->with($order, 'transaction-id');
-        $this->orderTransactionStateHandler->expects($this->once())->method('paid')->with('transaction-id');
-        $this->orderTransactionStateHandler->expects($this->never())->method('cancel');
-
-        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', 'replacement-order'));
-
-        static::assertSame([], $this->orderTransactionRepository->updates);
-    }
-
-    #[DataProvider('settledTransactionProvider')]
-    public function testPendingCancellationNeverChangesSettledTransaction(string $state): void
-    {
-        $transaction = $this->createTransaction($state);
-        $transaction->setCustomFields([
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id',
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => 'paypal-order-id',
-        ]);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
-        $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
-        $this->orderResource->expects($this->never())->method('get');
-        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
-
-        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', 'paypal-order-id'));
-    }
-
-    public static function settledTransactionProvider(): \Generator
-    {
-        yield 'paid payment is preserved' => [OrderTransactionStates::STATE_PAID];
-        yield 'refunded payment is preserved' => [OrderTransactionStates::STATE_REFUNDED];
-        yield 'partially refunded payment is preserved' => [OrderTransactionStates::STATE_PARTIALLY_REFUNDED];
-    }
-
-    public function testCreatedOrderWithoutCancellationRequestRemainsUnchanged(): void
-    {
-        $transaction = $this->createTransaction(OrderTransactionStates::STATE_UNCONFIRMED);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
-        $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
-        $this->orderResource->expects($this->once())->method('get')->willReturn((new Order())->assign([
-            'id' => 'paypal-order-id',
-            'status' => 'CREATED',
-            'purchase_units' => [['reference_id' => 'default']],
-        ]));
-        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
-
-        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', 'paypal-order-id'));
-    }
-
-    public function testAuthorizedTransactionWithCancellationRequestStillReconciles(): void
-    {
-        $transaction = $this->createTransaction(OrderTransactionStates::STATE_AUTHORIZED);
-        $transaction->setCustomFields([
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id',
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_CANCELLATION_REQUESTED => 'paypal-order-id',
-        ]);
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
-        $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
-        $this->orderResource->expects($this->once())->method('get')->willReturn((new Order())->assign([
-            'id' => 'paypal-order-id',
-            'intent' => 'AUTHORIZE',
-            'purchase_units' => [['payments' => ['authorizations' => [['id' => 'authorization-id', 'status' => 'CREATED']]]]],
-        ]));
-        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
-
-        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', 'paypal-order-id'));
-    }
-
     public function testInvokeWithAuthorizedTransactionAndOrderWillSkip(): void
     {
-        $transaction = new OrderTransactionEntity();
-        $transaction->setId('transaction-id');
-        $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
-        $transaction->setStateMachineState(new StateMachineStateEntity());
-        $this->orderTransactionRepository->addSearch(new OrderTransactionCollection([$transaction]));
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+                    $orderTransactionEntity->setStateMachineState(new StateMachineStateEntity());
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
+            );
 
         $payPalOrder = (new Order())->assign([
             'intent' => ConstantsV2::INTENT_AUTHORIZE,
@@ -547,17 +373,5 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         );
 
         ($this->handler)($message);
-    }
-
-    private function createTransaction(string $state): OrderTransactionEntity
-    {
-        $transaction = new OrderTransactionEntity();
-        $transaction->setId('transaction-id');
-        $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
-        $transactionState = new StateMachineStateEntity();
-        $transactionState->setTechnicalName($state);
-        $transaction->setStateMachineState($transactionState);
-
-        return $transaction;
     }
 }

@@ -52,8 +52,6 @@ use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Lock\LockFactory;
-use Symfony\Component\Lock\Store\InMemoryStore;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -234,9 +232,7 @@ Subscription not found', '/') . '\z/');
                 $orderResource,
                 $orderTransactionStateHandler,
                 new OrderNumberPatchBuilder(),
-                $logger,
-                $this->orderTransactionRepo,
-                new LockFactory(new InMemoryStore()),
+                $logger
             ),
             new OrderPatchService(
                 $systemConfig,

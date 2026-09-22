@@ -167,9 +167,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
         }
 
         if ($isCancelled) {
-            $this->transactionDataService->setCancellationRequested($transaction->getOrderTransactionId(), $paypalOrderId, $context);
-
-            if (!$this->orderExecuteService->isCancellationAllowed($paypalOrderId, $order->getSalesChannelId(), $transaction->getOrderTransactionId(), $context)) {
+            if (!$this->orderExecuteService->isCancellationAllowed($paypalOrderId, $order->getSalesChannelId())) {
                 return;
             }
 
