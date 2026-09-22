@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where the "log out guest customer after order" setting kept Pay Upon Invoice guests logged in permanently instead of logging them out once the payment details were shown (shopware/shopware#7962)
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront
 
 # 10.8.4
