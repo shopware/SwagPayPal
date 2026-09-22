@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Util\Availability;
 
+use Shopware\Commercial\Subscription\Framework\Struct\PlanIntervalMappingStruct;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -45,7 +46,7 @@ final class AvailabilityContextBuilder
         return self::buildContext(
             $salesChannelContext,
             $cart->getPrice()->getTotalPrice(),
-            $salesChannelContext->hasExtension('subscription'),
+            self::isSubscriptionContext($salesChannelContext),
             $hasDigitalProduct
         );
     }
@@ -93,9 +94,26 @@ final class AvailabilityContextBuilder
         return self::buildContext(
             $salesChannelContext,
             $order->getPrice()->getTotalPrice(),
-            $order->getExtensionOfType('foreignKeys', ArrayStruct::class)?->get('subscriptionId') !== null,
+            self::isSubscriptionContext($salesChannelContext)
+                || $order->getExtensionOfType('foreignKeys', ArrayStruct::class)?->get('subscriptionId') !== null,
             $hasDigitalProduct
         );
+    }
+
+    private static function isSubscriptionContext(SalesChannelContext $salesChannelContext): bool
+    {
+        if ($salesChannelContext->hasExtension('subscription')) {
+            return true;
+        }
+
+        if (!\class_exists(PlanIntervalMappingStruct::class)) {
+            return false;
+        }
+
+        return (bool) $salesChannelContext->getExtensionOfType(
+            PlanIntervalMappingStruct::MANAGED_CONTEXTS_EXTENSION,
+            PlanIntervalMappingStruct::class,
+        )?->all();
     }
 
     private static function buildContext(
