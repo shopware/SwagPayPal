@@ -9,7 +9,7 @@ namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
-use Shopware\PayPalSDK\Struct\V2\Order\ApplicationContext;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
 
 #[Package('checkout')]
 final class Settings
@@ -76,7 +76,7 @@ final class Settings
         self::SANDBOX => false,
         self::INTENT => ConstantsV2::INTENT_CAPTURE,
         self::SUBMIT_CART => true,
-        self::LANDING_PAGE => ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE,
+        self::LANDING_PAGE => ExperienceContext::LANDING_PAGE_TYPE_NO_PREFERENCE,
         self::SEND_ORDER_NUMBER => true,
         self::ECS_DETAIL_ENABLED => true,
         self::ECS_CART_ENABLED => true,

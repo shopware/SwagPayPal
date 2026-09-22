@@ -19,10 +19,10 @@ use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemRemoveRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemUpdateRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartLoadRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute;
-use Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartResponse;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Checkout\Cart\TaxProvider\TaxProviderProcessor;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -56,12 +56,6 @@ class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
         $newToken = 'new-context-token';
         $cart = new Cart($newToken);
         $cart->add(new LineItem('test', LineItem::PRODUCT_LINE_ITEM_TYPE, 'test'));
-
-        $taxProviderProcessor = $this->createMock(TaxProviderProcessor::class);
-        $taxProviderProcessor
-            ->expects($this->once())
-            ->method('process')
-            ->with($cart, $salesChannelContext);
 
         $newSalesChannelContext = $this->createMock(SalesChannelContext::class);
         $newSalesChannelContext
@@ -98,7 +92,7 @@ class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
             $expressCustomerService,
             $salesChannelContextFactory,
             $orderResource,
-            $this->createTaxedCartService($cart, $salesChannelContext, $newSalesChannelContext, $taxProviderProcessor),
+            $this->createTaxedCartService($cart, $salesChannelContext, $newSalesChannelContext),
             $cartPriceService,
             new NullLogger(),
         );
@@ -118,14 +112,8 @@ class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
         Cart $cart,
         SalesChannelContext $salesChannelContext,
         SalesChannelContext $newSalesChannelContext,
-        TaxProviderProcessor $taxProviderProcessor,
     ): CartService {
         $persister = $this->createMock(AbstractCartPersister::class);
-        $persister
-            ->expects($this->once())
-            ->method('load')
-            ->with($cart->getToken(), $salesChannelContext)
-            ->willReturn($cart);
         $persister
             ->expects($this->once())
             ->method('save')
@@ -133,20 +121,30 @@ class ExpressPrepareCheckoutRouteTaxedCartTest extends TestCase
 
         $calculator = $this->createMock(CartCalculator::class);
         $calculator
-            ->expects($this->exactly(2))
+            ->expects($this->once())
             ->method('calculate')
             ->willReturn($cart);
+
+        $cartLoadRoute = $this->createMock(AbstractCartLoadRoute::class);
+        $cartLoadRoute
+            ->expects($this->once())
+            ->method('load')
+            ->with(
+                static::callback(static function (Request $request) use ($cart): bool {
+                    static::assertSame($cart->getToken(), $request->query->get('token'));
+                    static::assertTrue($request->query->getBoolean('taxed'));
+
+                    return true;
+                }),
+                $salesChannelContext,
+            )
+            ->willReturn(new CartResponse($cart));
 
         return new CartService(
             $persister,
             $this->createMock(EventDispatcherInterface::class),
             $calculator,
-            new CartLoadRoute(
-                $persister,
-                $this->createMock(CartFactory::class),
-                $calculator,
-                $taxProviderProcessor,
-            ),
+            $cartLoadRoute,
             $this->createMock(AbstractCartDeleteRoute::class),
             $this->createMock(AbstractCartItemAddRoute::class),
             $this->createMock(AbstractCartItemUpdateRoute::class),

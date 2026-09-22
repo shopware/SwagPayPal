@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckoutException extends HttpException
 {
     public const PREPARED_ORDER_REQUIRED = 'PREPARED_ORDER_REQUIRED';
+    public const PAYPAL_ORDER_ALREADY_USED = 'PAYPAL_ORDER_ALREADY_USED';
 
     /**
      * @param class-string<AbstractPaymentHandler> $paymentHandler
@@ -27,6 +28,15 @@ class CheckoutException extends HttpException
             self::PREPARED_ORDER_REQUIRED,
             'PayPal Order ID does not exist in the request. The payment method {{ paymentHandler }} requires a prepared PayPal order.',
             ['paymentHandler' => $paymentHandler],
+        );
+    }
+
+    public static function paypalOrderAlreadyUsed(): self
+    {
+        return new self(
+            Response::HTTP_BAD_REQUEST,
+            self::PAYPAL_ORDER_ALREADY_USED,
+            'The PayPal Order ID has already been used for another order.',
         );
     }
 }

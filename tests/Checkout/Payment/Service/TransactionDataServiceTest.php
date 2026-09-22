@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEve
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
+use Swag\PayPal\Checkout\Payment\Service\OrderTransactionService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\SwagPayPal;
@@ -32,16 +33,20 @@ class TransactionDataServiceTest extends TestCase
 
     private CredentialsUtil&MockObject $credentialsUtil;
 
+    private OrderTransactionService&MockObject $orderTransactionService;
+
     private TransactionDataService $transactionDataService;
 
     protected function setUp(): void
     {
         $this->transactionRepository = $this->createMock(EntityRepository::class);
         $this->credentialsUtil = $this->createMock(CredentialsUtil::class);
+        $this->orderTransactionService = $this->createMock(OrderTransactionService::class);
 
         $this->transactionDataService = new TransactionDataService(
             $this->transactionRepository,
             $this->credentialsUtil,
+            $this->orderTransactionService,
         );
     }
 

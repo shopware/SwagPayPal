@@ -20,6 +20,7 @@ use Shopware\Core\Checkout\Payment\Cart\Error\PaymentMethodBlockedError;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\PayUponInvoice;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -212,26 +213,34 @@ class PUISubscriberTest extends TestCase
     {
         $this->settingsValidationService->expects($this->once())->method('validate');
         $paymentInstructionData = new PUIPaymentInstructionData();
+        $paymentInstructionData->setPaymentInstructions(new PayUponInvoice());
         $this->puiPaymentInstructionDataService->method('buildFinishData')->willReturn($paymentInstructionData);
 
-        $transaction = new OrderTransactionEntity();
-        $transaction->setId('test-id');
-        $transactions = new OrderTransactionCollection([$transaction]);
-        $order = new OrderEntity();
-        $order->setTransactions($transactions);
-        $page = new CheckoutFinishPage();
-        $page->setOrder($order);
-
-        // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.2.0, keep content
-        // @phpstan-ignore-next-line method may or may not exist depending on Shopware version
-        if (method_exists($page, 'setLogoutCustomer')) {
-            $page->setLogoutCustomer(true);
-        }
+        $page = $this->createFinishPage();
         $event = new CheckoutFinishPageLoadedEvent($page, $this->salesChannelContext, new Request());
 
         $this->subscriber->onCheckoutFinishLoaded($event);
         $extension = $page->getExtension(PUISubscriber::PAYPAL_PUI_PAYMENT_INSTRUCTIONS_PAGE_EXTENSION_ID);
         static::assertSame($paymentInstructionData, $extension);
+
+        // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.2.0, keep content
+        // @phpstan-ignore-next-line method may or may not exist depending on Shopware version
+        if (method_exists($page, 'isLogoutCustomer')) {
+            static::assertTrue($page->isLogoutCustomer());
+        }
+    }
+
+    public function testOnCheckoutFinishLoadedDefersGuestLogoutWhilePolling(): void
+    {
+        $this->settingsValidationService->expects($this->once())->method('validate');
+        $paymentInstructionData = new PUIPaymentInstructionData();
+        $this->puiPaymentInstructionDataService->method('buildFinishData')->willReturn($paymentInstructionData);
+
+        $page = $this->createFinishPage();
+        $event = new CheckoutFinishPageLoadedEvent($page, $this->salesChannelContext, new Request());
+
+        $this->subscriber->onCheckoutFinishLoaded($event);
+        static::assertSame($paymentInstructionData, $page->getExtension(PUISubscriber::PAYPAL_PUI_PAYMENT_INSTRUCTIONS_PAGE_EXTENSION_ID));
 
         // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.2.0, keep content
         // @phpstan-ignore-next-line method may or may not exist depending on Shopware version
@@ -304,5 +313,24 @@ class PUISubscriberTest extends TestCase
 
         $this->subscriber->onCheckoutFinishLoaded($event);
         static::assertNull($page->getExtension(PUISubscriber::PAYPAL_PUI_PAYMENT_INSTRUCTIONS_PAGE_EXTENSION_ID));
+    }
+
+    private function createFinishPage(): CheckoutFinishPage
+    {
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('test-id');
+        $order = new OrderEntity();
+        $order->setTransactions(new OrderTransactionCollection([$transaction]));
+
+        $page = new CheckoutFinishPage();
+        $page->setOrder($order);
+
+        // @deprecated tag:v11.0.0 - remove if condition with min-version of 6.7.2.0, keep content
+        // @phpstan-ignore-next-line method may or may not exist depending on Shopware version
+        if (method_exists($page, 'setLogoutCustomer')) {
+            $page->setLogoutCustomer(true);
+        }
+
+        return $page;
     }
 }

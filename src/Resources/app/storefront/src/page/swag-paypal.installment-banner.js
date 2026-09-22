@@ -104,6 +104,11 @@ export default class SwagPayPalInstallmentBanner extends SwagPayPalScriptBase {
         });
     }
 
+    onBfcacheRestore() {
+        this.el.replaceChildren();
+        this.createInstallmentBanner();
+    }
+
     getBannerConfig() {
         return {
             amount: this.options.amount,
