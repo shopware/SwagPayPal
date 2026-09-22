@@ -18,6 +18,8 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Generator;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
+use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPage;
@@ -107,12 +109,13 @@ class FundingSubscriberTest extends TestCase
     {
         $events = FundingSubscriber::getSubscribedEvents();
 
-        static::assertCount(4, $events);
+        static::assertCount(5, $events);
         // @deprecated tag:v11.0.0 - Remove this line below.
         static::assertSame('addFundingAvailabilityDataToFooter', $events[FooterPageletLoadedEvent::class]);
         static::assertSame('addFundingAvailabilityDataToPage', $events[GenericPageLoadedEvent::class]);
         static::assertSame(['removeFundingAvailabilityDataFromPage', -1], $events[CheckoutConfirmPageLoadedEvent::class]);
         static::assertSame(['removeFundingAvailabilityDataFromPage', -1], $events[CheckoutRegisterPageLoadedEvent::class]);
+        static::assertSame(['removeFundingAvailabilityDataFromPage', -1], $events[AccountEditOrderPageLoadedEvent::class]);
     }
 
     public function testAddNoSettings(): void
@@ -265,6 +268,33 @@ class FundingSubscriberTest extends TestCase
         $this->subscriber->removeFundingAvailabilityDataFromPage($registerEvent);
 
         static::assertFalse($registerEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+    }
+
+    public function testRemoveFundingAvailabilityDataFromAccountEditOrderPage(): void
+    {
+        $this->systemConfigService->set(Settings::CLIENT_ID, self::TEST_CLIENT_ID);
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'testClientSecret');
+
+        // First add the extension via GenericPageLoadedEvent
+        $genericEvent = $this->createGenericPageLoadedEvent();
+        $this->subscriber->addFundingAvailabilityDataToPage($genericEvent);
+        static::assertTrue($genericEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+
+        // Create AccountEditOrderPage with the extension
+        $salesChannelContext = Generator::generateSalesChannelContext();
+        $page = new AccountEditOrderPage();
+        $page->addExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION, $genericEvent->getPage()->getExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
+
+        $editOrderEvent = new AccountEditOrderPageLoadedEvent(
+            $page,
+            $salesChannelContext,
+            new Request()
+        );
+
+        // Remove the extension
+        $this->subscriber->removeFundingAvailabilityDataFromPage($editOrderEvent);
+
+        static::assertFalse($editOrderEvent->getPage()->hasExtension(FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION));
     }
 
     private function createFooterPageletLoadedEvent(): FooterPageletLoadedEvent
