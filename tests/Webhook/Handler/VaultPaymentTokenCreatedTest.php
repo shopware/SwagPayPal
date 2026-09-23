@@ -17,6 +17,8 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
@@ -25,6 +27,7 @@ use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\RestApi\V3\Api\PaymentToken;
+use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\Handler\VaultPaymentTokenCreated;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -72,7 +75,15 @@ class VaultPaymentTokenCreatedTest extends TestCase
             ->with($struct, $card, 'customerId', $context);
 
         /** @var StaticEntityRepository<OrderTransactionCollection> $orderTransactionRepo */
-        $orderTransactionRepo = new StaticEntityRepository([new OrderTransactionCollection([$orderTransaction])]);
+        $orderTransactionRepo = new StaticEntityRepository([static function (Criteria $criteria) use ($orderTransaction): OrderTransactionCollection {
+            static::assertCount(1, $criteria->getFilters());
+            $filter = $criteria->getFilters()[0];
+            static::assertInstanceOf(EqualsFilter::class, $filter);
+            static::assertSame('customFields.' . SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID, $filter->getField());
+            static::assertSame('00D91479YH268914P', $filter->getValue());
+
+            return new OrderTransactionCollection([$orderTransaction]);
+        }]);
         $paymentTransactionStructFactory = $this->createMock(PaymentTransactionStructFactory::class);
         $paymentTransactionStructFactory
             ->expects(static::once())
