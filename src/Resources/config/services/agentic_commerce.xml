@@ -106,6 +106,10 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="Swag\PayPal\AgenticCommerce\Subscriber\OrderFlagSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="Swag\PayPal\AgenticCommerce\Subscriber\WebhookSubscriber">
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Swag\PayPal\AgenticCommerce\HoneyWebhookService"/>
