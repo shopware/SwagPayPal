@@ -1,3 +1,6 @@
+# 8.12.4
+- Fixes an issue, where refunds of legacy PayPal payments via the Admin API were still possible as order editor, although they require the order refund editor permission (shopware/SwagPayPal#530)
+
 # 8.12.3
 - Fixes an issue, where payments with saved cards and recurring card payments were processed using incomplete PayPal order details
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
