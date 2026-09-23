@@ -1,0 +1,14 @@
+{% block sw_order_list_grid_label_manual_order %}
+    {% parent %}
+
+    {% block sw_order_list_grid_label_swag_paypal_agentic_commerce %}
+    <sw-label
+        v-if="isAgenticCommerceOrder(item)"
+        appearance="pill"
+        size="small"
+        class="swag-paypal-agentic-commerce-order-label"
+    >
+        {{ $t('swag-paypal-agentic-commerce.order-list.label') }}
+    </sw-label>
+    {% endblock %}
+{% endblock %}
