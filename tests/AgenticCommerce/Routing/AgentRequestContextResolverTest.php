@@ -20,6 +20,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\JWT\JWTDecoder;
 use Shopware\Core\Framework\JWT\Struct\JWKCollection;
 use Shopware\Core\Framework\JWT\Struct\JWKStruct;
@@ -30,6 +31,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataValidator;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
 use Swag\PayPal\AgenticCommerce\Exception\AgentException;
@@ -37,6 +39,7 @@ use Swag\PayPal\AgenticCommerce\Routing\AgentRequestContextResolver;
 use Swag\PayPal\AgenticCommerce\Routing\AgentRouteScope;
 use Swag\PayPal\AgenticCommerce\Routing\AgentSource;
 use Swag\PayPal\AgenticCommerce\Security\AbstractPayPalJwksProvider;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validation;
 
@@ -105,6 +108,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new RouteScopeRegistry([]),
             $this->createMock(SalesChannelContextService::class),
             $this->createJwksProvider(),
+            $this->createCredentialsUtil(),
         );
 
         $resolver->resolve($request);
@@ -130,6 +134,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new RouteScopeRegistry([new AgentRouteScope(), $wrongScope]),
             $this->createMock(SalesChannelContextService::class),
             $this->createJwksProvider(),
+            $this->createCredentialsUtil(),
         );
 
         $resolver->resolve($request);
@@ -150,6 +155,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
             $this->createJwksProvider(),
+            $this->createCredentialsUtil(),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Missing Authorization header'));
@@ -189,6 +195,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
             $this->createJwksProvider(self::createJwks('wrong-key')),
+            $this->createCredentialsUtil(),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -245,6 +252,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new RouteScopeRegistry([new AgentRouteScope()]),
             $salesChannelMock,
             $jwksProvider,
+            $this->createCredentialsUtil(),
         );
 
         $resolver->resolve($request);
@@ -290,6 +298,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
             $this->createJwksProvider(),
+            $this->createCredentialsUtil(),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -369,6 +378,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
             $this->createJwksProvider(),
+            $this->createCredentialsUtil(),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -442,6 +452,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new RouteScopeRegistry([new AgentRouteScope()]),
             $contextService,
             $this->createJwksProvider(),
+            $this->createCredentialsUtil(),
         );
 
         $this->expectExceptionObject(AgentException::unauthorized('Invalid JWT token'));
@@ -486,6 +497,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new RouteScopeRegistry([new AgentRouteScope()]),
             $salesChannelMock,
             $this->createJwksProvider(),
+            $this->createCredentialsUtil(),
         );
 
         $resolver->resolve($request);
@@ -496,6 +508,98 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
 
         static::assertInstanceOf(SalesChannelContext::class, $resultedSalesChannelContext);
         static::assertSame($salesChannelContext, $resultedSalesChannelContext);
+    }
+
+    public function testResolveUsesAgenticSalesChannelFromSub(): void
+    {
+        $salesChannelId = Uuid::randomHex();
+        $otherExport = self::createProductExport(Uuid::randomHex());
+        $export = self::createProductExport($salesChannelId);
+
+        $jwt = self::encodeJWT(['PayPal:MERCHANT_ID'], new \DateTimeImmutable(), new \DateTimeImmutable('+1 hour'), ['cart', 'checkout'], $salesChannelId);
+
+        $request = new Request();
+        $request->headers->set('Authorization', 'Bearer ' . $jwt);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
+        $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
+
+        $salesChannelContext = Generator::generateSalesChannelContext();
+
+        $contextService = $this->createMock(SalesChannelContextService::class);
+        $contextService
+            ->expects($this->once())
+            ->method('get')
+            ->with(static::callback(static fn (SalesChannelContextServiceParameters $parameters): bool => $parameters->getSalesChannelId() === $export->getStorefrontSalesChannelId()))
+            ->willReturn($salesChannelContext);
+
+        $resolver = new AgentRequestContextResolver(
+            new DataValidator(Validation::createValidator()),
+            $this->createProductExportRepository($otherExport, $export),
+            new JWTDecoder(),
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $contextService,
+            $this->createJwksProvider(),
+            $this->createCredentialsUtil([
+                $otherExport->getStorefrontSalesChannelId() => 'OTHER_MERCHANT_ID',
+                $export->getStorefrontSalesChannelId() => 'MERCHANT_ID',
+            ]),
+        );
+
+        $resolver->resolve($request);
+
+        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT);
+        static::assertInstanceOf(Context::class, $context);
+        $source = $context->getSource();
+        static::assertInstanceOf(AgentSource::class, $source);
+        static::assertSame($export->getProductStreamId(), $source->getStreamId());
+        static::assertSame($salesChannelContext, $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT));
+    }
+
+    /**
+     * @param non-empty-string $sub
+     */
+    #[DataProvider('mismatchingSourceProvider')]
+    public function testResolveWithMismatchingSource(string $salesChannelId, string $sub, string $paypalMerchantId, string $expectedMessage): void
+    {
+        $otherExport = self::createProductExport(Uuid::randomHex());
+        $export = self::createProductExport($salesChannelId);
+
+        $jwt = self::encodeJWT([\sprintf('PayPal:%s', $paypalMerchantId)], new \DateTimeImmutable(), new \DateTimeImmutable('+1 hour'), ['cart', 'checkout'], $sub);
+
+        $request = new Request();
+        $request->headers->set('Authorization', 'Bearer ' . $jwt);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
+        $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
+
+        $contextService = $this->createMock(SalesChannelContextService::class);
+        $contextService
+            ->expects($this->never())
+            ->method('get');
+
+        $resolver = new AgentRequestContextResolver(
+            new DataValidator(Validation::createValidator()),
+            $this->createProductExportRepository($otherExport, $export),
+            new JWTDecoder(),
+            new RouteScopeRegistry([new AgentRouteScope()]),
+            $contextService,
+            $this->createJwksProvider(),
+            $this->createCredentialsUtil([
+                $otherExport->getStorefrontSalesChannelId() => 'OTHER_MERCHANT_ID',
+                $export->getStorefrontSalesChannelId() => 'MERCHANT_ID',
+            ]),
+        );
+
+        $this->expectExceptionObject(AgentException::unauthorized($expectedMessage));
+
+        $resolver->resolve($request);
+    }
+
+    public static function mismatchingSourceProvider(): \Generator
+    {
+        $salesChannelId = Uuid::randomHex();
+
+        yield 'sub of an unknown sales channel' => [$salesChannelId, Uuid::randomHex(), 'MERCHANT_ID', 'Sales channel not found'];
+        yield 'merchant ID of another sales channel' => [$salesChannelId, $salesChannelId, 'OTHER_MERCHANT_ID', 'PayPal merchant ID mismatch'];
     }
 
     /**
@@ -556,6 +660,39 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         );
     }
 
+    private static function createProductExport(string $salesChannelId): ProductExportEntity
+    {
+        $productExport = new ProductExportEntity();
+        $productExport->setId(Uuid::randomHex());
+        $productExport->setSalesChannelId($salesChannelId);
+        $productExport->setStorefrontSalesChannelId(Uuid::randomHex());
+        $productExport->setProductStreamId(Uuid::randomHex());
+
+        return $productExport;
+    }
+
+    /**
+     * Behaves like the database: returns all given exports, narrowed down by a `salesChannelId` filter
+     */
+    private function createProductExportRepository(ProductExportEntity ...$productExports): EntityRepository
+    {
+        $repository = $this->createMock(EntityRepository::class);
+        $repository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(static function (Criteria $criteria, Context $context) use ($productExports): EntitySearchResult {
+                foreach ($criteria->getFilters() as $filter) {
+                    if ($filter instanceof EqualsFilter && $filter->getField() === 'salesChannelId') {
+                        $productExports = \array_filter($productExports, static fn (ProductExportEntity $productExport): bool => $productExport->getSalesChannelId() === $filter->getValue());
+                    }
+                }
+
+                return new EntitySearchResult(ProductExportDefinition::ENTITY_NAME, \count($productExports), new ProductExportCollection($productExports), null, $criteria, $context);
+            });
+
+        return $repository;
+    }
+
     private function createResolver(): AgentRequestContextResolver
     {
         return new AgentRequestContextResolver(
@@ -565,6 +702,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             new RouteScopeRegistry([new AgentRouteScope()]),
             $this->createMock(SalesChannelContextService::class),
             $this->createJwksProvider(),
+            $this->createCredentialsUtil(),
         );
     }
 
@@ -576,6 +714,19 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
             ->willReturn($jwks ?? self::createJwks());
 
         return $provider;
+    }
+
+    /**
+     * @param array<string, string> $merchantPayerIds keyed by storefront sales channel ID, any other storefront has `MERCHANT_ID`
+     */
+    private function createCredentialsUtil(array $merchantPayerIds = []): CredentialsUtil
+    {
+        $credentialsUtil = $this->createMock(CredentialsUtil::class);
+        $credentialsUtil
+            ->method('getMerchantPayerId')
+            ->willReturnCallback(static fn (string $salesChannelId): string => $merchantPayerIds[$salesChannelId] ?? 'MERCHANT_ID');
+
+        return $credentialsUtil;
     }
 
     /**

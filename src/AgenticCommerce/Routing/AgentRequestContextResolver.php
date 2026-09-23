@@ -35,6 +35,7 @@ use Swag\PayPal\AgenticCommerce\Security\AbstractPayPalJwksProvider;
 use Swag\PayPal\AgenticCommerce\Validation\CartTokenValidator;
 use Swag\PayPal\AgenticCommerce\Validation\Constraint\PayPalExternalId;
 use Swag\PayPal\AgenticCommerce\Validation\HasScopes;
+use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,6 +67,7 @@ class AgentRequestContextResolver implements RequestContextResolverInterface
         private readonly RouteScopeRegistry $routeScopeRegistry,
         private readonly SalesChannelContextServiceInterface $contextService,
         private readonly AbstractPayPalJwksProvider $jwksProvider,
+        private readonly CredentialsUtilInterface $credentialsUtil,
     ) {
     }
 
@@ -100,16 +102,23 @@ class AgentRequestContextResolver implements RequestContextResolverInterface
             throw AgentException::unauthorized('Invalid JWT token', $e->getPrevious());
         }
 
+        // PayPal echoes the IDs sent on registration, see HoneyWebhookService::createToken():
+        // `sub` is the agentic sales channel ID, `external_id` holds the PayPal merchant ID of its storefront
         $criteria = new Criteria();
         $criteria->addFilter(
             new EqualsFilter('storefrontSalesChannel.active', true),
             new EqualsFilter('salesChannel.active', true),
             new EqualsFilter('salesChannel.typeId', SwagPayPal::SALES_CHANNEL_TYPE_AGENTIC_COMMERCE),
+            new EqualsFilter('salesChannelId', $source->salesChannelId),
         );
 
         $productExport = $this->productExportRepository->search($criteria, $context)->getEntities()->first();
         if (!$productExport) {
             throw AgentException::unauthorized('Sales channel not found');
+        }
+
+        if ($source->merchantId !== $this->credentialsUtil->getMerchantPayerId($productExport->getStorefrontSalesChannelId())) {
+            throw AgentException::unauthorized('PayPal merchant ID mismatch');
         }
 
         $source->setStreamId($productExport->getProductStreamId());
