@@ -1,3 +1,6 @@
+# 9.13.4
+- Behebt ein Problem, bei dem Rückerstattungen älterer PayPal-Zahlungen über die Admin-API weiterhin als Bestell-Editor möglich waren, obwohl dafür die Berechtigung des Rückerstattungs-Editors erforderlich ist (shopware/SwagPayPal#530)
+
 # 9.13.3
 - Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte
 - Behebt ein Problem, bei dem Google Pay-Zahlungen, für die 3D Secure erforderlich war, nicht abgeschlossen wurden, da das Authentifizierungsfenster durch das Google Pay-Fenster überlagert wurde

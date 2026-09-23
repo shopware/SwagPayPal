@@ -1,3 +1,6 @@
+# 9.13.4
+- Fixes an issue, where refunds of legacy PayPal payments via the Admin API were still possible as order editor, although they require the order refund editor permission (shopware/SwagPayPal#530)
+
 # 9.13.3
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
 - Fixes an issue, where Google Pay payments that required 3D Secure never completed due to blocking the authentication window with the Google Pay one
