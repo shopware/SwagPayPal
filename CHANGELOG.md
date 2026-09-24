@@ -1,4 +1,5 @@
-# 9.13.4
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Added the order custom field `swag_paypal_agentic_commerce_sales_channel_id`, which stores the agentic sales channel of orders placed via PayPal Agentic Commerce. The Administration order list labels these orders.
 - Fixes an issue, where PayPal accounts and cards were not saved for future purchases, if PayPal completed the vaulting asynchronously (shopware/SwagPayPal#845)
 
 # 9.13.3
