@@ -65,6 +65,7 @@ use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookRegistry;
@@ -306,6 +307,22 @@ class UpdateTest extends TestCase
         static::assertSame(self::CLIENT_SECRET, $systemConfig->get(Settings::CLIENT_SECRET));
         static::assertNull($systemConfig->get(Settings::CLIENT_ID_SANDBOX));
         static::assertNull($systemConfig->get(Settings::CLIENT_SECRET_SANDBOX));
+    }
+
+    public function testUpdateTo9134AddsAgenticCommerceSalesChannelType(): void
+    {
+        $updateContext = $this->createUpdateContext('9.13.3', '9.13.4');
+        $updater = $this->createUpdateService(SystemConfigServiceMock::createWithoutCredentials());
+
+        $updater->update($updateContext);
+
+        $salesChannelType = $this->getRepository(SalesChannelTypeDefinition::ENTITY_NAME)->search(
+            new Criteria([SwagPayPal::SALES_CHANNEL_TYPE_AGENTIC_COMMERCE]),
+            Context::createDefaultContext(),
+        )->first();
+
+        static::assertNotNull($salesChannelType);
+        static::assertSame('PayPal Agentic Commerce', $salesChannelType->getName());
     }
 
     public function testUpdateRunsUpdatesWithNonNumericTargetPluginVersion(): void
@@ -604,6 +621,7 @@ class UpdateTest extends TestCase
         ?PosWebhookService $posWebhookService = null,
     ): Update {
         $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);
+        $salesChannelTypeRepository = $this->getRepository(SalesChannelTypeDefinition::ENTITY_NAME);
 
         static::assertInstanceOf(InformationDefaultService::class, $informationDefaultService);
 
@@ -615,7 +633,7 @@ class UpdateTest extends TestCase
             $this->getRepository(CustomFieldDefinition::ENTITY_NAME),
             $webhookService,
             $this->salesChannelRepository,
-            $this->getRepository(SalesChannelTypeDefinition::ENTITY_NAME),
+            $salesChannelTypeRepository,
             $informationDefaultService,
             $this->getRepository(ShippingMethodDefinition::ENTITY_NAME),
             $posWebhookService,
@@ -636,6 +654,7 @@ class UpdateTest extends TestCase
                 $this->paymentMethodRepository,
             ),
             $paymentMethodDataRegistry,
+            new AgenticCommerceService($this->salesChannelRepository, $salesChannelTypeRepository),
         );
     }
 
