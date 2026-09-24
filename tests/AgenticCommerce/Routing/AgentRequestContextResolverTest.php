@@ -517,7 +517,7 @@ dn/RsYEONbwQSjIfMPkvxF+8HQ==
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [AgentRouteScope::ID]);
         $request->attributes->set(AgentRouteScope::ATTRIBUTE_PAYPAL_AGENT_SCOPE, ['cart', 'checkout']);
 
-        $salesChannelContext = Generator::generateSalesChannelContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
 
         $contextService = $this->createMock(SalesChannelContextService::class);
         $contextService
