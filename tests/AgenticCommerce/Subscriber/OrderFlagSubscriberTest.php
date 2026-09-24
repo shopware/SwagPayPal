@@ -42,7 +42,7 @@ class OrderFlagSubscriberTest extends TestCase
 
     public function testAdminSalesChannelSourceWithoutAgent(): void
     {
-        $source = new AdminSalesChannelApiSource(Uuid::randomHex(), Context::createCLIContext(new AdminApiSource(Uuid::randomHex())));
+        $source = new AdminSalesChannelApiSource(Uuid::randomHex(), Context::createDefaultContext(new AdminApiSource(Uuid::randomHex())));
         $event = $this->createEvent($source);
 
         (new OrderFlagSubscriber())->onCartConverted($event);
@@ -66,7 +66,7 @@ class OrderFlagSubscriberTest extends TestCase
     public function testFlagsOrderForAdminSalesChannelSource(): void
     {
         $agentSource = $this->createAgentSource();
-        $source = new AdminSalesChannelApiSource(Uuid::randomHex(), Context::createCLIContext($agentSource));
+        $source = new AdminSalesChannelApiSource(Uuid::randomHex(), Context::createDefaultContext($agentSource));
         $event = $this->createEvent($source);
 
         (new OrderFlagSubscriber())->onCartConverted($event);
@@ -98,7 +98,7 @@ class OrderFlagSubscriberTest extends TestCase
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
         $salesChannelContext
             ->method('getContext')
-            ->willReturn(Context::createCLIContext($source));
+            ->willReturn(Context::createDefaultContext($source));
 
         return new CartConvertedEvent(new Cart('token'), $convertedCart, $salesChannelContext, new OrderConversionContext());
     }

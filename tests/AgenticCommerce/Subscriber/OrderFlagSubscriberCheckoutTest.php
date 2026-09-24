@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\AgenticCommerce\Subscriber;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\JWT\Struct\JWKCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -30,6 +31,14 @@ class OrderFlagSubscriberCheckoutTest extends TestCase
 {
     use FullCheckoutTrait;
     use IntegrationTestBehaviour;
+
+    protected function setUp(): void
+    {
+        // the agentic commerce services are only registered with the JWT support of the core
+        if (!\class_exists(JWKCollection::class)) {
+            static::markTestSkipped('Shopware\Core\Framework\JWT is only available for >=6.6.x (In App Purchases)');
+        }
+    }
 
     public function testAgentOrderIsFlagged(): void
     {
