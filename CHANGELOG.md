@@ -2,6 +2,7 @@
 - Added the order custom field `swag_paypal_agentic_commerce_sales_channel_id`, which stores the agentic sales channel of orders placed via PayPal Agentic Commerce. The Administration order list labels these orders.
 - Fixes an issue, where the "log out guest customer after order" setting kept Pay Upon Invoice guests logged in permanently instead of logging them out once the payment details were shown (shopware/shopware#7962)
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront
+- Fixes an issue, where payment methods where available for mixed subscription checkouts though vaulting is not enabled
 
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings

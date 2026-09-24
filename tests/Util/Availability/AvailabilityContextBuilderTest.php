@@ -8,7 +8,9 @@
 namespace Swag\PayPal\Test\Util\Availability;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shopware\Commercial\Subscription\Framework\Struct\PlanIntervalMappingStruct;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\ShippingLocation;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
@@ -19,9 +21,11 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
 use Swag\PayPal\Util\Availability\AvailabilityContextBuilder;
 
@@ -87,6 +91,14 @@ class AvailabilityContextBuilderTest extends TestCase
         static::assertSame('USD', $context->getCurrencyCode());
         static::assertSame(275.00, $context->getTotalAmount());
         static::assertFalse($context->hasDigitalProducts());
+    }
+
+    #[DataProvider('subscriptionSalesChannelContextProvider')]
+    public function testBuildFromCartDetectsSubscription(SalesChannelContext $salesChannelContext, bool $expected): void
+    {
+        $context = AvailabilityContextBuilder::buildFromCart(Generator::createCart(), $salesChannelContext);
+
+        static::assertSame($expected, $context->isSubscription());
     }
 
     public function testBuildFromProduct(): void
@@ -213,5 +225,61 @@ class AvailabilityContextBuilderTest extends TestCase
         static::assertSame('USD', $context->getCurrencyCode());
         static::assertSame(275.00, $context->getTotalAmount());
         static::assertFalse($context->hasDigitalProducts());
+    }
+
+    #[DataProvider('subscriptionSalesChannelContextProvider')]
+    public function testBuildFromOrderDetectsSubscription(SalesChannelContext $salesChannelContext, bool $expected): void
+    {
+        $order = new OrderEntity();
+        $order->setPrice(new CartPrice(275, 275, 1, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_GROSS));
+
+        $context = AvailabilityContextBuilder::buildFromOrder($order, $salesChannelContext);
+
+        static::assertSame($expected, $context->isSubscription());
+    }
+
+    public function testBuildFromOrderDetectsSubscriptionByForeignKey(): void
+    {
+        $order = new OrderEntity();
+        $order->setPrice(new CartPrice(275, 275, 1, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_GROSS));
+        $order->addExtension('foreignKeys', new ArrayStruct(['subscriptionId' => Uuid::randomHex()]));
+
+        $context = AvailabilityContextBuilder::buildFromOrder($order, Generator::generateSalesChannelContext(currency: self::createCurrency()));
+
+        static::assertTrue($context->isSubscription());
+    }
+
+    /**
+     * @return iterable<string, array{SalesChannelContext, bool}>
+     */
+    public static function subscriptionSalesChannelContextProvider(): iterable
+    {
+        $salesChannelContext = Generator::generateSalesChannelContext(currency: self::createCurrency());
+        yield 'context without any subscription extension' => [clone $salesChannelContext, false];
+
+        $salesChannelContext->addExtension('subscription', new ArrayStruct());
+        yield 'context of a single subscription' => [clone $salesChannelContext, true];
+
+        if (!\class_exists(PlanIntervalMappingStruct::class)) {
+            return;
+        }
+
+        $salesChannelContext->removeExtension('subscription');
+        /** @var PlanIntervalMappingStruct<SalesChannelContext> $managedContexts */
+        $managedContexts = new PlanIntervalMappingStruct();
+        $salesChannelContext->addExtension(PlanIntervalMappingStruct::MANAGED_CONTEXTS_EXTENSION, $managedContexts);
+        yield 'context without any managed subscription context' => [clone $salesChannelContext, false];
+
+        $managedContexts->set('plan-id', 'interval-id', clone $salesChannelContext);
+        yield 'context managing subscription contexts' => [$salesChannelContext, true];
+    }
+
+    private static function createCurrency(): CurrencyEntity
+    {
+        $currency = new CurrencyEntity();
+        $currency->setId(Uuid::randomHex());
+        $currency->setIsoCode('USD');
+
+        return $currency;
     }
 }
