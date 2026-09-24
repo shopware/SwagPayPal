@@ -116,6 +116,7 @@ class SwagPayPal extends Plugin
         $posWebhookService = $this->container->get(PosWebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         $paymentMethodInstaller = $this->container->get(PaymentMethodInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         $paymentMethodStateService = $this->container->get(PaymentMethodStateService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        $agenticCommerceService = $this->container->get(AgenticCommerceService::class);
         $mediaInstaller = $this->container->get(MediaInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry(
             $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
@@ -149,6 +150,7 @@ class SwagPayPal extends Plugin
                 $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
             ),
             $paymentMethodDataRegistry,
+            $agenticCommerceService,
         ))->update($updateContext);
 
         parent::update($updateContext);
