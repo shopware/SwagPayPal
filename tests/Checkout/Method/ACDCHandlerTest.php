@@ -27,8 +27,6 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMa
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\System\StateMachine\Transition;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
-use Shopware\PayPalSDK\Struct\V1\Common\Link as V1Link;
-use Shopware\PayPalSDK\Struct\V1\Common\LinkCollection as V1LinkCollection;
 use Shopware\PayPalSDK\Struct\V2\Common\Link;
 use Shopware\PayPalSDK\Struct\V2\Common\LinkCollection;
 use Shopware\PayPalSDK\Struct\V2\Order;
@@ -211,9 +209,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderExecuteService
             ->expects($this->once())
             ->method('captureOrAuthorizeOrder')
-            ->willThrowException(PayerActionRequiredException::payerActionRequired('paypalOrderId', new V1LinkCollection([
-                (new V1Link())->assign(['rel' => Link::RELATION_PAYER_ACTION, 'href' => 'https://paypal.test/payer-action']),
-            ])));
+            ->willThrowException(PayerActionRequiredException::payerActionRequired('paypalOrderId'));
 
         $this->acdcValidator
             ->expects($this->once())

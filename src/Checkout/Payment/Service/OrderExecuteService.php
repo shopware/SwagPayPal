@@ -11,9 +11,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\PayPalSDK\Exception\ErrorApiException;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
-use Shopware\PayPalSDK\Struct\V2\Common\Link;
 use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments;
 use Swag\PayPal\Checkout\Exception\OrderFailedException;
@@ -162,32 +160,15 @@ class OrderExecuteService
         PayPalOrder $paypalOrder,
         ?PayPalApiException $previous = null,
     ): PayerActionRequiredException {
-        // PayPal returns the `payer-action` link on the failing response only, never on the order itself
-        $error = $previous?->getPrevious();
-        $exception = PayerActionRequiredException::payerActionRequired(
-            $paypalOrder->getId(),
-            $error instanceof ErrorApiException ? $error->getLinks() : null,
-            $previous,
-        );
+        $exception = PayerActionRequiredException::payerActionRequired($paypalOrder->getId(), $previous);
 
         $this->logger->warning('PayPal requires another payer action before the order can be captured.', [
             'orderTransactionId' => $transactionId,
             'payPalOrderId' => $paypalOrder->getId(),
-            'payerActionUrl' => $exception->getPayerActionUrl() ?? $this->resolvePayerActionUrl($paypalOrder),
             'error' => $previous,
         ]);
 
         return $exception;
-    }
-
-    private function resolvePayerActionUrl(PayPalOrder $paypalOrder): ?string
-    {
-        // Order::$links has no default and PayPal may omit it
-        if (!$paypalOrder->isset('links')) {
-            return null;
-        }
-
-        return $paypalOrder->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref();
     }
 
     private function getPayments(PayPalOrder $order, string $salesChannelId, bool $refetch): ?Payments

@@ -8,13 +8,11 @@
 namespace Swag\PayPal\Test\Checkout\Payment\Exception;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\PayPalSDK\Struct\V1\Common\Link;
-use Shopware\PayPalSDK\Struct\V1\Common\LinkCollection;
-use Shopware\PayPalSDK\Struct\V2\Common\Link as V2Link;
+use Shopware\PayPalSDK\Exception\ApiException;
 use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @internal
@@ -23,46 +21,24 @@ use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 #[CoversClass(PayerActionRequiredException::class)]
 class PayerActionRequiredExceptionTest extends TestCase
 {
-    public function testGetPayerActionUrl(): void
+    public function testPayerActionRequiredIdentifiesThePaymentError(): void
     {
-        $exception = PayerActionRequiredException::payerActionRequired('paypalOrderId', new LinkCollection([
-            (new Link())->assign(['rel' => 'self', 'href' => 'https://paypal.test/self']),
-            (new Link())->assign(['rel' => V2Link::RELATION_PAYER_ACTION, 'href' => 'https://paypal.test/payer-action']),
-        ]));
+        $exception = PayerActionRequiredException::payerActionRequired('paypalOrderId');
 
-        static::assertSame('https://paypal.test/payer-action', $exception->getPayerActionUrl());
+        static::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $exception->getStatusCode());
+        static::assertSame(ApiException::CODE_UNPROCESSABLE_ENTITY, $exception->getName());
+        static::assertSame('PAYER_ACTION_REQUIRED', $exception->getIssue());
+        static::assertSame('SWAG_PAYPAL__API_PAYER_ACTION_REQUIRED', $exception->getErrorCode());
+        static::assertStringContainsString('"paypalOrderId"', $exception->getMessage());
+        static::assertNull($exception->getPrevious());
     }
 
-    public function testGetPayerActionUrlWithoutLinks(): void
+    public function testPayerActionRequiredKeepsTheOriginalException(): void
     {
-        static::assertNull(PayerActionRequiredException::payerActionRequired('paypalOrderId')->getPayerActionUrl());
-    }
+        $previous = new \RuntimeException('PayPal capture failed.');
 
-    /**
-     * Link::$rel and Link::$href are typed without a default, so reading an omitted one is a fatal error.
-     *
-     * @param array<string, string> $link
-     */
-    #[DataProvider('dataProviderIncompleteLinks')]
-    public function testGetPayerActionUrlToleratesIncompleteLinks(array $link): void
-    {
-        $exception = PayerActionRequiredException::payerActionRequired('paypalOrderId', new LinkCollection([
-            (new Link())->assign($link),
-            (new Link())->assign(['rel' => V2Link::RELATION_PAYER_ACTION, 'href' => 'https://paypal.test/payer-action']),
-        ]));
+        $exception = PayerActionRequiredException::payerActionRequired('paypalOrderId', $previous);
 
-        static::assertSame('https://paypal.test/payer-action', $exception->getPayerActionUrl());
-    }
-
-    /**
-     * @return array<string, array{array<string, string>}>
-     */
-    public static function dataProviderIncompleteLinks(): array
-    {
-        return [
-            'without rel' => [['href' => 'https://paypal.test/self']],
-            'without href' => [['rel' => 'self']],
-            'without either' => [['method' => 'GET']],
-        ];
+        static::assertSame($previous, $exception->getPrevious());
     }
 }

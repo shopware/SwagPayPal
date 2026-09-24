@@ -1,0 +1,7 @@
+// nested like the core manual order label, as `.sw-label` resets the margin otherwise
+.sw-order-list {
+    .swag-paypal-agentic-commerce-order-label {
+        margin-left: 12px;
+        text-align: center;
+    }
+}

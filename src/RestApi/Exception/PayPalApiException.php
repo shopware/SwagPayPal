@@ -98,7 +98,7 @@ class PayPalApiException extends PaymentException
             $e->getStatusCode(),
             $issue,
             $e instanceof RetryAfterApiException ? $e->getRetryAt() : null,
-            // keeps the failing response reachable, e.g. its HATEOAS links
+            // keeps the original response and PayPal debug ID available for diagnostics
             $e,
         );
     }
