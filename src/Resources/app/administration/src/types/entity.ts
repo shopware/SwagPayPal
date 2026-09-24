@@ -14,6 +14,13 @@ type EntityExtensions = {
         };
     };
 
+    order: {
+        customFields?: {
+            [key: string]: unknown;
+            swag_paypal_agentic_commerce_sales_channel_id?: string;
+        };
+    };
+
     order_transaction: {
         customFields: {
             [key: string]: unknown;
