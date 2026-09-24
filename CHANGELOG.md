@@ -1,4 +1,4 @@
-# 8.12.4
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where refunds of legacy PayPal payments via the Admin API were still possible as order editor, although they require the order refund editor permission (shopware/SwagPayPal#530)
 
 # 8.12.3
