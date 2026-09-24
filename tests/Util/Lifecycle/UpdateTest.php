@@ -32,6 +32,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeDefinition;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
@@ -323,9 +324,10 @@ class UpdateTest extends TestCase
         $salesChannelType = $this->getRepository(SalesChannelTypeDefinition::ENTITY_NAME)->search(
             new Criteria([SwagPayPal::SALES_CHANNEL_TYPE_AGENTIC_COMMERCE]),
             Context::createDefaultContext(),
-        )->first();
+        )->getEntities()->first();
 
         static::assertNotNull($salesChannelType);
+        static::assertInstanceOf(SalesChannelTypeEntity::class, $salesChannelType);
         static::assertSame('PayPal Agentic Commerce', $salesChannelType->getName());
     }
 
