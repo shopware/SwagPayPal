@@ -45,6 +45,7 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
+use Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
@@ -70,6 +71,7 @@ class Update
         private readonly PaymentMethodInstaller $paymentMethodInstaller,
         private readonly PaymentMethodStateService $paymentMethodStateService,
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        private readonly AgenticCommerceService $agenticCommerceService,
     ) {
     }
 
@@ -166,6 +168,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '10.7.0', '<')) {
             $this->updateTo1070();
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '10.8.5', '<')) {
+            $this->updateTo1085($updateContext->getContext());
         }
     }
 
@@ -613,5 +619,10 @@ class Update
         $this->setSettingToDefaultValue(Settings::INSTALLMENT_BANNER_LOGO_TYPE);
         $this->setSettingToDefaultValue(Settings::INSTALLMENT_BANNER_TEXT_COLOR);
         $this->setSettingToDefaultValue(Settings::INSTALLMENT_BANNER_TEXT_SIZE);
+    }
+
+    private function updateTo1085(Context $context): void
+    {
+        $this->agenticCommerceService->addAgenticSalesChannelType($context);
     }
 }

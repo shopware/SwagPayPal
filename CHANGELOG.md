@@ -1,6 +1,7 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.8.5
 - Fixes an issue, where the "log out guest customer after order" setting kept Pay Upon Invoice guests logged in permanently instead of logging them out once the payment details were shown (shopware/shopware#7962)
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront
+- Adds the PayPal Agentic Commerce sales channel type when updating from an older plugin version
 
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
