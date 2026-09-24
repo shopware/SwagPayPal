@@ -30,6 +30,7 @@
             <argument type="service" id="Shopware\Core\Framework\Routing\RouteScopeRegistry"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
             <argument type="service" id="Swag\PayPal\AgenticCommerce\Security\AbstractPayPalJwksProvider"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
         </service>
 
         <service id="Swag\PayPal\AgenticCommerce\Routing\AgentContextResolverListener">
@@ -103,6 +104,10 @@
         </service>
 
         <service id="Swag\PayPal\AgenticCommerce\Subscriber\ProductFilterSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\AgenticCommerce\Subscriber\OrderFlagSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
 

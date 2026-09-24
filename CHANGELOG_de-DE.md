@@ -1,4 +1,5 @@
-# 9.13.4
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fügt das Zusatzfeld `swag_paypal_agentic_commerce_sales_channel_id` hinzu, das bei über PayPal Agentic Commerce aufgegebenen Bestellungen den Agentic-Verkaufskanal speichert. Die Bestellübersicht der Administration kennzeichnet diese Bestellungen.
 - Behebt ein Problem, bei dem Rückerstattungen älterer PayPal-Zahlungen über die Admin-API weiterhin als Bestell-Editor möglich waren, obwohl dafür die Berechtigung des Rückerstattungs-Editors erforderlich ist (shopware/SwagPayPal#530)
 
 # 9.13.3
