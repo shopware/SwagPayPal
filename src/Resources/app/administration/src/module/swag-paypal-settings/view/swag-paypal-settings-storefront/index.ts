@@ -31,6 +31,25 @@ export default Shopware.Component.wrapComponentConfig({
             return Shopware.Store.get('swagPayPalSettings');
         },
 
+        merchantInformationStore() {
+            return Shopware.Store.get('swagPayPalMerchantInformation');
+        },
+
+        sdkV6SettingDisabled(): boolean {
+            return (this.merchantInformationStore.isLoading || !this.merchantInformationStore.canSdkV6)
+                && this.settingsStore.getActual('SwagPayPal.settings.sdkV6Enabled') !== true;
+        },
+
+        sdkV6Notice(): string | null {
+            if (this.merchantInformationStore.isLoading || this.merchantInformationStore.canSdkV6) {
+                return null;
+            }
+
+            return this.merchantInformationStore.actual.sdkV6Eligible === false
+                ? this.$t('swag-paypal-settings.sdk.ineligible')
+                : this.$t('swag-paypal-settings.sdk.undetermined');
+        },
+
         buttonColorOptions() {
             return BUTTON_COLORS.map((color) => ({
                 value: color,

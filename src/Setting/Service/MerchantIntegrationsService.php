@@ -31,6 +31,7 @@ class MerchantIntegrationsService
         private readonly TokenResourceInterface $tokenResource,
         private readonly CredentialsUtilInterface $credentialsUtil,
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        private readonly SdkV6EligibilityService $sdkV6EligibilityService,
     ) {
     }
 
@@ -41,6 +42,7 @@ class MerchantIntegrationsService
         $integrations = $this->getIntegrations($salesChannelId);
         $information->setMerchantIntegrations($integrations);
         $information->setCapabilities($this->enrichCapabilities($integrations, $context, $salesChannelId));
+        $information->setSdkV6Eligible($this->sdkV6EligibilityService->isEligible($salesChannelId));
 
         return $information;
     }

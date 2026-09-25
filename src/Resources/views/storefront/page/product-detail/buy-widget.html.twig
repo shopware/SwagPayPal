@@ -9,10 +9,15 @@
 
         {% if installmentBanner.detailPageEnabled %}
             <div class="row g-2 mt-0 mb-4 justify-content-end">
-                <div class="{{ buyable ? 'col-8' : 'col-12' }}"
-                     data-swag-paypal-installment-banner="true"
-                     data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
-                </div>
+                {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
+                {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+                    {% sw_include '@SwagPayPal/storefront/paypal/installment-banner.html.twig' with { classes: buyable ? 'col-8' : 'col-12' } %}
+                {% else %}
+                    <div class="{{ buyable ? 'col-8' : 'col-12' }}"
+                        data-swag-paypal-installment-banner="true"
+                        data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
+                    </div>
+                {% endif %}
             </div>
         {% endif %}
     {% endblock %}

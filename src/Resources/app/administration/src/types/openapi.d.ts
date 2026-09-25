@@ -594,6 +594,7 @@ export interface components {
             capabilities: {
                 [key: string]: string;
             };
+            sdkV6Eligible: boolean | null;
         };
         swag_paypal_setting_settings_information: {
             sandboxCredentialsChanged: boolean;

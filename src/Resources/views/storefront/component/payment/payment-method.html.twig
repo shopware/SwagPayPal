@@ -39,43 +39,49 @@
     {% set puiFraudnetData = page.extensions[constant('Swag\\PayPal\\Checkout\\PUI\\PUISubscriber::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID')] %}
 
     {% if acdcFieldData and acdcFieldData.paymentMethodId is same as(payment.id) %}
-        {% block swag_paypal_acdc_form %}
-            <div id="swag-paypal-acdc-form" class="mt-2 d-none">
-                <div class="row mb-1">
-                    <div class="col-sm-12">
-                        <label class="d-none"
-                               for="swag-paypal-acdc-form-cardholder">{{ "paypal.acdc.cardholderName"|trans }}</label>
-                        <div id="swag-paypal-acdc-form-cardholder"
-                             data-placeholder="{{ "paypal.acdc.cardholderName"|trans }}"
-                        ></div>
+        {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
+        {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+            {% sw_include '@SwagPayPal/storefront/paypal/card-fields-form.html.twig' %}
+        {% else %}
+            {# @deprecated tag:v11.0.0 - Will be removed and is replaced by `@SwagPayPal/storefront/paypal/card-fields-form.html.twig` #}
+            {% block swag_paypal_acdc_form %}
+                <div id="swag-paypal-acdc-form" class="mt-2 d-none">
+                    <div class="row mb-1">
+                        <div class="col-sm-12">
+                            <label class="d-none"
+                                for="swag-paypal-acdc-form-cardholder">{{ "paypal.acdc.cardholderName"|trans }}</label>
+                            <div id="swag-paypal-acdc-form-cardholder"
+                                data-placeholder="{{ "paypal.acdc.cardholderName"|trans }}"
+                            ></div>
+                        </div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm-12 swag-paypal-acdc-form-field-lg">
+                            <label class="d-none"
+                                for="swag-paypal-acdc-form-cardnumber">{{ "paypal.acdc.cardNumber"|trans }}</label>
+                            <div id="swag-paypal-acdc-form-cardnumber"
+                                data-placeholder="{{ "paypal.acdc.cardNumber"|trans }}"
+                            ></div>
+                        </div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm-6 pe-1">
+                            <label class="d-none"
+                                for="swag-paypal-acdc-form-expiration">{{ "paypal.acdc.expiration"|trans }}</label>
+                            <div id="swag-paypal-acdc-form-expiration"
+                                data-placeholder="{{ "paypal.acdc.expiration"|trans }}"
+                            ></div>
+                        </div>
+                        <div class="col-sm-6 ps-1">
+                            <label class="d-none" for="swag-paypal-acdc-form-cvv">{{ "paypal.acdc.cvv"|trans }}</label>
+                            <div id="swag-paypal-acdc-form-cvv"
+                                data-placeholder="{{ "paypal.acdc.cvv"|trans }}"
+                            ></div>
+                        </div>
                     </div>
                 </div>
-                <div class="row mb-1">
-                    <div class="col-sm-12 swag-paypal-acdc-form-field-lg">
-                        <label class="d-none"
-                               for="swag-paypal-acdc-form-cardnumber">{{ "paypal.acdc.cardNumber"|trans }}</label>
-                        <div id="swag-paypal-acdc-form-cardnumber"
-                             data-placeholder="{{ "paypal.acdc.cardNumber"|trans }}"
-                        ></div>
-                    </div>
-                </div>
-                <div class="row mb-1">
-                    <div class="col-sm-6 pe-1">
-                        <label class="d-none"
-                               for="swag-paypal-acdc-form-expiration">{{ "paypal.acdc.expiration"|trans }}</label>
-                        <div id="swag-paypal-acdc-form-expiration"
-                             data-placeholder="{{ "paypal.acdc.expiration"|trans }}"
-                        ></div>
-                    </div>
-                    <div class="col-sm-6 ps-1">
-                        <label class="d-none" for="swag-paypal-acdc-form-cvv">{{ "paypal.acdc.cvv"|trans }}</label>
-                        <div id="swag-paypal-acdc-form-cvv"
-                             data-placeholder="{{ "paypal.acdc.cvv"|trans }}"
-                        ></div>
-                    </div>
-                </div>
-            </div>
-        {% endblock %}
+            {% endblock %}
+        {% endif %}
 
     {% elseif puiFraudnetData and puiFraudnetData.paymentMethodId is same as(payment.id) and puiFraudnetData.paymentMethodId is same as(context.paymentMethod.id) %}
 

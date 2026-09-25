@@ -8,9 +8,17 @@
         {% set fundingEligibilityData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION')] %}
 
         {% if fundingEligibilityData %}
+            {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+            <div
+                data-swag-paypal-eligibility="true"
+                data-swag-paypal-eligibility-options="{{ fundingEligibilityData|json_encode }}"
+            >
+            </div>
+            {% else %}
             <div data-swag-paypal-funding-eligibility="true"
                  data-swag-paypal-funding-eligibility-options="{{ fundingEligibilityData|json_encode }}">
             </div>
+            {% endif %}
         {% endif %}
     {% endblock %}
 {% endblock %}

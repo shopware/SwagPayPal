@@ -17,9 +17,11 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
             <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute"/>
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\ClientTokenRoute"/>
             <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\Storefront\Service\ReturnTokenService"/>
             <argument type="service" id="router"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -77,6 +79,7 @@
             <argument type="service" id="router"/>
             <argument type="service" id="request_stack"/>
             <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\Data\Service\VaultDataService">

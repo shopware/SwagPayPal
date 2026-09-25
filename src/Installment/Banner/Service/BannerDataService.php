@@ -25,8 +25,10 @@ use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Service\AbstractScriptDataService;
+use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Symfony\Component\Routing\RouterInterface;
 
 #[Package('checkout')]
 class BannerDataService extends AbstractScriptDataService implements BannerDataServiceInterface
@@ -40,10 +42,11 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
         LocaleCodeProvider $localeCodeProvider,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
+        RouterInterface $router,
         private readonly PaymentMethodUtil $paymentMethodUtil,
         private readonly EntityRepository $languageRepository,
     ) {
-        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
+        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $router);
     }
 
     /**
@@ -75,9 +78,10 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
         }
 
         $bannerData = new BannerData();
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
 
-        if ($this->systemConfigService->getBool(Settings::CROSS_BORDER_MESSAGING_ENABLED)) {
-            $crossBorderBuyerCountry = $this->matchBuyerCountry($this->systemConfigService->getString(Settings::CROSS_BORDER_BUYER_COUNTRY), $salesChannelContext);
+        if ($this->systemConfigService->getBool(Settings::CROSS_BORDER_MESSAGING_ENABLED, $salesChannelId)) {
+            $crossBorderBuyerCountry = $this->matchBuyerCountry($this->systemConfigService->getString(Settings::CROSS_BORDER_BUYER_COUNTRY, $salesChannelId), $salesChannelContext);
             $crossBorderBuyerCountry ??= $this->determineBuyerCountry($salesChannelContext);
         }
 
@@ -85,15 +89,16 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
             ...$this->getBaseData($salesChannelContext),
             'paymentMethodId' => (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
             'amount' => $amount,
-            'footerEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED),
-            'cartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_CART_ENABLED),
-            'offCanvasCartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED),
-            'loginPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED),
-            'detailPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED),
-            'logoType' => $this->systemConfigService->getString(Settings::INSTALLMENT_BANNER_LOGO_TYPE),
-            'textColor' => $this->systemConfigService->getString(Settings::INSTALLMENT_BANNER_TEXT_COLOR),
-            'textSize' => $this->systemConfigService->getInt(Settings::INSTALLMENT_BANNER_TEXT_SIZE) ?: 12,
+            'footerEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_FOOTER_ENABLED, $salesChannelId),
+            'cartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_CART_ENABLED, $salesChannelId),
+            'offCanvasCartEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_OFF_CANVAS_CART_ENABLED, $salesChannelId),
+            'loginPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_LOGIN_PAGE_ENABLED, $salesChannelId),
+            'detailPageEnabled' => $this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_DETAIL_PAGE_ENABLED, $salesChannelId),
+            'logoType' => $this->systemConfigService->getString(Settings::INSTALLMENT_BANNER_LOGO_TYPE, $salesChannelId),
+            'textColor' => $this->systemConfigService->getString(Settings::INSTALLMENT_BANNER_TEXT_COLOR, $salesChannelId),
+            'textSize' => $this->systemConfigService->getInt(Settings::INSTALLMENT_BANNER_TEXT_SIZE, $salesChannelId) ?: 12,
             'crossBorderBuyerCountry' => $crossBorderBuyerCountry ?? null,
+            'pageType' => $this->getPageType($page),
         ]);
 
         return $bannerData;
@@ -130,6 +135,21 @@ class BannerDataService extends AbstractScriptDataService implements BannerDataS
             'it-IT-EUR' => 'IT',
             'en-GB-GBP' => 'UK',
             'en-US-USD' => 'US',
+            default => null,
+        };
+    }
+
+    /**
+     * @param CheckoutCartPage|CheckoutConfirmPage|CheckoutRegisterPage|OffcanvasCartPage|ProductPage|FooterPagelet|QuickviewPagelet $page
+     */
+    private function getPageType($page): ?string
+    {
+        return match (true) {
+            $page instanceof CheckoutCartPage => AbstractScriptData::PAGE_TYPE_CART,
+            $page instanceof CheckoutRegisterPage,
+            $page instanceof CheckoutConfirmPage => AbstractScriptData::PAGE_TYPE_CHECKOUT,
+            $page instanceof OffcanvasCartPage => AbstractScriptData::PAGE_TYPE_MINI_CART,
+            $page instanceof ProductPage => AbstractScriptData::PAGE_TYPE_PRODUCT_DETAILS,
             default => null,
         };
     }

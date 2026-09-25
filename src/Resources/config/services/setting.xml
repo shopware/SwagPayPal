@@ -29,6 +29,13 @@
             <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\TokenResource"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SdkV6EligibilityService"/>
+        </service>
+
+        <service id="Swag\PayPal\Setting\Service\SdkV6EligibilityService">
+            <argument type="service" id="Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface"/>
+            <argument type="service" id="Swag\PayPal\RestApi\ApiContextFactoryInterface"/>
+            <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
         <service id="Swag\PayPal\Setting\Service\SettingsValidationService">
@@ -40,6 +47,7 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\ApiCredentialService"/>
             <argument type="service" id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SdkV6EligibilityService"/>
         </service>
     </services>
 </container>

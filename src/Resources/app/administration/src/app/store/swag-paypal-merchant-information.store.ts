@@ -36,6 +36,7 @@ const store = Shopware.Store.register({
             return this.allMerchantInformations[String(this.salesChannel)] ?? {
                 merchantIntegrations: null,
                 capabilities: {},
+                sdkV6Eligible: null,
             };
         },
 
@@ -61,6 +62,10 @@ const store = Shopware.Store.register({
             return this.merchantCapabilities.some(
                 (capability) => capability.name === 'PAYPAL_CHECKOUT' && capability.status === 'ACTIVE',
             );
+        },
+
+        canSdkV6(): boolean {
+            return this.actual.sdkV6Eligible === true;
         },
     },
 });

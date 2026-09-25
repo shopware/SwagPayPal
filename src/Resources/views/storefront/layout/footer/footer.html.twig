@@ -6,10 +6,15 @@
         {% set installmentBanner = footer.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
 
         {% if installmentBanner.footerEnabled %}
-            <div class="col-4 mt-2 p-0 footer-logo is-payment"
-                 data-swag-paypal-installment-banner="true"
-                 data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
-            </div>
+            {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
+            {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+                {% sw_include '@SwagPayPal/storefront/paypal/installment-banner.html.twig' with { classes: 'col-4 mt-2 p-0 footer-logo is-payment' } %}
+            {% else %}
+                <div class="col-4 mt-2 p-0 footer-logo is-payment"
+                    data-swag-paypal-installment-banner="true"
+                    data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
+                </div>
+            {% endif %}
         {% endif %}
     {% endblock %}
 

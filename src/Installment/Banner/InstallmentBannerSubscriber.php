@@ -105,6 +105,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
 
         if ($page instanceof CheckoutCartPage) {
             $productTableBannerData = clone $bannerData;
+            /** @deprecated tag:v11.0.0 - All setters will be removed */
             $productTableBannerData->setLayout('flex');
             $productTableBannerData->setColor('grey');
             $productTableBannerData->setRatio('20x1');

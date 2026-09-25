@@ -314,7 +314,7 @@ class CheckoutSubscriberTest extends TestCase
             $localeCodeProvider,
             $router,
             $settings,
-            $credentialsUtil
+            $credentialsUtil,
         );
 
         $payLaterDataService = new PayLaterCheckoutDataService(
@@ -322,7 +322,7 @@ class CheckoutSubscriberTest extends TestCase
             $localeCodeProvider,
             $router,
             $settings,
-            $credentialsUtil
+            $credentialsUtil,
         );
 
         $venmoDataService = new VenmoCheckoutDataService(
@@ -339,7 +339,7 @@ class CheckoutSubscriberTest extends TestCase
             $localeCodeProvider,
             $router,
             $settings,
-            $credentialsUtil
+            $credentialsUtil,
         );
 
         $spbDataService = new SPBCheckoutDataService(
