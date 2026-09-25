@@ -156,6 +156,10 @@ class SwagPayPal extends Plugin
                 $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
             ),
             $paymentMethodDataRegistry,
+            new AgenticCommerceService(
+                $this->getRepository($this->container, SalesChannelDefinition::ENTITY_NAME),
+                $this->getRepository($this->container, SalesChannelTypeDefinition::ENTITY_NAME),
+            ),
         ))->update($updateContext);
 
         parent::update($updateContext);
