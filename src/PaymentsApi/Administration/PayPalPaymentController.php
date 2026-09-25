@@ -209,7 +209,7 @@ class PayPalPaymentController extends AbstractController
             content: new OA\JsonContent(ref: DoVoid::class)
         )]
     )]
-    #[Route(path: '/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.refund_payment', methods: ['POST'], defaults: ['_acl' => ['order.editor']])]
+    #[Route(path: '/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}', name: 'api.action.paypal.refund_payment', methods: ['POST'], defaults: ['_acl' => ['order_refund.editor']])]
     public function refundPayment(
         Request $request,
         Context $context,
