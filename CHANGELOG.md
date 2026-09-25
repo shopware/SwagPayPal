@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where PayPal accounts and cards were not saved for future purchases, if PayPal completed the vaulting asynchronously (shopware/SwagPayPal#845)
 - Fixes an issue, where refunds of legacy PayPal payments via the Admin API were still possible as order editor, although they require the order refund editor permission (shopware/SwagPayPal#530)
 
 # 8.12.3
