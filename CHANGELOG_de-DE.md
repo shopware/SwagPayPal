@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fügt das Zusatzfeld `swag_paypal_agentic_commerce_sales_channel_id` hinzu, das bei über PayPal Agentic Commerce aufgegebenen Bestellungen den Agentic-Verkaufskanal speichert. Die Bestellübersicht der Administration kennzeichnet diese Bestellungen.
 - Behebt ein Problem, bei dem PayPal-Konten und Karten nicht für zukünftige Käufe gespeichert wurden, wenn PayPal das Vaulting asynchron abschloss (shopware/SwagPayPal#845)
+- Behebt ein Problem, bei dem Rückerstattungen älterer PayPal-Zahlungen über die Admin-API weiterhin als Bestell-Editor möglich waren, obwohl dafür die Berechtigung des Rückerstattungs-Editors erforderlich ist (shopware/SwagPayPal#530)
 
 # 9.13.3
 - Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte
