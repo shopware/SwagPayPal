@@ -1,4 +1,8 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue where PayPal and Pay Later payments failed after the approved order amount changed, instead of asking the customer to approve the new amount (shopware/SwagPayPal#759)
+- Adds `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException`
+- Adds `Swag\PayPal\RestApi\V2\Resource\OrderResource::confirm()`, which confirms the payment source of an existing PayPal order
+- Changes `Swag\PayPal\RestApi\Exception\PayPalApiException` to carry the PayPal SDK exception of the failure as its previous exception
 - Added the order custom field `swag_paypal_agentic_commerce_sales_channel_id`, which stores the agentic sales channel of orders placed via PayPal Agentic Commerce. The Administration order list labels these orders.
 - Fixes an issue, where the "log out guest customer after order" setting kept Pay Upon Invoice guests logged in permanently instead of logging them out once the payment details were shown (shopware/shopware#7962)
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront

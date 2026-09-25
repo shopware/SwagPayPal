@@ -21,4 +21,9 @@ class PayLaterHandler extends AbstractPaymentMethodHandler
     {
         return true;
     }
+
+    protected function recoversFromPayerAction(): bool
+    {
+        return true;
+    }
 }
