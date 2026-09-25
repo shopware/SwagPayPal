@@ -1,4 +1,5 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 9.13.4
+- Adds the PayPal Agentic Commerce sales channel type when updating from an older plugin version
 - Added the order custom field `swag_paypal_agentic_commerce_sales_channel_id`, which stores the agentic sales channel of orders placed via PayPal Agentic Commerce. The Administration order list labels these orders.
 - Fixes an issue, where refunds of legacy PayPal payments via the Admin API were still possible as order editor, although they require the order refund editor permission (shopware/SwagPayPal#530)
 
