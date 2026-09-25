@@ -8,6 +8,9 @@
         },
         "product-export": {
             "name": "PayPal Agentic Commerce Export"
+        },
+        "order-list": {
+            "label": "PayPal Agentic Commerce"
         }
     }
 }
