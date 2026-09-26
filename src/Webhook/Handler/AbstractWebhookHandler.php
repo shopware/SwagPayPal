@@ -131,6 +131,9 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         return $state === null || !\in_array($state, [
             OrderTransactionStates::STATE_CANCELLED,
             OrderTransactionStates::STATE_PAID,
+            OrderTransactionStates::STATE_PARTIALLY_PAID,
+            OrderTransactionStates::STATE_PARTIALLY_REFUNDED,
+            OrderTransactionStates::STATE_REFUNDED,
         ], true);
     }
 }

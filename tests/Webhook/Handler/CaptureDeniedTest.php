@@ -7,11 +7,16 @@
 
 namespace Swag\PayPal\Test\Webhook\Handler;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
+use Swag\PayPal\Util\PaymentStatusUtilV2;
+use Swag\PayPal\Util\PriceFormatter;
 use Swag\PayPal\Webhook\Handler\CaptureDenied;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -56,10 +61,39 @@ class CaptureDeniedTest extends AbstractWebhookHandlerTestCase
         $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook, OrderTransactionStates::STATE_CANCELLED);
     }
 
-    public function testInvokeDoesNotCancelPaidTransaction(): void
+    #[DataProvider('cancellationProtectedStates')]
+    public function testInvokeDoesNotCancelCapturedTransaction(string $state): void
     {
         $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_CAPTURE);
-        $this->assertInvoke(OrderTransactionStates::STATE_PAID, $webhook, OrderTransactionStates::STATE_PAID);
+        $this->assertInvoke($state, $webhook, $state);
+    }
+
+    public function testDeniedCapturePreservesPreviousPartialCapture(): void
+    {
+        $context = Context::createDefaultContext();
+        $transactionId = $this->getTransactionId($context, $this->getContainer(), OrderTransactionStates::STATE_AUTHORIZED);
+        $paymentStatusUtil = new PaymentStatusUtilV2(
+            $this->orderTransactionRepository,
+            new OrderTransactionStateHandler($this->stateMachineRegistry),
+            new PriceFormatter()
+        );
+        $capture = (new Capture())->assign([
+            'id' => 'completed-capture',
+            'status' => 'COMPLETED',
+            'final_capture' => false,
+            'amount' => ['currency_code' => 'EUR', 'value' => '10.00'],
+        ]);
+
+        $paymentStatusUtil->applyCaptureState($transactionId, $capture, $context);
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_PARTIALLY_PAID, $transactionId, $context);
+
+        $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_CAPTURE, $transactionId);
+        $resource = $webhook->getResource();
+        static::assertInstanceOf(Capture::class, $resource);
+        $resource->assign(['id' => 'denied-capture']);
+        $this->webhookHandler->invoke($webhook, $context);
+
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_PARTIALLY_PAID, $transactionId, $context);
     }
 
     protected function createWebhookHandler()

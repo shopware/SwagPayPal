@@ -53,6 +53,17 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         $this->webhookHandler = $this->createWebhookHandler();
     }
 
+    /**
+     * @return \Generator<string, array{string}>
+     */
+    public static function cancellationProtectedStates(): \Generator
+    {
+        yield 'paid' => [OrderTransactionStates::STATE_PAID];
+        yield 'partially paid' => [OrderTransactionStates::STATE_PARTIALLY_PAID];
+        yield 'partially refunded' => [OrderTransactionStates::STATE_PARTIALLY_REFUNDED];
+        yield 'refunded' => [OrderTransactionStates::STATE_REFUNDED];
+    }
+
     protected function assertEventType(string $type): void
     {
         static::assertSame($type, $this->webhookHandler->getEventType());

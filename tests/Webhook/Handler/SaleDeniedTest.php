@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Webhook\Handler;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Log\Package;
@@ -49,10 +50,11 @@ class SaleDeniedTest extends AbstractWebhookHandlerTestCase
         $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook, OrderTransactionStates::STATE_CANCELLED);
     }
 
-    public function testInvokeDoesNotCancelPaidTransaction(): void
+    #[DataProvider('cancellationProtectedStates')]
+    public function testInvokeDoesNotCancelCapturedTransaction(string $state): void
     {
         $webhook = $this->createWebhookV1();
-        $this->assertInvoke(OrderTransactionStates::STATE_PAID, $webhook, OrderTransactionStates::STATE_PAID);
+        $this->assertInvoke($state, $webhook, $state);
     }
 
     protected function createWebhookHandler(): SaleDenied

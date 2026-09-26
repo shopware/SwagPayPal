@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Webhook\Handler;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
@@ -87,7 +88,7 @@ class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
     {
         $context = Context::createDefaultContext();
         $container = $this->getContainer();
-        $transactionId = $this->getTransactionId($context, $container);
+        $transactionId = $this->getTransactionId($context, $container, OrderTransactionStates::STATE_AUTHORIZED);
 
         $this->orderTransactionRepository->update([[
             'id' => $transactionId,
@@ -113,10 +114,11 @@ class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
         $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook, OrderTransactionStates::STATE_CANCELLED);
     }
 
-    public function testInvokeDoesNotCancelPaidTransaction(): void
+    #[DataProvider('cancellationProtectedStates')]
+    public function testInvokeDoesNotCancelCapturedTransaction(string $state): void
     {
         $webhook = $this->createWebhookV2(Event::RESOURCE_TYPE_AUTHORIZATION);
-        $this->assertInvoke(OrderTransactionStates::STATE_PAID, $webhook, OrderTransactionStates::STATE_PAID);
+        $this->assertInvoke($state, $webhook, $state);
     }
 
     protected function createWebhookHandler(): AuthorizationVoided
