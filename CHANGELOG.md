@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue where late PayPal browser cancellations could cancel payments already being processed, and negative webhooks could incorrectly attempt to cancel fully or partially paid or refunded transactions (shopware/shopware#19221)
 - Added the order custom field `swag_paypal_agentic_commerce_sales_channel_id`, which stores the agentic sales channel of orders placed via PayPal Agentic Commerce. The Administration order list labels these orders.
 - Fixes an issue, where the "log out guest customer after order" setting kept Pay Upon Invoice guests logged in permanently instead of logging them out once the payment details were shown (shopware/shopware#7962)
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront

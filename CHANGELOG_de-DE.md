@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem verspätete PayPal-Abbruchantworten im Browser bereits laufende Zahlungen abbrechen konnten und negative Webhooks fälschlicherweise versuchten, vollständig oder teilweise bezahlte oder erstattete Transaktionen auf „Abgebrochen“ zu setzen (shopware/shopware#19221)
 - Fügt das Zusatzfeld `swag_paypal_agentic_commerce_sales_channel_id` hinzu, das bei über PayPal Agentic Commerce aufgegebenen Bestellungen den Agentic-Verkaufskanal speichert. Die Bestellübersicht der Administration kennzeichnet diese Bestellungen.
 - Behebt ein Problem, bei dem die Einstellung "Gastkunde nach Bestellung ausloggen" bei Rechnungskauf dauerhaft ignoriert wurde, statt den Gast auszuloggen, sobald die Zahlungsinformationen angezeigt wurden (shopware/shopware#7962)
 - Behebt ein Problem, bei dem das PayPal JS in der Storefront mehrmals geladen werden konnte

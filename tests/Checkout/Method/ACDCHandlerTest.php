@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Method;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
@@ -18,11 +19,13 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\System\StateMachine\Transition;
@@ -366,6 +369,99 @@ class ACDCHandlerTest extends TestCase
         $this->handler->finalize(new Request([]), $paymentTransaction, $context);
     }
 
+    #[DataProvider('cancellationDecisionProvider')]
+    public function testFinalizeWithCancelChecksPayPalBeforeCancelling(string $stateName, bool $cancellationAllowed): void
+    {
+        $context = Context::createDefaultContext();
+        $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
+        $order = new OrderEntity();
+        $order->setSalesChannelId('salesChannelId');
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setOrder($order);
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypalOrderId',
+        ]);
+        $state = new StateMachineStateEntity();
+        $state->setTechnicalName($stateName);
+        $transaction->setStateMachineState($state);
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->orderExecuteService
+            ->expects($this->once())
+            ->method('isCancellationAllowed')
+            ->with('paypalOrderId', 'salesChannelId')
+            ->willReturn($cancellationAllowed);
+        $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
+        $this->stateMachineRegistry->expects($this->never())->method('transition');
+        $this->transactionDataService->expects($this->never())->method('setResourceId');
+        $this->acdcValidator->expects($this->never())->method('validate');
+
+        if ($cancellationAllowed) {
+            $this->expectExceptionObject(PaymentException::customerCanceled(
+                $transaction->getId(),
+                'Customer canceled the payment on the PayPal page'
+            ));
+        }
+
+        $this->handler->finalize(new Request(['cancel' => true]), $paymentTransaction, $context);
+    }
+
+    public static function cancellationDecisionProvider(): \Generator
+    {
+        yield 'unconfirmed payment already submitted' => [OrderTransactionStates::STATE_UNCONFIRMED, false];
+        yield 'in-progress payment already submitted' => [OrderTransactionStates::STATE_IN_PROGRESS, false];
+        yield 'unconfirmed payment not submitted' => [OrderTransactionStates::STATE_UNCONFIRMED, true];
+        yield 'in-progress payment not submitted' => [OrderTransactionStates::STATE_IN_PROGRESS, true];
+    }
+
+    #[DataProvider('successfulTransactionStateProvider')]
+    public function testFinalizeWithCancelPreservesSuccessfulTransaction(string $stateName): void
+    {
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setOrder(new OrderEntity());
+        $state = new StateMachineStateEntity();
+        $state->setTechnicalName($stateName);
+        $transaction->setStateMachineState($state);
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
+        $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
+        $this->stateMachineRegistry->expects($this->never())->method('transition');
+
+        $this->handler->finalize(
+            new Request(['cancel' => true]),
+            new PaymentTransactionStruct($transaction->getId()),
+            Context::createDefaultContext(),
+        );
+    }
+
+    #[DataProvider('invalidPayPalOrderIdProvider')]
+    public function testFinalizeWithCancelWithoutValidOrderIdPreservesTransaction(string|int|null $paypalOrderId): void
+    {
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setOrder(new OrderEntity());
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $paypalOrderId,
+        ]);
+        $state = new StateMachineStateEntity();
+        $state->setTechnicalName(OrderTransactionStates::STATE_UNCONFIRMED);
+        $transaction->setStateMachineState($state);
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->orderExecuteService->expects($this->never())->method('isCancellationAllowed');
+        $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
+        $this->stateMachineRegistry->expects($this->never())->method('transition');
+
+        $this->handler->finalize(
+            new Request(['cancel' => true]),
+            new PaymentTransactionStruct($transaction->getId()),
+            Context::createDefaultContext(),
+        );
+    }
+
     public function testFinalizeValid3DSecure(): void
     {
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
@@ -573,6 +669,105 @@ class ACDCHandlerTest extends TestCase
             $paymentTransaction,
             $context,
         );
+    }
+
+    #[DataProvider('successfulTransactionStateProvider')]
+    public function testRecurringRetryPersistsExistingSuccessfulPayment(string $stateName): void
+    {
+        if (!\class_exists(SubscriptionDefinition::class)) {
+            static::markTestSkipped('Commercial is not available');
+        }
+
+        $context = Context::createDefaultContext();
+        $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null);
+        $paypalOrder = $this->createOrderObject();
+        $order = new OrderEntity();
+        $order->setSalesChannelId('salesChannelId');
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setCustomerId('customerId');
+        $order->setOrderCustomer($orderCustomer);
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setOrder($order);
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $paypalOrder->getId(),
+        ]);
+        $state = new StateMachineStateEntity();
+        $state->setTechnicalName($stateName);
+        $transaction->setStateMachineState($state);
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->vaultTokenService->method('getSubscriptions')->willReturn(new SubscriptionCollection());
+        $this->orderBuilder->expects($this->never())->method('getOrder');
+        $this->orderResource->expects($this->never())->method('create');
+        $this->transactionDataService->expects($this->never())->method('setOrderId');
+        $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
+        $this->acdcValidator->expects($this->never())->method('validate');
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('get')
+            ->with($paypalOrder->getId(), $order->getSalesChannelId())
+            ->willReturn($paypalOrder);
+
+        $this->transactionDataService
+            ->expects($this->once())
+            ->method('setResourceId')
+            ->with($paypalOrder, $transaction->getId(), $context);
+
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('saveToken')
+            ->with($paymentTransaction, $transaction, $paypalOrder->getPaymentSource()?->getCard(), $orderCustomer->getCustomerId(), $context);
+
+        $this->handler->recurring($paymentTransaction, $context);
+    }
+
+    public static function successfulTransactionStateProvider(): \Generator
+    {
+        yield 'paid retry preserves the existing payment' => [OrderTransactionStates::STATE_PAID];
+        yield 'authorized retry preserves the existing payment' => [OrderTransactionStates::STATE_AUTHORIZED];
+    }
+
+    #[DataProvider('invalidPayPalOrderIdProvider')]
+    public function testRecurringRetryWithoutValidPayPalOrderIdFails(string|int|null $paypalOrderId): void
+    {
+        if (!\class_exists(SubscriptionDefinition::class)) {
+            static::markTestSkipped('Commercial is not available');
+        }
+
+        $context = Context::createDefaultContext();
+        $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', null);
+        $order = new OrderEntity();
+        $order->setSalesChannelId('salesChannelId');
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setOrder($order);
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $paypalOrderId,
+        ]);
+        $state = new StateMachineStateEntity();
+        $state->setTechnicalName(OrderTransactionStates::STATE_PAID);
+        $transaction->setStateMachineState($state);
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->vaultTokenService->method('getSubscriptions')->willReturn(new SubscriptionCollection());
+        $this->orderBuilder->expects($this->never())->method('getOrder');
+        $this->orderResource->expects($this->never())->method('create');
+        $this->orderResource->expects($this->never())->method('get');
+        $this->transactionDataService->expects($this->never())->method('setOrderId');
+        $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
+
+        $this->expectExceptionObject(CheckoutException::preparedOrderRequired(ACDCHandler::class));
+
+        $this->handler->recurring($paymentTransaction, $context);
+    }
+
+    public static function invalidPayPalOrderIdProvider(): \Generator
+    {
+        yield 'missing order ID cannot start another payment' => [null];
+        yield 'empty order ID cannot start another payment' => [''];
+        yield 'non-string order ID cannot start another payment' => [42];
     }
 
     public function testRecurringWithoutSubscription(): void

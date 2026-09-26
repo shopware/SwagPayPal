@@ -48,6 +48,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorizedOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAPM;
@@ -178,6 +179,10 @@ class MockRequestHandler
         if (\mb_strpos($resourceUri, OrderGateway::GATEWAY_URL) !== false) {
             if (\mb_substr($resourceUri, -17) === GetCapturedOrderCapture::ID) {
                 return $this->createResponse(SymResponse::HTTP_OK, GetCapturedOrderCapture::get());
+            }
+
+            if (\mb_substr($resourceUri, -17) === GetAuthorizedOrderAuthorization::ID) {
+                return $this->createResponse(SymResponse::HTTP_OK, GetAuthorizedOrderAuthorization::get());
             }
 
             if (\mb_substr($resourceUri, -17) === GetRefundedOrderCapture::ID) {
