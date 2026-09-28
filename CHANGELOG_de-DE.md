@@ -1,4 +1,8 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem PayPal-Zahlungen und Zahlungen mit „Später bezahlen“ nach einer Änderung des freigegebenen Bestellbetrags fehlschlugen, anstatt den Kunden den neuen Betrag erneut freigeben zu lassen (shopware/SwagPayPal#759)
+- Fügt `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException` hinzu
+- Fügt `Swag\PayPal\RestApi\V2\Resource\OrderResource::confirm()` hinzu, das die Zahlungsquelle einer bestehenden PayPal-Bestellung bestätigt
+- Ändert `Swag\PayPal\RestApi\Exception\PayPalApiException`, sodass die PayPal-SDK-Exception des Fehlers als vorherige Exception erhalten bleibt
 - Fügt das Zusatzfeld `swag_paypal_agentic_commerce_sales_channel_id` hinzu, das bei über PayPal Agentic Commerce aufgegebenen Bestellungen den Agentic-Verkaufskanal speichert. Die Bestellübersicht der Administration kennzeichnet diese Bestellungen.
 - Behebt ein Problem, bei dem die Einstellung "Gastkunde nach Bestellung ausloggen" bei Rechnungskauf dauerhaft ignoriert wurde, statt den Gast auszuloggen, sobald die Zahlungsinformationen angezeigt wurden (shopware/shopware#7962)
 - Behebt ein Problem, bei dem das PayPal JS in der Storefront mehrmals geladen werden konnte

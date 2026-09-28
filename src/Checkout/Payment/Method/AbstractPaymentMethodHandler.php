@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Checkout\Payment\Method;
 
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -27,11 +30,13 @@ use Shopware\PayPalSDK\Struct\V2\Common\Link;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\AbstractPaymentSource;
 use Swag\PayPal\Checkout\CheckoutException;
+use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -40,8 +45,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
-abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
+abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     public const PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME = 'paypalOrderId';
     public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
 
@@ -72,7 +79,9 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
         Context $context,
         ?Struct $validateStruct,
     ): ?RedirectResponse {
-        $paypalOrderId = $request->request->getAlnum(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        // empty unless the payer approved a PayPal order the shop prepared for them
+        $preparedOrderId = $request->request->getAlnum(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        $paypalOrderId = $preparedOrderId;
         [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
         $existingVault = $this->isVaultable() ? $this->vaultTokenService->getAvailableToken($transaction, $orderTransaction, $order, $context) : null;
         if ($this->requirePreparedOrder() && !$paypalOrderId && !$existingVault) {
@@ -93,15 +102,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
 
         $response = null;
         if (!$paypalOrderId) {
-            $paypalOrder = $this->orderBuilder->getOrder($transaction, $orderTransaction, $order, $context, $request);
-            $response = $this->orderResource->create(
-                $paypalOrder,
-                $order->getSalesChannelId(),
-                $this->resolvePartnerAttributionId($request),
-                false,
-                $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
-                $this->getMetaDataId($request),
-            );
+            $response = $this->createPayPalOrder($request, $transaction, $orderTransaction, $order, $context);
             $paypalOrderId = $response->getId();
         }
 
@@ -128,13 +129,17 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             return new RedirectResponse($action);
         }
 
-        $this->executeOrder(
-            $transaction,
-            $response,
-            $order,
-            $orderTransaction,
-            $context,
-        );
+        try {
+            $this->executeOrder(
+                $transaction,
+                $response,
+                $order,
+                $orderTransaction,
+                $context,
+            );
+        } catch (PayerActionRequiredException $e) {
+            return $this->recoverFromPayerAction($e, $request, $preparedOrderId, $transaction, $orderTransaction, $order, $context);
+        }
 
         return null;
     }
@@ -199,14 +204,23 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
             $context,
         );
 
-        $this->executeOrder(
-            $transaction,
-            $response,
-            $order,
-            $orderTransaction,
-            $context,
-            false,
-        );
+        try {
+            $this->executeOrder(
+                $transaction,
+                $response,
+                $order,
+                $orderTransaction,
+                $context,
+                false,
+            );
+        } catch (PayerActionRequiredException $e) {
+            // no payer is present to approve
+            throw PaymentException::recurringInterrupted(
+                $transaction->getOrderTransactionId(),
+                $e->getMessage(),
+                $e,
+            );
+        }
     }
 
     protected function executeOrder(PaymentTransactionStruct $transaction, Order $paypalOrder, OrderEntity $order, OrderTransactionEntity $orderTransaction, Context $context, bool $isUserPresent = true): Order
@@ -242,6 +256,76 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
     }
 
     /**
+     * Reopens the approval of an order PayPal refused to capture, redirecting the payer to
+     * approve it again and return into finalize.
+     *
+     * @see https://developer.paypal.com/docs/checkout/standard/customize/overcharge-handling/
+     */
+    protected function recoverFromPayerAction(
+        PayerActionRequiredException $exception,
+        Request $request,
+        string $preparedOrderId,
+        PaymentTransactionStruct $transaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+    ): RedirectResponse {
+        if (!$this->recoversFromPayerAction() || !$preparedOrderId || !$transaction->getReturnUrl()) {
+            throw $exception;
+        }
+
+        // stripped of payment data, so no App Switch context and no vault token
+        $confirmationRequest = new Request();
+        $confirmationRequest->attributes->set(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE, true);
+
+        // but the payer still gets the vaulting they asked for
+        if ($request->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+            $confirmationRequest->request->set(VaultTokenService::REQUEST_CREATE_VAULT, true);
+        }
+
+        $paymentSource = $this->orderBuilder
+            ->getOrder($transaction, $orderTransaction, $order, $context, $confirmationRequest)
+            ->getPaymentSource();
+
+        if ($paymentSource === null) {
+            throw $exception;
+        }
+
+        try {
+            $confirmedOrder = $this->orderResource->confirm(
+                $preparedOrderId,
+                $paymentSource,
+                $order->getSalesChannelId(),
+                PartnerAttributionId::PAYPAL_PPCP,
+            );
+        } catch (PayPalApiException|ClientExceptionInterface $confirmationException) {
+            $this->logger?->warning('Could not reopen the PayPal order for payer approval.', [
+                'orderTransactionId' => $transaction->getOrderTransactionId(),
+                'payPalOrderId' => $preparedOrderId,
+                'exception' => $confirmationException,
+            ]);
+
+            throw $exception;
+        }
+
+        $action = $this->resolveRedirect($confirmedOrder);
+        if ($action === null) {
+            throw $exception;
+        }
+
+        return new RedirectResponse($action);
+    }
+
+    /**
+     * If this method returns true, a capture PayPal rejected with `PAYER_ACTION_REQUIRED` sends
+     * the payer back to PayPal to approve the order again.
+     */
+    protected function recoversFromPayerAction(): bool
+    {
+        return false;
+    }
+
+    /**
      * If this method returns true, the payment handler will:
      * - be available for recurring payments
      * - attempt to save the payment source as a vault token
@@ -271,7 +355,31 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler
 
     protected function resolveRedirect(?Order $order): ?string
     {
-        return $order?->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref();
+        // Order::$links has no default and PayPal may omit it
+        if ($order === null || !$order->isset('links')) {
+            return null;
+        }
+
+        return $order->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref();
+    }
+
+    private function createPayPalOrder(
+        Request $request,
+        PaymentTransactionStruct $transaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+    ): Order {
+        $paypalOrder = $this->orderBuilder->getOrder($transaction, $orderTransaction, $order, $context, $request);
+
+        return $this->orderResource->create(
+            $paypalOrder,
+            $order->getSalesChannelId(),
+            $this->resolvePartnerAttributionId($request),
+            false,
+            $transaction->getOrderTransactionId() . ($orderTransaction->getUpdatedAt()?->getTimestamp() ?: ''),
+            $this->getMetaDataId($request),
+        );
     }
 
     /**
