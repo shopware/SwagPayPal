@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.8.5
 - Fixes an issue where late PayPal browser cancellations could cancel payments already being processed, and negative webhooks could incorrectly attempt to cancel fully or partially paid or refunded transactions (shopware/shopware#19221)
 - Fixes an issue where PayPal and Pay Later payments failed after the approved order amount changed, instead of asking the customer to approve the new amount (shopware/SwagPayPal#759)
 - Adds `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException`
@@ -8,6 +8,7 @@
 - Fixes an issue, where the "log out guest customer after order" setting kept Pay Upon Invoice guests logged in permanently instead of logging them out once the payment details were shown (shopware/shopware#7962)
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront
 - Fixes an issue, where PayPal accounts and cards were not saved for future purchases, if PayPal completed the vaulting asynchronously (shopware/SwagPayPal#845)
+- Adds the PayPal Agentic Commerce sales channel type when updating from an older plugin version
 
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
