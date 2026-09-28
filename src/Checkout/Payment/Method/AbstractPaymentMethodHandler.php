@@ -12,6 +12,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AbstractPaymentHandler;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerType;
@@ -51,6 +52,11 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
 
     public const PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME = 'paypalOrderId';
     public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
+
+    private const SUCCESSFUL_TRANSACTION_STATES = [
+        OrderTransactionStates::STATE_PAID,
+        OrderTransactionStates::STATE_AUTHORIZED,
+    ];
 
     /**
      * @internal
@@ -151,12 +157,25 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
     ): void {
         [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
 
+        $isCancelled = $request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL);
+        if ($isCancelled && $this->isTransactionSuccessful($orderTransaction)) {
+            return;
+        }
+
         $paypalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
         if (!\is_string($paypalOrderId) || !$paypalOrderId) {
+            if ($isCancelled) {
+                return;
+            }
+
             throw CheckoutException::preparedOrderRequired(static::class);
         }
 
-        if ($request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
+        if ($isCancelled) {
+            if (!$this->orderExecuteService->isCancellationAllowed($paypalOrderId, $order->getSalesChannelId())) {
+                return;
+            }
+
             throw PaymentException::customerCanceled(
                 $transaction->getOrderTransactionId(),
                 'Customer canceled the payment on the PayPal page'
@@ -185,6 +204,24 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         }
 
         [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
+
+        if ($this->isTransactionSuccessful($orderTransaction)) {
+            $paypalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
+            if (!\is_string($paypalOrderId) || !$paypalOrderId) {
+                throw CheckoutException::preparedOrderRequired(static::class);
+            }
+
+            $this->executeOrder(
+                $transaction,
+                $this->orderResource->get($paypalOrderId, $order->getSalesChannelId()),
+                $order,
+                $orderTransaction,
+                $context,
+                false,
+            );
+
+            return;
+        }
 
         $this->settingsValidationService->validate($order->getSalesChannelId());
         $paypalOrder = $this->orderBuilder->getOrder($transaction, $orderTransaction, $order, $context, new Request());
@@ -225,13 +262,15 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
 
     protected function executeOrder(PaymentTransactionStruct $transaction, Order $paypalOrder, OrderEntity $order, OrderTransactionEntity $orderTransaction, Context $context, bool $isUserPresent = true): Order
     {
-        $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
-            $transaction->getOrderTransactionId(),
-            $paypalOrder,
-            $order->getSalesChannelId(),
-            $context,
-            PartnerAttributionId::PAYPAL_PPCP,
-        );
+        if (!$this->isPayPalOrderAlreadyExecuted($paypalOrder, $orderTransaction)) {
+            $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
+                $transaction->getOrderTransactionId(),
+                $paypalOrder,
+                $order->getSalesChannelId(),
+                $context,
+                PartnerAttributionId::PAYPAL_PPCP,
+            );
+        }
 
         $this->transactionDataService->setResourceId($paypalOrder, $transaction->getOrderTransactionId(), $context);
 
@@ -382,12 +421,27 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         );
     }
 
+    private function isTransactionSuccessful(OrderTransactionEntity $orderTransaction): bool
+    {
+        $state = $orderTransaction->getStateMachineState()?->getTechnicalName();
+
+        return $state !== null && \in_array($state, self::SUCCESSFUL_TRANSACTION_STATES, true);
+    }
+
+    private function isPayPalOrderAlreadyExecuted(Order $paypalOrder, OrderTransactionEntity $orderTransaction): bool
+    {
+        $storedPayPalOrderId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
+
+        return $this->isTransactionSuccessful($orderTransaction) && $storedPayPalOrderId === $paypalOrder->getId();
+    }
+
     /**
      * @return array{0: OrderTransactionEntity, 1: OrderEntity}
      */
     private function fetchOrderTransaction(string $transactionId, Context $context): array
     {
         $criteria = new Criteria([$transactionId]);
+        $criteria->addAssociation('stateMachineState');
         $criteria->addAssociation('order.billingAddress.country');
         $criteria->addAssociation('order.billingAddress.countryState');
         $criteria->addAssociation('order.currency');

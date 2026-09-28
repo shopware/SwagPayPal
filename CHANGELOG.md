@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue where late PayPal browser cancellations could cancel payments already being processed, and negative webhooks could incorrectly attempt to cancel fully or partially paid or refunded transactions (shopware/shopware#19221)
 - Fixes an issue where PayPal and Pay Later payments failed after the approved order amount changed, instead of asking the customer to approve the new amount (shopware/SwagPayPal#759)
 - Adds `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException`
 - Adds `Swag\PayPal\RestApi\V2\Resource\OrderResource::confirm()`, which confirms the payment source of an existing PayPal order
