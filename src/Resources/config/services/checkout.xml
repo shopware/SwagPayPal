@@ -97,6 +97,9 @@
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
             <argument type="service" id="order_transaction.repository"/>
+            <call method="setLogger">
+                <argument type="service" id="monolog.logger.paypal"/>
+            </call>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Method\ACDCHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler">
