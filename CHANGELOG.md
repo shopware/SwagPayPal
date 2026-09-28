@@ -3,6 +3,11 @@
 - Fixes an issue, where the "log out guest customer after order" setting kept Pay Upon Invoice guests logged in permanently instead of logging them out once the payment details were shown (shopware/shopware#7962)
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront
 - Adds the PayPal Agentic Commerce sales channel type when updating from an older plugin version
+- Fixes an issue where late PayPal browser cancellations could cancel payments already being processed, and negative webhooks could incorrectly attempt to cancel fully or partially paid or refunded transactions (shopware/shopware#19221)
+- Fixes an issue where PayPal and Pay Later payments failed after the approved order amount changed, instead of asking the customer to approve the new amount (shopware/SwagPayPal#759)
+- Adds `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException`
+- Adds `Swag\PayPal\RestApi\V2\Resource\OrderResource::confirm()`, which confirms the payment source of an existing PayPal order
+- Changes `Swag\PayPal\RestApi\Exception\PayPalApiException` to carry the PayPal SDK exception of the failure as its previous exception
 
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings

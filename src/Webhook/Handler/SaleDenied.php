@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Webhook\Handler;
 
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
@@ -31,7 +30,7 @@ class SaleDenied extends AbstractWebhookHandler
 
         $orderTransaction = $this->getOrderTransaction($webhook->getResource(), $context);
 
-        if ($this->isChangeAllowed($orderTransaction, OrderTransactionStates::STATE_CANCELLED)) {
+        if ($this->isCancellationAllowed($orderTransaction)) {
             $this->orderTransactionStateHandler->cancel($orderTransaction->getId(), $context);
         }
     }
