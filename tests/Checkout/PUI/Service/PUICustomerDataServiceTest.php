@@ -28,14 +28,15 @@ class PUICustomerDataServiceTest extends TestCase
     use IntegrationTestBehaviour;
 
     private const PHONE_NUMBER = '+491234956789';
+    private const SHIPPING_ADDRESS_ID = '00000000000000000000000000000000';
 
     public function testPhoneNumberIsStoredOnBillingAddress(): void
     {
         $context = $this->registerUser();
         $order = $this->placeOrder($this->addToCart($this->createProduct(), $context), $context);
 
-        // sorts before the billing address, so it is found first when looking at all addresses of the order
-        $shippingAddressId = '00' . \substr($order->getBillingAddressId(), 2);
+        // sorts before any generated billing address id, so it is found first when looking at all addresses of the order
+        $shippingAddressId = self::SHIPPING_ADDRESS_ID;
         $this->getOrderAddressRepository()->create([[
             'id' => $shippingAddressId,
             'orderId' => $order->getId(),
