@@ -103,6 +103,6 @@ describe('swag-paypal-method-partner-offer', () => {
 
         const link = wrapper.find('a');
         expect(link.exists()).toBe(true);
-        expect(link.attributes('href')).toBe('https://www.shopware.com/de/paypal-businesskredit');
+        expect(link.attributes('href')).toBe('https://www.shopware.com/de/paypal-businesskredit/?utm_medium=referral&utm_source=swdmn&utm_campaign=2026_de_partner_paypal_businesskredit');
     });
 });
