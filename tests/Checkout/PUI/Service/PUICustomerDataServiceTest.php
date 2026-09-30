@@ -56,9 +56,9 @@ class PUICustomerDataServiceTest extends TestCase
             $context->getContext(),
         );
 
-        $addresses = $this->getOrderAddressRepository()->search(new Criteria([$shippingAddressId, $order->getBillingAddressId()]), $context->getContext());
-        static::assertSame(self::PHONE_NUMBER, $addresses->get($order->getBillingAddressId())?->get('phoneNumber'));
-        static::assertNull($addresses->get($shippingAddressId)?->get('phoneNumber'));
+        $addresses = $this->getOrderAddressRepository()->search(new Criteria([$shippingAddressId, $order->getBillingAddressId()]), $context->getContext())->getEntities();
+        static::assertSame(self::PHONE_NUMBER, $addresses->get($order->getBillingAddressId())?->getPhoneNumber());
+        static::assertNull($addresses->get($shippingAddressId)?->getPhoneNumber());
     }
 
     private function getOrderAddressRepository(): EntityRepository
