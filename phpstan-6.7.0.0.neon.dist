@@ -72,7 +72,10 @@ parameters:
 
         - identifier: argument.type
           message: '#Shopware\\Core\\Framework\\Struct\\Struct::addExtension\(\) expects Shopware\\Core\\Framework\\Struct\\Struct.*PlanIntervalMappingStruct.*given.#'
-          path: tests/Checkout/Payment/Service/VaultTokenServiceTest.php
+          paths:
+            - tests/Checkout/Payment/Service/VaultTokenServiceTest.php
+            - tests/Util/Availability/AvailabilityContextBuilderTest.php
+
         - message: '#PHPDoc tag .* but class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\(Criteria|IdSearchResult) is not generic.#'
           paths:
             - src/Pos/Run/Administration/SyncResetter.php
@@ -93,7 +96,9 @@ parameters:
             - tests/Checkout/Payment/Service/VaultTokenServiceTest.php
 
         - message: '#(Call to an undefined method.*)?Shopware\\Core\\Framework\\Struct\\Struct::(all|getExtensionOfType)\(\).*(, string given)?#'
-          path: src/Checkout/Payment/Service/VaultTokenService.php
+          paths:
+            - src/Checkout/Payment/Service/VaultTokenService.php
+            - src/Util/Availability/AvailabilityContextBuilder.php
 
         - message: '#Shopware\\Core\\Content\\Cookie\\Event\\CookieGroupCollectEvent#'
           paths:
