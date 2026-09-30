@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem die für Rechnungskauf eingegebene Telefonnummer bei abweichender Liefer- und Rechnungsadresse an der Lieferadresse statt an der Rechnungsadresse gespeichert wurde und die Zahlung dadurch fehlschlug (shopware/SwagPayPal#857)
+
 # 10.8.5
 - Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
 - Behebt ein Problem, bei dem verspätete PayPal-Abbruchantworten im Browser bereits laufende Zahlungen abbrechen konnten und negative Webhooks fälschlicherweise versuchten, vollständig oder teilweise bezahlte oder erstattete Transaktionen auf „Abgebrochen“ zu setzen (shopware/shopware#19221)
