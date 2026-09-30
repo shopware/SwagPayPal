@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
 use Swag\PayPal\Checkout\Exception\OrderFailedException;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
@@ -105,6 +106,15 @@ class OrderExecuteService
                 return false;
             }
 
+            if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_PENDING) {
+                try {
+                    $this->orderTransactionStateHandler->process($transactionId, $context);
+                } catch (IllegalTransitionException) {
+                }
+
+                return true;
+            }
+
             if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_COMPLETED) {
                 $this->orderTransactionStateHandler->paid($transactionId, $context);
 
@@ -122,6 +132,15 @@ class OrderExecuteService
         $authorization = $this->getPayments($order, $salesChannelId, $refetch)?->getAuthorizations()?->first();
         if ($authorization === null) {
             return false;
+        }
+
+        if ($authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_PENDING) {
+            try {
+                $this->orderTransactionStateHandler->process($transactionId, $context);
+            } catch (IllegalTransitionException) {
+            }
+
+            return true;
         }
 
         if ($authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_CREATED) {

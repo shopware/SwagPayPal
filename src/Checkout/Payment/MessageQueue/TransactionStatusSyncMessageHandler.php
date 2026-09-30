@@ -59,6 +59,7 @@ class TransactionStatusSyncMessageHandler
 
             // Check if transaction is still unconfirmed at time of execution
             $criteria = (new Criteria([$message->getTransactionId()]))
+                ->addAssociation('stateMachineState')
                 ->addFilter(new MultiFilter(
                     MultiFilter::CONNECTION_OR,
                     [
@@ -81,16 +82,22 @@ class TransactionStatusSyncMessageHandler
             // Set the resource ID for the transaction
             $this->transactionDataService->setResourceId($order, $message->getTransactionId(), $context);
 
+            $currentState = $transaction->getStateMachineState()?->getTechnicalName();
+            $isUnconfirmed = $currentState === OrderTransactionStates::STATE_UNCONFIRMED;
+            $isAuthorized = $currentState !== OrderTransactionStates::STATE_AUTHORIZED;
+
             if ($order->getIntent() === PaymentIntentV2::CAPTURE) {
                 match ($order->getPurchaseUnits()->first()?->getPayments()?->getCaptures()?->first()?->getStatus()) {
                     PaymentStatusV2::ORDER_CAPTURE_COMPLETED => $this->orderTransactionStateHandler->paid($message->getTransactionId(), $context),
+                    PaymentStatusV2::ORDER_CAPTURE_PENDING => $isUnconfirmed ? $this->orderTransactionStateHandler->process($message->getTransactionId(), $context) : null,
                     PaymentStatusV2::ORDER_CAPTURE_DECLINED, PaymentStatusV2::ORDER_CAPTURE_FAILED => $this->orderTransactionStateHandler->fail($message->getTransactionId(), $context),
                     default => null,
                 };
             } elseif ($order->getIntent() === PaymentIntentV2::AUTHORIZE) {
                 match ($order->getPurchaseUnits()->first()?->getPayments()?->getAuthorizations()?->first()?->getStatus()) {
                     PaymentStatusV2::ORDER_AUTHORIZATION_CAPTURED => $this->orderTransactionStateHandler->paid($message->getTransactionId(), $context),
-                    PaymentStatusV2::ORDER_AUTHORIZATION_CREATED => $transaction->getStateMachineState()?->getTechnicalName() !== OrderTransactionStates::STATE_AUTHORIZED ? $this->orderTransactionStateHandler->authorize($message->getTransactionId(), $context) : null,
+                    PaymentStatusV2::ORDER_AUTHORIZATION_PENDING => $isUnconfirmed ? $this->orderTransactionStateHandler->process($message->getTransactionId(), $context) : null,
+                    PaymentStatusV2::ORDER_AUTHORIZATION_CREATED => $isAuthorized ? $this->orderTransactionStateHandler->authorize($message->getTransactionId(), $context) : null,
                     PaymentStatusV2::ORDER_AUTHORIZATION_VOIDED => $this->orderTransactionStateHandler->cancel($message->getTransactionId(), $context),
                     PaymentStatusV2::ORDER_AUTHORIZATION_DENIED => $this->orderTransactionStateHandler->fail($message->getTransactionId(), $context),
                     default => null,
