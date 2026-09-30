@@ -41,7 +41,7 @@ export default Shopware.Component.wrapComponentConfig({
         },
 
         offerLink(): string {
-            return 'https://www.shopware.com/de/paypal-businesskredit';
+            return 'https://www.shopware.com/de/paypal-businesskredit/?utm_medium=referral&utm_source=swdmn&utm_campaign=2026_de_partner_paypal_businesskredit';
         },
 
         isOfferRunning(): boolean {
