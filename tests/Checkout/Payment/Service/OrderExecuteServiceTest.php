@@ -15,9 +15,12 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
+use Shopware\Core\System\StateMachine\StateMachineException;
 use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order;
@@ -26,6 +29,7 @@ use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
@@ -79,6 +83,108 @@ class OrderExecuteServiceTest extends TestCase
             Context::createDefaultContext(),
             Uuid::randomHex(),
         );
+    }
+
+    public function testCheckFinalizedStatusSetsInProgressOnPendingCapture(): void
+    {
+        $orderData = CaptureOrderCapture::get();
+        $orderData['purchase_units'][0]['payments']['captures'][0]['status'] = ConstantsV2::ORDER_CAPTURE_PENDING;
+        $order = (new Order())->assign($orderData);
+
+        $transactionId = Uuid::randomHex();
+        $context = Context::createDefaultContext();
+
+        $this->transactionStateHandler->expects($this->once())
+            ->method('process')
+            ->with($transactionId, $context);
+        $this->transactionStateHandler->expects($this->never())->method('paid');
+        $this->transactionStateHandler->expects($this->never())->method('reopen');
+
+        $finalized = $this->orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
+
+        static::assertTrue($finalized);
+    }
+
+    public function testCheckFinalizedStatusSetsInProgressOnPendingAuthorization(): void
+    {
+        $orderData = AuthorizeOrderAuthorization::get();
+        $orderData['purchase_units'][0]['payments']['authorizations'][0]['status'] = ConstantsV2::ORDER_AUTHORIZATION_PENDING;
+        $order = (new Order())->assign($orderData);
+
+        $transactionId = Uuid::randomHex();
+        $context = Context::createDefaultContext();
+
+        $this->transactionStateHandler->expects($this->once())
+            ->method('process')
+            ->with($transactionId, $context);
+        $this->transactionStateHandler->expects($this->never())->method('authorize');
+        $this->transactionStateHandler->expects($this->never())->method('reopen');
+
+        $finalized = $this->orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
+
+        static::assertTrue($finalized);
+    }
+
+    public function testCheckFinalizedStatusIgnoresIllegalTransitionOnPendingCapture(): void
+    {
+        $orderData = CaptureOrderCapture::get();
+        $orderData['purchase_units'][0]['payments']['captures'][0]['status'] = ConstantsV2::ORDER_CAPTURE_PENDING;
+        $order = (new Order())->assign($orderData);
+
+        $transactionId = Uuid::randomHex();
+        $context = Context::createDefaultContext();
+
+        // the transaction is already "in progress", e.g. because the payment was executed before
+        $this->transactionStateHandler->expects($this->once())
+            ->method('process')
+            ->with($transactionId, $context)
+            ->willThrowException(StateMachineException::illegalStateTransition(
+                OrderTransactionStates::STATE_IN_PROGRESS,
+                StateMachineTransitionActions::ACTION_PROCESS,
+                [],
+            ));
+
+        $finalized = $this->orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
+
+        static::assertTrue($finalized);
+    }
+
+    public function testCheckFinalizedStatusIgnoresIllegalTransitionOnPendingAuthorization(): void
+    {
+        $orderData = AuthorizeOrderAuthorization::get();
+        $orderData['purchase_units'][0]['payments']['authorizations'][0]['status'] = ConstantsV2::ORDER_AUTHORIZATION_PENDING;
+        $order = (new Order())->assign($orderData);
+
+        $transactionId = Uuid::randomHex();
+        $context = Context::createDefaultContext();
+
+        // the transaction is already "in progress", e.g. because the payment was executed before
+        $this->transactionStateHandler->expects($this->once())
+            ->method('process')
+            ->with($transactionId, $context)
+            ->willThrowException(StateMachineException::illegalStateTransition(
+                OrderTransactionStates::STATE_IN_PROGRESS,
+                StateMachineTransitionActions::ACTION_PROCESS,
+                [],
+            ));
+
+        $finalized = $this->orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), $transactionId, $context, false);
+
+        static::assertTrue($finalized);
+    }
+
+    public function testCheckFinalizedStatusDoesNotSwallowOtherStateMachineExceptions(): void
+    {
+        $orderData = CaptureOrderCapture::get();
+        $orderData['purchase_units'][0]['payments']['captures'][0]['status'] = ConstantsV2::ORDER_CAPTURE_PENDING;
+        $order = (new Order())->assign($orderData);
+
+        $this->transactionStateHandler->expects($this->once())
+            ->method('process')
+            ->willThrowException(StateMachineException::stateMachineNotFound(OrderTransactionStates::STATE_MACHINE));
+
+        $this->expectException(StateMachineException::class);
+        $this->orderExecuteService->checkFinalizedStatus($order, Uuid::randomHex(), Uuid::randomHex(), Context::createDefaultContext(), false);
     }
 
     #[DataProvider('cancellationOrderStatusProvider')]

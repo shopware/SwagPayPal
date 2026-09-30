@@ -1,4 +1,5 @@
 # 10.8.5
+- Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
 - Fixes an issue where late PayPal browser cancellations could cancel payments already being processed, and negative webhooks could incorrectly attempt to cancel fully or partially paid or refunded transactions (shopware/shopware#19221)
 - Fixes an issue where PayPal and Pay Later payments failed after the approved order amount changed, instead of asking the customer to approve the new amount (shopware/SwagPayPal#759)
 - Adds `Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException`
