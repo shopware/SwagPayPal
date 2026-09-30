@@ -50,6 +50,10 @@ class Migration1789983699AddProcessTransitionFromUnconfirmed extends MigrationSt
         }
     }
 
+    public function updateDestructive(Connection $connection): void
+    {
+    }
+
     private function addTransition(Connection $connection, string $stateMachineId, string $fromStateId, string $toStateId, string $actionName): void
     {
         $existingTransition = $connection->fetchOne(
