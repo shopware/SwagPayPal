@@ -83,6 +83,7 @@ class TransactionStatusSyncMessageHandler
 
             $currentState = $transaction->getStateMachineState()?->getTechnicalName();
             $isUnconfirmed = $currentState === OrderTransactionStates::STATE_UNCONFIRMED;
+            $isAuthorized = $currentState !== OrderTransactionStates::STATE_AUTHORIZED;
 
             if ($order->getIntent() === ConstantsV2::INTENT_CAPTURE) {
                 match ($order->getPurchaseUnits()->first()?->getPayments()?->getCaptures()?->first()?->getStatus()) {
@@ -95,7 +96,7 @@ class TransactionStatusSyncMessageHandler
                 match ($order->getPurchaseUnits()->first()?->getPayments()?->getAuthorizations()?->first()?->getStatus()) {
                     ConstantsV2::ORDER_AUTHORIZATION_CAPTURED => $this->orderTransactionStateHandler->paid($message->getTransactionId(), $context),
                     ConstantsV2::ORDER_AUTHORIZATION_PENDING => $isUnconfirmed ? $this->orderTransactionStateHandler->process($message->getTransactionId(), $context) : null,
-                    ConstantsV2::ORDER_AUTHORIZATION_CREATED => $currentState !== OrderTransactionStates::STATE_AUTHORIZED ? $this->orderTransactionStateHandler->authorize($message->getTransactionId(), $context) : null,
+                    ConstantsV2::ORDER_AUTHORIZATION_CREATED => $isAuthorized ? $this->orderTransactionStateHandler->authorize($message->getTransactionId(), $context) : null,
                     ConstantsV2::ORDER_AUTHORIZATION_VOIDED => $this->orderTransactionStateHandler->cancel($message->getTransactionId(), $context),
                     ConstantsV2::ORDER_AUTHORIZATION_DENIED => $this->orderTransactionStateHandler->fail($message->getTransactionId(), $context),
                     default => null,
