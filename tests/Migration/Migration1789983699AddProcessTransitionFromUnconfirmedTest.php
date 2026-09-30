@@ -19,10 +19,11 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMa
 use Swag\PayPal\Migration\Migration1789983699AddProcessTransitionFromUnconfirmed;
 
 /**
+ * @covers \Swag\PayPal\Migration\Migration1789983699AddProcessTransitionFromUnconfirmed
+ *
  * @internal
  */
 #[Package('checkout')]
-#[CoversClass(Migration1789983699AddProcessTransitionFromUnconfirmed::class)]
 class Migration1789983699AddProcessTransitionFromUnconfirmedTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
