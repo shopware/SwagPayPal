@@ -7,7 +7,9 @@
 
 namespace Swag\PayPal\Checkout\PUI\Service;
 
-use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Customer\CustomerCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressCollection;
+use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -23,6 +25,10 @@ class PUICustomerDataService
     public const PUI_CUSTOMER_DATA_PHONE_NUMBER = 'payPalPuiCustomerPhoneNumber';
 
     /**
+     * @param EntityRepository<OrderCollection> $orderRepository
+     * @param EntityRepository<OrderAddressCollection> $orderAddressRepository
+     * @param EntityRepository<CustomerCollection> $customerRepository
+     *
      * @internal
      */
     public function __construct(
@@ -53,7 +59,6 @@ class PUICustomerDataService
         if ($phoneNumber) {
             $orderCriteria = new Criteria();
             $orderCriteria->addFilter(new EqualsFilter('transactions.id', $transaction->getOrderTransactionId()));
-            /** @var OrderEntity|null $order */
             $order = $this->orderRepository->search($orderCriteria, $context)->getEntities()->first();
             $billingAddressId = $order?->getBillingAddressId();
 

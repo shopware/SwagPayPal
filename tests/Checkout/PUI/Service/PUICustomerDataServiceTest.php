@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\PUI\Service;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressCollection;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -61,6 +62,9 @@ class PUICustomerDataServiceTest extends TestCase
         static::assertNull($addresses->get($shippingAddressId)?->getPhoneNumber());
     }
 
+    /**
+     * @return EntityRepository<OrderAddressCollection>
+     */
     private function getOrderAddressRepository(): EntityRepository
     {
         return $this->getContainer()->get('order_address.repository');
