@@ -1,3 +1,6 @@
+# 9.13.5
+- Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
+
 # 9.13.4
 - Adds the PayPal Agentic Commerce sales channel type when updating from an older plugin version
 - Added the order custom field `swag_paypal_agentic_commerce_sales_channel_id`, which stores the agentic sales channel of orders placed via PayPal Agentic Commerce. The Administration order list labels these orders.
