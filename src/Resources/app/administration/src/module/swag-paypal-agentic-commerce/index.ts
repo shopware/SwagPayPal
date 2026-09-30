@@ -3,3 +3,5 @@ Shopware.Component.override('sw-sales-channel-create', import('./extension/sw-sa
 Shopware.Component.override('sw-sales-channel-detail', import('./extension/sw-sales-channel-detail'));
 
 Shopware.Component.override('sw-sales-channel-detail-base', import('./extension/sw-sales-channel-detail-base'));
+
+Shopware.Component.override('sw-order-list', import('./extension/sw-order-list'));

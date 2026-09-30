@@ -7,12 +7,16 @@
 
 namespace Swag\PayPal\Test\RestApi\Exception;
 
+use GuzzleHttp\Psr7\Response as PsrResponse;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\PayPalSDK\Exception\ErrorApiException;
 use Shopware\PayPalSDK\Exception\RetryAfterApiException;
+use Shopware\PayPalSDK\Struct\Error\Detail;
 use Shopware\PayPalSDK\Struct\Error\DetailCollection;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @internal
@@ -58,5 +62,34 @@ class PayPalApiExceptionTest extends TestCase
 
         static::assertTrue($exception->is('RATE_LIMIT_REACHED'));
         static::assertSame($retryAt, $exception->getRetryAt());
+    }
+
+    /**
+     * Pins the detection contract: the last detail issue becomes the issue and derives the snippet key.
+     */
+    public function testFromExtractsPayerActionRequiredIssue(): void
+    {
+        $sdkException = new ErrorApiException(
+            'UNPROCESSABLE_ENTITY',
+            'The requested action could not be performed, semantically incorrect, or failed business validation.',
+            new PsrResponse(Response::HTTP_UNPROCESSABLE_ENTITY),
+            'paypal-debug-id',
+            details: new DetailCollection([
+                (new Detail())->assign([
+                    'issue' => 'PAYER_ACTION_REQUIRED',
+                    'description' => 'Payer needs to perform the following action before proceeding with payment.',
+                ]),
+            ]),
+        );
+
+        $exception = PayPalApiException::from($sdkException);
+
+        static::assertSame('PAYER_ACTION_REQUIRED', $exception->getIssue());
+        static::assertTrue($exception->is('PAYER_ACTION_REQUIRED'));
+        static::assertSame('SWAG_PAYPAL__API_PAYER_ACTION_REQUIRED', $exception->getErrorCode());
+
+        $error = $exception->getPrevious();
+        static::assertSame($sdkException, $error);
+        static::assertSame('paypal-debug-id', $error->debugId);
     }
 }

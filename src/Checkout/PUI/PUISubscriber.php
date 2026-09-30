@@ -107,12 +107,17 @@ class PUISubscriber implements EventSubscriberInterface
 
         $event->getPage()->addExtension(self::PAYPAL_PUI_PAYMENT_INSTRUCTIONS_PAGE_EXTENSION_ID, $puiPaymentInstructionData);
 
+        if ($puiPaymentInstructionData->getPaymentInstructions() !== null) {
+            return;
+        }
+
         // @deprecated tag:v11.0.0 - remove early return with min-version of 6.7.2.0
         // @phpstan-ignore-next-line method may or may not exist depending on Shopware version
         if (!method_exists($event->getPage(), 'setLogoutCustomer')) {
             return;
         }
 
+        // polling still needs the session, defer the logout to the reload
         $event->getPage()->setLogoutCustomer(false);
     }
 
