@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fügt Kanada zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist (shopware/SwagPayPal#581)
 - Aktualisiert die Zahlungsbetragsgrenzen für P24
 
 # 8.12.4

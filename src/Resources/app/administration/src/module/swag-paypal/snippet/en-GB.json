@@ -117,7 +117,7 @@
                     "mybankapmhandler": "MyBank is available for the following countries: Italy",
                     "oxxoapmhandler": "OXXO is available for the following countries: Mexico",
                     "p24apmhandler": "Przelewy24 is available for the following countries: Poland",
-                    "paylaterhandler": "Pay Later is available for the following countries: Australia, France, Germany, Italy, Spain, United Kingdom, United States",
+                    "paylaterhandler": "Pay Later is available for the following countries: Australia, Austria, Canada, France, Germany, Italy, Spain, United Kingdom, United States",
                     "puihandler": "Pay upon invoice is available for the following countries: Germany",
                     "sepahandler": "SEPA Lastschrift is available for the following countries: Germany",
                     "venmohandler": "Venmo is available for the following countries: United States",

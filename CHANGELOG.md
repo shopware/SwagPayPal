@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Added Canada to the countries where Pay Later is available (shopware/SwagPayPal#581)
 - Updated the payment amount limitations for P24
 
 # 8.12.4
