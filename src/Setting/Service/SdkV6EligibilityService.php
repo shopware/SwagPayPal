@@ -14,15 +14,9 @@ use Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface;
 use Swag\PayPal\RestApi\ApiContextFactoryInterface;
 use Swag\PayPal\RestApi\Context\UncachedOAuthContext;
 
-/**
- * The PayPal web SDK v6 has to be activated by the merchant in their PayPal account.
- * Whether that happened is expressed by the scopes granted to the client token of the merchant.
- */
 #[Package('checkout')]
-class SdkV6EligibilityService
+class SdkV6EligibilityService implements SdkV6EligibilityServiceInterface
 {
-    public const SCOPE_CLIENT_PAYMENTS_ELIGIBILITY = 'https://uri.paypal.com/services/payments/client-payments-eligibility';
-
     /**
      * @internal
      */
