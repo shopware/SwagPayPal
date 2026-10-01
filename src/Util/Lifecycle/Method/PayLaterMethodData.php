@@ -26,18 +26,25 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
     public const PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID = 'payPalPayLaterFieldData';
 
     /**
+     * A range spans every Pay Later product PayPal offers in that country, e.g. Pay in 30 Days and
+     * Ratenzahlung in DE, as the buyer picks the one their cart qualifies for on PayPal's side.
+     * The developer overview misses AT entirely and Pay Monthly in CA, so those come from PayPal's buyer pages.
+     *
      * @var array<string, array{currency: string, minAmount: float, maxAmount: float}>
      *
-     * @see https://developer.paypal.com/studio/checkout/pay-later/{{countryCode}}
+     * @see https://developer.paypal.com/pay-later/overview
+     * @see https://www.paypal.com/at/digital-wallet/ways-to-pay/buy-now-pay-later
+     * @see https://www.paypal.com/ca/digital-wallet/ways-to-pay/buy-now-pay-later
      */
     public const PAYPAL_PAY_LATER_CRITERIA = [
         'AT' => ['currency' => 'EUR', 'minAmount' => 1.00, 'maxAmount' => 10000.00],
         'DE' => ['currency' => 'EUR', 'minAmount' => 1.00, 'maxAmount' => 10000.00],
-        'FR' => ['currency' => 'EUR', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
-        'IT' => ['currency' => 'EUR', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
-        'ES' => ['currency' => 'EUR', 'minAmount' => 30.00, 'maxAmount' => 2000.00],
-        'GB' => ['currency' => 'GBP', 'minAmount' => 20.00, 'maxAmount' => 3000.00],
-        'US' => ['currency' => 'USD', 'minAmount' => 30.00, 'maxAmount' => 10000.00],
+        'FR' => ['currency' => 'EUR', 'minAmount' => 20.00, 'maxAmount' => 3000.00],
+        'IT' => ['currency' => 'EUR', 'minAmount' => 20.00, 'maxAmount' => 5000.00],
+        'ES' => ['currency' => 'EUR', 'minAmount' => 20.00, 'maxAmount' => 5000.00],
+        'GB' => ['currency' => 'GBP', 'minAmount' => 1.00, 'maxAmount' => 3000.00],
+        'US' => ['currency' => 'USD', 'minAmount' => 10.00, 'maxAmount' => 10000.00],
+        'CA' => ['currency' => 'CAD', 'minAmount' => 10.00, 'maxAmount' => 10000.00],
         'AU' => ['currency' => 'AUD', 'minAmount' => 1.00, 'maxAmount' => 1999.99],
     ];
 

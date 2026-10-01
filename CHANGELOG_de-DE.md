@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Aktualisiert die Zahlungsbetragsgrenzen für P24 und „Später bezahlen“ (shopware/SwagPayPal#581)
+
 # 9.13.4
 - Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
 - Fügt beim Update von einer älteren Plugin-Version den PayPal-Agentic-Commerce-Verkaufskanaltyp hinzu
