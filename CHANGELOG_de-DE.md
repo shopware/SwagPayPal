@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Aktualisiert die Zahlungsbetragsgrenzen für P24
+
 # 8.12.4
 - Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
 - Behebt ein Problem, bei dem PayPal-Konten und Karten nicht für zukünftige Käufe gespeichert wurden, wenn PayPal das Vaulting asynchron abschloss (shopware/SwagPayPal#845)
