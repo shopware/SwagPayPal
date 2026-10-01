@@ -31,7 +31,7 @@ class MerchantIntegrationsService
         private readonly TokenResourceInterface $tokenResource,
         private readonly CredentialsUtilInterface $credentialsUtil,
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
-        private readonly SdkV6EligibilityService $sdkV6EligibilityService,
+        private readonly SdkV6EligibilityServiceInterface $sdkV6EligibilityService,
     ) {
     }
 

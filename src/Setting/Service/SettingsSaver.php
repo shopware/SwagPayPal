@@ -23,7 +23,7 @@ class SettingsSaver implements SettingsSaverInterface
         private readonly SystemConfigService $systemConfigService,
         private readonly ApiCredentialService $apiCredentialService,
         private readonly WebhookSystemConfigHelper $webhookSystemConfigHelper,
-        private readonly SdkV6EligibilityService $sdkV6EligibilityService,
+        private readonly SdkV6EligibilityServiceInterface $sdkV6EligibilityService,
     ) {
     }
 
