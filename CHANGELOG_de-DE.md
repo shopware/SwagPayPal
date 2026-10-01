@@ -11,10 +11,7 @@
 - Behebt ein Problem, bei dem Zahlungsmethoden trotz deaktiviertem Vautling für gemischte Abonnements zur Verfügung standen
 - Behebt ein Problem, bei dem PayPal-Konten und Karten nicht für zukünftige Käufe gespeichert wurden, wenn PayPal das Vaulting asynchron abschloss (shopware/SwagPayPal#845)
 - Fügt beim Update von einer älteren Plugin-Version den PayPal-Agentic-Commerce-Verkaufskanaltyp hinzu
-- Passt die Kaufbeträge für „Später bezahlen“ an die aktuellen Beträge von PayPal an: Frankreich von 20 € bis 3.000 €, Italien und Spanien von 20 € bis 5.000 €, Vereinigtes Königreich von 1 £ bis 3.000 £ und USA von 10 $ bis 10.000 $
-- Fügt Kanada zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist, für Einkäufe von 10 CAD bis 10.000 CAD
-- Behebt ein Problem, bei dem Przelewy24 für PLN-Bestellungen über dem PayPal-Höchstbetrag von 55.000 PLN angeboten wurde
-- Behebt ein Problem, bei dem der Verfügbarkeitshinweis zu „Später bezahlen“ in den Zahlungsart-Einstellungen Österreich nicht aufführte
+- Aktualisiert die Zahlungsbetragsgrenzen für P24 und „Später bezahlen“ (shopware/SwagPayPal#581)
 
 # 10.8.4
 - Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte
