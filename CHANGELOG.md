@@ -10,6 +10,9 @@
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront
 - Fixes an issue, where PayPal accounts and cards were not saved for future purchases, if PayPal completed the vaulting asynchronously (shopware/SwagPayPal#845)
 - Adds the PayPal Agentic Commerce sales channel type when updating from an older plugin version
+- Changes the Pay Later purchase amounts to PayPal's current ones: France from 20 € to 3,000 €, Italy and Spain from 20 € to 5,000 €, the United Kingdom from £1 to £3,000 and the United States from $10 to $10,000
+- Added Canada to the countries where Pay Later is available, for purchases from 10 CAD to 10,000 CAD
+- Fixes an issue, where Przelewy24 was offered for PLN orders above PayPal's maximum of 55,000 PLN
 
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
