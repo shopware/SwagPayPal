@@ -1,7 +1,7 @@
 # 9.13.4
 - Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
 - Fügt beim Update von einer älteren Plugin-Version den PayPal-Agentic-Commerce-Verkaufskanaltyp hinzu
-- Fügt das Zusatzfeld `swag_paypal_agentic_commerce_sales_channel_id` hinzu, das bei über PayPal Agentic Commerce aufgegebenen Bestellungen den Agentic-Verkaufskanal speichert. Die Bestellübersicht der Administration kennzeichnet diese Bestellungen.
+- Fügt das Zusatzfeld `swag_paypal_agentic_commerce_sales_channel_id` hinzu, das bei über PayPal Agentic Commerce aufgegebenen Bestellungen den Agentic-Verkaufskanal speichert. Die Bestellübersicht der Administration kennzeichnet diese Bestellungen
 - Behebt ein Problem, bei dem PayPal-Konten und Karten nicht für zukünftige Käufe gespeichert wurden, wenn PayPal das Vaulting asynchron abschloss (shopware/SwagPayPal#845)
 - Behebt ein Problem, bei dem Rückerstattungen älterer PayPal-Zahlungen über die Admin-API weiterhin als Bestell-Editor möglich waren, obwohl dafür die Berechtigung des Rückerstattungs-Editors erforderlich ist (shopware/SwagPayPal#530)
 
