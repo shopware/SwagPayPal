@@ -53,8 +53,11 @@ class P24MethodData extends AbstractMethodData
 
     public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
+        // PayPal caps P24 at 55,000 PLN and states no EUR maximum:
+        // https://developer.paypal.com/docs/multiparty/checkout/apm/supported-apms/
         return $availabilityContext->getTotalAmount() >= 1.0
             && \in_array($availabilityContext->getCurrencyCode(), ['EUR', 'PLN'], true)
+            && ($availabilityContext->getCurrencyCode() !== 'PLN' || $availabilityContext->getTotalAmount() <= 55000.0)
             && $availabilityContext->getBillingCountryCode() === 'PL';
     }
 

@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Updated the payment amount limitations for P24 and Pay Later (shopware/SwagPayPal#581)
+
 # 9.13.4
 - Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
 - Adds the PayPal Agentic Commerce sales channel type when updating from an older plugin version
