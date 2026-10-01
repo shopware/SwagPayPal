@@ -62,7 +62,9 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
             || ($availabilityContext->getCurrencyCode() === 'AUD'
                 && $availabilityContext->getBillingCountryCode() === 'AU')
             || ($availabilityContext->getCurrencyCode() === 'USD'
-                && $availabilityContext->getBillingCountryCode() === 'US');
+                && $availabilityContext->getBillingCountryCode() === 'US')
+            || ($availabilityContext->getCurrencyCode() === 'CAD'
+                && $availabilityContext->getBillingCountryCode() === 'CA');
     }
 
     public function getInitialState(): bool

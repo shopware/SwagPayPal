@@ -1,3 +1,7 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fügt Kanada zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist (shopware/SwagPayPal#581)
+- Aktualisiert die Zahlungsbetragsgrenzen für P24
+
 # 8.12.4
 - Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
 - Behebt ein Problem, bei dem PayPal-Konten und Karten nicht für zukünftige Käufe gespeichert wurden, wenn PayPal das Vaulting asynchron abschloss (shopware/SwagPayPal#845)
