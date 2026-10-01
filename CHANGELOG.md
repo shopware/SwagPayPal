@@ -13,6 +13,7 @@
 - Changes the Pay Later purchase amounts to PayPal's current ones: France from 20 € to 3,000 €, Italy and Spain from 20 € to 5,000 €, the United Kingdom from £1 to £3,000 and the United States from $10 to $10,000
 - Added Canada to the countries where Pay Later is available, for purchases from 10 CAD to 10,000 CAD
 - Fixes an issue, where Przelewy24 was offered for PLN orders above PayPal's maximum of 55,000 PLN
+- Fixes an issue, where the Pay Later availability hint in the payment method settings did not list Austria
 
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
