@@ -8,6 +8,7 @@
 - Behebt ein Problem, bei dem Zahlungsmethoden trotz deaktiviertem Vautling für gemischte Abonnements zur Verfügung standen
 - Behebt ein Problem, bei dem PayPal-Konten und Karten nicht für zukünftige Käufe gespeichert wurden, wenn PayPal das Vaulting asynchron abschloss (shopware/SwagPayPal#845)
 - Fügt beim Update von einer älteren Plugin-Version den PayPal-Agentic-Commerce-Verkaufskanaltyp hinzu
+- Aktualisiert die Zahlungsbetragsgrenzen für P24 und „Später bezahlen“ (shopware/SwagPayPal#581)
 
 # 10.8.4
 - Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte

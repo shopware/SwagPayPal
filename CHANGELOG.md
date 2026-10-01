@@ -7,6 +7,7 @@
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront
 - Fixes an issue, where PayPal accounts and cards were not saved for future purchases, if PayPal completed the vaulting asynchronously (shopware/SwagPayPal#845)
 - Adds the PayPal Agentic Commerce sales channel type when updating from an older plugin version
+- Updated the payment amount limitations for P24 and Pay Later (shopware/SwagPayPal#581)
 
 # 10.8.4
 - Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
