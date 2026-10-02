@@ -1,0 +1,47 @@
+{% block swag_paypal_express_buttons %}
+<div class="swag-paypal-express-buttons {{ classes }}">
+    {% if 'paypal' in expressSettings.fundingSources %}
+
+        {% block swag_paypal_paypal %}
+        <paypal-button
+            class="swag-paypal-button shape-{{ expressSettings.buttonShape }} paypal-{{ expressSettings.buttonColor }}"
+            data-swag-paypal-express-paypal="true"
+            data-swag-paypal-express-paypal-options="{{ expressSettings|json_encode }}"
+            type="buynow"
+            hidden
+        >
+        </paypal-button>
+        {% endblock %}
+
+    {% endif %}
+
+    {% if 'paylater' in expressSettings.fundingSources %}
+
+        {% block swag_paypal_pay_later %}
+        <paypal-pay-later-button
+            class="swag-paypal-button shape-{{ expressSettings.buttonShape }} paypal-gold"
+            data-swag-paypal-express-pay-later="true"
+            data-swag-paypal-express-pay-later-options="{{ expressSettings|json_encode }}"
+            hidden
+        >
+        </paypal-pay-later-button>
+        {% endblock %}
+
+    {% endif %}
+
+    {% if 'venmo' in expressSettings.fundingSources %}
+
+        {% block swag_paypal_venmo %}
+        <venmo-button
+            class="swag-paypal-button shape-{{ expressSettings.buttonShape }} paypal-blue"
+            data-swag-paypal-express-venmo="true"
+            data-swag-paypal-express-venmo-options="{{ expressSettings|json_encode }}"
+            type="buynow"
+            hidden
+        >
+        </venmo-button>
+        {% endblock %}
+
+    {% endif %}
+</div>
+{% endblock %}

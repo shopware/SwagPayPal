@@ -21,12 +21,14 @@ describe('swag-paypal-merchant-information.store', () => {
         expect(store.actual).toStrictEqual({
             merchantIntegrations: null,
             capabilities: {},
+            sdkV6Eligible: null,
         });
         expect(store.products).toStrictEqual([]);
         expect(store.capabilities).toStrictEqual({});
         expect(store.merchantCapabilities).toStrictEqual([]);
         expect(store.canVault).toBe(false);
         expect(store.canPPCP).toBe(false);
+        expect(store.canSdkV6).toBe(false);
     });
 
     it('should have correct root state', () => {
@@ -47,6 +49,7 @@ describe('swag-paypal-merchant-information.store', () => {
         expect(store.merchantCapabilities).toStrictEqual(MIFixture.Default.merchantIntegrations.capabilities);
         expect(store.canVault).toBe(true);
         expect(store.canPPCP).toBe(true);
+        expect(store.canSdkV6).toBe(true);
     });
 
     it('should have correct non-vault state', () => {
@@ -67,6 +70,7 @@ describe('swag-paypal-merchant-information.store', () => {
         expect(store.merchantCapabilities).toStrictEqual(MIFixture.NonVault.merchantIntegrations.capabilities);
         expect(store.canVault).toBe(false);
         expect(store.canPPCP).toBe(true);
+        expect(store.canSdkV6).toBe(true);
     });
 
     it('should have correct non-ppcp state', () => {
@@ -87,6 +91,7 @@ describe('swag-paypal-merchant-information.store', () => {
         expect(store.merchantCapabilities).toStrictEqual(MIFixture.NonPPCP.merchantIntegrations.capabilities);
         expect(store.canVault).toBe(true);
         expect(store.canPPCP).toBe(false);
+        expect(store.canSdkV6).toBe(true);
     });
 
     it('should have correct not-logged-in state', () => {
@@ -107,5 +112,20 @@ describe('swag-paypal-merchant-information.store', () => {
         expect(store.merchantCapabilities).toStrictEqual([]);
         expect(store.canVault).toBe(false);
         expect(store.canPPCP).toBe(false);
+        expect(store.canSdkV6).toBe(false);
+    });
+
+    it('should not allow sdk v6 when it is not activated in the PayPal account', () => {
+        store.set(null, MIFixture.SdkV6Ineligible);
+
+        expect(store.actual.sdkV6Eligible).toBe(false);
+        expect(store.canSdkV6).toBe(false);
+    });
+
+    it('should not allow sdk v6 while the eligibility is unknown', () => {
+        store.set(null, MIFixture.SdkV6Unknown);
+
+        expect(store.actual.sdkV6Eligible).toBeNull();
+        expect(store.canSdkV6).toBe(false);
     });
 });

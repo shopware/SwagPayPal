@@ -122,6 +122,7 @@ const Default = {
     capabilities: {
         'some-payment-method-id': 'active',
     },
+    sdkV6Eligible: true,
 } satisfies PayPal.Setting<'merchant_information'>;
 
 const NotLoggedIn = {
@@ -129,6 +130,7 @@ const NotLoggedIn = {
     capabilities: {
         'some-payment-method-id': 'inactive',
     },
+    sdkV6Eligible: null,
 } satisfies PayPal.Setting<'merchant_information'>;
 
 const NonPPCP = {
@@ -149,9 +151,21 @@ const NonVault = {
     },
 } satisfies PayPal.Setting<'merchant_information'>;
 
+const SdkV6Ineligible = {
+    ...Default,
+    sdkV6Eligible: false,
+} satisfies PayPal.Setting<'merchant_information'>;
+
+const SdkV6Unknown = {
+    ...Default,
+    sdkV6Eligible: null,
+} satisfies PayPal.Setting<'merchant_information'>;
+
 export default {
     Default,
     NotLoggedIn,
     NonPPCP,
     NonVault,
+    SdkV6Ineligible,
+    SdkV6Unknown,
 };

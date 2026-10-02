@@ -23,6 +23,7 @@ use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Exception\MissingCountryIdException;
@@ -32,11 +33,14 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCal
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsResponse;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
+use Swag\PayPal\Checkout\SalesChannel\AbstractClientTokenRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\SalesChannel\AbstractMethodEligibilityRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Swag\PayPal\Storefront\Service\ReturnToken;
 use Swag\PayPal\Storefront\Service\ReturnTokenService;
 use Symfony\Component\HttpFoundation\Request;
@@ -69,10 +73,18 @@ class PayPalController extends StorefrontController
         private readonly CartService $cartService,
         private readonly CartPriceService $cartPriceService,
         private readonly AbstractClearVaultRoute $clearVaultRoute,
+        private readonly AbstractClientTokenRoute $clientTokenRoute,
         private readonly LoggerInterface $logger,
         private readonly ReturnTokenService $returnTokenService,
         private readonly RouterInterface $router,
+        private readonly SystemConfigService $systemConfigService,
     ) {
+    }
+
+    #[Route(path: '/paypal/client-token', name: 'frontend.paypal.client_token', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
+    public function clientToken(Request $request, SalesChannelContext $salesChannelContext): Response
+    {
+        return $this->clientTokenRoute->getClientToken($request, $salesChannelContext);
     }
 
     #[Route(path: '/paypal/create-order', name: 'frontend.paypal.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false, AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true])]
@@ -187,6 +199,16 @@ class PayPalController extends StorefrontController
         operationId: 'paypalHandleError',
         description: 'Adds an error message to the flash bag',
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+            new OA\Property(property: 'step', type: 'string'),
+            new OA\Property(property: 'pageType', type: 'string', description: 'Page type "checkout" will prevent any flash messages added', enum: [
+                AbstractScriptData::PAGE_TYPE_CART,
+                AbstractScriptData::PAGE_TYPE_CHECKOUT,
+                AbstractScriptData::PAGE_TYPE_HOME,
+                AbstractScriptData::PAGE_TYPE_MINI_CART,
+                AbstractScriptData::PAGE_TYPE_PRODUCT_DETAILS,
+                AbstractScriptData::PAGE_TYPE_PRODUCT_LISTING,
+                AbstractScriptData::PAGE_TYPE_SEARCH_RESULTS,
+            ]),
             new OA\Property(property: 'code', type: 'string'),
             new OA\Property(property: 'fatal', description: 'Will prevent reinitiate the corresponding payment method.', type: 'boolean', default: false),
             new OA\Property(property: 'error', type: 'string', default: null),
@@ -200,11 +222,19 @@ class PayPalController extends StorefrontController
     #[Route(path: '/paypal/handle-error', name: 'frontend.paypal.handle-error', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function onHandleError(Request $request, SalesChannelContext $context): Response
     {
-        $code = $request->request->getString('code');
+        $step = \mb_trim($request->request->getString('step')) ?: null;
+        $code = \mb_trim($request->request->getString('code')) ?: null;
+        $pageType = \mb_trim($request->request->getString('pageType')) ?: null;
         $fatal = $request->request->getBoolean('fatal');
+        $plugin = \mb_trim($request->request->getString('plugin')) ?: null;
+        $error = $request->request->getString('error') ?: null;
+
+        /** @deprecated tag:v11.0.0 - Will be removed */
         $isCheckout = $request->request->getBoolean('isCheckout');
 
-        if ($isCheckout) {
+        // we are either on the checkout page or in a js plugin implementing payment.
+        // In both cases any submission error should be shown to the customer
+        if ($pageType === AbstractScriptData::PAGE_TYPE_CHECKOUT || $step === 'SUBMIT_FLOW' || $isCheckout) {
             $snippetGeneric = \sprintf('paypal.error.%s', $code);
             $snippetByMethod = \sprintf('paypal.error.%s.%s', $context->getPaymentMethod()->getFormattedHandlerIdentifier(), $code);
 
@@ -219,7 +249,10 @@ class PayPalController extends StorefrontController
             }
         }
 
-        if ($fatal) {
+        // session key is only read in checkout, if the pageType isn't checkout too
+        // its a JS plugin rendering aside the main one (like pay-later)
+        $isV6Enabled = $this->systemConfigService->getBool(Settings::SDK_V6_ENABLED, $context->getSalesChannelId());
+        if ($fatal && (!$isV6Enabled || $pageType === AbstractScriptData::PAGE_TYPE_CHECKOUT)) {
             $request->getSession()->set(self::PAYMENT_METHOD_FATAL_ERROR, $context->getPaymentMethod()->getId());
         }
 
@@ -227,9 +260,11 @@ class PayPalController extends StorefrontController
             \in_array($code, ['SWAG_PAYPAL__SCRIPT_ERROR', 'SWAG_PAYPAL__SCRIPT_NOT_LOADED'], true) ? Level::Error : Level::Warning,
             'Storefront checkout error',
             [
-                'error' => $request->request->get('error'),
+                'error' => $error,
+                'step' => $step,
                 'code' => $code,
                 'fatal' => $fatal,
+                'plugin' => $plugin,
                 'paymentMethodId' => $context->getPaymentMethod()->getId(),
                 'paymentMethodName' => $context->getPaymentMethod()->getName(),
             ],

@@ -1,3 +1,66 @@
+/** @deprecated tag:v11.0.0 - Will be removed without replacement */
+.swag-paypal-settings-sdk {
+    &__info-text, &__recommendation-text {
+        font-size: var(--font-size-xs);
+        line-height: var(--line-height-sm);
+        margin-bottom: var(--scale-size-12);
+        white-space: pre-wrap;
+    }
+
+    &__recommendation-text {
+        font-weight: var(--font-weight-semibold);
+    }
+
+    &__toggle_wrapper:not(:has(input[type="checkbox"]:checked)) {
+        position: relative;
+        transform-style: preserve-3d;
+        border-radius: 4px;
+
+        .swag-paypal-setting {
+            background: var(--color-elevation-surface-raised);
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 4px;
+            background: linear-gradient(
+                -45deg,
+                transparent 45%,
+                var(--color-border-brand-selected) 48%,
+                var(--color-border-accent-default) 52%,
+                transparent 55%
+            );
+            transform: translateZ(-1px);
+            background-size: 200%;
+            z-index: -1;
+            opacity: 0;
+            user-select: none;
+            pointer-events: none;
+            animation: glow 8s linear infinite;
+            will-change: background-position, opacity;
+        }
+
+        @keyframes glow {
+            0% {
+                background-position: 0 0;
+                opacity: 1;
+            }
+
+            90% {
+                background-position: -360% 0;
+                opacity: 1;
+            }
+
+            100% {
+                background-position: -400% 0;
+                opacity: 0;
+            }
+        }
+    }
+}
+
 .swag-paypal-settings-installment {
     &__layout {
         display: grid;

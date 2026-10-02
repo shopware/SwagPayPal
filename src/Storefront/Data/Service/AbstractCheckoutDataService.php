@@ -34,11 +34,11 @@ abstract class AbstractCheckoutDataService extends AbstractScriptDataService
     public function __construct(
         private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
         LocaleCodeProvider $localeCodeProvider,
-        private readonly RouterInterface $router,
+        RouterInterface $router,
         SystemConfigService $systemConfigService,
         CredentialsUtilInterface $credentialsUtil,
     ) {
-        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil);
+        parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $router);
         $this->methodData = $this->paymentMethodDataRegistry->getPaymentMethod($this->getMethodDataClass());
     }
 

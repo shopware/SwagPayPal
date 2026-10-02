@@ -1,6 +1,9 @@
 import HttpClient from 'src/service/http-client.service';
 import SwagPayPalScriptBase from '../swag-paypal.script-base';
 
+/**
+ * @deprecated tag:v11.0.0 - Will be removed and is replaced by `swag-paypal.eligibility.ts`
+ */
 export default class SwagPayPalFundingEligibility extends SwagPayPalScriptBase {
     static fundingSources = [
         'CARD',

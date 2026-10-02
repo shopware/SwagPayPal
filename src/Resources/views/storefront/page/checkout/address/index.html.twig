@@ -17,16 +17,26 @@
 
                 {% block page_checkout_address_login_toggle_paypal_express %}
                     {% if expressEnabled %}
-                        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'col-12 col-sm-6 col-xl-5'} %}
+                        {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
+                        {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+                            {% sw_include '@SwagPayPal/storefront/paypal/express-button.html.twig' with { classes: 'col-12 col-sm-6 col-xl-5' } %}
+                        {% else %}
+                            {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'col-12 col-sm-6 col-xl-5'} %}
+                        {% endif %}
                     {% endif %}
                 {% endblock %}
 
                 {% block page_checkout_address_login_toggle_paypal_installment_banner %}
                     {% if installmentBannerEnabled %}
-                        <div class="col-12 col-sm-6"
-                             data-swag-paypal-installment-banner="true"
-                             data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
-                        </div>
+                        {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
+                        {% if config('SwagPayPal.settings.sdkV6Enabled') %}
+                            {% sw_include '@SwagPayPal/storefront/paypal/installment-banner.html.twig' with { classes: 'col-12 col-sm-6' } %}
+                        {% else %}
+                            <div class="col-12 col-sm-6"
+                                data-swag-paypal-installment-banner="true"
+                                data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
+                            </div>
+                        {% endif %}
                     {% endif %}
                 {% endblock %}
             </div>
