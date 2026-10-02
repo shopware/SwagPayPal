@@ -1,6 +1,7 @@
 Shopware.Component.register('swag-paypal-settings-icon', () => import('./components/swag-paypal-settings-icon'));
 Shopware.Component.register('swag-paypal-settings-locale-select', () => import('./components/swag-paypal-settings-locale-select'));
 Shopware.Component.register('swag-paypal-settings-sales-channel-switch', () => import('./components/swag-paypal-settings-sales-channel-switch'));
+Shopware.Component.register('swag-paypal-settings-sdk-v6-banner', () => import('./components/swag-paypal-settings-sdk-v6-banner'));
 Shopware.Component.register('swag-paypal-settings-webhook', () => import('./components/swag-paypal-settings-webhook'));
 
 Shopware.Component.register('swag-paypal-settings-advanced', () => import('./view/swag-paypal-settings-advanced'));

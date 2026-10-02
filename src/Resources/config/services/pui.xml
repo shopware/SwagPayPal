@@ -13,6 +13,7 @@
         </service>
 
         <service id="Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService">
+            <argument type="service" id="order.repository"/>
             <argument type="service" id="order_address.repository"/>
             <argument type="service" id="customer.repository"/>
         </service>

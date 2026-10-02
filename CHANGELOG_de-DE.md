@@ -1,7 +1,18 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem der Ladeindikator beim PayPal Express Checkout stecken blieb, wenn die Checkout-Vorbereitung mit einem anderen HTTP-Status als 400 fehlschlug
+- Behebt ein Problem, bei dem die für Rechnungskauf eingegebene Telefonnummer bei abweichender Liefer- und Rechnungsadresse an der Lieferadresse statt an der Rechnungsadresse gespeichert wurde und die Zahlung dadurch fehlschlug (shopware/SwagPayPal#857)
+
+# 10.8.5
+- Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
+- Behebt ein Problem, bei dem verspätete PayPal-Abbruchantworten im Browser bereits laufende Zahlungen abbrechen konnten und negative Webhooks fälschlicherweise versuchten, vollständig oder teilweise bezahlte oder erstattete Transaktionen auf "Abgebrochen" zu setzen (shopware/shopware#19221)
+- Behebt ein Problem, bei dem PayPal-Zahlungen und Zahlungen mit "Später bezahlen" nach einer Änderung des freigegebenen Bestellbetrags fehlschlugen, anstatt den Kunden den neuen Betrag erneut freigeben zu lassen (shopware/SwagPayPal#759)
+- Fügt das Zusatzfeld `swag_paypal_agentic_commerce_sales_channel_id` hinzu, das bei über PayPal Agentic Commerce aufgegebenen Bestellungen den Agentic-Verkaufskanal speichert. Die Bestellübersicht der Administration kennzeichnet diese Bestellungen
 - Behebt ein Problem, bei dem die Einstellung "Gastkunde nach Bestellung ausloggen" bei Rechnungskauf dauerhaft ignoriert wurde, statt den Gast auszuloggen, sobald die Zahlungsinformationen angezeigt wurden (shopware/shopware#7962)
 - Behebt ein Problem, bei dem das PayPal JS in der Storefront mehrmals geladen werden konnte
+- Behebt ein Problem, bei dem Zahlungsmethoden trotz deaktiviertem Vautling für gemischte Abonnements zur Verfügung standen
+- Behebt ein Problem, bei dem PayPal-Konten und Karten nicht für zukünftige Käufe gespeichert wurden, wenn PayPal das Vaulting asynchron abschloss (shopware/SwagPayPal#845)
+- Fügt beim Update von einer älteren Plugin-Version den PayPal-Agentic-Commerce-Verkaufskanaltyp hinzu
+- Aktualisiert die Zahlungsbetragsgrenzen für P24 und „Später bezahlen“ (shopware/SwagPayPal#581)
 
 # 10.8.4
 - Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte

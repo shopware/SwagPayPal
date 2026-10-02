@@ -11,10 +11,12 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
 use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Shopware\PayPalSDK\Struct\V2\Order as PayPalOrder;
 use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments;
 use Swag\PayPal\Checkout\Exception\OrderFailedException;
+use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -48,6 +50,7 @@ class OrderExecuteService
 
     /**
      * @throws PayPalApiException
+     * @throws PayerActionRequiredException
      */
     public function captureOrAuthorizeOrder(
         string $transactionId,
@@ -59,24 +62,74 @@ class OrderExecuteService
         $this->logger->debug('Started');
 
         try {
-            return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+            try {
+                return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+            } catch (PayPalApiException $e) {
+                if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
+                    || !$e->is(PayPalApiException::ISSUE_DUPLICATE_INVOICE_ID)) {
+                    throw $e;
+                }
+
+                $this->logger->warning('Duplicate order number detected. Retrying payment without order number.');
+
+                $this->orderResource->update(
+                    [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
+                    $paypalOrder->getId(),
+                    $salesChannelId,
+                    $partnerAttributionId
+                );
+
+                return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+            }
         } catch (PayPalApiException $e) {
-            if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
-                || !$e->is(PayPalApiException::ISSUE_DUPLICATE_INVOICE_ID)) {
+            // is a PayPalApiException itself, so it must not be wrapped twice
+            if ($e instanceof PayerActionRequiredException
+                || $e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
+                || !$e->is(PayerActionRequiredException::ISSUE_PAYER_ACTION_REQUIRED)) {
                 throw $e;
             }
 
-            $this->logger->warning('Duplicate order number detected. Retrying payment without order number.');
-
-            $this->orderResource->update(
-                [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
-                $paypalOrder->getId(),
-                $salesChannelId,
-                $partnerAttributionId
-            );
-
-            return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
+            throw $this->createPayerActionRequiredException($transactionId, $paypalOrder, $e);
         }
+    }
+
+    public function isCancellationAllowed(string $paypalOrderId, string $salesChannelId): bool
+    {
+        try {
+            $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
+        } catch (\Throwable $e) {
+            $this->logger->warning('Could not verify PayPal order before cancellation. Preserving transaction state.', [
+                'paypalOrderId' => $paypalOrderId,
+                'salesChannelId' => $salesChannelId,
+                'exception' => $e,
+            ]);
+
+            return false;
+        }
+
+        if (!$order->isset('id') || $order->getId() !== $paypalOrderId || !$order->isset('status')) {
+            return false;
+        }
+
+        // An approved order may already be executing before payment resources become visible.
+        if (!\in_array($order->getStatus(), [ConstantsV2::ORDER_CREATED, ConstantsV2::ORDER_PAYER_ACTION_REQUIRED], true)) {
+            return false;
+        }
+
+        if ($order->getPurchaseUnits()->first() === null) {
+            return false;
+        }
+
+        foreach ($order->getPurchaseUnits() as $purchaseUnit) {
+            $payments = $purchaseUnit->getPayments();
+            if ($payments?->getCaptures()?->first() !== null
+                || $payments?->getAuthorizations()?->first() !== null
+                || $payments?->getRefunds()?->first() !== null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function checkFinalizedStatus(PayPalOrder $order, string $salesChannelId, string $transactionId, Context $context, bool $refetch = true): bool
@@ -85,6 +138,15 @@ class OrderExecuteService
             $capture = $this->getPayments($order, $salesChannelId, $refetch)?->getCaptures()?->first();
             if ($capture === null) {
                 return false;
+            }
+
+            if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_PENDING) {
+                try {
+                    $this->orderTransactionStateHandler->process($transactionId, $context);
+                } catch (IllegalTransitionException) {
+                }
+
+                return true;
             }
 
             if ($capture->getStatus() === ConstantsV2::ORDER_CAPTURE_COMPLETED) {
@@ -104,6 +166,15 @@ class OrderExecuteService
         $authorization = $this->getPayments($order, $salesChannelId, $refetch)?->getAuthorizations()?->first();
         if ($authorization === null) {
             return false;
+        }
+
+        if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_PENDING) {
+            try {
+                $this->orderTransactionStateHandler->process($transactionId, $context);
+            } catch (IllegalTransitionException) {
+            }
+
+            return true;
         }
 
         if ($authorization->getStatus() === ConstantsV2::ORDER_AUTHORIZATION_CREATED) {
@@ -126,6 +197,11 @@ class OrderExecuteService
             return $paypalOrder;
         }
 
+        // capturing an order PayPal already flagged is guaranteed to fail
+        if ($paypalOrder->isset('status') && $paypalOrder->getStatus() === ConstantsV2::ORDER_PAYER_ACTION_REQUIRED) {
+            throw $this->createPayerActionRequiredException($transactionId, $paypalOrder);
+        }
+
         if ($paypalOrder->getIntent() === ConstantsV2::INTENT_CAPTURE) {
             $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
         } else {
@@ -135,6 +211,22 @@ class OrderExecuteService
         $this->checkFinalizedStatus($response, $salesChannelId, $transactionId, $context);
 
         return $response;
+    }
+
+    private function createPayerActionRequiredException(
+        string $transactionId,
+        PayPalOrder $paypalOrder,
+        ?PayPalApiException $previous = null,
+    ): PayerActionRequiredException {
+        $exception = PayerActionRequiredException::payerActionRequired($paypalOrder->getId(), $previous);
+
+        $this->logger->warning('PayPal requires another payer action before the order can be captured.', [
+            'orderTransactionId' => $transactionId,
+            'payPalOrderId' => $paypalOrder->getId(),
+            'error' => $previous,
+        ]);
+
+        return $exception;
     }
 
     private function getPayments(PayPalOrder $order, string $salesChannelId, bool $refetch): ?Payments

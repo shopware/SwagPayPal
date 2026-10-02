@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
+use Swag\PayPal\Setting\Service\SdkV6EligibilityService;
 use Swag\PayPal\Setting\Service\SettingsSaver;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
@@ -53,6 +54,8 @@ class SettingsSaverTest extends TestCase
 
     private WebhookSystemConfigHelper&MockObject $webhookSystemConfigHelper;
 
+    private SdkV6EligibilityService&MockObject $sdkV6EligibilityService;
+
     private SettingsSaver $settingsSaver;
 
     protected function setUp(): void
@@ -60,11 +63,13 @@ class SettingsSaverTest extends TestCase
         $this->systemConfigService = $this->createMock(SystemConfigService::class);
         $this->apiCredentialService = $this->createMock(ApiCredentialService::class);
         $this->webhookSystemConfigHelper = $this->createMock(WebhookSystemConfigHelper::class);
+        $this->sdkV6EligibilityService = $this->createMock(SdkV6EligibilityService::class);
 
         $this->settingsSaver = new SettingsSaver(
             $this->systemConfigService,
             $this->apiCredentialService,
-            $this->webhookSystemConfigHelper
+            $this->webhookSystemConfigHelper,
+            $this->sdkV6EligibilityService
         );
     }
 
@@ -427,5 +432,137 @@ class SettingsSaverTest extends TestCase
 
         static::assertTrue($information->getLiveCredentialsChanged());
         static::assertFalse($information->getLiveCredentialsValid());
+    }
+
+    public function testSdkV6StaysEnabledWhenItIsActivatedInThePayPalAccount(): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->systemConfigService->method('getBool')->willReturn(true);
+
+        $this->sdkV6EligibilityService
+            ->expects($this->once())
+            ->method('isEligible')
+            ->with('sales-channel-id')
+            ->willReturn(true);
+
+        $this->systemConfigService->expects($this->never())->method('set');
+        $this->systemConfigService->expects($this->never())->method('delete');
+
+        $this->settingsSaver->save([Settings::SDK_V6_ENABLED => true], 'sales-channel-id');
+    }
+
+    #[DataProvider('falsySdkV6EligibilityProvider')]
+    public function testSdkV6IsDisabledOnTheRootConfiguration(?bool $eligible): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->systemConfigService->method('getBool')->willReturn(true);
+        $this->sdkV6EligibilityService->method('isEligible')->willReturn($eligible);
+
+        // every other setting was saved before, only the guarded one is corrected
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('setMultiple')
+            ->with([
+                Settings::SDK_V6_ENABLED => true,
+                Settings::BRAND_NAME => 'testBrandName',
+            ], null);
+
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('set')
+            ->with(Settings::SDK_V6_ENABLED, false);
+
+        $this->settingsSaver->save([
+            Settings::SDK_V6_ENABLED => true,
+            Settings::BRAND_NAME => 'testBrandName',
+        ], null);
+    }
+
+    #[DataProvider('falsySdkV6EligibilityProvider')]
+    public function testSdkV6LosesItsOverrideOnASalesChannel(?bool $eligible): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->systemConfigService->method('getBool')->willReturn(true);
+        $this->sdkV6EligibilityService->method('isEligible')->willReturn($eligible);
+
+        // the sales channel falls back to the root configuration instead of carrying an override
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('delete')
+            ->with(Settings::SDK_V6_ENABLED, 'sales-channel-id');
+
+        $this->systemConfigService->expects($this->never())->method('set');
+
+        $this->settingsSaver->save([Settings::SDK_V6_ENABLED => true], 'sales-channel-id');
+    }
+
+    public static function falsySdkV6EligibilityProvider(): \Generator
+    {
+        yield 'the PayPal account has not activated it' => ['eligible' => false];
+
+        yield 'the eligibility could not be determined' => ['eligible' => null];
+    }
+
+    public function testSdkV6EligibilityIsCheckedAgainstTheCredentialsThatWereJustSaved(): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->systemConfigService->method('getBool')->willReturn(true);
+        $this->sdkV6EligibilityService->method('isEligible')->willReturn(true);
+
+        $saveOrder = [];
+        $this->systemConfigService
+            ->method('setMultiple')
+            ->willReturnCallback(static function () use (&$saveOrder): void {
+                $saveOrder[] = 'setMultiple';
+            });
+        $this->sdkV6EligibilityService
+            ->method('isEligible')
+            ->willReturnCallback(static function () use (&$saveOrder): bool {
+                $saveOrder[] = 'isEligible';
+
+                return true;
+            });
+
+        $this->settingsSaver->save([
+            Settings::SDK_V6_ENABLED => true,
+            ...self::VALID_LIVE_CREDENTIALS_1,
+        ], null);
+
+        static::assertSame(['setMultiple', 'isEligible'], $saveOrder);
+    }
+
+    public function testSdkV6EligibilityIsNotCheckedWhenItEndsUpDisabled(): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        $this->systemConfigService->method('getBool')->willReturn(false);
+
+        $this->sdkV6EligibilityService->expects($this->never())->method('isEligible');
+        $this->systemConfigService->expects($this->never())->method('set');
+        $this->systemConfigService->expects($this->never())->method('delete');
+
+        $this->settingsSaver->save([Settings::SDK_V6_ENABLED => false], 'sales-channel-id');
+    }
+
+    public function testSdkV6IsGuardedForASalesChannelThatOnlyInheritsIt(): void
+    {
+        $this->systemConfigService->method('get')->willReturn(null);
+        // the sales channel has no value of its own, the root configuration enables it
+        $this->systemConfigService
+            ->method('getBool')
+            ->with(Settings::SDK_V6_ENABLED, 'sales-channel-id')
+            ->willReturn(true);
+
+        $this->sdkV6EligibilityService
+            ->expects($this->once())
+            ->method('isEligible')
+            ->with('sales-channel-id')
+            ->willReturn(false);
+
+        $this->systemConfigService
+            ->expects($this->once())
+            ->method('delete')
+            ->with(Settings::SDK_V6_ENABLED, 'sales-channel-id');
+
+        $this->settingsSaver->save([Settings::BRAND_NAME => 'testBrandName'], 'sales-channel-id');
     }
 }

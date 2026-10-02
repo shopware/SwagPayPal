@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -68,15 +69,23 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     }
 
     #[DataProvider('dataProviderInvokeWithAllMatchingStatus')]
-    public function testInvokeWithAllMatchingStatus(string $intent, string $status, ?string $stateHandlerMethod): void
-    {
+    public function testInvokeWithAllMatchingStatus(
+        string $intent,
+        string $status,
+        ?string $stateHandlerMethod,
+        string $currentState = OrderTransactionStates::STATE_UNCONFIRMED,
+    ): void {
         $this->orderTransactionRepository
             ->expects($this->once())
             ->method('search')
             ->willReturnCallback(
-                static function (Criteria $criteria, Context $context): EntitySearchResult {
+                static function (Criteria $criteria, Context $context) use ($currentState): EntitySearchResult {
+                    $stateMachineState = new StateMachineStateEntity();
+                    $stateMachineState->setTechnicalName($currentState);
+
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
+                    $orderTransactionEntity->setStateMachineState($stateMachineState);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
                 }
@@ -125,7 +134,9 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         yield 'intent: capture, status: declined' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_DECLINED, 'fail'];
         yield 'intent: capture, status: failed' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_FAILED, 'fail'];
         yield 'intent: capture, status: partially refunded' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_PARTIALLY_REFUNDED, null];
-        yield 'intent: capture, status: pending' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_PENDING, null];
+        yield 'intent: capture, status: pending' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_PENDING, 'process'];
+        yield 'intent: capture, status: pending, already in progress' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_PENDING, null, OrderTransactionStates::STATE_IN_PROGRESS];
+        yield 'intent: capture, status: pending, already authorized' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_PENDING, null, OrderTransactionStates::STATE_AUTHORIZED];
         yield 'intent: capture, status: refunded' => [ConstantsV2::INTENT_CAPTURE, ConstantsV2::ORDER_CAPTURE_REFUNDED, null];
 
         yield 'intent: authorize, status: captured' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_CAPTURED, 'paid'];
@@ -133,7 +144,9 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         yield 'intent: authorize, status: voided' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_VOIDED, 'cancel'];
         yield 'intent: authorize, status: denied' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_DENIED, 'fail'];
         yield 'intent: authorize, status: partially captured' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_PARTIALLY_CAPTURED, null];
-        yield 'intent: authorize, status: pending' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_PENDING, null];
+        yield 'intent: authorize, status: pending' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_PENDING, 'process'];
+        yield 'intent: authorize, status: pending, already in progress' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_PENDING, null, OrderTransactionStates::STATE_IN_PROGRESS];
+        yield 'intent: authorize, status: created, already authorized' => [ConstantsV2::INTENT_AUTHORIZE, ConstantsV2::ORDER_AUTHORIZATION_CREATED, null, OrderTransactionStates::STATE_AUTHORIZED];
     }
 
     public function testInvokeThrowsStateMachineExceptionException(): void
@@ -333,7 +346,9 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
-                    $orderTransactionEntity->setStateMachineState(new StateMachineStateEntity());
+                    $stateMachineState = new StateMachineStateEntity();
+                    $stateMachineState->setTechnicalName(OrderTransactionStates::STATE_AUTHORIZED);
+                    $orderTransactionEntity->setStateMachineState($stateMachineState);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
                 }

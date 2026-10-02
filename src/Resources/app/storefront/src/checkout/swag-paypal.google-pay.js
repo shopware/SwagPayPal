@@ -14,6 +14,9 @@ const GOOGLE_PAY_LOCALE_ALIASES = {
     nn: 'no',
 };
 
+/**
+ * @deprecated tag:v11.0.0 - Will be removed and is replaced by `payment/swag-paypal.checkout.google-pay.ts`
+ */
 export default class SwagPaypalGooglePay extends SwagPaypalAbstractStandalone {
     static options = {
         ...super.options,

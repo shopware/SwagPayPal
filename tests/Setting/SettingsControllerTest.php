@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -17,6 +18,7 @@ use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
+use Swag\PayPal\Setting\Service\SdkV6EligibilityService;
 use Swag\PayPal\Setting\Service\SettingsSaver;
 use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -98,6 +100,11 @@ class SettingsControllerTest extends TestCase
             self::tokenGateway(),
             self::customerGateway(),
         );
+        $sdkV6EligibilityService = new SdkV6EligibilityService(
+            self::tokenGateway(),
+            new ApiContextFactoryMock(),
+            new NullLogger(),
+        );
 
         return new SettingsController(
             $apiCredentialsService,
@@ -106,12 +113,14 @@ class SettingsControllerTest extends TestCase
                 new TokenResource(self::tokenGateway(), new ApiContextFactoryMock()),
                 new CredentialsUtil($systemConfigService),
                 $this->getContainer()->get(PaymentMethodDataRegistry::class),
+                $sdkV6EligibilityService,
             ),
             $this->getContainer()->get(SystemConfigValidator::class),
             new SettingsSaver(
                 $systemConfigService,
                 $apiCredentialsService,
                 $this->createMock(WebhookSystemConfigHelper::class),
+                $sdkV6EligibilityService,
             )
         );
     }

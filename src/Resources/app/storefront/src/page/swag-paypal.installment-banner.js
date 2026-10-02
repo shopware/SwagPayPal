@@ -1,5 +1,8 @@
 import SwagPayPalScriptBase from '../swag-paypal.script-base';
 
+/**
+ * @deprecated tag:v11.0.0 - Will be removed and is replaced by `swag-paypal.messages.ts`
+ */
 export default class SwagPayPalInstallmentBanner extends SwagPayPalScriptBase {
     static options = {
         ...super.options,
