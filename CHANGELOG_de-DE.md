@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem der Ladeindikator beim PayPal Express Checkout stecken blieb, wenn die Checkout-Vorbereitung mit einem anderen HTTP-Status als 400 fehlschlug
 - Behebt ein Problem, bei dem die Einstellung "Gastkunde nach Bestellung ausloggen" bei Rechnungskauf dauerhaft ignoriert wurde, statt den Gast auszuloggen, sobald die Zahlungsinformationen angezeigt wurden (shopware/shopware#7962)
 - Behebt ein Problem, bei dem das PayPal JS in der Storefront mehrmals geladen werden konnte
 
@@ -19,7 +20,6 @@
 - Behebt ein Problem, bei dem der von einem benutzerdefinierten Tax Provider angepasste Gesamtbetrag nicht berechnet wurde, weil die PayPal-Bestellung den veralteten Warenkorb- oder Bestelltransaktionsbetrag anstelle des besteuerten Gesamtbetrags verwendete (shopware/SwagPayPal#722)
 - Behebt ein Problem, bei dem die PayPal Express Checkout Buttons nach dem Zurücknavigieren vom Checkout mit dem Browser-Zurück-Button nicht mehr angezeigt wurden (shopware/shopware#18297)
 - Behebt ein Problem, bei dem die PayPal-Versandtracking-Synchronisierung 429 RATE_LIMIT_REACHED-Antworten zu früh erneut verarbeitet hat, anstatt den Retry-After-Header zu berücksichtigen.
-- Behebt ein Problem, bei dem vorübergehende PayPal-API-Transportfehler während des Express Checkouts zu HTTP 500 führten und der Ladeindikator auf der Seite stecken blieb
 - Behebt ein Problem, bei dem im Kontextmenü der Erweiterungs-Kachel der rohe Snippet-Key statt „Konfigurieren” angezeigt wurde (shopware/shopware#19028)
 
 # 10.8.0

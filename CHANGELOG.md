@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where PayPal Express Checkout left the loading spinner stuck when checkout preparation failed with an HTTP status other than 400
 - Fixes an issue, where the "log out guest customer after order" setting kept Pay Upon Invoice guests logged in permanently instead of logging them out once the payment details were shown (shopware/shopware#7962)
 - Fixes an issue, where the PayPal JS could be loaded twice in the storefront
 
@@ -19,7 +20,6 @@
 - Fixes an issue, where a custom tax provider's adjusted total was not charged, because the PayPal order used the stale cart or order transaction amount instead of the taxed total (shopware/SwagPayPal#722)
 - Fixes an issue, where PayPal Express Checkout buttons disappeared after using the browser back button from the checkout page (shopware/shopware#18297)
 - Fixes an issue, where PayPal shipping tracking sync retried 429 RATE_LIMIT_REACHED responses too early instead of respecting the Retry-After header.
-- Fixes an issue, where transient PayPal API transport errors during Express Checkout resulted in HTTP 500 and left the loading spinner stuck on the page
 - Fixes an issue, where the extension card context menu showed a raw snippet key instead of "Configure" (shopware/shopware#19028)
 
 # 10.8.0

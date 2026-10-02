@@ -356,27 +356,17 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                     return actions.redirect(this.options.checkoutConfirmUrl);
                 }
 
-                ElementLoadingIndicatorUtil.remove(document.body);
-
-                if (request.status === 400) {
-                    try {
-                        this.onError(JSON.parse(request.response));
-                    } catch (error) {
-                        console.warn('SwagPayPalExpressCheckout: Could not parse error response', error);
-                        this.onError();
-                    }
-
-                    return;
+                try {
+                    return this.onError(JSON.parse(request.response));
+                } catch (error) {
+                    console.warn('SwagPayPalExpressCheckout: Could not parse error response', error);
+                    return this.onError();
                 }
-
-                return this.onError();
             },
         );
     }
 
     onErrorHandled(code, fatal, error, isCheckout = false) {
-        ElementLoadingIndicatorUtil.remove(document.body);
-
         if (code === this.USER_CANCELLED) {
             window.scrollTo(0, 0);
             window.location = this.options.cancelRedirectUrl;
