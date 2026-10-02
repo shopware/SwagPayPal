@@ -13,18 +13,18 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.6.3",
     "@types/uuid": "^11.0.0",
-    "dotenv": "^17.4.2",
-    "eslint": "^10.7.0",
-    "eslint-plugin-playwright": "^2.10.5",
+    "dotenv": "^18.0.4",
+    "eslint": "^10.11.0",
+    "eslint-plugin-playwright": "^2.12.0",
     "jiti": "^2.6.1",
-    "typescript-eslint": "^8.65.0"
+    "typescript-eslint": "^8.71.0"
   },
   "dependencies": {
-    "@currents/playwright": "^2.5.0",
-    "@shopware-ag/acceptance-test-suite": "12.13.4",
-    "@shopware/api-client": "1.5.0",
+    "@currents/playwright": "^2.5.1",
+    "@shopware-ag/acceptance-test-suite": "12.21.1",
+    "@shopware/api-client": "1.6.0",
     "typescript": "^6.0.3"
   }
 }
