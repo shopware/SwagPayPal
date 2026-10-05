@@ -1,3 +1,7 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Added Canada to the countries where Pay Later is available (shopware/SwagPayPal#581)
+- Updated the payment amount limitations for P24
+
 # 8.12.4
 - Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
 - Fixes an issue, where PayPal accounts and cards were not saved for future purchases, if PayPal completed the vaulting asynchronously (shopware/SwagPayPal#845)
