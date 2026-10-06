@@ -13,9 +13,9 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PrePayment;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -23,9 +23,14 @@ use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
+use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
+use Shopware\Core\System\StateMachine\StateMachineEntity;
+use Shopware\Core\System\StateMachine\Transition;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Reporting\Subscriber\OrderTransactionSubscriber;
 use Swag\PayPal\SwagPayPal;
@@ -43,29 +48,38 @@ class OrderTransactionSubscriberTest extends TestCase
 
     private EntityRepository&MockObject $transactionReportRepository;
 
+    private EntityRepository&MockObject $orderTransactionRepository;
+
     private OrderTransactionSubscriber $subscriber;
 
     protected function setUp(): void
     {
         $this->methodDataRegistry = $this->createMock(PaymentMethodDataRegistry::class);
+        $this->methodDataRegistry
+            ->method('getPaymentHandlers')
+            ->willReturn([PayPalHandler::class]);
+
         $this->transactionReportRepository = $this->createMock(EntityRepository::class);
+        $this->orderTransactionRepository = $this->createMock(EntityRepository::class);
 
         $this->subscriber = new OrderTransactionSubscriber(
             $this->methodDataRegistry,
             $this->transactionReportRepository,
+            $this->orderTransactionRepository,
         );
     }
 
-    public function testOnPaidStateTransition(): void
+    public function testSubscribesToTransactionStateChange(): void
     {
-        $order = $this->createOrder($this->createTransaction('transaction-id'));
+        static::assertSame(
+            ['state_machine.order_transaction.state_changed' => 'onTransactionStateChange'],
+            OrderTransactionSubscriber::getSubscribedEvents(),
+        );
+    }
 
-        $event = new OrderStateMachineStateChangeEvent('paid', $order, Context::createDefaultContext());
-
-        $this->methodDataRegistry
-            ->expects(static::once())
-            ->method('getPaymentHandlers')
-            ->willReturn([PayPalHandler::class]);
+    public function testOnTransactionStateChange(): void
+    {
+        $this->expectTransactionSearch('transaction-id', $this->createTransaction('transaction-id'));
 
         $this->transactionReportRepository
             ->expects(static::once())
@@ -76,21 +90,15 @@ class OrderTransactionSubscriberTest extends TestCase
                 'totalPrice' => 10,
             ]]);
 
-        $this->subscriber->onPaidStateTransition($event);
+        $this->subscriber->onTransactionStateChange($this->createEvent('transaction-id', Context::createDefaultContext()));
     }
 
-    public function testOnPaidStateTransitionWritesInSystemScope(): void
+    public function testOnTransactionStateChangeReadsAndWritesInSystemScope(): void
     {
-        $order = $this->createOrder($this->createTransaction('transaction-id'));
+        $this->expectTransactionSearch('transaction-id', $this->createTransaction('transaction-id'));
 
         // e.g. a restricted integration without privileges on swag_paypal_transaction_report
         $context = new Context(new AdminApiSource(null, 'integration-id'));
-
-        $event = new OrderStateMachineStateChangeEvent('paid', $order, $context);
-
-        $this->methodDataRegistry
-            ->method('getPaymentHandlers')
-            ->willReturn([PayPalHandler::class]);
 
         $this->transactionReportRepository
             ->expects(static::once())
@@ -99,135 +107,122 @@ class OrderTransactionSubscriberTest extends TestCase
                 static fn (Context $context): bool => $context->getScope() === Context::SYSTEM_SCOPE
             ));
 
-        $this->subscriber->onPaidStateTransition($event);
+        $this->subscriber->onTransactionStateChange($this->createEvent('transaction-id', $context));
 
         static::assertSame(Context::USER_SCOPE, $context->getScope());
     }
 
-    public function testOnPaidStateTransitionUsesPaidTransactionInsteadOfFirst(): void
+    public function testOnTransactionStateChangeWithoutPayPalPaymentHandler(): void
     {
-        $order = $this->createOrder(
-            $this->createTransaction('cancelled-transaction-id', state: OrderTransactionStates::STATE_CANCELLED),
-            $this->createTransaction('paid-transaction-id', amount: 20),
-        );
-
-        $event = new OrderStateMachineStateChangeEvent('paid', $order, Context::createDefaultContext());
-
-        $this->methodDataRegistry
-            ->method('getPaymentHandlers')
-            ->willReturn([PayPalHandler::class]);
-
-        $this->transactionReportRepository
-            ->expects(static::once())
-            ->method('upsert')
-            ->with([[
-                'orderTransactionId' => 'paid-transaction-id',
-                'currencyIso' => 'EUR',
-                'totalPrice' => 20,
-            ]]);
-
-        $this->subscriber->onPaidStateTransition($event);
-    }
-
-    public function testOnPaidStateTransitionIgnoresUnpaidPayPalTransactionBeforePaidPrepayment(): void
-    {
-        $order = $this->createOrder(
-            $this->createTransaction('paypal-transaction-id', state: OrderTransactionStates::STATE_FAILED),
-            $this->createTransaction('prepayment-transaction-id', PrePayment::class),
-        );
-
-        $event = new OrderStateMachineStateChangeEvent('paid', $order, Context::createDefaultContext());
-
-        $this->methodDataRegistry
-            ->method('getPaymentHandlers')
-            ->willReturn([PayPalHandler::class]);
+        $this->expectTransactionSearch('transaction-id', $this->createTransaction('transaction-id', PrePayment::class));
 
         $this->transactionReportRepository->expects(static::never())->method(static::anything());
 
-        $this->subscriber->onPaidStateTransition($event);
+        $this->subscriber->onTransactionStateChange($this->createEvent('transaction-id', Context::createDefaultContext()));
     }
 
-    public function testOnPaidStateTransitionWithoutPaidTransaction(): void
+    public function testOnTransactionStateChangeWithSandboxTransaction(): void
     {
-        $order = $this->createOrder(
-            $this->createTransaction('transaction-id', state: OrderTransactionStates::STATE_OPEN),
-        );
+        $transaction = $this->createTransaction('transaction-id');
+        $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_IS_SANDBOX => true]);
 
-        $event = new OrderStateMachineStateChangeEvent('paid', $order, Context::createDefaultContext());
+        $this->expectTransactionSearch('transaction-id', $transaction);
 
         $this->transactionReportRepository->expects(static::never())->method(static::anything());
-        $this->methodDataRegistry->expects(static::never())->method(static::anything());
 
-        $this->subscriber->onPaidStateTransition($event);
+        $this->subscriber->onTransactionStateChange($this->createEvent('transaction-id', Context::createDefaultContext()));
     }
 
-    public function testOnPaidStateTransitionWithNonLiveVersion(): void
+    public function testOnTransactionStateChangeWithoutTransaction(): void
     {
-        $order = $this->createOrder($this->createTransaction('transaction-id'));
+        $this->expectTransactionSearch('transaction-id', null);
 
+        $this->transactionReportRepository->expects(static::never())->method(static::anything());
+
+        $this->subscriber->onTransactionStateChange($this->createEvent('transaction-id', Context::createDefaultContext()));
+    }
+
+    public function testOnTransactionStateChangeIgnoresLeaveSide(): void
+    {
+        $event = $this->createEvent(
+            'transaction-id',
+            Context::createDefaultContext(),
+            StateMachineStateChangeEvent::STATE_MACHINE_TRANSITION_SIDE_LEAVE,
+        );
+
+        $this->orderTransactionRepository->expects(static::never())->method(static::anything());
+        $this->transactionReportRepository->expects(static::never())->method(static::anything());
+
+        $this->subscriber->onTransactionStateChange($event);
+    }
+
+    public function testOnTransactionStateChangeIgnoresOtherStates(): void
+    {
+        $event = $this->createEvent(
+            'transaction-id',
+            Context::createDefaultContext(),
+            nextState: OrderTransactionStates::STATE_CANCELLED,
+        );
+
+        $this->orderTransactionRepository->expects(static::never())->method(static::anything());
+        $this->transactionReportRepository->expects(static::never())->method(static::anything());
+
+        $this->subscriber->onTransactionStateChange($event);
+    }
+
+    public function testOnTransactionStateChangeWithNonLiveVersion(): void
+    {
         $context = new Context(
             new SystemSource(),
             versionId: 'random-non-live-version-id',
         );
 
-        $event = new OrderStateMachineStateChangeEvent('paid', $order, $context);
-
+        $this->orderTransactionRepository->expects(static::never())->method(static::anything());
         $this->transactionReportRepository->expects(static::never())->method(static::anything());
-        $this->methodDataRegistry->expects(static::never())->method(static::anything());
 
-        $this->subscriber->onPaidStateTransition($event);
+        $this->subscriber->onTransactionStateChange($this->createEvent('transaction-id', $context));
     }
 
-    public function testOnPaidStateTransitionWithoutPayPalPaymentHandler(): void
+    private function expectTransactionSearch(string $transactionId, ?OrderTransactionEntity $transaction): void
     {
-        $order = $this->createOrder($this->createTransaction('transaction-id', 'not-a-paypal-handler'));
-
-        $event = new OrderStateMachineStateChangeEvent('paid', $order, Context::createDefaultContext());
-
-        $this->transactionReportRepository->expects(static::never())->method(static::anything());
-
-        $this->methodDataRegistry
+        $this->orderTransactionRepository
             ->expects(static::once())
-            ->method('getPaymentHandlers')
-            ->willReturn([PayPalHandler::class]);
+            ->method('search')
+            ->willReturnCallback(static function (Criteria $criteria, Context $context) use ($transactionId, $transaction): EntitySearchResult {
+                static::assertSame([$transactionId], $criteria->getIds());
+                static::assertSame(Context::SYSTEM_SCOPE, $context->getScope());
 
-        $this->subscriber->onPaidStateTransition($event);
+                $collection = new OrderTransactionCollection($transaction ? [$transaction] : []);
+
+                return new EntitySearchResult(OrderTransactionDefinition::ENTITY_NAME, $collection->count(), $collection, null, $criteria, $context);
+            });
     }
 
-    public function testOnPaidStateTransitionWithSandboxTransaction(): void
+    private function createEvent(
+        string $transactionId,
+        Context $context,
+        string $side = StateMachineStateChangeEvent::STATE_MACHINE_TRANSITION_SIDE_ENTER,
+        string $nextState = OrderTransactionStates::STATE_PAID,
+    ): StateMachineStateChangeEvent {
+        return new StateMachineStateChangeEvent(
+            $context,
+            $side,
+            new Transition(OrderTransactionDefinition::ENTITY_NAME, $transactionId, 'paid', 'stateId'),
+            (new StateMachineEntity())->assign(['technicalName' => OrderTransactionStates::STATE_MACHINE]),
+            (new StateMachineStateEntity())->assign(['technicalName' => OrderTransactionStates::STATE_OPEN]),
+            (new StateMachineStateEntity())->assign(['technicalName' => $nextState]),
+        );
+    }
+
+    private function createTransaction(string $id, string $handlerIdentifier = PayPalHandler::class): OrderTransactionEntity
     {
-        $transaction = $this->createTransaction('transaction-id');
-        $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_IS_SANDBOX => true]);
-
-        $order = $this->createOrder($transaction);
-
-        $event = new OrderStateMachineStateChangeEvent('paid', $order, Context::createDefaultContext());
-
-        $this->transactionReportRepository->expects(static::never())->method(static::anything());
-        $this->methodDataRegistry->expects(static::never())->method(static::anything());
-
-        $this->subscriber->onPaidStateTransition($event);
-    }
-
-    private function createTransaction(
-        string $id,
-        string $handlerIdentifier = PayPalHandler::class,
-        string $state = OrderTransactionStates::STATE_PAID,
-        float $amount = 10,
-    ): OrderTransactionEntity {
         return (new OrderTransactionEntity())->assign([
             'id' => $id,
             'paymentMethod' => (new PaymentMethodEntity())->assign(['handlerIdentifier' => $handlerIdentifier]),
-            'stateMachineState' => (new StateMachineStateEntity())->assign(['technicalName' => $state]),
-            'amount' => new CalculatedPrice($amount, $amount, new CalculatedTaxCollection(), new TaxRuleCollection()),
-        ]);
-    }
-
-    private function createOrder(OrderTransactionEntity ...$transactions): OrderEntity
-    {
-        return (new OrderEntity())->assign([
-            'transactions' => new OrderTransactionCollection($transactions),
-            'currency' => (new CurrencyEntity())->assign(['isoCode' => 'EUR']),
+            'amount' => new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()),
+            'order' => (new OrderEntity())->assign([
+                'currency' => (new CurrencyEntity())->assign(['isoCode' => 'EUR']),
+            ]),
         ]);
     }
 }
