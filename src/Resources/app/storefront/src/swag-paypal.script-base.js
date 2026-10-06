@@ -1,5 +1,6 @@
-import Plugin from 'src/plugin-system/plugin.class';
 import { loadScript } from '@paypal/paypal-js';
+
+const Plugin = window.PluginBaseClass;
 
 const availableAPMs = [
     'card',

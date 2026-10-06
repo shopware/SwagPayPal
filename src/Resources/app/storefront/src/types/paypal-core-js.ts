@@ -1,10 +1,11 @@
 import type * as SDK from '@paypal/paypal-js/sdk-v6';
 import 'applepayjs';
 
+// PayPalCoreJS is an ambient type namespace, used throughout the storefront without imports
+/* eslint-disable @typescript-eslint/no-namespace */
 declare global {
     namespace PayPalCoreJS {
-        export interface Namespace extends SDK.PayPalV6Namespace {
-        }
+        export type Namespace = SDK.PayPalV6Namespace;
 
         export type Components = SDK.Components;
         export type FundingSource = SDK.FundingSource;

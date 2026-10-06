@@ -72,7 +72,6 @@ export default tseslint.config(
             /* stylistic rules */
 
             /* typescript rules */
-            '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/ban-ts-comment': ['error', { 'ts-expect-error': false }],
             '@typescript-eslint/no-unsafe-member-access': ['error', { allowOptionalChaining: true }],
             '@typescript-eslint/no-unsafe-call': 'error',
@@ -85,9 +84,7 @@ export default tseslint.config(
             '@typescript-eslint/no-shadow': 'error',
             '@typescript-eslint/consistent-type-imports': 'error',
             '@typescript-eslint/no-unused-vars': 'off',
-            '@typescript-eslint/no-namespace': 'off',
             '@typescript-eslint/restrict-template-expressions': 'off',
-            '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'always' }],
             '@typescript-eslint/no-redundant-type-constituents': 'off',
             /* typescript rules */
         },
