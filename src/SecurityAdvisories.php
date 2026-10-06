@@ -16,17 +16,19 @@ use Shopware\Core\Framework\Log\Package;
 class SecurityAdvisories
 {
     public const ADVISORIES = [
-        'GHSA-mwvm-68w4-32gq' => [
+        'GHSAmwvm68w432gq' => [
             'description' => 'PayPal order ID can be reused for another order',
             'link' => 'https://github.com/shopware/SwagPayPal/security/advisories/GHSA-mwvm-68w4-32gq',
         ],
     ];
 
     /**
-     * Check if an advisory is fixed, case insensitive
+     * Check if an advisory is fixed, case insensitive and ignoring dashes
      */
     public static function isFixed(string $advisoryId): bool
     {
+        $advisoryId = str_replace('-', '', $advisoryId);
+
         foreach (self::ADVISORIES as $id => $_) {
             if (strcasecmp($advisoryId, $id) === 0) {
                 return true;
