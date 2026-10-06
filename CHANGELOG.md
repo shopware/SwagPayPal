@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
 - Updated the payment amount limitations for P24 and Pay Later (shopware/SwagPayPal#581)
 
 # 9.13.4
