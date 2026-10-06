@@ -7,8 +7,11 @@
 
 namespace Swag\PayPal\Reporting\Subscriber;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\SwagPayPal;
@@ -36,7 +39,10 @@ class OrderTransactionSubscriber implements EventSubscriberInterface
 
     public function onPaidStateTransition(OrderStateMachineStateChangeEvent $event): void
     {
-        $transaction = $event->getOrder()->getTransactions()?->first();
+        // The event does not carry the transitioned transaction, so earlier failed or cancelled ones must be skipped
+        $transaction = $event->getOrder()->getTransactions()?->filter(
+            static fn (OrderTransactionEntity $transaction): bool => $transaction->getStateMachineState()?->getTechnicalName() === OrderTransactionStates::STATE_PAID
+        )->last();
         $handlerId = $transaction?->getPaymentMethod()?->getHandlerIdentifier();
         $isSandbox = (bool) ($transaction?->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_IS_SANDBOX));
 
@@ -49,10 +55,15 @@ class OrderTransactionSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->transactionReportRepository->upsert([[
+        $data = [
             'orderTransactionId' => $transaction->getId(),
             'currencyIso' => $event->getOrder()->getCurrency()?->getIsoCode(),
             'totalPrice' => \round($transaction->getAmount()->getTotalPrice(), 2),
-        ]], $event->getContext());
+        ];
+
+        // Internal bookkeeping, must not depend on the ACL privileges of whoever changed the transaction state
+        $event->getContext()->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($data): void {
+            $this->transactionReportRepository->upsert([$data], $context);
+        });
     }
 }
