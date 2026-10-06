@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
 - Fixes an issue, where the phone number entered for Pay Upon Invoice was stored on the shipping instead of the billing address, if both differed, causing the payment to fail (shopware/SwagPayPal#857)
 
 # 10.8.5
