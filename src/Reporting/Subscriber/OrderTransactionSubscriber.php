@@ -50,6 +50,7 @@ class OrderTransactionSubscriber implements EventSubscriberInterface
         }
 
         // Internal bookkeeping, must not depend on the ACL privileges of whoever changed the transaction state
+        // @phpstan-ignore method.deprecated
         $event->getContext()->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($event): void {
             $criteria = (new Criteria([$event->getTransition()->getEntityId()]))
                 ->addAssociation('paymentMethod')
