@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Reporting\Subscriber;
 
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
+use Swag\PayPal\Reporting\DataAbstractionLayer\TransactionReport\TransactionReportCollection;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -25,6 +26,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 #[Package('checkout')]
 class OrderTransactionSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @param EntityRepository<TransactionReportCollection> $transactionReportRepository
+     * @param EntityRepository<OrderTransactionCollection> $orderTransactionRepository
+     */
     public function __construct(
         private readonly PaymentMethodDataRegistry $methodDataRegistry,
         private readonly EntityRepository $transactionReportRepository,
@@ -56,7 +61,7 @@ class OrderTransactionSubscriber implements EventSubscriberInterface
                 ->addAssociation('order.currency');
 
             $transaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
-            if (!$transaction instanceof OrderTransactionEntity) {
+            if ($transaction === null) {
                 return;
             }
 
