@@ -48,7 +48,7 @@ runs:
       continue-on-error: true
       with:
         scope: shopware
-        identity: ${{ github.event.repository.name }}
+        identity: SwagPayPal
 
     - name: Ignore audit
       if: ${{ inputs.shopware-version != 'trunk' }}
@@ -62,9 +62,9 @@ runs:
       shell: bash
       run: |
         REPOS='{
-            "${{ github.event.repository.name }}": {
+            "SwagPayPal": {
               "type": "path",
-              "url": "custom/plugins/${{ github.event.repository.name }}",
+              "url": "custom/plugins/SwagPayPal",
               "symlink": true
             }
         }'
@@ -123,7 +123,7 @@ runs:
     - uses: shopware/github-actions/setup-extension@main
       with:
         extension-zip: ${{ inputs.extension-zip }}
-        extensionName: ${{ github.event.repository.name }}
+        extensionName: SwagPayPal
         mysqlVersion: ${{ inputs.mysql-version }}
         shopwareVersion: ${{ inputs.shopware-version }}
         phpVersion: ${{ inputs.php-version }}
