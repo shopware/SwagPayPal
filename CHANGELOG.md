@@ -1,3 +1,60 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Added Canada to the countries where Pay Later is available (shopware/SwagPayPal#581)
+- Updated the payment amount limitations for P24
+- Fixes an issue, where setting a transaction to paid via an API integration without privileges for the PayPal turnover report failed and prevented flows on the paid state, e.g. after switching from a failed PayPal payment to prepayment (shopware/shopware#21245)
+
+# 8.12.4
+- Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
+- Fixes an issue, where PayPal accounts and cards were not saved for future purchases, if PayPal completed the vaulting asynchronously (shopware/SwagPayPal#845)
+- Fixes an issue, where refunds of legacy PayPal payments via the Admin API were still possible as order editor, although they require the order refund editor permission (shopware/SwagPayPal#530)
+
+# 8.12.3
+- Fixes an issue, where payments with saved cards and recurring card payments were processed using incomplete PayPal order details
+- Fixes an issue where updating from a custom plugin version could rerun migrations, overwrite existing PayPal configuration values, or fail because of legacy landing page settings
+- Fixes an issue, where Google Pay payments that required 3D Secure never completed due to blocking the authentication window with the Google Pay one
+
+# 8.12.2
+- Fixes an issue, where PayPal orders could not be placed when the `updated_at` column of the PayPal order transaction table was not nullable
+- Fixes an issue, where line item labels containing line breaks made the PayPal order creation fail for local payment methods like iDEAL, P24, EPS or Bancontact
+
+# 8.12.1
+- Fixes an issue, where the same PayPal order could be used for multiple Shopware orders.
+
+# 8.12.0
+- Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
+- Fixes an issue, where the Smart Payment Buttons failed silently when the terms and conditions were not accepted, by guiding the user to the invalid field
+- Fixes an issue, where the PayPal Express Checkout failed without customer feedback when shipping to a country that is not assigned to the sales channel (shopware/shopware#15067)
+- Fixes an issue, where PayPal Express Checkout in a stale offcanvas cart could call the PayPal API with an empty cart and fail without customer feedback (shopware/SwagPayPal#712)
+- Fixes an issue, where the Google Pay button was always displayed in English instead of the sales channel language (shopware/shopware#17804)
+- Fixes an issue, where card payments without 3D Secure data were rejected even when `ACDC_FORCE_3DS` was disabled (shopware/SwagPayPal#714)
+- Changes disabled "Enforce 3D Secure" to allow no 3DS challenge if not required
+
+# 8.11.4
+- Fixes an issue, where net prices could cause the express checkout with shipping callback enabled to fail
+
+# 8.11.3
+- Fixes an issue, where shipping cost discrepancies could cause the express checkout with shipping callback enabled to fail
+
+# 8.11.2
+- Fixes an issue, where the Express Checkout failed when the buyer changed the delivery country to one with rule-restricted shipping methods (shopware/shopware#16295).
+
+# 8.11.1
+- Fixes an issue, where declined PayPal payments were still shown as refundable in the Administration (shopware/SwagPayPal#547)
+- Fixes an issue, where subscription PayPal order creation did not use the subscription cart service and ACDC was available for subscriptions without wallet vaulting
+- Fixes an issue, where the express checkout shipping callback returned unsupported order fields
+
+# 8.11.0
+- Added setting to disable the shipping callback for express checkouts.
+- Fixes an issue, where the shiiping callback required the store-api to be exposed.
+- Fixes an issue, where PayPal order creation and express checkout flows did not use the taxed cart with tax provider processing
+- Fixes an issue, where PayPal webhooks with a `custom_id` payload that does not contain an `orderTransactionId` could trigger an undefined array key warning
+
+# 8.10.0
+- Added Austria to the countries where Pay Later is available
+
+# 8.9.2
+- Fixes an issue, where refunds where possible as order editor, whereas order refund editor should be prefered (shopware/SwagPayPal#556)
+
 # 8.9.1
 - Fixes an issue, where required cookies were not displayed in the banner even though PayPal scripts had been loaded (shopware/SwagPayPal#506)
 - Fixes an issue, where languages not supported by PayPal did not fall back to a supported language (shopware/shopware#13950)

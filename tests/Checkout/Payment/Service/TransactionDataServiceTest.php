@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Checkout\Payment\Service\OrderTransactionService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -43,6 +44,7 @@ class TransactionDataServiceTest extends TestCase
         $this->transactionDataService = new TransactionDataService(
             $this->transactionRepository,
             $this->credentialsUtil,
+            $this->createMock(OrderTransactionService::class),
         );
     }
 

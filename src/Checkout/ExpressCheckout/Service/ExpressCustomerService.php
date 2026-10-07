@@ -27,6 +27,7 @@ use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Exception\MissingCountryIdException;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\RestApi\V2\Api\Order;
 
@@ -158,21 +159,25 @@ class ExpressCustomerService
         if (!$paypal) {
             throw new MissingPayloadException($order->getId(), 'paymentSource.paypal');
         }
-        $purchaseUnit = $order->getPurchaseUnits()->first();
-        if ($purchaseUnit) {
-            $shipping = $purchaseUnit->getShipping();
+        $firstName = $paypal->getName()->getGivenName();
+        $lastName = $paypal->getName()->getSurname();
+        $address = $paypal->getAddress();
+
+        $shipping = $order->getPurchaseUnits()->first()?->getShipping();
+        if ($shipping !== null) {
             $address = $shipping->getAddress();
             $names = \explode(' ', $shipping->getName()->getFullName());
             $lastName = \array_pop($names);
             $firstName = \implode(' ', $names);
-        } else {
-            $address = $paypal->getAddress();
-            $firstName = $paypal->getName()->getGivenName();
-            $lastName = $paypal->getName()->getSurname();
         }
 
         $countryCode = $address->getCountryCode();
         $countryId = $this->getCountryId($countryCode, $context);
+
+        if (!$countryId) {
+            throw new MissingCountryIdException($order->getId(), $countryCode);
+        }
+
         $countryStateId = $this->getCountryStateId($countryId, $countryCode, $address->getAdminArea1(), $context->getContext());
         $phone = $paypal->getPhoneNumber();
 

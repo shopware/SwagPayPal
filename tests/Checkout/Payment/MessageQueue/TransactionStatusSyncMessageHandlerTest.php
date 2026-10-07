@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -23,6 +24,7 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 use Shopware\Core\System\StateMachine\StateMachineException;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessage;
 use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessageHandler;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -43,6 +45,8 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     private OrderResource&MockObject $orderResource;
 
+    private TransactionDataService&MockObject $transactionDataService;
+
     private LoggerInterface&MockObject $logger;
 
     private TransactionStatusSyncMessageHandler $handler;
@@ -52,12 +56,14 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         $this->orderTransactionRepository = $this->createMock(EntityRepository::class);
         $this->orderTransactionStateHandler = $this->createMock(OrderTransactionStateHandler::class);
         $this->orderResource = $this->createMock(OrderResource::class);
+        $this->transactionDataService = $this->createMock(TransactionDataService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->handler = new TransactionStatusSyncMessageHandler(
             $this->orderTransactionRepository,
             $this->orderTransactionStateHandler,
             $this->orderResource,
+            $this->transactionDataService,
             $this->logger,
         );
     }
@@ -65,15 +71,23 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
     /**
      * @dataProvider dataProviderInvokeWithAllMatchingStatus
      */
-    public function testInvokeWithAllMatchingStatus(string $intent, string $status, ?string $stateHandlerMethod): void
-    {
+    public function testInvokeWithAllMatchingStatus(
+        string $intent,
+        string $status,
+        ?string $stateHandlerMethod,
+        string $currentState = OrderTransactionStates::STATE_UNCONFIRMED,
+    ): void {
         $this->orderTransactionRepository
             ->expects(static::once())
             ->method('search')
             ->willReturnCallback(
-                function (Criteria $criteria, Context $context): EntitySearchResult {
+                function (Criteria $criteria, Context $context) use ($currentState): EntitySearchResult {
+                    $stateMachineState = new StateMachineStateEntity();
+                    $stateMachineState->setTechnicalName($currentState);
+
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
+                    $orderTransactionEntity->setStateMachineState($stateMachineState);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
                 }
@@ -94,6 +108,11 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willReturn($payPalOrder);
+
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setResourceId')
+            ->with($payPalOrder, 'transaction-id');
 
         $this->orderTransactionStateHandler
             ->expects($stateHandlerMethod ? static::once() : static::never())
@@ -117,7 +136,9 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         yield 'intent: capture, status: declined' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_DECLINED, 'fail'];
         yield 'intent: capture, status: failed' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_FAILED, 'fail'];
         yield 'intent: capture, status: partially refunded' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_PARTIALLY_REFUNDED, null];
-        yield 'intent: capture, status: pending' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_PENDING, null];
+        yield 'intent: capture, status: pending' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_PENDING, 'process'];
+        yield 'intent: capture, status: pending, already in progress' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_PENDING, null, OrderTransactionStates::STATE_IN_PROGRESS];
+        yield 'intent: capture, status: pending, already authorized' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_PENDING, null, OrderTransactionStates::STATE_AUTHORIZED];
         yield 'intent: capture, status: refunded' => [PaymentIntentV2::CAPTURE, PaymentStatusV2::ORDER_CAPTURE_REFUNDED, null];
 
         yield 'intent: authorize, status: captured' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_CAPTURED, 'paid'];
@@ -125,7 +146,9 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         yield 'intent: authorize, status: voided' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_VOIDED, 'cancel'];
         yield 'intent: authorize, status: denied' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_DENIED, 'fail'];
         yield 'intent: authorize, status: partially captured' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_PARTIALLY_CAPTURED, null];
-        yield 'intent: authorize, status: pending' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_PENDING, null];
+        yield 'intent: authorize, status: pending' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_PENDING, 'process'];
+        yield 'intent: authorize, status: pending, already in progress' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_PENDING, null, OrderTransactionStates::STATE_IN_PROGRESS];
+        yield 'intent: authorize, status: created, already authorized' => [PaymentIntentV2::AUTHORIZE, PaymentStatusV2::ORDER_AUTHORIZATION_CREATED, null, OrderTransactionStates::STATE_AUTHORIZED];
     }
 
     public function testInvokeThrowsStateMachineExceptionException(): void
@@ -158,6 +181,11 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willReturn($payPalOrder);
+
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setResourceId')
+            ->with($payPalOrder, 'transaction-id');
 
         $exception = StateMachineException::illegalStateTransition(
             'invalid-state',
@@ -320,7 +348,9 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
-                    $orderTransactionEntity->setStateMachineState(new StateMachineStateEntity());
+                    $stateMachineState = new StateMachineStateEntity();
+                    $stateMachineState->setTechnicalName(OrderTransactionStates::STATE_AUTHORIZED);
+                    $orderTransactionEntity->setStateMachineState($stateMachineState);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
                 }
@@ -340,6 +370,11 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
             ->method('get')
             ->with('paypal-order-id', 'sales-channel-id')
             ->willReturn($payPalOrder);
+
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setResourceId')
+            ->with($payPalOrder, 'transaction-id');
 
         $this->orderTransactionStateHandler
             ->expects(static::never())

@@ -32,6 +32,7 @@
 
     {% block swag_paypal_webhook_refresh_button %}
     <sw-button
+        v-tooltip="refreshTooltip"
         class="swag-paypal-webhook__refresh-button"
         variant=""
         :disabled="isLoading || isRefreshing || isFetchingStatus || !allowRefresh || !acl.can('swag_paypal.editor')"

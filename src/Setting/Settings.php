@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
 #[Package('checkout')]
@@ -42,6 +42,7 @@ final class Settings
     public const ECS_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonLanguageIso';
 
     public const ECS_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'ecsShowPayLater';
+    public const ECS_SHIPPING_CALLBACK_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'ecsShippingCallbackEnabled';
     public const SPB_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonColor';
     public const SPB_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonShape';
     public const SPB_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonLanguageIso';
@@ -84,7 +85,7 @@ final class Settings
         self::SANDBOX => false,
         self::INTENT => PaymentIntentV2::CAPTURE,
         self::SUBMIT_CART => true,
-        self::LANDING_PAGE => ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE,
+        self::LANDING_PAGE => ExperienceContext::LANDING_PAGE_TYPE_NO_PREFERENCE,
         self::SEND_ORDER_NUMBER => true,
         self::MERCHANT_LOCATION => self::MERCHANT_LOCATION_OTHER,
         self::ECS_DETAIL_ENABLED => true,
@@ -95,6 +96,7 @@ final class Settings
         self::ECS_BUTTON_COLOR => 'gold',
         self::ECS_BUTTON_SHAPE => 'sharp',
         self::ECS_SHOW_PAY_LATER => true,
+        self::ECS_SHIPPING_CALLBACK_ENABLED => true,
         self::SPB_CHECKOUT_ENABLED => true,
         self::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED => false,
         self::SPB_BUTTON_COLOR => 'gold',

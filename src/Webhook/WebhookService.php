@@ -34,6 +34,7 @@ class WebhookService implements WebhookServiceInterface
     public const STATUS_WEBHOOK_MISSING = 'missing';
     public const STATUS_WEBHOOK_INVALID = 'invalid';
     public const STATUS_WEBHOOK_VALID = 'valid';
+    public const STATUS_WEBHOOK_DISABLED = 'disabled';
 
     private WebhookResource $webhookResource;
 
@@ -60,6 +61,10 @@ class WebhookService implements WebhookServiceInterface
 
     public function getStatus(?string $salesChannelId): string
     {
+        if ($this->systemConfigService->getBool(Settings::IS_LOCAL_ENVIRONMENT, $salesChannelId)) {
+            return self::STATUS_WEBHOOK_DISABLED;
+        }
+
         $webhookId = $this->systemConfigService->getString(Settings::WEBHOOK_ID, $salesChannelId);
         if ($webhookId === '') {
             return self::STATUS_WEBHOOK_MISSING;

@@ -24,6 +24,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\TestDefaults;
+use Swag\PayPal\Checkout\Exception\MissingCountryIdException;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\Setting\Settings;
@@ -144,6 +145,17 @@ class ExpressCustomerServiceTest extends TestCase
 
         static::assertFalse($customer->getDoubleOptInRegistration());
         static::assertNull($customer->getDoubleOptInEmailSentDate());
+    }
+
+    public function testLoginWithCountryNotAssignedToSalesChannel(): void
+    {
+        $order = new Order();
+        $order->assign(GetOrderCapture::get());
+        $order->getPurchaseUnits()->first()?->getShipping()?->getAddress()->setCountryCode('XX');
+
+        $this->expectException(MissingCountryIdException::class);
+
+        $this->doLogin($order);
     }
 
     private function doLogin(Order $order): CustomerEntity

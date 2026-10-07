@@ -59,6 +59,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderDeclined;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderPending;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
@@ -293,6 +294,10 @@ class GuzzleClientMock implements ClientInterface
                 return GetOrderCaptureLiabilityShiftUnknown::get();
             }
 
+            if (\mb_substr($resourceUri, -17) === CaptureOrderPending::ID) {
+                return CaptureOrderPending::get();
+            }
+
             $orderCapture = GetOrderCapture::get();
             if (\mb_substr($resourceUri, -17) === GetOrderCapture::ID) {
                 return $orderCapture;
@@ -395,6 +400,10 @@ class GuzzleClientMock implements ClientInterface
 
         if (!isset($response)) {
             throw new \RuntimeException('No fixture defined for POST ' . $resourceUri);
+        }
+
+        if ($data) {
+            $this->data = \json_decode(\json_encode($data, \JSON_THROW_ON_ERROR), true, \JSON_THROW_ON_ERROR);
         }
 
         return $this->ensureValidJson($response);

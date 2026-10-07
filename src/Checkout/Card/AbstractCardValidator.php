@@ -42,7 +42,7 @@ abstract class AbstractCardValidator implements CardValidatorInterface
         $threeDSecure = $authenticationResult->getThreeDSecure();
 
         if ($threeDSecure === null) {
-            return false;
+            return true;
         }
 
         return \in_array(

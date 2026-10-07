@@ -101,6 +101,25 @@ export default Shopware.Component.wrapComponentConfig({
 
             return criteria;
         },
+
+        ecsShippingCallbackSettingDisabled(): boolean {
+            return this.renderSettingsDisabled || !!this.actualConfigData['SwagPayPal.settings.isLocalEnvironment'];
+        },
+
+        ecsShippingCallbackSettingTooltip(): { message: string; showOnDisabledElements?: boolean; disabled?: boolean } {
+            if (this.actualConfigData['SwagPayPal.settings.isLocalEnvironment']) {
+                return {
+                    message: this.$t('swag-paypal.settingForm.express.ecsShippingCallbackEnabled.tooltipDisabled'),
+                    showOnDisabledElements: true,
+                    disabled: false,
+                };
+            }
+
+            return {
+                message: '',
+                disabled: true,
+            };
+        },
     },
 
     watch: {

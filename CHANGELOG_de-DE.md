@@ -1,3 +1,60 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fügt Kanada zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist (shopware/SwagPayPal#581)
+- Aktualisiert die Zahlungsbetragsgrenzen für P24
+- Behebt ein Problem, bei dem das Setzen einer Transaktion auf "Bezahlt" über eine API-Integration ohne Berechtigungen für den PayPal-Umsatzbericht fehlschlug und Flows für den Status "Bezahlt" verhinderte, z. B. nach dem Wechsel von einer fehlgeschlagenen PayPal-Zahlung auf Vorkasse (shopware/shopware#21245)
+
+# 8.12.4
+- Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
+- Behebt ein Problem, bei dem PayPal-Konten und Karten nicht für zukünftige Käufe gespeichert wurden, wenn PayPal das Vaulting asynchron abschloss (shopware/SwagPayPal#845)
+- Behebt ein Problem, bei dem Rückerstattungen älterer PayPal-Zahlungen über die Admin-API weiterhin als Bestell-Editor möglich waren, obwohl dafür die Berechtigung des Rückerstattungs-Editors erforderlich ist (shopware/SwagPayPal#530)
+
+# 8.12.3
+- Behebt ein Problem, bei dem Zahlungen mit gespeicherten Karten und wiederkehrende Kartenzahlungen mit unvollständigen PayPal-Bestelldaten verarbeitet wurden
+- Behebt ein Problem, bei dem ein Update von einer benutzerdefinierten Plugin-Version Migrationen erneut ausführen, vorhandene PayPal-Konfigurationswerte überschreiben oder wegen veralteter Landing-Page-Einstellungen fehlschlagen konnte
+- Behebt ein Problem, bei dem Google Pay-Zahlungen, für die 3D Secure erforderlich war, nicht abgeschlossen wurden, da das Authentifizierungsfenster durch das Google Pay-Fenster überlagert wurde
+
+# 8.12.2
+- Behebt ein Problem, bei dem PayPal-Bestellungen nicht abgeschlossen werden konnten, wenn die `updated_at`-Spalte der PayPal-Bestelltransaktionstabelle keine NULL-Werte zuließ
+- Behebt ein Problem, bei dem Positionsbezeichnungen mit Zeilenumbrüchen die Erstellung der PayPal-Bestellung für lokale Zahlungsarten wie iDEAL, P24, EPS oder Bancontact fehlschlagen ließen
+
+# 8.12.1
+- Behebt ein Problem, bei dem dieselbe PayPal-Bestellung für mehrere Shopware-Bestellungen verwendet werden konnte.
+
+# 8.12.0
+- Behebt ein Problem, bei dem PayPal Express Checkout die Fehlermeldung nicht zuverlässig anzeigte, wenn die Checkout-Vorbereitung fehlschlug
+- Behebt ein Problem, bei dem die Smart Payment Buttons ohne sichtbare Rückmeldung fehlschlugen, wenn die AGB nicht akzeptiert wurden, indem der Nutzer nun zum betreffenden Feld geführt wird
+- Behebt ein Problem, bei dem der PayPal Express Checkout ohne Rückmeldung für den Kunden fehlschlug, wenn in ein Land geliefert werden sollte, das dem Verkaufskanal nicht zugeordnet ist (shopware/shopware#15067)
+- Behebt ein Problem, bei dem PayPal Express Checkout in einem veralteten Offcanvas-Warenkorb die PayPal-API mit leerem Warenkorb aufrufen konnte und ohne Rückmeldung für den Kunden fehlschlug (shopware/SwagPayPal#712)
+- Behebt ein Problem, bei dem der Google Pay Button immer auf Englisch statt in der Verkaufskanal-Sprache angezeigt wurde (shopware/shopware#17804)
+- Behebt ein Problem, bei dem Kartenzahlungen ohne 3D-Secure-Daten abgelehnt wurden, obwohl `ACDC_FORCE_3DS` deaktiviert war (shopware/SwagPayPal#714)
+- Deaktiviertes „3D Secure erzwingen” erlaubt nun, dass keine 3DS-Abfrage erfolgt, wenn sie nicht erforderlich ist
+
+# 8.11.4
+- Behebt ein Problem, bei dem Netto-Preise den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
+
+# 8.11.3
+- Behebt ein Problem, bei dem Versandkosten Diskrepanzen den Express Checkout mit aktivem Versand-Callback fehlschlagen lies
+
+# 8.11.2
+- Behebt ein Problem, bei dem der Express Checkout fehlschlug, wenn der Käufer das Lieferland zu einem mit regelbasierten Versandarten änderte (shopware/shopware#16295).
+
+# 8.11.1
+- Behebt ein Problem, bei dem abgelehnte PayPal-Zahlungen in der Administration weiterhin als erstattungsfaehig angezeigt wurden (shopware/SwagPayPal#547)
+- Behebt ein Problem, bei dem die PayPal-Bestellerstellung für Abonnements nicht den Subscription-Cart-Service verwendet hat und ACDC für Abonnements ohne Wallet-Vaulting verfügbar war
+- Behebt ein Problem, bei dem die Antwort des Versand-Callbacks im Express Checkout nicht unterstützte Bestellfelder enthielt
+
+# 8.11.0
+- Fügt eine Einstellung hinzu, um den Versand-Callback für Express-Checkouts zu deaktivieren
+- Behebt ein Problem, bei dem der Versand-Callback die Offenlegung der Store-API erforderte
+- Behebt ein Problem, bei dem die PayPal-Bestellerstellung und Express-Checkout-Flows nicht den besteuerten Warenkorb mit Tax-Provider-Verarbeitung verwendet haben
+- Behebt ein Problem, bei dem PayPal-Webhooks mit einem `custom_id`-Payload ohne `orderTransactionId` eine Warnung wegen eines undefinierten Array-Keys ausloesen konnten
+
+# 8.10.0
+- Fügt Österreich zu den Ländern hinzu, in denen „Später bezahlen“ verfügbar ist
+
+# 8.9.2
+- Behebt ein Problem, bei dem Rückerstattungen als Bestell-Editor möglich waren, obwohl der Rückerstattungs-Editor der Bestellung bevorzugt werden sollte (shopware/SwagPayPal#556)
+
 # 8.9.1
 - Behebt ein Problem, bei dem erforderliche Cookies nicht im Banner angezeigt wurden, obwohl PayPal-Skripte geladen wurden (shopware/SwagPayPal#506)
 - Behebt ein Problem, bei dem nicht von PayPal unterstützte Sprachen nicht auf eine unterstützte Sprache korrigiert wurden (shopware/shopware#13950)

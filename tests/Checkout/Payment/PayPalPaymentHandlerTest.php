@@ -68,6 +68,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentAuthorizeResp
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderPending;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
@@ -220,6 +221,31 @@ class PayPalPaymentHandlerTest extends TestCase
 An error occurred during the communication with PayPal
 The error "TEST" occurred with the following message: generalClientExceptionMessage');
         $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
+    }
+
+    public function testPayAndFinalizePendingCapture(): void
+    {
+        $settings = $this->getDefaultConfigData();
+        $handler = $this->createPayPalPaymentHandler($settings);
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext(
+            $this->getContainer(),
+            new PaymentMethodCollection()
+        );
+        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+        $response = $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
+        static::assertSame(CreateOrderCapture::APPROVE_URL, $response->getTargetUrl());
+
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
+
+        $handler->finalize(
+            $this->createPaymentTransactionStruct('some-order-id', $transactionId, null, $this->getContainer(), $salesChannelContext->getContext()),
+            new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => CaptureOrderPending::ID]),
+            $salesChannelContext
+        );
+
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
     }
 
     public function testPayWithEcs(): void
@@ -567,6 +593,15 @@ An error occurred during the communication with PayPal');
         $this->assertCustomFields(CaptureOrderCapture::CAPTURE_ID);
     }
 
+    public function testFinalizePendingCapture(): void
+    {
+        $request = new Request([
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => CaptureOrderPending::ID,
+        ]);
+        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_IN_PROGRESS);
+        $this->assertCustomFields(CaptureOrderPending::CAPTURE_ID);
+    }
+
     public function testFinalizePayPalOrderAuthorize(): void
     {
         $request = new Request([
@@ -684,6 +719,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
                 new TransactionDataService(
                     $this->orderTransactionRepo,
                     new CredentialsUtil($systemConfig),
+                    $this->createMock(\Swag\PayPal\Checkout\Payment\Service\OrderTransactionService::class),
                 ),
                 $this->createMock(VaultTokenService::class),
                 $logger

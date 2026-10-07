@@ -40,6 +40,7 @@ class OpenAPISchemaTest extends TestCase
         '\\' . PayPalController::class . '::expressPrepareCheckout',
         '\\' . PayPalController::class . '::expressCreateOrder',
         '\\' . PayPalController::class . '::expressPrepareCart',
+        '\\' . PayPalController::class . '::expressShippingCallback',
         '\\' . PayPalController::class . '::clearVault',
 
         // Decoration, covered by platform

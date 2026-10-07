@@ -215,16 +215,36 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
     }
 
     /**
-     * Triggers the form validation
+     * Triggers the form validation and, when invalid, guides the user to the offending field.
      * @param _
      * @param {{reject: Function, resolve: Function}} actions
      * @returns {*}
      */
     onClick(_, actions) {
-        if (!this.confirmOrderForm.checkValidity()) {
-            return actions.reject();
+        if (this.confirmOrderForm.checkValidity()) {
+            return actions.resolve();
         }
 
-        return actions.resolve();
+        this.focusFirstInvalidField();
+
+        return actions.reject();
+    }
+
+    /**
+     * Scrolls to and focuses the first invalid field of the confirm form to guide the user to it.
+     *
+     * The required checkboxes (terms, revocation) are associated with the form via the `form`
+     * attribute but live outside of it in the DOM, so they are read from `form.elements`.
+     */
+    focusFirstInvalidField() {
+        const field = Array.from(this.confirmOrderForm.elements)
+            .find((element) => !element.validity.valid);
+
+        if (!field) {
+            return;
+        }
+
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        field.focus();
     }
 }

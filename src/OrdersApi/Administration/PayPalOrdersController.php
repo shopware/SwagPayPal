@@ -212,7 +212,7 @@ class PayPalOrdersController extends AbstractController
             content: new OA\JsonContent(ref: Order\PurchaseUnit\Payments\Refund::class)
         )]
     )]
-    #[Route(path: '/api/paypal-v2/refund/{orderTransactionId}/{refundId}', name: 'api.paypal_v2.refund_details', defaults: ['_acl' => ['order.viewer']], methods: ['GET'])]
+    #[Route(path: '/api/paypal-v2/refund/{orderTransactionId}/{refundId}', name: 'api.paypal_v2.refund_details', defaults: ['_acl' => ['order_refund.viewer']], methods: ['GET'])]
     public function refundDetails(string $orderTransactionId, string $refundId, Context $context): JsonResponse
     {
         $refund = $this->refundResource->get(
@@ -267,7 +267,7 @@ class PayPalOrdersController extends AbstractController
             content: new OA\JsonContent(ref: Order\PurchaseUnit\Payments\Refund::class)
         )]
     )]
-    #[Route(path: '/api/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}', name: 'api.action.paypal_v2.refund_capture', defaults: ['_acl' => ['order.editor']], methods: ['POST'])]
+    #[Route(path: '/api/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}', name: 'api.action.paypal_v2.refund_capture', defaults: ['_acl' => ['order_refund.editor']], methods: ['POST'])]
     public function refundCapture(
         string $orderTransactionId,
         string $captureId,
