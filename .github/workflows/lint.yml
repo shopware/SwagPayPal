@@ -115,9 +115,15 @@ jobs:
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
 
+      # setup-extension re-checks out the plugin without persisted credentials,
+      # which breaks fetching from private repositories
       - name: Fetch SwagPayPal
         working-directory: custom/plugins/SwagPayPal
-        run: git fetch --unshallow origin
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh auth setup-git
+          git fetch --unshallow origin
 
       - name: Run bc-check
         working-directory: custom/plugins/SwagPayPal
