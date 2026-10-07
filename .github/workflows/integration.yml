@@ -48,7 +48,8 @@ jobs:
         uses: shopware/shopware-cli-action@v3
 
       - name: Validate extension
-        run: shopware-cli extension validate ${{ github.event.repository.name }}.zip --reporter github
+        # PHPStan needs a full Shopware installation around the plugin; it runs in lint.yml instead.
+        run: shopware-cli extension validate ${{ github.event.repository.name }}.zip --exclude phpstan --format github
 
   test-install-zip:
     needs: build-zip

@@ -144,14 +144,14 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'google
             await this.onApprove({ orderId });
 
             return { transactionState: 'SUCCESS' };
-        } catch (error: any) {
+        } catch (error) {
             this.onError(error);
 
             return {
                 transactionState: 'ERROR',
                 error: {
                     intent: 'PAYMENT_AUTHORIZATION',
-                    message: error?.message as string || 'TRANSACTION FAILED',
+                    message: (error as Error | undefined)?.message || 'TRANSACTION FAILED',
                     reason: 'OTHER_ERROR',
                 },
             };

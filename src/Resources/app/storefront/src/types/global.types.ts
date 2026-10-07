@@ -1,6 +1,10 @@
-import type PluginManager from 'src/plugin-system/plugin.manager';
 import type TPayPalPluginError from '../base/paypal-plugin.error';
-import type Plugin from 'src/plugin-system/plugin.class';
+
+// The extension validation rejects import declarations from src/plugin-system, type-only ones included
+/* eslint-disable @typescript-eslint/consistent-type-imports */
+type PluginClass = typeof import('src/plugin-system/plugin.class').default;
+type PluginManagerClass = typeof import('src/plugin-system/plugin.manager').default;
+/* eslint-enable @typescript-eslint/consistent-type-imports */
 
 declare global {
     type OmitReadonly<T> = { -readonly [P in keyof T]: OmitReadonly<T[P]> };
@@ -9,7 +13,7 @@ declare global {
 
     type PayPalPluginError = TPayPalPluginError;
 
-    type SwPlugin = Plugin;
+    type SwPlugin = InstanceType<PluginClass>;
 
     interface ApplePay {
         ApplePayError?: ApplePayError;
@@ -19,11 +23,14 @@ declare global {
     }
 
     interface Window extends ApplePay {
-        PluginManager: PluginManager&(typeof PluginManager);
+        PluginManager: InstanceType<PluginManagerClass>&PluginManagerClass;
+        PluginBaseClass: PluginClass;
     }
 }
 
 declare module '@paypal/paypal-js/types' {
+    // Declaration merging only works with an interface
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface PayPalNamespace extends PayPalCoreJS.Namespace {
     }
 }
