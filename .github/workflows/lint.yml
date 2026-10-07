@@ -20,6 +20,7 @@ jobs:
         - phpstan
         - ecs
         - validate-openapi-typescript
+        - bc-check
         - admin-eslint
         - admin-jest
         - storefront-eslint
@@ -71,17 +72,27 @@ jobs:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
-          path: custom/plugins/${{ github.event.repository.name }}
+          path: custom/plugins/SwagPayPal
 
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
 
+      # setup-extension re-checks out the plugin without persisted credentials,
+      # which breaks fetching from private repositories
       - name: Fetch SwagPayPal
-        working-directory: custom/plugins/${{ github.event.repository.name }}
-        run: git fetch --unshallow origin
+        working-directory: custom/plugins/SwagPayPal
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh auth setup-git
+          git fetch --unshallow origin
+
+      # The bc-checker of Shopware 6.5 reads the exclusions from the Shopware root instead of the working directory
+      - name: Use SwagPayPal bc-check exclusions
+        run: cp custom/plugins/SwagPayPal/.bc-exclude.php .bc-exclude.php
 
       - name: Run bc-check
-        working-directory: custom/plugins/${{ github.event.repository.name }}
+        working-directory: custom/plugins/SwagPayPal
         if: github.event_name == 'pull_request' && !contains(github.base_ref, '/feature/')
         run: composer bc-check -- --format=github-actions --from="origin/${{ github.base_ref }}"
 
