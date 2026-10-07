@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem PayPal Express Checkout die Fehlermeldung nicht zuverlässig anzeigte, wenn die Checkout-Vorbereitung fehlschlug
 - Aktualisiert die Zahlungsbetragsgrenzen für P24 und „Später bezahlen“ (shopware/SwagPayPal#581)
 - Behebt ein Problem, bei dem das Setzen einer Transaktion auf "Bezahlt" über eine API-Integration ohne Berechtigungen für den PayPal-Umsatzbericht fehlschlug und Flows für den Status "Bezahlt" verhinderte, z. B. nach dem Wechsel von einer fehlgeschlagenen PayPal-Zahlung auf Vorkasse (shopware/shopware#21245)
 
