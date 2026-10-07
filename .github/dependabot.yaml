@@ -43,16 +43,10 @@ updates:
         patterns:
           - '*'
     ignore:
-      # eslint is pinned to v9: eslint-plugin-import@2.32.0 (latest) peers eslint up to ^9 only,
-      # so eslint@10 / @eslint/js@10 cannot resolve. Drop once eslint-plugin-import supports v10.
-      - dependency-name: 'eslint'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@eslint/js'
-        update-types: ['version-update:semver-major']
-      # typescript is pinned to v5: typescript-eslint@8.71.0 (latest) peers typescript >=4.8.4 <6.1.0,
-      # so typescript@7 cannot resolve. Drop once typescript-eslint supports v7.
+      # typescript is capped below 6.1: typescript-eslint@8.71.1 (latest) peers typescript >=4.8.4 <6.1.0,
+      # so typescript@6.1+ / @7 cannot resolve. Drop once typescript-eslint supports newer versions.
       - dependency-name: 'typescript'
-        update-types: ['version-update:semver-major']
+        versions: ['>=6.1.0']
     labels:
       - 'dependencies'
       - 'javascript'
