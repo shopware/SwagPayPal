@@ -5,6 +5,8 @@
  * file that was distributed with this source code.
  */
 
+namespace Swag\PayPal\Test;
+
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\SecurityAdvisories;
