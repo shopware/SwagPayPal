@@ -30,7 +30,7 @@ jobs:
       - name: Build and validate zip
         uses: shopware/github-actions/build-zip@main
         with:
-          extensionName: ${{ github.event.repository.name }}
+          extensionName: SwagPayPal
 
   test-install-zip:
     needs: build-zip
@@ -42,7 +42,7 @@ jobs:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
-          path: custom/plugins/${{ github.event.repository.name }}
+          path: custom/plugins/SwagPayPal
 
       - name: Test install zip
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
@@ -69,7 +69,7 @@ jobs:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
-          path: custom/plugins/${{ github.event.repository.name }}
+          path: custom/plugins/SwagPayPal
 
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
@@ -82,5 +82,5 @@ jobs:
           shopware-version: ${{ matrix.PLATFORM_BRANCH }}
 
       - name: Run PHPUnit
-        working-directory: custom/plugins/${{ github.event.repository.name }}
+        working-directory: custom/plugins/SwagPayPal
         run: composer phpunit -- --coverage-cobertura cobertura.xml --coverage-text --only-summary-for-coverage-text

@@ -40,7 +40,7 @@ jobs:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
-          path: custom/plugins/${{ github.event.repository.name }}
+          path: custom/plugins/SwagPayPal
 
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
@@ -50,7 +50,7 @@ jobs:
           install-storefront: true
           shopware-version: ${{ matrix.PLATFORM_BRANCH }}
 
-      - run: composer -d custom/plugins/${{ github.event.repository.name }} run phpstan
+      - run: composer -d custom/plugins/SwagPayPal run phpstan
 
   php-cs-fixer:
     runs-on: ubuntu-latest
@@ -58,13 +58,13 @@ jobs:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
-          path: custom/plugins/${{ github.event.repository.name }}
+          path: custom/plugins/SwagPayPal
 
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
 
       - name: Run php-cs-fixer
-        run: composer -d custom/plugins/${{ github.event.repository.name }} run ecs
+        run: composer -d custom/plugins/SwagPayPal run ecs
 
   validate-openapi-typescript:
     runs-on: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
-          path: custom/plugins/${{ github.event.repository.name }}
+          path: custom/plugins/SwagPayPal
 
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
@@ -80,7 +80,7 @@ jobs:
           install-admin: true
           install-storefront: true
 
-      - working-directory: custom/plugins/${{ github.event.repository.name }}
+      - working-directory: custom/plugins/SwagPayPal
         run: |
           ${GITHUB_WORKSPACE}/bin/console bundle:dump
           composer init:admin
@@ -95,17 +95,17 @@ jobs:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
-          path: custom/plugins/${{ github.event.repository.name }}
+          path: custom/plugins/SwagPayPal
 
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
 
       - name: Fetch SwagPayPal
-        working-directory: custom/plugins/${{ github.event.repository.name }}
+        working-directory: custom/plugins/SwagPayPal
         run: git fetch --unshallow origin
 
       - name: Run bc-check
-        working-directory: custom/plugins/${{ github.event.repository.name }}
+        working-directory: custom/plugins/SwagPayPal
         if: github.event_name == 'pull_request' && !contains(github.base_ref, '/feature/')
         run: composer bc-check -- --format=github-actions --from="origin/${{ github.base_ref }}"
 
@@ -115,7 +115,7 @@ jobs:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
-          path: custom/plugins/${{ github.event.repository.name }}
+          path: custom/plugins/SwagPayPal
 
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
@@ -125,7 +125,7 @@ jobs:
       - name: Run ESLint
         env:
           ADMIN_PATH: ${{ github.workspace }}/src/Administration/Resources/app/administration
-        working-directory: custom/plugins/${{ github.event.repository.name }}
+        working-directory: custom/plugins/SwagPayPal
         run: composer run lint:admin:ci
 
   admin-jest:
@@ -134,7 +134,7 @@ jobs:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
-          path: custom/plugins/${{ github.event.repository.name }}
+          path: custom/plugins/SwagPayPal
 
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
@@ -144,7 +144,7 @@ jobs:
       - name: Run ESLint
         env:
           ADMIN_PATH: ${{ github.workspace }}/src/Administration/Resources/app/administration
-        working-directory: custom/plugins/${{ github.event.repository.name }}
+        working-directory: custom/plugins/SwagPayPal
         run: composer run jest
 
   storefront-eslint:
@@ -153,7 +153,7 @@ jobs:
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
-          path: custom/plugins/${{ github.event.repository.name }}
+          path: custom/plugins/SwagPayPal
 
       - name: Setup SwagPayPal
         uses: ./custom/plugins/SwagPayPal/.github/actions/setup-paypal
@@ -164,5 +164,5 @@ jobs:
       - name: Run ESLint
         env:
           STOREFRONT_PATH: ${{ github.workspace }}/src/Storefront/Resources/app/storefront
-        working-directory: custom/plugins/${{ github.event.repository.name }}
+        working-directory: custom/plugins/SwagPayPal
         run: composer lint:storefront:ci
