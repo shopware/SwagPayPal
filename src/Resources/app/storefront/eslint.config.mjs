@@ -1,6 +1,7 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import importPlugin from 'eslint-plugin-import';
+import { importX, createNodeResolver } from 'eslint-plugin-import-x';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import stylistic from '@stylistic/eslint-plugin';
 
 export default tseslint.config(
@@ -11,7 +12,7 @@ export default tseslint.config(
         ignores: ['**/*.d.ts'],
 
         plugins: {
-            import: importPlugin,
+            'import-x': importX,
             stylistic,
         },
 
@@ -28,21 +29,21 @@ export default tseslint.config(
         },
 
         settings: {
-            'import/resolver': {
-                node: {},
-                typescript: {
+            'import-x/resolver-next': [
+                createNodeResolver(),
+                createTypeScriptImportResolver({
                     project: './tsconfig.json',
-                },
-            },
+                }),
+            ],
         },
 
         rules: {
             'no-console': ['error', { allow: ['warn', 'error'] }],
 
             /* import rules */
-            'import/no-extraneous-dependencies': 'off',
-            'import/no-useless-path-segments': 'off',
-            'import/extensions': [
+            'import-x/no-extraneous-dependencies': 'off',
+            'import-x/no-useless-path-segments': 'off',
+            'import-x/extensions': [
                 'error',
                 'ignorePackages',
                 { js: 'never', ts: 'never' },

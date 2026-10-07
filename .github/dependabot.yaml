@@ -42,6 +42,11 @@ updates:
       all:
         patterns:
           - '*'
+    ignore:
+      # typescript is capped below 6.1: typescript-eslint@8.71.1 (latest) peers typescript >=4.8.4 <6.1.0,
+      # so typescript@6.1+ / @7 cannot resolve. Drop once typescript-eslint supports newer versions.
+      - dependency-name: 'typescript'
+        versions: ['>=6.1.0']
     labels:
       - 'dependencies'
       - 'javascript'
