@@ -18,7 +18,6 @@ parameters:
         -   tests
     excludePaths:
         -   src/Resources
-        -   src/DevOps/Rector
 
     bootstrapFiles:
         - tests/PHPStanBootstrap.php
