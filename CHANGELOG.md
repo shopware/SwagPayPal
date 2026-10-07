@@ -1,5 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
 - Fixes an issue, where the phone number entered for Pay Upon Invoice was stored on the shipping instead of the billing address, if both differed, causing the payment to fail (shopware/SwagPayPal#857)
+- Fixes an issue, where setting a transaction to paid via an API integration without privileges for the PayPal turnover report failed and prevented flows on the paid state, e.g. after switching from a failed PayPal payment to prepayment (shopware/shopware#21245)
 
 # 10.8.5
 - Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state

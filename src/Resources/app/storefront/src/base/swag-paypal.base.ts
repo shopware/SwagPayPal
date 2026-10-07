@@ -1,7 +1,8 @@
-import Plugin from 'src/plugin-system/plugin.class';
 import DependencyHelper from '../helper/dependency.helper';
 import PayPalPluginError from './paypal-plugin.error';
 import { RequestHelper } from '../helper/request.helper';
+
+const Plugin = window.PluginBaseClass;
 
 export interface SwagPaypalBaseOptions {
     clientId: string | null;

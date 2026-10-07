@@ -8,7 +8,7 @@
 
     display: grid;
     grid-template-columns: 1fr auto;
-    grid-row-gap: 18px;
+    row-gap: 18px;
 
     &__email {
         line-height: 24px;

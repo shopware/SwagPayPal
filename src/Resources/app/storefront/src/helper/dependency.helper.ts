@@ -159,7 +159,7 @@ export default class DependencyHelper {
     /**
      * @deprecated tag:v11.0.0 - can be removed
      */
-    private static _hashObject(object: Record<keyof any, any>) {
+    private static _hashObject(object: object) {
         let hash = 0;
         for (const char of JSON.stringify(object)) {
             hash = (hash << 5) - hash + char.charCodeAt(0);

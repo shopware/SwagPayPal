@@ -1,6 +1,7 @@
-import Plugin from 'src/plugin-system/plugin.class';
 import HttpClient from 'src/service/http-client.service';
 import LoadingIndicator from 'src/utility/loading-indicator/loading-indicator.util';
+
+const Plugin = window.PluginBaseClass;
 
 export default class SwagPaypalPuiPolling extends Plugin {
     static options = {

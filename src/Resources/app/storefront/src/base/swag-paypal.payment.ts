@@ -3,8 +3,7 @@ import type { SwagPaypalBaseOptions } from './swag-paypal.base';
 import { ElementHelper } from '../helper/element.helper';
 import PayPalPluginError from './paypal-plugin.error';
 
-export interface SwagPaypalPaymentOptions extends SwagPaypalBaseOptions {
-}
+export type SwagPaypalPaymentOptions = SwagPaypalBaseOptions;
 
 export interface SubmissionData<FS extends PayPalCoreJS.FundingSource> {
     paymentSession: PayPalCoreJS.PaymentSession<FS>;
