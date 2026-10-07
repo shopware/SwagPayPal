@@ -7,11 +7,16 @@ on:
       - 6.[0-9]*.x
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     if: github.repository == 'shopware/SwagPayPal'
     permissions:
+      contents: read
       id-token: write
     steps:
       - name: Checkout
