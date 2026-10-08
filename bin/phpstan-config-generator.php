@@ -24,12 +24,13 @@ $shopwareVersion = $shopwareVersion === Kernel::SHOPWARE_FALLBACK_VERSION ? 'tru
 echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
 
 $versionedConfig = \sprintf('%s/phpstan-%s.neon.dist', $pluginRootPath, $shopwareVersion);
+$skipVersionedConfig = (bool) ($_SERVER['PHPSTAN_SKIP_VERSIONED_CONFIG'] ?? false);
 
 $phpstanConfig = [
     'includes' => \array_merge(
         [$kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/extension.neon'],
         [$kernel->getProjectDir() . '/src/Core/DevOps/StaticAnalyze/PHPStan/rules.neon'],
-        \file_exists($versionedConfig) ? [$versionedConfig] : [],
+        \file_exists($versionedConfig) && !$skipVersionedConfig ? [$versionedConfig] : [],
         $plugins->has('Shopware\\Commercial\\SwagCommercial') ? [] : [$pluginRootPath . '/phpstan-baseline.commercial.neon'],
         $plugins->has('Swag\\CmsExtensions\\SwagCmsExtensions') ? [] : [$pluginRootPath . '/phpstan-baseline.cms-extensions.neon'],
     ),

@@ -50,7 +50,49 @@ jobs:
           install-storefront: true
           shopware-version: ${{ matrix.PLATFORM_BRANCH }}
 
-      - run: composer -d custom/plugins/SwagPayPal run phpstan
+      - id: phpstan
+        run: composer -d custom/plugins/SwagPayPal run phpstan
+
+      # Baselines can only be generated with the matching Shopware version.
+      # Regenerate the relevant one from scratch and print the diff, so it can be applied without a local setup.
+      - name: Print baseline diff
+        if: failure() && steps.phpstan.outcome == 'failure'
+        working-directory: custom/plugins/SwagPayPal
+        env:
+          PLATFORM_BRANCH: ${{ matrix.PLATFORM_BRANCH }}
+        run: |
+          baseline="phpstan-${PLATFORM_BRANCH#v}.neon.dist"
+          if [ -f "$baseline" ]; then
+            # versioned baseline, e.g. phpstan-6.6.0.0.neon.dist
+            export PHPSTAN_SKIP_VERSIONED_CONFIG=1
+          else
+            baseline="phpstan-baseline.neon"
+            sed -i "/- $baseline/d" phpstan.neon.dist
+          fi
+
+          php bin/phpstan-config-generator.php > /dev/null
+          php ../../../vendor/bin/phpstan analyze --no-progress --generate-baseline=phpstan-generated.neon --allow-empty-baseline || true
+          mv phpstan-generated.neon "$baseline"
+
+          git diff --no-color -- "$baseline" | tee baseline.diff
+          {
+            echo "### Updated \`$baseline\` (${PLATFORM_BRANCH})"
+            echo 'Apply with `git apply baseline.diff` (download the artifact) or copy the diff below.'
+            echo '<details><summary>Show diff</summary>'
+            echo
+            echo '```diff'
+            cat baseline.diff
+            echo '```'
+            echo '</details>'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload baseline diff
+        if: failure() && steps.phpstan.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpstan-baseline-diff-${{ matrix.PLATFORM_BRANCH }}
+          path: custom/plugins/SwagPayPal/baseline.diff
+          if-no-files-found: ignore
 
   php-cs-fixer:
     runs-on: ubuntu-latest
