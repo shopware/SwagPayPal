@@ -29,9 +29,10 @@ $shopwareVersion = $shopwareVersion === Kernel::SHOPWARE_FALLBACK_VERSION ? 'tru
 echo \sprintf('Identified shopware version "%s"' . \PHP_EOL, $shopwareVersion);
 
 $versionedConfig = \sprintf('%s/phpstan-%s.neon.dist', $pluginRootPath, $shopwareVersion);
+$skipVersionedConfig = (bool) ($_SERVER['PHPSTAN_SKIP_VERSIONED_CONFIG'] ?? false);
 
 $phpstanConfig = [
-    'includes' => \file_exists($versionedConfig) ? [$versionedConfig] : [],
+    'includes' => \file_exists($versionedConfig) && !$skipVersionedConfig ? [$versionedConfig] : [],
     'parameters' => [
         'symfony' => ['containerXmlPath' => \sprintf('%s/%s%sDebugContainer.xml', $kernel->getCacheDir(), str_replace('\\', '_', $kernel::class), \ucfirst($kernel->getEnvironment()))],
         'reportUnmatchedIgnoredErrors' => !((bool) $_SERVER['CI']),
