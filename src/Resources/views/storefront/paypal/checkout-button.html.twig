@@ -91,11 +91,10 @@
 
     {% elseif sepaData and sepaData.paymentMethodId is same as(context.paymentMethod.id) %}
 
-        {# @TODO - Replace with v6 equivalent #}
         {% block swag_paypal_sepa %}
         <div
-            data-swag-paypal-sepa="true"
-            data-swag-paypal-sepa-options="{{ sepaData|json_encode }}"
+            data-swag-paypal-checkout-sepa="true"
+            data-swag-paypal-checkout-sepa-options="{{ sepaData|json_encode }}"
         >
         </div>
         {% endblock %}
