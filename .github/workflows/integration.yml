@@ -24,10 +24,11 @@ jobs:
             allowed-skips: '["acceptance"]'
 
   build-zip:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     outputs:
       artifact-url: ${{ steps.upload.outputs.artifact-url }}
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Build and validate zip
         uses: shopware/github-actions/build-zip@main
         with:
@@ -35,8 +36,9 @@ jobs:
 
   validate:
     needs: build-zip
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Download zip
         uses: actions/download-artifact@v8
         with:
@@ -53,11 +55,12 @@ jobs:
 
   test-install-zip:
     needs: build-zip
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     strategy:
       matrix:
         PLATFORM_BRANCH: ["v6.7.0.0", "trunk"]
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
@@ -70,7 +73,7 @@ jobs:
           shopware-version: ${{ matrix.PLATFORM_BRANCH }}
 
   phpunit:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     strategy:
       matrix:
         MYSQL_IMAGE: ["mysql:8.0"]
@@ -103,6 +106,7 @@ jobs:
         ports:
           - "6379:6379"
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:

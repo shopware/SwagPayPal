@@ -32,13 +32,14 @@ jobs:
             jobs: ${{ toJSON(needs) }}
 
   phpstan:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     strategy:
       matrix:
         PHP_VERSION: ["8.2", "8.4"] # only min and max
         PLATFORM_BRANCH: ["v6.7.0.0", "trunk"]
       fail-fast: false
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
@@ -108,8 +109,9 @@ jobs:
           if-no-files-found: ignore
 
   php-cs-fixer:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
@@ -122,8 +124,9 @@ jobs:
         run: composer -d custom/plugins/SwagPayPal run ecs
 
   validate-openapi-typescript:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
@@ -147,8 +150,9 @@ jobs:
           git diff --exit-code src/Resources/app/administration/src/types/openapi.d.ts || (echo "Please run 'composer openapi:generate' to update openapi.d.ts" && exit 1)
 
   bc-check:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
@@ -173,8 +177,9 @@ jobs:
         run: composer bc-check -- --format=github-actions --from="origin/${{ github.base_ref }}"
 
   admin-eslint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
@@ -192,8 +197,9 @@ jobs:
         run: composer run lint:admin:ci
 
   admin-jest:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
@@ -211,8 +217,9 @@ jobs:
         run: composer run jest
 
   storefront-eslint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Checkout SwagPayPal
         uses: actions/checkout@v4
         with:
@@ -231,8 +238,9 @@ jobs:
         run: composer lint:storefront:ci
 
   acceptance-eslint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     steps:
+      - uses: runs-on/action@dfae4d98c5537a0dc7bbb7e6b9211f30ba240f6d # v2.4.0
       - name: Checkout SwagPayPal
         uses: actions/checkout@v5
         with:
