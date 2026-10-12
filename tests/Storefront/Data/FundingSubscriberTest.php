@@ -104,7 +104,6 @@ class FundingSubscriberTest extends TestCase
                 $router,
                 $this->requestStack,
                 new MethodEligibilityStateService($this->createMock(SalesChannelContextPersister::class)),
-                $paymentMethodUtil,
             ),
             $paymentMethodUtil,
         );
@@ -226,7 +225,6 @@ class FundingSubscriberTest extends TestCase
                 $this->router,
                 $this->requestStack,
                 new MethodEligibilityStateService($this->createMock(SalesChannelContextPersister::class)),
-                $paymentMethodUtil,
             ),
             $paymentMethodUtil,
         );

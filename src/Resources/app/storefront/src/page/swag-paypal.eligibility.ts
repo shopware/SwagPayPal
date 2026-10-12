@@ -23,9 +23,11 @@ export default class SwagPayPalEligibility extends SwagPaypalBase {
         methodEligibilityUrl: '',
     };
 
+    /**
+     * SEPA is missing on purpose, as SDK v6 has no eligibility check for it
+     */
     fundingSources: Record<string, PayPalCoreJS.FundingSource> = {
         CARD: 'advanced_cards',
-        SEPA: 'sepa',
         VENMO: 'venmo',
         PAYLATER: 'paylater',
     };
