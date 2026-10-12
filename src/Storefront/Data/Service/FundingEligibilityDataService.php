@@ -33,7 +33,6 @@ class FundingEligibilityDataService extends AbstractScriptDataService
         RouterInterface $router,
         private readonly RequestStack $requestStack,
         private readonly MethodEligibilityStateService $methodEligibilityStateService,
-        private readonly PaymentMethodUtil $paymentMethodUtil,
     ) {
         parent::__construct($localeCodeProvider, $systemConfigService, $credentialsUtil, $router);
     }
@@ -44,8 +43,6 @@ class FundingEligibilityDataService extends AbstractScriptDataService
             ...parent::getBaseData($context),
             'methodEligibilityUrl' => $this->router->generate('frontend.paypal.payment-method-eligibility'),
             'filteredPaymentMethods' => $this->getFilteredPaymentMethods($context),
-            // @deprecated tag:v11.0.0 - Will be removed, SEPA eligibility will be checked via SDK v6.
-            'sepaActive' => $this->paymentMethodUtil->isPaymentMethodActive($context, [SEPAHandler::class]),
         ]);
     }
 

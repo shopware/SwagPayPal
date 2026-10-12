@@ -8,7 +8,7 @@ declare global {
         export type Namespace = SDK.PayPalV6Namespace;
 
         export type Components = SDK.Components;
-        export type FundingSource = SDK.FundingSource;
+        export type FundingSource = SDK.FundingSource | 'sepa';
 
         export type SdkInstance<T extends readonly Components[]> = SDK.SdkInstance<T>;
 
@@ -30,6 +30,7 @@ declare global {
             | T extends 'googlepay' ? SDK.GooglePayOneTimePaymentSession : never
             | T extends 'applepay' ? SDK.ApplePayOneTimePaymentSession : never
             | T extends 'advanced_cards' ? SDK.CardFieldsOneTimePaymentSession : never
+            | T extends 'sepa' ? SDK.LPMOneTimePaymentSession : never
         ;
 
         export type PageTypes = SDK.PageTypes;
