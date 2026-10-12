@@ -8,7 +8,7 @@ declare global {
         export type Namespace = SDK.PayPalV6Namespace;
 
         export type Components = SDK.Components;
-        export type FundingSource = SDK.FundingSource | 'sepa';
+        export type FundingSource = SDK.FundingSource;
 
         export type SdkInstance<T extends readonly Components[]> = SDK.SdkInstance<T>;
 
