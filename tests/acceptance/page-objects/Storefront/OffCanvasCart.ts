@@ -1,6 +1,7 @@
 import { StorefrontPageObjects } from '@shopware-ag/acceptance-test-suite';
 import type { Page, Locator } from '@shopware-ag/acceptance-test-suite';
-import { PayPalExpressButton } from 'types/PayPalTypes';
+import type { PayPalExpressButton } from 'types/PayPalTypes';
+import { paypalExpressButton } from './PayPalExpressButton';
 
 export class OffCanvasCart extends StorefrontPageObjects.OffCanvasCart {
     public readonly offcanvasContainer: Locator;
@@ -11,14 +12,7 @@ export class OffCanvasCart extends StorefrontPageObjects.OffCanvasCart {
         this.offcanvasContainer = page.locator('.offcanvas-cart-actions');
     }
 
-    public async paypalButton(type: PayPalExpressButton): Promise<Locator> {
-        const iframeLocator = this.offcanvasContainer
-            .locator(`iframe.component-frame[title*="PayPal-${type}"]`)
-            .first();
-
-        const iframe = await iframeLocator.elementHandle();
-        const frame = await iframe?.contentFrame();
-        if (!frame) throw new Error('PayPal frame not available');
-        return frame.getByRole('link');
+    public paypalButton(type: PayPalExpressButton): Promise<Locator> {
+        return paypalExpressButton(this.offcanvasContainer, type);
     }
 }

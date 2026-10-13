@@ -89,21 +89,15 @@ test('SEC-09 Zettle webhook with a bad signature is rejected', async ({
 }) => {
     const product = await TestDataService.createBasicProduct({ stock: 4 });
     const channel = await OpenZettleSalesChannel()();
+    const body = {
+        eventName: 'InventoryBalanceChanged',
+        messageUuid: 'sec-09-message',
+        organizationUuid: 'sec-09-organization',
+        payload: '{}',
+        timestamp: '2020-01-01T00:00:00.000Z',
+    };
 
-    try {
-        const body = {
-            eventName: 'InventoryBalanceChanged',
-            messageUuid: 'sec-09-message',
-            organizationUuid: 'sec-09-organization',
-            payload: '{}',
-            timestamp: '2020-01-01T00:00:00.000Z',
-        };
-
-        expect(await ExecuteZettleWebhook(channel.salesChannelId, body)()).toBe(401);
-        expect(await ExecuteZettleWebhook(channel.salesChannelId, body, 'not-a-valid-signature')()).toBe(401);
-        expect(await ReadProductStock(product.id)()).toBe(4);
-    }
-    finally {
-        await channel.close();
-    }
+    expect(await ExecuteZettleWebhook(channel.salesChannelId, body)()).toBe(401);
+    expect(await ExecuteZettleWebhook(channel.salesChannelId, body, 'not-a-valid-signature')()).toBe(401);
+    expect(await ReadProductStock(product.id)()).toBe(4);
 });
