@@ -93,7 +93,7 @@ class PayPalExpressCheckoutDataService extends AbstractScriptDataService
             'addProductToCart' => $addProductToCart,
             'contextSwitchUrl' => $this->router->generate('frontend.paypal.express.prepare_cart'),
             'payPalPaymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
-            'createOrderUrl' => $this->router->generate('frontend.paypal.express.create_order'),
+            'createOrderUrl' => $this->router->generate('frontend.paypal.express.create_order', $addProductToCart ? ['addProductToCart' => 1] : []),
             'prepareCheckoutUrl' => $this->router->generate('frontend.paypal.express.prepare_checkout'),
             'checkoutConfirmUrl' => $this->router->generate(
                 'frontend.checkout.confirm.page',

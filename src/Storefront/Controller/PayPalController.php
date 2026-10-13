@@ -158,10 +158,15 @@ class PayPalController extends StorefrontController
     #[Route(path: '/paypal/express/create-order', name: 'frontend.paypal.express.create_order', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
     public function expressCreateOrder(Request $request, SalesChannelContext $context): TokenResponse
     {
-        // Express approves in the popup, so these are only used when leaving PayPal by a link or redirect
-        $cartUrl = $this->router->generate('frontend.checkout.cart.page', [], UrlGeneratorInterface::ABSOLUTE_URL);
-        $request->request->set(AbstractCreateOrderRoute::RETURN_URL, $cartUrl);
-        $request->request->set(AbstractCreateOrderRoute::CANCEL_URL, $cartUrl);
+        // Express approves in the popup, so these are only used when leaving PayPal by a link or redirect.
+        // Same targets as the popup's `cancelRedirectUrl`
+        $cancelUrl = $this->router->generate(
+            $request->query->getBoolean('addProductToCart') ? 'frontend.checkout.cart.page' : 'frontend.checkout.register.page',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL,
+        );
+        $request->request->set(AbstractCreateOrderRoute::RETURN_URL, $cancelUrl);
+        $request->request->set(AbstractCreateOrderRoute::CANCEL_URL, $cancelUrl);
 
         return $this->expressCreateOrderRoute->createPayPalOrder($request, $context);
     }

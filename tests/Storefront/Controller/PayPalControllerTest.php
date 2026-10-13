@@ -80,6 +80,7 @@ class PayPalControllerTest extends TestCase
             ->willReturnMap([
                 ['frontend.paypal.restore_context', ['token' => 'return-token'], UrlGeneratorInterface::ABSOLUTE_URL, 'https://example.test/paypal/restore-context/return-token'],
                 ['frontend.checkout.cart.page', [], UrlGeneratorInterface::ABSOLUTE_URL, 'https://example.test/checkout/cart'],
+                ['frontend.checkout.register.page', [], UrlGeneratorInterface::ABSOLUTE_URL, 'https://example.test/checkout/register'],
             ]);
         $this->logHandler = new TestHandler();
         $this->systemConfigService = new SystemConfigServiceMock();
@@ -143,18 +144,27 @@ class PayPalControllerTest extends TestCase
         $this->controller->createOrder($this->generateSalesChannelContext(), $request);
     }
 
-    public function testExpressCreateOrderAddsCartUrls(): void
+    #[DataProvider('dataProviderExpressCancelUrl')]
+    public function testExpressCreateOrderAddsCancelUrl(bool $addProductToCart, string $expectedUrl): void
     {
+        $request = new Request($addProductToCart ? ['addProductToCart' => '1'] : []);
+
         $this->expressCreateOrderRoute
             ->expects($this->once())
             ->method('createPayPalOrder')
-            ->with(static::callback(static function (Request $request): bool {
-                return $request->request->get(CreateOrderRoute::RETURN_URL) === 'https://example.test/checkout/cart'
-                    && $request->request->get(CreateOrderRoute::CANCEL_URL) === 'https://example.test/checkout/cart';
+            ->with(static::callback(static function (Request $request) use ($expectedUrl): bool {
+                return $request->request->get(CreateOrderRoute::RETURN_URL) === $expectedUrl
+                    && $request->request->get(CreateOrderRoute::CANCEL_URL) === $expectedUrl;
             }), static::isInstanceOf(SalesChannelContext::class))
             ->willReturn(new TokenResponse('paypal-order-id'));
 
-        $this->controller->expressCreateOrder(new Request(), $this->generateSalesChannelContext());
+        $this->controller->expressCreateOrder($request, $this->generateSalesChannelContext());
+    }
+
+    public static function dataProviderExpressCancelUrl(): \Generator
+    {
+        yield 'product added to cart' => [true, 'https://example.test/checkout/cart'];
+        yield 'existing cart' => [false, 'https://example.test/checkout/register'];
     }
 
     public function testOnHandleErrorWithTranslatableErrorCodeAddsFlash(): void
