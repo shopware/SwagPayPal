@@ -1,5 +1,4 @@
 import { test as base, expect } from '@shopware-ag/acceptance-test-suite';
-import type { PayPalTestDataService } from '@services/PayPalTestDataService';
 
 const POS_SALES_CHANNEL_TYPE_ID = '1ce0868f406d47d98cfe4b281e62f099';
 
@@ -14,7 +13,6 @@ export const OpenZettleSalesChannel = base.extend<FixtureTypes>({
                 const salesChannel = IdProvider.getIdPair();
                 const posChannelId = IdProvider.getIdPair().uuid;
                 const storefront = TestDataService.defaultSalesChannel;
-                const paypalData = TestDataService as PayPalTestDataService;
                 const name = `${TestDataService.namePrefix}SEC-09 POS-${salesChannel.id}${TestDataService.nameSuffix}`;
 
                 const created = await AdminApiContext.post('sales-channel', {
@@ -50,9 +48,7 @@ export const OpenZettleSalesChannel = base.extend<FixtureTypes>({
                     },
                 });
                 expect(posChannel.ok()).toBeTruthy();
-                // Deleted before the sales channel. The POS row restricts that delete.
-                paypalData.addPayPalCreatedRecord('swag_paypal_pos_sales_channel', posChannelId);
-
+                // The sales channel delete cascades to this row. Deleting the row itself is restricted while the channel exists.
                 return {
                     salesChannelId: salesChannel.uuid,
                 };

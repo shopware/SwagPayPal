@@ -10,7 +10,7 @@ export class OrderDetail extends AdminPageObjects.OrderDetail {
     constructor(page: Page, instanceMeta: FixtureTypes['InstanceMeta']) {
         super(page, instanceMeta);
 
-        this.payPalTab = page.getByRole('link', { name: 'PayPal' });
+        this.payPalTab = page.getByRole('tab', { name: 'PayPal', exact: true });
         this.payPalRefundButton = page.getByRole('button', { name: 'Create a new refund' });
         this.payPalRefundConfirmButton = page.getByRole('dialog', { name: 'New refund' }).getByRole('button', { name: 'Execute' });
         this.payPalRefundSuccess = page.getByText('Your refund was successful.');
