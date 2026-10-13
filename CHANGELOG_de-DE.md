@@ -2,6 +2,7 @@
 - Behebt ein Problem, bei dem PayPal Express Checkout die Fehlermeldung nicht zuverlässig anzeigte, wenn die Checkout-Vorbereitung fehlschlug
 - Behebt ein Problem, bei dem die für Rechnungskauf eingegebene Telefonnummer bei abweichender Liefer- und Rechnungsadresse an der Lieferadresse statt an der Rechnungsadresse gespeichert wurde und die Zahlung dadurch fehlschlug (shopware/SwagPayPal#857)
 - Behebt ein Problem, bei dem das Setzen einer Transaktion auf "Bezahlt" über eine API-Integration ohne Berechtigungen für den PayPal-Umsatzbericht fehlschlug und Flows für den Status "Bezahlt" verhinderte, z. B. nach dem Wechsel von einer fehlgeschlagenen PayPal-Zahlung auf Vorkasse (shopware/shopware#21245)
+- Behebt ein Problem, bei dem der Link "Abbrechen und zurück zum Shop" auf der PayPal-Seite im PayPal Express Checkout auf `example.com` verwies (shopware/shopware#21430)
 
 # 10.8.5
 - Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
