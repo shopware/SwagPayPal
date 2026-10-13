@@ -54,6 +54,8 @@ class PayPalControllerTest extends TestCase
 {
     private AbstractCreateOrderRoute&MockObject $createOrderRoute;
 
+    private AbstractExpressCreateOrderRoute&MockObject $expressCreateOrderRoute;
+
     private RouterInterface&MockObject $router;
 
     private ReturnTokenService&MockObject $returnTokenService;
@@ -67,6 +69,7 @@ class PayPalControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->createOrderRoute = $this->createMock(AbstractCreateOrderRoute::class);
+        $this->expressCreateOrderRoute = $this->createMock(AbstractExpressCreateOrderRoute::class);
         $this->returnTokenService = $this->createMock(ReturnTokenService::class);
         $this->returnTokenService
             ->method('generate')
@@ -74,8 +77,11 @@ class PayPalControllerTest extends TestCase
         $this->router = $this->createMock(RouterInterface::class);
         $this->router
             ->method('generate')
-            ->with('frontend.paypal.restore_context', ['token' => 'return-token'], UrlGeneratorInterface::ABSOLUTE_URL)
-            ->willReturn('https://example.test/paypal/restore-context/return-token');
+            ->willReturnMap([
+                ['frontend.paypal.restore_context', ['token' => 'return-token'], UrlGeneratorInterface::ABSOLUTE_URL, 'https://example.test/paypal/restore-context/return-token'],
+                ['frontend.checkout.cart.page', [], UrlGeneratorInterface::ABSOLUTE_URL, 'https://example.test/checkout/cart'],
+                ['frontend.checkout.register.page', [], UrlGeneratorInterface::ABSOLUTE_URL, 'https://example.test/checkout/register'],
+            ]);
         $this->logHandler = new TestHandler();
         $this->systemConfigService = new SystemConfigServiceMock();
 
@@ -86,7 +92,7 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(AbstractMethodEligibilityRoute::class),
                 $this->createMock(AbstractPUIPaymentInstructionsRoute::class),
                 $this->createMock(AbstractExpressPrepareCheckoutRoute::class),
-                $this->createMock(AbstractExpressCreateOrderRoute::class),
+                $this->expressCreateOrderRoute,
                 $this->createMock(AbstractExpressShippingCallbackRoute::class),
                 $this->createMock(AbstractContextSwitchRoute::class),
                 $this->createMock(AbstractCartDeleteRoute::class),
@@ -136,6 +142,29 @@ class PayPalControllerTest extends TestCase
             ->willReturn(new TokenResponse('paypal-order-id'));
 
         $this->controller->createOrder($this->generateSalesChannelContext(), $request);
+    }
+
+    #[DataProvider('dataProviderExpressCancelUrl')]
+    public function testExpressCreateOrderAddsCancelUrl(bool $addProductToCart, string $expectedUrl): void
+    {
+        $request = new Request($addProductToCart ? ['addProductToCart' => '1'] : []);
+
+        $this->expressCreateOrderRoute
+            ->expects($this->once())
+            ->method('createPayPalOrder')
+            ->with(static::callback(static function (Request $request) use ($expectedUrl): bool {
+                return $request->request->get(CreateOrderRoute::RETURN_URL) === $expectedUrl
+                    && $request->request->get(CreateOrderRoute::CANCEL_URL) === $expectedUrl;
+            }), static::isInstanceOf(SalesChannelContext::class))
+            ->willReturn(new TokenResponse('paypal-order-id'));
+
+        $this->controller->expressCreateOrder($request, $this->generateSalesChannelContext());
+    }
+
+    public static function dataProviderExpressCancelUrl(): \Generator
+    {
+        yield 'product added to cart' => [true, 'https://example.test/checkout/cart'];
+        yield 'existing cart' => [false, 'https://example.test/checkout/register'];
     }
 
     public function testOnHandleErrorWithTranslatableErrorCodeAddsFlash(): void
