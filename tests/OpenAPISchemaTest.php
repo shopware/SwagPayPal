@@ -96,7 +96,7 @@ class OpenAPISchemaTest extends TestCase
             $failures[] = $record->level->getName() . ': ' . $record->message;
         }
 
-        static::assertEmpty($failures, \implode(\PHP_EOL, $failures));
+        static::assertCount(0, $failures, \implode(\PHP_EOL, $failures));
     }
 
     public function testRouteSchemas(): void
@@ -144,7 +144,7 @@ class OpenAPISchemaTest extends TestCase
             }
         }
 
-        static::assertEmpty($failures, \implode(\PHP_EOL, $failures));
+        static::assertCount(0, $failures, \implode(\PHP_EOL, $failures));
     }
 
     public function testAllRoutesHaveSchemas(): void
@@ -171,7 +171,7 @@ class OpenAPISchemaTest extends TestCase
             }
         }
 
-        static::assertEmpty($failures, \implode(\PHP_EOL, $failures));
+        static::assertCount(0, $failures, \implode(\PHP_EOL, $failures));
     }
 
     private function ignorableRecord(LogRecord $record): bool

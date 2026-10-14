@@ -81,7 +81,7 @@ class ProductContextFactoryTestProductSync extends AbstractTestProductSync
         $defectiveMedia = new MediaEntity();
         $defectiveMedia->setId(self::IMAGE_MEDIA_ID_EXISTING);
         static::assertNull($productContext->checkForMediaUrl($defectiveMedia));
-        static::assertEmpty($productContext->getMediaRequests());
+        static::assertCount(0, $productContext->getMediaRequests());
     }
 
     public function testCheckForUploadedMedia(): void
@@ -94,7 +94,7 @@ class ProductContextFactoryTestProductSync extends AbstractTestProductSync
         $existingMedia->setFileExtension('jpg');
         $existingMedia->setFileName('filename');
         static::assertSame(self::IMAGE_URL, $productContext->checkForMediaUrl($existingMedia));
-        static::assertEmpty($productContext->getMediaRequests());
+        static::assertCount(0, $productContext->getMediaRequests());
     }
 
     public function testCheckForNewMedia(): void
@@ -148,7 +148,7 @@ class ProductContextFactoryTestProductSync extends AbstractTestProductSync
 
         $productContext->removeProduct($productEntity);
         $productContextFactory->commit($productContext);
-        static::assertEmpty($posProductRepoMock->getCollection());
+        static::assertCount(0, $posProductRepoMock->getCollection());
     }
 
     private function createProductEntity(): SalesChannelProductEntity

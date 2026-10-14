@@ -573,8 +573,6 @@ class ACDCHandlerTest extends TestCase
 
     public function testFinalizeFallbackButton(): void
     {
-        $paypalOrderId = 'paypalOrderId';
-
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
         $context = Context::createDefaultContext();
         $order = new OrderEntity();

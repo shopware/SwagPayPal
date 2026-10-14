@@ -27,7 +27,7 @@ class ProductGroupingTest extends TestCase
         $grouping = new ProductGrouping($parentProduct);
         static::assertSame($parentProduct, $grouping->getIdentifyingEntity());
         static::assertSame($parentProduct->getId(), $grouping->getIdentifyingId());
-        static::assertEmpty($grouping->getVariantEntities());
+        static::assertCount(0, $grouping->getVariantEntities());
 
         $productOne = $this->createProduct($parentProduct->getId());
         $grouping = new ProductGrouping($productOne);

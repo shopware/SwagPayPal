@@ -107,11 +107,6 @@ parameters:
             message: '#Call to method buildFilters\(\) of deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface:#'
             path: src/Pos/Sync/ProductSelection.php
 
-        - # 6.8 deprecation - kept for 6.7.0.0 compatibility
-            identifier: classConstant.deprecatedInterface
-            message: '#Access to constant on deprecated interface Shopware\\Core\\Content\\ProductStream\\Service\\ProductStreamBuilderInterface:#'
-            path: tests/Pos/Sync/Product/ProductSelectionTestProductSync.php
-
         - # Shopware trunk classifies these plugin tests as non-Unit by namespace
             identifier: shopware.unexpectedTestCovers
 
@@ -134,14 +129,6 @@ parameters:
                 - tests/Checkout/Method/ACDCHandlerTest.php
                 - tests/Checkout/Method/VenmoHandlerTest.php
 
-        - # 6.8 deprecation - reason:exception-change - Will throw \Shopware\Core\Framework\Util\UtilException instead of \Doctrine\DBAL\Exception\TableNotFoundException
-            identifier: method.deprecated
-            message: '#Call to deprecated method columnExists\(\) of class .*\\MigrationStep#'
-            paths:
-                - src/Migration/Migration1706111604AddCustomerIdToVault.php
-                - src/Migration/Migration1675420139AddManagerDataToRun.php
-                - src/Migration/Migration1626082072AddStatusAndMessageCountToRun.php
-
         - # Only name change
           identifier: method.deprecated
           message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
@@ -160,9 +147,7 @@ parameters:
         - # swagger-php 6.4 deprecation - Generator::isDefault() moved to OpenApi\Undefined::isDefault()
             identifier: staticMethod.deprecated
             message: '#Call to deprecated method isDefault\(\) of class OpenApi\\Generator#'
-            paths:
-                - src/DevOps/OpenApi
-                - tests/OpenAPISchemaTest.php
+            path: src/DevOps/OpenApi
 
         - # swagger-php 6.4 deprecation - Generator::UNDEFINED moved to OpenApi\Undefined::UNDEFINED
             identifier: classConstant.deprecated
@@ -172,9 +157,7 @@ parameters:
         - # swagger-php 6.4 makes OpenApi\Context non-nullable; the nullsafe operator is still required on 6.7.0.0
             identifier: nullsafe.neverNull
             message: '#Using nullsafe (property access|method call) on non-nullable type OpenApi\\Context#'
-            paths:
-                - src/DevOps/OpenApi
-                - tests/OpenAPISchemaTest.php
+            path: tests/OpenAPISchemaTest.php
 
 rules:
     # Shopware core rules

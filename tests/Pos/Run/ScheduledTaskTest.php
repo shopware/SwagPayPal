@@ -53,7 +53,7 @@ class ScheduledTaskTest extends TestCase
 
         $taskHandler = new CompleteSyncTaskHandler($scheduledTaskRepository, new NullLogger(), $salesChannelRepoMock, $completeTask);
 
-        static::assertEmpty($runRepository->getCollection());
+        static::assertCount(0, $runRepository->getCollection());
 
         $taskHandler->run();
 
@@ -78,7 +78,7 @@ class ScheduledTaskTest extends TestCase
 
         $taskHandler = new InventorySyncTaskHandler($scheduledTaskRepository, new NullLogger(), $salesChannelRepoMock, $inventoryTask);
 
-        static::assertEmpty($runRepository->getCollection());
+        static::assertCount(0, $runRepository->getCollection());
 
         $taskHandler->run();
 

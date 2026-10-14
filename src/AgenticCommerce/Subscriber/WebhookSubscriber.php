@@ -36,7 +36,7 @@ class WebhookSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly EntityRepository $salesChannelRepository,
         private readonly HoneyWebhookService $webhookService,
-        private readonly EntityRepository $notificationRepository, // @phpstan-ignore parameter.deprecatedClass, property.deprecatedClass
+        private readonly EntityRepository $notificationRepository,
     ) {
     }
 

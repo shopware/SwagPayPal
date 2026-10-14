@@ -346,7 +346,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
 
         $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
-        static::assertNotEmpty($paypalOrderItems);
+        static::assertNotSame([], $paypalOrderItems);
         static::assertSame('0.00', $paypalOrderItems[0]->getUnitAmount()->getValue());
     }
 
@@ -364,7 +364,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
 
         $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
-        static::assertNotEmpty($paypalOrderItems);
+        static::assertNotSame([], $paypalOrderItems);
         static::assertSame(0, \array_keys($paypalOrderItems)[0], 'First array key of the PayPal items array must be 0.');
     }
 
@@ -382,7 +382,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $order = $this->getBuilder()->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
         $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
-        static::assertNotEmpty($paypalOrderItems);
+        static::assertNotSame([], $paypalOrderItems);
         $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magn';
         static::assertSame($expectedItemName, $paypalOrderItems[0]->getName());
     }
@@ -401,7 +401,7 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $order = $this->getBuilder()->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag());
         $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
-        static::assertNotEmpty($paypalOrderItems);
+        static::assertNotSame([], $paypalOrderItems);
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
         static::assertSame($expectedItemSku, $paypalOrderItems[0]->getSku());
     }

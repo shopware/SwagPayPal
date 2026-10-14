@@ -36,7 +36,7 @@ class DefaultRouteScopeTest extends TestCase
             $reflectionClass = new \ReflectionClass($class);
             $attributes = $reflectionClass->getAttributes(Route::class);
 
-            static::assertNotEmpty($attributes, \sprintf('No Route attribute found for class %s', $class));
+            static::assertNotCount(0, $attributes, \sprintf('No Route attribute found for class %s', $class));
 
             /** @var Route $routeAttribute */
             $routeAttribute = $attributes[0]->newInstance();
