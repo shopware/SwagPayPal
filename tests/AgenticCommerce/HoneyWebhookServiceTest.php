@@ -153,7 +153,7 @@ class HoneyWebhookServiceTest extends TestCase
                 static::assertSame('https://example.com/', $jwt['storeUrl']);
                 static::assertSame('DE', $jwt['country']);
                 static::assertSame('EUR', $jwt['currency']);
-                static::assertEmpty(array_diff(['DE', 'UK'], $jwt['shippingCountries']));
+                static::assertCount(0, array_diff(['DE', 'UK'], $jwt['shippingCountries']));
                 static::assertSame('SomeMerchantId', $jwt['paypalMerchantId']);
                 static::assertSame('019980f9426c716baa53befcd0879fb4', $jwt['shopwareMerchantId']);
                 static::assertSame('https://example.com/test/path/export', $jwt['catalogDownloadUrl']);
@@ -219,7 +219,7 @@ class HoneyWebhookServiceTest extends TestCase
                 static::assertSame('https://example.com/', $jwt['storeUrl']);
                 static::assertSame('DE', $jwt['country']);
                 static::assertSame('EUR', $jwt['currency']);
-                static::assertEmpty(array_diff(['DE', 'UK'], $jwt['shippingCountries']));
+                static::assertCount(0, array_diff(['DE', 'UK'], $jwt['shippingCountries']));
                 static::assertSame('SomeMerchantId', $jwt['paypalMerchantId']);
                 static::assertSame($salesChannel->getId(), $jwt['shopwareMerchantId']);
                 static::assertSame('https://example.com/test/path/export', $jwt['catalogDownloadUrl']);

@@ -97,7 +97,7 @@ class CartValidatorTest extends TestCase
 
         $this->validator->validate($cart, $errors, $context);
 
-        static::assertEmpty($errors->getElements());
+        static::assertCount(0, $errors->getElements());
     }
 
     public function testValidateWithCartWithValueZero(): void
@@ -139,7 +139,7 @@ class CartValidatorTest extends TestCase
 
         $this->validator->validate($cart, $errors, $context);
 
-        static::assertEmpty($errors->getElements());
+        static::assertCount(0, $errors->getElements());
     }
 
     public function testValidateWithNormalCart(): void
@@ -150,7 +150,7 @@ class CartValidatorTest extends TestCase
 
         $this->validator->validate($cart, $errors, $context);
 
-        static::assertEmpty($errors->getElements());
+        static::assertCount(0, $errors->getElements());
     }
 
     public function testValidateWithInvalidCredentials(): void

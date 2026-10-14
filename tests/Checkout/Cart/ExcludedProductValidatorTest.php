@@ -162,7 +162,7 @@ class ExcludedProductValidatorTest extends TestCase
             $this->registerUser()
         )->getEntities();
         static::assertInstanceOf(SalesChannelProductCollection::class, $products);
-        static::assertNotEmpty($products);
+        static::assertCount(1, $products);
 
         // the searched variant is excluded, whenever it is excluded itself or through its parent
         foreach ($products as $product) {
@@ -191,7 +191,7 @@ class ExcludedProductValidatorTest extends TestCase
             new Criteria([$this->idsCollection->get('variant')]),
             $this->registerUser()
         )->getEntities();
-        static::assertNotEmpty($products);
+        static::assertCount(1, $products);
 
         foreach ($products as $product) {
             static::assertFalse($product->hasExtension(ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL));

@@ -115,7 +115,7 @@ class InstallmentBannerSubscriberTest extends TestCase
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
-        static::assertEmpty($event->getPage()->getExtensions());
+        static::assertCount(0, $event->getPage()->getExtensions());
     }
 
     public function testAddInstallmentBannerInvalidSettings(): void
@@ -128,7 +128,7 @@ class InstallmentBannerSubscriberTest extends TestCase
             Settings::CLIENT_SECRET => null,
         ])->addInstallmentBanner($event);
 
-        static::assertEmpty($event->getPage()->getExtensions());
+        static::assertCount(0, $event->getPage()->getExtensions());
     }
 
     public function testAddInstallmentBannerCheckoutCartDisabled(): void
@@ -177,7 +177,7 @@ class InstallmentBannerSubscriberTest extends TestCase
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
-        static::assertEmpty($event->getPage()->getExtensions());
+        static::assertCount(0, $event->getPage()->getExtensions());
     }
 
     public function testAddInstallmentBannerOffCanvasCartDisabled(): void
@@ -232,7 +232,7 @@ class InstallmentBannerSubscriberTest extends TestCase
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
-        static::assertEmpty($event->getPage()->getExtensions());
+        static::assertCount(0, $event->getPage()->getExtensions());
     }
 
     public function testAddInstallmentBannerProductPageWithAdvancedPrices(): void
@@ -256,7 +256,7 @@ class InstallmentBannerSubscriberTest extends TestCase
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBannerPagelet($event);
 
-        static::assertEmpty($event->getPagelet()->getExtensions());
+        static::assertCount(0, $event->getPagelet()->getExtensions());
     }
 
     public function testAddInstallmentBannerFooterInvalidSettings(): void
@@ -269,7 +269,7 @@ class InstallmentBannerSubscriberTest extends TestCase
             Settings::CLIENT_SECRET => null,
         ])->addInstallmentBannerPagelet($event);
 
-        static::assertEmpty($event->getPagelet()->getExtensions());
+        static::assertCount(0, $event->getPagelet()->getExtensions());
     }
 
     public function testAddInstallmentBannerFooterDisabled(): void
@@ -322,25 +322,25 @@ class InstallmentBannerSubscriberTest extends TestCase
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
-        static::assertEmpty($event->getPage()->getExtensions());
+        static::assertCount(0, $event->getPage()->getExtensions());
 
         $event = $this->createOffCanvasCartPageLoadedEvent(price: 0.50);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
-        static::assertEmpty($event->getPage()->getExtensions());
+        static::assertCount(0, $event->getPage()->getExtensions());
 
         $event = $this->createCheckoutConfirmPageLoadedEvent(price: 0.50);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
-        static::assertEmpty($event->getPage()->getExtensions());
+        static::assertCount(0, $event->getPage()->getExtensions());
 
         $event = $this->createProductPageLoadedEvent(price: 0.50);
 
         $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
-        static::assertEmpty($event->getPage()->getExtensions());
+        static::assertCount(0, $event->getPage()->getExtensions());
     }
 
     private function assertBannerData(Struct $page, float $price): void

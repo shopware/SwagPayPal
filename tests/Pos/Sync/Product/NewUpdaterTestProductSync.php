@@ -104,7 +104,7 @@ class NewUpdaterTestProductSync extends AbstractTestProductSync
         $updater->update($this->productGroupingCollection, $this->productContext);
 
         static::assertCount(1, $this->productContext->getProductChanges());
-        static::assertEmpty($this->productContext->getProductChanges()[0]['checksum']);
+        static::assertSame('0', $this->productContext->getProductChanges()[0]['checksum']);
         static::assertCount(0, $this->productContext->getProductRemovals());
     }
 

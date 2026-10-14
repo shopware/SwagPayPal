@@ -50,7 +50,7 @@ class LogCleanerTest extends TestCase
 
         $logCleaner->clearLog(TestDefaults::SALES_CHANNEL, $context);
 
-        static::assertEmpty($runRepository->getCollection());
+        static::assertCount(0, $runRepository->getCollection());
     }
 
     private function createLogHistory(): RunRepoMock
