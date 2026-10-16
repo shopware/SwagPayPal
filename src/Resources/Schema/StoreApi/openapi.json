@@ -15,11 +15,11 @@
                             "schema": {
                                 "properties": {
                                     "returnUrl": {
-                                        "description": "Return URL for the order experience context",
+                                        "description": "Return URL for the order experience context. Must be sent together with `cancelUrl`, otherwise both are ignored",
                                         "type": "string"
                                     },
                                     "cancelUrl": {
-                                        "description": "Cancel URL for the order experience context",
+                                        "description": "Cancel URL for the order experience context. Must be sent together with `returnUrl`, otherwise both are ignored",
                                         "type": "string"
                                     }
                                 },
@@ -219,11 +219,11 @@
                                         "type": "string"
                                     },
                                     "returnUrl": {
-                                        "description": "Return URL for the order experience context",
+                                        "description": "Return URL for the order experience context. Must be sent together with `cancelUrl`, otherwise both are ignored",
                                         "type": "string"
                                     },
                                     "cancelUrl": {
-                                        "description": "Cancel URL for the order experience context",
+                                        "description": "Cancel URL for the order experience context. Must be sent together with `returnUrl`, otherwise both are ignored",
                                         "type": "string"
                                     }
                                 },

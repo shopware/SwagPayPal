@@ -62,12 +62,12 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
             new OA\Property(
                 property: AbstractCreateOrderRoute::RETURN_URL,
-                description: 'Return URL for the order experience context',
+                description: 'Return URL for the order experience context. Must be sent together with `cancelUrl`, otherwise both are ignored',
                 type: 'string',
             ),
             new OA\Property(
                 property: AbstractCreateOrderRoute::CANCEL_URL,
-                description: 'Cancel URL for the order experience context',
+                description: 'Cancel URL for the order experience context. Must be sent together with `returnUrl`, otherwise both are ignored',
                 type: 'string',
             ),
         ])),
