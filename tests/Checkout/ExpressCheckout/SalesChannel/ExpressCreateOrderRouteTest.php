@@ -23,6 +23,7 @@ use Swag\PayPal\Checkout\Exception\EmptyCartException;
 use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -120,6 +121,29 @@ class ExpressCreateOrderRouteTest extends TestCase
         $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
         static::assertNotNull($experienceContext);
         static::assertNotNull($experienceContext->getOrderUpdateCallbackConfig());
+    }
+
+    public function testCreatePaymentUsesRequestReturnUrls(): void
+    {
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
+
+        $response = $this->createRoute()->createPayPalOrder(new Request([], [
+            AbstractCreateOrderRoute::RETURN_URL => 'https://example.test/paypal/return',
+            AbstractCreateOrderRoute::CANCEL_URL => 'https://example.test/paypal/cancel',
+        ]), $salesChannelContext);
+
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        static::assertSame(CreateOrderCapture::ID, $response->getToken());
+
+        $request = $this->getClient()->getLast();
+        static::assertNotNull($request);
+
+        $order = (new Order())->assign($request->getRequestBody() ?? []);
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertSame('https://example.test/paypal/return', $experienceContext->getReturnUrl());
+        static::assertSame('https://example.test/paypal/cancel', $experienceContext->getCancelUrl());
     }
 
     public function testCreateWithLocalEnvironmentActive(): void
