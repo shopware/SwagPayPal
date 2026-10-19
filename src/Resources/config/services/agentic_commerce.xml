@@ -100,7 +100,7 @@
             <argument type="service" id="salutation.repository"/>
             <argument type="service" id="customer_group.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory"/>
-            <argument type="service" id="Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\LineItemFactoryHandler\PromotionLineItemFactory"/>
         </service>
 
         <service id="Swag\PayPal\AgenticCommerce\Subscriber\ProductFilterSubscriber">
