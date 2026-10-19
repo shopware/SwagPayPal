@@ -47,7 +47,7 @@ class ShopwareCartTransformer
         private readonly SalesChannelRepository $countryRepository,
         private readonly EntityRepository $salutationRepository,
         private readonly EntityRepository $groupRepository,
-        private readonly LineItemFactoryInterface $lineItemFactory,
+        private readonly LineItemFactoryInterface $productLineItemFactory,
         private readonly LineItemFactoryInterface $promotionLineItemFactory,
     ) {
     }
@@ -89,7 +89,7 @@ class ShopwareCartTransformer
     {
         $lineItems = [];
         foreach ($payPalCart->getItems() as $item) {
-            $lineItems[] = $this->lineItemFactory->create(['id' => $item->getVariantId(), 'quantity' => $item->getQuantity()], $salesChannelContext);
+            $lineItems[] = $this->productLineItemFactory->create(['id' => $item->getVariantId(), 'quantity' => $item->getQuantity()], $salesChannelContext);
         }
 
         if ($payPalCart->isset('coupons')) {

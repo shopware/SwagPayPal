@@ -138,8 +138,8 @@ class ShopwareCartTransformerTest extends TestCase
         $salesChannelContext = $this->createMock(SalesChannelContext::class);
 
         $itemId = Uuid::randomHex();
-        $itemFactory = $this->createMock(ProductLineItemFactory::class);
-        $itemFactory
+        $productFactory = $this->createMock(ProductLineItemFactory::class);
+        $productFactory
             ->method('create')
             ->with(['id' => $itemId, 'quantity' => 2])
             ->willReturn(new LineItem($itemId, LineItem::PRODUCT_LINE_ITEM_TYPE, $itemId, 2));
@@ -156,7 +156,7 @@ class ShopwareCartTransformerTest extends TestCase
             $this->createMock(SalesChannelRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
-            $itemFactory,
+            $productFactory,
             $promotionFactory,
         );
 
