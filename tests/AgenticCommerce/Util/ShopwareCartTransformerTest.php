@@ -11,7 +11,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\ProductLineItemFactory;
-use Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder;
+use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\PromotionLineItemFactory;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -78,7 +78,7 @@ class ShopwareCartTransformerTest extends TestCase
             $repository,
             $repository,
             $this->createMock(ProductLineItemFactory::class),
-            $this->createMock(PromotionItemBuilder::class),
+            $this->createMock(PromotionLineItemFactory::class),
         );
 
         $customerData = $transformer->extractCustomerData((new PayPalCart())->assign(self::requestCustomerData()), $overallRandomId, $this->createMock(SalesChannelContext::class));
@@ -127,7 +127,7 @@ class ShopwareCartTransformerTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(ProductLineItemFactory::class),
-            $this->createMock(PromotionItemBuilder::class),
+            $this->createMock(PromotionLineItemFactory::class),
         );
 
         $transformer->extractCustomerData((new PayPalCart())->assign(self::requestCustomerData()), Uuid::randomHex(), $this->createMock(SalesChannelContext::class));
@@ -135,19 +135,29 @@ class ShopwareCartTransformerTest extends TestCase
 
     public function testGetLineItems(): void
     {
+        $salesChannelContext = $this->createMock(SalesChannelContext::class);
+
         $itemId = Uuid::randomHex();
-        $itemFactory = $this->createMock(ProductLineItemFactory::class);
-        $itemFactory
+        $productFactory = $this->createMock(ProductLineItemFactory::class);
+        $productFactory
             ->method('create')
             ->with(['id' => $itemId, 'quantity' => 2])
             ->willReturn(new LineItem($itemId, LineItem::PRODUCT_LINE_ITEM_TYPE, $itemId, 2));
+
+        $promotionId = Uuid::randomHex();
+        $promotionFactory = $this->createMock(PromotionLineItemFactory::class);
+        $promotionFactory
+            ->expects($this->once())
+            ->method('create')
+            ->with(['referencedId' => 'some-code'], $salesChannelContext)
+            ->willReturn(new LineItem($promotionId, LineItem::PROMOTION_LINE_ITEM_TYPE, 'some-code'));
 
         $transformer = new ShopwareCartTransformer(
             $this->createMock(SalesChannelRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
-            $itemFactory,
-            new PromotionItemBuilder(),
+            $productFactory,
+            $promotionFactory,
         );
 
         $data = [
@@ -159,17 +169,15 @@ class ShopwareCartTransformerTest extends TestCase
             ],
         ];
 
-        $lineItems = $transformer->getLineItems((new PayPalCart())->assign($data), $this->createMock(SalesChannelContext::class));
+        $lineItems = $transformer->getLineItems((new PayPalCart())->assign($data), $salesChannelContext);
         static::assertCount(2, $lineItems);
 
         static::assertSame($itemId, $lineItems[0]->getId());
         static::assertSame(2, $lineItems[0]->getQuantity());
         static::assertSame(LineItem::PRODUCT_LINE_ITEM_TYPE, $lineItems[0]->getType());
 
-        $key = PromotionItemBuilder::PLACEHOLDER_PREFIX . 'some-code';
-        static::assertSame(Uuid::fromStringToHex($key), $lineItems[1]->getId());
+        static::assertSame($promotionId, $lineItems[1]->getId());
         static::assertSame('some-code', $lineItems[1]->getReferencedId());
-        static::assertSame(1, $lineItems[1]->getQuantity());
         static::assertSame(LineItem::PROMOTION_LINE_ITEM_TYPE, $lineItems[1]->getType());
     }
 

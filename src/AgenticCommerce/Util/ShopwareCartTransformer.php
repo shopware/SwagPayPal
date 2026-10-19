@@ -10,7 +10,6 @@ namespace Swag\PayPal\AgenticCommerce\Util;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItemFactoryHandler\LineItemFactoryInterface;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
-use Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -48,8 +47,8 @@ class ShopwareCartTransformer
         private readonly SalesChannelRepository $countryRepository,
         private readonly EntityRepository $salutationRepository,
         private readonly EntityRepository $groupRepository,
-        private readonly LineItemFactoryInterface $lineItemFactory,
-        private readonly PromotionItemBuilder $promotionItemBuilder,
+        private readonly LineItemFactoryInterface $productLineItemFactory,
+        private readonly LineItemFactoryInterface $promotionLineItemFactory,
     ) {
     }
 
@@ -90,11 +89,11 @@ class ShopwareCartTransformer
     {
         $lineItems = [];
         foreach ($payPalCart->getItems() as $item) {
-            $lineItems[] = $this->lineItemFactory->create(['id' => $item->getVariantId(), 'quantity' => $item->getQuantity()], $salesChannelContext);
+            $lineItems[] = $this->productLineItemFactory->create(['id' => $item->getVariantId(), 'quantity' => $item->getQuantity()], $salesChannelContext);
         }
 
         if ($payPalCart->isset('coupons')) {
-            $lineItems = array_merge($lineItems, $this->handleCoupons($payPalCart->getCoupons()));
+            $lineItems = array_merge($lineItems, $this->handleCoupons($payPalCart->getCoupons(), $salesChannelContext));
         }
 
         return $lineItems;
@@ -139,12 +138,12 @@ class ShopwareCartTransformer
     /**
      * @return LineItem[]
      */
-    private function handleCoupons(CouponCollection $coupons): array
+    private function handleCoupons(CouponCollection $coupons, SalesChannelContext $salesChannelContext): array
     {
         $items = [];
         foreach ($coupons as $coupon) {
             if ($coupon->getAction() === Coupon::APPLY) {
-                $items[] = $this->promotionItemBuilder->buildPlaceholderItem($coupon->getCode());
+                $items[] = $this->promotionLineItemFactory->create(['referencedId' => $coupon->getCode()], $salesChannelContext);
             }
         }
 
