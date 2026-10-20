@@ -118,7 +118,16 @@ export default abstract class SwagPaypalBase extends Plugin {
             pageType: this.options.pageType,
             partnerAttributionId: this.options.partnerAttributionId,
             components: this.metadata.components,
+            testBuyerCountry: this.options.environment === 'sandbox' ? this.sandboxBuyerCountry : undefined,
         });
+    }
+
+    /**
+     * Buyer country for sandbox only, as PayPal rejects it in production.
+     * Override for payment methods that need a buyer country in sandbox, where it is not detected.
+     */
+    protected get sandboxBuyerCountry(): string | undefined {
+        return undefined;
     }
 
     /**
