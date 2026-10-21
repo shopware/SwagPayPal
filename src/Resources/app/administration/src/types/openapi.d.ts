@@ -470,7 +470,7 @@ export interface components {
     };
     swag_paypal_v1_merchant_integrations_product: {
       name: string;
-      vetting_status?: string;
+      vetting_status?: string | null;
       capabilities?: string[];
     };
     swag_paypal_v1_oauth_credentials: {

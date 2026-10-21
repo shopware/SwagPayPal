@@ -3012,7 +3012,8 @@
                         "type": "string"
                     },
                     "vetting_status": {
-                        "type": "string"
+                        "type": "string",
+                        "nullable": true
                     },
                     "capabilities": {
                         "type": "array",
