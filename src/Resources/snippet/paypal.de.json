@@ -77,7 +77,9 @@
         "vault": {
             "account": {
                 "clear": "Konto entfernen",
-                "create": "Konto für zukünftige Käufe speichern"
+                "create": "Konto für zukünftige Käufe speichern",
+                "edit": "Ändern",
+                "edited": "Für diese Bestellung haben Sie in PayPal eine andere Zahlungsmethode gewählt."
             },
             "card": {
                 "clear": "Karte entfernen",

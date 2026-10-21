@@ -42,6 +42,9 @@ use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 use Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutData;
+use Swag\PayPal\Storefront\Data\Struct\SavedPaymentMethodData;
+use Swag\PayPal\Storefront\Data\Struct\VaultData;
+use Swag\PayPal\Storefront\Data\VaultSubscriber;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
@@ -244,6 +247,40 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame('sharp', $extension->getButtonShape());
     }
 
+    #[DataProvider('dataProviderSavedWallet')]
+    public function testOnCheckoutConfirmLoadedWithSavedWallet(bool $withSavedPaymentMethod, bool $expectButton): void
+    {
+        $paymentMethodId = $this->getPayPalPaymentMethodId();
+        $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
+        $subscriber = $this->createSubscriber();
+        $event = $this->createConfirmPageLoadedEvent($paymentMethodId);
+        $event->getPage()->addExtension(VaultSubscriber::VAULT_EXTENSION, $this->createVaultData($withSavedPaymentMethod));
+
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        static::assertSame($expectButton, $event->getPage()->hasExtension(PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
+    }
+
+    #[DataProvider('dataProviderSavedWallet')]
+    public function testOnAccountOrderEditLoadedWithSavedWallet(bool $withSavedPaymentMethod, bool $expectButton): void
+    {
+        $paymentMethodId = $this->getPayPalPaymentMethodId();
+        $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
+        $subscriber = $this->createSubscriber();
+        $event = $this->createEditOrderPageLoadedEvent($paymentMethodId);
+        $event->getPage()->addExtension(VaultSubscriber::VAULT_EXTENSION, $this->createVaultData($withSavedPaymentMethod));
+
+        $subscriber->onAccountOrderEditLoaded($event);
+
+        static::assertSame($expectButton, $event->getPage()->hasExtension(PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
+    }
+
+    public static function dataProviderSavedWallet(): \Generator
+    {
+        yield 'saved wallet replaces the PayPal button' => [true, false];
+        yield 'saved wallet without SDK v6 keeps the PayPal button' => [false, true];
+    }
+
     public static function dataProviderPaymentMethods(): iterable
     {
         $paymentMethodDataRegistry = static::getContainer()->get(PaymentMethodDataRegistry::class);
@@ -396,6 +433,28 @@ class CheckoutSubscriberTest extends TestCase
                 $spbMethodDataMock,
             ]
         );
+    }
+
+    private function getPayPalPaymentMethodId(): string
+    {
+        $paymentMethodDataRegistry = static::getContainer()->get(PaymentMethodDataRegistry::class);
+
+        return (string) $paymentMethodDataRegistry->getEntityIdFromData(
+            $paymentMethodDataRegistry->getPaymentMethod(PayPalMethodData::class),
+            Context::createDefaultContext()
+        );
+    }
+
+    private function createVaultData(bool $withSavedPaymentMethod): VaultData
+    {
+        $vaultData = new VaultData();
+        $vaultData->setIdentifier('buyer@example.com');
+
+        if ($withSavedPaymentMethod) {
+            $vaultData->setSavedPaymentMethod(new SavedPaymentMethodData());
+        }
+
+        return $vaultData;
     }
 
     private function createConfirmPageLoadedEvent(?string $paymentMethodId): CheckoutConfirmPageLoadedEvent

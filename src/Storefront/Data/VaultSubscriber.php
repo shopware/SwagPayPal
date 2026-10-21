@@ -13,6 +13,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Storefront\Data\Service\SavedPaymentMethodDataService;
 use Swag\PayPal\Storefront\Data\Service\VaultDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -27,6 +28,7 @@ class VaultSubscriber implements EventSubscriberInterface
     public function __construct(
         private SettingsValidationServiceInterface $settingsValidationService,
         private VaultDataService $vaultDataService,
+        private SavedPaymentMethodDataService $savedPaymentMethodDataService,
     ) {
     }
 
@@ -39,6 +41,9 @@ class VaultSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param CheckoutConfirmPageLoadedEvent|AccountEditOrderPageLoadedEvent $event
+     */
     public function addVaultData(PageLoadedEvent $event): void
     {
         try {
@@ -50,6 +55,14 @@ class VaultSubscriber implements EventSubscriberInterface
         $data = $this->vaultDataService->buildData($event->getSalesChannelContext());
         if ($data === null) {
             return;
+        }
+
+        if ($data->getIdentifier()) {
+            $data->setSavedPaymentMethod($this->savedPaymentMethodDataService->buildCheckoutData(
+                $event->getSalesChannelContext(),
+                $event instanceof CheckoutConfirmPageLoadedEvent ? $event->getPage()->getCart() : null,
+                $event instanceof AccountEditOrderPageLoadedEvent ? $event->getPage()->getOrder() : null,
+            ));
         }
 
         $event->getPage()->addExtension(self::VAULT_EXTENSION, $data);
