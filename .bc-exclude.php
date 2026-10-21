@@ -11,5 +11,8 @@ return [
         \preg_quote('An enum expression Monolog\Level::Debug is not supported in class Monolog\Handler\AbstractHandler'),
         // Storefront package is not installed
         \preg_quote('"Shopware\Storefront\Framework\Cookie\CookieProviderInterface" could not be found in the located source'),
+        // PayPal does not always return a vetting status
+        \preg_quote('Type of property Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product#$vettingStatus changed from string to'),
+        \preg_quote('The return type of Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product#getVettingStatus() changed from string to'),
     ],
 ];

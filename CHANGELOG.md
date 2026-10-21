@@ -2,6 +2,7 @@
 - Added Canada to the countries where Pay Later is available (shopware/SwagPayPal#581)
 - Updated the payment amount limitations for P24
 - Fixes an issue, where setting a transaction to paid via an API integration without privileges for the PayPal turnover report failed and prevented flows on the paid state, e.g. after switching from a failed PayPal payment to prepayment (shopware/shopware#21245)
+- Fixes an issue, where loading the PayPal merchant information, e.g. in the PayPal settings after an onboarding, failed with an error, if PayPal returned a product without vetting status (shopware/shopware#21346)
 
 # 8.12.4
 - Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
