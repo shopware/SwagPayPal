@@ -78,7 +78,7 @@
             "account": {
                 "clear": "Remove account",
                 "create": "Remember account for future purchases",
-                "edit": "Change",
+                "edit": "Choose payment method in PayPal",
                 "edited": "For this order, you chose a different payment method in PayPal."
             },
             "card": {

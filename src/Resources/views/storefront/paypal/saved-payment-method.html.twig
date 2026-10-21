@@ -30,12 +30,16 @@
     {% endblock %}
 
     {% block swag_paypal_saved_payment_method_actions %}
-        <button type="button" class="swag-paypal-saved-payment-method-edit btn btn-link p-0 me-2 align-baseline" hidden>
-            {{ "paypal.vault.account.edit"|trans|sw_sanitize }}
-        </button>
-        <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
-            {{ "paypal.vault.account.clear"|trans|sw_sanitize }}
-        </a>
+        <div>
+            <button type="button" class="swag-paypal-saved-payment-method-edit btn btn-link p-0 border-0 fw-normal lh-base align-baseline" hidden>
+                {{ "paypal.vault.account.edit"|trans|sw_sanitize }}
+            </button>
+        </div>
+        <div>
+            <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
+                {{ "paypal.vault.account.clear"|trans|sw_sanitize }}
+            </a>
+        </div>
     {% endblock %}
 </div>
 {% endblock %}

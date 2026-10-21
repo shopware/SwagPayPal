@@ -78,7 +78,7 @@
             "account": {
                 "clear": "Konto entfernen",
                 "create": "Konto für zukünftige Käufe speichern",
-                "edit": "Ändern",
+                "edit": "Zahlungsmethode in PayPal wählen",
                 "edited": "Für diese Bestellung haben Sie in PayPal eine andere Zahlungsmethode gewählt."
             },
             "card": {
