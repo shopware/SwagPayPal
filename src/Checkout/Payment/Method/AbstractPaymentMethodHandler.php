@@ -224,7 +224,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         }
 
         $this->settingsValidationService->validate($order->getSalesChannelId());
-        $paypalOrder = $this->orderBuilder->getOrder($transaction, $orderTransaction, $order, $context, new Request());
+        $paypalOrder = $this->orderBuilder->getOrder($transaction, $orderTransaction, $order, $context, new Request([], [], [AbstractOrderBuilder::RECURRING_ATTRIBUTE => true]));
         $response = $this->orderResource->create(
             $paypalOrder,
             $order->getSalesChannelId(),

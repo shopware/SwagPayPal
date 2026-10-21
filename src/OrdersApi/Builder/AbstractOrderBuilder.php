@@ -40,6 +40,11 @@ abstract class AbstractOrderBuilder
     public const PRELIMINARY_ATTRIBUTE = 'isPayPalPreliminaryOrder';
 
     /**
+     * Marks an order the merchant initiates without the payer present, e.g. a subscription renewal
+     */
+    public const RECURRING_ATTRIBUTE = 'isPayPalRecurringOrder';
+
+    /**
      * @internal
      */
     public function __construct(

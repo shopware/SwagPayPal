@@ -48,6 +48,7 @@ use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
+use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -696,7 +697,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderBuilder
             ->expects($this->once())
             ->method('getOrder')
-            ->with($paymentTransaction, $transaction, $order, $context, new Request())
+            ->with($paymentTransaction, $transaction, $order, $context, new Request([], [], [AbstractOrderBuilder::RECURRING_ATTRIBUTE => true]))
             ->willReturn($payPalOrder);
 
         $this->orderResource
