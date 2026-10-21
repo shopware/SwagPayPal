@@ -15,5 +15,8 @@ return [
         \preg_quote('Value of constant Swag\PayPal\Setting\Settings::DEFAULT_VALUES changed from array') . '.*',
         // Apple Pay it now available on third-party browsers
         \preg_quote('Value of constant Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute::REMOVABLE_PAYMENT_HANDLERS changed from array ('),
+        // PayPal does not always return a vetting status
+        \preg_quote('Type of property Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product#$vettingStatus changed from string to'),
+        \preg_quote('The return type of Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product#getVettingStatus() changed from string to'),
     ],
 ];

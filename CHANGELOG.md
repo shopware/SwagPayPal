@@ -2,6 +2,7 @@
 - Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
 - Updated the payment amount limitations for P24 and Pay Later (shopware/SwagPayPal#581)
 - Fixes an issue, where setting a transaction to paid via an API integration without privileges for the PayPal turnover report failed and prevented flows on the paid state, e.g. after switching from a failed PayPal payment to prepayment (shopware/shopware#21245)
+- Fixes an issue, where loading the PayPal merchant information, e.g. in the PayPal settings after an onboarding, failed with an error, if PayPal returned a product without vetting status (shopware/shopware#21346)
 
 # 9.13.4
 - Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
