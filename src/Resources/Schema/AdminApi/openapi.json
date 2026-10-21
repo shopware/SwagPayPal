@@ -3081,7 +3081,8 @@
                         "type": "string"
                     },
                     "vetting_status": {
-                        "type": "string"
+                        "type": "string",
+                        "nullable": true
                     },
                     "capabilities": {
                         "type": "array",
@@ -6059,7 +6060,8 @@
                 ],
                 "properties": {
                     "liability_shift": {
-                        "type": "string"
+                        "type": "string",
+                        "nullable": true
                     },
                     "three_d_secure": {
                         "oneOf": [
