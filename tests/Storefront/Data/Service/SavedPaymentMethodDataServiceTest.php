@@ -173,6 +173,26 @@ class SavedPaymentMethodDataServiceTest extends TestCase
         static::assertNull($this->service->buildCheckoutData($this->salesChannelContext, null, $order));
     }
 
+    public function testBuildCheckoutDataForRenewalOrder(): void
+    {
+        $order = new OrderEntity();
+        $order->setId(Uuid::randomHex());
+        $order->addExtension('foreignKeys', new ArrayStruct(['subscriptionId' => Uuid::randomHex()]));
+
+        $this->savedPaymentMethodEditService->expects($this->never())->method('getApprovedOrderId');
+
+        static::assertNull($this->service->buildCheckoutData($this->salesChannelContext, null, $order));
+    }
+
+    public function testBuildCheckoutDataForOrderWithoutSubscription(): void
+    {
+        $order = new OrderEntity();
+        $order->setId(Uuid::randomHex());
+        $order->addExtension('foreignKeys', new ArrayStruct(['subscriptionId' => null]));
+
+        static::assertNotNull($this->service->buildCheckoutData($this->salesChannelContext, null, $order));
+    }
+
     public function testBuildCheckoutDataForOrderWithoutInitialSubscriptions(): void
     {
         $order = new OrderEntity();

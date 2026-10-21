@@ -11,6 +11,7 @@ use Shopware\Commercial\Subscription\Framework\Struct\PlanIntervalMappingStruct;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
@@ -88,6 +89,11 @@ class SavedPaymentMethodDataService extends AbstractCheckoutDataService
         }
 
         if (\class_exists(PlanIntervalMappingStruct::class) && $context->getExtensionOfType('subscriptionManagedContexts', PlanIntervalMappingStruct::class)?->all()) {
+            return true;
+        }
+
+        // a renewal order on the order edit page, whose context carries no subscription
+        if ($order?->getExtensionOfType('foreignKeys', ArrayStruct::class)?->get('subscriptionId') !== null) {
             return true;
         }
 
