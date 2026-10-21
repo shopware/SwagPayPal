@@ -953,7 +953,7 @@ export interface components {
         };
         paypal_v1_merchant_integrations_product: {
             name: string;
-            vetting_status?: string;
+            vetting_status?: string | null;
             capabilities?: string[];
         };
         paypal_v1_merchant_tracking: {
@@ -1596,7 +1596,7 @@ export interface components {
             stored_credential: components["schemas"]["paypal_v2_order_payment_source_card_stored_credential"] | (never | null);
         };
         paypal_v2_order_payment_source_card_authentication_result: {
-            liability_shift: string;
+            liability_shift: string | null;
             three_d_secure: components["schemas"]["paypal_v2_order_payment_source_card_authentication_result_3d_secure"] | (never | null);
         };
         paypal_v2_order_payment_source_card_authentication_result_3d_secure: {

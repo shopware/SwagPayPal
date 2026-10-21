@@ -134,6 +134,13 @@ parameters:
           message: '#tag:v11.0.0 reason:parameter-type-change - `\$countryCode` will be renamed to `\$currencyIso`#'
           path: '**/*.php'
 
+        - # paypal-sdk v3.0.0 deprecation - getToken() only gets an additional `$refresh` parameter, so the calls stay valid
+            identifier: method.deprecated
+            message: '#Call to deprecated method getToken\(\) of interface Shopware\\PayPalSDK\\Contract\\Gateway\\TokenGatewayInterface#'
+            paths:
+                - src/Setting/Service/ApiCredentialService.php
+                - src/Setting/Service/SdkV6EligibilityService.php
+
         - # 6.8 deprecation - Use the "defaults" property instead
             identifier: method.deprecated
             message: '#Call to deprecated method getDefaults\(\) of class Symfony\\Component\\Routing\\Attribute\\Route#'
