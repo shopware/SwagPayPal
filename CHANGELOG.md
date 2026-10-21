@@ -3,6 +3,7 @@
 - Fixes an issue, where the phone number entered for Pay Upon Invoice was stored on the shipping instead of the billing address, if both differed, causing the payment to fail (shopware/SwagPayPal#857)
 - Fixes an issue, where setting a transaction to paid via an API integration without privileges for the PayPal turnover report failed and prevented flows on the paid state, e.g. after switching from a failed PayPal payment to prepayment (shopware/shopware#21245)
 - Fixes an issue, where the "Cancel and return to shop" link on the PayPal page pointed to `example.com` in PayPal Express Checkout (shopware/shopware#21430)
+- Fixes an issue, where the shipping options of the PayPal Express Checkout shipping callback only carried the costs of the currently selected shipping method, so PayPal displayed every other shipping method with 0.00
 
 # 10.8.5
 - Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state

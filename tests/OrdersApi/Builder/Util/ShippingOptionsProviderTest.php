@@ -9,7 +9,9 @@ namespace Swag\PayPal\Test\OrdersApi\Builder\Util;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryDate;
@@ -17,6 +19,7 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryPositionCollection;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\ShippingLocation;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
@@ -39,9 +42,11 @@ use Swag\PayPal\Util\PriceFormatter;
 #[CoversClass(ShippingOptionsProvider::class)]
 class ShippingOptionsProviderTest extends TestCase
 {
+    private const CART_TOKEN = 'cart-token';
+
     public function testGetShippingOptionsCreatesAnOptionPerShippingMethod(): void
     {
-        $provider = $this->createProvider($this->createShippingMethod('standard-id', 'Standard'), $this->createShippingMethod('express-id', 'Express'));
+        $provider = $this->createProvider([$this->createShippingMethod('standard-id', 'Standard'), $this->createShippingMethod('express-id', 'Express')]);
 
         $options = $provider->getShippingOptions($this->createCart(), $this->createSalesChannelContext('unselected-id'));
 
@@ -55,10 +60,10 @@ class ShippingOptionsProviderTest extends TestCase
 
     public function testGetShippingOptionsMarksTheSelectedMethodAndSetsItsGrossAmount(): void
     {
-        $provider = $this->createProvider(
+        $provider = $this->createProvider([
             $this->createShippingMethod('selected-id', 'Selected'),
             $this->createShippingMethod('other-id', 'Other'),
-        );
+        ]);
 
         $cart = $this->createCart(shippingTotal: 4.99);
         $options = $provider->getShippingOptions($cart, $this->createSalesChannelContext('selected-id'));
@@ -76,7 +81,7 @@ class ShippingOptionsProviderTest extends TestCase
 
     public function testGetShippingOptionsAddsTaxesToTheSelectedMethodOnNetCarts(): void
     {
-        $provider = $this->createProvider($this->createShippingMethod('selected-id', 'Selected'));
+        $provider = $this->createProvider([$this->createShippingMethod('selected-id', 'Selected')]);
 
         $cart = $this->createCart(shippingTotal: 5.0, shippingTax: 0.95, taxState: CartPrice::TAX_STATE_NET);
         $options = $provider->getShippingOptions($cart, $this->createSalesChannelContext('selected-id'));
@@ -85,6 +90,80 @@ class ShippingOptionsProviderTest extends TestCase
         static::assertNotNull($selectedOption);
         static::assertTrue($selectedOption->isSelected());
         static::assertSame('5.95', $selectedOption->getAmount()->getValue());
+    }
+
+    public function testGetShippingOptionsSetsTheAmountOfUnselectedMethodsFromTheirOwnCart(): void
+    {
+        $cart = $this->createCart(shippingTotal: 4.99);
+        $cartService = $this->createMock(CartService::class);
+        $cartService
+            ->method('getCart')
+            ->willReturnCallback(function (string $token, SalesChannelContext $context, bool $caching, bool $taxed): Cart {
+                static::assertSame(self::CART_TOKEN, $token);
+                static::assertFalse($caching);
+                static::assertTrue($taxed);
+
+                return match ($context->getShippingMethod()->getId()) {
+                    'express-id' => $this->createCart(shippingTotal: 12.5),
+                    'pickup-id' => $this->createCart(shippingTotal: 0.0),
+                    default => static::fail('Unexpected cart recalculation for ' . $context->getShippingMethod()->getId()),
+                };
+            });
+        // the recalculated carts must not remain in the cart service cache
+        $cartService
+            ->expects($this->once())
+            ->method('setCart')
+            ->with($cart);
+
+        $provider = $this->createProvider([
+            $this->createShippingMethod('selected-id', 'Selected'),
+            $this->createShippingMethod('express-id', 'Express'),
+            $this->createShippingMethod('pickup-id', 'Pickup'),
+        ], $cartService);
+
+        $options = $provider->getShippingOptions($cart, $this->createSalesChannelContext('selected-id'));
+
+        $selectedOption = $options->get('selected-id');
+        static::assertNotNull($selectedOption);
+        static::assertTrue($selectedOption->isSelected());
+        static::assertSame('4.99', $selectedOption->getAmount()->getValue());
+
+        $expressOption = $options->get('express-id');
+        static::assertNotNull($expressOption);
+        static::assertFalse($expressOption->isSelected());
+        static::assertSame('12.50', $expressOption->getAmount()->getValue());
+        static::assertSame('EUR', $expressOption->getAmount()->getCurrencyCode());
+
+        $pickupOption = $options->get('pickup-id');
+        static::assertNotNull($pickupOption);
+        static::assertSame('0.00', $pickupOption->getAmount()->getValue());
+    }
+
+    public function testGetShippingOptionsKeepsTheOptionWithoutAmountIfItsCartCannotBeCalculated(): void
+    {
+        $cartService = $this->createMock(CartService::class);
+        $cartService
+            ->method('getCart')
+            ->willThrowException(CartException::tokenNotFound(self::CART_TOKEN));
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger
+            ->expects($this->once())
+            ->method('warning')
+            ->with(static::anything(), static::callback(static fn (array $context) => $context['shippingMethodId'] === 'other-id'));
+
+        $provider = $this->createProvider([
+            $this->createShippingMethod('selected-id', 'Selected'),
+            $this->createShippingMethod('other-id', 'Other'),
+        ], $cartService, $logger);
+
+        $options = $provider->getShippingOptions($this->createCart(shippingTotal: 4.99), $this->createSalesChannelContext('selected-id'));
+
+        static::assertCount(2, $options);
+
+        $otherOption = $options->get('other-id');
+        static::assertNotNull($otherOption);
+        static::assertFalse($otherOption->isset('amount'));
     }
 
     public function testGetShippingOptionsReturnsEmptyCollectionWhenNoMethodsAreAvailable(): void
@@ -96,8 +175,14 @@ class ShippingOptionsProviderTest extends TestCase
         static::assertCount(0, $options);
     }
 
-    private function createProvider(ShippingMethodEntity ...$shippingMethods): ShippingOptionsProvider
-    {
+    /**
+     * @param ShippingMethodEntity[] $shippingMethods
+     */
+    private function createProvider(
+        array $shippingMethods = [],
+        ?CartService $cartService = null,
+        ?LoggerInterface $logger = null,
+    ): ShippingOptionsProvider {
         $response = $this->createMock(ShippingMethodRouteResponse::class);
         $response
             ->method('getShippingMethods')
@@ -108,7 +193,20 @@ class ShippingOptionsProviderTest extends TestCase
             ->method('load')
             ->willReturn($response);
 
-        return new ShippingOptionsProvider(new PriceFormatter(), $shippingMethodRoute);
+        if ($cartService === null) {
+            // by default, every unselected shipping method gets an empty cart
+            $cartService = $this->createMock(CartService::class);
+            $cartService
+                ->method('getCart')
+                ->willReturnCallback(fn () => $this->createCart());
+        }
+
+        return new ShippingOptionsProvider(
+            new PriceFormatter(),
+            $shippingMethodRoute,
+            $cartService,
+            $logger ?? $this->createMock(LoggerInterface::class),
+        );
     }
 
     private function createShippingMethod(string $id, string $name): ShippingMethodEntity
@@ -126,7 +224,7 @@ class ShippingOptionsProviderTest extends TestCase
         float $shippingTax = 0.0,
         string $taxState = CartPrice::TAX_STATE_GROSS,
     ): Cart {
-        $cart = new Cart(Uuid::randomHex());
+        $cart = new Cart(self::CART_TOKEN);
         $cart->setPrice(new CartPrice(0.0, 0.0, 0.0, new CalculatedTaxCollection(), new TaxRuleCollection(), $taxState));
 
         $shippingCosts = new CalculatedPrice(
@@ -163,13 +261,14 @@ class ShippingOptionsProviderTest extends TestCase
         $shippingMethod = new ShippingMethodEntity();
         $shippingMethod->setId($selectedShippingMethodId);
 
-        $salesChannelContext = $this->createMock(SalesChannelContext::class);
-        $salesChannelContext
-            ->method('getCurrency')
-            ->willReturn($currency);
-        $salesChannelContext
-            ->method('getShippingMethod')
-            ->willReturn($shippingMethod);
+        // A real context (instead of a mock), so that the provider can clone it and
+        // assign another shipping method for the recalculation of the other options.
+        $salesChannelContext = (new \ReflectionClass(SalesChannelContext::class))->newInstanceWithoutConstructor();
+        $salesChannelContext->assign([
+            'token' => self::CART_TOKEN,
+            'currency' => $currency,
+            'shippingMethod' => $shippingMethod,
+        ]);
 
         return $salesChannelContext;
     }
