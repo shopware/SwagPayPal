@@ -22,6 +22,7 @@ use Swag\PayPal\Storefront\Data\Event\PayPalPageExtensionAddedEvent;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Struct\VaultData;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -67,7 +68,7 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
             }
 
             $vaultData = $event->getPage()->getExtensionOfType(VaultSubscriber::VAULT_EXTENSION, VaultData::class);
-            if ($vaultData?->getIdentifier() && $checkoutMethod instanceof ACDCMethodData) {
+            if ($this->isPaidWithVault($vaultData, $checkoutMethod)) {
                 return;
             }
 
@@ -87,12 +88,25 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
             }
 
             $vaultData = $event->getPage()->getExtensionOfType(VaultSubscriber::VAULT_EXTENSION, VaultData::class);
-            if ($vaultData?->getIdentifier() && $checkoutMethod instanceof ACDCMethodData) {
+            if ($this->isPaidWithVault($vaultData, $checkoutMethod)) {
                 return;
             }
 
             $this->addExtension($checkoutMethod, $event, $event->getPage()->getCart());
         }
+    }
+
+    /**
+     * A saved card, or a saved PayPal wallet with SDK v6, pays with the regular order button,
+     * so the method's own fields or buttons are not needed.
+     */
+    private function isPaidWithVault(?VaultData $vaultData, CheckoutDataMethodInterface $checkoutMethod): bool
+    {
+        if ($vaultData?->getIdentifier() && $checkoutMethod instanceof ACDCMethodData) {
+            return true;
+        }
+
+        return $vaultData?->getSavedPaymentMethod() !== null && $checkoutMethod instanceof PayPalMethodData;
     }
 
     /**

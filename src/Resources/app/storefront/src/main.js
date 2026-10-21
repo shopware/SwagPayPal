@@ -88,6 +88,11 @@ PluginManager.register(
     () => import('./payment/swag-paypal.checkout.card-fields'),
     '[data-swag-paypal-checkout-card-fields]',
 );
+PluginManager.register(
+    'SwagPaypalCheckoutSavedPaymentMethod',
+    () => import('./payment/swag-paypal.checkout.saved-payment-method'),
+    '[data-swag-paypal-checkout-saved-payment-method]',
+);
 
 
 PluginManager.register(

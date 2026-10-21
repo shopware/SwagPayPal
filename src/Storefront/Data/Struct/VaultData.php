@@ -20,6 +20,11 @@ class VaultData extends Struct
 
     protected string $snippetType = self::SNIPPET_TYPE_ACCOUNT;
 
+    /**
+     * Set if the saved PayPal wallet replaces the PayPal button
+     */
+    protected ?SavedPaymentMethodData $savedPaymentMethod = null;
+
     public function getIdentifier(): ?string
     {
         return $this->identifier;
@@ -38,5 +43,15 @@ class VaultData extends Struct
     public function setSnippetType(string $snippetType): void
     {
         $this->snippetType = $snippetType;
+    }
+
+    public function getSavedPaymentMethod(): ?SavedPaymentMethodData
+    {
+        return $this->savedPaymentMethod;
+    }
+
+    public function setSavedPaymentMethod(?SavedPaymentMethodData $savedPaymentMethod): void
+    {
+        $this->savedPaymentMethod = $savedPaymentMethod;
     }
 }

@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Api\EventListener\ErrorResponseFactory;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\JWT\JWTException;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
@@ -30,6 +31,7 @@ use Swag\PayPal\Checkout\Exception\MissingCountryIdException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressShippingCallbackRoute;
+use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsResponse;
 use Swag\PayPal\Checkout\SalesChannel\AbstractClearVaultRoute;
@@ -43,6 +45,7 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Swag\PayPal\Storefront\Service\ReturnToken;
 use Swag\PayPal\Storefront\Service\ReturnTokenService;
+use Swag\PayPal\Storefront\Service\SavedPaymentMethodEditService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -78,6 +81,7 @@ class PayPalController extends StorefrontController
         private readonly ReturnTokenService $returnTokenService,
         private readonly RouterInterface $router,
         private readonly SystemConfigService $systemConfigService,
+        private readonly SavedPaymentMethodEditService $savedPaymentMethodEditService,
     ) {
     }
 
@@ -199,8 +203,25 @@ class PayPalController extends StorefrontController
     public function clearVault(Request $request, SalesChannelContext $context): Response
     {
         $this->clearVaultRoute->clearVault($request, $context);
+        $this->savedPaymentMethodEditService->forgetAll();
 
         return $this->createActionResponse($request);
+    }
+
+    #[Route(path: '/paypal/saved-payment-method/edit', name: 'frontend.paypal.saved_payment_method.edit', methods: ['POST'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false, '_loginRequired' => true])]
+    public function editSavedPaymentMethod(Request $request, SalesChannelContext $context): Response
+    {
+        $paypalOrderId = $request->request->getAlnum(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        if ($paypalOrderId === '') {
+            throw RoutingException::missingRequestParameter(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        }
+
+        $orderId = $request->request->getAlnum('orderId') ?: null;
+        if (!$this->savedPaymentMethodEditService->remember($context, $orderId, $paypalOrderId)) {
+            throw RoutingException::invalidRequestParameter(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        }
+
+        return new NoContentResponse();
     }
 
     #[OA\Post(

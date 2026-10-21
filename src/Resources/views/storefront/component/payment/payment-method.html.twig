@@ -12,7 +12,9 @@
 
     {% if payment.id is same as(context.paymentMethod.id) and payPalVaultData is not null %}
         {% block component_payment_method_description_paypal_vault %}
-        {% if payPalVaultData.identifier %}
+        {% if payPalVaultData.identifier and payPalVaultData.savedPaymentMethod %}
+            {% sw_include '@SwagPayPal/storefront/paypal/saved-payment-method.html.twig' %}
+        {% elseif payPalVaultData.identifier %}
             <div>{{ payPalVaultData.identifier }}</div>
             <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
                 {{ ("paypal.vault." ~ payPalVaultData.snippetType ~ ".clear")|trans }}

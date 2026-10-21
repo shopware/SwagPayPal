@@ -158,6 +158,22 @@
                 ],
                 "description": "Retrieves a client ID token for the current sales channel",
                 "operationId": "paypalClientToken",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "vault": {
+                                        "description": "Binds the token to the saved PayPal wallet of the logged-in customer, so the PayPal JS SDK can show it and let the customer change its funding instrument",
+                                        "type": "boolean",
+                                        "default": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Client ID token",
@@ -206,6 +222,15 @@
                                     "cancelUrl": {
                                         "description": "Cancel URL for the order experience context",
                                         "type": "string"
+                                    },
+                                    "userAction": {
+                                        "description": "User action for the order experience context. Use `CONTINUE`, if the customer still confirms the order in the shop after approving it at PayPal",
+                                        "type": "string",
+                                        "default": "PAY_NOW",
+                                        "enum": [
+                                            "PAY_NOW",
+                                            "CONTINUE"
+                                        ]
                                     }
                                 },
                                 "type": "object"

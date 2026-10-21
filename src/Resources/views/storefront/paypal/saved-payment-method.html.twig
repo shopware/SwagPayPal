@@ -1,0 +1,45 @@
+{# @var \Swag\PayPal\Storefront\Data\Struct\VaultData payPalVaultData #}
+{# @var \Swag\PayPal\Storefront\Data\Struct\SavedPaymentMethodData savedPaymentMethodData #}
+{% set savedPaymentMethodData = payPalVaultData.savedPaymentMethod %}
+
+{% block swag_paypal_saved_payment_method %}
+<div class="swag-paypal-saved-payment-method"
+     data-swag-paypal-checkout-saved-payment-method="true"
+     data-swag-paypal-checkout-saved-payment-method-options="{{ savedPaymentMethodData|json_encode }}">
+
+    {% block swag_paypal_saved_payment_method_identifier %}
+        {# Replaced by PayPal's preview of the funding instrument, once the PayPal SDK is ready #}
+        <div class="swag-paypal-saved-payment-method-identifier">{{ payPalVaultData.identifier }}</div>
+    {% endblock %}
+
+    {% block swag_paypal_saved_payment_method_preview %}
+        <paypal-saved-payment-methods class="swag-paypal-saved-payment-method-preview" hidden></paypal-saved-payment-methods>
+    {% endblock %}
+
+    {% block swag_paypal_saved_payment_method_approved_order %}
+        <p class="swag-paypal-saved-payment-method-approved mb-0" {% if not savedPaymentMethodData.approvedOrderId %}hidden{% endif %}>
+            {{ "paypal.vault.account.edited"|trans|sw_sanitize }}
+        </p>
+
+        <input type="hidden"
+               class="swag-paypal-saved-payment-method-order-id"
+               name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Method\\AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}"
+               value="{{ savedPaymentMethodData.approvedOrderId }}"
+               form="confirmOrderForm"
+               {% if not savedPaymentMethodData.approvedOrderId %}disabled{% endif %}>
+    {% endblock %}
+
+    {% block swag_paypal_saved_payment_method_actions %}
+        <div>
+            <button type="button" class="swag-paypal-saved-payment-method-edit btn btn-link p-0 border-0 fw-normal lh-base align-baseline" hidden>
+                {{ "paypal.vault.account.edit"|trans|sw_sanitize }}
+            </button>
+        </div>
+        <div>
+            <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
+                {{ "paypal.vault.account.clear"|trans|sw_sanitize }}
+            </a>
+        </div>
+    {% endblock %}
+</div>
+{% endblock %}

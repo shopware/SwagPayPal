@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
@@ -214,6 +215,48 @@ class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
 
         static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
         static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
+    }
+
+    public function testGetOrderFromCartUsesRequestUserAction(): void
+    {
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $this->createSalesChannelContext(),
+            new RequestDataBag([CreateOrderRoute::USER_ACTION => ExperienceContext::USER_ACTION_CONTINUE]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertSame(ExperienceContext::USER_ACTION_CONTINUE, $experienceContext->getUserAction());
+    }
+
+    public function testGetOrderUsesRequestUserAction(): void
+    {
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->getBuilder()->getOrder(
+            new PaymentTransactionStruct($orderTransaction->getId()),
+            $orderTransaction,
+            $this->createOrder(),
+            Context::createDefaultContext(),
+            new Request([], [CreateOrderRoute::USER_ACTION => ExperienceContext::USER_ACTION_CONTINUE]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertSame(ExperienceContext::USER_ACTION_CONTINUE, $experienceContext->getUserAction());
+    }
+
+    public function testGetOrderFromCartIgnoresUnknownUserAction(): void
+    {
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $this->createSalesChannelContext(),
+            new RequestDataBag([CreateOrderRoute::USER_ACTION => 'SHIP_IT']),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertSame(ExperienceContext::USER_ACTION_PAY_NOW, $experienceContext->getUserAction());
     }
 
     public function testGetOrderNoBillingAddress(): void

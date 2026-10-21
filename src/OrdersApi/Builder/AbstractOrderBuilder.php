@@ -203,6 +203,11 @@ abstract class AbstractOrderBuilder
             $experienceContext->setCancelUrl(CreateOrderRoute::FAKE_URL . '?cancel=1');
         }
 
+        $userAction = $requestDataBag?->getString(CreateOrderRoute::USER_ACTION);
+        if (\in_array($userAction, [ExperienceContext::USER_ACTION_CONTINUE, ExperienceContext::USER_ACTION_PAY_NOW], true)) {
+            $experienceContext->setUserAction($userAction);
+        }
+
         return $experienceContext;
     }
 

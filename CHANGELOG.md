@@ -3,6 +3,7 @@
 - Fixes an issue, where the phone number entered for Pay Upon Invoice was stored on the shipping instead of the billing address, if both differed, causing the payment to fail (shopware/SwagPayPal#857)
 - Fixes an issue, where setting a transaction to paid via an API integration without privileges for the PayPal turnover report failed and prevented flows on the paid state, e.g. after switching from a failed PayPal payment to prepayment (shopware/shopware#21245)
 - Fixes an issue, where the "Cancel and return to shop" link on the PayPal page pointed to `example.com` in PayPal Express Checkout (shopware/shopware#21430)
+- With the PayPal JS SDK v6, customers with a saved PayPal account now pay with the regular order button instead of the PayPal button. A "Change" link next to the saved account lets them pick another payment method from their PayPal wallet for the order. For this, the Store API routes `/store-api/paypal/client-token` and `/store-api/paypal/create-order` accept the new parameters `vault` and `userAction`
 
 # 10.8.5
 - Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
