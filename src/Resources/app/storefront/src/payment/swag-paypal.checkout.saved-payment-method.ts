@@ -172,6 +172,8 @@ export default class SwagPaypalCheckoutSavedPaymentMethod extends SwagPaypalPaym
 
     private async createOrder(): Promise<{ orderId: string }> {
         const formData = new FormData();
+        // the buyer still places the order in the shop, so PayPal's window offers to continue instead of to pay
+        formData.set('userAction', 'CONTINUE');
         if (this.options.orderId !== null) {
             formData.set('orderId', this.options.orderId);
         }

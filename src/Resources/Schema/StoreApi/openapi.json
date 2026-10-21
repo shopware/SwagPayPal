@@ -222,6 +222,15 @@
                                     "cancelUrl": {
                                         "description": "Cancel URL for the order experience context",
                                         "type": "string"
+                                    },
+                                    "userAction": {
+                                        "description": "User action for the order experience context. Use `CONTINUE`, if the customer still confirms the order in the shop after approving it at PayPal",
+                                        "type": "string",
+                                        "default": "PAY_NOW",
+                                        "enum": [
+                                            "PAY_NOW",
+                                            "CONTINUE"
+                                        ]
                                     }
                                 },
                                 "type": "object"
