@@ -77,10 +77,7 @@ class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
     {
         $this->systemConfig->set(Settings::ACDC_FORCE_3DS, $force3ds);
 
-        $card = $this->buildCardWithSavedCard(
-            new Request([], [], [AbstractOrderBuilder::RECURRING_ATTRIBUTE => true]),
-            $this->createSubscriptions(),
-        );
+        $card = $this->buildCardWithSavedCard($this->createSubscriptions(), true);
 
         static::assertNull($card->getAttributes());
         $this->assertStoredCredential($card, StoredCredential::PAYMENT_INITIATOR_MERCHANT, StoredCredential::PAYMENT_TYPE_RECURRING, StoredCredential::USAGE_SUBSEQUENT);
@@ -94,7 +91,7 @@ class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
 
     public function testSubscriptionCheckoutWithASavedCardIsACustomerInitiatedRecurringPayment(): void
     {
-        $card = $this->buildCardWithSavedCard(new Request(), $this->createSubscriptions());
+        $card = $this->buildCardWithSavedCard($this->createSubscriptions());
 
         static::assertSame(Verification::METHOD_SCA_WHEN_REQUIRED, $card->getAttributes()?->getVerification()?->getMethod());
         $this->assertStoredCredential($card, StoredCredential::PAYMENT_INITIATOR_CUSTOMER, StoredCredential::PAYMENT_TYPE_RECURRING, StoredCredential::USAGE_SUBSEQUENT);
@@ -102,7 +99,7 @@ class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
 
     public function testRepeatPurchaseWithASavedCardIsUnscheduled(): void
     {
-        $card = $this->buildCardWithSavedCard(new Request(), null);
+        $card = $this->buildCardWithSavedCard(null);
 
         $this->assertStoredCredential($card, StoredCredential::PAYMENT_INITIATOR_CUSTOMER, StoredCredential::PAYMENT_TYPE_UNSCHEDULED, StoredCredential::USAGE_SUBSEQUENT);
     }
@@ -113,7 +110,7 @@ class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
         $this->vaultTokenService->method('shouldRequestVaulting')->willReturn(true);
         $this->vaultTokenService->method('getSubscriptions')->willReturn($this->createSubscriptions());
 
-        $card = $this->buildCard(new Request());
+        $card = $this->buildCard();
 
         $this->assertStoredCredential($card, StoredCredential::PAYMENT_INITIATOR_CUSTOMER, StoredCredential::PAYMENT_TYPE_RECURRING, StoredCredential::USAGE_FIRST);
     }
@@ -124,7 +121,7 @@ class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
         $this->vaultTokenService->method('shouldRequestVaulting')->willReturn(true);
         $this->vaultTokenService->method('getSubscriptions')->willReturn(null);
 
-        static::assertNull($this->buildCard(new Request())->getStoredCredential());
+        static::assertNull($this->buildCard()->getStoredCredential());
     }
 
     public function testSubscriptionCartVaultingANewCardOpensTheRecurringSeries(): void
@@ -162,7 +159,7 @@ class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
         return Card::class;
     }
 
-    private function buildCardWithSavedCard(Request $request, ?SubscriptionCollection $subscriptions): Card
+    private function buildCardWithSavedCard(?SubscriptionCollection $subscriptions, bool $isRecurring = false): Card
     {
         $vaultToken = new VaultTokenEntity();
         $vaultToken->setToken('testToken');
@@ -170,23 +167,24 @@ class ACDCOrderBuilderTest extends AbstractOrderBuilderTestCase
         $this->vaultTokenService->method('getAvailableToken')->willReturn($vaultToken);
         $this->vaultTokenService->method('getSubscriptions')->willReturn($subscriptions);
 
-        $card = $this->buildCard($request);
+        $card = $this->buildCard($isRecurring);
         static::assertSame('testToken', $card->getVaultId());
 
         return $card;
     }
 
-    private function buildCard(Request $request): Card
+    private function buildCard(bool $isRecurring = false): Card
     {
         $orderTransaction = $this->createOrderTransaction();
+        $paymentTransaction = new PaymentTransactionStruct($orderTransaction->getId());
+        $order = $this->createOrder();
+        $context = Context::createDefaultContext();
 
-        $card = $this->getBuilder()->getOrder(
-            new PaymentTransactionStruct($orderTransaction->getId()),
-            $orderTransaction,
-            $this->createOrder(),
-            Context::createDefaultContext(),
-            $request,
-        )->getPaymentSource()?->first(Card::class);
+        $paypalOrder = $isRecurring
+            ? $this->getBuilder()->getRecurringOrder($paymentTransaction, $orderTransaction, $order, $context)
+            : $this->getBuilder()->getOrder($paymentTransaction, $orderTransaction, $order, $context, new Request());
+
+        $card = $paypalOrder->getPaymentSource()?->first(Card::class);
         static::assertInstanceOf(Card::class, $card);
 
         return $card;

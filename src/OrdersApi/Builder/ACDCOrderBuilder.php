@@ -60,7 +60,7 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
         /** @phpstan-ignore method.deprecated */
         $card->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, new RequestDataBag($request->request->all())));
 
-        $isRecurring = $request->attributes->getBoolean(self::RECURRING_ATTRIBUTE);
+        $isRecurring = $this->isRecurringOrder($request);
 
         // a renewal has no payer to complete a 3D Secure challenge, so requesting one leaves it at PAYER_ACTION_REQUIRED
         if (!$isRecurring) {

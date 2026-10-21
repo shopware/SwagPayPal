@@ -36,7 +36,6 @@ use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
-use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
@@ -52,7 +51,6 @@ use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Util\PriceFormatter;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -165,8 +163,8 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
 
         $this->orderBuilder
             ->expects($this->once())
-            ->method('getOrder')
-            ->with($paymentTransaction, static::isInstanceOf(OrderTransactionEntity::class), static::isInstanceOf(OrderEntity::class), $context, new Request([], [], [AbstractOrderBuilder::RECURRING_ATTRIBUTE => true]))
+            ->method('getRecurringOrder')
+            ->with($paymentTransaction, static::isInstanceOf(OrderTransactionEntity::class), static::isInstanceOf(OrderEntity::class), $context)
             ->willReturn($paypalOrder);
 
         $this->orderResource

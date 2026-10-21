@@ -48,7 +48,6 @@ use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
-use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -696,8 +695,8 @@ class ACDCHandlerTest extends TestCase
 
         $this->orderBuilder
             ->expects($this->once())
-            ->method('getOrder')
-            ->with($paymentTransaction, $transaction, $order, $context, new Request([], [], [AbstractOrderBuilder::RECURRING_ATTRIBUTE => true]))
+            ->method('getRecurringOrder')
+            ->with($paymentTransaction, $transaction, $order, $context)
             ->willReturn($payPalOrder);
 
         $this->orderResource
@@ -751,7 +750,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->vaultTokenService->method('getSubscriptions')->willReturn(new SubscriptionCollection());
-        $this->orderBuilder->expects($this->never())->method('getOrder');
+        $this->orderBuilder->expects($this->never())->method('getRecurringOrder');
         $this->orderResource->expects($this->never())->method('create');
         $this->transactionDataService->expects($this->never())->method('setOrderId');
         $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
@@ -805,7 +804,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->vaultTokenService->method('getSubscriptions')->willReturn(new SubscriptionCollection());
-        $this->orderBuilder->expects($this->never())->method('getOrder');
+        $this->orderBuilder->expects($this->never())->method('getRecurringOrder');
         $this->orderResource->expects($this->never())->method('create');
         $this->orderResource->expects($this->never())->method('get');
         $this->transactionDataService->expects($this->never())->method('setOrderId');
@@ -858,7 +857,7 @@ class ACDCHandlerTest extends TestCase
 
         $this->orderBuilder
             ->expects($this->once())
-            ->method('getOrder')
+            ->method('getRecurringOrder')
             ->willReturn($payPalOrder);
 
         $this->orderResource
