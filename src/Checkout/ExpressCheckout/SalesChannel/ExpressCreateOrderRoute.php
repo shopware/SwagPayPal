@@ -20,6 +20,7 @@ use Shopware\PayPalSDK\Struct\V2\Order\ApplicationContext;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\OrderUpdateCallbackConfig;
 use Shopware\Storefront\Framework\Routing\StorefrontRouteScope;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
+use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -58,6 +59,18 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
         path: '/paypal/express/create-order',
         operationId: 'createPayPalExpressOrder',
         description: 'Creates a PayPal order from the existing cart',
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+            new OA\Property(
+                property: AbstractCreateOrderRoute::RETURN_URL,
+                description: 'Return URL for the order experience context. Must be sent together with `cancelUrl`, otherwise both are ignored',
+                type: 'string',
+            ),
+            new OA\Property(
+                property: AbstractCreateOrderRoute::CANCEL_URL,
+                description: 'Cancel URL for the order experience context. Must be sent together with `returnUrl`, otherwise both are ignored',
+                type: 'string',
+            ),
+        ])),
         tags: ['Store API', 'PayPal'],
         responses: [new OA\Response(
             response: Response::HTTP_OK,
