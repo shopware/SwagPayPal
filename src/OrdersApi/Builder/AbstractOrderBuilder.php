@@ -39,6 +39,8 @@ abstract class AbstractOrderBuilder
 {
     public const PRELIMINARY_ATTRIBUTE = 'isPayPalPreliminaryOrder';
 
+    private const RECURRING_ATTRIBUTE = 'isPayPalRecurringOrder';
+
     /**
      * @internal
      */
@@ -67,6 +69,18 @@ abstract class AbstractOrderBuilder
         $payPalOrder->setPaymentSource($paymentSource);
 
         return $payPalOrder;
+    }
+
+    /**
+     * Builds the order for a payment the merchant initiates without the payer present, e.g. a subscription renewal
+     */
+    public function getRecurringOrder(
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+    ): Order {
+        return $this->getOrder($paymentTransaction, $orderTransaction, $order, $context, new Request([], [], [self::RECURRING_ATTRIBUTE => true]));
     }
 
     public function getOrderFromCart(
@@ -220,6 +234,14 @@ abstract class AbstractOrderBuilder
     protected function submitCart(string $salesChannelId): bool
     {
         return $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelId);
+    }
+
+    /**
+     * Whether the order is built by {@see self::getRecurringOrder}
+     */
+    protected function isRecurringOrder(Request $request): bool
+    {
+        return $request->attributes->getBoolean(self::RECURRING_ATTRIBUTE);
     }
 
     /**
