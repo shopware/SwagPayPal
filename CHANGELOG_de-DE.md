@@ -4,6 +4,7 @@
 - Behebt ein Problem, bei dem das Setzen einer Transaktion auf "Bezahlt" über eine API-Integration ohne Berechtigungen für den PayPal-Umsatzbericht fehlschlug und Flows für den Status "Bezahlt" verhinderte, z. B. nach dem Wechsel von einer fehlgeschlagenen PayPal-Zahlung auf Vorkasse (shopware/shopware#21245)
 - Behebt ein Problem, bei dem der Link "Abbrechen und zurück zum Shop" auf der PayPal-Seite im PayPal Express Checkout auf `example.com` verwies (shopware/shopware#21430)
 - Behebt ein Problem, bei dem das Laden der PayPal-Händlerinformationen, z. B. in den PayPal-Einstellungen nach einem Onboarding, mit einem Fehler fehlschlug, wenn PayPal ein Produkt ohne Prüfstatus zurückgab (shopware/shopware#21346)
+- Behebt ein Problem, bei dem Verlängerungen von Kreditkarten-Abonnements fehlschlagen konnten, wenn die kartenausgebende Bank 3D Secure verlangte, da Verlängerungen eine Verifizierung anforderten und Abonnements nicht als wiederkehrende Kartenzahlungen gekennzeichnet waren (shopware/shopware#21069)
 
 # 10.8.5
 - Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden

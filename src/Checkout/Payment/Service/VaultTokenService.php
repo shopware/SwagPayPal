@@ -163,7 +163,7 @@ class VaultTokenService
         ?ParameterBag $bag = null,
         ?PaymentTransactionStruct $paymentTransaction = null,
     ): bool {
-        if ($context && ($context->hasExtension('subscription') || (\class_exists(PlanIntervalMappingStruct::class) && $context->getExtensionOfType('subscriptionManagedContexts', PlanIntervalMappingStruct::class)?->all()))) {
+        if ($context && $this->isSubscriptionContext($context)) {
             return true;
         }
 
@@ -176,6 +176,17 @@ class VaultTokenService
         }
 
         return false;
+    }
+
+    /**
+     * Whether the checkout contains a subscription, either as its own subscription cart or mixed into the regular cart
+     *
+     * @internal
+     */
+    public function isSubscriptionContext(SalesChannelContext $context): bool
+    {
+        return $context->hasExtension('subscription')
+            || (\class_exists(PlanIntervalMappingStruct::class) && $context->getExtensionOfType('subscriptionManagedContexts', PlanIntervalMappingStruct::class)?->all());
     }
 
     private function saveTokenToSubscriptions(SubscriptionCollection $subscriptions, string $tokenId, string $paymentMethodId, Context $context): void

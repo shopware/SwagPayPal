@@ -695,8 +695,8 @@ class ACDCHandlerTest extends TestCase
 
         $this->orderBuilder
             ->expects($this->once())
-            ->method('getOrder')
-            ->with($paymentTransaction, $transaction, $order, $context, new Request())
+            ->method('getRecurringOrder')
+            ->with($paymentTransaction, $transaction, $order, $context)
             ->willReturn($payPalOrder);
 
         $this->orderResource
@@ -750,7 +750,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->vaultTokenService->method('getSubscriptions')->willReturn(new SubscriptionCollection());
-        $this->orderBuilder->expects($this->never())->method('getOrder');
+        $this->orderBuilder->expects($this->never())->method('getRecurringOrder');
         $this->orderResource->expects($this->never())->method('create');
         $this->transactionDataService->expects($this->never())->method('setOrderId');
         $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
@@ -804,7 +804,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->vaultTokenService->method('getSubscriptions')->willReturn(new SubscriptionCollection());
-        $this->orderBuilder->expects($this->never())->method('getOrder');
+        $this->orderBuilder->expects($this->never())->method('getRecurringOrder');
         $this->orderResource->expects($this->never())->method('create');
         $this->orderResource->expects($this->never())->method('get');
         $this->transactionDataService->expects($this->never())->method('setOrderId');
@@ -857,7 +857,7 @@ class ACDCHandlerTest extends TestCase
 
         $this->orderBuilder
             ->expects($this->once())
-            ->method('getOrder')
+            ->method('getRecurringOrder')
             ->willReturn($payPalOrder);
 
         $this->orderResource
