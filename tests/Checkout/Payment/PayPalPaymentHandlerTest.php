@@ -218,6 +218,8 @@ class PayPalPaymentHandlerTest extends TestCase
         // the payer returns into finalize, which resumes the payment from its own token
         static::assertSame(self::RETURN_URL, $paypalSource['experience_context']['return_url'] ?? null);
         static::assertSame(self::RETURN_URL . '&cancel=1', $paypalSource['experience_context']['cancel_url'] ?? null);
+        // a renewed approval with PAY_NOW does not let PayPal capture the changed amount
+        static::assertSame('CONTINUE', $paypalSource['experience_context']['user_action'] ?? null);
 
         // no new PayPal order, which would orphan the one the payer approved
         static::assertCount(0, $this->getGatewayRequests('createOrder'));

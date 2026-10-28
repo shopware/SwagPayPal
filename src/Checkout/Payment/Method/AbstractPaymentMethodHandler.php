@@ -30,6 +30,7 @@ use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultablePaymentSo
 use Shopware\PayPalSDK\Struct\V2\Common\Link;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\AbstractPaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\Checkout\CheckoutException;
 use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -328,6 +329,12 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
 
         if ($paymentSource === null) {
             throw $exception;
+        }
+
+        // approved with PAY_NOW, the default, PayPal still rejects the capture with `PAYER_ACTION_REQUIRED`
+        $paypal = $paymentSource->getPaypal();
+        if ($paypal !== null && $paypal->isset('experienceContext')) {
+            $paypal->getExperienceContext()->setUserAction(ExperienceContext::USER_ACTION_CONTINUE);
         }
 
         try {

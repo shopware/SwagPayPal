@@ -5,6 +5,7 @@
 - Fixes an issue, where the "Cancel and return to shop" link on the PayPal page pointed to `example.com` in PayPal Express Checkout (shopware/shopware#21430)
 - Fixes an issue, where loading the PayPal merchant information, e.g. in the PayPal settings after an onboarding, failed with an error, if PayPal returned a product without vetting status (shopware/shopware#21346)
 - Fixes an issue, where card subscription renewals could fail when the card issuer required 3D Secure, because renewals requested a verification and subscriptions were not flagged as recurring card payments (shopware/shopware#21069)
+- Fixes an issue, where PayPal and Pay Later payments still failed after the customer approved the changed order amount, e.g. after changing the quantity on the confirmation page in PayPal Express Checkout (shopware/SwagPayPal#920)
 
 # 10.8.5
 - Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state
