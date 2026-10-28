@@ -178,6 +178,8 @@ export default class SwagPayPalScriptBase extends Plugin {
     }
 
     destroy() {
+        this._cancelPendingVisibility();
+
         if (this._onPageShow) {
             window.removeEventListener('pageshow', this._onPageShow);
             this._onPageShow = null;
@@ -211,16 +213,39 @@ export default class SwagPayPalScriptBase extends Plugin {
         }
     }
 
+    /**
+     * Drop a pending visibility observer so a later createScript() does not
+     * render a second button into the same element. A queued callback from the
+     * old observer is ignored via the generation counter.
+     *
+     * @private
+     */
+    _cancelPendingVisibility() {
+        this._visibilityObserver?.disconnect();
+        this._visibilityObserver = null;
+        this._visibilityGeneration = (this._visibilityGeneration ?? 0) + 1;
+    }
+
     async _awaitVisibility(callback) {
+        this._cancelPendingVisibility();
+        const generation = this._visibilityGeneration;
+
         const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting) {
-                observer.disconnect();
-                callback();
+            if (!entry.isIntersecting || generation !== this._visibilityGeneration) {
+                return;
             }
+
+            observer.disconnect();
+            if (this._visibilityObserver === observer) {
+                this._visibilityObserver = null;
+            }
+
+            callback();
         }, {
             rootMargin: '200px', // Load the buttons before they become visible
         });
 
+        this._visibilityObserver = observer;
         observer.observe(this.el);
     }
 

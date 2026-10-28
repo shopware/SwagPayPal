@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem Express-Buttons im Listing nach dem Zurücknavigieren mit dem Browser-Zurück-Button mehrfach dargestellt wurden (shopware/SwagPayPal#856)
 - Behebt ein Problem, bei dem PayPal Express Checkout die Fehlermeldung nicht zuverlässig anzeigte, wenn die Checkout-Vorbereitung fehlschlug
 - Behebt ein Problem, bei dem die für Rechnungskauf eingegebene Telefonnummer bei abweichender Liefer- und Rechnungsadresse an der Lieferadresse statt an der Rechnungsadresse gespeichert wurde und die Zahlung dadurch fehlschlug (shopware/SwagPayPal#857)
 - Behebt ein Problem, bei dem das Setzen einer Transaktion auf "Bezahlt" über eine API-Integration ohne Berechtigungen für den PayPal-Umsatzbericht fehlschlug und Flows für den Status "Bezahlt" verhinderte, z. B. nach dem Wechsel von einer fehlgeschlagenen PayPal-Zahlung auf Vorkasse (shopware/shopware#21245)
