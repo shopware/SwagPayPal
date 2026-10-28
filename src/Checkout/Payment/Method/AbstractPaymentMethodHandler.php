@@ -30,6 +30,7 @@ use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultablePaymentSo
 use Shopware\PayPalSDK\Struct\V2\Common\Link;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\AbstractPaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\Checkout\CheckoutException;
 use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -317,17 +318,23 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         $confirmationRequest = new Request();
         $confirmationRequest->attributes->set(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE, true);
 
-        // but the payer still gets the vaulting they asked for
-        if ($request->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
-            $confirmationRequest->request->set(VaultTokenService::REQUEST_CREATE_VAULT, true);
-        }
-
         $paymentSource = $this->orderBuilder
             ->getOrder($transaction, $orderTransaction, $order, $context, $confirmationRequest)
             ->getPaymentSource();
 
         if ($paymentSource === null) {
             throw $exception;
+        }
+
+        $paypal = $paymentSource->getPaypal();
+        if ($paypal !== null) {
+            // the prepared order already requests the vaulting; asked again, PayPal never vaults the payment method
+            $paypal->setAttributes(null);
+
+            // approved with PAY_NOW, the default, PayPal still rejects the capture with `PAYER_ACTION_REQUIRED`
+            if ($paypal->isset('experienceContext')) {
+                $paypal->getExperienceContext()->setUserAction(ExperienceContext::USER_ACTION_CONTINUE);
+            }
         }
 
         try {

@@ -93,6 +93,7 @@ class PayLaterHandlerTest extends AbstractTestSyncAPMHandler
         static::assertIsArray($paypalSource);
         static::assertSame($returnUrl, $paypalSource['experience_context']['return_url'] ?? null);
         static::assertSame($returnUrl . '&cancel=1', $paypalSource['experience_context']['cancel_url'] ?? null);
+        static::assertSame('CONTINUE', $paypalSource['experience_context']['user_action'] ?? null);
         static::assertNull($paypalSource['experience_context']['app_switch_context'] ?? null);
         static::assertArrayNotHasKey('vault_id', $paypalSource);
         static::assertArrayNotHasKey('vault', $paypalSource['attributes'] ?? []);
