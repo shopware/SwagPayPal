@@ -27,7 +27,10 @@ use Shopware\PayPalSDK\Struct\V2\Common\Link;
 use Shopware\PayPalSDK\Struct\V2\Common\LinkCollection;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\Vault;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
 use Shopware\PayPalSDK\Struct\V2\PatchCollection;
 use Shopware\PayPalSDK\Test\Request\TestRequestContext;
 use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
@@ -271,7 +274,7 @@ class PayPalPaymentHandlerTest extends TestCase
         static::assertArrayNotHasKey('vault', $paypalSource['attributes'] ?? []);
     }
 
-    public function testPayerActionRecoveryKeepsTheVaultingThePayerAskedFor(): void
+    public function testPayerActionRecoveryLeavesTheVaultingToThePreparedOrder(): void
     {
         $confirmationRequest = null;
         $orderBuilder = $this->createMock(AbstractOrderBuilder::class);
@@ -285,8 +288,19 @@ class PayPalPaymentHandlerTest extends TestCase
             ) use (&$confirmationRequest): Order {
                 $confirmationRequest = $request;
 
+                // what a subscription order still builds, even without the payer's request
+                $vault = new Vault();
+                $vault->setStoreInVault(Vault::STORE_IN_VAULT_ON_SUCCESS);
+                $attributes = new Attributes();
+                $attributes->setVault($vault);
+                $paypal = new Paypal();
+                $paypal->setAttributes($attributes);
+                $paypal->setExperienceContext(new ExperienceContext());
+                $paymentSource = new PaymentSource();
+                $paymentSource->setPaypal($paypal);
+
                 $paypalOrder = new Order();
-                $paypalOrder->setPaymentSource(new PaymentSource());
+                $paypalOrder->setPaymentSource($paymentSource);
 
                 return $paypalOrder;
             }
@@ -298,8 +312,15 @@ class PayPalPaymentHandlerTest extends TestCase
         $link->setHref(MockRequestHandler::CONFIRMED_PAYER_ACTION_URL);
         $confirmed->setLinks(new LinkCollection([$link]));
 
+        $confirmedSource = null;
         $orderResource = $this->createMock(OrderResource::class);
-        $orderResource->method('confirm')->willReturn($confirmed);
+        $orderResource->method('confirm')->willReturnCallback(
+            static function (string $orderId, PaymentSource $paymentSource) use (&$confirmedSource, $confirmed): Order {
+                $confirmedSource = $paymentSource;
+
+                return $confirmed;
+            }
+        );
 
         $handler = new class(...$this->createHandlerDependencies($orderResource, $orderBuilder)) extends PayPalPaymentHandler {
             public function recoverFromPayerActionOf(
@@ -331,12 +352,18 @@ class PayPalPaymentHandlerTest extends TestCase
             Context::createDefaultContext(),
         );
 
+        static::assertInstanceOf(PaymentSource::class, $confirmedSource);
+        $confirmedPaypal = $confirmedSource->getPaypal();
+        static::assertNotNull($confirmedPaypal);
+        // the prepared order already requested the vaulting the payer ticked; requested again on the
+        // confirmation, PayPal captures the order but never vaults the payment method
+        static::assertNull($confirmedPaypal->getAttributes());
+        static::assertSame(ExperienceContext::USER_ACTION_CONTINUE, $confirmedPaypal->getExperienceContext()->getUserAction());
+
         static::assertInstanceOf(Request::class, $confirmationRequest);
-        // the payer ticked "save for later" before the capture was rejected; re-approving must carry
-        // that consent, or the order is captured and the payment method never vaulted
-        static::assertTrue($confirmationRequest->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT));
-        // ... while everything that would make the return silent or non-interactive stays behind
+        // everything that would make the return silent or non-interactive stays behind
         static::assertTrue($confirmationRequest->attributes->getBoolean(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE));
+        static::assertFalse($confirmationRequest->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT));
         static::assertSame('', $confirmationRequest->request->getString('product'));
         static::assertSame('', $confirmationRequest->request->getString(CreateOrderRoute::PAYPAL_BUYER_USER_AGENT));
     }

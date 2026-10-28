@@ -318,11 +318,6 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         $confirmationRequest = new Request();
         $confirmationRequest->attributes->set(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE, true);
 
-        // but the payer still gets the vaulting they asked for
-        if ($request->request->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
-            $confirmationRequest->request->set(VaultTokenService::REQUEST_CREATE_VAULT, true);
-        }
-
         $paymentSource = $this->orderBuilder
             ->getOrder($transaction, $orderTransaction, $order, $context, $confirmationRequest)
             ->getPaymentSource();
@@ -331,10 +326,15 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
             throw $exception;
         }
 
-        // approved with PAY_NOW, the default, PayPal still rejects the capture with `PAYER_ACTION_REQUIRED`
         $paypal = $paymentSource->getPaypal();
-        if ($paypal !== null && $paypal->isset('experienceContext')) {
-            $paypal->getExperienceContext()->setUserAction(ExperienceContext::USER_ACTION_CONTINUE);
+        if ($paypal !== null) {
+            // the prepared order already requests the vaulting; asked again, PayPal never vaults the payment method
+            $paypal->setAttributes(null);
+
+            // approved with PAY_NOW, the default, PayPal still rejects the capture with `PAYER_ACTION_REQUIRED`
+            if ($paypal->isset('experienceContext')) {
+                $paypal->getExperienceContext()->setUserAction(ExperienceContext::USER_ACTION_CONTINUE);
+            }
         }
 
         try {
