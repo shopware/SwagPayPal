@@ -54,7 +54,6 @@ export const CaptureSandboxPayPalOrder = base.extend<FixtureTypes>({
                         },
                         data: {
                             intent: 'CAPTURE',
-                            processing_instruction: 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL',
                             purchase_units: [
                                 {
                                     amount: {
