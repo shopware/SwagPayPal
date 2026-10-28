@@ -1,46 +1,61 @@
+import { createHmac } from 'node:crypto';
 import { test, expect } from '@fixtures/AcceptanceTest';
 
-const captureCompleted = {
-    event_type: 'PAYMENT.CAPTURE.COMPLETED',
-};
+function captureCompletedBody(customId: string): Record<string, unknown> {
+    return {
+        event_type: 'PAYMENT.CAPTURE.COMPLETED',
+        resource_type: 'capture',
+        resource_version: '2.0',
+        resource: {
+            id: 'CAPTURE-NOT-THIS-ORDER',
+            custom_id: customId,
+            status: 'COMPLETED',
+            final_capture: true,
+        },
+    };
+}
+
+async function openOrder(
+    TestDataService: FixtureTypes['TestDataService'],
+    ReadOrderTransactionState: FixtureTypes['ReadOrderTransactionState'],
+) {
+    const product = await TestDataService.createBasicProduct();
+    const customer = await TestDataService.createCustomer();
+    const order = await TestDataService.createOrder([{ product, quantity: 1 }], customer);
+    const transaction = await ReadOrderTransactionState(order.id)();
+
+    return { order, transaction };
+}
 
 test('SEC-03 Webhook without sw-token is rejected', async ({
     ExecutePayPalWebhook,
-    ReplaceWebhookToken,
+    ReadOrderTransactionState,
+    TestDataService,
 }) => {
-    const token = await ReplaceWebhookToken()();
+    const { order, transaction } = await openOrder(TestDataService, ReadOrderTransactionState);
+    const response = await ExecutePayPalWebhook({
+        body: captureCompletedBody(transaction.id),
+    })();
 
-    try {
-        const response = await ExecutePayPalWebhook({
-            body: captureCompleted,
-        })();
-
-        expect(response.status).toBe(400);
-        expect(response.body).toContain('Shopware token is invalid');
-    }
-    finally {
-        await token.restore();
-    }
+    expect(response.status).toBe(400);
+    expect(response.body).toContain('Shopware token is invalid');
+    expect((await ReadOrderTransactionState(order.id)()).technicalName).toBe(transaction.technicalName);
 });
 
 test('SEC-04 Webhook with a wrong sw-token is rejected', async ({
     ExecutePayPalWebhook,
-    ReplaceWebhookToken,
+    ReadOrderTransactionState,
+    TestDataService,
 }) => {
-    const token = await ReplaceWebhookToken()();
+    const { order, transaction } = await openOrder(TestDataService, ReadOrderTransactionState);
+    const response = await ExecutePayPalWebhook({
+        token: 'wrongtokenvalue123456789012',
+        body: captureCompletedBody(transaction.id),
+    })();
 
-    try {
-        const response = await ExecutePayPalWebhook({
-            token: 'wrongtokenvalue123456789012',
-            body: captureCompleted,
-        })();
-
-        expect(response.status).toBe(400);
-        expect(response.body).toContain('Shopware token is invalid');
-    }
-    finally {
-        await token.restore();
-    }
+    expect(response.status).toBe(400);
+    expect(response.body).toContain('Shopware token is invalid');
+    expect((await ReadOrderTransactionState(order.id)()).technicalName).toBe(transaction.technicalName);
 });
 
 test('SEC-05 A capture event for another custom id does not mark the order paid', async ({
@@ -51,30 +66,18 @@ test('SEC-05 A capture event for another custom id does not mark the order paid'
     TestDataService,
 }) => {
     const token = await ReplaceWebhookToken()();
-    const product = await TestDataService.createBasicProduct();
-    const customer = await TestDataService.createCustomer();
-    const order = await TestDataService.createOrder([{ product, quantity: 1 }], customer);
-    const transaction = await ReadOrderTransactionState(order.id)();
-    const otherCustomId = IdProvider.getIdPair().uuid;
 
     try {
+        const { order, transaction } = await openOrder(TestDataService, ReadOrderTransactionState);
         const response = await ExecutePayPalWebhook({
             token: token.value,
-            body: {
-                event_type: 'PAYMENT.CAPTURE.COMPLETED',
-                resource_type: 'capture',
-                resource_version: '2.0',
-                resource: {
-                    id: 'CAPTURE-NOT-THIS-ORDER',
-                    custom_id: otherCustomId,
-                    status: 'COMPLETED',
-                    final_capture: true,
-                },
-            },
+            body: captureCompletedBody(IdProvider.getIdPair().uuid),
         })();
 
         expect(response.status).toBe(400);
-        expect((await ReadOrderTransactionState(order.id)()).stateId).toBe(transaction.stateId);
+        expect(response.body).toContain('An error occurred during execution of webhook');
+        expect(response.body).not.toContain('Shopware token is invalid');
+        expect((await ReadOrderTransactionState(order.id)()).technicalName).toBe(transaction.technicalName);
     }
     finally {
         await token.restore();
@@ -84,10 +87,7 @@ test('SEC-05 A capture event for another custom id does not mark the order paid'
 test('SEC-09 Zettle webhook with a bad signature is rejected', async ({
     ExecuteZettleWebhook,
     OpenZettleSalesChannel,
-    ReadProductStock,
-    TestDataService,
 }) => {
-    const product = await TestDataService.createBasicProduct({ stock: 4 });
     const channel = await OpenZettleSalesChannel()();
     const body = {
         eventName: 'InventoryBalanceChanged',
@@ -96,8 +96,11 @@ test('SEC-09 Zettle webhook with a bad signature is rejected', async ({
         payload: '{}',
         timestamp: '2020-01-01T00:00:00.000Z',
     };
+    const validSignature = createHmac('sha256', channel.webhookSigningKey)
+        .update(`${body.timestamp}.${body.payload}`)
+        .digest('hex');
 
     expect(await ExecuteZettleWebhook(channel.salesChannelId, body)()).toBe(401);
     expect(await ExecuteZettleWebhook(channel.salesChannelId, body, 'not-a-valid-signature')()).toBe(401);
-    expect(await ReadProductStock(product.id)()).toBe(4);
+    expect(await ExecuteZettleWebhook(channel.salesChannelId, body, validSignature)()).toBe(204);
 });

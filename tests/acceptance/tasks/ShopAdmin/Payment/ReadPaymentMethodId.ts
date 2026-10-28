@@ -1,8 +1,4 @@
-import { test as base } from '@shopware-ag/acceptance-test-suite';
-
-const paymentMethodNames: Record<string, string> = {
-    swag_paypal_paypal: 'PayPal',
-};
+import { test as base, expect } from '@shopware-ag/acceptance-test-suite';
 
 export type ReadPaymentMethodIdTask = (technicalName: string) => () => Promise<string>;
 
@@ -10,12 +6,27 @@ export const ReadPaymentMethodId = base.extend<FixtureTypes>({
     ReadPaymentMethodId: async ({ TestDataService }, use) => {
         const task: ReadPaymentMethodIdTask = (technicalName) => {
             return async function ReadPaymentMethodId() {
-                const method = await TestDataService.getPaymentMethod(paymentMethodNames[technicalName] ?? technicalName);
-                if (!method?.id) {
+                const response = await TestDataService.AdminApiClient.post('search/payment-method', {
+                    data: {
+                        limit: 1,
+                        filter: [
+                            {
+                                type: 'equals',
+                                field: 'technicalName',
+                                value: technicalName,
+                            },
+                        ],
+                    },
+                });
+
+                expect(response.ok()).toBeTruthy();
+
+                const { data } = await response.json() as { data: { id: string }[] };
+                if (!data[0]?.id) {
                     throw new Error(`Payment method ${technicalName} was not found.`);
                 }
 
-                return method.id;
+                return data[0].id;
             };
         };
 

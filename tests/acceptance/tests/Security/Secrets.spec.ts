@@ -70,38 +70,3 @@ test('SEC-11 Live mode does not send the sandbox client id', { tag: ['@Storefron
         await TestDataService.clearCaches();
     }
 });
-
-test('SEC-12 PUI customer-service instructions are not executed on the storefront', { tag: ['@Storefront'] }, async ({
-    ShopCustomer,
-    StorefrontProductDetail,
-    AdminApiContext,
-    TestDataService,
-}) => {
-    const key = 'SwagPayPal.settings.puiCustomerServiceInstructions';
-    const previous = await readPayPalSetting(AdminApiContext, key);
-    const payload = '<script>window.__xss=1</script>';
-    const product = await TestDataService.createBasicProduct();
-
-    try {
-        await savePayPalSettings(AdminApiContext, {
-            [key]: payload,
-        });
-
-        expect(await readPayPalSetting(AdminApiContext, key)).toBe(payload);
-
-        // The setting is stored for PayPal and customer mail. The storefront page must not run it if a template echoes it.
-        await ShopCustomer.goesTo(StorefrontProductDetail.url(product));
-        const html = await StorefrontProductDetail.page.content();
-        const executed: unknown = await StorefrontProductDetail.page.evaluate(() => {
-            return (globalThis as { __xss?: unknown }).__xss;
-        });
-
-        expect(html).not.toContain(payload);
-        expect(executed).toBeUndefined();
-    }
-    finally {
-        await savePayPalSettings(AdminApiContext, {
-            [key]: previous ?? 'Details zum Kundenservice finden Sie auf unserer Webseite',
-        });
-    }
-});

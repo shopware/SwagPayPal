@@ -12,7 +12,7 @@ export class OffCanvasCart extends StorefrontPageObjects.OffCanvasCart {
         this.offcanvasContainer = page.locator('.offcanvas-cart-actions');
     }
 
-    public paypalButton(type: PayPalExpressButton): Promise<Locator> {
+    public paypalButton(type: PayPalExpressButton): Locator {
         return paypalExpressButton(this.offcanvasContainer, type);
     }
 }

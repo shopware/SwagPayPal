@@ -1,16 +1,30 @@
+import { randomUUID } from 'node:crypto';
 import { test, expect } from '@fixtures/AcceptanceTest';
 
-function unsignedJwt(payload: Record<string, unknown>): string {
+function unsignedJwt(claims: Record<string, unknown>): string {
     const encode = (value: unknown) => Buffer.from(JSON.stringify(value)).toString('base64url');
+    const now = Math.floor(Date.now() / 1000);
 
-    return `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode(payload)}.not-a-signature`;
+    return `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({
+        iat: now,
+        nbf: now,
+        exp: now + 900,
+        jti: randomUUID().replaceAll('-', ''),
+        ...claims,
+    })}.not-a-signature`;
 }
 
 test('SEC-06 A tampered return token is rejected', async ({
     RestorePayPalContext,
+    TestDataService,
 }) => {
+    const salesChannelId = TestDataService.defaultSalesChannel.id;
     const garbage = await RestorePayPalContext('not-a-jwt')();
-    const tampered = await RestorePayPalContext(unsignedJwt({ orderId: 'not-an-order' }))();
+    const tampered = await RestorePayPalContext(unsignedJwt({
+        contextToken: 'acceptance-context-token',
+        salesChannelId,
+        returnTarget: 'checkout-confirm',
+    }))();
 
     expect(garbage).toContain('checkout/cart');
     expect(garbage).not.toContain('checkout/finish');
@@ -29,18 +43,22 @@ test('SEC-07 A return token cannot complete another customer order', async ({
     const customerB = await TestDataService.createCustomer();
     const orderA = await TestDataService.createOrder([{ product, quantity: 1 }], customerA);
     const orderB = await TestDataService.createOrder([{ product, quantity: 1 }], customerB);
-    const stateA = (await ReadOrderTransactionState(orderA.id)()).stateId;
-    const stateB = (await ReadOrderTransactionState(orderB.id)()).stateId;
+    const stateA = (await ReadOrderTransactionState(orderA.id)()).technicalName;
+    const stateB = (await ReadOrderTransactionState(orderB.id)()).technicalName;
 
+    // The signature is invalid on purpose. A shop that skips signature checks would
+    // accept these claims and redirect into customer B's order.
     const token = unsignedJwt({
-        orderId: orderB.id,
+        contextToken: 'acceptance-context-token',
+        salesChannelId: TestDataService.defaultSalesChannel.id,
         returnTarget: 'account-order-edit',
+        orderId: orderB.id,
     });
     const url = await RestorePayPalContext(token)();
 
     expect(url).toContain('checkout/cart');
     expect(url).not.toContain(orderB.id);
     expect(url).not.toContain('account/order');
-    expect((await ReadOrderTransactionState(orderA.id)()).stateId).toBe(stateA);
-    expect((await ReadOrderTransactionState(orderB.id)()).stateId).toBe(stateB);
+    expect((await ReadOrderTransactionState(orderA.id)()).technicalName).toBe(stateA);
+    expect((await ReadOrderTransactionState(orderB.id)()).technicalName).toBe(stateB);
 });

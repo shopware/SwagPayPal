@@ -1,4 +1,4 @@
-import { test } from '@fixtures/AcceptanceTest';
+import { test, expect } from '@fixtures/AcceptanceTest';
 
 test('E2E-14 As an admin, I can refund a PayPal payment from the order', { tag: ['@Settings'] }, async ({
     ShopAdmin,
@@ -42,4 +42,6 @@ test('E2E-14 As an admin, I can refund a PayPal payment from the order', { tag: 
     });
     await AdminOrderDetail.payPalRefundConfirmButton.click();
     await ShopAdmin.expects(AdminOrderDetail.payPalRefundSuccess).toBeVisible();
+    await expect.poll(async () => (await ReadOrderTransactionState(order.id)()).technicalName)
+        .toMatch(/^(refunded|refunded_partially)$/);
 });

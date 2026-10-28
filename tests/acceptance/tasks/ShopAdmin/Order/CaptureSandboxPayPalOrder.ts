@@ -2,6 +2,8 @@ import { request } from '@playwright/test';
 import { test as base } from '@shopware-ag/acceptance-test-suite';
 
 const SANDBOX_CARD_NUMBER = '4012888888881881';
+const SANDBOX_CARD_SECURITY_CODE = '123';
+const SANDBOX_CARD_EXPIRY = '2030-12';
 
 export type CaptureSandboxPayPalOrderTask = () => () => Promise<string>;
 
@@ -52,6 +54,7 @@ export const CaptureSandboxPayPalOrder = base.extend<FixtureTypes>({
                         },
                         data: {
                             intent: 'CAPTURE',
+                            processing_instruction: 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL',
                             purchase_units: [
                                 {
                                     amount: {
@@ -64,8 +67,8 @@ export const CaptureSandboxPayPalOrder = base.extend<FixtureTypes>({
                                 card: {
                                     name: 'Test Buyer',
                                     number: SANDBOX_CARD_NUMBER,
-                                    security_code: '123',
-                                    expiry: '2030-12',
+                                    security_code: SANDBOX_CARD_SECURITY_CODE,
+                                    expiry: SANDBOX_CARD_EXPIRY,
                                 },
                             },
                         },
@@ -76,12 +79,34 @@ export const CaptureSandboxPayPalOrder = base.extend<FixtureTypes>({
                         throw new Error(`PayPal sandbox order failed with HTTP ${orderResponse.status()}: ${orderText.slice(0, 500)}`);
                     }
 
-                    const order = JSON.parse(orderText) as { id?: string, status?: string };
-                    if (order.status !== 'COMPLETED' || !order.id) {
-                        throw new Error(`PayPal sandbox order is ${order.status ?? 'missing'}, not a completed capture.`);
+                    const created = JSON.parse(orderText) as { id?: string, status?: string };
+                    if (!created.id) {
+                        throw new Error('PayPal sandbox order did not return an id.');
                     }
 
-                    return order.id;
+                    if (created.status === 'COMPLETED') {
+                        return created.id;
+                    }
+
+                    const captureResponse = await paypal.post(`/v2/checkout/orders/${created.id}/capture`, {
+                        headers: {
+                            Authorization: `Bearer ${tokenJson.access_token}`,
+                            'Content-Type': 'application/json',
+                            'PayPal-Request-Id': crypto.randomUUID(),
+                            Prefer: 'return=representation',
+                        },
+                    });
+                    const captureText = await captureResponse.text();
+                    if (!captureResponse.ok()) {
+                        throw new Error(`PayPal sandbox capture failed with HTTP ${captureResponse.status()}: ${captureText.slice(0, 500)}`);
+                    }
+
+                    const captured = JSON.parse(captureText) as { id?: string, status?: string };
+                    if (captured.status !== 'COMPLETED' || !captured.id) {
+                        throw new Error(`PayPal sandbox order is ${captured.status ?? 'missing'}, not a completed capture.`);
+                    }
+
+                    return captured.id;
                 }
                 finally {
                     await paypal.dispose();

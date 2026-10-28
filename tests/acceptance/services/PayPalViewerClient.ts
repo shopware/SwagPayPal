@@ -33,8 +33,9 @@ export async function openViewerClient(
         throw new Error('Viewer login did not return an access token. APP_URL must point at the shop.');
     }
 
+    // Login is `{APP_URL}api/oauth/token`. Two segments up keeps a path prefix such as `/shop/`.
     return apiRequest.newContext({
-        baseURL: new URL(tokenResponse.url()).origin + '/',
+        baseURL: new URL('../../', tokenResponse.url()).href,
         extraHTTPHeaders: {
             Authorization: `Bearer ${tokenJson.access_token}`,
         },

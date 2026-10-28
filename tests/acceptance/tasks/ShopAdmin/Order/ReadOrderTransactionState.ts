@@ -3,6 +3,7 @@ import { test as base, expect } from '@shopware-ag/acceptance-test-suite';
 export type OrderTransactionState = {
     id: string
     stateId: string
+    technicalName: string
 };
 
 export type ReadOrderTransactionStateTask = (orderId: string) => () => Promise<OrderTransactionState>;
@@ -14,6 +15,9 @@ export const ReadOrderTransactionState = base.extend<FixtureTypes>({
                 const response = await AdminApiContext.post('search/order-transaction', {
                     data: {
                         limit: 1,
+                        associations: {
+                            stateMachineState: {},
+                        },
                         filter: [
                             {
                                 type: 'equals',
@@ -26,13 +30,24 @@ export const ReadOrderTransactionState = base.extend<FixtureTypes>({
 
                 expect(response.ok(), `Should find the transaction for order ${orderId}`).toBeTruthy();
 
-                const json = await response.json() as { data: OrderTransactionState[] };
+                const json = await response.json() as {
+                    data: {
+                        id: string
+                        stateId: string
+                        stateMachineState?: { technicalName?: string }
+                    }[]
+                };
                 const transaction = json.data[0];
-                if (!transaction?.id || !transaction.stateId) {
+                const technicalName = transaction?.stateMachineState?.technicalName;
+                if (!transaction?.id || !transaction.stateId || !technicalName) {
                     throw new Error(`Order ${orderId} has no transaction.`);
                 }
 
-                return transaction;
+                return {
+                    id: transaction.id,
+                    stateId: transaction.stateId,
+                    technicalName,
+                };
             };
         };
 
