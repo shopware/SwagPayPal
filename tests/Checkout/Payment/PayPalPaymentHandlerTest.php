@@ -51,6 +51,9 @@ use Swag\PayPal\PaymentsApi\Patch\TransactionPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\Patch;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Vault;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\VaultablePaymentSourceInterface;
 use Swag\PayPal\RestApi\V2\Api\Patch as PatchV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
@@ -350,6 +353,39 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         static::assertArrayNotHasKey('vault_id', $paypalSource);
 
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
+    }
+
+    public function testPayWithSpbPayerActionRequiredLeavesTheVaultingToThePreparedOrder(): void
+    {
+        $vaultTokenService = $this->createMock(VaultTokenService::class);
+        // requests the vaulting like the real service does
+        $vaultTokenService->method('requestVaulting')->willReturnCallback(static function (VaultablePaymentSourceInterface $paymentSource): void {
+            $vault = new Vault();
+            $vault->setStoreInVault(Vault::STORE_IN_VAULT_ON_SUCCESS);
+            $attributes = new Attributes();
+            $attributes->setVault($vault);
+            $paymentSource->setAttributes($attributes);
+        });
+        $handler = $this->createPayPalPaymentHandler($this->getDefaultConfigData(), null, $vaultTokenService);
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId);
+        $dataBag = new RequestDataBag([
+            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
+            VaultTokenService::REQUEST_CREATE_VAULT => true,
+        ]);
+
+        $response = $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
+
+        static::assertSame(ConfirmOrderPayerAction::PAYER_ACTION_URL, $response->getTargetUrl());
+
+        $paypalSource = $this->clientFactory->getClient()->getData()['payment_source']['paypal'] ?? null;
+        static::assertIsArray($paypalSource);
+        // the prepared order already requested the vaulting the payer ticked; requested again on the
+        // confirmation, PayPal captures the order but never vaults the payment method
+        static::assertNull($paypalSource['attributes'] ?? null);
+        static::assertSame('CONTINUE', $paypalSource['experience_context']['user_action'] ?? null);
     }
 
     public function testPayWithEcsPayerActionRequiredThrowsIfConfirmationFails(): void
@@ -745,7 +781,8 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
 
     private function createPayPalPaymentHandler(
         array $settings = [],
-        ?EntityRepository $orderTransactionRepository = null
+        ?EntityRepository $orderTransactionRepository = null,
+        ?VaultTokenService $orderBuilderVaultTokenService = null,
     ): PayPalPaymentHandler {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
@@ -759,7 +796,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
         return new PayPalPaymentHandler(
             $orderTransactionStateHandler,
             new PayPalHandler(
-                $this->createOrderBuilder($systemConfig),
+                $this->createOrderBuilder($systemConfig, $orderBuilderVaultTokenService),
                 $orderResource,
                 new OrderExecuteService(
                     $orderResource,

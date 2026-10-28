@@ -173,7 +173,7 @@ class PayPalHandler
                 throw $e;
             }
 
-            return $this->recoverFromPayerAction($e, $transaction, $dataBag, $salesChannelContext, $paypalOrderId, $partnerAttributionId, $finalizeUrl);
+            return $this->recoverFromPayerAction($e, $transaction, $salesChannelContext, $paypalOrderId, $partnerAttributionId, $finalizeUrl);
         }
 
         // finalize finds the transaction already paid or authorized
@@ -230,7 +230,6 @@ class PayPalHandler
     private function recoverFromPayerAction(
         PayPalApiException $exception,
         AsyncPaymentTransactionStruct $transaction,
-        RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext,
         string $paypalOrderId,
         string $partnerAttributionId,
@@ -241,19 +240,17 @@ class PayPalHandler
             'payPalOrderId' => $paypalOrderId,
         ]);
 
-        // without a saved vault token, but the payer still gets the vaulting they asked for
-        $confirmationDataBag = new RequestDataBag([AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true]);
-        if ($dataBag->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
-            $confirmationDataBag->set(VaultTokenService::REQUEST_CREATE_VAULT, true);
-        }
-
+        // without a saved vault token
         $paymentSource = $this->orderBuilder
-            ->getOrder($transaction, $salesChannelContext, $confirmationDataBag)
+            ->getOrder($transaction, $salesChannelContext, new RequestDataBag([AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true]))
             ->getPaymentSource();
         $paypal = $paymentSource?->getPaypal();
         if ($paymentSource === null || $paypal === null || !$paypal->isset('experienceContext')) {
             throw $exception;
         }
+
+        // the prepared order already requests the vaulting; asked again, PayPal never vaults the payment method
+        $paypal->setAttributes(null);
 
         $experienceContext = $paypal->getExperienceContext();
         // approved with PAY_NOW, the default, PayPal still rejects the capture with `PAYER_ACTION_REQUIRED`
