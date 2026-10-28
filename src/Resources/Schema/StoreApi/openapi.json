@@ -3355,6 +3355,17 @@
                 },
                 "type": "object"
             },
+            "swag_paypal_v2_confirm_order": {
+                "required": [
+                    "payment_source"
+                ],
+                "properties": {
+                    "payment_source": {
+                        "$ref": "#/components/schemas/swag_paypal_v2_order_payment_source"
+                    }
+                },
+                "type": "object"
+            },
             "swag_paypal_v2_order": {
                 "required": [
                     "create_time",

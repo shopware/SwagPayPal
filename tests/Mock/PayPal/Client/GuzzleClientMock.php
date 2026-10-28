@@ -60,6 +60,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderDeclined;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderPending;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\ConfirmOrderPayerAction;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
@@ -256,6 +257,12 @@ class GuzzleClientMock implements ClientInterface
                 $orderCapture['id'] = PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED;
 
                 return $orderCapture;
+            }
+
+            foreach ([PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_CONFIRMATION_FAILS] as $orderId) {
+                if (\mb_strpos($resourceUri, $orderId) !== false) {
+                    return \array_merge(GetOrderCapture::get(), ['id' => $orderId]);
+                }
             }
 
             if (\mb_substr($resourceUri, -17) === GetOrderAuthorization::ID) {
@@ -509,6 +516,20 @@ class GuzzleClientMock implements ClientInterface
                 throw $this->createClientExceptionInstrumentDeclined();
             }
 
+            if (\mb_substr($resourceUri, -8) === '/capture'
+                && (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED) !== false
+                    || \mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_CONFIRMATION_FAILS) !== false)) {
+                throw $this->createClientExceptionPayerActionRequired();
+            }
+
+            if (\mb_substr($resourceUri, -23) === '/confirm-payment-source') {
+                if (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_CONFIRMATION_FAILS) !== false) {
+                    throw $this->createClientExceptionWithResponse();
+                }
+
+                return ConfirmOrderPayerAction::get();
+            }
+
             if (\mb_substr($resourceUri, -8) === '/capture' && \mb_strpos($resourceUri, CaptureOrderAPM::ID)) {
                 return CaptureOrderAPM::get();
             }
@@ -711,6 +732,22 @@ class GuzzleClientMock implements ClientInterface
         ]);
 
         return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_BAD_REQUEST);
+    }
+
+    private function createClientExceptionPayerActionRequired(): ClientException
+    {
+        $jsonString = $this->ensureValidJson([
+            'name' => 'UNPROCESSABLE_ENTITY',
+            'details' => [
+                [
+                    'issue' => 'PAYER_ACTION_REQUIRED',
+                    'description' => 'Payer needs to perform the following action before proceeding with payment.',
+                ],
+            ],
+            'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.',
+        ]);
+
+        return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     private function createClientExceptionDuplicateOrderNumber(): ClientException
