@@ -9,7 +9,9 @@ namespace Swag\PayPal\RestApi\V2\Resource;
 
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
+use Swag\PayPal\RestApi\V2\Api\ConfirmOrder;
 use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\Tracker;
 use Swag\PayPal\RestApi\V2\Api\Patch;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
@@ -73,6 +75,27 @@ class OrderResource
             \sprintf('%s/%s', RequestUriV2::ORDERS_RESOURCE, $orderId),
             $patches
         );
+    }
+
+    /**
+     * Confirms the payment source of an existing PayPal order, which reopens its approval
+     * with the experience context of the given payment source.
+     */
+    public function confirm(
+        string $orderId,
+        PaymentSource $paymentSource,
+        string $salesChannelId,
+        string $partnerAttributionId,
+    ): Order {
+        $confirmOrder = new ConfirmOrder();
+        $confirmOrder->setPaymentSource($paymentSource);
+
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
+            \sprintf('%s/%s/confirm-payment-source', RequestUriV2::ORDERS_RESOURCE, $orderId),
+            $confirmOrder,
+        );
+
+        return (new Order())->assign($response);
     }
 
     public function capture(
