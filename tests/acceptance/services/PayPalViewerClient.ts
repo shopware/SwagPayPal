@@ -14,12 +14,26 @@ export async function openViewerClient(
         aclRoles: [{ id: role.id }],
     } as Parameters<FixtureTypes['TestDataService']['createUser']>[0]);
 
+    const viewer = await loginViewer(request, user.username);
+    const me = await viewer.get('api/_info/me');
+    if (me.status() !== 401) {
+        return viewer;
+    }
+
+    await viewer.dispose();
+    // Shopware 6.5 treats a token as expired when its iat is in the same second as the user's password timestamp.
+    await new Promise(resolve => setTimeout(resolve, 1100));
+
+    return loginViewer(request, user.username);
+}
+
+async function loginViewer(request: APIRequestContext, username: string): Promise<APIRequestContext> {
     const tokenResponse = await request.post('api/oauth/token', {
         data: {
             client_id: 'administration',
             grant_type: 'password',
             scope: 'write',
-            username: user.username,
+            username,
             password: 'shopware',
         },
     });
