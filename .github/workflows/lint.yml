@@ -24,6 +24,7 @@ jobs:
         - admin-eslint
         - admin-jest
         - storefront-eslint
+        - acceptance-eslint
       runs-on: ubuntu-latest
       steps:
         - uses: re-actors/alls-green@v1.2.2
@@ -214,3 +215,25 @@ jobs:
           STOREFRONT_PATH: ${{ github.workspace }}/src/Storefront/Resources/app/storefront
         working-directory: custom/plugins/SwagPayPal
         run: composer lint:storefront:ci
+
+  acceptance-eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SwagPayPal
+        uses: actions/checkout@v5
+        with:
+          path: custom/plugins/SwagPayPal
+
+      # The acceptance test suite requires a newer Node.js than Shopware is built with, but no Shopware installation
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        working-directory: ./custom/plugins/SwagPayPal/tests/acceptance
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./custom/plugins/SwagPayPal/tests/acceptance
+        run: npm run lint
