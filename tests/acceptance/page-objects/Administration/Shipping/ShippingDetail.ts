@@ -11,7 +11,7 @@ export class ShippingDetail extends AdminPageObjects.ShippingDetail {
         super(page);
 
         this.standardShippingCarrierCard = page.locator('.swag-paypal-settings-shipping-carrier');
-        this.standardShippingCarrierInput = this.standardShippingCarrierCard.getByLabel('Carrier code');
+        this.standardShippingCarrierInput = this.standardShippingCarrierCard.locator('.sw-single-select__selection-input');
         this.standardShippingCarrierList = this.standardShippingCarrierCard.locator('.sw-single-select__selection');
         this.standardShippingCarrierItem = this.page.locator('.sw-select-result');
     }
