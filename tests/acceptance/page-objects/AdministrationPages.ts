@@ -16,8 +16,8 @@ export interface AdminPageTypes {
 }
 
 export const test = base.extend<FixtureTypes>({
-    AdminOrderDetail: async ({ AdminPage }, use) => {
-        await use(new OrderDetail(AdminPage));
+    AdminOrderDetail: async ({ AdminPage, InstanceMeta }, use) => {
+        await use(new OrderDetail(AdminPage, InstanceMeta));
     },
 
     AdminPaymentListing: async ({ AdminPage }, use) => {
