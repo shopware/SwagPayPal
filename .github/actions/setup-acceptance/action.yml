@@ -35,7 +35,6 @@ runs:
         key: playwright-browsers-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}
 
     - name: Install playwright browsers
-      if: steps.playwright-browsers-cache.outputs.cache-hit != 'true'
       shell: bash
       working-directory: ${{ inputs.path }}
       run: npx playwright install --with-deps chromium
