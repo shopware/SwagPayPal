@@ -4,7 +4,7 @@ const DataDefinition = {
     MERCHANT_ID: (value: string | undefined) => value ?? '',
     CUSTOMER_ID: (value: string | undefined) => value ?? '',
     CUSTOMER_PASSWORD: (value: string | undefined) => value ?? '',
-    SANDBOX: (value: string | undefined) => value ?? 'true',
+    SANDBOX: (value: string | undefined) => !['false', '0'].includes(value?.toLowerCase() ?? ''),
 };
 
 export type Data = {
@@ -26,11 +26,12 @@ export class PayPalDataProvider {
                 continue;
             }
 
-            const key = rawKey as keyof typeof DataDefinition;
-            const preprocessor = DataDefinition[key];
-
-            this.data[key] = preprocessor(process.env[env]);
+            this.set(rawKey as keyof Data, process.env[env]);
         }
+    }
+
+    private set<T extends keyof Data>(key: T, value: string | undefined): void {
+        this.data[key] = DataDefinition[key](value) as Data[T];
     }
 
     public has<T extends keyof Data>(key: T): boolean {
