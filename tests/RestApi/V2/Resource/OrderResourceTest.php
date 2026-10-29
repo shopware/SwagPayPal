@@ -15,6 +15,10 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V2\Api\Common\Link;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -23,6 +27,7 @@ use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\ConfirmOrderPayerAction;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
@@ -115,6 +120,21 @@ class OrderResourceTest extends TestCase
         static::assertSame('CREATED', $authorizations->first()?->getStatus());
         static::assertNull($payments->getCaptures());
         static::assertNull($payments->getRefunds());
+    }
+
+    public function testConfirm(): void
+    {
+        $paypal = new Paypal();
+        $paypal->setExperienceContext(new ExperienceContext());
+        $paymentSource = new PaymentSource();
+        $paymentSource->setPaypal($paypal);
+        $clientFactory = new PayPalClientFactoryMock(new NullLogger());
+
+        $order = (new OrderResource($clientFactory))->confirm('orderId', $paymentSource, TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT);
+
+        static::assertSame(ConfirmOrderPayerAction::ID, $order->getId());
+        static::assertSame(ConfirmOrderPayerAction::PAYER_ACTION_URL, $order->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)?->getHref());
+        static::assertSame(['payment_source'], \array_keys($clientFactory->getClient()->getData()));
     }
 
     private function createResource(): OrderResource

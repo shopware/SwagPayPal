@@ -900,6 +900,9 @@ export interface components {
       national_number: string;
       country_code: string;
     };
+    swag_paypal_v2_confirm_order: {
+      payment_source: components["schemas"]["swag_paypal_v2_order_payment_source"];
+    };
     swag_paypal_v2_order: {
       create_time: string;
       update_time: string;

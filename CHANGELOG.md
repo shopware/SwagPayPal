@@ -3,6 +3,8 @@
 - Updated the payment amount limitations for P24 and Pay Later (shopware/SwagPayPal#581)
 - Fixes an issue, where setting a transaction to paid via an API integration without privileges for the PayPal turnover report failed and prevented flows on the paid state, e.g. after switching from a failed PayPal payment to prepayment (shopware/shopware#21245)
 - Fixes an issue, where loading the PayPal merchant information, e.g. in the PayPal settings after an onboarding, failed with an error, if PayPal returned a product without vetting status (shopware/shopware#21346)
+- Fixes an issue, where PayPal Express Checkout and Smart Payment Buttons payments failed after the approved order amount rose, e.g. after changing the quantity on the confirmation page, instead of asking the customer to approve the new amount (shopware/SwagPayPal#759, shopware/SwagPayPal#920)
+- Changes `Swag\PayPal\Checkout\Payment\Handler\PayPalHandler::handlePreparedOrder()` to capture or authorize the PayPal order, which `handleFinalizeOrder()` did during `finalize()` before
 
 # 9.13.4
 - Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state

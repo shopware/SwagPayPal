@@ -31,6 +31,8 @@ class PayPalApiException extends PaymentException
 
     public const ISSUE_NOT_AVAILABLE = 'NOT_AVAILABLE';
 
+    public const ISSUE_PAYER_ACTION_REQUIRED = 'PAYER_ACTION_REQUIRED';
+
     /**
      * @param string $name - The general name of the error, groups multiple issues
      * @param string|null $issue - The specific issue which caused the error
