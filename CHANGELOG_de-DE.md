@@ -5,8 +5,6 @@
 - Behebt ein Problem, bei dem das Laden der PayPal-Händlerinformationen, z. B. in den PayPal-Einstellungen nach einem Onboarding, mit einem Fehler fehlschlug, wenn PayPal ein Produkt ohne Prüfstatus zurückgab (shopware/shopware#21346)
 - Behebt ein Problem, bei dem Zahlungen mit PayPal Express Checkout und den Smart Payment Buttons fehlschlugen, nachdem der freigegebene Bestellbetrag gestiegen war, z. B. nach einer Mengenänderung auf der Bestellbestätigungsseite, anstatt den Kunden den neuen Betrag erneut freigeben zu lassen (shopware/SwagPayPal#759, shopware/SwagPayPal#920)
 - Ändert `Swag\PayPal\Checkout\Payment\Handler\PayPalHandler::handlePreparedOrder()`, sodass die PayPal-Bestellung dort eingezogen oder autorisiert wird, was zuvor `handleFinalizeOrder()` während `finalize()` tat
-- Fügt `Swag\PayPal\RestApi\V2\Resource\OrderResource::confirm()` hinzu, das die Zahlungsquelle einer bestehenden PayPal-Bestellung bestätigt
-- Fügt `Swag\PayPal\RestApi\V2\Api\ConfirmOrder` hinzu
 
 # 9.13.4
 - Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden
