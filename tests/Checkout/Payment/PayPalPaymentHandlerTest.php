@@ -51,6 +51,9 @@ use Swag\PayPal\PaymentsApi\Patch\TransactionPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\Patch;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes\Vault;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\VaultablePaymentSourceInterface;
 use Swag\PayPal\RestApi\V2\Api\Patch as PatchV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
@@ -69,6 +72,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentOrderResponse
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderPending;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\ConfirmOrderPayerAction;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
@@ -98,6 +102,8 @@ class PayPalPaymentHandlerTest extends TestCase
     public const PAYPAL_PATCH_THROWS_EXCEPTION = 'invalidId';
     public const PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER = 'paypalOrderIdDuplicateOrderNumber';
     public const PAYPAL_ORDER_ID_INSTRUMENT_DECLINED = 'paypalOrderIdInstrumentDeclined';
+    public const PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED = 'paypalOrderIdPayerActionRequired';
+    public const PAYPAL_ORDER_ID_CONFIRMATION_FAILS = 'paypalOrderIdConfirmationFails';
     private const TEST_CUSTOMER_STREET = 'Street 1';
     private const TEST_CUSTOMER_FIRST_NAME = 'FirstName';
     private const TEST_CUSTOMER_LAST_NAME = 'LastName';
@@ -303,7 +309,103 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         static::assertSame(self::TEST_SHIPPING, $patchValue['amount']['breakdown']['shipping']['value']);
         static::assertSame(1, $patchValue['items'][0]['quantity']);
 
+        // captured before the redirect, so finalize finds the transaction paid
+        static::assertSame(
+            CaptureOrderCapture::CAPTURE_ID,
+            $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID]
+        );
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, $salesChannelContext->getContext());
+    }
+
+    public function testPayWithEcsPayerActionRequiredConfirmsPaymentSourceAndRedirects(): void
+    {
+        $handler = $this->createPayPalPaymentHandler($this->getDefaultConfigData());
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId);
+        $dataBag = new RequestDataBag([
+            PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
+            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
+        ]);
+
+        $response = $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
+
+        static::assertSame(ConfirmOrderPayerAction::PAYER_ACTION_URL, $response->getTargetUrl());
+
+        $confirmation = $this->clientFactory->getClient()->getData();
+        static::assertArrayNotHasKey('intent', $confirmation);
+        $paypalSource = $confirmation['payment_source']['paypal'] ?? null;
+        static::assertIsArray($paypalSource);
+        // the payer returns into finalize, which captures the same PayPal order
+        static::assertSame(
+            \sprintf(
+                '%s&token=%s&%s=1',
+                ConstantsForTesting::PAYMENT_TRANSACTION_DOMAIN,
+                self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
+                PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID
+            ),
+            $paypalSource['experience_context']['return_url'] ?? null
+        );
+        static::assertSame(ConstantsForTesting::PAYMENT_TRANSACTION_DOMAIN . '&cancel=1', $paypalSource['experience_context']['cancel_url'] ?? null);
+        // a renewed approval with PAY_NOW does not let PayPal capture the changed amount
+        static::assertSame('CONTINUE', $paypalSource['experience_context']['user_action'] ?? null);
+        static::assertArrayNotHasKey('vault_id', $paypalSource);
+
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
+    }
+
+    public function testPayWithSpbPayerActionRequiredLeavesTheVaultingToThePreparedOrder(): void
+    {
+        $vaultTokenService = $this->createMock(VaultTokenService::class);
+        // requests the vaulting like the real service does
+        $vaultTokenService->method('requestVaulting')->willReturnCallback(static function (VaultablePaymentSourceInterface $paymentSource): void {
+            $vault = new Vault();
+            $vault->setStoreInVault(Vault::STORE_IN_VAULT_ON_SUCCESS);
+            $attributes = new Attributes();
+            $attributes->setVault($vault);
+            $paymentSource->setAttributes($attributes);
+        });
+        $handler = $this->createPayPalPaymentHandler($this->getDefaultConfigData(), null, $vaultTokenService);
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId);
+        $dataBag = new RequestDataBag([
+            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID_PAYER_ACTION_REQUIRED,
+            VaultTokenService::REQUEST_CREATE_VAULT => true,
+        ]);
+
+        $response = $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
+
+        static::assertSame(ConfirmOrderPayerAction::PAYER_ACTION_URL, $response->getTargetUrl());
+
+        $paypalSource = $this->clientFactory->getClient()->getData()['payment_source']['paypal'] ?? null;
+        static::assertIsArray($paypalSource);
+        // the prepared order already requested the vaulting the payer ticked; requested again on the
+        // confirmation, PayPal captures the order but never vaults the payment method
+        static::assertNull($paypalSource['attributes'] ?? null);
+        static::assertSame('CONTINUE', $paypalSource['experience_context']['user_action'] ?? null);
+    }
+
+    public function testPayWithEcsPayerActionRequiredThrowsIfConfirmationFails(): void
+    {
+        $handler = $this->createPayPalPaymentHandler($this->getDefaultConfigData());
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId);
+        $dataBag = new RequestDataBag([
+            PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
+            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_ORDER_ID_CONFIRMATION_FAILS,
+        ]);
+
+        try {
+            $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
+            static::fail('Expected the payer action to be required');
+        } catch (PaymentException $e) {
+            static::assertSame('SWAG_PAYPAL__API_PAYER_ACTION_REQUIRED', $e->getErrorCode());
+        }
     }
 
     public function testPayWithEcsThrowsException(): void
@@ -380,6 +482,8 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         static::assertSame(self::TEST_AMOUNT, $patchValue['amount']['value']);
         static::assertSame(self::TEST_SHIPPING, $patchValue['amount']['breakdown']['shipping']['value']);
         static::assertSame(1, $patchValue['items'][0]['quantity']);
+
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, $salesChannelContext->getContext());
     }
 
     public function testPayWithExceptionDuringPayPalCommunication(): void
@@ -677,7 +781,8 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
 
     private function createPayPalPaymentHandler(
         array $settings = [],
-        ?EntityRepository $orderTransactionRepository = null
+        ?EntityRepository $orderTransactionRepository = null,
+        ?VaultTokenService $orderBuilderVaultTokenService = null,
     ): PayPalPaymentHandler {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $this->clientFactory = new PayPalClientFactoryMock(new NullLogger());
@@ -691,7 +796,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
         return new PayPalPaymentHandler(
             $orderTransactionStateHandler,
             new PayPalHandler(
-                $this->createOrderBuilder($systemConfig),
+                $this->createOrderBuilder($systemConfig, $orderBuilderVaultTokenService),
                 $orderResource,
                 new OrderExecuteService(
                     $orderResource,

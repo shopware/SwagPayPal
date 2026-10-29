@@ -3,6 +3,8 @@
 - Aktualisiert die Zahlungsbetragsgrenzen für P24
 - Behebt ein Problem, bei dem das Setzen einer Transaktion auf "Bezahlt" über eine API-Integration ohne Berechtigungen für den PayPal-Umsatzbericht fehlschlug und Flows für den Status "Bezahlt" verhinderte, z. B. nach dem Wechsel von einer fehlgeschlagenen PayPal-Zahlung auf Vorkasse (shopware/shopware#21245)
 - Behebt ein Problem, bei dem das Laden der PayPal-Händlerinformationen, z. B. in den PayPal-Einstellungen nach einem Onboarding, mit einem Fehler fehlschlug, wenn PayPal ein Produkt ohne Prüfstatus zurückgab (shopware/shopware#21346)
+- Behebt ein Problem, bei dem Zahlungen mit PayPal Express Checkout und den Smart Payment Buttons fehlschlugen, nachdem der freigegebene Bestellbetrag gestiegen war, z. B. nach einer Mengenänderung auf der Bestellbestätigungsseite, anstatt den Kunden den neuen Betrag erneut freigeben zu lassen (shopware/SwagPayPal#759, shopware/SwagPayPal#920)
+- Ändert `Swag\PayPal\Checkout\Payment\Handler\PayPalHandler::handlePreparedOrder()`, sodass die PayPal-Bestellung dort eingezogen oder autorisiert wird, was zuvor `handleFinalizeOrder()` während `finalize()` tat
 
 # 8.12.4
 - Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden

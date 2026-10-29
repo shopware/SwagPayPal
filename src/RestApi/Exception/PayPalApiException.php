@@ -29,6 +29,8 @@ class PayPalApiException extends PaymentException
     public const ERROR_CODE_RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND';
     public const ISSUE_INVALID_RESOURCE_ID = 'INVALID_RESOURCE_ID';
 
+    public const ISSUE_PAYER_ACTION_REQUIRED = 'PAYER_ACTION_REQUIRED';
+
     /**
      * @param string $name - The general name of the error, groups multiple issues
      * @param string|null $issue - The specific issue which caused the error

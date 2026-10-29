@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -21,10 +22,12 @@ use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Common\Link;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -121,6 +124,9 @@ class PayPalHandler
         return new RedirectResponse($link->getHref());
     }
 
+    /**
+     * @throws PaymentException
+     */
     public function handlePreparedOrder(
         AsyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,
@@ -129,11 +135,12 @@ class PayPalHandler
         $this->logger->debug('Started');
         $paypalOrderId = $dataBag->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
         $isECS = $dataBag->get(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID);
+        $partnerAttributionId = $isECS ? PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT : PartnerAttributionId::SMART_PAYMENT_BUTTONS;
 
         $this->transactionDataService->setOrderId(
             $transaction->getOrderTransaction()->getId(),
             $paypalOrderId,
-            $isECS ? PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT : PartnerAttributionId::SMART_PAYMENT_BUTTONS,
+            $partnerAttributionId,
             $salesChannelContext
         );
 
@@ -142,15 +149,35 @@ class PayPalHandler
             $transaction->getOrderTransaction(),
             $salesChannelContext,
             $paypalOrderId,
-            $isECS ? PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT : PartnerAttributionId::SMART_PAYMENT_BUTTONS
+            $partnerAttributionId
         );
 
         $parameters = \http_build_query([
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => $paypalOrderId,
             $isECS ? PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID : PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID => true,
         ]);
+        $finalizeUrl = \sprintf('%s&%s', $transaction->getReturnUrl(), $parameters);
 
-        return new RedirectResponse(\sprintf('%s&%s', $transaction->getReturnUrl(), $parameters));
+        // captured here instead of in finalize, which cannot send the payer back to PayPal
+        try {
+            $this->handleFinalizeOrder(
+                $transaction,
+                $paypalOrderId,
+                $salesChannelContext->getSalesChannelId(),
+                $salesChannelContext,
+                $partnerAttributionId
+            );
+        } catch (PayPalApiException $e) {
+            if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
+                || !$e->is(PayPalApiException::ISSUE_PAYER_ACTION_REQUIRED)) {
+                throw $e;
+            }
+
+            return $this->recoverFromPayerAction($e, $transaction, $salesChannelContext, $paypalOrderId, $partnerAttributionId, $finalizeUrl);
+        }
+
+        // finalize finds the transaction already paid or authorized
+        return new RedirectResponse($finalizeUrl);
     }
 
     /**
@@ -192,5 +219,68 @@ class PayPalHandler
         }
 
         $this->vaultTokenService->saveToken($transaction, $paymentSource, $customerId, $context->getContext());
+    }
+
+    /**
+     * Reopens the approval of a prepared order PayPal refused to capture, e.g. because its amount rose
+     * after the payer approved it, and redirects the payer to approve it again and return into finalize.
+     *
+     * @see https://developer.paypal.com/docs/checkout/standard/customize/overcharge-handling/
+     */
+    private function recoverFromPayerAction(
+        PayPalApiException $exception,
+        AsyncPaymentTransactionStruct $transaction,
+        SalesChannelContext $salesChannelContext,
+        string $paypalOrderId,
+        string $partnerAttributionId,
+        string $finalizeUrl,
+    ): RedirectResponse {
+        $this->logger->warning('PayPal requires another payer action before the order can be captured.', [
+            'orderTransactionId' => $transaction->getOrderTransaction()->getId(),
+            'payPalOrderId' => $paypalOrderId,
+        ]);
+
+        // without a saved vault token
+        $paymentSource = $this->orderBuilder
+            ->getOrder($transaction, $salesChannelContext, new RequestDataBag([AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true]))
+            ->getPaymentSource();
+        $paypal = $paymentSource?->getPaypal();
+        if ($paymentSource === null || $paypal === null || !$paypal->isset('experienceContext')) {
+            throw $exception;
+        }
+
+        // the prepared order already requests the vaulting; asked again, PayPal never vaults the payment method
+        $paypal->setAttributes(null);
+
+        $experienceContext = $paypal->getExperienceContext();
+        // approved with PAY_NOW, the default, PayPal still rejects the capture with `PAYER_ACTION_REQUIRED`
+        $experienceContext->setUserAction(ExperienceContext::USER_ACTION_CONTINUE);
+        // finalize needs the token and the Express or Smart Payment Buttons flag
+        $experienceContext->setReturnUrl($finalizeUrl);
+
+        try {
+            $confirmedOrder = $this->orderResource->confirm(
+                $paypalOrderId,
+                $paymentSource,
+                $salesChannelContext->getSalesChannelId(),
+                $partnerAttributionId,
+            );
+        } catch (PayPalApiException $confirmationException) {
+            $this->logger->warning('Could not reopen the PayPal order for payer approval.', [
+                'orderTransactionId' => $transaction->getOrderTransaction()->getId(),
+                'payPalOrderId' => $paypalOrderId,
+                'exception' => $confirmationException,
+            ]);
+
+            throw $exception;
+        }
+
+        // Order::$links has no default and PayPal may omit it
+        $link = $confirmedOrder->isset('links') ? $confirmedOrder->getLinks()->getRelation(Link::RELATION_PAYER_ACTION) : null;
+        if ($link === null) {
+            throw $exception;
+        }
+
+        return new RedirectResponse($link->getHref());
     }
 }

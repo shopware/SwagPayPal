@@ -69,7 +69,7 @@ trait ServicesTrait
         );
     }
 
-    protected function createOrderBuilder(?SystemConfigService $systemConfig = null): PayPalOrderBuilder
+    protected function createOrderBuilder(?SystemConfigService $systemConfig = null, ?VaultTokenService $vaultTokenService = null): PayPalOrderBuilder
     {
         $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
 
@@ -84,7 +84,7 @@ trait ServicesTrait
             $addressProvider,
             $this->createMock(LocaleCodeProvider::class),
             new ItemListProvider($priceFormatter, $this->createMock(EventDispatcherInterface::class), new NullLogger()),
-            $this->createMock(VaultTokenService::class),
+            $vaultTokenService ?? $this->createMock(VaultTokenService::class),
         );
     }
 
