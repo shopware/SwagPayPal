@@ -28,7 +28,7 @@ export class PayPalPayment implements PageObject {
         this.paymentMethodRadioGroup = page.getByTestId('pay-with');
         this.payLaterRadioGroup = page.getByTestId('pay-later');
 
-        this.payButton = page.getByTestId('submit-button-initial');
+        this.payButton = page.getByTestId('submit-button-initial').or(page.locator('#one-time-cta')).first();
     }
 
     url(): string {
