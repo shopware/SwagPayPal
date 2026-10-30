@@ -9,8 +9,6 @@ test('E2E-14 As an admin, I can refund a PayPal payment from the order', { tag: 
     ReadPaymentMethodId,
     TestDataService,
 }) => {
-    test.setTimeout(60_000);
-
     const product = await TestDataService.createBasicProduct(
         {
             price: [
