@@ -54,11 +54,17 @@ jobs:
   phpunit:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         MYSQL_IMAGE: ["mysql:8.0", "mariadb:10.11"]
         PLATFORM_BRANCH: ["v6.6.0.0", "6.6.x"]
-        PHP_VERSION: ["8.2", "8.3"]
+        PHP_VERSION: ["8.2", "8.3", "8.4", "8.5"]
         WITH_COMMERCIAL: [true, false]
+        exclude:
+          - PLATFORM_BRANCH: "v6.6.0.0"
+            PHP_VERSION: "8.4"
+          - PLATFORM_BRANCH: "v6.6.0.0"
+            PHP_VERSION: "8.5"
     env:
       REDIS_URL: redis://localhost:6379
     services:
