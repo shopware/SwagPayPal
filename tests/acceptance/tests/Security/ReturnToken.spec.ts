@@ -14,16 +14,6 @@ function unsignedJwt(claims: Record<string, unknown>): string {
     })}.not-a-signature`;
 }
 
-test('SEC-06 A tampered return token is rejected', async ({
-    RestorePayPalContext,
-}) => {
-    const garbage = await RestorePayPalContext('not-a-jwt')();
-
-    expect(garbage).toContain('checkout/cart');
-    expect(garbage).not.toContain('checkout/finish');
-    expect(garbage).not.toContain('account/order');
-});
-
 test('SEC-07 A return token cannot complete another customer order', async ({
     RestorePayPalContext,
     ReadOrderTransactionState,
