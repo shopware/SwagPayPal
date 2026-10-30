@@ -75,11 +75,15 @@ jobs:
   phpunit:
     runs-on: ${{ github.event.repository.private && format('runs-on={0}/runner=sw-amd64', github.run_id) || 'ubuntu-latest' }}
     strategy:
+      fail-fast: false
       matrix:
         MYSQL_IMAGE: ["mysql:8.0"]
         PLATFORM_BRANCH: ["v6.7.0.0", "trunk"]
-        PHP_VERSION: ["8.2", "8.3", "8.4"]
+        PHP_VERSION: ["8.2", "8.3", "8.4", "8.5"]
         WITH_COMMERCIAL: [true]
+        exclude:
+          - PLATFORM_BRANCH: "v6.7.0.0"
+            PHP_VERSION: "8.5"
         include:
           # without commercial, 6.7.0.0
           - WITH_COMMERCIAL: false
