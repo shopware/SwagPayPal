@@ -31,10 +31,10 @@ test('Check Express Buttons in Off Canvas Cart', { tag: ['@Storefront'] }, async
     await ShopCustomer.attemptsTo(CloseTheOffCanvasCart());
     await ShopCustomer.presses(StorefrontHeader.cartTotal);
     await ShopCustomer.expects(StorefrontOffCanvasCart.offcanvasContainer).toBeVisible();
-    await ShopCustomer.expects(await StorefrontOffCanvasCart.paypalButton('paypal')).toBeVisible();
+    await ShopCustomer.expects(StorefrontOffCanvasCart.paypalButton('paypal')).toBeVisible();
 
     // Pay Later Button is only shown in the local test instance, not in pipeline. Redefined scope. Re-Implement with https://github.com/shopware/SwagPayPal/issues/582
-    // await ShopCustomer.expects(await StorefrontOffCanvasCart.paypalButton('paylater')).toBeVisible();
+    // await ShopCustomer.expects(StorefrontOffCanvasCart.paypalButton('paylater')).toBeVisible();
 });
 
 test('Check Express Buttons in Checkout Confirm', { tag: ['@Storefront'] }, async ({
