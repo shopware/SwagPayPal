@@ -11,7 +11,7 @@ export const CaptureSandboxPayPalOrder = base.extend<FixtureTypes>({
     CaptureSandboxPayPalOrder: async ({ PayPalDataProvider }, use) => {
         const task: CaptureSandboxPayPalOrderTask = () => {
             return async function CaptureSandboxPayPalOrder() {
-                if (!PayPalDataProvider.get('SANDBOX')) {
+                if (!PayPalDataProvider.get('SANDBOX', true)) {
                     throw new Error('Refusing to create a card capture against the live PayPal API.');
                 }
 
