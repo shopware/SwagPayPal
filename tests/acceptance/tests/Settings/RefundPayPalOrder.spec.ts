@@ -1,4 +1,11 @@
 import { test, expect } from '@fixtures/AcceptanceTest';
+import { PayPalDataProvider } from '@services/PayPalDataProvider';
+
+const sandboxCaptureAllowed = new PayPalDataProvider().get('SANDBOX', true);
+
+// The card capture targets the sandbox API and throws in live mode.
+// eslint-disable-next-line playwright/no-skipped-test -- skipped only when PAYPAL_SANDBOX is disabled
+test.skip(!sandboxCaptureAllowed, 'Sandbox card capture is refused when PAYPAL_SANDBOX is disabled.');
 
 test('E2E-14 As an admin, I can refund a PayPal payment from the order', { tag: ['@Settings'] }, async ({
     ShopAdmin,
@@ -9,8 +16,6 @@ test('E2E-14 As an admin, I can refund a PayPal payment from the order', { tag: 
     ReadPaymentMethodId,
     TestDataService,
 }) => {
-    test.setTimeout(61_000);
-
     const product = await TestDataService.createBasicProduct(
         {
             price: [

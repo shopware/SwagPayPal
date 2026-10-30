@@ -5,7 +5,6 @@ import { ReadOrderTransactionState, type ReadOrderTransactionStateTask } from '.
 import { ReadPaymentMethodId, type ReadPaymentMethodIdTask } from './ShopAdmin/Payment/ReadPaymentMethodId';
 import { ExecuteZettleWebhook, type ExecuteZettleWebhookTask } from './ShopAdmin/Pos/ExecuteZettleWebhook';
 import { OpenZettleSalesChannel, type OpenZettleSalesChannelTask } from './ShopAdmin/Pos/OpenZettleSalesChannel';
-import { ReadProductStock, type ReadProductStockTask } from './ShopAdmin/Product/ReadProductStock';
 import { ReplaceWebhookToken, type ReplaceWebhookTokenTask } from './ShopAdmin/Settings/ReplaceWebhookToken';
 import { SetStandardCarrier, type SetStandardCarrierTask } from './ShopAdmin/Shipping/SetStandardCarrier';
 import { ExecutePayPalWebhook, type ExecutePayPalWebhookTask } from './ShopAdmin/Webhook/ExecutePayPalWebhook';
@@ -18,7 +17,6 @@ export interface ShopAdminTasks {
     OpenZettleSalesChannel: OpenZettleSalesChannelTask
     ReadOrderTransactionState: ReadOrderTransactionStateTask
     ReadPaymentMethodId: ReadPaymentMethodIdTask
-    ReadProductStock: ReadProductStockTask
     ReplaceWebhookToken: ReplaceWebhookTokenTask
     SetStandardCarrier: SetStandardCarrierTask
 }
@@ -31,7 +29,6 @@ export const test = mergeTests(
     OpenZettleSalesChannel,
     ReadOrderTransactionState,
     ReadPaymentMethodId,
-    ReadProductStock,
     ReplaceWebhookToken,
     SetStandardCarrier,
 );

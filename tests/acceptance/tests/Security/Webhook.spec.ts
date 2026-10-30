@@ -94,7 +94,7 @@ test('SEC-09 Zettle webhook with a bad signature is rejected', async ({
         messageUuid: 'sec-09-message',
         organizationUuid: 'sec-09-organization',
         payload: '{}',
-        timestamp: '2020-01-01T00:00:00.000Z',
+        timestamp: new Date().toISOString(),
     };
     const validSignature = createHmac('sha256', channel.webhookSigningKey)
         .update(`${body.timestamp}.${body.payload}`)
