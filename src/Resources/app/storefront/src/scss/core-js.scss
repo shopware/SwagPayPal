@@ -49,7 +49,7 @@
     --paypal-card-field-font-size: var(--bs-body-font-size);
     --paypal-card-field-line-height: var(--bs-body-line-height);
 
-    --paypal-card-field-padding: $input-padding-y $input-padding-x;
+    --paypal-card-field-padding: #{$input-padding-y} #{$input-padding-x};
     --paypal-card-field-border: var(--bs-border-width) solid var(--bs-border-color);
     --paypal-card-field-border-radius: var(--bs-border-radius);
     --paypal-card-field-color: #{$input-color};
