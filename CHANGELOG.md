@@ -1,4 +1,5 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 10.9.0
+- Added support for the PayPal JS SDK v6, which can be enabled in the "Storefront presentation" settings once it is activated for the PayPal merchant account. It is more performant and displays payment buttons and Pay Later banners faster. Template customisations may need to be adapted if enabled. SDK v6 will become the default in version 11 (shopware/SwagPayPal#257)
 - Fixes an issue, where listing Express buttons were rendered more than once after using the browser Back button (shopware/SwagPayPal#856)
 - Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
 - Fixes an issue, where the phone number entered for Pay Upon Invoice was stored on the shipping instead of the billing address, if both differed, causing the payment to fail (shopware/SwagPayPal#857)
