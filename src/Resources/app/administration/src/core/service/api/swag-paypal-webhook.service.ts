@@ -19,7 +19,7 @@ export default class SwagPayPalWebhookService extends ApiService {
 
     unregister(salesChannelId: string | null) {
         return this.httpClient.delete<PayPal.Api.Operations<'deregisterWebhook'>>(
-            `_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`,
+            `_action/${this.getApiBasePath()}/webhook/deregister/${salesChannelId}`,
             { headers: this.getBasicHeaders() },
         ).then(ApiService.handleResponse.bind(this) as TResponseHandler);
     }
