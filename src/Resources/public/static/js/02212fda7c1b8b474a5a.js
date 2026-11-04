@@ -1,0 +1,2 @@
+(window["webpackJsonpPluginswag-pay-pal"]=window["webpackJsonpPluginswag-pay-pal"]||[]).push([[1667],{722:function(){},1667:function(o,n,a){"use strict";a.r(n),a.d(n,{default:function(){return p}}),a(155);var p=Shopware.Component.wrapComponentConfig({template:'<icons-paypal-multicolor class="swag-paypal-settings-icon" />\n',compatConfig:Shopware.compatConfig})},155:function(o,n,a){var p=a(722);p.__esModule&&(p=p.default),"string"==typeof p&&(p=[[o.id,p,""]]),p.locals&&(o.exports=p.locals),a(5346).Z("0f4dec28",p,!0,{})}}]);
+//# sourceMappingURL=02212fda7c1b8b474a5a.js.map
