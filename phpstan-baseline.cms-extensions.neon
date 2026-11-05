@@ -21,7 +21,7 @@ parameters:
 		-
 			message: '#^Class Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPageletLoadedEvent not found\.$#'
 			identifier: class.notFound
-			count: 3
+			count: 4
 			path: src/Checkout/ExpressCheckout/ExpressCheckoutSubscriber.php
 
 		-
@@ -68,6 +68,12 @@ parameters:
 
 		-
 			message: '#^Parameter \$page of method Swag\\PayPal\\Installment\\Banner\\Service\\BannerDataService\:\:getInstallmentBannerData\(\) has invalid type Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPagelet\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Installment/Banner/Service/BannerDataService.php
+
+		-
+			message: '#^Parameter \$page of method Swag\\PayPal\\Installment\\Banner\\Service\\BannerDataService\:\:getPageType\(\) has invalid type Swag\\CmsExtensions\\Storefront\\Pagelet\\Quickview\\QuickviewPagelet\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Installment/Banner/Service/BannerDataService.php
