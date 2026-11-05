@@ -116,18 +116,17 @@ class PosSyncControllerTest extends TestCase
         ];
     }
 
-    public static function dataProviderFunctions(): array
+    /**
+     * @return \Generator<int, array{string}>
+     */
+    public static function dataProviderFunctions(): \Generator
     {
-        return static::dataProviderSyncFunctions() + [
-            [
-                'cleanUpLog',
-                null,
-            ],
-            [
-                'resetSync',
-                null,
-            ],
-        ];
+        foreach (static::dataProviderSyncFunctions() as [$function]) {
+            yield [$function];
+        }
+
+        yield ['cleanUpLog'];
+        yield ['resetSync'];
     }
 
     #[DataProvider('dataProviderFunctions')]

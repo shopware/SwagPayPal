@@ -118,18 +118,17 @@ class PosCommandTest extends TestCase
         ];
     }
 
-    public static function dataProviderFunctions(): array
+    /**
+     * @return \Generator<int, array{string}>
+     */
+    public static function dataProviderFunctions(): \Generator
     {
-        return static::dataProviderSyncFunctions() + [
-            [
-                PosLogCleanupCommand::class,
-                null,
-            ],
-            [
-                PosSyncResetCommand::class,
-                null,
-            ],
-        ];
+        foreach (static::dataProviderSyncFunctions() as [$function]) {
+            yield [$function];
+        }
+
+        yield [PosLogCleanupCommand::class];
+        yield [PosSyncResetCommand::class];
     }
 
     #[DataProvider('dataProviderFunctions')]
