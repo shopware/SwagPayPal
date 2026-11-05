@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Pos\Run;
 
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Pos\Command\AbstractPosCommand;
@@ -46,15 +45,6 @@ class PosCommandTest extends TestCase
     private SalesChannelRepoMock $salesChannelRepoMock;
 
     /**
-     * @var MockObject&RunService
-     */
-    private RunService $runService;
-
-    private MockObject $logCleaner;
-
-    private MockObject $syncResetter;
-
-    /**
      * @var AbstractPosCommand[]
      */
     private array $commands;
@@ -65,23 +55,21 @@ class PosCommandTest extends TestCase
     {
         $this->salesChannelRepoMock = new SalesChannelRepoMock();
         $this->messageBus = new MessageBusMock();
-        $this->runService = $this->createMock(RunService::class);
-        $this->logCleaner = $this->createMock(LogCleaner::class);
-        $this->syncResetter = $this->createMock(SyncResetter::class);
+        $runService = static::createStub(RunService::class);
 
-        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class), new NativeClock());
-        $productTask = new ProductTask($messageDispatcher, $this->runService);
-        $imageTask = new ImageTask($messageDispatcher, $this->runService);
-        $inventoryTask = new InventoryTask($messageDispatcher, $this->runService);
-        $completeTask = new CompleteTask($messageDispatcher, $this->runService);
+        $messageDispatcher = new MessageDispatcher($this->messageBus, static::createStub(Connection::class), new NativeClock());
+        $productTask = new ProductTask($messageDispatcher, $runService);
+        $imageTask = new ImageTask($messageDispatcher, $runService);
+        $inventoryTask = new InventoryTask($messageDispatcher, $runService);
+        $completeTask = new CompleteTask($messageDispatcher, $runService);
 
         $this->commands = [
             PosSyncCommand::class => new PosSyncCommand($this->salesChannelRepoMock, $completeTask),
             PosImageSyncCommand::class => new PosImageSyncCommand($this->salesChannelRepoMock, $imageTask),
             PosInventorySyncCommand::class => new PosInventorySyncCommand($this->salesChannelRepoMock, $inventoryTask),
             PosProductSyncCommand::class => new PosProductSyncCommand($this->salesChannelRepoMock, $productTask),
-            PosLogCleanupCommand::class => new PosLogCleanupCommand($this->salesChannelRepoMock, $this->logCleaner),
-            PosSyncResetCommand::class => new PosSyncResetCommand($this->salesChannelRepoMock, $this->syncResetter),
+            PosLogCleanupCommand::class => new PosLogCleanupCommand($this->salesChannelRepoMock, static::createStub(LogCleaner::class)),
+            PosSyncResetCommand::class => new PosSyncResetCommand($this->salesChannelRepoMock, static::createStub(SyncResetter::class)),
         ];
     }
 
@@ -161,17 +149,19 @@ class PosCommandTest extends TestCase
 
     public function testLogCleanup(): void
     {
-        $this->logCleaner->expects($this->exactly($this->salesChannelRepoMock->getCollection()->count()))->method('cleanUpLog');
-        $input = new ArrayInput([]);
+        $logCleaner = $this->createMock(LogCleaner::class);
+        $logCleaner->expects($this->exactly($this->salesChannelRepoMock->getCollection()->count()))->method('cleanUpLog');
+        $command = new PosLogCleanupCommand($this->salesChannelRepoMock, $logCleaner);
 
-        static::assertSame(0, $this->commands[PosLogCleanupCommand::class]->run($input, new NullOutput()));
+        static::assertSame(0, $command->run(new ArrayInput([]), new NullOutput()));
     }
 
     public function testSyncReset(): void
     {
-        $this->syncResetter->expects($this->exactly($this->salesChannelRepoMock->getCollection()->count()))->method('resetSync');
-        $input = new ArrayInput([]);
+        $syncResetter = $this->createMock(SyncResetter::class);
+        $syncResetter->expects($this->exactly($this->salesChannelRepoMock->getCollection()->count()))->method('resetSync');
+        $command = new PosSyncResetCommand($this->salesChannelRepoMock, $syncResetter);
 
-        static::assertSame(0, $this->commands[PosSyncResetCommand::class]->run($input, new NullOutput()));
+        static::assertSame(0, $command->run(new ArrayInput([]), new NullOutput()));
     }
 }
