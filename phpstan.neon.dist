@@ -111,6 +111,10 @@ parameters:
         - # Shopware trunk classifies these plugin tests as non-Unit by namespace
             identifier: shopware.unexpectedTestCovers
 
+        - # Shopware trunk rule; StaticEntityRepository::of() and the generic inference from the searches only exist
+          # since 6.7.14.0, so the tests keep the @var StaticEntityRepository<...> annotations for 6.7.0.0 compatibility
+            identifier: shopware.staticEntityRepositoryVarAnnotation
+
         - # v11.0.0 deprecation - addFundingAvailabilityDataToFooter will be removed
             identifier: method.deprecated
             message: '#Call to deprecated method addFundingAvailabilityDataToFooter\(\) of class Swag\\PayPal\\Storefront\\Data\\FundingSubscriber#'
