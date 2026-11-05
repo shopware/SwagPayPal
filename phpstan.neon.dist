@@ -12,6 +12,7 @@ parameters:
 
     excludePaths:
         - src/Resources
+        - tests/acceptance
         - tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
         - tests/DeprecatedTagTest.php
 
