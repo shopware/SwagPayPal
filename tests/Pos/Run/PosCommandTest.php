@@ -11,6 +11,7 @@ use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Command\AbstractPosCommand;
 use Swag\PayPal\Pos\Command\PosImageSyncCommand;
 use Swag\PayPal\Pos\Command\PosInventorySyncCommand;
@@ -156,6 +157,16 @@ class PosCommandTest extends TestCase
         static::assertSame(0, $command->run(new ArrayInput([]), new NullOutput()));
     }
 
+    public function testLogCleanupOfOneSalesChannel(): void
+    {
+        $salesChannelId = $this->salesChannelRepoMock->getMockEntity()->getId();
+        $logCleaner = $this->createMock(LogCleaner::class);
+        $logCleaner->expects($this->once())->method('cleanUpLog')->with($salesChannelId);
+        $command = new PosLogCleanupCommand($this->salesChannelRepoMock, $logCleaner);
+
+        static::assertSame(0, $command->run(new ArrayInput(['salesChannelId' => $salesChannelId]), new NullOutput()));
+    }
+
     public function testSyncReset(): void
     {
         $syncResetter = $this->createMock(SyncResetter::class);
@@ -163,5 +174,17 @@ class PosCommandTest extends TestCase
         $command = new PosSyncResetCommand($this->salesChannelRepoMock, $syncResetter);
 
         static::assertSame(0, $command->run(new ArrayInput([]), new NullOutput()));
+    }
+
+    public function testSyncResetOfOneSalesChannel(): void
+    {
+        $salesChannelId = $this->salesChannelRepoMock->getMockEntity()->getId();
+        $syncResetter = $this->createMock(SyncResetter::class);
+        $syncResetter->expects($this->once())->method('resetSync')->with(
+            static::callback(static fn (SalesChannelEntity $salesChannel): bool => $salesChannel->getId() === $salesChannelId)
+        );
+        $command = new PosSyncResetCommand($this->salesChannelRepoMock, $syncResetter);
+
+        static::assertSame(0, $command->run(new ArrayInput(['salesChannelId' => $salesChannelId]), new NullOutput()));
     }
 }
