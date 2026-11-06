@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -32,6 +33,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -39,6 +41,8 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\Generator;
@@ -223,6 +227,66 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
 
         static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
         static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
+    }
+
+    /**
+     * @param array<string, string> $domainUrls domain URLs by language ID
+     */
+    #[DataProvider('dataProviderFallbackUrl')]
+    public function testGetOrderFromCartUsesSalesChannelDomainAsFallbackUrl(array $domainUrls, string $expectedUrl): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        $salesChannelContext->getSalesChannel()->setDomains($this->createDomains($domainUrls));
+
+        $order = $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, new RequestDataBag());
+        $experienceContext = $order->getPaymentSource()?->first($this->getPaymentSourceClass())?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame($expectedUrl, $experienceContext->getReturnUrl());
+        static::assertSame($expectedUrl . '?cancel=1', $experienceContext->getCancelUrl());
+    }
+
+    /**
+     * @param array<string, string> $domainUrls domain URLs by language ID
+     */
+    #[DataProvider('dataProviderFallbackUrl')]
+    public function testGetOrderUsesSalesChannelDomainAsFallbackUrl(array $domainUrls, string $expectedUrl): void
+    {
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->createOrder();
+        $order->getSalesChannel()?->setDomains($this->createDomains($domainUrls));
+
+        $payPalOrder = $this->getBuilder()->getOrder(
+            new PaymentTransactionStruct($orderTransaction->getId()),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request(),
+        );
+
+        $experienceContext = $payPalOrder->getPaymentSource()?->first($this->getPaymentSourceClass())?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame($expectedUrl, $experienceContext->getReturnUrl());
+        static::assertSame($expectedUrl . '?cancel=1', $experienceContext->getCancelUrl());
+    }
+
+    public static function dataProviderFallbackUrl(): \Generator
+    {
+        yield 'domain of the context language' => [
+            [Uuid::randomHex() => 'https://other-language.test', Defaults::LANGUAGE_SYSTEM => 'https://shop.test/en'],
+            'https://shop.test/en',
+        ];
+
+        yield 'first domain without a domain of the context language' => [
+            [Uuid::randomHex() => 'https://first.test', Uuid::randomHex() => 'https://second.test'],
+            'https://first.test',
+        ];
+
+        yield 'placeholder URL without domains' => [
+            [],
+            CreateOrderRoute::FAKE_URL,
+        ];
     }
 
     public function testGetOrderWithDisabledSubmitCartConfig(): void
@@ -653,5 +717,22 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $cart->add($this->createLineItem($lineItemPrice));
 
         return $cart;
+    }
+
+    /**
+     * @param array<string, string> $domainUrls domain URLs by language ID
+     */
+    private function createDomains(array $domainUrls): SalesChannelDomainCollection
+    {
+        $domains = new SalesChannelDomainCollection();
+        foreach ($domainUrls as $languageId => $url) {
+            $domain = new SalesChannelDomainEntity();
+            $domain->setId(Uuid::randomHex());
+            $domain->setLanguageId($languageId);
+            $domain->setUrl($url);
+            $domains->add($domain);
+        }
+
+        return $domains;
     }
 }
