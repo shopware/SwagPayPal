@@ -19,6 +19,7 @@ use Shopware\Core\Checkout\Order\SalesChannel\AbstractSetPaymentOrderRoute;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStructFactory;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
@@ -222,7 +223,12 @@ class CreateOrderRouteTest extends TestCase
         $salesChannel->setId(Uuid::randomHex());
         $orderEntity->setSalesChannel($salesChannel);
 
-        $this->orderRepository->addSearch(new OrderCollection([$orderEntity]));
+        $this->orderRepository->addSearch(static function (Criteria $criteria) use ($orderEntity): OrderCollection {
+            // without return URLs in the request, the order builder falls back to a domain of the sales channel
+            static::assertTrue($criteria->getAssociation('salesChannel')->hasAssociation('domains'));
+
+            return new OrderCollection([$orderEntity]);
+        });
 
         $response = $this->route->createPayPalOrder($salesChannelContext, $request);
 

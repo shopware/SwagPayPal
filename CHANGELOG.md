@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where a placeholder URL instead of a domain of the sales channel was sent to PayPal as return and cancel URL, if no return URL was given, e.g. when creating a PayPal order via the Store API without `returnUrl` and `cancelUrl`
+
 # 10.9.0
 - Added support for the PayPal JS SDK v6, which can be enabled in the "Storefront presentation" settings once it is activated for the PayPal merchant account. It is more performant and displays payment buttons and Pay Later banners faster. Template customisations may need to be adapted if enabled. SDK v6 will become the default in version 11 (shopware/SwagPayPal#257)
 - Fixes an issue, where listing Express buttons were rendered more than once after using the browser Back button (shopware/SwagPayPal#856)
