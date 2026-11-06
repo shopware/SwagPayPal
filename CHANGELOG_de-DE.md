@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem eine Platzhalter-URL statt einer Domain des Verkaufskanals als Rücksprung- und Abbruch-URL an PayPal übermittelt wurde, z. B. bei Zahlungen mit PayPal Express Checkout oder den Smart Payment Buttons
+
 # 9.13.5
 - Behebt ein Problem, bei dem PayPal Express Checkout die Fehlermeldung nicht zuverlässig anzeigte, wenn die Checkout-Vorbereitung fehlschlug
 - Aktualisiert die Zahlungsbetragsgrenzen für P24 und "Später bezahlen" (shopware/SwagPayPal#581)
