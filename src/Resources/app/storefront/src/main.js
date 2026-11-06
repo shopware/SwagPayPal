@@ -82,11 +82,15 @@ PluginManager.register(
     () => import('./payment/swag-paypal.checkout.apple-pay'),
     '[data-swag-paypal-checkout-apple-pay]',
 );
-
 PluginManager.register(
     'SwagPaypalCheckoutCardFields',
     () => import('./payment/swag-paypal.checkout.card-fields'),
     '[data-swag-paypal-checkout-card-fields]',
+);
+PluginManager.register(
+    'SwagPaypalCheckoutSepa',
+    () => import('./payment/swag-paypal.checkout.sepa'),
+    '[data-swag-paypal-checkout-sepa]',
 );
 
 
