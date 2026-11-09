@@ -246,9 +246,6 @@ abstract class AbstractOrderBuilder
         return $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId());
     }
 
-    /**
-     * Only used if no return URL is known. PayPal usually does not redirect the buyer to it, e.g. after an approval via the JS SDK
-     */
     private function getFallbackUrl(SalesChannelContext $salesChannelContext): string
     {
         $domainId = $salesChannelContext->getDomainId();
