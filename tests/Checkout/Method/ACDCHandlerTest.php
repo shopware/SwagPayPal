@@ -648,7 +648,6 @@ class ACDCHandlerTest extends TestCase
         $payPalOrder = $this->createOrderObject();
 
         $this->orderTransactionRepository->addSearch(static function (Criteria $criteria) use ($transaction): array {
-            // the renewal has no return URL, so the order builder falls back to a domain of the sales channel
             static::assertTrue($criteria->getAssociation('order.salesChannel')->hasAssociation('domains'));
 
             return [$transaction];

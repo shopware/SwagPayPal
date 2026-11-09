@@ -224,7 +224,6 @@ class CreateOrderRouteTest extends TestCase
         $orderEntity->setSalesChannel($salesChannel);
 
         $this->orderRepository->addSearch(static function (Criteria $criteria) use ($orderEntity): OrderCollection {
-            // without return URLs in the request, the order builder falls back to a domain of the sales channel
             static::assertTrue($criteria->getAssociation('salesChannel')->hasAssociation('domains'));
 
             return new OrderCollection([$orderEntity]);

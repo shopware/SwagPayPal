@@ -245,9 +245,6 @@ abstract class AbstractOrderBuilder
         return $request->attributes->getBoolean(self::RECURRING_ATTRIBUTE);
     }
 
-    /**
-     * Only used if no return URL is known. PayPal usually does not redirect the buyer to it, e.g. after an approval via the JS SDK
-     */
     private function getFallbackUrl(SalesChannelEntity $salesChannel, Context $context): string
     {
         $domains = $salesChannel->getDomains();
