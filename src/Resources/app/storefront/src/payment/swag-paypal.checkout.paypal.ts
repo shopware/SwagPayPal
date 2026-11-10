@@ -24,7 +24,7 @@ export default class SwagPaypalCheckoutPaypal extends SwagPaypalCheckout<'paypal
             return;
         }
 
-        this.el!.type = 'checkout';
+        this.el!.type = 'pay';
         this.el!.addEventListener('click', () => void this.submissionFlow({ paymentSession }));
     }
 
