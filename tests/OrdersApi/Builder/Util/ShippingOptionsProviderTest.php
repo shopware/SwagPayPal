@@ -209,6 +209,11 @@ class ShippingOptionsProviderTest extends TestCase
      */
     private function createShippingCostRoute(array $shippingTotals, float $shippingTax = 0.0): AbstractShippingCostRoute&MockObject
     {
+        // @deprecated tag:v11.0.0 - class exists with v6.7.11.0.
+        if (!\class_exists(AbstractShippingCostRoute::class)) {
+            static::markTestSkipped('AbstractShippingCostRoute does not exist');
+        }
+
         $response = $this->createMock(ShippingCostRouteResponse::class);
         $response
             ->method('getShippingCost')
