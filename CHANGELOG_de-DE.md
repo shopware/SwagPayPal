@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Behebt ein Problem, bei dem eine Platzhalter-URL statt einer Domain des Verkaufskanals als Rücksprung- und Abbruch-URL an PayPal übermittelt wurde, wenn keine Rücksprung-URL angegeben war, z. B. beim Erstellen einer PayPal-Bestellung über die Store API ohne `returnUrl` und `cancelUrl`
+- Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
 
 # 10.9.0
 - Fügt Unterstützung für das PayPal JS SDK v6 hinzu, das in den Einstellungen unter "Storefront-Darstellung" aktiviert werden kann, sobald es für das PayPal-Händlerkonto freigeschaltet ist. Es ist performanter und zeigt Zahlungsbuttons und "Später bezahlen"-Banner schneller an. Template-Anpassungen müssen gegebenenfalls angepasst werden wenn aktiviert. SDK v6 wird ab Version 11 die Standardimplementierung (shopware/SwagPayPal#257)
