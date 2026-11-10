@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem PayPal Express Checkout alle Versandarten außer der gewählten als kostenlos anzeigte (shopware/SwagPayPal#913)
+
 # 10.9.0
 - Fügt Unterstützung für das PayPal JS SDK v6 hinzu, das in den Einstellungen unter "Storefront-Darstellung" aktiviert werden kann, sobald es für das PayPal-Händlerkonto freigeschaltet ist. Es ist performanter und zeigt Zahlungsbuttons und "Später bezahlen"-Banner schneller an. Template-Anpassungen müssen gegebenenfalls angepasst werden wenn aktiviert. SDK v6 wird ab Version 11 die Standardimplementierung (shopware/SwagPayPal#257)
 - Behebt ein Problem, bei dem Express-Buttons im Listing nach dem Zurücknavigieren mit dem Browser-Zurück-Button mehrfach dargestellt wurden (shopware/SwagPayPal#856)
