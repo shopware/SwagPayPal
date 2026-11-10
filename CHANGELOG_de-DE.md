@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
+
 # 9.13.5
 - Behebt ein Problem, bei dem PayPal Express Checkout die Fehlermeldung nicht zuverlässig anzeigte, wenn die Checkout-Vorbereitung fehlschlug
 - Aktualisiert die Zahlungsbetragsgrenzen für P24 und "Später bezahlen" (shopware/SwagPayPal#581)

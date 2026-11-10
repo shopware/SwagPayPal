@@ -222,8 +222,9 @@ abstract class AbstractOrderBuilder
             $experienceContext->setReturnUrl($paymentTransaction->getReturnUrl());
             $experienceContext->setCancelUrl(\sprintf('%s&cancel=1', $paymentTransaction->getReturnUrl()));
         } else {
-            $experienceContext->setReturnUrl(CreateOrderRoute::FAKE_URL);
-            $experienceContext->setCancelUrl(CreateOrderRoute::FAKE_URL . '?cancel=1');
+            $fallbackUrl = $this->getFallbackUrl($salesChannelContext);
+            $experienceContext->setReturnUrl($fallbackUrl);
+            $experienceContext->setCancelUrl($fallbackUrl . '?cancel=1');
         }
 
         return $experienceContext;
@@ -243,6 +244,15 @@ abstract class AbstractOrderBuilder
     protected function submitCart(SalesChannelContext $salesChannelContext): bool
     {
         return $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId());
+    }
+
+    private function getFallbackUrl(SalesChannelContext $salesChannelContext): string
+    {
+        $domainId = $salesChannelContext->getDomainId();
+        $domains = $salesChannelContext->getSalesChannel()->getDomains();
+        $domain = ($domainId !== null ? $domains?->get($domainId) : null) ?? $domains?->first();
+
+        return $domain?->getUrl() ?? CreateOrderRoute::FAKE_URL;
     }
 
     /**

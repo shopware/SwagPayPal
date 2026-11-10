@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -38,10 +39,13 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\TestDefaults;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -186,6 +190,65 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $this->expectExceptionMessage('Required setting "landingPage" is missing or invalid');
         $this->systemConfig->set(Settings::LANDING_PAGE, 'invalidLandingPageType');
         $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, new RequestDataBag());
+    }
+
+    /**
+     * @param array<string, string> $domainUrls domain URLs by domain ID
+     */
+    #[DataProvider('dataProviderFallbackUrl')]
+    public function testGetOrderFromCartUsesSalesChannelDomainAsFallbackUrl(array $domainUrls, ?string $domainId, string $expectedUrl): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        $salesChannelContext->setDomainId($domainId);
+        $salesChannelContext->getSalesChannel()->setDomains($this->createDomains($domainUrls));
+
+        $order = $this->getBuilder()->getOrderFromCart($this->createCart(''), $salesChannelContext, new RequestDataBag());
+        $experienceContext = $order->getPaymentSource()?->first($this->getPaymentSourceClass())?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame($expectedUrl, $experienceContext->getReturnUrl());
+        static::assertSame($expectedUrl . '?cancel=1', $experienceContext->getCancelUrl());
+    }
+
+    /**
+     * @param array<string, string> $domainUrls domain URLs by domain ID
+     */
+    #[DataProvider('dataProviderFallbackUrl')]
+    public function testGetOrderUsesSalesChannelDomainAsFallbackUrl(array $domainUrls, ?string $domainId, string $expectedUrl): void
+    {
+        $paymentTransaction = new SyncPaymentTransactionStruct($this->createOrderTransaction(), $this->createOrder());
+        $salesChannelContext = $this->createSalesChannelContext();
+        $salesChannelContext->setDomainId($domainId);
+        $salesChannelContext->getSalesChannel()->setDomains($this->createDomains($domainUrls));
+
+        $order = $this->getBuilder()->getOrder($paymentTransaction, $salesChannelContext, new RequestDataBag());
+        $experienceContext = $order->getPaymentSource()?->first($this->getPaymentSourceClass())?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+
+        static::assertSame($expectedUrl, $experienceContext->getReturnUrl());
+        static::assertSame($expectedUrl . '?cancel=1', $experienceContext->getCancelUrl());
+    }
+
+    public static function dataProviderFallbackUrl(): \Generator
+    {
+        $domainId = Uuid::randomHex();
+        yield 'domain of the request' => [
+            [Uuid::randomHex() => 'https://other-domain.test', $domainId => 'https://shop.test/en'],
+            $domainId,
+            'https://shop.test/en',
+        ];
+
+        yield 'first domain without a domain of the request' => [
+            [Uuid::randomHex() => 'https://first.test', Uuid::randomHex() => 'https://second.test'],
+            null,
+            'https://first.test',
+        ];
+
+        yield 'placeholder URL without domains' => [
+            [],
+            null,
+            CreateOrderRoute::FAKE_URL,
+        ];
     }
 
     public function testGetOrderWithDisabledSubmitCartConfig(): void
@@ -529,5 +592,21 @@ abstract class AbstractOrderBuilderTestCase extends TestCase
         $cart->add($this->createLineItem($lineItemPrice));
 
         return $cart;
+    }
+
+    /**
+     * @param array<string, string> $domainUrls domain URLs by domain ID
+     */
+    private function createDomains(array $domainUrls): SalesChannelDomainCollection
+    {
+        $domains = new SalesChannelDomainCollection();
+        foreach ($domainUrls as $domainId => $url) {
+            $domain = new SalesChannelDomainEntity();
+            $domain->setId($domainId);
+            $domain->setUrl($url);
+            $domains->add($domain);
+        }
+
+        return $domains;
     }
 }
