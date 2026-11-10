@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Behebt ein Problem, bei dem eine Platzhalter-URL statt einer Domain des Verkaufskanals als Rücksprung- und Abbruch-URL an PayPal übermittelt wurde, z. B. bei Zahlungen mit PayPal Express Checkout oder den Smart Payment Buttons
+- Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
 
 # 8.12.5
 - Fügt Kanada zu den Ländern hinzu, in denen "Später bezahlen" verfügbar ist (shopware/SwagPayPal#581)
