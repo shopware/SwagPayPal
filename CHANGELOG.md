@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- Fixes an issue, where a placeholder URL instead of a domain of the sales channel was sent to PayPal as return and cancel URL, e.g. for payments via PayPal Express Checkout or the Smart Payment Buttons
+- Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
 
 # 9.13.5
 - Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
