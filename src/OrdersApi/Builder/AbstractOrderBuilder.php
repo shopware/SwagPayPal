@@ -213,8 +213,9 @@ abstract class AbstractOrderBuilder
             $experienceContext->setReturnUrl($paymentTransaction->getReturnUrl());
             $experienceContext->setCancelUrl(\sprintf('%s&cancel=1', $paymentTransaction->getReturnUrl()));
         } else {
-            $experienceContext->setReturnUrl(CreateOrderRoute::FAKE_URL);
-            $experienceContext->setCancelUrl(CreateOrderRoute::FAKE_URL . '?cancel=1');
+            $fallbackUrl = $this->getFallbackUrl($salesChannel, $context);
+            $experienceContext->setReturnUrl($fallbackUrl);
+            $experienceContext->setCancelUrl($fallbackUrl . '?cancel=1');
         }
 
         return $experienceContext;
@@ -242,6 +243,14 @@ abstract class AbstractOrderBuilder
     protected function isRecurringOrder(Request $request): bool
     {
         return $request->attributes->getBoolean(self::RECURRING_ATTRIBUTE);
+    }
+
+    private function getFallbackUrl(SalesChannelEntity $salesChannel, Context $context): string
+    {
+        $domains = $salesChannel->getDomains();
+        $domain = $domains?->filterByProperty('languageId', $context->getLanguageId())->first() ?? $domains?->first();
+
+        return $domain?->getUrl() ?? CreateOrderRoute::FAKE_URL;
     }
 
     /**

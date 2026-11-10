@@ -456,7 +456,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         $criteria->addAssociation('order.deliveries.shippingOrderAddress.countryState');
         $criteria->addAssociation('order.lineItems');
         $criteria->addAssociation('order.orderCustomer.customer');
-        $criteria->addAssociation('order.salesChannel');
+        $criteria->addAssociation('order.salesChannel.domains');
 
         $transaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
         \assert($transaction instanceof OrderTransactionEntity);

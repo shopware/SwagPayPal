@@ -24,6 +24,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
@@ -646,7 +647,11 @@ class ACDCHandlerTest extends TestCase
 
         $payPalOrder = $this->createOrderObject();
 
-        $this->orderTransactionRepository->addSearch([$transaction]);
+        $this->orderTransactionRepository->addSearch(static function (Criteria $criteria) use ($transaction): array {
+            static::assertTrue($criteria->getAssociation('order.salesChannel')->hasAssociation('domains'));
+
+            return [$transaction];
+        });
 
         /** @deprecated tag:v11.0.0 - Condition will always be true */
         if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
