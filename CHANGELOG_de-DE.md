@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
+
 # 8.12.5
 - Fügt Kanada zu den Ländern hinzu, in denen "Später bezahlen" verfügbar ist (shopware/SwagPayPal#581)
 - Aktualisiert die Zahlungsbetragsgrenzen für P24

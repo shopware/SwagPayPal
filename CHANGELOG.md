@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
+
 # 8.12.5
 - Added Canada to the countries where Pay Later is available (shopware/SwagPayPal#581)
 - Updated the payment amount limitations for P24
