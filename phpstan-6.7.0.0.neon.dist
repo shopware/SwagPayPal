@@ -113,6 +113,11 @@ parameters:
         - message: '#Shopware\\Core\\Content\\Cookie\\Struct\\CookieGroup#'
           path: tests/Storefront/Framework/Cookie/CookieProviderSubscriberTest.php
 
+        - message: '#Shopware\\Core\\Checkout\\Cart\\SalesChannel\\(Abstract)?ShippingCostRoute#'
+          paths:
+            - src/OrdersApi/Builder/Util/ShippingOptionsProvider.php
+            - tests/OrdersApi/Builder/Util/ShippingOptionsProviderTest.php
+
         - message: '#^Mixed variable in a `\$(required|entries)\-\>\.\.\.\(\)` can skip important errors\. Make sure the type is known$#'
           identifier: typePerfect.noMixedMethodCaller
           paths:
