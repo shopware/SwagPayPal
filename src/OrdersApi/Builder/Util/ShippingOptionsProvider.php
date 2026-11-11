@@ -26,7 +26,11 @@ use Symfony\Component\HttpFoundation\Request;
 #[Package('checkout')]
 class ShippingOptionsProvider
 {
-    // The shipping cost route deletes the persisted cart before shopware/shopware#19419
+    /**
+     * The shipping cost route deletes the persisted cart before shopware/shopware#19419
+     *
+     * @deprecated tag:v11.0.0 - Will be removed with 6.8.0.0, which always contains the fix
+     */
     private const MIN_SHIPPING_COST_ROUTE_VERSION = '6.7.14.0';
 
     /**
@@ -35,7 +39,13 @@ class ShippingOptionsProvider
     public function __construct(
         private readonly PriceFormatter $priceFormatter,
         private readonly AbstractShippingMethodRoute $shippingMethodRoute,
+        /**
+         * @deprecated tag:v11.0.0 - Will be non-optional with 6.8.0.0
+         */
         private readonly ?AbstractShippingCostRoute $shippingCostRoute,
+        /**
+         * @deprecated tag:v11.0.0 - Will be removed with 6.8.0.0
+         */
         private readonly string $shopwareVersion,
     ) {
     }
