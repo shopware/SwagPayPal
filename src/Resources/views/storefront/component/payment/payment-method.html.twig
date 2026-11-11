@@ -26,8 +26,10 @@
     {% elseif payment.id is same as(context.paymentMethod.id) and payPalVaultData is not null %}
         {% block component_payment_method_description_paypal_vault %}
         {% if payPalVaultData.identifier %}
+            {# keeps the parameters of the current route, e.g. the subscription token of the subscription checkout #}
+            {% set payPalVaultClearRedirectParameters = (app.request.attributes.get('_route_params') ?? {})|merge(page.order.id ? { orderId: page.order.id } : {}) %}
             <div>{{ payPalVaultData.identifier }}</div>
-            <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
+            <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: payPalVaultClearRedirectParameters|json_encode }) }}">
                 {{ ("paypal.vault." ~ payPalVaultData.snippetType ~ ".clear")|trans }}
             </a>
         {% elseif context.extensions.subscription is not defined %}
