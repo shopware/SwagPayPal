@@ -56,12 +56,13 @@ class VaultTokenService
             // try to get the token from the subscription
             $tokenId = ($subscription->getCustomFields() ?? [])[$this->getSubscriptionCustomFieldKey($struct->getOrderTransaction()->getPaymentMethodId())] ?? null;
 
-            if (!$tokenId) {
-                return null;
+            if (\is_string($tokenId) && $tokenId !== '') {
+                $criteria->setIds([$tokenId]);
             }
+        }
 
-            $criteria->setIds([$tokenId]);
-        } else {
+        if (!$criteria->getIds()) {
+            // the first order of a subscription has no token yet, so the customer's main token is used, like outside of subscriptions
             $criteria->addFilter(new EqualsFilter('mainMapping.customerId', $customerId));
         }
 

@@ -13,6 +13,8 @@ use Psr\Log\NullLogger;
 use Shopware\Commercial\Subscription\Checkout\Cart\Recurring\SubscriptionRecurringDataStruct;
 use Shopware\Commercial\Subscription\Entity\Subscription\SubscriptionEntity;
 use Shopware\Core\Checkout\Cart\Order\OrderConverter;
+use Shopware\Core\Checkout\Customer\CustomerDefinition;
+use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -22,6 +24,7 @@ use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Test\Generator;
+use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Swag\PayPal\Checkout\Card\CardValidatorInterface;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
@@ -29,6 +32,8 @@ use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
+use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
+use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenDefinition;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -197,6 +202,78 @@ class ACDCHandlerTest extends TestCase
         );
 
         static::assertSame('payerAction', $response->getTargetUrl());
+    }
+
+    public function testPayFirstSubscriptionOrderWithCustomerVaultToken(): void
+    {
+        if (!\class_exists(SubscriptionRecurringDataStruct::class)) {
+            static::markTestSkipped('Commercial is not available');
+        }
+
+        $salesChannelContext = Generator::createSalesChannelContext();
+
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setPaymentMethodId('paymentMethodId');
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setCustomerId('customerId');
+        $order = new OrderEntity();
+        $order->setOrderCustomer($orderCustomer);
+        // the first order of a subscription, so there is no token saved to the subscription yet
+        $subscription = new SubscriptionEntity();
+        $subscription->setId('subscriptionId');
+        $subscription->setNextSchedule(new \DateTime());
+        $paymentTransaction = new AsyncPaymentTransactionStruct(
+            $transaction,
+            $order,
+            'returnUrl',
+            new SubscriptionRecurringDataStruct($subscription),
+        );
+
+        $token = new VaultTokenEntity();
+        $token->setId('vaultTokenId');
+        $token->setToken('vaultToken');
+
+        $handler = new ACDCHandler(
+            $this->settingsValidationService,
+            $this->orderTransactionStateHandler,
+            $this->orderExecuteService,
+            $this->orderPatchService,
+            $this->transactionDataService,
+            new NullLogger(),
+            $this->orderResource,
+            $this->acdcValidator,
+            new VaultTokenService(
+                new StaticEntityRepository([new VaultTokenCollection([$token])], new VaultTokenDefinition()),
+                new StaticEntityRepository([], new CustomerDefinition()),
+                null,
+            ),
+            $this->orderBuilder,
+            $this->orderConverter,
+        );
+
+        $paypalOrder = $this->createOrderObject();
+
+        $this->orderBuilder
+            ->expects(static::once())
+            ->method('getOrder')
+            ->with($paymentTransaction, $salesChannelContext, new RequestDataBag())
+            ->willReturn($paypalOrder);
+
+        $this->orderResource
+            ->expects(static::once())
+            ->method('create')
+            ->with($paypalOrder, $salesChannelContext->getSalesChannelId(), PartnerAttributionId::PAYPAL_PPCP, false)
+            ->willReturn($paypalOrder);
+
+        $this->transactionDataService
+            ->expects(static::once())
+            ->method('setOrderId')
+            ->with('orderTransactionId', 'paypalOrderId', PartnerAttributionId::PAYPAL_PPCP, $salesChannelContext);
+
+        $response = $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
+
+        static::assertSame('returnUrl', $response->getTargetUrl());
     }
 
     public function testPayWithInvalidSettingsException(): void

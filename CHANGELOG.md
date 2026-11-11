@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
+- Fixes an issue, where the first order of a subscription did not use the saved PayPal account or card of the customer, which made payments with a saved card fail
 
 # 9.13.5
 - Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
