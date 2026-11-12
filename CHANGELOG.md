@@ -1,8 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
-- Fixes an issue, where the first order of a subscription did not use the saved PayPal account or card of the customer, which made payments with a saved card fail
-- Fixes an issue, where removing a saved PayPal account or card on the confirmation page of a subscription led to an error page
-- Fixes an issue, where removing a saved PayPal account or card on the confirmation page of a subscription removed the saved account or card of the payment method selected outside of the subscription instead
+- Fixes an issue, where the first payment of a subscription failed, if the customer paid with a saved card
+- Fixes an issue, where removing a saved PayPal account or card on the confirmation page of a subscription led to an error page and could remove other saved payment details instead
 
 # 9.13.5
 - Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
