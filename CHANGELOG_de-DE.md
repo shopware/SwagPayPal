@@ -2,6 +2,7 @@
 - Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
 - Behebt ein Problem, bei dem die erste Bestellung eines Abonnements nicht das gespeicherte PayPal-Konto oder die gespeicherte Karte des Kunden verwendete, wodurch Zahlungen mit einer gespeicherten Karte fehlschlugen
 - Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer gespeicherten Karte auf der Bestellbestätigungsseite eines Abonnements zu einer Fehlerseite führte
+- Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer gespeicherten Karte auf der Bestellbestätigungsseite eines Abonnements stattdessen das gespeicherte Konto oder die gespeicherte Karte der außerhalb des Abonnements ausgewählten Zahlungsart entfernte
 
 # 9.13.5
 - Behebt ein Problem, bei dem PayPal Express Checkout die Fehlermeldung nicht zuverlässig anzeigte, wenn die Checkout-Vorbereitung fehlschlug

@@ -11,9 +11,13 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Test\Generator;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
+use Swag\PayPal\Storefront\Controller\PayPalController;
 use Swag\PayPal\Storefront\Data\Struct\VaultData;
 use Symfony\Bridge\Twig\AppVariable;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,13 +35,20 @@ class VaultClearLinkTest extends TestCase
 
     private const TEMPLATE = '@SwagPayPal/storefront/component/payment/payment-method.html.twig';
     private const BLOCK = 'component_payment_method_description_paypal_vault';
+    private const SUBSCRIPTION_TOKEN = 'Gm0aJ8xVbPq3sLtC7wZnR2kYdE5hU9fA';
 
     /**
      * @param array<string, string> $pathParameters
      */
     #[DataProvider('dataProviderRoutes')]
-    public function testClearLinkRedirectsBackToCurrentRoute(string $routeName, array $pathParameters, ?string $orderId, string $expectedPath): void
-    {
+    public function testClearLinkRedirectsBackToCurrentRoute(
+        string $routeName,
+        array $pathParameters,
+        ?string $orderId,
+        ?string $subscriptionToken,
+        string $expectedClearPath,
+        string $expectedRedirectPath,
+    ): void {
         $router = static::getContainer()->get('router');
         static::assertInstanceOf(RouterInterface::class, $router);
 
@@ -62,6 +73,13 @@ class VaultClearLinkTest extends TestCase
             $page->setOrder($order);
         }
 
+        // the subscription checkout renders with the subscription context, whose token is the subscription token
+        $context = Generator::createSalesChannelContext(token: $subscriptionToken ?? Uuid::randomHex());
+        if ($subscriptionToken !== null) {
+            // see SubscriptionContextStruct::SUBSCRIPTION_EXTENSION of SwagCommercial
+            $context->addExtension('subscription', new ArrayStruct());
+        }
+
         $vaultData = new VaultData();
         $vaultData->setIdentifier('Visa **1881');
         $vaultData->setSnippetType(VaultData::SNIPPET_TYPE_CARD);
@@ -77,6 +95,7 @@ class VaultClearLinkTest extends TestCase
 
         $html = $twig->load(self::TEMPLATE)->renderBlock(self::BLOCK, [
             'app' => $app,
+            'context' => $context,
             'payPalVaultData' => $vaultData,
             'activeRoute' => $routeName,
             'page' => $page,
@@ -84,7 +103,7 @@ class VaultClearLinkTest extends TestCase
 
         static::assertSame(1, \preg_match('/<a href="([^"]+)"/', $html, $matches), $html);
         $clearUrl = \html_entity_decode($matches[1]);
-        static::assertSame('/paypal/vault/clear', \parse_url($clearUrl, \PHP_URL_PATH));
+        static::assertSame($expectedClearPath, \parse_url($clearUrl, \PHP_URL_PATH));
 
         \parse_str((string) \parse_url($clearUrl, \PHP_URL_QUERY), $query);
         static::assertSame($routeName, $query['redirectTo'] ?? null);
@@ -93,11 +112,11 @@ class VaultClearLinkTest extends TestCase
         // the vault clear controller redirects with these parameters, see StorefrontController::createActionResponse
         $redirectParameters = \json_decode($query['redirectParameters'], true, 512, \JSON_THROW_ON_ERROR);
         static::assertIsArray($redirectParameters);
-        static::assertSame($expectedPath, $router->generate($routeName, $redirectParameters));
+        static::assertSame($expectedRedirectPath, $router->generate($routeName, $redirectParameters));
     }
 
     /**
-     * @return iterable<string, array{0: string, 1: array<string, string>, 2: string|null, 3: string}>
+     * @return iterable<string, array{0: string, 1: array<string, string>, 2: string|null, 3: string|null, 4: string, 5: string}>
      */
     public static function dataProviderRoutes(): iterable
     {
@@ -105,6 +124,8 @@ class VaultClearLinkTest extends TestCase
             'frontend.checkout.confirm.page',
             [],
             null,
+            null,
+            '/paypal/vault/clear',
             '/checkout/confirm',
         ];
 
@@ -112,6 +133,8 @@ class VaultClearLinkTest extends TestCase
             'frontend.account.edit-order.page',
             ['orderId' => 'b8bf1d9f9a6a4d0a8e3c1f2e4d5c6b7a'],
             'b8bf1d9f9a6a4d0a8e3c1f2e4d5c6b7a',
+            null,
+            '/paypal/vault/clear',
             '/account/order/edit/b8bf1d9f9a6a4d0a8e3c1f2e4d5c6b7a',
         ];
 
@@ -119,15 +142,34 @@ class VaultClearLinkTest extends TestCase
             'frontend.detail.page',
             ['productId' => 'a1f2e3d4c5b6a7f8e9d0c1b2a3f4e5d6'],
             null,
+            null,
+            '/paypal/vault/clear',
             '/detail/a1f2e3d4c5b6a7f8e9d0c1b2a3f4e5d6',
         ];
 
         // only available with SwagCommercial
         yield 'subscription checkout confirm page' => [
             'frontend.subscription.checkout.confirm.page',
-            ['subscriptionToken' => 'Gm0aJ8xVbPq3sLtC7wZnR2kYdE5hU9fA'],
+            ['subscriptionToken' => self::SUBSCRIPTION_TOKEN],
             null,
-            '/subscription/checkout/confirm/Gm0aJ8xVbPq3sLtC7wZnR2kYdE5hU9fA',
+            self::SUBSCRIPTION_TOKEN,
+            '/subscription/paypal/vault/clear/' . self::SUBSCRIPTION_TOKEN,
+            '/subscription/checkout/confirm/' . self::SUBSCRIPTION_TOKEN,
         ];
+    }
+
+    public function testSubscriptionClearRouteUsesSubscriptionContext(): void
+    {
+        $router = static::getContainer()->get('router');
+        static::assertInstanceOf(RouterInterface::class, $router);
+
+        $route = $router->getRouteCollection()->get('frontend.subscription.paypal.vault.clear');
+        static::assertNotNull($route);
+        static::assertSame('/subscription/paypal/vault/clear/{subscriptionToken}', $route->getPath());
+        static::assertSame(PayPalController::class . '::clearVault', $route->getDefault('_controller'));
+
+        // SwagCommercial passes the subscription context, and with it the payment method of the subscription, to these routes
+        static::assertTrue($route->getDefault('_subscriptionCart'));
+        static::assertTrue($route->getDefault('_subscriptionContext'));
     }
 }
