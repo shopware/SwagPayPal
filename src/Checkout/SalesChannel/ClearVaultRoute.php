@@ -50,7 +50,34 @@ class ClearVaultRoute extends AbstractClearVaultRoute
             description: 'Vault has been cleared successfully',
         )]
     )]
+    #[OA\Post(
+        path: '/subscription/paypal/vault/clear',
+        operationId: 'paypalSubscriptionVaultClear',
+        description: 'Clears the vault for the current customer and the payment method of the subscription selected by the subscription plan and interval headers',
+        tags: ['Store API', 'PayPal'],
+        parameters: [
+            new OA\Parameter(
+                name: 'sw-subscription-plan',
+                description: 'Identifier of the subscription plan',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+            ),
+            new OA\Parameter(
+                name: 'sw-subscription-interval',
+                description: 'Identifier of the subscription interval',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+            ),
+        ],
+        responses: [new OA\Response(
+            response: Response::HTTP_NO_CONTENT,
+            description: 'Vault has been cleared successfully',
+        )]
+    )]
     #[Route(path: '/store-api/paypal/vault/clear', name: 'store-api.paypal.vault.clear', methods: ['POST'], defaults: ['_loginRequired' => true])]
+    #[Route(path: '/store-api/subscription/paypal/vault/clear', name: 'store-api.subscription.paypal.vault.clear', methods: ['POST'], defaults: ['_loginRequired' => true, '_subscriptionCart' => true, '_subscriptionContext' => true])]
     public function clearVault(Request $request, SalesChannelContext $salesChannelContext): Response
     {
         $this->tokenMappingRepository->delete([[
