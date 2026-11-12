@@ -18,7 +18,7 @@
             {% set payPalVaultClearParameters = { redirectTo: activeRoute, redirectParameters: payPalVaultClearRedirectParameters|json_encode } %}
             {# the separate subscription checkout has its own context and payment method, which only the subscription route resolves. Mixed carts use the main context #}
             {% if context.extensions.subscription is defined %}
-                {% set payPalVaultClearUrl = path('frontend.subscription.paypal.vault.clear', payPalVaultClearParameters|merge({ subscriptionToken: context.extensions.subscription.subscriptionToken })) %}
+                {% set payPalVaultClearUrl = path('frontend.subscription.paypal.vault.clear', payPalVaultClearParameters|merge({ subscriptionToken: context.extension('subscription').subscriptionToken })) %}
             {% else %}
                 {% set payPalVaultClearUrl = path('frontend.paypal.vault.clear', payPalVaultClearParameters) %}
             {% endif %}
