@@ -16,8 +16,10 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\ApplicationContext;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\OrderUpdateCallbackConfig;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Item;
 use Shopware\Storefront\Framework\Routing\StorefrontRouteScope;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
@@ -88,6 +90,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 
             $this->logger->debug('Building order');
             $order = $this->paypalOrderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag($request->request->all()));
+            $this->removeDigitalGoodsCategory($order);
             $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
 
             if ($experienceContext !== null) {
@@ -129,6 +132,18 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
             $this->logger->error($e->getMessage(), ['error' => $e]);
 
             throw $e;
+        }
+    }
+
+    // PayPal returns no shipping address for orders with only digital goods, but the customer cannot be registered without one
+    private function removeDigitalGoodsCategory(Order $order): void
+    {
+        foreach ($order->getPurchaseUnits() as $purchaseUnit) {
+            foreach ($purchaseUnit->getItems() ?? [] as $item) {
+                if ($item->isset('category') && $item->getCategory() === Item::CATEGORY_DIGITAL_GOODS) {
+                    $item->unset('category');
+                }
+            }
         }
     }
 }
