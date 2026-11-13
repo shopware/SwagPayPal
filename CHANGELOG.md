@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
+- Fixes an issue, where PayPal Express Checkout failed for carts with only digital products (shopware/SwagPayPal#825)
 
 # 8.12.5
 - Added Canada to the countries where Pay Later is available (shopware/SwagPayPal#581)
