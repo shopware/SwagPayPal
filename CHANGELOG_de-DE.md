@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
+- Behebt ein Problem, bei dem PayPal Express Checkout bei Warenkörben mit ausschließlich digitalen Produkten fehlschlug (shopware/SwagPayPal#825)
 
 # 8.12.5
 - Fügt Kanada zu den Ländern hinzu, in denen "Später bezahlen" verfügbar ist (shopware/SwagPayPal#581)
