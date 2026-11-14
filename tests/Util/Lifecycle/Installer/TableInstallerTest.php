@@ -11,6 +11,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
+use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenDefinition;
+use Swag\PayPal\DataAbstractionLayer\VaultTokenMapping\VaultTokenMappingDefinition;
+use Swag\PayPal\Reporting\DataAbstractionLayer\TransactionReport\TransactionReportDefinition;
 use Swag\PayPal\Util\Lifecycle\Installer\TableInstaller;
 
 /**
@@ -21,9 +24,9 @@ use Swag\PayPal\Util\Lifecycle\Installer\TableInstaller;
 class TableInstallerTest extends TestCase
 {
     private const TABLES = [
-        'swag_paypal_vault_token',
-        'swag_paypal_vault_token_mapping',
-        'swag_paypal_transaction_report',
+        VaultTokenDefinition::ENTITY_NAME,
+        VaultTokenMappingDefinition::ENTITY_NAME,
+        TransactionReportDefinition::ENTITY_NAME,
         'swag_paypal_order_transactions',
     ];
 
