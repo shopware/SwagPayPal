@@ -1,6 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
-- Fixes an issue, where the first payment of a subscription failed, if the customer paid with a saved card, and where card renewals could fail, if the card issuer required 3D Secure
+- Fixes an issue, where card payments of subscriptions could fail, at checkout with a saved card and on renewal if the issuer required 3D Secure
 - Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
 
 # 9.13.5
