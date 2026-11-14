@@ -583,7 +583,11 @@ class VaultTokenServiceTest extends TestCase
         $token->setId(Uuid::randomHex());
 
         /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
-        $vaultTokenRepository = new StaticEntityRepository([new VaultTokenCollection([$token])], new VaultTokenDefinition());
+        $vaultTokenRepository = new StaticEntityRepository([static function (Criteria $criteria) use ($token) {
+            static::assertSame([$token->getId()], $criteria->getIds());
+
+            return new VaultTokenCollection([$token]);
+        }], new VaultTokenDefinition());
         /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
         $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
         /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
@@ -607,7 +611,6 @@ class VaultTokenServiceTest extends TestCase
             Context::createDefaultContext(),
         );
 
-        static::assertSame([$token->getId()], $vaultTokenRepository->searchedCriteria[0]->getIds());
         static::assertSame([], $subscriptionRepository->upserts);
     }
 
@@ -618,6 +621,7 @@ class VaultTokenServiceTest extends TestCase
             static::markTestSkipped('Commercial is not available');
         }
 
+        // any search fails, as none is configured
         /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
         $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
         /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
@@ -645,7 +649,6 @@ class VaultTokenServiceTest extends TestCase
             Context::createDefaultContext(),
         );
 
-        static::assertSame([], $vaultTokenRepository->searchedCriteria);
         static::assertSame([], $subscriptionRepository->upserts);
     }
 
@@ -659,6 +662,7 @@ class VaultTokenServiceTest extends TestCase
 
     public function testSaveUsedTokenToSubscriptionsWithoutSubscription(): void
     {
+        // any search fails, as none is configured
         /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
         $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
         /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
@@ -682,7 +686,6 @@ class VaultTokenServiceTest extends TestCase
             Context::createDefaultContext(),
         );
 
-        static::assertSame([], $vaultTokenRepository->searchedCriteria);
         static::assertSame([], $subscriptionRepository->upserts);
     }
 
@@ -692,8 +695,13 @@ class VaultTokenServiceTest extends TestCase
             static::markTestSkipped('Commercial is not available');
         }
 
+        $searched = false;
         /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
-        $vaultTokenRepository = new StaticEntityRepository([new VaultTokenCollection([])], new VaultTokenDefinition());
+        $vaultTokenRepository = new StaticEntityRepository([static function () use (&$searched) {
+            $searched = true;
+
+            return new VaultTokenCollection([]);
+        }], new VaultTokenDefinition());
         /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
         $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
         /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
@@ -715,7 +723,7 @@ class VaultTokenServiceTest extends TestCase
             Context::createDefaultContext(),
         );
 
-        static::assertCount(1, $vaultTokenRepository->searchedCriteria);
+        static::assertTrue($searched);
         static::assertSame([], $subscriptionRepository->upserts);
     }
 
