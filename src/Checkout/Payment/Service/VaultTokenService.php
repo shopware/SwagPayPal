@@ -30,6 +30,7 @@ use Swag\PayPal\Checkout\Exception\SubscriptionTypeNotSupportedException;
 use Swag\PayPal\DataAbstractionLayer\Extension\CustomerExtension;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
@@ -114,6 +115,34 @@ class VaultTokenService
         if ($subscriptions = $this->getSubscriptions($struct)) {
             $this->saveTokenToSubscriptions($subscriptions, $tokenId, $orderTransaction->getPaymentMethodId(), $context);
         }
+    }
+
+    /**
+     * PayPal returns no vault for a payment with an already saved payment method, so this saves its token to the
+     * subscriptions. Their renewals then keep using it, even after the customer removed it or saved another one.
+     *
+     * @internal
+     */
+    public function saveUsedTokenToSubscriptions(PaymentTransactionStruct $struct, OrderTransactionEntity $orderTransaction, Context $context): void
+    {
+        // recorded when the PayPal order was created, as the customer's saved one may have changed since
+        $tokenId = $orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_VAULT_TOKEN_ID);
+        if (!\is_string($tokenId) || $tokenId === '') {
+            return;
+        }
+
+        $subscriptions = $this->getSubscriptions($struct);
+        if (!$subscriptions) {
+            return;
+        }
+
+        $customFieldKey = $this->getSubscriptionCustomFieldKey($orderTransaction->getPaymentMethodId());
+        $subscriptions = $subscriptions->filter(static fn (SubscriptionEntity $subscription): bool => $subscription->getCustomFieldsValue($customFieldKey) !== $tokenId);
+        if ($subscriptions->count() === 0) {
+            return;
+        }
+
+        $this->saveTokenToSubscriptions($subscriptions, $tokenId, $orderTransaction->getPaymentMethodId(), $context);
     }
 
     /**

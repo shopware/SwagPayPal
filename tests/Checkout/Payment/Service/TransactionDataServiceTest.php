@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
@@ -141,5 +142,64 @@ class TransactionDataServiceTest extends TestCase
     {
         yield 'is paypal sandbox' => [true];
         yield 'is not paypal sandbox' => [false];
+    }
+
+    #[DataProvider('dataProviderSetVaultTokenId')]
+    public function testSetVaultTokenId(?string $recordedTokenId, ?string $tokenId): void
+    {
+        $context = Context::createDefaultContext();
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('order-transaction-id');
+        $transaction->setCustomFields([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id',
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_VAULT_TOKEN_ID => $recordedTokenId,
+        ]);
+
+        $this->transactionRepository
+            ->expects($this->once())
+            ->method('update')
+            ->with([[
+                'id' => 'order-transaction-id',
+                'customFields' => [
+                    SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_VAULT_TOKEN_ID => $tokenId,
+                ],
+            ]], $context);
+
+        $this->transactionDataService->setVaultTokenId($transaction, $tokenId, $context);
+
+        static::assertSame([
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id',
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_VAULT_TOKEN_ID => $tokenId,
+        ], $transaction->getCustomFields());
+    }
+
+    public static function dataProviderSetVaultTokenId(): \Generator
+    {
+        yield 'order with a saved token' => [null, 'token-id'];
+        yield 'order with another saved token' => ['other-token-id', 'token-id'];
+        // e.g. a prepared order after an order with a saved token failed
+        yield 'order without a saved token' => ['token-id', null];
+    }
+
+    #[DataProvider('dataProviderSetVaultTokenIdUnchanged')]
+    public function testSetVaultTokenIdUnchanged(?string $tokenId): void
+    {
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('order-transaction-id');
+        if ($tokenId !== null) {
+            $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_VAULT_TOKEN_ID => $tokenId]);
+        }
+
+        $this->transactionRepository
+            ->expects($this->never())
+            ->method('update');
+
+        $this->transactionDataService->setVaultTokenId($transaction, $tokenId, Context::createDefaultContext());
+    }
+
+    public static function dataProviderSetVaultTokenIdUnchanged(): \Generator
+    {
+        yield 'same saved token' => ['token-id'];
+        yield 'no saved token' => [null];
     }
 }
