@@ -82,7 +82,7 @@
         },
         "refundAction": {
             "successMessage": "Die Rückerstattung war erfolgreich.",
-            "pendingMessage": "PayPal bearbeitet die Rückerstattung noch. Der Zahlungsstatus wird aktualisiert, sobald PayPal sie abschließt.",
+            "pendingMessage": "PayPal bearbeitet die Rückerstattung noch. Der Zahlungsstatus ändert sich, sobald PayPal das Ergebnis per Webhook meldet, andernfalls bitte die Rückerstattung in PayPal prüfen.",
             "failedMessage": "PayPal konnte die Rückerstattung nicht ausführen. Der Zahlungsstatus wurde nicht geändert.",
             "invoiceSelect": {
                 "label": "Einzug wählen"
@@ -113,8 +113,8 @@
         },
         "captureAction": {
             "successMessage": "Die Autorisierung war erfolgreich.",
-            "pendingMessage": "PayPal bearbeitet den Einzug noch. Der Zahlungsstatus wird aktualisiert, sobald PayPal ihn abschließt.",
-            "failedMessage": "PayPal hat den Einzug abgelehnt. Der Zahlungsstatus wurde nicht geändert.",
+            "pendingMessage": "PayPal bearbeitet den Einzug noch. Der Zahlungsstatus ändert sich, sobald PayPal das Ergebnis per Webhook meldet, andernfalls bitte den Einzug in PayPal prüfen.",
+            "failedMessage": "PayPal konnte den Einzug nicht ausführen. Der Zahlungsstatus wurde nicht geändert.",
             "maxAmount": "Maximalbetrag",
             "currentAmount": "Betrag",
             "captureInvoiceNumber": {
