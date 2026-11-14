@@ -32,7 +32,6 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
-use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Card;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\Vault;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
@@ -42,6 +41,7 @@ use Swag\PayPal\DataAbstractionLayer\Extension\CustomerExtension;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenDefinition;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
@@ -523,19 +523,9 @@ class VaultTokenServiceTest extends TestCase
             static::markTestSkipped('Commercial with mixed cart subscriptions is not available');
         }
 
-        $token = new VaultTokenEntity();
-        $token->setId(Uuid::randomHex());
-
+        // any search fails, as the customer's saved token may have changed since the PayPal order was created
         /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
-        $vaultTokenRepository = new StaticEntityRepository([static function (Criteria $criteria) use ($token) {
-            // the new subscriptions have no token yet, so the customer's saved one paid
-            static::assertSame([], $criteria->getIds());
-            static::assertCount(3, $criteria->getFilters());
-            static::assertInstanceOf(EqualsFilter::class, $criteria->getFilters()[2]);
-            static::assertSame('mainMapping.customerId', $criteria->getFilters()[2]->getField());
-
-            return new VaultTokenCollection([$token]);
-        }], new VaultTokenDefinition());
+        $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
         /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
         $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
         /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
@@ -547,26 +537,24 @@ class VaultTokenServiceTest extends TestCase
             $subscriptionRepository,
         );
 
-        $transaction = $this->createOrderTransaction();
+        $transaction = $this->createOrderTransaction('token-id');
         $subscription = $this->createSubscription();
         $otherSubscription = $this->createSubscription();
 
         $vaultTokenService->saveUsedTokenToSubscriptions(
             new PaymentTransactionStruct($transaction->getId(), recurring: new SubscriptionsRecurringDataStruct(new SubscriptionCollection([$subscription, $otherSubscription]))),
             $transaction,
-            $this->createOrder(),
-            new Card(),
             Context::createDefaultContext(),
         );
 
         static::assertSame([[
             [
                 'id' => $subscription->getId(),
-                'customFields' => ['swagPaypalVaultToken_payment-method-id' => $token->getId()],
+                'customFields' => ['swagPaypalVaultToken_payment-method-id' => 'token-id'],
             ],
             [
                 'id' => $otherSubscription->getId(),
-                'customFields' => ['swagPaypalVaultToken_payment-method-id' => $token->getId()],
+                'customFields' => ['swagPaypalVaultToken_payment-method-id' => 'token-id'],
             ],
         ]], $subscriptionRepository->upserts);
         static::assertSame([], $vaultTokenRepository->upserts);
@@ -579,151 +567,59 @@ class VaultTokenServiceTest extends TestCase
             static::markTestSkipped('Commercial is not available');
         }
 
-        $token = new VaultTokenEntity();
-        $token->setId(Uuid::randomHex());
-
-        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
-        $vaultTokenRepository = new StaticEntityRepository([static function (Criteria $criteria) use ($token) {
-            static::assertSame([$token->getId()], $criteria->getIds());
-
-            return new VaultTokenCollection([$token]);
-        }], new VaultTokenDefinition());
-        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
-        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
         /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
         $subscriptionRepository = new StaticEntityRepository([], new SubscriptionDefinition());
+        $vaultTokenService = $this->createVaultTokenService($subscriptionRepository);
 
-        $vaultTokenService = new VaultTokenService(
-            $vaultTokenRepository,
-            $customerRepository,
-            $subscriptionRepository,
-        );
-
-        $transaction = $this->createOrderTransaction();
+        $transaction = $this->createOrderTransaction('token-id');
         $subscription = $this->createSubscription();
-        $subscription->setCustomFields(['swagPaypalVaultToken_payment-method-id' => $token->getId()]);
+        $subscription->setCustomFields(['swagPaypalVaultToken_payment-method-id' => 'token-id']);
 
         $vaultTokenService->saveUsedTokenToSubscriptions(
             new PaymentTransactionStruct($transaction->getId(), recurring: $this->createRecurring($subscription)),
             $transaction,
-            $this->createOrder(),
-            new Card(),
             Context::createDefaultContext(),
         );
 
         static::assertSame([], $subscriptionRepository->upserts);
     }
 
-    #[DataProvider('newPaymentMethodVaultProvider')]
-    public function testSaveUsedTokenToSubscriptionsIgnoresNewPaymentMethod(Vault $vault): void
+    public function testSaveUsedTokenToSubscriptionsWithoutUsedToken(): void
     {
         if (!\class_exists(SubscriptionDefinition::class)) {
             static::markTestSkipped('Commercial is not available');
         }
 
-        // any search fails, as none is configured
-        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
-        $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
-        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
-        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
         /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
         $subscriptionRepository = new StaticEntityRepository([], new SubscriptionDefinition());
+        $vaultTokenService = $this->createVaultTokenService($subscriptionRepository);
 
-        $vaultTokenService = new VaultTokenService(
-            $vaultTokenRepository,
-            $customerRepository,
-            $subscriptionRepository,
-        );
-
-        $attributes = new Attributes();
-        $attributes->setVault($vault);
-        $paymentSource = new Paypal();
-        $paymentSource->setAttributes($attributes);
-        $transaction = $this->createOrderTransaction();
+        // e.g. a prepared order, whose new payment method `saveToken` or the webhook saves
+        $transaction = $this->createOrderTransaction(null);
 
         $vaultTokenService->saveUsedTokenToSubscriptions(
             new PaymentTransactionStruct($transaction->getId(), recurring: $this->createRecurring($this->createSubscription())),
             $transaction,
-            $this->createOrder(),
-            $paymentSource,
             Context::createDefaultContext(),
         );
 
         static::assertSame([], $subscriptionRepository->upserts);
-    }
-
-    public static function newPaymentMethodVaultProvider(): \Generator
-    {
-        // saved by `saveToken`
-        yield 'vaulted' => [(new Vault())->assign(['id' => 'vault-id', 'status' => 'VAULTED', 'customer' => ['id' => 'customer-id']])];
-        // saved by the webhook
-        yield 'vaulting pending' => [(new Vault())->assign(['status' => 'APPROVED'])];
     }
 
     public function testSaveUsedTokenToSubscriptionsWithoutSubscription(): void
     {
-        // any search fails, as none is configured
-        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
-        $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
-        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
-        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
         /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
         $subscriptionRepository = new StaticEntityRepository([]);
+        $vaultTokenService = $this->createVaultTokenService($subscriptionRepository);
 
-        $vaultTokenService = new VaultTokenService(
-            $vaultTokenRepository,
-            $customerRepository,
-            $subscriptionRepository,
-        );
-
-        $transaction = $this->createOrderTransaction();
+        $transaction = $this->createOrderTransaction('token-id');
 
         $vaultTokenService->saveUsedTokenToSubscriptions(
             new PaymentTransactionStruct($transaction->getId()),
             $transaction,
-            $this->createOrder(),
-            new Card(),
             Context::createDefaultContext(),
         );
 
-        static::assertSame([], $subscriptionRepository->upserts);
-    }
-
-    public function testSaveUsedTokenToSubscriptionsWithoutToken(): void
-    {
-        if (!\class_exists(SubscriptionDefinition::class)) {
-            static::markTestSkipped('Commercial is not available');
-        }
-
-        $searched = false;
-        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
-        $vaultTokenRepository = new StaticEntityRepository([static function () use (&$searched) {
-            $searched = true;
-
-            return new VaultTokenCollection([]);
-        }], new VaultTokenDefinition());
-        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
-        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
-        /** @var StaticEntityRepository<SubscriptionCollection> $subscriptionRepository */
-        $subscriptionRepository = new StaticEntityRepository([], new SubscriptionDefinition());
-
-        $vaultTokenService = new VaultTokenService(
-            $vaultTokenRepository,
-            $customerRepository,
-            $subscriptionRepository,
-        );
-
-        $transaction = $this->createOrderTransaction();
-
-        $vaultTokenService->saveUsedTokenToSubscriptions(
-            new PaymentTransactionStruct($transaction->getId(), recurring: $this->createRecurring($this->createSubscription())),
-            $transaction,
-            $this->createOrder(),
-            new Card(),
-            Context::createDefaultContext(),
-        );
-
-        static::assertTrue($searched);
         static::assertSame([], $subscriptionRepository->upserts);
     }
 
@@ -842,24 +738,27 @@ class VaultTokenServiceTest extends TestCase
         yield 'regular checkout with subscription items' => [$salesChannelContext, true];
     }
 
-    private function createOrderTransaction(): OrderTransactionEntity
+    /**
+     * @param StaticEntityRepository<SubscriptionCollection> $subscriptionRepository
+     */
+    private function createVaultTokenService(StaticEntityRepository $subscriptionRepository): VaultTokenService
+    {
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
+        $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+
+        return new VaultTokenService($vaultTokenRepository, $customerRepository, $subscriptionRepository);
+    }
+
+    private function createOrderTransaction(?string $usedTokenId): OrderTransactionEntity
     {
         $transaction = new OrderTransactionEntity();
         $transaction->setId(Uuid::randomHex());
         $transaction->setPaymentMethodId('payment-method-id');
+        $transaction->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_VAULT_TOKEN_ID => $usedTokenId]);
 
         return $transaction;
-    }
-
-    private function createOrder(): OrderEntity
-    {
-        $order = new OrderEntity();
-        $order->setId(Uuid::randomHex());
-        $orderCustomer = new OrderCustomerEntity();
-        $orderCustomer->setCustomerId('customer-id');
-        $order->setOrderCustomer($orderCustomer);
-
-        return $order;
     }
 
     private function createSubscription(): SubscriptionEntity

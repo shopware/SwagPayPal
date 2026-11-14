@@ -23,7 +23,6 @@ use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\Core\Test\TestDefaults;
-use Shopware\PayPalSDK\Contract\Struct\V2\Order\PaymentSource\VaultablePaymentSourceInterface;
 use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
@@ -61,13 +60,13 @@ class AbstractPaymentMethodHandlerTest extends TestCase
 
     private VaultTokenService&MockObject $vaultTokenService;
 
+    private TransactionDataService&MockObject $transactionDataService;
+
     private LoggerInterface&MockObject $logger;
 
     private PayPalPaymentHandler $handler;
 
     private PayerActionRequiredException $payerActionRequired;
-
-    private OrderEntity $order;
 
     private OrderTransactionEntity $orderTransaction;
 
@@ -75,15 +74,15 @@ class AbstractPaymentMethodHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->order = new OrderEntity();
-        $this->order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
+        $order = new OrderEntity();
+        $order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $orderCustomer = new OrderCustomerEntity();
         $orderCustomer->setCustomerId('customerId');
-        $this->order->setOrderCustomer($orderCustomer);
+        $order->setOrderCustomer($orderCustomer);
 
         $this->orderTransaction = new OrderTransactionEntity();
         $this->orderTransaction->setId(self::TRANSACTION_ID);
-        $this->orderTransaction->setOrder($this->order);
+        $this->orderTransaction->setOrder($order);
 
         $this->paypalOrder = new Order();
         $this->paypalOrder->setId(self::PAYPAL_ORDER_ID);
@@ -92,6 +91,7 @@ class AbstractPaymentMethodHandlerTest extends TestCase
         $this->orderResource = $this->createMock(OrderResource::class);
         $this->orderExecuteService = $this->createMock(OrderExecuteService::class);
         $this->vaultTokenService = $this->createMock(VaultTokenService::class);
+        $this->transactionDataService = $this->createMock(TransactionDataService::class);
 
         $captureRejection = new PayPalApiException(
             'UNPROCESSABLE_ENTITY',
@@ -121,14 +121,21 @@ class AbstractPaymentMethodHandlerTest extends TestCase
         $response->setId(self::PAYPAL_ORDER_ID);
         $response->setPaymentSource($paymentSource);
 
-        $this->vaultTokenService->expects($this->once())->method('getAvailableToken')->willReturn(new VaultTokenEntity());
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setId('vaultTokenId');
+
+        $this->vaultTokenService->expects($this->once())->method('getAvailableToken')->willReturn($vaultToken);
         $this->orderResource->expects($this->once())->method('create')->willReturn($response);
+        $this->transactionDataService
+            ->expects($this->once())
+            ->method('setVaultTokenId')
+            ->with($this->orderTransaction, 'vaultTokenId', $context);
         $this->orderExecuteService->expects($this->once())->method('captureOrAuthorizeOrder')->willReturn($response);
         $this->vaultTokenService->expects($this->once())->method('saveToken');
         $this->vaultTokenService
             ->expects($this->once())
             ->method('saveUsedTokenToSubscriptions')
-            ->with($transaction, $this->orderTransaction, $this->order, $paymentSource->first(VaultablePaymentSourceInterface::class), $context);
+            ->with($transaction, $this->orderTransaction, $context);
 
         static::assertNull($this->createHandler($handlerClass)->pay(new Request(), $transaction, $context, null));
     }
@@ -242,7 +249,7 @@ class AbstractPaymentMethodHandlerTest extends TestCase
             static::createStub(StateMachineRegistry::class),
             $this->orderExecuteService,
             static::createStub(OrderPatchService::class),
-            static::createStub(TransactionDataService::class),
+            $this->transactionDataService,
             $this->orderResource,
             $this->vaultTokenService,
             new StaticEntityRepository([new OrderTransactionCollection([$this->orderTransaction])]),

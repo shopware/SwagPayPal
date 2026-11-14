@@ -121,6 +121,9 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
             $context,
         );
 
+        // the order builder pays a new order with this token, which must not be looked up again after a redirect
+        $this->transactionDataService->setVaultTokenId($orderTransaction, $preparedOrderId ? null : $existingVault?->getId(), $context);
+
         if (!$response) {
             $this->orderPatchService->patchOrder(
                 $order,
@@ -294,7 +297,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
 
         // the checkout decides the token of all renewals, which keep it instead of the one the customer saved last
         if ($isUserPresent) {
-            $this->vaultTokenService->saveUsedTokenToSubscriptions($transaction, $orderTransaction, $order, $vaultableSource, $context);
+            $this->vaultTokenService->saveUsedTokenToSubscriptions($transaction, $orderTransaction, $context);
         }
 
         return $paypalOrder;

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Payment\Service;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Log\Package;
@@ -46,6 +47,27 @@ class TransactionDataService
             ],
         ];
         $this->orderTransactionRepository->update([$data], $context);
+    }
+
+    /**
+     * Records the saved token a PayPal order is paid with, also on the given transaction, as the customer may save
+     * another one before the payment completes, e.g. during a 3D Secure challenge
+     *
+     * @internal
+     */
+    public function setVaultTokenId(OrderTransactionEntity $orderTransaction, ?string $vaultTokenId, Context $context): void
+    {
+        if ($orderTransaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_VAULT_TOKEN_ID) === $vaultTokenId) {
+            return;
+        }
+
+        $customFields = [SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_VAULT_TOKEN_ID => $vaultTokenId];
+        $this->orderTransactionRepository->update([[
+            'id' => $orderTransaction->getId(),
+            'customFields' => $customFields,
+        ]], $context);
+
+        $orderTransaction->changeCustomFields($customFields);
     }
 
     public function setResourceId(PayPalOrder $order, string $transactionId, Context $context): void
