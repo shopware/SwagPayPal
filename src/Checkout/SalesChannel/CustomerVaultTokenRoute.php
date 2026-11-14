@@ -48,7 +48,38 @@ class CustomerVaultTokenRoute
             )])
         )],
     )]
+    #[OA\Get(
+        path: '/subscription/paypal/vault-token',
+        operationId: 'getPayPalSubscriptionCustomerVaultToken',
+        description: 'Tries to get the customer vault token for the payment method of the subscription selected by the subscription plan and interval headers',
+        tags: ['Store API', 'PayPal'],
+        parameters: [
+            new OA\Parameter(
+                name: 'sw-subscription-plan',
+                description: 'Identifier of the subscription plan',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+            ),
+            new OA\Parameter(
+                name: 'sw-subscription-interval',
+                description: 'Identifier of the subscription interval',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string', pattern: '^[0-9a-f]{32}$')
+            ),
+        ],
+        responses: [new OA\Response(
+            response: Response::HTTP_OK,
+            description: 'The customer vault token',
+            content: new OA\JsonContent(properties: [new OA\Property(
+                property: 'token',
+                type: 'string'
+            )])
+        )],
+    )]
     #[Route(path: '/store-api/paypal/vault-token', name: 'store-api.paypal.vault.token', defaults: ['_loginRequired' => true, '_loginRequiredAllowGuest' => false], methods: ['GET'])]
+    #[Route(path: '/store-api/subscription/paypal/vault-token', name: 'store-api.subscription.paypal.vault.token', defaults: ['_loginRequired' => true, '_loginRequiredAllowGuest' => false, '_subscriptionCart' => true, '_subscriptionContext' => true], methods: ['GET'])]
     public function getVaultToken(SalesChannelContext $context): TokenResponse
     {
         $customer = $context->getCustomer();
