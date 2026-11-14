@@ -1,7 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
 - Behebt ein Problem, bei dem PayPal Express Checkout alle Versandarten außer der gewählten als kostenlos anzeigte (shopware/SwagPayPal#913, benötigt Shopware 6.7.14.0 oder höher)
-- Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer gespeicherten Karte auf der Bestellbestätigungsseite eines Abonnements zu einer Fehlerseite führte und stattdessen andere gespeicherte Zahlungsdaten entfernen konnte. Headless-Storefronts können gespeicherte PayPal-Konten und Karten jetzt entfernen und die gespeicherten Zahlungsdaten eines Abonnements ebenfalls anzeigen und entfernen
+- Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer Karte im Abonnement-Checkout zu einer Fehlerseite führte und stattdessen andere Zahlungsdaten entfernen konnte. Headless-Storefronts können diese jetzt entfernen, auch bei Abonnements
 
 # 10.9.0
 - Fügt Unterstützung für das PayPal JS SDK v6 hinzu, das in den Einstellungen unter "Storefront-Darstellung" aktiviert werden kann, sobald es für das PayPal-Händlerkonto freigeschaltet ist. Es ist performanter und zeigt Zahlungsbuttons und "Später bezahlen"-Banner schneller an. Template-Anpassungen müssen gegebenenfalls angepasst werden wenn aktiviert. SDK v6 wird ab Version 11 die Standardimplementierung (shopware/SwagPayPal#257)
