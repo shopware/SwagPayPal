@@ -203,7 +203,7 @@
             <argument type="service" id="subscription.repository" on-invalid="null"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute">
+        <service id="Swag\PayPal\Checkout\SalesChannel\ClearVaultRoute" public="true">
             <argument type="service" id="swag_paypal_vault_token_mapping.repository"/>
         </service>
 

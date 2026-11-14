@@ -2,6 +2,7 @@
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
 - Fixes an issue, where the first payment of a subscription failed, if the customer paid with a saved card
 - Fixes an issue, where removing a saved PayPal account or card on the confirmation page of a subscription led to an error page and could remove other saved payment details instead. Headless storefronts can now show and remove the saved payment details of a subscription as well
+- Fixes an issue, where the Store API route `/store-api/paypal/vault/clear` always failed with an error instead of removing the saved PayPal account or card
 
 # 9.13.5
 - Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
