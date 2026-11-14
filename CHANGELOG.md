@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
 - Fixes an issue, where PayPal Express Checkout showed all shipping methods except the selected one as free (shopware/SwagPayPal#913, requires Shopware 6.7.14.0 or greater)
+- Fixes an issue, where capturing or refunding in the Administration marked the payment as paid or refunded although PayPal answered with a pending, declined or failed status (shopware/SwagPayPal#839)
 
 # 10.9.0
 - Added support for the PayPal JS SDK v6, which can be enabled in the "Storefront presentation" settings once it is activated for the PayPal merchant account. It is more performant and displays payment buttons and Pay Later banners faster. Template customisations may need to be adapted if enabled. SDK v6 will become the default in version 11 (shopware/SwagPayPal#257)

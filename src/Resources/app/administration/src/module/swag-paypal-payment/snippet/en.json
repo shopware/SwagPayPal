@@ -82,6 +82,8 @@
         },
         "refundAction": {
             "successMessage": "Your refund was successful.",
+            "pendingMessage": "PayPal is still processing the refund. The payment status changes once PayPal reports the result via webhook, otherwise check the refund in PayPal.",
+            "failedMessage": "PayPal could not complete the refund. The payment status was not changed.",
             "invoiceSelect": {
                 "label": "Select capture"
             },
@@ -111,6 +113,8 @@
         },
         "captureAction": {
             "successMessage": "Your capture was successful.",
+            "pendingMessage": "PayPal is still processing the capture. The payment status changes once PayPal reports the result via webhook, otherwise check the capture in PayPal.",
+            "failedMessage": "PayPal could not complete the capture. The payment status was not changed.",
             "maxAmount": "Maximum amount",
             "currentAmount": "Amount",
             "captureInvoiceNumber": {

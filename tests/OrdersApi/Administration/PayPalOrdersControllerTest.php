@@ -7,11 +7,16 @@
 
 namespace Swag\PayPal\Test\OrdersApi\Administration;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Struct\ArrayStruct;
+use Shopware\PayPalSDK\Struct\ConstantsV2;
+use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Capture;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\OrdersApi\Administration\Exception\OrderNotFoundException;
 use Swag\PayPal\OrdersApi\Administration\Exception\RequestParameterInvalidException;
 use Swag\PayPal\OrdersApi\Administration\PayPalOrdersController;
@@ -223,6 +228,76 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
         static::assertFalse($captureDetailArray['final_capture']);
     }
 
+    #[DataProvider('captureStatusProvider')]
+    public function testCaptureAuthorizationAppliesOnlyACompletedCapture(string $status, bool $isApplied): void
+    {
+        $capture = (new Capture())->assign(CaptureAuthorization::get());
+        $capture->setStatus($status);
+
+        $authorizationResource = $this->createMock(AuthorizationResource::class);
+        $authorizationResource->method('capture')->willReturn($capture);
+
+        $paymentStatusUtil = $this->createMock(PaymentStatusUtilV2::class);
+        $paymentStatusUtil->expects($isApplied ? $this->once() : $this->never())->method('applyCaptureState');
+
+        $response = $this->createControllerWithResources($paymentStatusUtil, authorizationResource: $authorizationResource)->captureAuthorization(
+            'orderTransactionId',
+            'authorizationId',
+            Context::createDefaultContext(),
+            $this->createCaptureRefundRequest()
+        );
+
+        static::assertSame($status, \json_decode((string) $response->getContent(), true)['status']);
+    }
+
+    /**
+     * @return iterable<string, array{string, bool}>
+     */
+    public static function captureStatusProvider(): iterable
+    {
+        yield 'completed' => [ConstantsV2::ORDER_CAPTURE_COMPLETED, true];
+        yield 'pending' => [ConstantsV2::ORDER_CAPTURE_PENDING, false];
+        yield 'declined' => [ConstantsV2::ORDER_CAPTURE_DECLINED, false];
+        yield 'failed' => [ConstantsV2::ORDER_CAPTURE_FAILED, false];
+    }
+
+    #[DataProvider('refundStatusProvider')]
+    public function testRefundCaptureAppliesOnlyACompletedRefund(string $status, bool $isApplied): void
+    {
+        $refund = (new Refund())->assign(RefundCapture::get());
+        $refund->setStatus($status);
+
+        $captureResource = $this->createMock(CaptureResource::class);
+        $captureResource->method('refund')->willReturn($refund);
+
+        $orderResource = $this->createMock(OrderResource::class);
+        $orderResource->expects($isApplied ? $this->once() : $this->never())->method('get')->willReturn(new Order());
+
+        $paymentStatusUtil = $this->createMock(PaymentStatusUtilV2::class);
+        $paymentStatusUtil->expects($isApplied ? $this->once() : $this->never())->method('applyRefundState');
+
+        $response = $this->createControllerWithResources($paymentStatusUtil, captureResource: $captureResource, orderResource: $orderResource)->refundCapture(
+            'orderTransactionId',
+            'captureId',
+            GetOrderCapture::ID,
+            Context::createDefaultContext(),
+            $this->createCaptureRefundRequest()
+        );
+
+        static::assertSame($status, \json_decode((string) $response->getContent(), true)['status']);
+    }
+
+    /**
+     * @return iterable<string, array{string, bool}>
+     */
+    public static function refundStatusProvider(): iterable
+    {
+        yield 'completed' => [ConstantsV2::ORDER_REFUND_COMPLETED, true];
+        yield 'pending' => [ConstantsV2::ORDER_REFUND_PENDING, false];
+        yield 'failed' => [ConstantsV2::ORDER_REFUND_FAILED, false];
+        yield 'cancelled' => [ConstantsV2::ORDER_REFUND_CANCELLED, false];
+    }
+
     public function testVoidAuthorization(): void
     {
         $response = $this->createController()->voidAuthorization(
@@ -251,6 +326,25 @@ Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Payments\Refund::$invoiceId must
             new CaptureRefundCreator(
                 new PriceFormatter()
             )
+        );
+    }
+
+    private function createControllerWithResources(
+        PaymentStatusUtilV2 $paymentStatusUtil,
+        ?AuthorizationResource $authorizationResource = null,
+        ?CaptureResource $captureResource = null,
+        ?OrderResource $orderResource = null,
+    ): PayPalOrdersController {
+        $paymentGateway = self::paymentGateway();
+
+        return new PayPalOrdersController(
+            $orderResource ?? new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            $authorizationResource ?? new AuthorizationResource($paymentGateway, new ApiContextFactoryMock()),
+            $captureResource ?? new CaptureResource($paymentGateway, new ApiContextFactoryMock()),
+            new RefundResource($paymentGateway, new ApiContextFactoryMock()),
+            new OrderTransactionRepoMock(),
+            $paymentStatusUtil,
+            new CaptureRefundCreator(new PriceFormatter())
         );
     }
 

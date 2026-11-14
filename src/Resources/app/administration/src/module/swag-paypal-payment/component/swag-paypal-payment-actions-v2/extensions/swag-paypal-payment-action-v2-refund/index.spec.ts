@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import SwagPayPalPaymentActionV2Refund from '.';
 import {
     ORDER_CAPTURE_COMPLETED,
@@ -7,6 +7,10 @@ import {
     ORDER_CAPTURE_PARTIALLY_REFUNDED,
     ORDER_CAPTURE_PENDING,
     ORDER_CAPTURE_REFUNDED,
+    ORDER_REFUND_CANCELLED,
+    ORDER_REFUND_COMPLETED,
+    ORDER_REFUND_FAILED,
+    ORDER_REFUND_PENDING,
 } from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
 
 Shopware.Component.register('swag-paypal-payment-action-v2-refund', Promise.resolve(SwagPayPalPaymentActionV2Refund));
@@ -38,6 +42,7 @@ function createPayPalOrder(captures: Array<Record<string, unknown>>) {
 async function createWrapper(
     captures: Array<Record<string, unknown>>,
     refundableAmount = 200,
+    refundCapture = jest.fn(),
 ) {
     return mount(
         await Shopware.Component.build('swag-paypal-payment-action-v2-refund') as typeof SwagPayPalPaymentActionV2Refund,
@@ -54,7 +59,7 @@ async function createWrapper(
                 },
                 provide: {
                     SwagPayPalOrderService: {
-                        refundCapture: jest.fn(),
+                        refundCapture,
                     },
                 },
                 stubs: {
@@ -89,6 +94,30 @@ describe('swag-paypal-payment-action-v2-refund', () => {
             'partially-refunded',
         ]);
         expect(wrapper.vm.selectedCaptureId).toBe('completed');
+    });
+
+    it.each([
+        [ORDER_REFUND_COMPLETED, 'createNotificationSuccess', 'successMessage'],
+        [ORDER_REFUND_PENDING, 'createNotificationInfo', 'pendingMessage'],
+        [ORDER_REFUND_FAILED, 'createNotificationError', 'failedMessage'],
+        [ORDER_REFUND_CANCELLED, 'createNotificationError', 'failedMessage'],
+    ])('should notify about a %s refund', async (status, notification, message) => {
+        const wrapper = await createWrapper(
+            [createCapture('completed', ORDER_CAPTURE_COMPLETED)],
+            200,
+            jest.fn(() => Promise.resolve({ status })),
+        );
+        wrapper.vm.createNotificationSuccess = jest.fn();
+        wrapper.vm.createNotificationInfo = jest.fn();
+        wrapper.vm.createNotificationError = jest.fn();
+
+        (wrapper.vm as unknown as { refund: () => void }).refund();
+        await flushPromises();
+
+        expect(wrapper.vm[notification]).toHaveBeenCalledWith(expect.objectContaining({
+            message: `swag-paypal-payment.refundAction.${message}`,
+        }));
+        expect(wrapper.emitted('modal-close')).toHaveLength(1);
     });
 
     it('should initialize safely when no refundable captures are available', async () => {
