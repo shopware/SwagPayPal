@@ -1,5 +1,10 @@
 import template from './swag-paypal-payment-action-v2-refund.html.twig';
-import { REFUNDABLE_CAPTURE_STATUSES } from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
+import {
+    ORDER_REFUND_CANCELLED,
+    ORDER_REFUND_FAILED,
+    ORDER_REFUND_PENDING,
+    REFUNDABLE_CAPTURE_STATUSES,
+} from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
 
 const { Component, Filter } = Shopware;
 
@@ -145,10 +150,8 @@ Component.register('swag-paypal-payment-action-v2-refund', {
                 this.refundInvoiceNumber,
                 this.refundNoteToPayer,
                 this.paypalPartnerAttributionId,
-            ).then(() => {
-                this.createNotificationSuccess({
-                    message: this.$t('swag-paypal-payment.refundAction.successMessage'),
-                });
+            ).then((refund) => {
+                this.notifyRefundStatus(refund.status);
                 this.isLoading = false;
                 this.$emit('modal-close');
             }).catch((errorResponse) => {
@@ -166,6 +169,29 @@ Component.register('swag-paypal-payment-action-v2-refund', {
                 } finally {
                     this.isLoading = false;
                 }
+            });
+        },
+
+        notifyRefundStatus(status) {
+            if (status === ORDER_REFUND_PENDING) {
+                this.createNotificationInfo({
+                    message: this.$t('swag-paypal-payment.refundAction.pendingMessage'),
+                });
+
+                return;
+            }
+
+            if ([ORDER_REFUND_CANCELLED, ORDER_REFUND_FAILED].includes(status)) {
+                this.createNotificationError({
+                    message: this.$t('swag-paypal-payment.refundAction.failedMessage'),
+                    autoClose: false,
+                });
+
+                return;
+            }
+
+            this.createNotificationSuccess({
+                message: this.$t('swag-paypal-payment.refundAction.successMessage'),
             });
         },
     },
