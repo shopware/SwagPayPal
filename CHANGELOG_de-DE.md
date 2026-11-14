@@ -1,6 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
-- Behebt ein Problem, bei dem die erste Zahlung eines Abonnements fehlschlug, wenn der Kunde mit einer gespeicherten Karte bezahlte
+- Behebt ein Problem, bei dem die erste Zahlung eines Abonnements fehlschlug, wenn der Kunde mit einer gespeicherten Karte bezahlte, und bei dem Verlängerungen per Karte fehlschlagen konnten, wenn die kartenausgebende Bank 3D Secure verlangte
 - Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer gespeicherten Karte auf der Bestellbestätigungsseite eines Abonnements zu einer Fehlerseite führte und stattdessen andere gespeicherte Zahlungsdaten entfernen konnte. Headless-Storefronts können die gespeicherten Zahlungsdaten eines Abonnements jetzt ebenfalls anzeigen und entfernen
 - Behebt ein Problem, bei dem die Store-API-Route `/store-api/paypal/vault/clear` immer mit einem Fehler abbrach, statt das gespeicherte PayPal-Konto oder die gespeicherte Karte zu entfernen
 
