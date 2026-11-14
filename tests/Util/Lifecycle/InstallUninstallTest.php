@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
+use Swag\PayPal\Util\Lifecycle\Installer\TableInstaller;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService;
 use Swag\PayPal\Util\Lifecycle\State\PosStateService;
@@ -46,6 +47,7 @@ class InstallUninstallTest extends TestCase
             $posInstaller,
             $posStateService,
             $agenticCommerceService,
+            $this->createMock(TableInstaller::class),
         ))->install($context);
     }
 
@@ -73,6 +75,10 @@ class InstallUninstallTest extends TestCase
         $posInstaller
             ->expects($this->once())
             ->method('removePosTables');
+        $tableInstaller = $this->createMock(TableInstaller::class);
+        $tableInstaller
+            ->expects($this->once())
+            ->method('removeTables');
 
         (new InstallUninstall(
             $paymentMethodInstaller,
@@ -80,6 +86,7 @@ class InstallUninstallTest extends TestCase
             $posInstaller,
             $posStateService,
             $agenticCommerceService,
+            $tableInstaller,
         ))->uninstall($context);
     }
 }
