@@ -113,4 +113,40 @@ describe('swag-paypal-payment-details-v2', () => {
             status: refundStatus,
         });
     });
+
+    it('should deduct only the completed refund when another one failed', async () => {
+        const wrapper = await createWrapper(createPayPalOrder(
+            [{
+                id: 'capture-id',
+                status: 'COMPLETED',
+                amount: {
+                    currency_code: 'EUR',
+                    value: '52.97',
+                },
+                create_time: '2020-08-17T13:09:30Z',
+                update_time: '2020-08-17T13:09:30Z',
+            }],
+            [{
+                id: 'failed-refund-id',
+                status: 'FAILED',
+                amount: {
+                    currency_code: 'EUR',
+                    value: '50.82',
+                },
+                create_time: '2020-08-18T13:09:30Z',
+                update_time: '2020-08-18T13:09:30Z',
+            }, {
+                id: 'completed-refund-id',
+                status: 'COMPLETED',
+                amount: {
+                    currency_code: 'EUR',
+                    value: '10.00',
+                },
+                create_time: '2020-08-19T13:09:30Z',
+                update_time: '2020-08-19T13:09:30Z',
+            }],
+        ));
+
+        expect(wrapper.vm.refundableAmount).toBe(42.97);
+    });
 });
