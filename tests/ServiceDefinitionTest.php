@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\JWT\Struct\JWKCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -60,11 +61,18 @@ class ServiceDefinitionTest extends TestCase
         // requests resolve their controller from the kernel's container, which only offers public services, unlike the test container above
         $controllerResolver = new ContainerControllerResolver(static::getKernel()->getContainer());
 
+        // the agentic commerce routes are always imported, but their services are only registered with the JWT support of the core (see services.php)
+        $hasAgenticCommerce = \class_exists(JWKCollection::class);
+
         $checked = 0;
         $errors = [];
         foreach ($router->getRouteCollection() as $routeName => $route) {
             $controller = $route->getDefault('_controller');
             if (!\is_string($controller) || !\str_starts_with($controller, 'Swag\\PayPal\\')) {
+                continue;
+            }
+
+            if (!$hasAgenticCommerce && \str_starts_with($controller, 'Swag\\PayPal\\AgenticCommerce\\')) {
                 continue;
             }
 
