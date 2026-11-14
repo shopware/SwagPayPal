@@ -117,6 +117,38 @@ class VaultTokenService
     }
 
     /**
+     * Saves the token of a payment with an already saved payment method to its subscriptions. Their renewals then
+     * keep using it, even after the customer removed it or saved another one.
+     *
+     * @internal
+     */
+    public function saveUsedTokenToSubscriptions(PaymentTransactionStruct $struct, OrderTransactionEntity $orderTransaction, OrderEntity $order, VaultablePaymentSourceInterface $paymentSource, Context $context): void
+    {
+        // PayPal returns no vault for a payment with a saved token. A vault, even without id, belongs to a new payment method
+        if ($paymentSource->getAttributes()?->getVault() !== null) {
+            return;
+        }
+
+        $subscriptions = $this->getSubscriptions($struct);
+        if (!$subscriptions) {
+            return;
+        }
+
+        $token = $this->getAvailableToken($struct, $orderTransaction, $order, $context);
+        if (!$token) {
+            return;
+        }
+
+        $customFieldKey = $this->getSubscriptionCustomFieldKey($orderTransaction->getPaymentMethodId());
+        $subscriptions = $subscriptions->filter(static fn (SubscriptionEntity $subscription): bool => $subscription->getCustomFieldsValue($customFieldKey) !== $token->getId());
+        if ($subscriptions->count() === 0) {
+            return;
+        }
+
+        $this->saveTokenToSubscriptions($subscriptions, $token->getId(), $orderTransaction->getPaymentMethodId(), $context);
+    }
+
+    /**
      * @deprecated tag:v11.0.0 - Will be removed and is replaced by {@see self::getSubscriptions}
      */
     public function getSubscription(PaymentTransactionStruct $struct): ?SubscriptionEntity

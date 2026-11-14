@@ -292,6 +292,11 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
 
         $this->vaultTokenService->saveToken($transaction, $orderTransaction, $vaultableSource, $customerId, $context);
 
+        // the checkout decides the token of all renewals, which keep it instead of the one the customer saved last
+        if ($isUserPresent) {
+            $this->vaultTokenService->saveUsedTokenToSubscriptions($transaction, $orderTransaction, $order, $vaultableSource, $context);
+        }
+
         return $paypalOrder;
     }
 

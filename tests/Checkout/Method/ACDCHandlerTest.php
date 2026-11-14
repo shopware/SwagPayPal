@@ -41,6 +41,7 @@ use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
 use Swag\PayPal\Checkout\Card\CardValidatorInterface;
 use Swag\PayPal\Checkout\Card\Exception\CardValidationFailedException;
 use Swag\PayPal\Checkout\CheckoutException;
+use Swag\PayPal\Checkout\Exception\OrderFailedException;
 use Swag\PayPal\Checkout\Payment\Exception\PayerActionRequiredException;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
@@ -314,6 +315,110 @@ class ACDCHandlerTest extends TestCase
         static::assertSame('payerAction', $response?->getTargetUrl());
     }
 
+    public function testPayWithSavedCardSavesItsTokenToTheSubscriptions(): void
+    {
+        $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
+        $context = Context::createDefaultContext();
+        [$transaction, $order] = $this->createOrderTransactionWithCustomer();
+        $payPalOrder = $this->createOrderObject();
+        $card = $payPalOrder->getPaymentSource()?->getCard();
+
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('getAvailableToken')
+            ->willReturn(new VaultTokenEntity());
+
+        $this->orderBuilder
+            ->expects($this->once())
+            ->method('getOrder')
+            ->willReturn($payPalOrder);
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('create')
+            ->willReturn($payPalOrder);
+
+        $this->acdcValidator
+            ->expects($this->once())
+            ->method('validate')
+            ->willReturn(true);
+
+        $calls = [];
+        $this->orderExecuteService
+            ->expects($this->once())
+            ->method('captureOrAuthorizeOrder')
+            ->willReturnCallback(static function () use (&$calls, $payPalOrder): Order {
+                $calls[] = 'capture';
+
+                return $payPalOrder;
+            });
+
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('saveToken')
+            ->with($paymentTransaction, $transaction, $card, 'customerId', $context);
+
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('saveUsedTokenToSubscriptions')
+            ->with($paymentTransaction, $transaction, $order, $card, $context)
+            ->willReturnCallback(static function () use (&$calls): void {
+                $calls[] = 'saveUsedTokenToSubscriptions';
+            });
+
+        static::assertNull($this->handler->pay(new Request(), $paymentTransaction, $context, null));
+        static::assertSame(['capture', 'saveUsedTokenToSubscriptions'], $calls);
+    }
+
+    public function testPayWithSavedCardSavesNoTokenIfThePaymentFails(): void
+    {
+        $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
+        $context = Context::createDefaultContext();
+        [$transaction] = $this->createOrderTransactionWithCustomer();
+        $payPalOrder = $this->createOrderObject();
+
+        $this->orderTransactionRepository->addSearch([$transaction]);
+
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('getAvailableToken')
+            ->willReturn(new VaultTokenEntity());
+
+        $this->orderBuilder
+            ->expects($this->once())
+            ->method('getOrder')
+            ->willReturn($payPalOrder);
+
+        $this->orderResource
+            ->expects($this->once())
+            ->method('create')
+            ->willReturn($payPalOrder);
+
+        $this->acdcValidator
+            ->expects($this->once())
+            ->method('validate')
+            ->willReturn(true);
+
+        $this->orderExecuteService
+            ->expects($this->once())
+            ->method('captureOrAuthorizeOrder')
+            ->willThrowException(new OrderFailedException('paypalOrderId'));
+
+        $this->vaultTokenService
+            ->expects($this->never())
+            ->method('saveToken');
+
+        $this->vaultTokenService
+            ->expects($this->never())
+            ->method('saveUsedTokenToSubscriptions');
+
+        $this->expectException(OrderFailedException::class);
+
+        $this->handler->pay(new Request(), $paymentTransaction, $context, null);
+    }
+
     public function testPayWithInvalidSettingsException(): void
     {
         $paymentTransaction = new PaymentTransactionStruct('orderTransactionId', 'returnUrl');
@@ -569,6 +674,12 @@ class ACDCHandlerTest extends TestCase
             ->method('saveToken')
             ->with($paymentTransaction, $transaction, $payPalOrder->getPaymentSource()?->getCard(), $orderCustomer->getCustomerId(), $context);
 
+        // a payment with a saved card returns here after a 3D Secure challenge
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('saveUsedTokenToSubscriptions')
+            ->with($paymentTransaction, $transaction, $order, $payPalOrder->getPaymentSource()?->getCard(), $context);
+
         $this->handler->finalize(new Request(), $paymentTransaction, $context);
     }
 
@@ -639,6 +750,9 @@ class ACDCHandlerTest extends TestCase
         $transaction->setId('orderTransactionId');
         $order = new OrderEntity();
         $order->setSalesChannelId('salesChannelId');
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setCustomerId('customerId');
+        $order->setOrderCustomer($orderCustomer);
         $transaction->setOrder($order);
         $subscription = new SubscriptionEntity();
         $subscription->setId('subscriptionId');
@@ -722,6 +836,16 @@ class ACDCHandlerTest extends TestCase
             )
             ->willReturn($payPalOrder);
 
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('saveToken')
+            ->with($paymentTransaction, $transaction, $payPalOrder->getPaymentSource()?->getCard(), 'customerId', $context);
+
+        // a renewal keeps the token of its checkout, even if it was paid with another one
+        $this->vaultTokenService
+            ->expects($this->never())
+            ->method('saveUsedTokenToSubscriptions');
+
         $this->handler->recurring(
             $paymentTransaction,
             $context,
@@ -776,6 +900,10 @@ class ACDCHandlerTest extends TestCase
             ->expects($this->once())
             ->method('saveToken')
             ->with($paymentTransaction, $transaction, $paypalOrder->getPaymentSource()?->getCard(), $orderCustomer->getCustomerId(), $context);
+
+        $this->vaultTokenService
+            ->expects($this->never())
+            ->method('saveUsedTokenToSubscriptions');
 
         $this->handler->recurring($paymentTransaction, $context);
     }
@@ -903,6 +1031,23 @@ Subscription not found', '/') . '\z/');
             $paymentTransaction,
             Context::createDefaultContext(),
         );
+    }
+
+    /**
+     * @return array{0: OrderTransactionEntity, 1: OrderEntity}
+     */
+    private function createOrderTransactionWithCustomer(): array
+    {
+        $order = new OrderEntity();
+        $order->setSalesChannelId('salesChannelId');
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setCustomerId('customerId');
+        $order->setOrderCustomer($orderCustomer);
+        $transaction = new OrderTransactionEntity();
+        $transaction->setId('orderTransactionId');
+        $transaction->setOrder($order);
+
+        return [$transaction, $order];
     }
 
     private function createOrderObject(?Link $link = null): Order
