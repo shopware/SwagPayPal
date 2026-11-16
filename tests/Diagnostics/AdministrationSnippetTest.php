@@ -11,6 +11,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Diagnostics\Reachability\ReachabilityError;
+use Swag\PayPal\Diagnostics\Twig\Override\TemplateOverrideType;
+use Swag\PayPal\Diagnostics\Twig\TemplateArea;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Each value of a check's result needs an Administration snippet.
@@ -21,6 +24,40 @@ use Swag\PayPal\Diagnostics\Reachability\ReachabilityError;
 class AdministrationSnippetTest extends TestCase
 {
     private const SNIPPET_DIRECTORY = __DIR__ . '/../../src/Resources/app/administration/src/module/swag-paypal-settings/snippet/';
+
+    private const VIEWS_DIRECTORY = __DIR__ . '/../../src/Resources/views/';
+
+    #[DataProvider('languageProvider')]
+    public function testEveryMarkedFeatureHasALabel(string $language): void
+    {
+        $features = [];
+        foreach ((new Finder())->files()->in(self::VIEWS_DIRECTORY)->name('*.twig') as $file) {
+            \preg_match_all('/@diagnostics\s+([a-z0-9_]+)/', $file->getContents(), $matches);
+            $features = [...$features, ...$matches[1]];
+        }
+        static::assertNotSame([], $features);
+
+        $labels = $this->getSnippets($language, 'twig', 'features');
+
+        static::assertSame([], \array_values(\array_diff(\array_unique($features), \array_keys($labels))));
+    }
+
+    #[DataProvider('languageProvider')]
+    public function testEveryOverrideTypeHasATitleAndDescription(string $language): void
+    {
+        $this->assertTitleAnd($this->getSnippets($language, 'twig', 'types'), TemplateOverrideType::cases());
+    }
+
+    #[DataProvider('languageProvider')]
+    public function testEveryAreaHasItsTexts(string $language): void
+    {
+        $areas = $this->getSnippets($language, 'twig', 'areas');
+
+        foreach (TemplateArea::cases() as $area) {
+            static::assertIsArray($areas[$area->value] ?? null, $area->value);
+            static::assertSame(['title', 'notApplicable', 'noOverrides'], \array_keys($areas[$area->value]), $area->value);
+        }
+    }
 
     #[DataProvider('languageProvider')]
     public function testEveryReachabilityErrorHasATitleAndDescription(string $language): void

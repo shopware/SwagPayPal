@@ -11,6 +11,7 @@
     {% set subscriptionContext = context.extensions.subscription is defined or (context.extensions.subscriptionManagedContexts.all|length > 0) or (page.order.extensions.initialSubscriptions|length > 0) %}
 
     {% if payment.id is same as(context.paymentMethod.id) and payPalVaultData is not null %}
+        {# @diagnostics vault #}
         {% block component_payment_method_description_paypal_vault %}
         {% if payPalVaultData.identifier %}
             <div>{{ payPalVaultData.identifier }}</div>
@@ -31,6 +32,7 @@
 {% endblock %}
 
 
+{# @diagnostics card_fields #}
 {% block component_payment_method_label %}
     {{ parent() }}
 
@@ -86,6 +88,7 @@
 
     {% elseif puiFraudnetData and puiFraudnetData.paymentMethodId is same as(payment.id) and puiFraudnetData.paymentMethodId is same as(context.paymentMethod.id) %}
 
+        {# @diagnostics pui_fields #}
         {% block swag_paypal_pui_customer_data_form %}
             {% set birthdayName = constant('Swag\\PayPal\\Checkout\\PUI\\Service\\PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY') %}
             {% set phoneNumberName = constant('Swag\\PayPal\\Checkout\\PUI\\Service\\PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER') %}

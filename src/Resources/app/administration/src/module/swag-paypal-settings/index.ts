@@ -1,6 +1,7 @@
 Shopware.Component.register('swag-paypal-settings-diagnostics-item', () => import('./components/swag-paypal-settings-diagnostics-item'));
 Shopware.Component.register('swag-paypal-settings-diagnostics-reachability', () => import('./components/swag-paypal-settings-diagnostics-reachability'));
 Shopware.Component.register('swag-paypal-settings-diagnostics-section', () => import('./components/swag-paypal-settings-diagnostics-section'));
+Shopware.Component.register('swag-paypal-settings-diagnostics-twig', () => import('./components/swag-paypal-settings-diagnostics-twig'));
 Shopware.Component.register('swag-paypal-settings-icon', () => import('./components/swag-paypal-settings-icon'));
 Shopware.Component.register('swag-paypal-settings-locale-select', () => import('./components/swag-paypal-settings-locale-select'));
 Shopware.Component.register('swag-paypal-settings-sales-channel-switch', () => import('./components/swag-paypal-settings-sales-channel-switch'));
@@ -8,6 +9,7 @@ Shopware.Component.register('swag-paypal-settings-sdk-v6-banner', () => import('
 Shopware.Component.register('swag-paypal-settings-webhook', () => import('./components/swag-paypal-settings-webhook'));
 
 Shopware.Component.register('swag-paypal-settings-advanced', () => import('./view/swag-paypal-settings-advanced'));
+Shopware.Component.register('swag-paypal-settings-diagnostics', () => import('./view/swag-paypal-settings-diagnostics'));
 Shopware.Component.register('swag-paypal-settings-general', () => import('./view/swag-paypal-settings-general'));
 Shopware.Component.register('swag-paypal-settings-storefront', () => import('./view/swag-paypal-settings-storefront'));
 Shopware.Component.register('swag-paypal-settings-banner-preview', () => import('./view/swag-paypal-settings-storefront/swag-paypal-settings-banner-preview'));
@@ -45,6 +47,14 @@ Shopware.Module.register('swag-paypal-settings', {
                 storefront: {
                     path: 'storefront',
                     component: 'swag-paypal-settings-storefront',
+                    meta: {
+                        privilege: 'swag_paypal.viewer',
+                        parentPath: 'sw.settings.index',
+                    },
+                },
+                diagnostics: {
+                    path: 'diagnostics',
+                    component: 'swag-paypal-settings-diagnostics',
                     meta: {
                         privilege: 'swag_paypal.viewer',
                         parentPath: 'sw.settings.index',

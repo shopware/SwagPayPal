@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Added the tab "Diagnostics" to the PayPal settings, which shows if a theme or another plugin hides the PayPal buttons by overriding their templates (shopware/SwagPayPal#800)
 - Added the option to register the webhook for the `APP_URL` in the tab "Advanced", if it differs from the URL of the Administration (shopware/SwagPayPal#800)
 - Fixes an issue, where a cancelled payment was not marked as partially paid when a partial amount was captured afterwards (shopware/SwagPayPal#841)
 - Fixes an issue, where cancelling the authorization in the Administration marked a paid or partially paid payment as cancelled (shopware/SwagPayPal#841)

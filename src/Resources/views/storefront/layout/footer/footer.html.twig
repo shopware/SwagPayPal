@@ -1,6 +1,7 @@
 {% sw_extends '@Storefront/storefront/layout/footer/footer.html.twig' %}
 
 {% block layout_footer_payment_logos %}
+    {# @diagnostics pay_later_banner #}
     {% block layout_footer_payment_logos_paypal_installment_banner %}
         {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
         {% set installmentBanner = footer.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}

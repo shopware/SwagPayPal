@@ -21,6 +21,14 @@ export default Shopware.Component.wrapComponentConfig({
         'SwagPaypalPaymentMethodService',
     ],
 
+    props: {
+        showDefaultPayment: {
+            type: Boolean,
+            required: false,
+            default: true,
+        },
+    },
+
     data(): {
         isLoading: boolean;
         salesChannels: SalesChannel[];

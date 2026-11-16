@@ -15,6 +15,7 @@
         {% if expressEnabled or installmentBannerEnabled %}
             <div class="row mb-2 g-3">
 
+                {# @diagnostics express_checkout_button #}
                 {% block page_checkout_address_login_toggle_paypal_express %}
                     {% if expressEnabled %}
                         {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}
@@ -26,6 +27,7 @@
                     {% endif %}
                 {% endblock %}
 
+                {# @diagnostics pay_later_banner #}
                 {% block page_checkout_address_login_toggle_paypal_installment_banner %}
                     {% if installmentBannerEnabled %}
                         {# @deprecated tag:v11.0.0 - SDK v6 will be the default #}

@@ -5,6 +5,7 @@
 
     {% if cmsPage.type is same as 'product_detail' %}
 
+        {# @diagnostics pay_later_banner #}
         {% block buy_widget_price_paypal_installment_banner %}
             {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
             {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}

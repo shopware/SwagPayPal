@@ -3,6 +3,7 @@
 {% block base_body_script %}
     {{ parent() }}
 
+    {# @diagnostics funding_eligibility #}
     {% block paypal_funding_eligibility_script %}
         {# @var \Swag\PayPal\Storefront\Data\Struct\FundingEligibilityData fundingEligibilityData #}
         {% set fundingEligibilityData = page.extensions[constant('Swag\\PayPal\\Storefront\\Data\\FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION')] %}

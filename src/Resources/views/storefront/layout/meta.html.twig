@@ -1,5 +1,6 @@
 {% sw_extends '@Storefront/storefront/layout/meta.html.twig' %}
 
+{# @diagnostics wallet_scripts #}
 {% block layout_head_javascript_hmr_mode %}
     {{ parent() }}
 
@@ -17,6 +18,7 @@
 {% block layout_head_meta_tags %}
     {{ parent() }}
 
+    {# @diagnostics sdk_configuration #}
     {% block swag_paypal_meta_tags %}
         {% if config('SwagPayPal.settings.sdkV6Enabled') %}
             {% sw_include '@SwagPayPal/storefront/paypal/meta-tags.html.twig' %}
