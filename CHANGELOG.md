@@ -2,8 +2,7 @@
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
 - Fixes an issue, where PayPal Express Checkout failed for carts with only digital products (shopware/SwagPayPal#825)
 - Fixes an issue, where the first payment of a subscription failed, if the customer paid with a saved card, and where card renewals could fail, if the card issuer required 3D Secure
-- Fixes an issue, where removing a saved PayPal account or card on the confirmation page of a subscription led to an error page and could remove other saved payment details instead. Headless storefronts can now show and remove the saved payment details of a subscription as well
-- Fixes an issue, where the Store API route `/store-api/paypal/vault/clear` always failed with an error instead of removing the saved PayPal account or card
+- Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
 
 # 8.12.5
 - Added Canada to the countries where Pay Later is available (shopware/SwagPayPal#581)
