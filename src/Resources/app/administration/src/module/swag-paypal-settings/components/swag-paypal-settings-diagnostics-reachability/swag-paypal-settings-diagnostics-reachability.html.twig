@@ -1,0 +1,96 @@
+<swag-paypal-settings-diagnostics-section
+    v-if="test?.status !== 'done' || results.length > 0"
+    class="swag-paypal-settings-diagnostics-reachability"
+    :title="$t('swag-paypal-settings.diagnostics.reachability.title')"
+    :description="$t('swag-paypal-settings.diagnostics.reachability.description')"
+>
+    <mt-skeleton-bar
+        v-if="test?.status === 'testing'"
+        class="swag-paypal-settings-diagnostics-reachability__testing"
+    />
+
+    <swag-paypal-settings-diagnostics-item
+        v-else-if="test?.status === 'failed'"
+        class="swag-paypal-settings-diagnostics-reachability__failed"
+        status="error"
+        :title="$t('swag-paypal-settings.diagnostics.reachability.failed')"
+    />
+
+    <template v-else-if="test?.status === 'done'">
+        <swag-paypal-settings-diagnostics-item
+            class="swag-paypal-settings-diagnostics-reachability__summary"
+            :status="summaryStatus"
+            :title="$t(`swag-paypal-settings.diagnostics.reachability.summary.${subject}.${summaryStatus}`, results.length)"
+            :subtitle="summaryCounts"
+        >
+            <template
+                v-if="summaryStatus !== 'passed'"
+                #default
+            >
+                <p class="swag-paypal-settings-diagnostics-item__description">
+                    {{ $t(`swag-paypal-settings.diagnostics.reachability.summary.${subject}.description`) }}
+                    <br>
+                    <strong>{{ $t('swag-paypal-settings.diagnostics.reachability.summary.actionLabel') }}</strong>
+                    {{ $t(`swag-paypal-settings.diagnostics.reachability.summary.action.${summaryStatus}`) }}
+                </p>
+            </template>
+        </swag-paypal-settings-diagnostics-item>
+
+        <details class="swag-paypal-settings-diagnostics-reachability__results">
+            <summary class="swag-paypal-settings-diagnostics-reachability__results-summary">
+                {{ $t('swag-paypal-settings.diagnostics.reachability.viewResults', results.length) }}
+
+                <mt-icon
+                    class="swag-paypal-settings-diagnostics-reachability__chevron"
+                    name="regular-chevron-down-xs"
+                    size="16px"
+                    aria-hidden="true"
+                />
+            </summary>
+
+            <swag-paypal-settings-diagnostics-item
+                v-for="result in results"
+                :key="result.url"
+                class="swag-paypal-settings-diagnostics-reachability__result"
+                compact
+                :status="status(result)"
+                :title="$t(`swag-paypal-settings.diagnostics.reachability.${key(result)}.title`)"
+                :subtitle="result.url"
+            >
+                <template
+                    v-if="result.error"
+                    #default
+                >
+                    <p class="swag-paypal-settings-diagnostics-item__description">
+                        {{ $t(`swag-paypal-settings.diagnostics.reachability.${key(result)}.description`) }}
+                    </p>
+
+                    <dl class="swag-paypal-settings-diagnostics-item__details">
+                        <template v-if="result.statusCode">
+                            <dt>{{ $t('swag-paypal-settings.diagnostics.reachability.labelStatusCode') }}</dt>
+                            <dd>{{ result.statusCode }}</dd>
+                        </template>
+
+                        <template v-if="result.location">
+                            <dt>{{ $t('swag-paypal-settings.diagnostics.reachability.labelLocation') }}</dt>
+                            <dd><code>{{ result.location }}</code></dd>
+                        </template>
+
+                        <dt>{{ $t('swag-paypal-settings.diagnostics.reachability.labelAddresses') }}</dt>
+                        <dd class="swag-paypal-settings-diagnostics-reachability__addresses">
+                            <code v-if="result.addresses.length > 0">{{ result.addresses.join(', ') }}</code>
+                            <template v-else>
+                                {{ $t('swag-paypal-settings.diagnostics.reachability.noAddresses') }}
+                            </template>
+                        </dd>
+
+                        <template v-if="result.detail">
+                            <dt>{{ $t('swag-paypal-settings.diagnostics.reachability.labelDetail') }}</dt>
+                            <dd><code>{{ result.detail }}</code></dd>
+                        </template>
+                    </dl>
+                </template>
+            </swag-paypal-settings-diagnostics-item>
+        </details>
+    </template>
+</swag-paypal-settings-diagnostics-section>

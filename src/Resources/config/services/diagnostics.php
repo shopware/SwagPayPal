@@ -5,8 +5,22 @@
  * file that was distributed with this source code.
  */
 
+use Swag\PayPal\Diagnostics\Reachability\HostResolver;
+use Swag\PayPal\Diagnostics\Reachability\ReachabilityProbe;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $containerConfigurator): void {
     $services = $containerConfigurator->services();
+
+    // Reachability
+    $services->set(HostResolver::class);
+
+    $services->set(ReachabilityProbe::class)
+        ->args([
+            service(HttpClientInterface::class),
+            service(HostResolver::class),
+        ]);
 };

@@ -564,6 +564,29 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description The answer to a test request sent to a callback URL, like PayPal sends it, combined with the address its host resolves to */
+        swag_paypal_diagnostics_reachability: {
+            /** @description The tested URL, its throw-away token replaced by `<token>` */
+            url: string;
+            /**
+             * @description Null when PayPal can reach the URL
+             * @enum {string|null}
+             */
+            error: "host_unresolved" | "host_local" | "certificate_invalid" | "redirected" | "denied" | "not_found" | "server_error" | "unexpected_answer" | "host_private" | "timeout" | "connection_failed" | null;
+            /**
+             * @description Null when PayPal can reach the URL. `warning` when the shop may still be reachable from PayPal, as servers often can't reach their own public URL or resolve their own domain to a private address
+             * @enum {string|null}
+             */
+            severity: "error" | "warning" | null;
+            /** @description The addresses of the URL's host */
+            addresses: string[];
+            /** @description The status code of an answer that doesn't come from the plugin */
+            statusCode: number | null;
+            /** @description The redirect target */
+            location: string | null;
+            /** @description The HTTP client's message when the request failed, for support */
+            detail: string | null;
+        };
         swag_paypal_pos_webhook: {
             organizationUuid: string;
             messageUuid: string;

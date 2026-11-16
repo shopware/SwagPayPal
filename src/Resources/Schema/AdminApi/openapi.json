@@ -1481,6 +1481,74 @@
     },
     "components": {
         "schemas": {
+            "swag_paypal_diagnostics_reachability": {
+                "description": "The answer to a test request sent to a callback URL, like PayPal sends it, combined with the address its host resolves to",
+                "required": [
+                    "url",
+                    "error",
+                    "severity",
+                    "addresses",
+                    "statusCode",
+                    "location",
+                    "detail"
+                ],
+                "properties": {
+                    "url": {
+                        "description": "The tested URL, its throw-away token replaced by `<token>`",
+                        "type": "string"
+                    },
+                    "error": {
+                        "description": "Null when PayPal can reach the URL",
+                        "type": "string",
+                        "nullable": true,
+                        "enum": [
+                            "host_unresolved",
+                            "host_local",
+                            "certificate_invalid",
+                            "redirected",
+                            "denied",
+                            "not_found",
+                            "server_error",
+                            "unexpected_answer",
+                            "host_private",
+                            "timeout",
+                            "connection_failed"
+                        ]
+                    },
+                    "severity": {
+                        "description": "Null when PayPal can reach the URL. `warning` when the shop may still be reachable from PayPal, as servers often can't reach their own public URL or resolve their own domain to a private address",
+                        "type": "string",
+                        "nullable": true,
+                        "enum": [
+                            "error",
+                            "warning"
+                        ]
+                    },
+                    "addresses": {
+                        "description": "The addresses of the URL's host",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "statusCode": {
+                        "description": "The status code of an answer that doesn't come from the plugin",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "location": {
+                        "description": "The redirect target",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "detail": {
+                        "description": "The HTTP client's message when the request failed, for support",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "swag_paypal_pos_webhook": {
                 "required": [
                     "organizationUuid",
