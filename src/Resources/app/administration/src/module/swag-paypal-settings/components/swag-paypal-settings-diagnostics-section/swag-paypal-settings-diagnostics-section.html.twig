@@ -1,0 +1,14 @@
+<section class="swag-paypal-settings-diagnostics-section">
+    <h3 class="swag-paypal-settings-diagnostics-section__title">
+        {{ title }}
+    </h3>
+
+    <p
+        v-if="description"
+        class="swag-paypal-settings-diagnostics-section__description"
+    >
+        {{ description }}
+    </p>
+
+    <slot />
+</section>

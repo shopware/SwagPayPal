@@ -18,6 +18,10 @@ swag_paypal.checkout_route:
     resource: ../../Checkout/**/*Route.php
     type: attribute
 
+swag_paypal.diagnostics:
+    resource: ../../Diagnostics/**/*Controller.php
+    type: attribute
+
 swag_paypal.dispute:
     resource: ../../Dispute/**/*Controller.php
     type: attribute

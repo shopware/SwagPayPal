@@ -1,0 +1,57 @@
+<component
+    :is="hasContent() ? 'details' : 'div'"
+    class="swag-paypal-settings-diagnostics-item"
+    :class="[
+        `swag-paypal-settings-diagnostics-item--${status}`,
+        { 'swag-paypal-settings-diagnostics-item--compact': compact },
+    ]"
+>
+    <component
+        :is="hasContent() ? 'summary' : 'div'"
+        class="swag-paypal-settings-diagnostics-item__summary"
+    >
+        <span class="swag-paypal-settings-diagnostics-item__icon">
+            <mt-icon
+                :name="icon"
+                size="12px"
+                aria-hidden="true"
+            />
+        </span>
+
+        <span class="swag-paypal-settings-diagnostics-item__text">
+            <span class="swag-paypal-settings-diagnostics-item__title">{{ title }}</span>
+
+            <span
+                v-if="subtitle || $slots.subtitle"
+                class="swag-paypal-settings-diagnostics-item__subtitle"
+            ><slot name="subtitle">{{ subtitle }}</slot></span>
+        </span>
+
+        <span
+            v-if="!compact"
+            class="swag-paypal-settings-diagnostics-item__badge"
+        >
+            <mt-icon
+                :name="icon"
+                size="10px"
+                aria-hidden="true"
+            />
+            {{ $t(`swag-paypal-settings.diagnostics.status.${status}`) }}
+        </span>
+
+        <mt-icon
+            v-if="hasContent()"
+            class="swag-paypal-settings-diagnostics-item__chevron"
+            name="regular-chevron-down-xs"
+            size="16px"
+            aria-hidden="true"
+        />
+    </component>
+
+    <div
+        v-if="hasContent()"
+        class="swag-paypal-settings-diagnostics-item__content"
+    >
+        <slot />
+    </div>
+</component>

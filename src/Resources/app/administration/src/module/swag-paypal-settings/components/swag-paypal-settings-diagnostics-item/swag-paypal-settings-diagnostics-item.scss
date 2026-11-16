@@ -1,0 +1,170 @@
+$statuses: (
+    error: critical,
+    warning: attention,
+    info: brand,
+    passed: positive,
+    not-observed: secondary,
+);
+
+.swag-paypal-settings-diagnostics-item {
+    border-bottom: 1px solid var(--color-border-secondary-default);
+
+    &:last-child {
+        border-bottom: 0;
+    }
+
+    &__summary {
+        display: flex;
+        align-items: center;
+        gap: var(--scale-size-12);
+        padding: var(--scale-size-12) 0;
+        list-style: none;
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-border-brand-selected);
+        }
+    }
+
+    details > &__summary {
+        cursor: pointer;
+    }
+
+    &__icon {
+        display: inline-flex;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        width: var(--scale-size-24);
+        height: var(--scale-size-24);
+        border-radius: var(--border-radius-round);
+    }
+
+    &__text {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    &__title {
+        overflow-wrap: anywhere;
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        line-height: var(--font-line-height-xs);
+    }
+
+    &__subtitle {
+        overflow-wrap: anywhere;
+        color: var(--color-text-secondary-default);
+        font-size: var(--font-size-xs);
+        line-height: var(--font-line-height-xs);
+    }
+
+    &__badge {
+        display: inline-flex;
+        flex: none;
+        align-items: center;
+        gap: var(--scale-size-4);
+        height: var(--scale-size-20);
+        padding: 0 var(--scale-size-8);
+        border: 1px solid var(--color-border-primary-default);
+        border-radius: var(--border-radius-round);
+        background-color: var(--color-background-secondary-default);
+        color: var(--color-text-primary-default);
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-medium);
+        line-height: var(--font-line-height-2xs);
+        white-space: nowrap;
+    }
+
+    @each $status, $tone in $statuses {
+        &--#{$status} &__icon {
+            background-color: var(--color-background-#{$tone}-default);
+            color: var(--color-icon-#{$tone}-default);
+        }
+
+        &--#{$status} &__badge {
+            border-color: var(--color-border-#{$tone}-default);
+            background-color: var(--color-background-#{$tone}-default);
+
+            .mt-icon {
+                color: var(--color-icon-#{$tone}-default);
+            }
+        }
+    }
+
+    &__chevron {
+        flex: none;
+        color: var(--color-icon-secondary-default);
+        transition: transform 0.15s ease;
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
+    }
+
+    &[open] &__chevron {
+        transform: rotate(180deg);
+    }
+
+    &__content {
+        padding: 0 0 var(--scale-size-16) var(--scale-size-36);
+        font-size: var(--font-size-xs);
+    }
+
+    &__description {
+        margin: 0 0 var(--scale-size-8);
+        color: var(--color-text-secondary-default);
+        line-height: var(--font-line-height-xs);
+    }
+
+    &__details {
+        display: grid;
+        grid-template-columns: 11rem minmax(0, 1fr);
+        gap: var(--scale-size-4) var(--scale-size-16);
+        margin: 0;
+
+        dt {
+            font-weight: var(--font-weight-semibold);
+        }
+
+        dd {
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        code {
+            font-family: ui-monospace, SFMono-Regular, menlo, monaco, consolas, monospace;
+            font-size: var(--font-size-2xs);
+        }
+    }
+
+    &--compact &__summary {
+        gap: var(--scale-size-8);
+        padding: var(--scale-size-8) 0;
+    }
+
+    &--compact &__icon {
+        width: auto;
+        height: auto;
+        background-color: transparent;
+    }
+
+    &--compact &__text {
+        flex-flow: row wrap;
+        align-items: baseline;
+        gap: 0 var(--scale-size-8);
+    }
+
+    &--compact &__subtitle {
+        font-size: var(--font-size-2xs);
+    }
+
+    &--compact &__content {
+        padding-left: var(--scale-size-20);
+    }
+}
