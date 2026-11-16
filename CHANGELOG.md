@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
 - Fixes an issue, where PayPal Express Checkout showed all shipping methods except the selected one as free (shopware/SwagPayPal#913, requires Shopware 6.7.14.0 or greater)
+- Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
 - Fixes an issue, where renewals of subscriptions paid with a saved PayPal account or card failed after the customer removed it, or used one added later instead
 
 # 10.9.0
