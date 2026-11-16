@@ -3,6 +3,7 @@
 - Behebt ein Problem, bei dem PayPal Express Checkout bei Warenkörben mit ausschließlich digitalen Produkten fehlschlug (shopware/SwagPayPal#825)
 - Behebt ein Problem, bei dem die erste Bestellung eines Abonnements nicht das gespeicherte PayPal-Konto oder die gespeicherte Karte des Kunden verwendete, wodurch Zahlungen mit einer gespeicherten Karte fehlschlugen
 - Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer gespeicherten Karte auf der Bestellbestätigungsseite eines Abonnements zu einer Fehlerseite führte
+- Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer gespeicherten Karte auf der Bestellbestätigungsseite eines Abonnements stattdessen das gespeicherte Konto oder die gespeicherte Karte der außerhalb des Abonnements ausgewählten Zahlungsart entfernte
 
 # 8.12.5
 - Fügt Kanada zu den Ländern hinzu, in denen "Später bezahlen" verfügbar ist (shopware/SwagPayPal#581)
