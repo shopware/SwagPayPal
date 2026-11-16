@@ -61,7 +61,9 @@ class TransactionStatusSyncMessageHandler
                         new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_AUTHORIZED),
                         new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_IN_PROGRESS),
                     ]
-                ));
+                ))
+                // a new payment attempt since the message was queued has its own PayPal order
+                ->addFilter(new EqualsFilter('customFields.' . SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID, $message->getPayPalOrderId()));
 
             /**
              * @var OrderTransactionEntity|null $transaction
@@ -71,23 +73,13 @@ class TransactionStatusSyncMessageHandler
                 return;
             }
 
-            $payPalOrderId = $transaction->getCustomFieldsValue(SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID);
-            if (!\is_string($payPalOrderId) || $payPalOrderId === '') {
-                $payPalOrderId = null;
-            }
-
-            // a new payment attempt since the message was queued has its own PayPal order
-            if ($payPalOrderId !== ($message->getPayPalOrderId() ?: null)) {
-                return;
-            }
-
-            if ($payPalOrderId === null) {
+            if (!$message->getPayPalOrderId()) {
                 $this->orderTransactionStateHandler->cancel($message->getTransactionId(), $context);
 
                 return;
             }
 
-            $order = $this->orderResource->get($payPalOrderId, $message->getSalesChannelId());
+            $order = $this->orderResource->get($message->getPayPalOrderId(), $message->getSalesChannelId());
 
             // Set the resource ID for the transaction
             $this->transactionDataService->setResourceId($order, $message->getTransactionId(), $context);

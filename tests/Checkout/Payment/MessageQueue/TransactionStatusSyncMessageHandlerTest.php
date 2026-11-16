@@ -21,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\StateMachineException;
@@ -86,7 +87,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
-                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
                     $orderTransactionEntity->setStateMachineState($stateMachineState);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
@@ -160,7 +160,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
-                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
                 }
@@ -227,7 +226,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
-                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
                 }
@@ -270,7 +268,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
-                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
                 }
@@ -367,35 +364,33 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', null));
     }
 
-    #[DataProvider('dataProviderChangedPayPalOrderId')]
-    public function testInvokeSkipsTransactionWithChangedPayPalOrderId(?string $queuedPayPalOrderId, ?string $currentPayPalOrderId): void
+    #[DataProvider('dataProviderQueuedPayPalOrderId')]
+    public function testInvokeOnlyLoadsTransactionWithQueuedPayPalOrderId(?string $queuedPayPalOrderId): void
     {
         $this->orderTransactionRepository
             ->expects($this->once())
             ->method('search')
             ->willReturnCallback(
-                static function (Criteria $criteria, Context $context) use ($currentPayPalOrderId): EntitySearchResult {
-                    $orderTransactionEntity = new OrderTransactionEntity();
-                    $orderTransactionEntity->setId('test-id');
-                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $currentPayPalOrderId]);
+                static function (Criteria $criteria, Context $context) use ($queuedPayPalOrderId): EntitySearchResult {
+                    static::assertContainsEquals(
+                        new EqualsFilter('customFields.' . SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID, $queuedPayPalOrderId),
+                        $criteria->getFilters()
+                    );
 
-                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                    return new EntitySearchResult('order_transaction', 0, new EntityCollection(), null, $criteria, $context);
                 }
             );
 
         $this->orderResource->expects($this->never())->method('get');
-        $this->transactionDataService->expects($this->never())->method('setResourceId');
         $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
-        $this->logger->expects($this->never())->method(static::anything());
 
         ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', $queuedPayPalOrderId));
     }
 
-    public static function dataProviderChangedPayPalOrderId(): \Generator
+    public static function dataProviderQueuedPayPalOrderId(): \Generator
     {
-        yield 'new PayPal order after the message was queued' => ['paypal-order-id', 'new-paypal-order-id'];
-        yield 'first PayPal order after the message was queued' => [null, 'new-paypal-order-id'];
-        yield 'PayPal order removed after the message was queued' => ['paypal-order-id', null];
+        yield 'with PayPal order' => ['paypal-order-id'];
+        yield 'without PayPal order' => [null];
     }
 
     public function testInvokeWithAuthorizedTransactionAndOrderWillSkip(): void
@@ -407,7 +402,6 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
-                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
                     $stateMachineState = new StateMachineStateEntity();
                     $stateMachineState->setTechnicalName(OrderTransactionStates::STATE_AUTHORIZED);
                     $orderTransactionEntity->setStateMachineState($stateMachineState);
