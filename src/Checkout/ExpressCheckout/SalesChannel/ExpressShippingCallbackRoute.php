@@ -16,6 +16,9 @@ use Shopware\PayPalSDK\Struct\V2\Order;
 use Shopware\PayPalSDK\Struct\V2\OrderShippingCallback;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
+use Swag\PayPal\Diagnostics\ExpressCallback\Recording\CallbackOutcome;
+use Swag\PayPal\Diagnostics\ExpressCallback\Recording\LastCallbackStorage;
+use Swag\PayPal\Diagnostics\Reachability\ReachabilityProbe;
 use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,6 +36,7 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
     public function __construct(
         private readonly ExpressShippingCallbackService $shippingCallbackService,
         private readonly LoggerInterface $logger,
+        private readonly LastCallbackStorage $lastCallbackStorage,
     ) {
     }
 
@@ -59,16 +63,24 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
         $callback = (new OrderShippingCallback())->assign($request->request->all());
 
         if (!$callback->isset('id') || !$callback->isset('shippingAddress') || !$callback->isset('purchaseUnits')) {
+            $response = new JsonResponse(['error' => 'Invalid payload'], Response::HTTP_BAD_REQUEST);
+
+            // the reachability test sends no payload
+            if (ReachabilityProbe::isProbe($request)) {
+                return ReachabilityProbe::answer($response);
+            }
+
             $this->logger->warning('Rejected a shipping callback with an invalid payload', Log::context(
                 code: LogCode::EXPRESS_CALLBACK_INVALID,
                 salesChannelId: $salesChannelContext->getSalesChannelId(),
             ));
 
-            return new JsonResponse(['error' => 'Invalid payload'], Response::HTTP_BAD_REQUEST);
+            return $response;
         }
 
         try {
             $order = $this->shippingCallbackService->recalculateCart($callback, $salesChannelContext);
+            $this->lastCallbackStorage->record($salesChannelContext->getSalesChannelId(), CallbackOutcome::Answered);
 
             return new JsonResponse($order);
         } catch (\Throwable $e) {
@@ -84,6 +96,7 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
                     code: LogCode::EXPRESS_CALLBACK_SHIPPING_UNAVAILABLE,
                     countryCode: $callback->getShippingAddress()->getCountryCode(),
                 ));
+                $this->lastCallbackStorage->record($salesChannelContext->getSalesChannelId(), CallbackOutcome::Rejected);
 
                 return $e->intoCallbackResponse();
             }
@@ -92,6 +105,7 @@ class ExpressShippingCallbackRoute extends AbstractExpressShippingCallbackRoute
                 ...$logContext,
                 code: LogCode::EXPRESS_CALLBACK_FAILED,
             ));
+            $this->lastCallbackStorage->record($salesChannelContext->getSalesChannelId(), CallbackOutcome::Failed);
 
             throw $e;
         }

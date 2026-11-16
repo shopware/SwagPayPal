@@ -29,6 +29,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
+use Swag\PayPal\Diagnostics\ExpressCallback\Recording\StoreApiUrlStorage;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -67,6 +68,7 @@ class ExpressCreateOrderRouteTaxedCartTest extends TestCase
             $this->createMock(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
             new NullLogger(),
+            $this->createMock(StoreApiUrlStorage::class),
         );
 
         static::expectException(OrderZeroValueException::class);

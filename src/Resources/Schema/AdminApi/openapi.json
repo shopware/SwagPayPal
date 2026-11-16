@@ -32,6 +32,77 @@
                 }
             }
         },
+        "/_action/paypal/diagnostics/express-callback/{salesChannelId}": {
+            "get": {
+                "tags": [
+                    "Admin Api",
+                    "PayPal"
+                ],
+                "description": "Checks whether PayPal can reach the shop with the shipping callback of Express Checkout",
+                "operationId": "getPayPalExpressCallbackDiagnostics",
+                "parameters": [
+                    {
+                        "parameter": "salesChannelId",
+                        "name": "salesChannelId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{32}$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The state of the shipping callback",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/swag_paypal_diagnostics_express_callback_result"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/_action/paypal/diagnostics/express-callback/{salesChannelId}/reachability": {
+            "post": {
+                "tags": [
+                    "Admin Api",
+                    "PayPal"
+                ],
+                "description": "Sends a test request to the shipping callback URLs of the Sales Channel, like PayPal sends it. It runs from the shop's server, so a pass means the URL answers from there",
+                "operationId": "testPayPalExpressCallbackReachability",
+                "parameters": [
+                    {
+                        "parameter": "salesChannelId",
+                        "name": "salesChannelId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{32}$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The answer of each callback URL",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/swag_paypal_diagnostics_reachability"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/_action/paypal/diagnostics/twig/{salesChannelId}": {
             "get": {
                 "tags": [
@@ -1515,6 +1586,105 @@
     },
     "components": {
         "schemas": {
+            "swag_paypal_diagnostics_express_callback_finding": {
+                "description": "Something that keeps PayPal from reaching the shop, or makes it unreliable",
+                "required": [
+                    "type",
+                    "severity",
+                    "host"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "last_callback_failed",
+                            "untrusted_proxy",
+                            "sandbox",
+                            "store_api_url_unknown",
+                            "store_api_host_unknown"
+                        ]
+                    },
+                    "severity": {
+                        "type": "string",
+                        "enum": [
+                            "error",
+                            "warning",
+                            "notice",
+                            "unknown"
+                        ]
+                    },
+                    "host": {
+                        "description": "The host of a `store_api_host_unknown` finding",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "swag_paypal_diagnostics_express_callback_result": {
+                "required": [
+                    "status",
+                    "lastCallback",
+                    "findings"
+                ],
+                "properties": {
+                    "status": {
+                        "description": "`inactive` without PayPal or Express Checkout buttons, `local_environment` and `disabled` when the plugin doesn't ask PayPal for callbacks",
+                        "type": "string",
+                        "enum": [
+                            "inactive",
+                            "local_environment",
+                            "disabled",
+                            "active"
+                        ]
+                    },
+                    "lastCallback": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/swag_paypal_diagnostics_express_callback_last_callback"
+                            },
+                            {
+                                "type": "object",
+                                "nullable": true,
+                                "enum": [
+                                    null
+                                ]
+                            }
+                        ]
+                    },
+                    "findings": {
+                        "description": "Empty unless the status is `active`",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/swag_paypal_diagnostics_express_callback_finding"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "swag_paypal_diagnostics_express_callback_last_callback": {
+                "description": "The last shipping callback PayPal sent to the Sales Channel",
+                "required": [
+                    "at",
+                    "outcome"
+                ],
+                "properties": {
+                    "at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "outcome": {
+                        "description": "`answered` when the shop sent the recalculated prices, `rejected` when it can't ship to the address or with the shipping method, `failed` on a server error",
+                        "type": "string",
+                        "enum": [
+                            "answered",
+                            "rejected",
+                            "failed"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
             "swag_paypal_diagnostics_reachability": {
                 "description": "The answer to a test request sent to a callback URL, like PayPal sends it, combined with the address its host resolves to",
                 "required": [

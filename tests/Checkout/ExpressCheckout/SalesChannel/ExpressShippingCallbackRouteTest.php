@@ -21,9 +21,14 @@ use Shopware\PayPalSDK\Struct\V2\OrderShippingCallback;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressShippingCallbackRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
+use Swag\PayPal\Diagnostics\ExpressCallback\Recording\CallbackOutcome;
+use Swag\PayPal\Diagnostics\ExpressCallback\Recording\LastCallbackStorage;
+use Swag\PayPal\Diagnostics\Reachability\ReachabilityProbe;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Test\Mock\KeyValueStorageMock;
 use Swag\PayPal\Util\Log\Log;
 use Swag\PayPal\Util\Log\LogCode;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -39,12 +44,16 @@ class ExpressShippingCallbackRouteTest extends TestCase
 
     private ExpressShippingCallbackRoute $route;
 
+    private LastCallbackStorage $lastCallbackStorage;
+
     protected function setUp(): void
     {
         $this->service = $this->createMock(ExpressShippingCallbackService::class);
+        $this->lastCallbackStorage = new LastCallbackStorage(new KeyValueStorageMock(), new MockClock(), $this->createPayPalLogger());
         $this->route = new ExpressShippingCallbackRoute(
             $this->service,
             $this->createPayPalLogger(),
+            $this->lastCallbackStorage,
         );
     }
 
@@ -84,6 +93,7 @@ class ExpressShippingCallbackRouteTest extends TestCase
         static::assertSame('default', $responsePayload['purchase_units'][0]['reference_id']);
 
         static::assertSame([], $this->getPayPalLogRecords());
+        static::assertSame(CallbackOutcome::Answered, $this->lastCallbackStorage->get($salesChannelContext->getSalesChannelId())?->outcome);
     }
 
     /**
@@ -104,6 +114,22 @@ class ExpressShippingCallbackRouteTest extends TestCase
 
         $record = $this->assertPayPalLogged(LogCode::EXPRESS_CALLBACK_INVALID, Level::Warning, message: 'Rejected a shipping callback with an invalid payload');
         static::assertArrayNotHasKey('callback', $record->context);
+        static::assertNull($this->lastCallbackStorage->get($salesChannelContext->getSalesChannelId()));
+    }
+
+    public function testReachabilityTestIsNotLogged(): void
+    {
+        $request = new Request(request: []);
+        $request->headers->set(ReachabilityProbe::HEADER, '1');
+        $salesChannelContext = Generator::generateSalesChannelContext();
+
+        $response = $this->route->handleCallback($request, $salesChannelContext);
+
+        static::assertSame(\json_encode(['error' => 'Invalid payload']), $response->getContent());
+        static::assertSame(400, $response->getStatusCode());
+        static::assertTrue($response->headers->has(ReachabilityProbe::HEADER));
+        static::assertSame([], $this->getPayPalLogRecords());
+        static::assertNull($this->lastCallbackStorage->get($salesChannelContext->getSalesChannelId()));
     }
 
     public static function handleCallbackInvalidPayloadDataProvider(): \Generator
@@ -161,6 +187,7 @@ class ExpressShippingCallbackRouteTest extends TestCase
             );
             static::assertSame($expection::class, $record->context[Log::EXCEPTION]['class'] ?? null);
             static::assertSame($expection->getMessage(), $record->context[Log::EXCEPTION]['message'] ?? null);
+            static::assertSame(CallbackOutcome::Failed, $this->lastCallbackStorage->get($salesChannelContext->getSalesChannelId())?->outcome);
         }
     }
 
@@ -197,5 +224,6 @@ class ExpressShippingCallbackRouteTest extends TestCase
             [Log::PAYPAL_ORDER_ID => 'paypal-order-id', Log::COUNTRY_CODE => 'DE'],
             'Could not offer shipping for PayPal order {paypalOrderId}: {errorCode}',
         );
+        static::assertSame(CallbackOutcome::Rejected, $this->lastCallbackStorage->get($salesChannelContext->getSalesChannelId())?->outcome);
     }
 }

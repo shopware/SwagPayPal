@@ -31,6 +31,7 @@ use Swag\PayPal\Checkout\Exception\OrderZeroValueException;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
+use Swag\PayPal\Diagnostics\ExpressCallback\Recording\StoreApiUrlStorage;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -40,6 +41,7 @@ use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
+use Swag\PayPal\Test\Mock\KeyValueStorageMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\GatewayTestBehaviour;
@@ -78,6 +80,7 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
             new NullLogger(),
+            $this->createMock(StoreApiUrlStorage::class),
         );
 
         static::expectException(OrderZeroValueException::class);
@@ -102,6 +105,7 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
             new NullLogger(),
+            $this->createMock(StoreApiUrlStorage::class),
         );
 
         static::expectException(EmptyCartException::class);
@@ -159,6 +163,7 @@ class ExpressCreateOrderRouteTest extends TestCase
             $this->getContainer()->get(SystemConfigService::class),
             $this->createMock(RouterInterface::class),
             new NullLogger(),
+            $this->createMock(StoreApiUrlStorage::class),
         );
 
         $route->createPayPalOrder(new Request(), $this->getSalesChannelContext());
@@ -290,12 +295,57 @@ class ExpressCreateOrderRouteTest extends TestCase
         static::assertNotNull($experienceContext->getOrderUpdateCallbackConfig());
     }
 
+    public function testRecordsTheStoreApiUrlForStoreApiRequests(): void
+    {
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
+        $storage = new StoreApiUrlStorage(new KeyValueStorageMock(), new NullLogger());
+
+        $this->createRoute([], $this->createRouterGenerating('https://api.shop.example/store-api/paypal/express/shipping-callback/a/b'), $storage)
+            ->createPayPalOrder(new Request(), $salesChannelContext);
+
+        static::assertSame('https://api.shop.example', $storage->get($salesChannelContext->getSalesChannelId()));
+    }
+
+    public function testDoesNotRecordTheStoreApiUrlForStorefrontRequests(): void
+    {
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
+        $storage = new StoreApiUrlStorage(new KeyValueStorageMock(), new NullLogger());
+
+        $request = new Request();
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [StorefrontRouteScope::ID]);
+
+        $this->createRoute([], $this->createRouterGenerating('https://shop.example/paypal/express/shipping-callback/a/b'), $storage)
+            ->createPayPalOrder($request, $salesChannelContext);
+
+        static::assertNull($storage->get($salesChannelContext->getSalesChannelId()));
+    }
+
+    public function testDoesNotRecordTheStoreApiUrlWithShippingCallbackDisabled(): void
+    {
+        $salesChannelContext = $this->getSalesChannelContextWithCart();
+        $storage = new StoreApiUrlStorage(new KeyValueStorageMock(), new NullLogger());
+
+        $this->createRoute([Settings::ECS_SHIPPING_CALLBACK_ENABLED => false], null, $storage)
+            ->createPayPalOrder(new Request(), $salesChannelContext);
+
+        static::assertNull($storage->get($salesChannelContext->getSalesChannelId()));
+    }
+
+    private function createRouterGenerating(string $url): RouterInterface
+    {
+        $router = $this->createMock(RouterInterface::class);
+        $router->method('generate')->willReturn($url);
+
+        return $router;
+    }
+
     /**
      * @param array<string, mixed> $systemConfigSettings
      */
     private function createRoute(
         array $systemConfigSettings = [],
         ?RouterInterface $router = null,
+        ?StoreApiUrlStorage $storeApiUrlStorage = null,
     ): ExpressCreateOrderRoute {
         $systemConfig = $this->createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
@@ -327,6 +377,7 @@ class ExpressCreateOrderRouteTest extends TestCase
             $systemConfig,
             $router ?? $this->createMock(RouterInterface::class),
             new NullLogger(),
+            $storeApiUrlStorage ?? new StoreApiUrlStorage(new KeyValueStorageMock(), new NullLogger()),
         );
     }
 }

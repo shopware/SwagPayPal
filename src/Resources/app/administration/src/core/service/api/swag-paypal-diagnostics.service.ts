@@ -9,6 +9,21 @@ export default class SwagPayPalDiagnosticsService extends ApiService {
         super(httpClient, loginService, apiEndpoint);
     }
 
+    expressCallback(salesChannelId: string): Promise<PayPal.Api.Operations<'getPayPalExpressCallbackDiagnostics'>> {
+        return this.httpClient.get<PayPal.Api.Operations<'getPayPalExpressCallbackDiagnostics'>>(
+            `_action/${this.getApiBasePath()}/diagnostics/express-callback/${salesChannelId}`,
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
+    }
+
+    expressCallbackReachability(salesChannelId: string): Promise<PayPal.Api.Operations<'testPayPalExpressCallbackReachability'>> {
+        return this.httpClient.post<PayPal.Api.Operations<'testPayPalExpressCallbackReachability'>>(
+            `_action/${this.getApiBasePath()}/diagnostics/express-callback/${salesChannelId}/reachability`,
+            {},
+            { headers: this.getBasicHeaders() },
+        ).then(ApiService.handleResponse.bind(this));
+    }
+
     twig(salesChannelId: string): Promise<PayPal.Api.Operations<'getPayPalTwigDiagnostics'>> {
         return this.httpClient.get<PayPal.Api.Operations<'getPayPalTwigDiagnostics'>>(
             `_action/${this.getApiBasePath()}/diagnostics/twig/${salesChannelId}`,

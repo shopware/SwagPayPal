@@ -10,6 +10,8 @@ namespace Swag\PayPal\Test\Diagnostics;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Diagnostics\ExpressCallback\ExpressCallbackFindingType;
+use Swag\PayPal\Diagnostics\ExpressCallback\ExpressCallbackStatus;
 use Swag\PayPal\Diagnostics\Reachability\ReachabilityError;
 use Swag\PayPal\Diagnostics\Twig\Override\TemplateOverrideType;
 use Swag\PayPal\Diagnostics\Twig\TemplateArea;
@@ -57,6 +59,20 @@ class AdministrationSnippetTest extends TestCase
             static::assertIsArray($areas[$area->value] ?? null, $area->value);
             static::assertSame(['title', 'notApplicable', 'noOverrides'], \array_keys($areas[$area->value]), $area->value);
         }
+    }
+
+    #[DataProvider('languageProvider')]
+    public function testEveryExpressCallbackStatusButActiveHasATitleAndSummary(string $language): void
+    {
+        $statuses = \array_values(\array_filter(ExpressCallbackStatus::cases(), static fn (ExpressCallbackStatus $status) => $status !== ExpressCallbackStatus::Active));
+
+        $this->assertTitleAnd($this->getSnippets($language, 'expressCallback', 'status'), $statuses, 'summary');
+    }
+
+    #[DataProvider('languageProvider')]
+    public function testEveryExpressCallbackFindingHasATitleAndSummary(string $language): void
+    {
+        $this->assertTitleAnd($this->getSnippets($language, 'expressCallback', 'findings'), ExpressCallbackFindingType::cases(), 'summary');
     }
 
     #[DataProvider('languageProvider')]

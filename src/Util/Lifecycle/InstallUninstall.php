@@ -9,6 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\Util\Lifecycle\Installer\DiagnosticsInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
@@ -29,6 +30,7 @@ class InstallUninstall
         private PosStateService $posStateService,
         private AgenticCommerceService $agenticCommerceService,
         private TableInstaller $tableInstaller,
+        private DiagnosticsInstaller $diagnosticsInstaller,
     ) {
     }
 
@@ -45,5 +47,6 @@ class InstallUninstall
         $this->settingsInstaller->removeConfiguration($context);
         $this->posInstaller->removePosTables();
         $this->tableInstaller->removeTables();
+        $this->diagnosticsInstaller->removeDiagnosticsData();
     }
 }

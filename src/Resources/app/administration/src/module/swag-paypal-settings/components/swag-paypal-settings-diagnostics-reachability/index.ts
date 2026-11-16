@@ -14,27 +14,53 @@ type ReachabilityTest =
     | { status: 'done'; results: ReachabilityResult[] };
 
 /**
- * Shows the results of the reachability test of the `subject`.
+ * Sends the reachability test of the `subject` for the Sales Channel itself.
+ * `busy-change` tells whether the test is running.
  *
  * @private
  */
 export default Shopware.Component.wrapComponentConfig({
     template,
 
+    inject: [
+        'SwagPayPalDiagnosticsService',
+    ],
+
+    mixins: [
+        Shopware.Mixin.getByName('swag-paypal-notification'),
+    ],
+
+    emits: ['busy-change'],
+
     props: {
-        test: {
-            type: Object as PropType<ReachabilityTest | null>,
-            required: false,
-            default: null,
+        salesChannelId: {
+            type: String,
+            required: true,
         },
 
         subject: {
-            type: String as PropType<'callback' | 'webhook'>,
+            type: String as PropType<'callback'>,
             required: true,
         },
     },
 
+    data(): {
+        tests: Record<string, ReachabilityTest>;
+    } {
+        return {
+            tests: {},
+        };
+    },
+
     computed: {
+        test(): ReachabilityTest | null {
+            return this.tests[this.salesChannelId] ?? null;
+        },
+
+        isTesting(): boolean {
+            return this.test?.status === 'testing';
+        },
+
         results(): ReachabilityResult[] {
             return this.test?.status === 'done' ? this.test.results : [];
         },
@@ -61,7 +87,48 @@ export default Shopware.Component.wrapComponentConfig({
         },
     },
 
+    watch: {
+        salesChannelId: {
+            immediate: true,
+            handler(salesChannelId: string) {
+                if (!this.tests[salesChannelId]) {
+                    this.runTest(salesChannelId);
+                }
+            },
+        },
+
+        isTesting: {
+            immediate: true,
+            handler(isTesting: boolean) {
+                this.$emit('busy-change', isTesting);
+            },
+        },
+    },
+
+    beforeUnmount() {
+        this.$emit('busy-change', false);
+    },
+
     methods: {
+        async runTest(salesChannelId: string) {
+            this.tests[salesChannelId] = { status: 'testing' };
+
+            try {
+                const results = await this.SwagPayPalDiagnosticsService.expressCallbackReachability(salesChannelId);
+
+                this.tests[salesChannelId] = { status: 'done', results };
+            } catch (errorResponse) {
+                this.tests[salesChannelId] = { status: 'failed' };
+
+                this.createNotificationError({
+                    title: this.$t('swag-paypal-settings.diagnostics.reachability.title'),
+                    message: this.$t('swag-paypal-settings.diagnostics.reachability.errorMessage', {
+                        message: this.createMessageFromError(errorResponse as PayPal.ServiceError),
+                    }),
+                });
+            }
+        },
+
         key(result: ReachabilityResult): string {
             return result.error ? `errors.${result.error}` : 'reachable';
         },
