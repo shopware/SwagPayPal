@@ -204,6 +204,78 @@
           }
         }
       },
+      "webhook": {
+        "title": "Webhooks",
+        "subtitle": "PayPal informiert diesen Shop über Änderungen an Zahlungen, zum Beispiel abgeschlossene Captures oder Erstattungen.",
+        "buttonCheck": "Erneut prüfen",
+        "buttonTest": "Test-Webhook senden",
+        "selectSalesChannel": "Wähle einen Verkaufskanal aus, um seinen Webhook zu prüfen.",
+        "failed": "Der Webhook konnte nicht geprüft werden.",
+        "errorMessage": "Der Webhook konnte nicht geprüft werden:<br>{message}",
+        "test": {
+          "waiting": "Warte auf den Test-Webhook von PayPal …",
+          "arrived": {
+            "title": "Test-Webhook ist angekommen",
+            "subtitle": "{url}, nach {seconds} s"
+          },
+          "missing": {
+            "title": "Test-Webhook ist nicht angekommen",
+            "description": "PayPal hat einen Test-Webhook an die registrierte URL gesendet, aber er ist nicht innerhalb einer Minute angekommen. PayPal sendet Test-Webhooks nur an HTTPS-URLs auf Port 443, und der Shop lehnt Webhooks mit einem veralteten Token ab. Der Erreichbarkeitstest unten zeigt, ob die URL antwortet.",
+            "descriptionCandidate": "PayPal hat einen Test-Webhook an diese URL gesendet, aber er ist nicht innerhalb einer Minute angekommen. Wenn du sie registrierst, kommen Webhooks dort ebenfalls nicht an. PayPal sendet Webhooks nur an HTTPS-URLs auf Port 443."
+          },
+          "failed": "PayPal konnte keinen Test-Webhook senden.",
+          "errorMessage": "PayPal konnte keinen Test-Webhook senden:<br>{message}"
+        },
+        "disabled": {
+          "title": "Lokale Entwicklungsumgebung ist aktiv",
+          "summary": "Änderungen an Zahlungen kommen nur mit dem stündlichen Statusabgleich an. Schalte sie im {advancedTab} eines Live-Shops aus."
+        },
+        "registered": {
+          "title": "Webhook für diesen Shop registriert"
+        },
+        "labelRegisteredUrl": "Registrierte URL",
+        "labelAdministrationUrl": "Administrations-URL",
+        "labelAppUrl": "Shop-URL (APP_URL)",
+        "lastWebhook": {
+          "title": "Letzter Webhook empfangen: {date}"
+        },
+        "noWebhook": {
+          "title": "Noch kein Webhook empfangen",
+          "summary": "PayPal sendet einen, wenn sich eine Zahlung ändert. Webhooks von vor dem Update auf diese Version werden nicht aufgezeichnet."
+        },
+        "findings": {
+          "registration_missing": {
+            "title": "Kein Webhook registriert",
+            "summary": "Änderungen an Zahlungen kommen nur mit dem stündlichen Statusabgleich an. Registriere den Webhook im {advancedTab}."
+          },
+          "registration_invalid": {
+            "title": "Webhook für eine andere URL registriert",
+            "summary": "PayPal sendet die Webhooks woandershin, zum Beispiel an ein Staging-System oder eine alte Shop-URL.",
+            "description": "Sende zuerst einen Test-Webhook und registriere dann im {advancedTab} die richtige URL."
+          },
+          "registration_outdated": {
+            "title": "Webhook mit veraltetem Token registriert",
+            "summary": "PayPal kennt die richtige URL, aber nicht das aktuelle Token.",
+            "description": "Aktualisiere den Webhook im {advancedTab}, um das aktuelle Token zu registrieren."
+          },
+          "registration_unknown": {
+            "title": "Registrierung konnte nicht geprüft werden",
+            "summary": "PayPal konnte nicht gefragt werden, zum Beispiel weil die API-Zugangsdaten im Tab „Allgemein“ fehlen oder ungültig sind."
+          },
+          "last_webhook_failed": {
+            "title": "Letzter Webhook fehlgeschlagen",
+            "summary": "Der Shop konnte den Webhook vom {date} nicht verarbeiten. Details stehen im Log unten."
+          },
+          "unknown_transaction": {
+            "title": "Webhook zu einer unbekannten Zahlung",
+            "summary": "Meist nutzt ein anderer Shop oder ein Staging-System dieselben PayPal-Zugangsdaten. Gib jedem System eigene Zugangsdaten."
+          },
+          "missed_events": {
+            "title": "Webhooks sind nicht angekommen",
+            "summary": "{count} Ereignis seit dem letzten Webhook: {eventType} am {date}. PayPal wiederholt die Zustellung 3 Tage lang. | {count} Ereignisse seit dem letzten Webhook, das neueste {eventType} am {date}. PayPal wiederholt die Zustellung 3 Tage lang."
+          }
+        }
+      },
       "reachability": {
         "title": "Erreichbarkeit",
         "description": "Sendet eine Testanfrage an die URLs, die PayPal aufruft. Sie läuft von diesem Server aus, daher heißt ein Erfolg, dass die URL hier antwortet, nicht dass PayPal durchkommt.",

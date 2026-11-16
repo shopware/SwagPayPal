@@ -72,6 +72,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/_action/paypal/diagnostics/webhook/{salesChannelId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Checks whether PayPal can reach the shop with webhooks */
+        get: operations["getPayPalWebhookDiagnostics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/_action/paypal/diagnostics/webhook/{salesChannelId}/reachability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Sends a test request to the webhook URL of the shop, like PayPal sends it. It runs from the shop's server, so a pass means the URL answers from there */
+        post: operations["testPayPalWebhookReachability"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/_action/paypal/diagnostics/webhook/{salesChannelId}/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Whether the last test webhook arrived since PayPal was asked to send it. Doesn't call PayPal */
+        get: operations["getPayPalTestWebhookArrival"];
+        put?: never;
+        /** @description Makes PayPal send a test webhook to the registered URL of the webhook (`registered`) or to a URL the plugin would register: with the host the Administration is opened with (`administration`) or with Shopware's `APP_URL` (`app_url`). Poll `GET` on the same path to see whether it arrived */
+        post: operations["sendPayPalTestWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/paypal/dispute": {
         parameters: {
             query?: never;
@@ -701,6 +753,87 @@ export interface components {
         swag_paypal_diagnostics_twig_result: {
             storefront: components["schemas"]["swag_paypal_diagnostics_twig_area_result"];
             documents: components["schemas"]["swag_paypal_diagnostics_twig_area_result"];
+        };
+        /** @description The request body of PayPal's simulate event call. PayPal requires either the webhook ID or a URL: set only one of them. */
+        swag_paypal_diagnostics_webhook_simulate_event: {
+            /** @description The ID of a registered webhook, PayPal sends the event to its URL. Either this or `url` must be set */
+            webhook_id?: string;
+            /** @description The URL PayPal sends the event to. Either this or `webhook_id` must be set */
+            url?: string;
+            event_type: string;
+            resource_version: string;
+        };
+        swag_paypal_diagnostics_webhook_event_list: {
+            events: components["schemas"]["paypal_v1_webhook_event"][];
+        };
+        /** @description Events PayPal created after the last webhook the shop received */
+        swag_paypal_diagnostics_webhook_missed_events: {
+            /**
+             * @description Events PayPal created after the last webhook the shop received. Every webhook of an app receives every event of the app,
+             *     so these events didn't arrive (or not yet, PayPal retries failed deliveries for 3 days).
+             */
+            count: number;
+            /** @description Whether PayPal has more events than the counted ones */
+            more: boolean;
+            /** @description When PayPal created the newest event (RFC 3339) */
+            newestAt: string;
+            /** @description For example `PAYMENT.CAPTURE.COMPLETED` */
+            newestEventType: string;
+        };
+        /** @description The last webhook PayPal sent to the shop */
+        swag_paypal_diagnostics_webhook_last_webhook: {
+            /** Format: date-time */
+            at: string;
+            /** @description For example `PAYMENT.CAPTURE.COMPLETED` */
+            eventType: string;
+            /**
+             * @description `handled` when the shop processed the webhook, `unknown_transaction` when it is about a payment the shop doesn't know, `failed` when the shop couldn't process it
+             * @enum {string}
+             */
+            outcome: "handled" | "unknown_transaction" | "failed";
+            /** @description The ID of PayPal's event. Empty when the payload had none */
+            eventId: string;
+        };
+        /** @description A test webhook PayPal was asked to send */
+        swag_paypal_diagnostics_webhook_test: {
+            /** @description The ID of the test event. PayPal uses the same ID for every test of an event type */
+            eventId: string;
+            /**
+             * Format: date-time
+             * @description When the shop asked PayPal to send it, by the shop's clock like the webhooks' arrival times
+             */
+            sentAt: string;
+        };
+        /** @description A URL the webhook could be registered for. The token is replaced by `<token>` */
+        swag_paypal_diagnostics_webhook_candidate_url: {
+            /**
+             * @description Where the host of the URL comes from: the host the Administration is opened with, or Shopware's `APP_URL`
+             * @enum {string}
+             */
+            source: "administration" | "app_url";
+            url: string;
+        };
+        /** @description Something that keeps PayPal from reaching the shop with webhooks, or makes it unreliable */
+        swag_paypal_diagnostics_webhook_finding: {
+            /** @enum {string} */
+            type: "registration_missing" | "registration_invalid" | "registration_outdated" | "registration_unknown" | "last_webhook_failed" | "unknown_transaction" | "missed_events";
+            /** @enum {string} */
+            severity: "error" | "warning" | "notice" | "unknown";
+        };
+        swag_paypal_diagnostics_webhook_result: {
+            /**
+             * @description `invalid` when the webhook is registered for another URL, `disabled` when the "Local development environment" is on, `unknown` when PayPal couldn't be asked
+             * @enum {string}
+             */
+            registration: "valid" | "invalid" | "missing" | "disabled" | "unknown";
+            lastWebhook: components["schemas"]["swag_paypal_diagnostics_webhook_last_webhook"] | (never | null);
+            /** @description The URL the webhook is registered for at PayPal, only when the registration is `invalid`. The token is replaced by `<token>` */
+            registeredUrl: string | null;
+            /** @description The URLs the webhook could be registered for, only when the registration is `invalid`: one per distinct URL, the Administration's first */
+            candidateUrls: components["schemas"]["swag_paypal_diagnostics_webhook_candidate_url"][];
+            missedEvents: components["schemas"]["swag_paypal_diagnostics_webhook_missed_events"] | (never | null);
+            /** @description Empty when the registration is `disabled` */
+            findings: components["schemas"]["swag_paypal_diagnostics_webhook_finding"][];
         };
         swag_paypal_pos_webhook: {
             organizationUuid: string;
@@ -2306,6 +2439,106 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["swag_paypal_diagnostics_twig_result"];
+                };
+            };
+        };
+    };
+    getPayPalWebhookDiagnostics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                salesChannelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The state of the webhook */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["swag_paypal_diagnostics_webhook_result"];
+                };
+            };
+        };
+    };
+    testPayPalWebhookReachability: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                salesChannelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The answer of the webhook URL */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["swag_paypal_diagnostics_reachability"][];
+                };
+            };
+        };
+    };
+    getPayPalTestWebhookArrival: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                salesChannelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Whether the test webhook arrived */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        arrived: boolean;
+                    };
+                };
+            };
+        };
+    };
+    sendPayPalTestWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                salesChannelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description Where PayPal sends the test webhook
+                     * @enum {string}
+                     */
+                    target: "registered" | "administration" | "app_url";
+                };
+            };
+        };
+        responses: {
+            /** @description The test webhook PayPal was asked to send */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["swag_paypal_diagnostics_webhook_test"];
                 };
             };
         };

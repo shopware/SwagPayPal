@@ -1,0 +1,239 @@
+<mt-card
+    class="swag-paypal-settings-diagnostics-webhook"
+    position-identifier="swag-paypal-settings-diagnostics-webhook"
+    :title="$t('swag-paypal-settings.diagnostics.webhook.title')"
+    :subtitle="$t('swag-paypal-settings.diagnostics.webhook.subtitle')"
+    :is-loading="isChecking"
+>
+    <template #headerRight>
+        <mt-button
+            v-if="result?.registration === 'valid'"
+            class="swag-paypal-settings-diagnostics-webhook__test-button"
+            variant="secondary"
+            size="small"
+            :disabled="isBusy"
+            @click="onTest('registered')"
+        >
+            {{ $t('swag-paypal-settings.diagnostics.webhook.buttonTest') }}
+        </mt-button>
+
+        <mt-button
+            class="swag-paypal-settings-diagnostics-webhook__check-button"
+            variant="secondary"
+            size="small"
+            :disabled="!salesChannelId || isBusy"
+            @click="onCheck"
+        >
+            {{ $t('swag-paypal-settings.diagnostics.webhook.buttonCheck') }}
+        </mt-button>
+    </template>
+
+    <mt-banner
+        v-if="!salesChannelId"
+        class="swag-paypal-settings-diagnostics-webhook__select-sales-channel"
+        variant="info"
+    >
+        {{ $t('swag-paypal-settings.diagnostics.webhook.selectSalesChannel') }}
+    </mt-banner>
+
+    <mt-banner
+        v-else-if="check?.status === 'failed'"
+        class="swag-paypal-settings-diagnostics-webhook__failed"
+        variant="critical"
+    >
+        {{ $t('swag-paypal-settings.diagnostics.webhook.failed') }}
+    </mt-banner>
+
+    <div
+        v-else-if="result"
+        class="swag-paypal-settings-diagnostics-webhook__content"
+    >
+        <swag-paypal-settings-diagnostics-section :title="$t('swag-paypal-settings.diagnostics.sectionActivity')">
+            <swag-paypal-settings-diagnostics-item
+                v-if="result.registration === 'disabled'"
+                class="swag-paypal-settings-diagnostics-webhook__disabled"
+                status="warning"
+                :title="$t('swag-paypal-settings.diagnostics.webhook.disabled.title')"
+                :subtitle="$t('swag-paypal-settings.diagnostics.webhook.disabled.summary')"
+            >
+                <template #subtitle>
+                    <i18n-t
+                        keypath="swag-paypal-settings.diagnostics.webhook.disabled.summary"
+                        tag="span"
+                    >
+                        <template #advancedTab>
+                            <mt-link
+                                type="internal"
+                                :to="{ name: 'swag.paypal.settings.index.advanced' }"
+                            >
+                                {{ $t('swag-paypal-settings.diagnostics.advancedTab') }}
+                            </mt-link>
+                        </template>
+                    </i18n-t>
+                </template>
+            </swag-paypal-settings-diagnostics-item>
+
+            <template v-else>
+                <swag-paypal-settings-diagnostics-item
+                    v-if="webhookTest?.status === 'sending' || webhookTest?.status === 'waiting'"
+                    class="swag-paypal-settings-diagnostics-webhook__test swag-paypal-settings-diagnostics-webhook__test--running"
+                    status="not-observed"
+                    :title="$t('swag-paypal-settings.diagnostics.webhook.test.waiting')"
+                    :subtitle="testTargetLabel(webhookTest.target)"
+                />
+
+                <swag-paypal-settings-diagnostics-item
+                    v-else-if="webhookTest?.status === 'arrived'"
+                    class="swag-paypal-settings-diagnostics-webhook__test swag-paypal-settings-diagnostics-webhook__test--arrived"
+                    status="passed"
+                    :title="$t('swag-paypal-settings.diagnostics.webhook.test.arrived.title')"
+                    :subtitle="$t('swag-paypal-settings.diagnostics.webhook.test.arrived.subtitle', {
+                        url: testTargetLabel(webhookTest.target),
+                        seconds: webhookTest.seconds,
+                    })"
+                />
+
+                <swag-paypal-settings-diagnostics-item
+                    v-else-if="webhookTest?.status === 'missing'"
+                    class="swag-paypal-settings-diagnostics-webhook__test swag-paypal-settings-diagnostics-webhook__test--missing"
+                    status="error"
+                    :title="$t('swag-paypal-settings.diagnostics.webhook.test.missing.title')"
+                    :subtitle="testTargetLabel(webhookTest.target)"
+                >
+                    <p class="swag-paypal-settings-diagnostics-item__description">
+                        {{ $t(webhookTest.target === 'registered'
+                            ? 'swag-paypal-settings.diagnostics.webhook.test.missing.description'
+                            : 'swag-paypal-settings.diagnostics.webhook.test.missing.descriptionCandidate') }}
+                    </p>
+                </swag-paypal-settings-diagnostics-item>
+
+                <swag-paypal-settings-diagnostics-item
+                    v-else-if="webhookTest?.status === 'failed'"
+                    class="swag-paypal-settings-diagnostics-webhook__test swag-paypal-settings-diagnostics-webhook__test--failed"
+                    status="error"
+                    :title="$t('swag-paypal-settings.diagnostics.webhook.test.failed')"
+                    :subtitle="testTargetLabel(webhookTest.target)"
+                />
+
+                <swag-paypal-settings-diagnostics-item
+                    v-for="finding in result.findings"
+                    :key="finding.type"
+                    class="swag-paypal-settings-diagnostics-webhook__finding"
+                    :status="findingStatus(finding)"
+                    :title="$t(`swag-paypal-settings.diagnostics.webhook.findings.${finding.type}.title`)"
+                    :subtitle="findingSummary(finding)"
+                >
+                    <template
+                        v-if="finding.type === 'registration_missing'"
+                        #subtitle
+                    >
+                        <i18n-t
+                            keypath="swag-paypal-settings.diagnostics.webhook.findings.registration_missing.summary"
+                            tag="span"
+                        >
+                            <template #advancedTab>
+                                <mt-link
+                                    type="internal"
+                                    :to="{ name: 'swag.paypal.settings.index.advanced' }"
+                                >
+                                    {{ $t('swag-paypal-settings.diagnostics.advancedTab') }}
+                                </mt-link>
+                            </template>
+                        </i18n-t>
+                    </template>
+
+                    <template
+                        v-if="isFoldable(finding)"
+                        #default
+                    >
+                        <i18n-t
+                            class="swag-paypal-settings-diagnostics-item__description"
+                            :keypath="`swag-paypal-settings.diagnostics.webhook.findings.${finding.type}.description`"
+                            tag="p"
+                        >
+                            <template #advancedTab>
+                                <mt-link
+                                    type="internal"
+                                    :to="{ name: 'swag.paypal.settings.index.advanced' }"
+                                >
+                                    {{ $t('swag-paypal-settings.diagnostics.advancedTab') }}
+                                </mt-link>
+                            </template>
+                        </i18n-t>
+
+                        <dl
+                            v-if="hasUrls"
+                            class="swag-paypal-settings-diagnostics-item__details swag-paypal-settings-diagnostics-webhook__urls"
+                        >
+                            <template v-if="result.registeredUrl">
+                                <dt>{{ $t('swag-paypal-settings.diagnostics.webhook.labelRegisteredUrl') }}</dt>
+                                <dd class="swag-paypal-settings-diagnostics-webhook__registered-url">
+                                    <code>{{ result.registeredUrl }}</code>
+                                    <mt-button
+                                        class="swag-paypal-settings-diagnostics-webhook__test-registered-button"
+                                        variant="secondary"
+                                        size="x-small"
+                                        :disabled="isBusy"
+                                        @click="onTest('registered')"
+                                    >
+                                        {{ $t('swag-paypal-settings.diagnostics.webhook.buttonTest') }}
+                                    </mt-button>
+                                </dd>
+                            </template>
+
+                            <template
+                                v-for="candidate in result.candidateUrls"
+                                :key="candidate.source"
+                            >
+                                <dt>{{ testTargetLabel(candidate.source) }}</dt>
+                                <dd :class="`swag-paypal-settings-diagnostics-webhook__candidate-url swag-paypal-settings-diagnostics-webhook__candidate-url--${candidate.source}`">
+                                    <code>{{ candidate.url }}</code>
+                                    <mt-button
+                                        class="swag-paypal-settings-diagnostics-webhook__test-candidate-button"
+                                        variant="secondary"
+                                        size="x-small"
+                                        :disabled="isBusy"
+                                        @click="onTest(candidate.source)"
+                                    >
+                                        {{ $t('swag-paypal-settings.diagnostics.webhook.buttonTest') }}
+                                    </mt-button>
+                                </dd>
+                            </template>
+                        </dl>
+                    </template>
+                </swag-paypal-settings-diagnostics-item>
+
+                <swag-paypal-settings-diagnostics-item
+                    v-if="result.registration === 'valid'"
+                    class="swag-paypal-settings-diagnostics-webhook__registered"
+                    status="passed"
+                    :title="$t('swag-paypal-settings.diagnostics.webhook.registered.title')"
+                />
+
+                <swag-paypal-settings-diagnostics-item
+                    v-if="!result.lastWebhook"
+                    class="swag-paypal-settings-diagnostics-webhook__no-webhook"
+                    status="not-observed"
+                    :title="$t('swag-paypal-settings.diagnostics.webhook.noWebhook.title')"
+                    :subtitle="$t('swag-paypal-settings.diagnostics.webhook.noWebhook.summary')"
+                />
+
+                <swag-paypal-settings-diagnostics-item
+                    v-else-if="result.lastWebhook.outcome === 'handled'"
+                    class="swag-paypal-settings-diagnostics-webhook__last-webhook"
+                    status="passed"
+                    :title="$t('swag-paypal-settings.diagnostics.webhook.lastWebhook.title', { date: lastWebhookDate })"
+                    :subtitle="result.lastWebhook.eventType"
+                />
+            </template>
+        </swag-paypal-settings-diagnostics-section>
+
+        <swag-paypal-settings-diagnostics-reachability
+            v-if="result.registration !== 'disabled'"
+            class="swag-paypal-settings-diagnostics-webhook__reachability"
+            subject="webhook"
+            :sales-channel-id="salesChannelId"
+            @busy-change="isTestingReachability = $event"
+        />
+    </div>
+</mt-card>

@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fügt dem Tab "Diagnose" eine Webhook-Prüfung hinzu, die die Registrierung und den letzten Webhook anzeigt, von PayPal gesendete, aber nicht angekommene Ereignisse findet und Test-Webhooks sendet (shopware/SwagPayPal#800)
 - Fügt dem Tab "Diagnose" eine Prüfung des Express-Checkout-Callbacks hinzu, die den letzten Callback von PayPal anzeigt und testet, ob seine URLs erreichbar sind (shopware/SwagPayPal#800)
 - Fügt den Tab "Diagnose" zu den PayPal-Einstellungen hinzu, der anzeigt, wenn ein Theme oder ein anderes Plugin die PayPal-Buttons durch Überschreiben ihrer Templates ausblendet (shopware/SwagPayPal#800)
 - Fügt im Tab "Fortgeschritten" die Option hinzu, den Webhook für die `APP_URL` zu registrieren, wenn sie von der URL der Administration abweicht (shopware/SwagPayPal#800)

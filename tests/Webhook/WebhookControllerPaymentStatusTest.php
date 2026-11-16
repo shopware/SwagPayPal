@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Webhook;
 use Monolog\Level;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
@@ -21,9 +22,12 @@ use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\PayPalSDK\Struct\V1\Webhook\Event;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\PUI\Service\PUIInstructionsFetchService;
+use Swag\PayPal\Diagnostics\Webhook\Recording\LastWebhookStorage;
+use Swag\PayPal\Diagnostics\Webhook\Recording\TestWebhookStorage;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PayPalLogTrait;
+use Swag\PayPal\Test\Mock\KeyValueStorageMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Webhook\_fixtures\WebhookDataFixture;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -36,6 +40,7 @@ use Swag\PayPal\Webhook\Registration\WebhookUrlBuilder;
 use Swag\PayPal\Webhook\WebhookController;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -90,6 +95,7 @@ class WebhookControllerPaymentStatusTest extends TestCase
             $logger,
             $webhookService,
             $systemConfigRepo,
+            new LastWebhookStorage($keyValueStorage = new KeyValueStorageMock(), new MockClock(), new NullLogger(), new TestWebhookStorage($keyValueStorage, new NullLogger())),
             new WebhookUrlBuilder($this->createMock(RouterInterface::class), new RequestStack(), ''),
             new RequestStack(),
         );

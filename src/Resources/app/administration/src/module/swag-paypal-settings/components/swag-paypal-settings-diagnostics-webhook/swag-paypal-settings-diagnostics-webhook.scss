@@ -1,0 +1,14 @@
+.swag-paypal-settings-diagnostics-webhook {
+    &__registered-url,
+    &__candidate-url {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--scale-size-4) var(--scale-size-8);
+
+        code {
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+    }
+}
