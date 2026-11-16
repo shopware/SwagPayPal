@@ -199,6 +199,7 @@ class ExpressShippingCallbackServiceTest extends TestCase
             static::getContainer()->get(ShippingOptionsProvider::class),
             static::getContainer()->get(ContextSwitchRoute::class),
             static::getContainer()->get(SalesChannelContextFactory::class),
+            /** @phpstan-ignore-next-line classConstant.internalClass - it's a test */
             static::getContainer()->get(BlockedShippingMethodSwitcher::class),
             new NullLogger(),
         );
