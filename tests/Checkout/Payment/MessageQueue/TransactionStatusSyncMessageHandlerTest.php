@@ -31,6 +31,7 @@ use Swag\PayPal\Checkout\Payment\MessageQueue\TransactionStatusSyncMessageHandle
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\SwagPayPal;
 
 /**
  * @internal
@@ -85,6 +86,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
+                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
                     $orderTransactionEntity->setStateMachineState($stateMachineState);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
@@ -158,6 +160,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
+                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
                 }
@@ -224,6 +227,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
+                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
                 }
@@ -266,6 +270,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
+                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
 
                     return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
                 }
@@ -319,7 +324,18 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
 
     public function testInvokeWithMissingPayPalOrderId(): void
     {
-        $this->orderTransactionRepository->expects($this->never())->method(static::anything());
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static function (Criteria $criteria, Context $context): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
+            );
+
         $this->orderResource->expects($this->never())->method('get');
         $this->logger->expects($this->never())->method(static::anything());
 
@@ -337,6 +353,51 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
         ($this->handler)($message);
     }
 
+    public function testInvokeWithMissingPayPalOrderIdSkipsTransactionThatIsNoLongerOpen(): void
+    {
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static fn (Criteria $criteria, Context $context) => new EntitySearchResult('order_transaction', 0, new EntityCollection(), null, $criteria, $context)
+            );
+
+        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
+
+        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', null));
+    }
+
+    #[DataProvider('dataProviderChangedPayPalOrderId')]
+    public function testInvokeSkipsTransactionWithChangedPayPalOrderId(?string $queuedPayPalOrderId, ?string $currentPayPalOrderId): void
+    {
+        $this->orderTransactionRepository
+            ->expects($this->once())
+            ->method('search')
+            ->willReturnCallback(
+                static function (Criteria $criteria, Context $context) use ($currentPayPalOrderId): EntitySearchResult {
+                    $orderTransactionEntity = new OrderTransactionEntity();
+                    $orderTransactionEntity->setId('test-id');
+                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $currentPayPalOrderId]);
+
+                    return new EntitySearchResult('order_transaction', 1, new EntityCollection([$orderTransactionEntity]), null, $criteria, $context);
+                }
+            );
+
+        $this->orderResource->expects($this->never())->method('get');
+        $this->transactionDataService->expects($this->never())->method('setResourceId');
+        $this->orderTransactionStateHandler->expects($this->never())->method(static::anything());
+        $this->logger->expects($this->never())->method(static::anything());
+
+        ($this->handler)(new TransactionStatusSyncMessage('transaction-id', 'sales-channel-id', $queuedPayPalOrderId));
+    }
+
+    public static function dataProviderChangedPayPalOrderId(): \Generator
+    {
+        yield 'new PayPal order after the message was queued' => ['paypal-order-id', 'new-paypal-order-id'];
+        yield 'first PayPal order after the message was queued' => [null, 'new-paypal-order-id'];
+        yield 'PayPal order removed after the message was queued' => ['paypal-order-id', null];
+    }
+
     public function testInvokeWithAuthorizedTransactionAndOrderWillSkip(): void
     {
         $this->orderTransactionRepository
@@ -346,6 +407,7 @@ class TransactionStatusSyncMessageHandlerTest extends TestCase
                 static function (Criteria $criteria, Context $context): EntitySearchResult {
                     $orderTransactionEntity = new OrderTransactionEntity();
                     $orderTransactionEntity->setId('test-id');
+                    $orderTransactionEntity->setCustomFields([SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => 'paypal-order-id']);
                     $stateMachineState = new StateMachineStateEntity();
                     $stateMachineState->setTechnicalName(OrderTransactionStates::STATE_AUTHORIZED);
                     $orderTransactionEntity->setStateMachineState($stateMachineState);
