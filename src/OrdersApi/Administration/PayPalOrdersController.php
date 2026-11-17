@@ -19,6 +19,7 @@ use Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V2\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -286,9 +287,10 @@ class PayPalOrdersController extends AbstractController
             false
         );
 
-        $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
-
-        $this->paymentStatusUtil->applyRefundState($orderTransactionId, $refundResponse, $order, $context);
+        if ($refundResponse->getStatus() === PaymentStatusV2::ORDER_REFUND_COMPLETED) {
+            $order = $this->orderResource->get($paypalOrderId, $salesChannelId);
+            $this->paymentStatusUtil->applyRefundState($orderTransactionId, $refundResponse, $order, $context);
+        }
 
         return new JsonResponse($refundResponse);
     }
@@ -347,7 +349,9 @@ class PayPalOrdersController extends AbstractController
             false
         );
 
-        $this->paymentStatusUtil->applyCaptureState($orderTransactionId, $captureResponse, $context);
+        if ($captureResponse->getStatus() === PaymentStatusV2::ORDER_CAPTURE_COMPLETED) {
+            $this->paymentStatusUtil->applyCaptureState($orderTransactionId, $captureResponse, $context);
+        }
 
         return new JsonResponse($captureResponse);
     }
