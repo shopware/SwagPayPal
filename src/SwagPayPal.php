@@ -35,6 +35,7 @@ use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
+use Swag\PayPal\Util\Lifecycle\Installer\TableInstaller;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
@@ -250,7 +251,8 @@ class SwagPayPal extends Plugin
                 $this->getRepository($this->container, SalesChannelTypeDefinition::ENTITY_NAME),
                 $this->getRepository($this->container, ShippingMethodDefinition::ENTITY_NAME),
                 $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
-            )
+            ),
+            new TableInstaller($this->container->get(Connection::class)),
         );
     }
 
