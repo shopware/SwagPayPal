@@ -11,12 +11,19 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\Item;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnit\ItemCollection;
+use Shopware\PayPalSDK\Struct\V2\Order\PurchaseUnitCollection;
 use Shopware\Storefront\Framework\Routing\StorefrontRouteScope;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Exception\EmptyCartException;
@@ -121,6 +128,50 @@ class ExpressCreateOrderRouteTest extends TestCase
         $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
         static::assertNotNull($experienceContext);
         static::assertNotNull($experienceContext->getOrderUpdateCallbackConfig());
+    }
+
+    public function testCreatePaymentRemovesDigitalGoodsCategory(): void
+    {
+        $cart = new Cart('token');
+        $cart->add(new LineItem('test', LineItem::PRODUCT_LINE_ITEM_TYPE, 'test'));
+        $cart->setPrice(new CartPrice(10.0, 10.0, 10.0, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_GROSS));
+
+        $cartService = $this->createMock(CartService::class);
+        $cartService->method('getCart')->willReturn($cart);
+
+        $digitalItem = new Item();
+        $digitalItem->setCategory(Item::CATEGORY_DIGITAL_GOODS);
+        $physicalItem = new Item();
+        $physicalItem->setCategory(Item::CATEGORY_PHYSICAL_GOODS);
+        $purchaseUnit = new PurchaseUnit();
+        $purchaseUnit->setItems(new ItemCollection([$digitalItem, $physicalItem]));
+        $paypalOrder = new Order();
+        $paypalOrder->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
+
+        $paypalOrderBuilder = $this->createMock(PayPalOrderBuilder::class);
+        $paypalOrderBuilder->method('getOrderFromCart')->willReturn($paypalOrder);
+
+        $route = new ExpressCreateOrderRoute(
+            $cartService,
+            $paypalOrderBuilder,
+            new OrderResource(self::orderGateway(), new ApiContextFactoryMock()),
+            $this->getContainer()->get(CartPriceService::class),
+            $this->getContainer()->get(SystemConfigService::class),
+            $this->createMock(RouterInterface::class),
+            new NullLogger(),
+        );
+
+        $route->createPayPalOrder(new Request(), $this->getSalesChannelContext());
+
+        $request = $this->getClient()->getLast();
+        static::assertNotNull($request);
+
+        $order = (new Order())->assign($request->getRequestBody() ?? []);
+
+        $items = $order->getPurchaseUnits()->first()?->getItems();
+        static::assertNotNull($items);
+        static::assertFalse($items->first()?->isset('category'));
+        static::assertSame(Item::CATEGORY_PHYSICAL_GOODS, $items->last()?->getCategory());
     }
 
     public function testCreatePaymentUsesRequestReturnUrls(): void
