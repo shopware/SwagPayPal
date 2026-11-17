@@ -391,12 +391,13 @@ class PayPalHandlerTest extends TestCase
 
     private function createOrderResource(): OrderResource
     {
-        $response = new Order();
-        $response->setId('paypalOrderId');
-        $response->setStatus(PaymentStatusV2::ORDER_APPROVED);
-
         $orderResource = $this->createMock(OrderResource::class);
-        $orderResource->method('create')->willReturn($response);
+        // like the real resource, which assigns PayPal's response to the given order, replacing its payment source without the vault id
+        $orderResource->method('create')->willReturnCallback(static fn (Order $order): Order => $order->assign([
+            'id' => 'paypalOrderId',
+            'status' => PaymentStatusV2::ORDER_APPROVED,
+            'payment_source' => ['paypal' => ['email_address' => 'payer@example.com']],
+        ]));
 
         return $orderResource;
     }

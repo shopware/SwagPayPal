@@ -67,6 +67,12 @@ class PayPalHandler
             $requestDataBag,
         );
 
+        // the saved token the order builder pays a new order of the payer with, read before PayPal's response replaces the payment source
+        $isRecurring = $transaction instanceof RecurringPaymentTransactionStruct;
+        $vaultToken = !$isRecurring && $paypalOrder->getPaymentSource()?->getPaypal()?->isset('vaultId')
+            ? $this->vaultTokenService->getTokenForPayment($transaction, $salesChannelContext->getContext(), false)
+            : null;
+
         $transactionId = $transaction->getOrderTransaction()->getId();
         $updateTime = $transaction->getOrderTransaction()->getUpdatedAt();
 
@@ -103,11 +109,8 @@ class PayPalHandler
             $salesChannelContext
         );
 
-        // the order builder pays a new order with the customer's saved token, which must not be looked up again after a redirect
-        if (!$transaction instanceof RecurringPaymentTransactionStruct) {
-            $vaultToken = $paypalOrder->getPaymentSource()?->getPaypal()?->isset('vaultId')
-                ? $this->vaultTokenService->getTokenForPayment($transaction, $salesChannelContext->getContext(), false)
-                : null;
+        // finalize() saves it to the subscription, so it must not be looked up again after a redirect
+        if (!$isRecurring) {
             $this->transactionDataService->setVaultTokenId($transaction->getOrderTransaction(), $vaultToken?->getId(), $salesChannelContext->getContext());
         }
 
