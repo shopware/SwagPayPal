@@ -1,4 +1,9 @@
 import template from './swag-paypal-payment-action-v2-capture.html.twig';
+import {
+    ORDER_CAPTURE_DECLINED,
+    ORDER_CAPTURE_FAILED,
+    ORDER_CAPTURE_PENDING,
+} from '../../../swag-paypal-payment-details-v2/swag-paypal-order-consts';
 
 const { Component } = Shopware;
 
@@ -79,10 +84,8 @@ Component.register('swag-paypal-payment-action-v2-capture', {
                 this.captureNoteToPayer,
                 this.paypalPartnerAttributionId,
                 this.isFinalCapture,
-            ).then(() => {
-                this.createNotificationSuccess({
-                    message: this.$tc('swag-paypal-payment.captureAction.successMessage'),
-                });
+            ).then((capture) => {
+                this.notifyCaptureStatus(capture.status);
                 this.isLoading = false;
                 this.$emit('modal-close');
             }).catch((errorResponse) => {
@@ -100,6 +103,29 @@ Component.register('swag-paypal-payment-action-v2-capture', {
                 } finally {
                     this.isLoading = false;
                 }
+            });
+        },
+
+        notifyCaptureStatus(status) {
+            if (status === ORDER_CAPTURE_PENDING) {
+                this.createNotificationInfo({
+                    message: this.$tc('swag-paypal-payment.captureAction.pendingMessage'),
+                });
+
+                return;
+            }
+
+            if ([ORDER_CAPTURE_DECLINED, ORDER_CAPTURE_FAILED].includes(status)) {
+                this.createNotificationError({
+                    message: this.$tc('swag-paypal-payment.captureAction.failedMessage'),
+                    autoClose: false,
+                });
+
+                return;
+            }
+
+            this.createNotificationSuccess({
+                message: this.$tc('swag-paypal-payment.captureAction.successMessage'),
             });
         },
     },
