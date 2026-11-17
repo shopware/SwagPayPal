@@ -232,7 +232,6 @@ class PUIInstructionsFetchServiceTest extends TestCase
                     'paymentMethodId' => $paymentMethodId,
                     'stateId' => $transactionStateId,
                     'amount' => new CalculatedPrice(100, 100, new CalculatedTaxCollection(), new TaxRuleCollection(), 1),
-                    'payload' => '{}',
                     'customFields' => [
                         SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $paypalOrderId,
                         SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION => $instructions,
