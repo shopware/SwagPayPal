@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem ein Einzug oder eine Rückerstattung in der Administration die Zahlung als bezahlt oder erstattet markierte, obwohl PayPal mit einem ausstehenden, abgelehnten oder fehlgeschlagenen Status antwortete (shopware/SwagPayPal#839)
 - Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
 - Behebt ein Problem, bei dem PayPal Express Checkout bei Warenkörben mit ausschließlich digitalen Produkten fehlschlug (shopware/SwagPayPal#825)
 
