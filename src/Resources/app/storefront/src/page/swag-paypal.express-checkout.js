@@ -3,6 +3,11 @@ import DomAccess from 'src/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
+// Core emits `addToCartWithoutOffcanvas` instead of `openOffCanvasCart` if the offcanvas cart is disabled.
+// The suffix keeps the listeners of others, as unsubscribing removes every listener of an event name.
+const ADD_TO_CART_EVENTS = ['openOffCanvasCart.SwagPayPalExpress', 'addToCartWithoutOffcanvas.SwagPayPalExpress'];
+const ADD_TO_CART_TIMEOUT_MILLISECONDS = 10000;
+
 /**
  * @deprecated tag:v11.0.0 - Will be removed and is replaced by `payment/swag-paypal.express.*.ts`
  */
@@ -334,11 +339,19 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         const buyButton = DomAccess.querySelector(buyForm, this.options.buyButtonSelector);
         const plugin = window.PluginManager.getPluginInstanceFromElement(buyForm, 'AddToCart');
 
-        return new Promise(resolve => {
-            plugin.$emitter.subscribe('openOffCanvasCart', () => {
-                resolve();
-            });
+        return new Promise((resolve, reject) => {
+            let timeout = 0;
+            const settle = (finish) => {
+                window.clearTimeout(timeout);
+                ADD_TO_CART_EVENTS.forEach((event) => plugin.$emitter.unsubscribe(event));
+                finish();
+            };
 
+            timeout = window.setTimeout(() => {
+                settle(() => reject(new Error('The product was not added to the cart in time')));
+            }, ADD_TO_CART_TIMEOUT_MILLISECONDS);
+
+            ADD_TO_CART_EVENTS.forEach((event) => plugin.$emitter.subscribe(event, () => settle(resolve)));
             buyButton.click();
         });
     }

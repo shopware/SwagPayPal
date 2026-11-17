@@ -6,6 +6,11 @@ import type { OnApproveDataOneTimePayments } from '@paypal/paypal-js/sdk-v6';
 import PayPalPluginError from './paypal-plugin.error';
 import { RequestHelper } from '../helper/request.helper';
 
+// Core emits `addToCartWithoutOffcanvas` instead of `openOffCanvasCart` if the offcanvas cart is disabled.
+// The suffix keeps the listeners of others, as unsubscribing removes every listener of an event name.
+const ADD_TO_CART_EVENTS = ['openOffCanvasCart.SwagPayPalExpress', 'addToCartWithoutOffcanvas.SwagPayPalExpress'];
+const ADD_TO_CART_TIMEOUT_MILLISECONDS = 10000;
+
 export interface SwagPaypalExpressOptions extends SwagPaypalPaymentOptions {
     buyButtonSelector: string;
     addProductToCart: boolean;
@@ -130,8 +135,19 @@ export default abstract class SwagPaypalExpress<FS extends PayPalCoreJS.FundingS
     protected addProductToCart(): Promise<void> {
         const plugin = window.PluginManager.getPluginInstanceFromElement(this.buyButtonForm!, 'AddToCart') as SwPlugin;
 
-        return new Promise(resolve => {
-            plugin.$emitter!.subscribe('openOffCanvasCart', () => resolve());
+        return new Promise((resolve, reject) => {
+            let timeout = 0;
+            const settle = (finish: () => void) => {
+                window.clearTimeout(timeout);
+                ADD_TO_CART_EVENTS.forEach((event) => plugin.$emitter!.unsubscribe(event));
+                finish();
+            };
+
+            timeout = window.setTimeout(() => {
+                settle(() => reject(new Error('The product was not added to the cart in time')));
+            }, ADD_TO_CART_TIMEOUT_MILLISECONDS);
+
+            ADD_TO_CART_EVENTS.forEach((event) => plugin.$emitter!.subscribe(event, () => settle(resolve)));
             this.buyButton!.click();
         });
     }
