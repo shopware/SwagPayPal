@@ -296,6 +296,10 @@ class PaymentStatusUtilTest extends TestCase
         $this->orderRepository->create($orderData, $context);
 
         if ($withTransaction) {
+            // PaymentStatusUtil uses the transaction with the latest `createdAt`, so the second one has to be newer.
+            // Do not leave this to the write time: `createdAt` is stored in milliseconds, and two fast writes in a row
+            // can get the same value. The order of tied rows is undefined, and the first transaction can end up last.
+            $createdAt = new \DateTimeImmutable();
             $firstTransactionData = [
                 [
                     'id' => self::FIRST_TRANSACTION_ID,
@@ -309,6 +313,7 @@ class PaymentStatusUtilTest extends TestCase
                         'taxRules' => [],
                     ],
                     'stateId' => $this->initialStateIdLoader->get(OrderTransactionStates::STATE_MACHINE),
+                    'createdAt' => $createdAt->modify('-1 minute'),
                 ],
             ];
             $secondTransactionData = [
@@ -324,9 +329,9 @@ class PaymentStatusUtilTest extends TestCase
                         'taxRules' => [],
                     ],
                     'stateId' => $this->initialStateIdLoader->get(OrderTransactionStates::STATE_MACHINE),
+                    'createdAt' => $createdAt,
                 ],
             ];
-            // Do not create simultaneously, so they have slightly different created dates
             $this->orderTransactionRepository->create($firstTransactionData, $context);
             $this->orderTransactionRepository->create($secondTransactionData, $context);
 
