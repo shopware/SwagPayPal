@@ -2,6 +2,7 @@
 - Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
 - Behebt ein Problem, bei dem fehlgeschlagene oder abgebrochene PayPal-Rückerstattungen in der Administration vom erstattbaren Betrag abgezogen wurden und die Schaltfläche für Rückerstattungen deaktivieren konnten (shopware/SwagPayPal#878)
 - Behebt ein Problem, bei dem PayPal Express Checkout bei Warenkörben mit ausschließlich digitalen Produkten fehlschlug (shopware/SwagPayPal#825)
+- Behebt ein Problem, bei dem nach dem Deinstallieren des Plugins ohne Beibehalten der Benutzerdaten gespeicherte PayPal-Konten und Karten, Transaktionsberichte und PayPal-Bestellzuordnungen in der Datenbank verblieben (shopware/SwagPayPal#846)
 - Behebt ein Problem, bei dem PayPal Express Checkout alle Versandarten außer der gewählten als kostenlos anzeigte (shopware/SwagPayPal#913, benötigt Shopware 6.7.14.0 oder höher)
 - Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer Karte im Abonnement-Checkout zu einer Fehlerseite führte und stattdessen andere Zahlungsdaten entfernen konnte. Headless-Storefronts können diese jetzt entfernen, auch bei Abonnements
 
