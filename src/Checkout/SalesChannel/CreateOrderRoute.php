@@ -104,6 +104,12 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
                 default: ExperienceContext::USER_ACTION_PAY_NOW,
                 enum: [ExperienceContext::USER_ACTION_PAY_NOW, ExperienceContext::USER_ACTION_CONTINUE],
             ),
+            new OA\Property(
+                property: self::VAULT,
+                description: 'Offers the logged-in customer\'s saved PayPal account as the preferred payment source, so that the customer changes its funding instrument in PayPal\'s window',
+                type: 'boolean',
+                default: false,
+            ),
         ])),
         tags: ['Store API', 'PayPal'],
         responses: [new OA\Response(

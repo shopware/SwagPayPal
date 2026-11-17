@@ -87,6 +87,19 @@ class VaultTokenService
         return $this->vaultTokenRepository->search($criteria, $context)->getEntities()->first();
     }
 
+    /**
+     * @internal
+     */
+    public function getCustomerToken(string $customerId, string $paymentMethodId, Context $context): ?VaultTokenEntity
+    {
+        $criteria = new Criteria();
+        $criteria->setLimit(1);
+        $criteria->addFilter(new EqualsFilter('mainMapping.customerId', $customerId));
+        $criteria->addFilter(new EqualsFilter('mainMapping.paymentMethodId', $paymentMethodId));
+
+        return $this->vaultTokenRepository->search($criteria, $context)->getEntities()->first();
+    }
+
     public function saveToken(PaymentTransactionStruct $struct, OrderTransactionEntity $orderTransaction, VaultablePaymentSourceInterface $paymentSource, string $customerId, Context $context): void
     {
         $token = $paymentSource->getAttributes()?->getVault();
