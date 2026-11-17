@@ -4,9 +4,8 @@ import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-l
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 // Core emits `addToCartWithoutOffcanvas` instead of `openOffCanvasCart` if the offcanvas cart is disabled.
-// The suffix keeps the listeners of others, as unsubscribing removes every listener of an event name.
-const ADD_TO_CART_EVENTS = ['openOffCanvasCart.SwagPayPalExpress', 'addToCartWithoutOffcanvas.SwagPayPalExpress'];
-const ADD_TO_CART_TIMEOUT_MILLISECONDS = 10000;
+const ADD_TO_CART_EVENTS = ['openOffCanvasCart', 'addToCartWithoutOffcanvas'];
+let addToCartCalls = 0;
 
 /**
  * @deprecated tag:v11.0.0 - Will be removed and is replaced by `payment/swag-paypal.express.*.ts`
@@ -339,19 +338,17 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         const buyButton = DomAccess.querySelector(buyForm, this.options.buyButtonSelector);
         const plugin = window.PluginManager.getPluginInstanceFromElement(buyForm, 'AddToCart');
 
-        return new Promise((resolve, reject) => {
-            let timeout = 0;
-            const settle = (finish) => {
-                window.clearTimeout(timeout);
-                ADD_TO_CART_EVENTS.forEach((event) => plugin.$emitter.unsubscribe(event));
-                finish();
+        // Unsubscribing removes every listener of an event name, so each call uses its own suffix.
+        addToCartCalls += 1;
+        const events = ADD_TO_CART_EVENTS.map((event) => `${event}.SwagPayPalExpress${addToCartCalls}`);
+
+        return new Promise((resolve) => {
+            const onAdded = () => {
+                events.forEach((event) => plugin.$emitter.unsubscribe(event));
+                resolve();
             };
 
-            timeout = window.setTimeout(() => {
-                settle(() => reject(new Error('The product was not added to the cart in time')));
-            }, ADD_TO_CART_TIMEOUT_MILLISECONDS);
-
-            ADD_TO_CART_EVENTS.forEach((event) => plugin.$emitter.subscribe(event, () => settle(resolve)));
+            events.forEach((event) => plugin.$emitter.subscribe(event, onAdded));
             buyButton.click();
         });
     }
