@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
+use Swag\PayPal\Util\Lifecycle\Installer\TableInstaller;
 use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 
 /**
@@ -28,16 +29,20 @@ class InstallUninstall
 
     private PosStateService $posStateService;
 
+    private TableInstaller $tableInstaller;
+
     public function __construct(
         PaymentMethodInstaller $paymentMethodInstaller,
         SettingsInstaller $settingsInstaller,
         PosInstaller $posInstaller,
-        PosStateService $posStateService
+        PosStateService $posStateService,
+        TableInstaller $tableInstaller
     ) {
         $this->paymentMethodInstaller = $paymentMethodInstaller;
         $this->settingsInstaller = $settingsInstaller;
         $this->posInstaller = $posInstaller;
         $this->posStateService = $posStateService;
+        $this->tableInstaller = $tableInstaller;
     }
 
     public function install(Context $context): void
@@ -53,5 +58,6 @@ class InstallUninstall
         $this->posStateService->removePosSalesChannelType($context);
         $this->posStateService->removePosDefaultEntities($context);
         $this->posInstaller->removePosTables();
+        $this->tableInstaller->removeTables();
     }
 }

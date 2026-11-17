@@ -4,6 +4,7 @@
 - Behebt ein Problem, bei dem fehlgeschlagene oder abgebrochene PayPal-Rückerstattungen in der Administration vom erstattbaren Betrag abgezogen wurden und die Schaltfläche für Rückerstattungen deaktivieren konnten (shopware/SwagPayPal#878)
 - Behebt ein Problem, bei dem PayPal Express Checkout bei Warenkörben mit ausschließlich digitalen Produkten fehlschlug (shopware/SwagPayPal#825)
 - Behebt ein Problem, bei dem die Synchronisierung des Transaktionsstatus eine Transaktion anhand eines veralteten Zahlungsversuchs ändern konnte (shopware/SwagPayPal#842)
+- Behebt ein Problem, bei dem nach dem Deinstallieren des Plugins ohne Beibehalten der Benutzerdaten gespeicherte PayPal-Konten und Karten, Transaktionsberichte und PayPal-Bestellzuordnungen in der Datenbank verblieben (shopware/SwagPayPal#846)
 
 # 8.12.5
 - Fügt Kanada zu den Ländern hinzu, in denen "Später bezahlen" verfügbar ist (shopware/SwagPayPal#581)

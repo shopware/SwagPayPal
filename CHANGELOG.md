@@ -4,6 +4,7 @@
 - Fixes an issue, where failed or cancelled PayPal refunds were deducted from the refundable amount in the Administration and could disable the refund button (shopware/SwagPayPal#878)
 - Fixes an issue, where PayPal Express Checkout failed for carts with only digital products (shopware/SwagPayPal#825)
 - Fixes an issue, where the transaction status synchronisation could change a transaction based on an outdated payment attempt (shopware/SwagPayPal#842)
+- Fixes an issue, where uninstalling the plugin without keeping user data left saved PayPal accounts and cards, transaction reports and PayPal order references in the database (shopware/SwagPayPal#846)
 
 # 8.12.5
 - Added Canada to the countries where Pay Later is available (shopware/SwagPayPal#581)
