@@ -24,6 +24,7 @@ use Shopware\PayPalSDK\Struct\ConstantsV2;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -50,12 +51,6 @@ class TransactionStatusSyncMessageHandler
         $context = Context::createDefaultContext();
 
         try {
-            if (!$message->getPayPalOrderId()) {
-                $this->orderTransactionStateHandler->cancel($message->getTransactionId(), $context);
-
-                return;
-            }
-
             // Check if transaction is still unconfirmed at time of execution
             $criteria = (new Criteria([$message->getTransactionId()]))
                 ->addAssociation('stateMachineState')
@@ -66,13 +61,21 @@ class TransactionStatusSyncMessageHandler
                         new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_AUTHORIZED),
                         new EqualsFilter('stateMachineState.technicalName', OrderTransactionStates::STATE_IN_PROGRESS),
                     ]
-                ));
+                ))
+                // a new payment attempt since the message was queued has its own PayPal order
+                ->addFilter(new EqualsFilter('customFields.' . SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID, $message->getPayPalOrderId()));
 
             /**
              * @var OrderTransactionEntity|null $transaction
              */
             $transaction = $this->orderTransactionRepository->search($criteria, $context)->getEntities()->first();
             if ($transaction === null) {
+                return;
+            }
+
+            if (!$message->getPayPalOrderId()) {
+                $this->orderTransactionStateHandler->cancel($message->getTransactionId(), $context);
+
                 return;
             }
 
