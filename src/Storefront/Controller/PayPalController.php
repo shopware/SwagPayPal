@@ -144,6 +144,7 @@ class PayPalController extends StorefrontController
     }
 
     #[Route(path: '/paypal/vault/clear', name: 'frontend.paypal.vault.clear', methods: ['GET'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false])]
+    #[Route(path: '/subscription/paypal/vault/clear/{subscriptionToken}', name: 'frontend.subscription.paypal.vault.clear', methods: ['GET'], defaults: ['XmlHttpRequest' => true, 'csrf_protected' => false, '_subscriptionCart' => true, '_subscriptionContext' => true])]
     public function clearVault(Request $request, SalesChannelContext $context): Response
     {
         $this->clearVaultRoute->clearVault($request, $context);
