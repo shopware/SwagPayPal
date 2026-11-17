@@ -256,13 +256,17 @@ class PayPalHandlerTest extends TestCase
         $handler->handleFinalizeOrder($struct, 'paypalOrderId', 'salesChannelId', $salesChannelContext, PartnerAttributionId::PAYPAL_PPCP);
     }
 
+    /**
+     * @param list<string> $expectedCalls
+     */
     #[DataProvider('dataProviderPayPalOrderRecordsTheSavedToken')]
-    public function testPayPalOrderRecordsTheSavedToken(RequestDataBag $requestDataBag, ?string $expectedTokenId): void
+    public function testPayPalOrderRecordsTheSavedToken(RequestDataBag $requestDataBag, ?string $expectedTokenId, array $expectedCalls): void
     {
         $orderTransaction = new OrderTransactionEntity();
         $orderTransaction->setId(Uuid::randomHex());
         $struct = new AsyncPaymentTransactionStruct($orderTransaction, new OrderEntity(), 'https://shop.test/payment/finalize-transaction?_sw_payment_token=token');
         $salesChannelContext = Generator::createSalesChannelContext();
+        $calls = new \ArrayObject();
 
         $vaultToken = new VaultTokenEntity();
         $vaultToken->setId('vaultTokenId');
@@ -272,26 +276,35 @@ class PayPalHandlerTest extends TestCase
             ->expects($expectedTokenId ? static::once() : static::never())
             ->method('getTokenForPayment')
             ->with($struct, $salesChannelContext->getContext(), false)
-            ->willReturn($vaultToken);
+            ->willReturnCallback(static function () use ($calls, $vaultToken): VaultTokenEntity {
+                $calls->append('lookup');
+
+                return $vaultToken;
+            });
 
         $transactionDataService = $this->createMock(TransactionDataService::class);
         // the order is paid with the saved token, which finalize() then saves to the subscription
         $transactionDataService
             ->expects(static::once())
             ->method('setVaultTokenId')
-            ->with($orderTransaction, $expectedTokenId, $salesChannelContext->getContext());
+            ->with($orderTransaction, $expectedTokenId, $salesChannelContext->getContext())
+            ->willReturnCallback(static function () use ($calls): void {
+                $calls->append('record');
+            });
 
-        $response = $this->createPayPalOrderHandler($vaultTokenService, $transactionDataService)
+        $response = $this->createPayPalOrderHandler($vaultTokenService, $transactionDataService, $calls)
             ->handlePayPalOrder($struct, $requestDataBag, $salesChannelContext);
 
         static::assertSame($struct->getReturnUrl() . '&token=paypalOrderId', $response->getTargetUrl());
+        // the customer may remove or replace their saved PayPal account while PayPal creates the order
+        static::assertSame($expectedCalls, $calls->getArrayCopy());
     }
 
     public static function dataProviderPayPalOrderRecordsTheSavedToken(): \Generator
     {
         // e.g. headless checkouts, or the storefront without Smart Payment Buttons
-        yield 'order with the saved token' => [new RequestDataBag(), 'vaultTokenId'];
-        yield 'preliminary order without a saved token' => [new RequestDataBag([AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true]), null];
+        yield 'order with the saved token' => [new RequestDataBag(), 'vaultTokenId', ['lookup', 'build', 'create', 'record']];
+        yield 'preliminary order without a saved token' => [new RequestDataBag([AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true]), null, ['build', 'create', 'record']];
     }
 
     public function testPayPalOrderOfARenewalRecordsNoToken(): void
@@ -462,21 +475,31 @@ class PayPalHandlerTest extends TestCase
         static::assertSame('https://paypal.test/payer-action', $response->getTargetUrl());
     }
 
-    private function createPayPalOrderHandler(VaultTokenService $vaultTokenService, TransactionDataService $transactionDataService): PayPalHandler
+    /**
+     * @param \ArrayObject<int, string> $calls
+     */
+    private function createPayPalOrderHandler(VaultTokenService $vaultTokenService, TransactionDataService $transactionDataService, \ArrayObject $calls = new \ArrayObject()): PayPalHandler
     {
         $builtOrder = new Order();
         $builtOrder->setPurchaseUnits(new PurchaseUnitCollection());
 
         $orderBuilder = $this->createMock(PayPalOrderBuilder::class);
-        $orderBuilder->method('getOrder')->willReturn($builtOrder);
+        $orderBuilder->method('getOrder')->willReturnCallback(static function () use ($calls, $builtOrder): Order {
+            $calls->append('build');
 
-        // an order with a saved token needs no approval
-        $response = new Order();
-        $response->setId('paypalOrderId');
-        $response->setStatus(PaymentStatusV2::ORDER_APPROVED);
+            return $builtOrder;
+        });
 
         $orderResource = $this->createMock(OrderResource::class);
-        $orderResource->expects(static::once())->method('create')->willReturn($response);
+        $orderResource
+            ->expects(static::once())
+            ->method('create')
+            ->willReturnCallback(static function (Order $order) use ($calls): Order {
+                $calls->append('create');
+
+                // like the resource, which assigns PayPal's response to the given order; an order with a saved token needs no approval
+                return $order->assign(['id' => 'paypalOrderId', 'status' => PaymentStatusV2::ORDER_APPROVED]);
+            });
 
         return new PayPalHandler(
             $orderBuilder,

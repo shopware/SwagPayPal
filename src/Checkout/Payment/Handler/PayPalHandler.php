@@ -59,6 +59,14 @@ class PayPalHandler
     ): RedirectResponse {
         $this->logger->debug('Started');
 
+        // only renewals are built from a recurring struct (see PayPalPaymentHandler::captureRecurring()), which keep the token of their subscription
+        $isRenewal = $transaction instanceof RecurringPaymentTransactionStruct;
+
+        // the same lookup as the order builder's, done before the request to PayPal, during which the customer may change their saved one
+        $vaultToken = $isRenewal || $requestDataBag->getBoolean(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE)
+            ? null
+            : $this->vaultTokenService->getTokenForPayment($transaction, $salesChannelContext->getContext(), false);
+
         $paypalOrder = $this->orderBuilder->getOrder(
             $transaction,
             $salesChannelContext,
@@ -101,10 +109,8 @@ class PayPalHandler
             $salesChannelContext
         );
 
-        // only renewals are built from a recurring struct (see PayPalPaymentHandler::captureRecurring()), which keep the token of their subscription
-        if (!$transaction instanceof RecurringPaymentTransactionStruct) {
+        if (!$isRenewal) {
             // the order builder pays the order with this token, which must not be looked up again after the redirect
-            $vaultToken = $requestDataBag->getBoolean(AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE) ? null : $this->vaultTokenService->getTokenForPayment($transaction, $salesChannelContext->getContext(), false);
             $this->transactionDataService->setVaultTokenId($transaction->getOrderTransaction(), $vaultToken?->getId(), $salesChannelContext->getContext());
         }
 
