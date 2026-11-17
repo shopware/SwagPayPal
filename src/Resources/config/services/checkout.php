@@ -139,8 +139,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->public()
         ->args([
             service(TokenResource::class),
-            service('swag_paypal_vault_token.repository'),
-            service(PaymentMethodDataRegistry::class),
+            service(VaultTokenService::class),
         ]);
 
     $services->set(FilteredPaymentMethodRoute::class)

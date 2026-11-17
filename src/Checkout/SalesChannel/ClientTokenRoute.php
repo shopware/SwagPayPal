@@ -9,18 +9,13 @@ namespace Swag\PayPal\Checkout\SalesChannel;
 
 use OpenApi\Attributes as OA;
 use Shopware\Core\Checkout\Customer\CustomerException;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Exception\MissingCustomerVaultTokenException;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\TokenResponse;
-use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
-use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
-use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -33,13 +28,10 @@ class ClientTokenRoute extends AbstractClientTokenRoute
 
     /**
      * @internal
-     *
-     * @param EntityRepository<VaultTokenCollection> $vaultTokenRepository
      */
     public function __construct(
         private readonly TokenResource $tokenResource,
-        private readonly EntityRepository $vaultTokenRepository,
-        private readonly PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        private readonly VaultTokenService $vaultTokenService,
     ) {
     }
 
@@ -55,7 +47,7 @@ class ClientTokenRoute extends AbstractClientTokenRoute
         requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
             new OA\Property(
                 property: self::REQUEST_VAULT,
-                description: 'Binds the token to the saved PayPal wallet of the logged-in customer, so the PayPal JS SDK can show it and let the customer change its funding instrument',
+                description: 'Binds the token to the logged-in customer\'s saved account or card for the selected payment method, so the PayPal JS SDK can show it, e.g. to let the customer change the funding instrument of their saved PayPal wallet',
                 type: 'boolean',
                 default: false,
             ),
@@ -77,29 +69,19 @@ class ClientTokenRoute extends AbstractClientTokenRoute
             return new TokenResponse($this->tokenResource->getClientToken($salesChannelContext)->getAccessToken());
         }
 
-        $vaultId = $this->getPayPalVaultId($salesChannelContext);
+        $vaultId = $this->getVaultId($salesChannelContext);
 
         return new TokenResponse($this->tokenResource->getVaultClientToken($salesChannelContext, $vaultId)->getAccessToken());
     }
 
-    private function getPayPalVaultId(SalesChannelContext $salesChannelContext): string
+    private function getVaultId(SalesChannelContext $salesChannelContext): string
     {
         $customer = $salesChannelContext->getCustomer();
         if (!$customer || $customer->getGuest()) {
             throw CustomerException::customerNotLoggedIn();
         }
 
-        $paymentMethodId = $this->paymentMethodDataRegistry->getEntityIdFromData(
-            $this->paymentMethodDataRegistry->getPaymentMethod(PayPalMethodData::class),
-            $salesChannelContext->getContext(),
-        );
-
-        $criteria = new Criteria();
-        $criteria->setLimit(1);
-        $criteria->addFilter(new EqualsFilter('mainMapping.customerId', $customer->getId()));
-        $criteria->addFilter(new EqualsFilter('mainMapping.paymentMethodId', $paymentMethodId));
-
-        $vault = $this->vaultTokenRepository->search($criteria, $salesChannelContext->getContext())->getEntities()->first();
+        $vault = $this->vaultTokenService->getCustomerToken($customer->getId(), $salesChannelContext->getPaymentMethod()->getId(), $salesChannelContext->getContext());
         if ($vault === null) {
             throw new MissingCustomerVaultTokenException($customer->getId());
         }

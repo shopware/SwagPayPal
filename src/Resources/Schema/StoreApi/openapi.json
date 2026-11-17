@@ -220,7 +220,7 @@
                             "schema": {
                                 "properties": {
                                     "vault": {
-                                        "description": "Binds the token to the saved PayPal wallet of the logged-in customer, so the PayPal JS SDK can show it and let the customer change its funding instrument",
+                                        "description": "Binds the token to the logged-in customer's saved account or card for the selected payment method, so the PayPal JS SDK can show it, e.g. to let the customer change the funding instrument of their saved PayPal wallet",
                                         "type": "boolean",
                                         "default": false
                                     }

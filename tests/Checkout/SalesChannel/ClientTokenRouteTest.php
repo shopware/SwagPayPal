@@ -11,21 +11,15 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\CustomerException;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Test\Generator;
-use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
 use Shopware\PayPalSDK\Struct\V1\Token;
 use Swag\PayPal\Checkout\Exception\MissingCustomerVaultTokenException;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\ClientTokenRoute;
 use Swag\PayPal\Checkout\TokenResponse;
-use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenCollection;
 use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
-use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
-use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -35,34 +29,18 @@ use Symfony\Component\HttpFoundation\Request;
 #[CoversClass(ClientTokenRoute::class)]
 class ClientTokenRouteTest extends TestCase
 {
-    private const PAYPAL_PAYMENT_METHOD_ID = 'paypal-payment-method-id';
-
-    /**
-     * @var StaticEntityRepository<VaultTokenCollection>
-     */
-    private StaticEntityRepository $repository;
-
     private TokenResource&MockObject $tokenResource;
+
+    private VaultTokenService&MockObject $vaultTokenService;
 
     private ClientTokenRoute $route;
 
     protected function setUp(): void
     {
-        $this->repository = new StaticEntityRepository([]);
         $this->tokenResource = $this->createMock(TokenResource::class);
+        $this->vaultTokenService = $this->createMock(VaultTokenService::class);
 
-        $paymentMethodData = $this->createMock(PayPalMethodData::class);
-        $paymentMethodDataRegistry = $this->createMock(PaymentMethodDataRegistry::class);
-        $paymentMethodDataRegistry
-            ->method('getPaymentMethod')
-            ->with(PayPalMethodData::class)
-            ->willReturn($paymentMethodData);
-        $paymentMethodDataRegistry
-            ->method('getEntityIdFromData')
-            ->with($paymentMethodData)
-            ->willReturn(self::PAYPAL_PAYMENT_METHOD_ID);
-
-        $this->route = new ClientTokenRoute($this->tokenResource, $this->repository, $paymentMethodDataRegistry);
+        $this->route = new ClientTokenRoute($this->tokenResource, $this->vaultTokenService);
     }
 
     public function testGetClientToken(): void
@@ -88,17 +66,12 @@ class ClientTokenRouteTest extends TestCase
         $salesChannelContext->getCustomer()?->setGuest(false);
 
         $vaultToken = new VaultTokenEntity();
-        $vaultToken->setId(Uuid::randomHex());
         $vaultToken->setToken('vault-id');
-
-        $this->repository->addSearch(static function (Criteria $criteria) use ($salesChannelContext, $vaultToken): VaultTokenCollection {
-            static::assertEquals([
-                new EqualsFilter('mainMapping.customerId', $salesChannelContext->getCustomerId()),
-                new EqualsFilter('mainMapping.paymentMethodId', self::PAYPAL_PAYMENT_METHOD_ID),
-            ], $criteria->getFilters());
-
-            return new VaultTokenCollection([$vaultToken]);
-        });
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('getCustomerToken')
+            ->with($salesChannelContext->getCustomerId(), $salesChannelContext->getPaymentMethod()->getId(), $salesChannelContext->getContext())
+            ->willReturn($vaultToken);
 
         $this->tokenResource->expects($this->never())->method('getClientToken');
         $this->tokenResource
@@ -142,7 +115,7 @@ class ClientTokenRouteTest extends TestCase
         $salesChannelContext = Generator::generateSalesChannelContext();
         $salesChannelContext->getCustomer()?->setGuest(false);
 
-        $this->repository->addSearch(new VaultTokenCollection());
+        $this->vaultTokenService->expects($this->once())->method('getCustomerToken')->willReturn(null);
 
         $this->tokenResource->expects($this->never())->method('getVaultClientToken');
 
