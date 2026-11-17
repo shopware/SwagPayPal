@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
+use Swag\PayPal\Util\Lifecycle\Installer\TableInstaller;
 use Swag\PayPal\Util\Lifecycle\State\AgenticCommerceService;
 use Swag\PayPal\Util\Lifecycle\State\PosStateService;
 
@@ -26,7 +27,8 @@ class InstallUninstall
         private SettingsInstaller $settingsInstaller,
         private PosInstaller $posInstaller,
         private PosStateService $posStateService,
-        private AgenticCommerceService $agenticCommerceService
+        private AgenticCommerceService $agenticCommerceService,
+        private TableInstaller $tableInstaller,
     ) {
     }
 
@@ -42,5 +44,6 @@ class InstallUninstall
         $this->posStateService->handleUninstallPos($context);
         $this->settingsInstaller->removeConfiguration($context);
         $this->posInstaller->removePosTables();
+        $this->tableInstaller->removeTables();
     }
 }

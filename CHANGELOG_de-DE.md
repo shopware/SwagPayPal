@@ -5,6 +5,7 @@
 - Behebt ein Problem, bei dem PayPal Express Checkout bei Warenkörben mit ausschließlich digitalen Produkten fehlschlug (shopware/SwagPayPal#825)
 - Behebt ein Problem, bei dem die Synchronisierung des Transaktionsstatus eine Transaktion anhand eines veralteten Zahlungsversuchs ändern konnte (shopware/SwagPayPal#842)
 - Behebt ein Problem, bei dem Kartenzahlungen von Abonnements fehlschlagen konnten, im Checkout mit einer gespeicherten Karte und bei Verlängerungen, wenn die Bank 3D Secure verlangte
+- Behebt ein Problem, bei dem nach dem Deinstallieren des Plugins ohne Beibehalten der Benutzerdaten gespeicherte PayPal-Konten und Karten, Transaktionsberichte und PayPal-Bestellzuordnungen in der Datenbank verblieben (shopware/SwagPayPal#846)
 - Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer Karte im Abonnement-Checkout zu einer Fehlerseite führte und stattdessen andere Zahlungsdaten entfernen konnte. Headless-Storefronts können diese jetzt entfernen, auch bei Abonnements
 
 # 9.13.5
