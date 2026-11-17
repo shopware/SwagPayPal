@@ -20,6 +20,7 @@ use Shopware\PayPalSDK\Struct\V2\Order\ApplicationContext;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\Attributes\OrderUpdateCallbackConfig;
 use Shopware\Storefront\Framework\Routing\StorefrontRouteScope;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\DigitalGoodsCategoryRemover;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
@@ -88,6 +89,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 
             $this->logger->debug('Building order');
             $order = $this->paypalOrderBuilder->getOrderFromCart($cart, $salesChannelContext, new RequestDataBag($request->request->all()));
+            DigitalGoodsCategoryRemover::remove($order);
             $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
 
             if ($experienceContext !== null) {
