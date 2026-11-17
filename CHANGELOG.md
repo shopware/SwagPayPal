@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
+- Fixes an issue, where failed or cancelled PayPal refunds were deducted from the refundable amount in the Administration and could disable the refund button (shopware/SwagPayPal#878)
 - Fixes an issue, where PayPal Express Checkout failed for carts with only digital products (shopware/SwagPayPal#825)
 
 # 9.13.5
