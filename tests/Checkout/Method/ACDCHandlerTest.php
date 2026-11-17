@@ -123,8 +123,8 @@ class ACDCHandlerTest extends TestCase
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getAvailableToken')
-            ->with($paymentTransaction, static::isInstanceOf(OrderTransactionEntity::class), static::isInstanceOf(OrderEntity::class))
+            ->method('getTokenForPayment')
+            ->with($paymentTransaction, static::isInstanceOf(OrderTransactionEntity::class), static::isInstanceOf(OrderEntity::class), static::anything(), false)
             ->willReturn($this->createVaultToken());
 
         $this->transactionDataService
@@ -208,7 +208,7 @@ class ACDCHandlerTest extends TestCase
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getAvailableToken')
+            ->method('getTokenForPayment')
             ->willReturn(null);
 
         $this->orderResource
@@ -265,8 +265,8 @@ class ACDCHandlerTest extends TestCase
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getAvailableToken')
-            ->with($paymentTransaction, $transaction, $order, $context)
+            ->method('getTokenForPayment')
+            ->with($paymentTransaction, $transaction, $order, $context, false)
             ->willReturn($this->createVaultToken());
 
         $this->transactionDataService
@@ -339,7 +339,7 @@ class ACDCHandlerTest extends TestCase
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getAvailableToken')
+            ->method('getTokenForPayment')
             ->willReturn($this->createVaultToken());
 
         $this->orderBuilder
@@ -403,7 +403,7 @@ class ACDCHandlerTest extends TestCase
 
         $this->vaultTokenService
             ->expects($this->once())
-            ->method('getAvailableToken')
+            ->method('getTokenForPayment')
             ->willReturn($this->createVaultToken());
 
         $this->orderBuilder
@@ -666,7 +666,7 @@ class ACDCHandlerTest extends TestCase
         // the customer may have saved another card meanwhile
         $this->vaultTokenService
             ->expects($this->never())
-            ->method('getAvailableToken');
+            ->method('getTokenForPayment');
 
         $this->orderResource
             ->expects($this->once())

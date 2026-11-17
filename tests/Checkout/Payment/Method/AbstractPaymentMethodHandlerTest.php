@@ -124,7 +124,11 @@ class AbstractPaymentMethodHandlerTest extends TestCase
         $vaultToken = new VaultTokenEntity();
         $vaultToken->setId('vaultTokenId');
 
-        $this->vaultTokenService->expects($this->once())->method('getAvailableToken')->willReturn($vaultToken);
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('getTokenForPayment')
+            ->with($transaction, $this->orderTransaction, static::anything(), $context, false)
+            ->willReturn($vaultToken);
         $this->orderResource->expects($this->once())->method('create')->willReturn($response);
         $this->transactionDataService
             ->expects($this->once())

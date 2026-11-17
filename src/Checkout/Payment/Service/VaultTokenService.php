@@ -61,10 +61,7 @@ class VaultTokenService
             return null;
         }
 
-        $criteria = new Criteria();
-        $criteria->setLimit(1);
-        $criteria->addFilter(new EqualsFilter('customerId', $customerId));
-        $criteria->addFilter(new EqualsFilter('paymentMethodId', $orderTransaction->getPaymentMethodId()));
+        $criteria = $this->createTokenCriteria($customerId, $orderTransaction->getPaymentMethodId());
 
         if ($subscriptions = $this->getSubscriptions($struct)) {
             $customFieldKey = $this->getSubscriptionCustomFieldKey($orderTransaction->getPaymentMethodId());
@@ -84,6 +81,30 @@ class VaultTokenService
         if (!$criteria->getIds()) {
             $criteria->addFilter(new EqualsFilter('mainMapping.customerId', $customerId));
         }
+
+        return $this->vaultTokenRepository->search($criteria, $context)->getEntities()->first();
+    }
+
+    /**
+     * Renewals keep using the token of their subscriptions. A payment of the customer, e.g. of a failed renewal, uses
+     * the one they saved last for the payment method instead, as the storefront shows them that one, and their
+     * subscriptions keep it afterwards.
+     *
+     * @internal
+     */
+    public function getTokenForPayment(PaymentTransactionStruct $struct, OrderTransactionEntity $orderTransaction, OrderEntity $order, Context $context, bool $isRecurring): ?VaultTokenEntity
+    {
+        if ($isRecurring) {
+            return $this->getAvailableToken($struct, $orderTransaction, $order, $context);
+        }
+
+        $customerId = $order->getOrderCustomer()?->getCustomerId();
+        if (!$customerId) {
+            return null;
+        }
+
+        $criteria = $this->createTokenCriteria($customerId, $orderTransaction->getPaymentMethodId());
+        $criteria->addFilter(new EqualsFilter('mainMapping.customerId', $customerId));
 
         return $this->vaultTokenRepository->search($criteria, $context)->getEntities()->first();
     }
@@ -242,6 +263,16 @@ class VaultTokenService
                 'tokenId' => $tokenId,
             ]],
         ]], $context);
+    }
+
+    private function createTokenCriteria(string $customerId, string $paymentMethodId): Criteria
+    {
+        $criteria = new Criteria();
+        $criteria->setLimit(1);
+        $criteria->addFilter(new EqualsFilter('customerId', $customerId));
+        $criteria->addFilter(new EqualsFilter('paymentMethodId', $paymentMethodId));
+
+        return $criteria;
     }
 
     private function findTokenId(string $token, string $customerId, Context $context): ?string

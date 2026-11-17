@@ -90,7 +90,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
         $preparedOrderId = $request->request->getAlnum(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
         $paypalOrderId = $preparedOrderId;
         [$orderTransaction, $order] = $this->fetchOrderTransaction($transaction->getOrderTransactionId(), $context);
-        $existingVault = $this->isVaultable() ? $this->vaultTokenService->getAvailableToken($transaction, $orderTransaction, $order, $context) : null;
+        $existingVault = $this->isVaultable() ? $this->vaultTokenService->getTokenForPayment($transaction, $orderTransaction, $order, $context, isRecurring: false) : null;
         if ($this->requirePreparedOrder() && !$paypalOrderId && !$existingVault) {
             throw CheckoutException::preparedOrderRequired(static::class);
         }
@@ -295,7 +295,7 @@ abstract class AbstractPaymentMethodHandler extends AbstractPaymentHandler imple
 
         $this->vaultTokenService->saveToken($transaction, $orderTransaction, $vaultableSource, $customerId, $context);
 
-        // the checkout decides the token of all renewals, which keep it instead of the one the customer saved last
+        // a payment of the customer, e.g. at checkout, decides the token the following renewals keep, even if they save another one
         if ($isUserPresent) {
             $this->vaultTokenService->saveUsedTokenToSubscriptions($transaction, $orderTransaction, $context);
         }
