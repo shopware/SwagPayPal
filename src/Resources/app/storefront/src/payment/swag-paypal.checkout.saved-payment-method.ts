@@ -9,7 +9,6 @@ export interface SwagPaypalCheckoutSavedPaymentMethodOptions extends SwagPaypalP
     editUrl: string;
     identifierSelector: string;
     previewSelector: string;
-    editButtonSelector: string;
     approvedOrderSelector: string;
     approvedOrderIdSelector: string;
 }
@@ -54,11 +53,6 @@ export default class SwagPaypalCheckoutSavedPaymentMethod extends SwagPaypalPaym
         previewSelector: 'paypal-saved-payment-methods',
 
         /**
-         * Selector of the button opening PayPal's window to change the funding instrument
-         */
-        editButtonSelector: '.swag-paypal-saved-payment-method-edit',
-
-        /**
          * Selector of the note, that the buyer changed the funding instrument for this order
          */
         approvedOrderSelector: '.swag-paypal-saved-payment-method-approved',
@@ -99,13 +93,11 @@ export default class SwagPaypalCheckoutSavedPaymentMethod extends SwagPaypalPaym
         });
 
         this.getElement(this.options.previewSelector).addEventListener('click', this.startEdit.bind(this));
-        this.getElement(this.options.editButtonSelector).addEventListener('click', this.startEdit.bind(this));
     }
 
     protected afterSetup(): void {
         this.getElement(this.options.identifierSelector).hidden = true;
         this.getElement(this.options.previewSelector).hidden = false;
-        this.getElement(this.options.editButtonSelector).hidden = false;
     }
 
     /**
