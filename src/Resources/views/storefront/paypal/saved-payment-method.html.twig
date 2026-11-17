@@ -36,7 +36,7 @@
             </button>
         </div>
         <div>
-            <a href="{{ path('frontend.paypal.vault.clear', { redirectTo: activeRoute, redirectParameters: (page.order.id ? { orderId: page.order.id } : {})|json_encode }) }}">
+            <a href="{{ payPalVaultClearUrl }}">
                 {{ "paypal.vault.account.clear"|trans|sw_sanitize }}
             </a>
         </div>

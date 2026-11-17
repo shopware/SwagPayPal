@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Pos\Run;
 
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Context;
@@ -45,42 +44,13 @@ class PosSyncControllerTest extends TestCase
 
     private SalesChannelRepoMock $salesChannelRepoMock;
 
-    private MockObject $logCleaner;
-
-    private MockObject $productSelection;
-
-    private MockObject $runService;
-
     private MessageBusMock $messageBus;
-
-    private MockObject $syncResetter;
 
     protected function setUp(): void
     {
         $this->salesChannelRepoMock = new SalesChannelRepoMock();
         $this->messageBus = new MessageBusMock();
-        $this->logCleaner = $this->createMock(LogCleaner::class);
-        $this->productSelection = $this->createMock(ProductSelection::class);
-        $this->runService = $this->createMock(RunService::class);
-        $this->syncResetter = $this->createMock(SyncResetter::class);
-
-        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class), new NativeClock());
-        $productTask = new ProductTask($messageDispatcher, $this->runService);
-        $imageTask = new ImageTask($messageDispatcher, $this->runService);
-        $inventoryTask = new InventoryTask($messageDispatcher, $this->runService);
-        $completeTask = new CompleteTask($messageDispatcher, $this->runService);
-
-        $this->posSyncController = new PosSyncController(
-            $this->salesChannelRepoMock,
-            $completeTask,
-            $productTask,
-            $imageTask,
-            $inventoryTask,
-            $this->logCleaner,
-            $this->runService,
-            $this->syncResetter,
-            $this->productSelection
-        );
+        $this->posSyncController = $this->createController();
     }
 
     public static function dataProviderSyncFunctions(): array
@@ -116,18 +86,17 @@ class PosSyncControllerTest extends TestCase
         ];
     }
 
-    public static function dataProviderFunctions(): array
+    /**
+     * @return \Generator<int, array{string}>
+     */
+    public static function dataProviderFunctions(): \Generator
     {
-        return static::dataProviderSyncFunctions() + [
-            [
-                'cleanUpLog',
-                null,
-            ],
-            [
-                'resetSync',
-                null,
-            ],
-        ];
+        foreach (static::dataProviderSyncFunctions() as [$function]) {
+            yield [$function];
+        }
+
+        yield ['cleanUpLog'];
+        yield ['resetSync'];
     }
 
     #[DataProvider('dataProviderFunctions')]
@@ -158,47 +127,75 @@ class PosSyncControllerTest extends TestCase
 
     public function testAbortSync(): void
     {
-        $this->runService->expects($this->once())->method('abortRun');
-        $this->posSyncController->abortSync(Uuid::randomHex(), Context::createDefaultContext());
+        $runService = $this->createMock(RunService::class);
+        $runService->expects($this->once())->method('abortRun');
+
+        $this->createController(runService: $runService)->abortSync(Uuid::randomHex(), Context::createDefaultContext());
     }
 
     public function testCleanUpLog(): void
     {
-        $context = Context::createDefaultContext();
-        $this->logCleaner->expects($this->atLeastOnce())->method('clearLog');
+        $logCleaner = $this->createMock(LogCleaner::class);
+        $logCleaner->expects($this->atLeastOnce())->method('clearLog');
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
-        $this->posSyncController->cleanUpLog($salesChannelId->getId(), $context);
+
+        $this->createController(logCleaner: $logCleaner)->cleanUpLog($salesChannelId->getId(), Context::createDefaultContext());
     }
 
     public function testResetSync(): void
     {
-        $context = Context::createDefaultContext();
-        $this->syncResetter->expects($this->atLeastOnce())->method('resetSync');
+        $syncResetter = $this->createMock(SyncResetter::class);
+        $syncResetter->expects($this->atLeastOnce())->method('resetSync');
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
-        $this->posSyncController->resetSync($salesChannelId->getId(), $context);
+
+        $this->createController(syncResetter: $syncResetter)->resetSync($salesChannelId->getId(), Context::createDefaultContext());
     }
 
     public function testProductLog(): void
     {
-        $context = Context::createDefaultContext();
-        $this->productSelection->expects($this->once())->method('getProductLogCollection')->with(
+        $productSelection = $this->createMock(ProductSelection::class);
+        $productSelection->expects($this->once())->method('getProductLogCollection')->with(
             static::isInstanceOf(SalesChannelEntity::class),
             0,
             10
         );
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
-        $this->posSyncController->getProductLog($salesChannelId->getId(), new Request(), $context);
+
+        $this->createController(productSelection: $productSelection)->getProductLog($salesChannelId->getId(), new Request(), Context::createDefaultContext());
     }
 
     public function testProductLogPaginated(): void
     {
-        $context = Context::createDefaultContext();
-        $this->productSelection->expects($this->once())->method('getProductLogCollection')->with(
+        $productSelection = $this->createMock(ProductSelection::class);
+        $productSelection->expects($this->once())->method('getProductLogCollection')->with(
             static::isInstanceOf(SalesChannelEntity::class),
             40,
             20
         );
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
-        $this->posSyncController->getProductLog($salesChannelId->getId(), new Request(['limit' => 20, 'page' => 3]), $context);
+
+        $this->createController(productSelection: $productSelection)->getProductLog($salesChannelId->getId(), new Request(['limit' => 20, 'page' => 3]), Context::createDefaultContext());
+    }
+
+    private function createController(
+        ?LogCleaner $logCleaner = null,
+        ?ProductSelection $productSelection = null,
+        ?RunService $runService = null,
+        ?SyncResetter $syncResetter = null,
+    ): PosSyncController {
+        $runService ??= static::createStub(RunService::class);
+        $messageDispatcher = new MessageDispatcher($this->messageBus, static::createStub(Connection::class), new NativeClock());
+
+        return new PosSyncController(
+            $this->salesChannelRepoMock,
+            new CompleteTask($messageDispatcher, $runService),
+            new ProductTask($messageDispatcher, $runService),
+            new ImageTask($messageDispatcher, $runService),
+            new InventoryTask($messageDispatcher, $runService),
+            $logCleaner ?? static::createStub(LogCleaner::class),
+            $runService,
+            $syncResetter ?? static::createStub(SyncResetter::class),
+            $productSelection ?? static::createStub(ProductSelection::class),
+        );
     }
 }

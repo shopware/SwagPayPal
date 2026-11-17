@@ -60,37 +60,32 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
         /** @phpstan-ignore method.deprecated */
         $card->setExperienceContext($this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, new RequestDataBag($request->request->all())));
 
-        $attributes = new Attributes();
-        $verification = new Verification();
-        if (!$this->systemConfigService->getBool(Settings::ACDC_FORCE_3DS, $order->getSalesChannelId())) {
-            $verification->setMethod(Verification::METHOD_SCA_WHEN_REQUIRED);
+        $isRecurring = $this->isRecurringOrder($request);
+
+        // a renewal has no payer to complete a 3D Secure challenge, so requesting one leaves it at PAYER_ACTION_REQUIRED
+        if (!$isRecurring) {
+            $card->setAttributes($this->createVerificationAttributes($order->getSalesChannelId()));
         }
-        $attributes->setVerification($verification);
-        $card->setAttributes($attributes);
 
         $paymentSource->setCard($card);
 
         if (!$request->attributes->getBoolean(self::PRELIMINARY_ATTRIBUTE) && $token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $orderTransaction, $order, $context)) {
             $card->setVaultId($token->getToken());
-            $storedCredential = new StoredCredential();
-
-            if ($this->vaultTokenService->getSubscriptions($paymentTransaction)) {
-                $storedCredential->setPaymentInitiator(StoredCredential::PAYMENT_INITIATOR_MERCHANT);
-                $storedCredential->setPaymentType(StoredCredential::PAYMENT_TYPE_RECURRING);
-                $storedCredential->setUsage(StoredCredential::USAGE_DERIVED);
-            } else {
-                $storedCredential->setPaymentInitiator(StoredCredential::PAYMENT_INITIATOR_CUSTOMER);
-                $storedCredential->setPaymentType(StoredCredential::PAYMENT_TYPE_UNSCHEDULED);
-                $storedCredential->setUsage(StoredCredential::USAGE_SUBSEQUENT);
-            }
-
-            $card->setStoredCredential($storedCredential);
+            $card->setStoredCredential($this->createStoredCredential(
+                $isRecurring ? StoredCredential::PAYMENT_INITIATOR_MERCHANT : StoredCredential::PAYMENT_INITIATOR_CUSTOMER,
+                $this->vaultTokenService->getSubscriptions($paymentTransaction) ? StoredCredential::PAYMENT_TYPE_RECURRING : StoredCredential::PAYMENT_TYPE_UNSCHEDULED,
+                StoredCredential::USAGE_SUBSEQUENT,
+            ));
 
             return;
         }
 
         if ($this->vaultTokenService->shouldRequestVaulting(bag: $request->request, paymentTransaction: $paymentTransaction)) {
             $this->vaultTokenService->requestVaulting($card);
+
+            if ($this->vaultTokenService->getSubscriptions($paymentTransaction)) {
+                $card->setStoredCredential($this->createStoredCredential(StoredCredential::PAYMENT_INITIATOR_CUSTOMER, StoredCredential::PAYMENT_TYPE_RECURRING, StoredCredential::USAGE_FIRST));
+            }
         }
     }
 
@@ -100,18 +95,44 @@ class ACDCOrderBuilder extends AbstractOrderBuilder
         /** @phpstan-ignore method.deprecated */
         $card->setExperienceContext($this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext(), null, $requestDataBag));
 
-        $attributes = new Attributes();
-        $verification = new Verification();
-        if (!$this->systemConfigService->getBool(Settings::ACDC_FORCE_3DS, $salesChannelContext->getSalesChannelId())) {
-            $verification->setMethod(Verification::METHOD_SCA_WHEN_REQUIRED);
-        }
-        $attributes->setVerification($verification);
-        $card->setAttributes($attributes);
+        $card->setAttributes($this->createVerificationAttributes($salesChannelContext->getSalesChannelId()));
 
         $paymentSource->setCard($card);
 
         if ($this->vaultTokenService->shouldRequestVaulting($salesChannelContext, $requestDataBag)) {
             $this->vaultTokenService->requestVaulting($card);
+
+            if ($this->vaultTokenService->isSubscriptionContext($salesChannelContext)) {
+                $card->setStoredCredential($this->createStoredCredential(StoredCredential::PAYMENT_INITIATOR_CUSTOMER, StoredCredential::PAYMENT_TYPE_RECURRING, StoredCredential::USAGE_FIRST));
+            }
         }
+    }
+
+    private function createVerificationAttributes(string $salesChannelId): Attributes
+    {
+        $attributes = new Attributes();
+        $verification = new Verification();
+        if (!$this->systemConfigService->getBool(Settings::ACDC_FORCE_3DS, $salesChannelId)) {
+            $verification->setMethod(Verification::METHOD_SCA_WHEN_REQUIRED);
+        }
+        $attributes->setVerification($verification);
+
+        return $attributes;
+    }
+
+    /**
+     * The card-on-file indicators PayPal passes to the issuer. A subscription's first payment opens a recurring
+     * series, which is what exempts its merchant-initiated renewals from SCA.
+     *
+     * @see https://developer.paypal.com/docs/checkout/advanced/customize/sca-payment-indicators
+     */
+    private function createStoredCredential(string $paymentInitiator, string $paymentType, string $usage): StoredCredential
+    {
+        $storedCredential = new StoredCredential();
+        $storedCredential->setPaymentInitiator($paymentInitiator);
+        $storedCredential->setPaymentType($paymentType);
+        $storedCredential->setUsage($usage);
+
+        return $storedCredential;
     }
 }

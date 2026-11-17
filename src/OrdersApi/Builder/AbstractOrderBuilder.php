@@ -39,6 +39,8 @@ abstract class AbstractOrderBuilder
 {
     public const PRELIMINARY_ATTRIBUTE = 'isPayPalPreliminaryOrder';
 
+    private const RECURRING_ATTRIBUTE = 'isPayPalRecurringOrder';
+
     /**
      * @internal
      */
@@ -67,6 +69,18 @@ abstract class AbstractOrderBuilder
         $payPalOrder->setPaymentSource($paymentSource);
 
         return $payPalOrder;
+    }
+
+    /**
+     * Builds the order for a payment the merchant initiates without the payer present, e.g. a subscription renewal
+     */
+    public function getRecurringOrder(
+        PaymentTransactionStruct $paymentTransaction,
+        OrderTransactionEntity $orderTransaction,
+        OrderEntity $order,
+        Context $context,
+    ): Order {
+        return $this->getOrder($paymentTransaction, $orderTransaction, $order, $context, new Request([], [], [self::RECURRING_ATTRIBUTE => true]));
     }
 
     public function getOrderFromCart(
@@ -199,8 +213,9 @@ abstract class AbstractOrderBuilder
             $experienceContext->setReturnUrl($paymentTransaction->getReturnUrl());
             $experienceContext->setCancelUrl(\sprintf('%s&cancel=1', $paymentTransaction->getReturnUrl()));
         } else {
-            $experienceContext->setReturnUrl(CreateOrderRoute::FAKE_URL);
-            $experienceContext->setCancelUrl(CreateOrderRoute::FAKE_URL . '?cancel=1');
+            $fallbackUrl = $this->getFallbackUrl($salesChannel, $context);
+            $experienceContext->setReturnUrl($fallbackUrl);
+            $experienceContext->setCancelUrl($fallbackUrl . '?cancel=1');
         }
 
         $userAction = $requestDataBag?->getString(CreateOrderRoute::USER_ACTION);
@@ -225,6 +240,22 @@ abstract class AbstractOrderBuilder
     protected function submitCart(string $salesChannelId): bool
     {
         return $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelId);
+    }
+
+    /**
+     * Whether the order is built by {@see self::getRecurringOrder}
+     */
+    protected function isRecurringOrder(Request $request): bool
+    {
+        return $request->attributes->getBoolean(self::RECURRING_ATTRIBUTE);
+    }
+
+    private function getFallbackUrl(SalesChannelEntity $salesChannel, Context $context): string
+    {
+        $domains = $salesChannel->getDomains();
+        $domain = $domains?->filterByProperty('languageId', $context->getLanguageId())->first() ?? $domains?->first();
+
+        return $domain?->getUrl() ?? CreateOrderRoute::FAKE_URL;
     }
 
     /**

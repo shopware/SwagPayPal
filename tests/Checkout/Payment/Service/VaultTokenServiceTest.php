@@ -591,4 +591,43 @@ class VaultTokenServiceTest extends TestCase
             true,
         ];
     }
+
+    #[DataProvider('isSubscriptionContextDataProvider')]
+    public function testIsSubscriptionContext(SalesChannelContext $salesChannelContext, bool $expected): void
+    {
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
+        $vaultTokenRepository = new StaticEntityRepository([], new VaultTokenDefinition());
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+
+        $vaultTokenService = new VaultTokenService(
+            $vaultTokenRepository,
+            $customerRepository,
+            null,
+        );
+
+        static::assertSame($expected, $vaultTokenService->isSubscriptionContext($salesChannelContext));
+    }
+
+    public static function isSubscriptionContextDataProvider(): \Generator
+    {
+        $salesChannelContext = Generator::generateSalesChannelContext();
+        yield 'regular checkout' => [clone $salesChannelContext, false];
+
+        $salesChannelContext->addExtension('subscription', new ArrayStruct());
+        yield 'subscription checkout' => [clone $salesChannelContext, true];
+
+        if (!\class_exists(PlanIntervalMappingStruct::class)) {
+            return;
+        }
+
+        $salesChannelContext->removeExtension('subscription');
+        /** @var PlanIntervalMappingStruct<SalesChannelContext> $managedContexts */
+        $managedContexts = new PlanIntervalMappingStruct();
+        $salesChannelContext->addExtension('subscriptionManagedContexts', $managedContexts);
+        yield 'regular checkout without subscription items' => [clone $salesChannelContext, false];
+
+        $managedContexts->set('id', 'id', $salesChannelContext);
+        yield 'regular checkout with subscription items' => [$salesChannelContext, true];
+    }
 }

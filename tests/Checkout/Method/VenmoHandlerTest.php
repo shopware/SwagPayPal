@@ -51,7 +51,6 @@ use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPalSDK\ApiContextFactoryMock;
 use Swag\PayPal\Util\PriceFormatter;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -164,8 +163,8 @@ class VenmoHandlerTest extends AbstractTestSyncAPMHandler
 
         $this->orderBuilder
             ->expects($this->once())
-            ->method('getOrder')
-            ->with($paymentTransaction, static::isInstanceOf(OrderTransactionEntity::class), static::isInstanceOf(OrderEntity::class), $context, new Request())
+            ->method('getRecurringOrder')
+            ->with($paymentTransaction, static::isInstanceOf(OrderTransactionEntity::class), static::isInstanceOf(OrderEntity::class), $context)
             ->willReturn($paypalOrder);
 
         $this->orderResource

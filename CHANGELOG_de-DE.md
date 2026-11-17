@@ -1,9 +1,25 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Behebt ein Problem, bei dem ein Einzug oder eine Rückerstattung in der Administration die Zahlung als bezahlt oder erstattet markierte, obwohl PayPal mit einem ausstehenden, abgelehnten oder fehlgeschlagenen Status antwortete (shopware/SwagPayPal#839)
+- Behebt ein Problem, bei dem PayPal bei einigen Zahlungen eine Platzhalter-URL statt der Shop-Domain erhielt
+- Behebt ein Problem, bei dem fehlgeschlagene oder abgebrochene PayPal-Rückerstattungen in der Administration vom erstattbaren Betrag abgezogen wurden und die Schaltfläche für Rückerstattungen deaktivieren konnten (shopware/SwagPayPal#878)
+- Behebt ein Problem, bei dem PayPal Express Checkout bei Warenkörben mit ausschließlich digitalen Produkten fehlschlug (shopware/SwagPayPal#825)
+- Behebt ein Problem, bei dem nach dem Deinstallieren des Plugins ohne Beibehalten der Benutzerdaten gespeicherte PayPal-Konten und Karten, Transaktionsberichte und PayPal-Bestellzuordnungen in der Datenbank verblieben (shopware/SwagPayPal#846)
+- Behebt ein Problem, bei dem PayPal Express Checkout alle Versandarten außer der gewählten als kostenlos anzeigte (shopware/SwagPayPal#913, benötigt Shopware 6.7.14.0 oder höher)
+- Behebt ein Problem, bei dem das Entfernen eines gespeicherten PayPal-Kontos oder einer Karte im Abonnement-Checkout zu einer Fehlerseite führte und stattdessen andere Zahlungsdaten entfernen konnte. Headless-Storefronts können diese jetzt entfernen, auch bei Abonnements
+- Behebt ein Problem, bei dem die Synchronisierung des Transaktionsstatus eine Transaktion anhand eines veralteten Zahlungsversuchs ändern konnte (shopware/SwagPayPal#842)
+- Mit dem PayPal JS SDK v6 bezahlen Kunden mit gespeichertem PayPal-Konto nun über den regulären Bestellbutton statt über den PayPal-Button. Über den Link "Ändern" neben dem gespeicherten Konto können sie für die Bestellung eine andere Zahlungsmethode aus ihrem PayPal-Konto wählen. Die Store-API-Routen `/store-api/paypal/client-token` und `/store-api/paypal/create-order` akzeptieren dafür die neuen Parameter `vault` und `userAction`
+
+# 10.9.0
+- Fügt Unterstützung für das PayPal JS SDK v6 hinzu, das in den Einstellungen unter "Storefront-Darstellung" aktiviert werden kann, sobald es für das PayPal-Händlerkonto freigeschaltet ist. Es ist performanter und zeigt Zahlungsbuttons und "Später bezahlen"-Banner schneller an. Template-Anpassungen müssen gegebenenfalls angepasst werden wenn aktiviert. SDK v6 wird ab Version 11 die Standardimplementierung (shopware/SwagPayPal#257)
+- Behebt ein Problem, bei dem Express-Buttons im Listing nach dem Zurücknavigieren mit dem Browser-Zurück-Button mehrfach dargestellt wurden (shopware/SwagPayPal#856)
 - Behebt ein Problem, bei dem PayPal Express Checkout die Fehlermeldung nicht zuverlässig anzeigte, wenn die Checkout-Vorbereitung fehlschlug
 - Behebt ein Problem, bei dem die für Rechnungskauf eingegebene Telefonnummer bei abweichender Liefer- und Rechnungsadresse an der Lieferadresse statt an der Rechnungsadresse gespeichert wurde und die Zahlung dadurch fehlschlug (shopware/SwagPayPal#857)
 - Behebt ein Problem, bei dem das Setzen einer Transaktion auf "Bezahlt" über eine API-Integration ohne Berechtigungen für den PayPal-Umsatzbericht fehlschlug und Flows für den Status "Bezahlt" verhinderte, z. B. nach dem Wechsel von einer fehlgeschlagenen PayPal-Zahlung auf Vorkasse (shopware/shopware#21245)
 - Behebt ein Problem, bei dem der Link "Abbrechen und zurück zum Shop" auf der PayPal-Seite im PayPal Express Checkout auf `example.com` verwies (shopware/shopware#21430)
-- Mit dem PayPal JS SDK v6 bezahlen Kunden mit gespeichertem PayPal-Konto nun über den regulären Bestellbutton statt über den PayPal-Button. Über den Link "Ändern" neben dem gespeicherten Konto können sie für die Bestellung eine andere Zahlungsmethode aus ihrem PayPal-Konto wählen. Die Store-API-Routen `/store-api/paypal/client-token` und `/store-api/paypal/create-order` akzeptieren dafür die neuen Parameter `vault` und `userAction`
+- Behebt ein Problem, bei dem das Laden der PayPal-Händlerinformationen, z. B. in den PayPal-Einstellungen nach einem Onboarding, mit einem Fehler fehlschlug, wenn PayPal ein Produkt ohne Prüfstatus zurückgab (shopware/shopware#21346)
+- Behebt ein Problem, bei dem Verlängerungen von Kreditkarten-Abonnements fehlschlagen konnten, wenn die kartenausgebende Bank 3D Secure verlangte, da Verlängerungen eine Verifizierung anforderten und Abonnements nicht als wiederkehrende Kartenzahlungen gekennzeichnet waren (shopware/shopware#21069)
+- Behebt ein Problem, bei dem PayPal-Zahlungen und Zahlungen mit "Später bezahlen" weiterhin fehlschlugen, nachdem der Kunde den geänderten Bestellbetrag erneut freigegeben hatte, z. B. nach einer Mengenänderung auf der Bestellbestätigungsseite im PayPal Express Checkout (shopware/SwagPayPal#920)
+- Behebt ein Problem, bei dem PayPal-Konten nicht für zukünftige Einkäufe gespeichert wurden und Abonnements nicht verlängert werden konnten, wenn der Kunde einen geänderten Bestellbetrag erneut freigeben musste
 
 # 10.8.5
 - Behebt ein Problem, bei dem ausstehende PayPal-Zahlungseinzüge und -Autorisierungen nicht im Zahlungsstatus abgebildet wurden

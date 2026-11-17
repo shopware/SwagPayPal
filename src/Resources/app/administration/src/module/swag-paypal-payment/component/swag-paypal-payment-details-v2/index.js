@@ -1,5 +1,6 @@
 import template from './swag-paypal-payment-details-v2.html.twig';
 import {
+    DEDUCTED_REFUND_STATUSES,
     ORDER_AUTHORIZATION_CREATED,
     ORDER_AUTHORIZATION_PARTIALLY_CAPTURED,
     ORDER_AUTHORIZATION_PENDING,
@@ -146,7 +147,10 @@ Component.register('swag-paypal-payment-details-v2', {
             if (rawRefunds) {
                 rawRefunds.forEach((refund) => {
                     this.pushPayment('refund', refund);
-                    this.refundableAmount -= Number(refund.amount.value);
+
+                    if (DEDUCTED_REFUND_STATUSES.includes(refund.status)) {
+                        this.refundableAmount -= Number(refund.amount.value);
+                    }
                 });
             }
 

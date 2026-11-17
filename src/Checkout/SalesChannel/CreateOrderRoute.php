@@ -89,12 +89,12 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             ),
             new OA\Property(
                 property: self::RETURN_URL,
-                description: 'Return URL for the order experience context',
+                description: 'Return URL for the order experience context. Must be sent together with `cancelUrl`, otherwise both are ignored',
                 type: 'string',
             ),
             new OA\Property(
                 property: self::CANCEL_URL,
-                description: 'Cancel URL for the order experience context',
+                description: 'Cancel URL for the order experience context. Must be sent together with `returnUrl`, otherwise both are ignored',
                 type: 'string',
             ),
             new OA\Property(
@@ -184,7 +184,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         $criteria->addAssociation('deliveries.shippingOrderAddress.countryState');
         $criteria->addAssociation('subscription');
         $criteria->addAssociation('currency');
-        $criteria->addAssociation('salesChannel');
+        $criteria->addAssociation('salesChannel.domains');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->getEntities()->first();

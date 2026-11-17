@@ -1,9 +1,25 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- Fixes an issue, where capturing or refunding in the Administration marked the payment as paid or refunded although PayPal answered with a pending, declined or failed status (shopware/SwagPayPal#839)
+- Fixes an issue, where PayPal received a placeholder URL instead of the shop's domain for some payments
+- Fixes an issue, where failed or cancelled PayPal refunds were deducted from the refundable amount in the Administration and could disable the refund button (shopware/SwagPayPal#878)
+- Fixes an issue, where PayPal Express Checkout failed for carts with only digital products (shopware/SwagPayPal#825)
+- Fixes an issue, where uninstalling the plugin without keeping user data left saved PayPal accounts and cards, transaction reports and PayPal order references in the database (shopware/SwagPayPal#846)
+- Fixes an issue, where PayPal Express Checkout showed all shipping methods except the selected one as free (shopware/SwagPayPal#913, requires Shopware 6.7.14.0 or greater)
+- Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
+- Fixes an issue, where the transaction status synchronisation could change a transaction based on an outdated payment attempt (shopware/SwagPayPal#842)
+- With the PayPal JS SDK v6, customers with a saved PayPal account now pay with the regular order button instead of the PayPal button. A "Change" link next to the saved account lets them pick another payment method from their PayPal wallet for the order. For this, the Store API routes `/store-api/paypal/client-token` and `/store-api/paypal/create-order` accept the new parameters `vault` and `userAction`
+
+# 10.9.0
+- Added support for the PayPal JS SDK v6, which can be enabled in the "Storefront presentation" settings once it is activated for the PayPal merchant account. It is more performant and displays payment buttons and Pay Later banners faster. Template customisations may need to be adapted if enabled. SDK v6 will become the default in version 11 (shopware/SwagPayPal#257)
+- Fixes an issue, where listing Express buttons were rendered more than once after using the browser Back button (shopware/SwagPayPal#856)
 - Fixes an issue, where PayPal Express Checkout did not reliably show the error message when the checkout preparation failed
 - Fixes an issue, where the phone number entered for Pay Upon Invoice was stored on the shipping instead of the billing address, if both differed, causing the payment to fail (shopware/SwagPayPal#857)
 - Fixes an issue, where setting a transaction to paid via an API integration without privileges for the PayPal turnover report failed and prevented flows on the paid state, e.g. after switching from a failed PayPal payment to prepayment (shopware/shopware#21245)
 - Fixes an issue, where the "Cancel and return to shop" link on the PayPal page pointed to `example.com` in PayPal Express Checkout (shopware/shopware#21430)
-- With the PayPal JS SDK v6, customers with a saved PayPal account now pay with the regular order button instead of the PayPal button. A "Change" link next to the saved account lets them pick another payment method from their PayPal wallet for the order. For this, the Store API routes `/store-api/paypal/client-token` and `/store-api/paypal/create-order` accept the new parameters `vault` and `userAction`
+- Fixes an issue, where loading the PayPal merchant information, e.g. in the PayPal settings after an onboarding, failed with an error, if PayPal returned a product without vetting status (shopware/shopware#21346)
+- Fixes an issue, where card subscription renewals could fail when the card issuer required 3D Secure, because renewals requested a verification and subscriptions were not flagged as recurring card payments (shopware/shopware#21069)
+- Fixes an issue, where PayPal and Pay Later payments still failed after the customer approved the changed order amount, e.g. after changing the quantity on the confirmation page in PayPal Express Checkout (shopware/SwagPayPal#920)
+- Fixes an issue, where PayPal accounts were not saved for future purchases and subscriptions could not be renewed, if the customer had to approve a changed order amount again
 
 # 10.8.5
 - Fixes an issue, where pending PayPal captures and authorizations were not reflected in the payment state

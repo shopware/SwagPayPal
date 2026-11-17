@@ -23,7 +23,7 @@ test('PayPal Account setup', {}, async ({
 
     expect(resetResponse.ok()).toBeTruthy();
 
-    const isSandbox = PayPalDataProvider.get('SANDBOX');
+    const isSandbox = PayPalDataProvider.get('SANDBOX', true);
     // eslint-disable-next-line playwright/no-conditional-in-test
     const prefix = isSandbox ? 'Sandbox' : '';
     const response = await TestDataService.setPayPalSettings('null', {

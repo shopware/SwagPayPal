@@ -24,6 +24,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
@@ -646,7 +647,11 @@ class ACDCHandlerTest extends TestCase
 
         $payPalOrder = $this->createOrderObject();
 
-        $this->orderTransactionRepository->addSearch([$transaction]);
+        $this->orderTransactionRepository->addSearch(static function (Criteria $criteria) use ($transaction): array {
+            static::assertTrue($criteria->getAssociation('order.salesChannel')->hasAssociation('domains'));
+
+            return [$transaction];
+        });
 
         /** @deprecated tag:v11.0.0 - Condition will always be true */
         if (\class_exists(SubscriptionsRecurringDataStruct::class)) {
@@ -695,8 +700,8 @@ class ACDCHandlerTest extends TestCase
 
         $this->orderBuilder
             ->expects($this->once())
-            ->method('getOrder')
-            ->with($paymentTransaction, $transaction, $order, $context, new Request())
+            ->method('getRecurringOrder')
+            ->with($paymentTransaction, $transaction, $order, $context)
             ->willReturn($payPalOrder);
 
         $this->orderResource
@@ -750,7 +755,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->vaultTokenService->method('getSubscriptions')->willReturn(new SubscriptionCollection());
-        $this->orderBuilder->expects($this->never())->method('getOrder');
+        $this->orderBuilder->expects($this->never())->method('getRecurringOrder');
         $this->orderResource->expects($this->never())->method('create');
         $this->transactionDataService->expects($this->never())->method('setOrderId');
         $this->orderExecuteService->expects($this->never())->method('captureOrAuthorizeOrder');
@@ -804,7 +809,7 @@ class ACDCHandlerTest extends TestCase
         $this->orderTransactionRepository->addSearch([$transaction]);
 
         $this->vaultTokenService->method('getSubscriptions')->willReturn(new SubscriptionCollection());
-        $this->orderBuilder->expects($this->never())->method('getOrder');
+        $this->orderBuilder->expects($this->never())->method('getRecurringOrder');
         $this->orderResource->expects($this->never())->method('create');
         $this->orderResource->expects($this->never())->method('get');
         $this->transactionDataService->expects($this->never())->method('setOrderId');
@@ -857,7 +862,7 @@ class ACDCHandlerTest extends TestCase
 
         $this->orderBuilder
             ->expects($this->once())
-            ->method('getOrder')
+            ->method('getRecurringOrder')
             ->willReturn($payPalOrder);
 
         $this->orderResource
