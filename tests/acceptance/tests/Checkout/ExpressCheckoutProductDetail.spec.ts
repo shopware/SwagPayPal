@@ -12,7 +12,7 @@ test('Express Checkout on the product detail page creates the PayPal order witho
     await ShopCustomer.goesTo(StorefrontProductDetail.url(product));
 
     // The PayPal order is only created once the product is in the cart.
-    const createOrderRequest = StorefrontProductDetail.page.waitForRequest('**/paypal/express/create-order');
+    const createOrderRequest = StorefrontProductDetail.page.waitForRequest('**/paypal/express/create-order**');
     await paypalExpressButton(StorefrontProductDetail.page.locator('[data-swag-paypal-express-button]')).click();
     await createOrderRequest;
 });
