@@ -1,5 +1,6 @@
 import template from './sw-sales-channel-detail-base.html.twig';
 import { PAYPAL_AGENTIC_COMMERCE_SALES_CHANNEL_TYPE_ID } from "SwagPayPal/constant/swag-paypal.constant";
+import { isAgenticCommerceSupported } from 'SwagPayPal/module/swag-paypal-agentic-commerce/agentic-commerce-support';
 import './sw-sales-channel-detail-base.scss';
 import type * as PayPal from "SwagPayPal/types";
 
@@ -32,6 +33,10 @@ export default Shopware.Component.wrapComponentConfig({
 
         isProductComparison(): boolean {
             return this.isAgenticCommerceType || this.$super('isProductComparison') as boolean;
+        },
+
+        showWebhookCard(): boolean {
+            return this.isAgenticCommerceType && isAgenticCommerceSupported();
         },
 
         // For now, we support only US sales channels
