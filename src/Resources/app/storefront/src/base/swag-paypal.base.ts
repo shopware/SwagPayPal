@@ -19,6 +19,8 @@ export interface SwagPaypalBaseOptions {
 
 type Credentials = { clientId: string; merchantId: string } | { clientToken: string };
 
+type SdkInstance = PayPalCoreJS.SdkInstance<PayPalCoreJS.Components[]>;
+
 /**
  * Base class for all PayPal plugins.
  *
@@ -82,9 +84,24 @@ export default abstract class SwagPaypalBase extends Plugin {
 
     protected instance: PayPalCoreJS.SdkInstance<(typeof this.metadata)['components']> | null = null;
 
+    /**
+     * @deprecated tag:v11.0.0 - Will be removed without replacement, the eligibility is cached per SDK instance
+     */
     protected static eligibleMethods: Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods> | null = null;
 
     protected static clientToken: Promise<string> | null = null;
+
+    /**
+     * Plugins with the same SDK options share one SDK instance,
+     * so a page fetches the eligibility once per configuration instead of once per button.
+     */
+    private static sdkInstances = new Map<string, Promise<SdkInstance>>();
+
+    /**
+     * The SDK checks the eligibility of its own instance when a Pay Later session starts,
+     * so the eligibility must be fetched by the instance that creates the session.
+     */
+    private static eligibleMethodsBySdkInstance = new WeakMap<SdkInstance, Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods>>();
 
     protected abstract get metadata(): { components: PayPalCoreJS.Components[] };
 
@@ -107,18 +124,7 @@ export default abstract class SwagPaypalBase extends Plugin {
      * Override in child classes to handle pre-SDK loading logic.
      */
     protected async beforeSetup(): Promise<void> {
-        const [credentials, paypal] = await Promise.all([
-            this._fetchCredentials(),
-            DependencyHelper.loadPayPalCore({ environment: this.options.environment }),
-        ]);
-
-        this.instance ??= await paypal.createInstance({
-            ...credentials,
-            locale: this.options.languageIso.replace('_', '-'),
-            pageType: this.options.pageType,
-            partnerAttributionId: this.options.partnerAttributionId,
-            components: this.metadata.components,
-        });
+        this.instance ??= await this.getSharedSdkInstance();
     }
 
     /**
@@ -133,14 +139,18 @@ export default abstract class SwagPaypalBase extends Plugin {
             throw new Error('PayPal SDK instance is not initialized yet.');
         }
 
-        SwagPaypalBase.eligibleMethods ??= this.instance.findEligibleMethods({
-            currencyCode: this.options.currency,
-        });
+        let eligibleMethods = SwagPaypalBase.eligibleMethodsBySdkInstance.get(this.instance);
+        if (!eligibleMethods) {
+            eligibleMethods = this.instance.findEligibleMethods({
+                currencyCode: this.options.currency,
+            });
+            SwagPaypalBase.eligibleMethodsBySdkInstance.set(this.instance, eligibleMethods);
+        }
 
         try {
-            return await SwagPaypalBase.eligibleMethods;
+            return await eligibleMethods;
         } catch (error) {
-            SwagPaypalBase.eligibleMethods = null;
+            SwagPaypalBase.eligibleMethodsBySdkInstance.delete(this.instance);
             throw PayPalPluginError.create(PayPalPluginError.CODE_SCRIPT, null, `Failed to find eligible payment methods: ${PayPalPluginError.stringifyError(error)}`);
         }
     }
@@ -210,5 +220,34 @@ export default abstract class SwagPaypalBase extends Plugin {
 
         SwagPaypalBase.clientToken ??= this._fetchClientToken();
         return { clientToken: await SwagPaypalBase.clientToken };
+    }
+
+    private async getSharedSdkInstance(): Promise<SdkInstance> {
+        const [credentials, paypal] = await Promise.all([
+            this._fetchCredentials(),
+            DependencyHelper.loadPayPalCore({ environment: this.options.environment }),
+        ]);
+
+        const options = {
+            ...credentials,
+            locale: this.options.languageIso.replace('_', '-'),
+            pageType: this.options.pageType,
+            partnerAttributionId: this.options.partnerAttributionId,
+            components: this.metadata.components,
+        };
+        const key = JSON.stringify(options);
+
+        let instance = SwagPaypalBase.sdkInstances.get(key);
+        if (!instance) {
+            instance = paypal.createInstance(options);
+            SwagPaypalBase.sdkInstances.set(key, instance);
+        }
+
+        try {
+            return await instance;
+        } catch (error) {
+            SwagPaypalBase.sdkInstances.delete(key);
+            throw error;
+        }
     }
 }
