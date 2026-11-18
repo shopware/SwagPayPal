@@ -8,9 +8,12 @@
 namespace Swag\PayPal\Checkout\SalesChannel;
 
 use OpenApi\Attributes as OA;
+use Shopware\Core\Checkout\Customer\CustomerException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Checkout\Exception\MissingCustomerVaultTokenException;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,11 +24,14 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(defaults: ['_routeScope' => ['store-api']])]
 class ClientTokenRoute extends AbstractClientTokenRoute
 {
+    public const REQUEST_VAULT = 'vault';
+
     /**
      * @internal
      */
     public function __construct(
         private readonly TokenResource $tokenResource,
+        private readonly VaultTokenService $vaultTokenService,
     ) {
     }
 
@@ -38,6 +44,14 @@ class ClientTokenRoute extends AbstractClientTokenRoute
         path: '/paypal/client-token',
         operationId: 'paypalClientToken',
         description: 'Retrieves a client ID token for the current sales channel',
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+            new OA\Property(
+                property: self::REQUEST_VAULT,
+                description: 'Binds the token to the logged-in customer\'s saved account or card for the selected payment method, so the PayPal JS SDK can show it, e.g. to let the customer change the funding instrument of their saved PayPal wallet',
+                type: 'boolean',
+                default: false,
+            ),
+        ])),
         tags: ['Store API', 'PayPal'],
         responses: [new OA\Response(
             response: Response::HTTP_OK,
@@ -51,8 +65,27 @@ class ClientTokenRoute extends AbstractClientTokenRoute
     #[Route(path: '/store-api/paypal/client-token', name: 'store-api.paypal.client-token', methods: ['POST'], defaults: ['_loginRequired' => false])]
     public function getClientToken(Request $request, SalesChannelContext $salesChannelContext): Response
     {
-        $clientToken = $this->tokenResource->getClientToken($salesChannelContext)->getAccessToken();
+        if (!$request->request->getBoolean(self::REQUEST_VAULT)) {
+            return new TokenResponse($this->tokenResource->getClientToken($salesChannelContext)->getAccessToken());
+        }
 
-        return new TokenResponse($clientToken);
+        $vaultId = $this->getVaultId($salesChannelContext);
+
+        return new TokenResponse($this->tokenResource->getVaultClientToken($salesChannelContext, $vaultId)->getAccessToken());
+    }
+
+    private function getVaultId(SalesChannelContext $salesChannelContext): string
+    {
+        $customer = $salesChannelContext->getCustomer();
+        if (!$customer || $customer->getGuest()) {
+            throw CustomerException::customerNotLoggedIn();
+        }
+
+        $vault = $this->vaultTokenService->getCustomerToken($customer->getId(), $salesChannelContext->getPaymentMethod()->getId(), $salesChannelContext->getContext());
+        if ($vault === null) {
+            throw new MissingCustomerVaultTokenException($customer->getId());
+        }
+
+        return $vault->getToken();
     }
 }

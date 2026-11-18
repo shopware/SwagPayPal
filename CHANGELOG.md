@@ -8,6 +8,7 @@
 - Fixes an issue, where PayPal Express Checkout showed all shipping methods except the selected one as free (shopware/SwagPayPal#913, requires Shopware 6.7.14.0 or greater)
 - Fixes an issue, where removing a saved PayPal account or card in the subscription checkout led to an error page and could remove a different one instead. Headless storefronts can now remove them, also for subscriptions
 - Fixes an issue, where the transaction status synchronisation could change a transaction based on an outdated payment attempt (shopware/SwagPayPal#842)
+- With the PayPal JS SDK v6, customers with a saved PayPal account now pay with the regular order button and can choose another payment method from their PayPal account for an order
 
 # 10.9.0
 - Added support for the PayPal JS SDK v6, which can be enabled in the "Storefront presentation" settings once it is activated for the PayPal merchant account. It is more performant and displays payment buttons and Pay Later banners faster. Template customisations may need to be adapted if enabled. SDK v6 will become the default in version 11 (shopware/SwagPayPal#257)

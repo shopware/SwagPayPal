@@ -43,6 +43,8 @@ class OpenAPISchemaTest extends TestCase
         '\\' . PayPalController::class . '::expressPrepareCart',
         '\\' . PayPalController::class . '::expressShippingCallback',
         '\\' . PayPalController::class . '::clearVault',
+        // Storefront only, as it remembers the edit in the storefront session
+        '\\' . PayPalController::class . '::editSavedPaymentMethod',
 
         // Decoration, covered by platform
         '\\' . ExpressCategoryRoute::class . '::load',

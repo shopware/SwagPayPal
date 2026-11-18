@@ -23,6 +23,7 @@ use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\Checkout\SalesChannel\CustomerVaultTokenRoute;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityStateService;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Storefront\Controller\ApplePayController;
@@ -35,6 +36,7 @@ use Swag\PayPal\Storefront\Data\Service\ApplePayCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\FundingEligibilityDataService;
 use Swag\PayPal\Storefront\Data\Service\GooglePayCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService;
+use Swag\PayPal\Storefront\Data\Service\SavedPaymentMethodDataService;
 use Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\VaultDataService;
@@ -46,6 +48,7 @@ use Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider;
 use Swag\PayPal\Storefront\Framework\Snippet\SnippetFileLoaderDecorator;
 use Swag\PayPal\Storefront\RequestSubscriber;
 use Swag\PayPal\Storefront\Service\ReturnTokenService;
+use Swag\PayPal\Storefront\Service\SavedPaymentMethodEditService;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -76,8 +79,15 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service(ReturnTokenService::class),
             service('router'),
             service(SystemConfigService::class),
+            service(SavedPaymentMethodEditService::class),
         ])
         ->call('setContainer', [service('service_container')]);
+
+    $services->set(SavedPaymentMethodEditService::class)
+        ->args([
+            service('request_stack'),
+            service(OrderResource::class),
+        ]);
 
     $services->set(ReturnTokenService::class)
         ->args([
@@ -126,6 +136,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->args([
             service(SettingsValidationService::class),
             service(VaultDataService::class),
+            service(SavedPaymentMethodDataService::class),
         ])
         ->tag('kernel.event_subscriber');
 
@@ -181,6 +192,12 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->public()
         ->args([
             service(CustomerVaultTokenRoute::class),
+        ]);
+
+    $services->set(SavedPaymentMethodDataService::class)
+        ->parent(AbstractCheckoutDataService::class)
+        ->args([
+            service(SavedPaymentMethodEditService::class),
         ]);
 
     $services->set(VenmoCheckoutDataService::class)

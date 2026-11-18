@@ -12,10 +12,12 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
+use Swag\PayPal\DataAbstractionLayer\VaultToken\VaultTokenEntity;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\PayPalOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
@@ -214,6 +216,131 @@ class PayPalOrderBuilderTest extends AbstractOrderBuilderTestCase
 
         static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getReturnUrl());
         static::assertSame('https://example.test/paypal/restore-context/token', $experienceContext->getCancelUrl());
+    }
+
+    public function testGetOrderFromCartUsesRequestUserAction(): void
+    {
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $this->createSalesChannelContext(),
+            new RequestDataBag([CreateOrderRoute::USER_ACTION => ExperienceContext::USER_ACTION_CONTINUE]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertSame(ExperienceContext::USER_ACTION_CONTINUE, $experienceContext->getUserAction());
+    }
+
+    public function testGetOrderUsesRequestUserAction(): void
+    {
+        $orderTransaction = $this->createOrderTransaction();
+        $order = $this->getBuilder()->getOrder(
+            new PaymentTransactionStruct($orderTransaction->getId()),
+            $orderTransaction,
+            $this->createOrder(),
+            Context::createDefaultContext(),
+            new Request([], [CreateOrderRoute::USER_ACTION => ExperienceContext::USER_ACTION_CONTINUE]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertSame(ExperienceContext::USER_ACTION_CONTINUE, $experienceContext->getUserAction());
+    }
+
+    public function testGetOrderFromCartIgnoresUnknownUserAction(): void
+    {
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $this->createSalesChannelContext(),
+            new RequestDataBag([CreateOrderRoute::USER_ACTION => 'SHIP_IT']),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertSame(ExperienceContext::USER_ACTION_PAY_NOW, $experienceContext->getUserAction());
+    }
+
+    public function testGetOrderFromCartPrefersSavedWallet(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        $customerId = $salesChannelContext->getCustomer()?->getId();
+        static::assertNotNull($customerId);
+
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setToken('saved-wallet-vault-id');
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('getCustomerToken')
+            ->with($customerId, $salesChannelContext->getPaymentMethod()->getId(), $salesChannelContext->getContext())
+            ->willReturn($vaultToken);
+
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $salesChannelContext,
+            new RequestDataBag([CreateOrderRoute::VAULT => true]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertSame('saved-wallet-vault-id', $experienceContext->getPreferredPaymentSource()?->getVaultId());
+    }
+
+    public function testGetOrderPrefersSavedWallet(): void
+    {
+        $orderTransaction = $this->createOrderTransaction();
+        $orderTransaction->setPaymentMethodId('paypal-payment-method-id');
+        $order = $this->createOrder();
+        $order->getOrderCustomer()?->setCustomerId('customer-id');
+
+        $vaultToken = new VaultTokenEntity();
+        $vaultToken->setToken('saved-wallet-vault-id');
+        $this->vaultTokenService
+            ->expects($this->once())
+            ->method('getCustomerToken')
+            ->with('customer-id', 'paypal-payment-method-id', static::anything())
+            ->willReturn($vaultToken);
+
+        $paypalOrder = $this->getBuilder()->getOrder(
+            new PaymentTransactionStruct($orderTransaction->getId()),
+            $orderTransaction,
+            $order,
+            Context::createDefaultContext(),
+            new Request([], [CreateOrderRoute::VAULT => '1'], [AbstractOrderBuilder::PRELIMINARY_ATTRIBUTE => true]),
+        );
+
+        $experienceContext = $paypalOrder->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertSame('saved-wallet-vault-id', $experienceContext->getPreferredPaymentSource()?->getVaultId());
+    }
+
+    public function testGetOrderFromCartWithoutVaultRequestHasNoPreferredPaymentSource(): void
+    {
+        $this->vaultTokenService->expects($this->never())->method('getCustomerToken');
+
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $this->createSalesChannelContext(),
+            new RequestDataBag(),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertNull($experienceContext->getPreferredPaymentSource());
+    }
+
+    public function testGetOrderFromCartWithoutSavedWalletHasNoPreferredPaymentSource(): void
+    {
+        $this->vaultTokenService->expects($this->once())->method('getCustomerToken')->willReturn(null);
+
+        $order = $this->getBuilder()->getOrderFromCart(
+            $this->createCart(''),
+            $this->createSalesChannelContext(),
+            new RequestDataBag([CreateOrderRoute::VAULT => true]),
+        );
+
+        $experienceContext = $order->getPaymentSource()?->getPaypal()?->getExperienceContext();
+        static::assertNotNull($experienceContext);
+        static::assertNull($experienceContext->getPreferredPaymentSource());
     }
 
     public function testGetOrderNoBillingAddress(): void

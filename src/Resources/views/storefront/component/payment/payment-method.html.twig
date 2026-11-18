@@ -22,10 +22,15 @@
             {% else %}
                 {% set payPalVaultClearUrl = path('frontend.paypal.vault.clear', payPalVaultClearParameters) %}
             {% endif %}
-            <div>{{ payPalVaultData.identifier }}</div>
-            <a href="{{ payPalVaultClearUrl }}">
-                {{ ("paypal.vault." ~ payPalVaultData.snippetType ~ ".clear")|trans }}
-            </a>
+
+            {% if payPalVaultData.savedPaymentMethod %}
+                {% sw_include '@SwagPayPal/storefront/paypal/saved-payment-method.html.twig' %}
+            {% else %}
+                <div>{{ payPalVaultData.identifier }}</div>
+                <a href="{{ payPalVaultClearUrl }}">
+                    {{ ("paypal.vault." ~ payPalVaultData.snippetType ~ ".clear")|trans }}
+                </a>
+            {% endif %}
         {% elseif not subscriptionContext %}
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="createVault" id="swagPaypalCreateVault" form="confirmOrderForm" value="1" />

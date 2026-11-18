@@ -14,6 +14,7 @@ use Shopware\PayPalSDK\Contract\Gateway\TokenGatewayInterface;
 use Shopware\PayPalSDK\Exception\ApiException;
 use Shopware\PayPalSDK\Struct\V1\Token;
 use Swag\PayPal\RestApi\ApiContextFactoryInterface;
+use Swag\PayPal\RestApi\Context\VaultClaimOAuthContext;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 
 /**
@@ -67,6 +68,23 @@ class TokenResource implements TokenResourceInterface
         }
 
         $clientTokenContext = $oauthContext->intoClientTokenContext();
+
+        return $this->tokenGateway->getToken($context->withOAuthContext($clientTokenContext));
+    }
+
+    /**
+     * A client token bound to the saved PayPal wallet with the given vault ID.
+     * Only hand it to the buyer who saved that wallet.
+     */
+    public function getVaultClientToken(SalesChannelContext $salesChannelContext, string $vaultId): Token
+    {
+        $context = $this->apiContextFactory->getApiContext($salesChannelContext->getSalesChannelId());
+
+        if (!($oauthContext = $context->getOAuthContext()) instanceof CredentialsOAuthContext) {
+            throw new \InvalidArgumentException($this->apiContextFactory::class . ' should have returned a context including ' . CredentialsOAuthContext::class);
+        }
+
+        $clientTokenContext = new VaultClaimOAuthContext($oauthContext->intoClientTokenContext(), $vaultId);
 
         return $this->tokenGateway->getToken($context->withOAuthContext($clientTokenContext));
     }

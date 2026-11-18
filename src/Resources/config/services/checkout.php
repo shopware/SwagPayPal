@@ -139,6 +139,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->public()
         ->args([
             service(TokenResource::class),
+            service(VaultTokenService::class),
         ]);
 
     $services->set(FilteredPaymentMethodRoute::class)

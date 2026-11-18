@@ -1,16 +1,25 @@
 import type * as SDK from '@paypal/paypal-js/sdk-v6';
 import 'applepayjs';
 
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
 // PayPalCoreJS is an ambient type namespace, used throughout the storefront without imports
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
     namespace PayPalCoreJS {
-        export type Namespace = SDK.PayPalV6Namespace;
+        export type Namespace = Omit<SDK.PayPalV6Namespace, 'createInstance'> & {
+            createInstance: <T extends readonly Components[]>(
+                createInstanceOptions: DistributiveOmit<SDK.CreateInstanceOptions<SDK.Components[]>, 'components'> & { components: T },
+            ) => Promise<SdkInstance<T>>;
+        };
 
-        export type Components = SDK.Components;
+        // `paypal-saved-payment-methods` is not typed by @paypal/paypal-js yet
+        export type Components = SDK.Components | 'paypal-saved-payment-methods';
         export type FundingSource = SDK.FundingSource;
 
-        export type SdkInstance<T extends readonly Components[]> = SDK.SdkInstance<T>;
+        export type SdkInstance<T extends readonly Components[]> =
+            SDK.SdkInstance<Extract<T[number], SDK.Components>[]>
+            & ('paypal-saved-payment-methods' extends T[number] ? SavedPaymentMethods.Instance : unknown);
 
         export type PaymentSessionOptions<T extends FundingSource = FundingSource> =
             | T extends 'paypal' ? SDK.PayPalOneTimePaymentSessionOptions : never
@@ -67,6 +76,20 @@ declare global {
 
         export namespace ApplePay {
             export type Config = SDK.ApplePayConfig;
+        }
+
+        export namespace SavedPaymentMethods {
+            export type SessionOptions = Pick<SDK.PayPalOneTimePaymentSessionOptions, 'commit' | 'onApprove' | 'onCancel' | 'onError'>;
+
+            export type Session = SDK.OneTimePaymentSession;
+
+            export type Instance = {
+                /**
+                 * Opens PayPal's window for a buyer to change the funding instrument of their saved wallet for one order.
+                 * Requires a client token bound to the wallet and a `<paypal-saved-payment-methods>` element in the page.
+                 */
+                createPayPalEditSavedPaymentSession: (sessionOptions: SessionOptions) => Session;
+            };
         }
     }
 }

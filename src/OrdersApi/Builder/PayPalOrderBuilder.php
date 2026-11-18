@@ -24,6 +24,7 @@ use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\AppSwitchContext;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\AppSwitchContext\MobileWebContext;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\PreferredPaymentSource;
 use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Paypal;
 use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\AbstractCreateOrderRoute;
@@ -85,6 +86,9 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $experienceContext = $this->createExperienceContext($order, $salesChannel, $context, $paymentTransaction, $requestDataBag);
         $requestVaulting = $this->vaultTokenService->shouldRequestVaulting(bag: $requestDataBag, paymentTransaction: $paymentTransaction);
         $this->configureAppSwitchContext($experienceContext, $order->getSalesChannelId(), $requestDataBag, $requestVaulting);
+        if ($requestDataBag->getBoolean(AbstractCreateOrderRoute::VAULT)) {
+            $this->addPreferredPaymentSource($experienceContext, $order->getOrderCustomer()?->getCustomerId(), $orderTransaction->getPaymentMethodId(), $context);
+        }
         $paypal->setExperienceContext($experienceContext);
 
         $customer = $order->getOrderCustomer();
@@ -112,6 +116,9 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $experienceContext = $this->createExperienceContext($cart, $salesChannelContext->getSalesChannel(), $salesChannelContext->getContext(), null, $requestDataBag);
         $requestVaulting = $this->vaultTokenService->shouldRequestVaulting($salesChannelContext, $requestDataBag);
         $this->configureAppSwitchContext($experienceContext, $salesChannelContext->getSalesChannelId(), $requestDataBag, $requestVaulting);
+        if ($requestDataBag->getBoolean(AbstractCreateOrderRoute::VAULT)) {
+            $this->addPreferredPaymentSource($experienceContext, $salesChannelContext->getCustomer()?->getId(), $salesChannelContext->getPaymentMethod()->getId(), $salesChannelContext->getContext());
+        }
         $paypal->setExperienceContext($experienceContext);
 
         $customer = $salesChannelContext->getCustomer();
@@ -161,5 +168,21 @@ class PayPalOrderBuilder extends AbstractOrderBuilder
         $appSwitchContext->setMobileWeb($mobileWebContext);
 
         $experienceContext->setAppSwitchContext($appSwitchContext);
+    }
+
+    private function addPreferredPaymentSource(ExperienceContext $experienceContext, ?string $customerId, string $paymentMethodId, Context $context): void
+    {
+        if ($customerId === null) {
+            return;
+        }
+
+        $token = $this->vaultTokenService->getCustomerToken($customerId, $paymentMethodId, $context);
+        if ($token === null) {
+            return;
+        }
+
+        $preferredPaymentSource = new PreferredPaymentSource();
+        $preferredPaymentSource->setVaultId($token->getToken());
+        $experienceContext->setPreferredPaymentSource($preferredPaymentSource);
     }
 }

@@ -49,6 +49,33 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 #[Package('checkout')]
 class VaultTokenServiceTest extends TestCase
 {
+    public function testGetCustomerToken(): void
+    {
+        $token = new VaultTokenEntity();
+        $token->setId(Uuid::randomHex());
+
+        /** @var StaticEntityRepository<VaultTokenCollection> $vaultTokenRepository */
+        $vaultTokenRepository = new StaticEntityRepository([static function (Criteria $criteria) use ($token) {
+            static::assertSame(1, $criteria->getLimit());
+            static::assertCount(2, $criteria->getFilters());
+            static::assertInstanceOf(EqualsFilter::class, $criteria->getFilters()[0]);
+            static::assertSame('mainMapping.customerId', $criteria->getFilters()[0]->getField());
+            static::assertSame('customer-id', $criteria->getFilters()[0]->getValue());
+            static::assertInstanceOf(EqualsFilter::class, $criteria->getFilters()[1]);
+            static::assertSame('mainMapping.paymentMethodId', $criteria->getFilters()[1]->getField());
+            static::assertSame('payment-method-id', $criteria->getFilters()[1]->getValue());
+
+            return new VaultTokenCollection([$token]);
+        }], new VaultTokenDefinition());
+
+        /** @var StaticEntityRepository<CustomerCollection> $customerRepository */
+        $customerRepository = new StaticEntityRepository([], new CustomerDefinition());
+
+        $vaultTokenService = new VaultTokenService($vaultTokenRepository, $customerRepository, null);
+
+        static::assertSame($token, $vaultTokenService->getCustomerToken('customer-id', 'payment-method-id', Context::createDefaultContext()));
+    }
+
     public function testGetAvailableTokenFromSubscription(): void
     {
         if (!\class_exists(SubscriptionDefinition::class)) {

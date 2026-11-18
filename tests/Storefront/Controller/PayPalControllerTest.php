@@ -18,6 +18,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Generator;
@@ -37,9 +38,11 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Controller\PayPalController;
 use Swag\PayPal\Storefront\Data\Struct\AbstractScriptData;
 use Swag\PayPal\Storefront\Service\ReturnTokenService;
+use Swag\PayPal\Storefront\Service\SavedPaymentMethodEditService;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -66,8 +69,14 @@ class PayPalControllerTest extends TestCase
 
     private SystemConfigServiceMock $systemConfigService;
 
+    private AbstractClearVaultRoute&MockObject $clearVaultRoute;
+
+    private SavedPaymentMethodEditService&MockObject $savedPaymentMethodEditService;
+
     protected function setUp(): void
     {
+        $this->clearVaultRoute = $this->createMock(AbstractClearVaultRoute::class);
+        $this->savedPaymentMethodEditService = $this->createMock(SavedPaymentMethodEditService::class);
         $this->createOrderRoute = $this->createMock(AbstractCreateOrderRoute::class);
         $this->expressCreateOrderRoute = $this->createMock(AbstractExpressCreateOrderRoute::class);
         $this->returnTokenService = $this->createMock(ReturnTokenService::class);
@@ -98,14 +107,91 @@ class PayPalControllerTest extends TestCase
                 $this->createMock(AbstractCartDeleteRoute::class),
                 $this->createMock(CartService::class),
                 new CartPriceService(new PriceFormatter()),
-                $this->createMock(AbstractClearVaultRoute::class),
+                $this->clearVaultRoute,
                 $this->createMock(AbstractClientTokenRoute::class),
                 new Logger('test', [$this->logHandler]),
                 $this->returnTokenService,
                 $this->router,
                 $this->systemConfigService,
+                $this->savedPaymentMethodEditService,
             ])
             ->getMock();
+    }
+
+    public function testClearVaultForgetsEdits(): void
+    {
+        $request = new Request();
+        $salesChannelContext = $this->generateSalesChannelContext();
+
+        $this->clearVaultRoute
+            ->expects($this->once())
+            ->method('clearVault')
+            ->with($request, $salesChannelContext);
+        $this->savedPaymentMethodEditService
+            ->expects($this->once())
+            ->method('forgetAll');
+
+        $this->controller->clearVault($request, $salesChannelContext);
+    }
+
+    public function testEditSavedPaymentMethod(): void
+    {
+        $salesChannelContext = $this->generateSalesChannelContext();
+
+        $this->savedPaymentMethodEditService
+            ->expects($this->once())
+            ->method('remember')
+            ->with($salesChannelContext, 'orderId', 'paypalOrderId')
+            ->willReturn(true);
+
+        $response = $this->controller->editSavedPaymentMethod(
+            new Request(request: ['paypalOrderId' => 'paypalOrderId', 'orderId' => 'orderId']),
+            $salesChannelContext,
+        );
+
+        static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+    }
+
+    public function testEditSavedPaymentMethodForCart(): void
+    {
+        $salesChannelContext = $this->generateSalesChannelContext();
+
+        $this->savedPaymentMethodEditService
+            ->expects($this->once())
+            ->method('remember')
+            ->with($salesChannelContext, null, 'paypalOrderId')
+            ->willReturn(true);
+
+        $response = $this->controller->editSavedPaymentMethod(
+            new Request(request: ['paypalOrderId' => 'paypalOrderId', 'orderId' => null]),
+            $salesChannelContext,
+        );
+
+        static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+    }
+
+    public function testEditSavedPaymentMethodWithoutPayPalOrderId(): void
+    {
+        $this->savedPaymentMethodEditService->expects($this->never())->method('remember');
+
+        $this->expectException(RoutingException::class);
+
+        $this->controller->editSavedPaymentMethod(new Request(), $this->generateSalesChannelContext());
+    }
+
+    public function testEditSavedPaymentMethodWithUnapprovedOrder(): void
+    {
+        $this->savedPaymentMethodEditService
+            ->expects($this->once())
+            ->method('remember')
+            ->willReturn(false);
+
+        $this->expectException(RoutingException::class);
+
+        $this->controller->editSavedPaymentMethod(
+            new Request(request: ['paypalOrderId' => 'paypalOrderId']),
+            $this->generateSalesChannelContext(),
+        );
     }
 
     public function testCreateOrderWillReturnErrorResponseOnThrownPayPalApiException(): void

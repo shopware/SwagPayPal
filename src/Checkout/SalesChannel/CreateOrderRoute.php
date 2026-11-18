@@ -26,6 +26,7 @@ use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\PayPalSDK\Struct\V2\Order;
+use Shopware\PayPalSDK\Struct\V2\Order\PaymentSource\Common\ExperienceContext;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\ACDCOrderBuilder;
@@ -95,6 +96,19 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
                 property: self::CANCEL_URL,
                 description: 'Cancel URL for the order experience context. Must be sent together with `returnUrl`, otherwise both are ignored',
                 type: 'string',
+            ),
+            new OA\Property(
+                property: self::USER_ACTION,
+                description: 'User action for the order experience context. Use `CONTINUE`, if the customer still confirms the order in the shop after approving it at PayPal',
+                type: 'string',
+                default: ExperienceContext::USER_ACTION_PAY_NOW,
+                enum: [ExperienceContext::USER_ACTION_PAY_NOW, ExperienceContext::USER_ACTION_CONTINUE],
+            ),
+            new OA\Property(
+                property: self::VAULT,
+                description: 'Offers the logged-in customer\'s saved PayPal account as the preferred payment source, so that the customer changes its funding instrument in PayPal\'s window',
+                type: 'boolean',
+                default: false,
             ),
         ])),
         tags: ['Store API', 'PayPal'],
