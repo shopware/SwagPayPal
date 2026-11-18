@@ -82,7 +82,7 @@ export default abstract class SwagPaypalBase extends Plugin {
 
     protected instance: PayPalCoreJS.SdkInstance<(typeof this.metadata)['components']> | null = null;
 
-    protected static eligibleMethods: Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods> | null = null;
+    protected eligibleMethods: Promise<PayPalCoreJS.FindEligibleMethods.EligiblePaymentMethods> | null = null;
 
     protected static clientToken: Promise<string> | null = null;
 
@@ -133,14 +133,14 @@ export default abstract class SwagPaypalBase extends Plugin {
             throw new Error('PayPal SDK instance is not initialized yet.');
         }
 
-        SwagPaypalBase.eligibleMethods ??= this.instance.findEligibleMethods({
+        this.eligibleMethods ??= this.instance.findEligibleMethods({
             currencyCode: this.options.currency,
         });
 
         try {
-            return await SwagPaypalBase.eligibleMethods;
+            return await this.eligibleMethods;
         } catch (error) {
-            SwagPaypalBase.eligibleMethods = null;
+            this.eligibleMethods = null;
             throw PayPalPluginError.create(PayPalPluginError.CODE_SCRIPT, null, `Failed to find eligible payment methods: ${PayPalPluginError.stringifyError(error)}`);
         }
     }
