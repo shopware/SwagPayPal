@@ -12,6 +12,7 @@ if (!\class_exists('Shopware\Core\Test\Stub\Framework\IdsCollection')) {
 }
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItemFactoryRegistry;
@@ -27,17 +28,24 @@ use Shopware\Core\Framework\Rule\Rule;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateCollection;
 use Shopware\Core\System\Country\CountryEntity;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
+use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\Stub\Framework\IdsCollection;
 use Shopware\Core\Test\TestDefaults;
+use Shopware\Storefront\Checkout\Shipping\BlockedShippingMethodSwitcher;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressShippingCallbackException;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressShippingCallbackService;
+use Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\Util\ShippingOptionsProvider;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ShippingOption;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\RestApi\V2\Api\OrderShippingCallback;
@@ -168,6 +176,40 @@ class ExpressShippingCallbackServiceTest extends TestCase
             SalesChannelContextService::COUNTRY_STATE_ID => $country->getStates()?->first()?->getId(),
             SalesChannelContextService::SHIPPING_METHOD_ID => $this->salesChannelContext->getShippingMethod()->getId(),
         ]);
+    }
+
+    public function testCalculationRemovesDigitalGoodsCategory(): void
+    {
+        $digitalItem = new Item();
+        $digitalItem->setCategory(Item::CATEGORY_DIGITAL_GOODS);
+        $physicalItem = new Item();
+        $physicalItem->setCategory(Item::CATEGORY_PHYSICAL_GOODS);
+        $purchaseUnit = new PurchaseUnit();
+        $purchaseUnit->setItems(new ItemCollection([$digitalItem, $physicalItem]));
+        $paypalOrder = new Order();
+        $paypalOrder->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
+
+        $orderBuilder = $this->createMock(AbstractOrderBuilder::class);
+        $orderBuilder->method('getOrderFromCart')->willReturn($paypalOrder);
+
+        $service = new ExpressShippingCallbackService(
+            static::getContainer()->get(CartService::class),
+            static::getContainer()->get('sales_channel.country.repository'),
+            $orderBuilder,
+            static::getContainer()->get(ShippingOptionsProvider::class),
+            static::getContainer()->get(ContextSwitchRoute::class),
+            static::getContainer()->get(SalesChannelContextFactory::class),
+            /** @phpstan-ignore-next-line classConstant.internalClass - it's a test */
+            static::getContainer()->get(BlockedShippingMethodSwitcher::class),
+            new NullLogger(),
+        );
+
+        $order = $service->recalculateCart($this->createCallback($this->getCountry('DE')), $this->salesChannelContext);
+
+        $items = $order->getPurchaseUnits()->first()?->getItems();
+        static::assertNotNull($items);
+        static::assertFalse($items->first()?->isset('category'));
+        static::assertSame(Item::CATEGORY_PHYSICAL_GOODS, $items->last()?->getCategory());
     }
 
     public function testCalculationSwitchesToFirstAvailableWhenSelectedShippingMethodIsBlocked(): void
